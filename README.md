@@ -3,7 +3,7 @@
 A token-driven design system for **spatial interfaces** — routing engines, pedestrian
 simulators, map tooling and geospatial dashboards.
 
-<!-- ds:components-line -->131 components, 269 design tokens<!-- /ds:components-line -->, dark and light themes, zero runtime dependencies, no build
+<!-- ds:components-line -->133 components, 269 design tokens<!-- /ds:components-line -->, dark and light themes, zero runtime dependencies, no build
 step. Three surfaces share one token layer, one type scale and one set of affordance rules: a
 landing page that has to persuade, a documentation site that has to explain, and a dashboard that
 has to be read at speed.
@@ -284,7 +284,7 @@ Naming is `.c-<block>`, `.c-<block>__<element>`, `.c-<block>--<variant>`. Compon
 into one another with descendant selectors, with three documented exceptions: the button group
 (`.c-btn-group--attached .c-btn`), the input group (`.c-input-group .c-input`), and the panel's
 resize handle (`.c-panel:hover .c-resize-handle`, a visibility dependency, not a style). The
-<!-- ds:components -->131<!-- /ds:components --> count is the number of
+<!-- ds:components -->133<!-- /ds:components --> count is the number of
 `.c-*` blocks in the component layer; the composed shells in `patterns.css` and the guide's own
 shell are not counted.
 
