@@ -7376,13 +7376,15 @@
                     </details></div>
           </div>
 
-          <div class="ds-example" data-generated="wrap"><div dir="rtl" data-snippet style="margin-block-start: var(--space-lg); padding: var(--space-md); border: 1px solid var(--color-border); border-radius: var(--radius-md)">
-            <p style="margin-block-end: var(--space-xs)">RTL specimen — chevron and chevron position flip.</p>
-            <button class="c-btn c-btn--primary" type="button"> RTL button </button>
-            <select class="c-select" style="margin-inline-start: var(--space-xs)">
-              <option>خيار ١</option>
-              <option>خيار ٢</option>
-            </select>
+          <div class="ds-example" data-generated="wrap"><div dir="rtl" data-snippet style="margin-block-start: var(--space-md); padding: var(--space-md); border: 1px solid var(--color-border); border-radius: var(--radius-md)">
+            <p style="margin-block-end: var(--space-sm)">RTL specimen — chevron flips to the inline-start side.</p>
+            <div class="c-stack" style="gap: var(--space-xs)">
+              <button class="c-btn c-btn--primary" type="button">RTL button</button>
+              <select class="c-select">
+                <option>خيار ١</option>
+                <option>خيار ٢</option>
+              </select>
+            </div>
           </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -7395,19 +7397,22 @@
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-105">&lt;div dir="rtl" style="margin-block-start: var(--space-lg); padding: var(--space-md); border: 1px solid var(--color-border); border-radius: var(--radius-md)"&gt;
-  &lt;p style="margin-block-end: var(--space-xs)"&gt;RTL specimen — chevron and chevron position flip.&lt;/p&gt;
-  &lt;button class="c-btn c-btn--primary" type="button"&gt;RTL button&lt;/button&gt;
-  &lt;select class="c-select" style="margin-inline-start: var(--space-xs)"&gt;
-    &lt;option&gt;خيار ١&lt;/option&gt;
-    &lt;option&gt;خيار ٢&lt;/option&gt;
-  &lt;/select&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-105">&lt;div dir="rtl" style="margin-block-start: var(--space-md); padding: var(--space-md); border: 1px solid var(--color-border); border-radius: var(--radius-md)"&gt;
+  &lt;p style="margin-block-end: var(--space-sm)"&gt;RTL specimen — chevron flips to the inline-start side.&lt;/p&gt;
+  &lt;div class="c-stack" style="gap: var(--space-xs)"&gt;
+    &lt;button class="c-btn c-btn--primary" type="button"&gt;RTL button&lt;/button&gt;
+    &lt;select class="c-select"&gt;
+      &lt;option&gt;خيار ١&lt;/option&gt;
+      &lt;option&gt;خيار ٢&lt;/option&gt;
+    &lt;/select&gt;
+  &lt;/div&gt;
 &lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
+          
         </section>
 
-        <div class="ds-panel" style="margin-block-start: var(--space-lg)">
+        <div class="ds-panel" style="margin-block-start: var(--space-md)">
           <h3 class="ds-spec__name">Layout primitives</h3>
           <p class="muted" style="font-size: var(--type-sm); margin-block: 0.35rem 1rem">
             The spatial dashboard skeleton: an app shell, a map area with floating panels, a footer
