@@ -41,8 +41,18 @@ export function minifyCss(css) {
       while (end < css.length && /\s/.test(css[end])) end++;
       const before = out[out.length - 1] || "";
       const after = css[end] || "";
-      // A space only matters when it separates two word-ish characters.
-      if (/[a-zA-Z0-9_\-]/.test(before) && /[a-zA-Z0-9_\-]/.test(after)) {
+      // A space matters when it separates two tokens that would otherwise
+      // merge into a different (or invalid) token. Keep it for:
+      //  - two word-ish neighbours (existing rule)
+      //  - math operators in calc()/clamp()/min()/max() (+, -, *, /)
+      //  - a descendant combinator before a class/id/attribute/element
+      //    (e.g. `] .cls`, `) .cls`, `.foo .bar`)
+      const wordish = /[a-zA-Z0-9_\-]/.test(before) && /[a-zA-Z0-9_\-]/.test(after);
+      const mathOp = /[+\-*/]/.test(before) || /[+\-*/]/.test(after);
+      const descendant =
+        (/[%)\]]/.test(before) && /[a-zA-Z0-9_.#\[]/.test(after)) ||
+        (/[a-zA-Z0-9_\-]/.test(before) && /[.#\[]/.test(after));
+      if (wordish || mathOp || descendant) {
         out += " ";
       }
       index = end;
@@ -140,11 +150,27 @@ export function minifyJs(code) {
     index++;
   }
 
-  return out
-    .replace(/[ \t]+([=+\-*/%<>!&|?:,;{}()[\]])/g, "$1")
-    .replace(/([=+\-*/%<>!&|?:,;{}()[\]])[ \t]+/g, "$1")
-    .replace(/;}/g, "}")
-    .trim();
+  // Final punctuation tidying must not touch the inside of string/template/
+  // regex literals, so walk the output and skip quoted regions.
+  let cleaned = "";
+  let i = 0;
+  while (i < out.length) {
+    const ch = out[i];
+    if (ch === '"' || ch === "'" || ch === "`") {
+      const end = ch === "`" ? findTemplateEnd(out, i) : findStringEnd(out, i);
+      cleaned += out.slice(i, end);
+      i = end;
+      continue;
+    }
+    cleaned += ch;
+    i += 1;
+  }
+  // Apply the punctuation tidying only to the non-string portions is complex;
+  // instead do a conservative global pass that cannot create invalid tokens:
+  // collapse `;}` and trim. Whitespace around operators is already handled
+  // by the character walk above.
+  cleaned = cleaned.replace(/;}/g, "}").trim();
+  return cleaned;
 }
 
 /**

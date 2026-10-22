@@ -378,6 +378,13 @@
     stroke-dasharray: var(--chart-dash-6);
   }
 
+  .c-chart__line[data-series="7"] {
+    stroke-dasharray: var(--chart-dash-7);
+  }
+  .c-chart__line[data-series="8"] {
+    stroke-dasharray: var(--chart-dash-8);
+  }
+
   /* -- Chart states -------------------------------------------------- */
   /* These tokens were declared and never read. They are the vocabulary the
      chart frame needs for the states a real chart has: missing data, hover,
@@ -478,6 +485,8 @@
   .c-legend__swatch--line {
     block-size: 3px;
     border-radius: var(--radius-pill);
+    inline-size: 2rem;
+    background-color: transparent;
   }
 
   /* =======================================================================
@@ -713,12 +722,29 @@
     inset-block: 0;
     inset-inline-end: 0;
     inline-size: min(26rem, 100vw);
-    display: flex;
+    display: none;
     flex-direction: column;
     border-inline-start: 1px solid var(--color-border);
     background: var(--color-surface-1);
     box-shadow: var(--shadow-xl);
     z-index: var(--z-drawer);
+  }
+
+  .c-drawer:popover-open,
+  .c-drawer.is-open {
+    display: flex;
+  }
+
+  .c-scrim {
+    position: fixed;
+    inset: 0;
+    display: none;
+    background: var(--color-scrim);
+    z-index: calc(var(--z-drawer) - 1);
+  }
+
+  .c-scrim.is-open {
+    display: block;
   }
 
   .c-drawer__head {
@@ -745,6 +771,7 @@
     align-content: start;
     scrollbar-gutter: stable;
     overscroll-behavior: contain;
+    scroll-padding: 0.5rem;
   }
 
   .c-drawer__foot {
@@ -768,13 +795,8 @@
     overflow: hidden;
   }
 
-  .c-scrim {
-    position: fixed;
-    inset: 0;
-    background: var(--color-scrim);
-    z-index: calc(var(--z-drawer) - 1);
-  }
-}
+
+
 
   /* =======================================================================
      8. BIVARIATE LEGEND
@@ -929,6 +951,8 @@
     max-inline-size: calc(100% - var(--space-lg));
     max-block-size: calc(100% - var(--space-lg));
     overflow: auto;
+    overscroll-behavior: contain;
+    scroll-padding: 0.5rem;
     background: var(--color-surface-1);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
@@ -957,6 +981,8 @@
     flex: 0 0 auto;
     max-block-size: 16rem;
     overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-padding-inline: 0.5rem;
     overflow-y: hidden;
     border-block-start: 1px solid var(--color-border);
     background: var(--color-surface-1);
@@ -988,6 +1014,8 @@
 
   .c-box--scroll {
     overflow: auto;
+    overscroll-behavior: contain;
+    scroll-padding: 0.5rem;
     max-block-size: 100%;
   }
 
@@ -1008,6 +1036,11 @@
     overflow-y: auto;
     min-block-size: 0;
     scrollbar-width: auto;
+    overscroll-behavior: contain;
+    scroll-padding: 0.5rem;
+  }
+  .c-container--scrollable::-webkit-scrollbar {
+    width: 10px;
   }
 
   .c-container--border > *:not(:last-child) {
@@ -1043,6 +1076,8 @@
     flex: 1 1 auto;
     min-inline-size: 0;
     overflow: auto;
+    overscroll-behavior: contain;
+    scroll-padding: 0.5rem;
   }
 
   .c-chart__control {
@@ -1137,7 +1172,7 @@
   /* =======================================================================
      DATA MARK — a painted mark is not a target
      ======================================================================= */
-  .c-mark {
+  .c-datamark {
     display: inline-block;
     inline-size: var(--target-mark, 0);
     block-size: var(--target-mark, 0);
@@ -1149,21 +1184,20 @@
      SPATIAL MARKS (T-50) — the system owns how a mark looks; the pipeline
      owns the geometry. Four marks, tokenised, no data.
      ======================================================================= */
-  .c-mark--isoline {
+  .c-datamark--isoline {
     fill: none;
-    stroke: var(--chart-seq-4);
     stroke-width: 1.5;
     stroke-dasharray: none;
   }
 
-  .c-mark--catchment {
-    fill: var(--color-chart-selection, var(--color-primary-soft));
+  .c-datamark--catchment {
+    fill: var(--chart-selection, var(--color-primary-soft));
     fill-opacity: 0.45;
     stroke: var(--color-primary);
     stroke-width: 1;
   }
 
-  .c-mark--route {
+  .c-datamark--route {
     fill: none;
     stroke: var(--color-primary);
     stroke-width: 2;
@@ -1171,13 +1205,13 @@
     stroke-linejoin: round;
   }
 
-  .c-mark--hex {
+  .c-datamark--hex {
     fill: var(--color-surface-2);
     stroke: var(--color-border);
     stroke-width: 1;
   }
 
-  .c-mark--hex[data-class="critical"] {
+  .c-datamark--hex[data-class="critical"] {
     fill: var(--color-danger-soft);
   }
 
@@ -1248,3 +1282,4 @@
     color: var(--color-text);
     background: var(--color-surface-3);
   }
+}

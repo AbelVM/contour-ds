@@ -269,6 +269,19 @@
     box-shadow: var(--shadow-lg);
   }
 
+  /* Popover behaviour (T-122): closed by default via UA, open via popover. */
+  .c-menu:popover-open {
+    display: grid;
+  }
+
+  @supports (anchor-name: --x) {
+    .c-menu {
+      position: absolute;
+      inset: auto;
+      margin: 0;
+    }
+  }
+
   .c-menu__item {
     min-block-size: var(--target-option);
     display: flex;

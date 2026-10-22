@@ -1,6 +1,6 @@
 # Contour
 
-> A token-driven design system for spatial interfaces — routing engines, pedestrian simulators, map tooling and geospatial dashboards. Dark and light themes, 133 components, 269 design tokens (267 read, 2 unread), zero runtime dependencies, no build step.
+> A token-driven design system for spatial interfaces — routing engines, pedestrian simulators, map tooling and geospatial dashboards. Dark and light themes, 134 components, 272 design tokens (271 read, 1 unread), zero runtime dependencies, no build step.
 
 Contour covers three kinds of page: a **landing page** that has to persuade, a **documentation site** that has to explain, and a **technical dashboard** that has to be read at speed. All three share one token layer, one type scale and one set of affordance rules.
 
@@ -17,7 +17,7 @@ Contour covers three kinds of page: a **landing page** that has to persuade, a *
 - [Technical dashboard](https://abelvm.github.io/contour/#data): KPI tiles, panels, chart frame, interactive legend, filter bar, dense sortable table, activity feed, drawer.
 - [Recipes](https://abelvm.github.io/contour/#recipes): all three surfaces composed live.
 
-## Components (133 blocks in src/css/)
+## Components (134 blocks in src/css/)
 
 Actions: button (primary, secondary, outline, ghost, accent, danger, quiet-danger), sizes, icon, block, groups, loading, text link.
 Forms: field, input, select, textarea, search group, range, switch, checkbox, radio.
@@ -72,11 +72,11 @@ Landing: logo wall, feature showcase, metrics band, testimonial, pricing, compar
 
 ## Tokens
 
-- 269 custom properties in the token layer, in four layers: primitives, semantic, component, utility.
+- 272 custom properties in the token layer, in four layers: primitives, semantic, component, utility.
 - Primitives never change between themes; only the semantic layer does, so a theme swap is a one-line change.
 - Two values retheme and reshape everything: `--brand-hue` and `--radius-scale`.
 - `.c-theme-scope` re-derives the whole brand layer for a subtree, because a custom property containing `var()` is resolved eagerly.
-- A separate chart token layer: `--chart-1…8` categorical (all eight clear 3:1 against the panel), `--chart-seq-1…7` sequential (monotonic in lightness, dark-inverted), `--chart-div-*` diverging (real midpoint), `--chart-dash-1…6` one pattern per series. The chart *frame* ships; the scale, ticks and datum layer are the consumer's (or a future Contour release).
+- A separate chart token layer: `--chart-1…8` categorical (all eight clear 3:1 against the panel), `--chart-seq-1…7` sequential (monotonic in lightness, dark-inverted), `--chart-div-*` diverging (real midpoint), `--chart-dash-1…6` one pattern per series. The chart *frame* ships, and `window.Contour.chart` ships `scale`, `ticks` and `datum` helpers for consumers who want them.
 
 ## Rules the system holds itself to
 

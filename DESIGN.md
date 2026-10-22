@@ -6,7 +6,7 @@ license: MIT
 repository: https://github.com/abelvm/contour-ds
 
 tokens:
-  count: 269
+  count: 272
   layers: [primitives, semantic, component, utility]
   themes: [light, dark]
   theme_mechanism: light-dark()
@@ -15,7 +15,7 @@ tokens:
 
 surfaces: [landing, documentation, dashboard]
 
-components: 133
+components: 134
 
 accessibility:
   conformance: "WCAG 2.2 AA"

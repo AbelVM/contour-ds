@@ -266,7 +266,7 @@
       forced-color-adjust: none;
     }
   }
-}
+
 
   /* -- Fill patterns (for polygon marks) ------------------------------ */
   .u-hatch-1 { background-image: var(--fill-hatch-1); }
@@ -276,40 +276,9 @@
   .u-hatch-5 { background-image: var(--fill-hatch-5); }
   .u-dot { background-image: var(--fill-dot); background-size: 8px 8px; }
 
-  /* -- High contrast preference --------------------------------------- */
-  @media (prefers-contrast: more) {
-    :root {
-      --color-border: light-dark(oklch(70% 0.014 230), oklch(46% 0.022 230));
-      --color-border-strong: light-dark(oklch(55% 0.016 230), oklch(56% 0.022 230));
-      --color-text-subtle: light-dark(oklch(40% 0.018 230), oklch(72% 0.016 230));
-    }
-
-    .u-bordered,
-    .c-card,
-    .c-chip,
-    .c-pill {
-      border-width: var(--border-width-thick);
-    }
-  }
-
-  /* -- Reduced data preference ---------------------------------------- */
-  @media (prefers-reduced-data: reduce) {
-    .u-raised {
-      box-shadow: none;
-    }
-
-    .c-header {
-      backdrop-filter: none;
-    }
-
-    .u-fade-in {
-      animation: none;
-    }
-  }
-
   /* -- Print: field sheet -------------------------------------------- */
   @media print {
-    .c-header, .c-drawer, .c-toolbar, .ds-rail, .ds-nav {
+    .c-header, .c-drawer, .c-toolbar {
       display: none;
     }
 
@@ -387,25 +356,25 @@
   /* -- Colour-vision preview (scoped to data surfaces) ----------------- */
   [data-cvd="deuteranopia"] .u-cvd-target,
   [data-cvd="deuteranopia"] .c-chart,
-  [data-cvd="deuteranopia"] .c-mark {
+  [data-cvd="deuteranopia"] .c-datamark {
     filter: url(#contour-cvd-deuteranopia);
   }
 
   [data-cvd="protanopia"] .u-cvd-target,
   [data-cvd="protanopia"] .c-chart,
-  [data-cvd="protanopia"] .c-mark {
+  [data-cvd="protanopia"] .c-datamark {
     filter: url(#contour-cvd-protanopia);
   }
 
   [data-cvd="tritanopia"] .u-cvd-target,
   [data-cvd="tritanopia"] .c-chart,
-  [data-cvd="tritanopia"] .c-mark {
+  [data-cvd="tritanopia"] .c-datamark {
     filter: url(#contour-cvd-tritanopia);
   }
 
   [data-cvd="achromatopsia"] .u-cvd-target,
   [data-cvd="achromatopsia"] .c-chart,
-  [data-cvd="achromatopsia"] .c-mark {
+  [data-cvd="achromatopsia"] .c-datamark {
     filter: grayscale(1);
   }
 
@@ -423,6 +392,13 @@
     :root {
       --color-border: light-dark(oklch(78% 0.012 230), oklch(42% 0.016 230));
       --color-border-strong: light-dark(oklch(62% 0.016 230), oklch(56% 0.022 230));
+      --color-text-subtle: light-dark(oklch(40% 0.018 230), oklch(72% 0.016 230));
+    }
+    .u-bordered,
+    .c-card,
+    .c-chip,
+    .c-pill {
+      border-width: var(--border-width-thick);
     }
     .c-card, .c-panel, .c-input, .c-select, .c-textarea {
       background: var(--color-surface-1);
@@ -431,10 +407,20 @@
 
   /* -- prefers-reduced-data ------------------------------------------- */
   @media (prefers-reduced-data: reduce) {
+    .u-raised {
+      box-shadow: none;
+    }
+    .u-fade-in {
+      animation: none;
+    }
     .c-field::before,
     .c-panel::before {
       display: none;
     }
+  }
+
+  /* -- prefers-reduced-transparency ----------------------------------- */
+  @media (prefers-reduced-transparency: reduce) {
     .u-backdrop,
     .c-header {
       backdrop-filter: none;
@@ -503,11 +489,6 @@
     cursor: not-allowed;
   }
 
-  .c-tab:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
   /* -- Data grid (T-49): row selection + pagination ------------------ */
   .c-table tbody tr.is-selected {
     background: var(--color-selection);
@@ -544,3 +525,4 @@
     color: var(--color-text);
     text-decoration-color: currentColor;
   }
+}

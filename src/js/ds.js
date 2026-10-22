@@ -9,8 +9,11 @@
 (() => {
   "use strict";
 
+  // Idempotent loading: a second <script> tag must not double-bind.
+  if (window.Contour && window.Contour.__loaded) return;
+
   const $ = (sel, root = document) => root.querySelector(sel);
-  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+  const $$ = (sel, root = document) => Array.from((root || document).querySelectorAll(sel));
 
   /* True when the event target is a place where the reader is typing, so a
      single-key shortcut must not steal the character. */
@@ -20,6 +23,20 @@
       ["INPUT", "TEXTAREA", "SELECT"].includes(el.tagName));
 
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  /* Jump to an element and keep the address bar in step, without stacking up
+     history entries for a single jump. Hoisted to top level so the public
+     API (window.Contour.scrollTo) can reach it. */
+  const goTo = (el) => {
+    if (!el) return;
+    if (el.id && location.hash !== "#" + el.id) {
+      history.replaceState(null, "", "#" + el.id);
+    }
+    el.scrollIntoView({
+      behavior: reducedMotion.matches ? "auto" : "smooth",
+      block: "start",
+    });
+  };
 
   /* ---------------------------------------------------------------------
     1. Colour scheme
@@ -163,6 +180,8 @@
         activate(next);
       });
     });
+    // Initialise: hide non-default panels (progressive enhancement).
+    if (tabs[0]) activate(tabs[0], false);
   });
 
   /* ---------------------------------------------------------------------
@@ -288,15 +307,24 @@
   /* ---------------------------------------------------------------------
     7. Toast
      --------------------------------------------------------------------- */
-  const toastHost = $("#toast-host");
+  let toastHost = $("#toast-host");
+  const ensureToastHost = () => {
+    if (toastHost && document.contains(toastHost)) return toastHost;
+    toastHost = document.createElement("div");
+    toastHost.id = "toast-host";
+    toastHost.className = "c-toast-host";
+    document.body.append(toastHost);
+    return toastHost;
+  };
   const showToast = (message, variant = "success") => {
-    if (!toastHost) return;
+    const host = ensureToastHost();
+    if (!host) return;
     const toast = document.createElement("div");
     toast.className = `c-toast c-toast--${variant}`;
     toast.setAttribute("role", "status");
     toast.innerHTML = `<span class="c-dot c-dot--${variant === "danger" ? "danger" : "success"}"></span><span></span>`;
     toast.querySelector("span:last-child").textContent = message;
-    toastHost.append(toast);
+    host.append(toast);
 
     requestAnimationFrame(() => {
       toast.animate(
@@ -448,6 +476,12 @@
       trigger.setAttribute("popovertarget", tip.id);
       trigger.setAttribute("aria-describedby", tip.id);
     });
+  } else {
+    $$("[data-tooltip]").forEach((trigger) => {
+      const tip = document.getElementById(trigger.dataset.tooltip);
+      if (!tip) return;
+      trigger.setAttribute("title", tip.textContent.trim());
+    });
   }
 
   /* ---------------------------------------------------------------------
@@ -490,17 +524,6 @@
       return { score, hits };
     };
 
-    /* Jump to an element and keep the address bar in step, without
-       stacking up history entries for a single jump. */
-    const goTo = (el) => {
-      if (el.id && location.hash !== "#" + el.id) {
-        history.replaceState(null, "", "#" + el.id);
-      }
-      el.scrollIntoView({
-        behavior: reducedMotion.matches ? "auto" : "smooth",
-        block: "start",
-      });
-    };
 
     const buildIndex = () => {
       const found = [];
@@ -639,9 +662,10 @@
         const rows = cmds
           .map((cmd) => {
             const position = filtered.indexOf(cmd);
+            const safeGroup = escapeHtml(group);
             const hint = cmd.hint
-              ? group + " \u00b7 " + highlight(cmd.hint, cmd.hintHits)
-              : group;
+              ? safeGroup + " \u00b7 " + highlight(cmd.hint, cmd.hintHits)
+              : safeGroup;
             return (
               '<button class="c-command__item" role="option" aria-selected="false" tabindex="-1" id="command-item-' +
               position +
@@ -649,7 +673,7 @@
               position +
               '" type="button">' +
               '<span class="c-command__item-icon"><svg aria-hidden="true"><use href="#' +
-              cmd.icon +
+              escapeHtml(cmd.icon) +
               '"/></svg></span>' +
               '<span class="c-command__item-body">' +
               '<span class="c-command__item-title">' +
@@ -665,7 +689,7 @@
           .join("");
         return (
           '<div class="c-command__group"><div class="c-command__group-title">' +
-          group +
+          escapeHtml(group) +
           "</div>" +
           rows +
           "</div>"
@@ -917,7 +941,33 @@
      helper should not have to reimplement them. Four functions, one
      namespace, a version.
      --------------------------------------------------------------------- */
+  // Colour-vision preview producer (T-134).
+  $$("[data-cvd-toggle]").forEach((group) => {
+    const scope = document.getElementById("data") || document.documentElement;
+    $$("button", group).forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const value = btn.dataset.cvdValue || "";
+        if (value) scope.setAttribute("data-cvd", value);
+        else scope.removeAttribute("data-cvd");
+        $$("button", group).forEach((b) => b.setAttribute("aria-pressed", String(b === btn)));
+      });
+    });
+  });
+
+  // Theme-set switcher producer (T-148).
+  $$("[data-theme-set]").forEach((group) => {
+    $$("button", group).forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const value = btn.dataset.themeValue || "";
+        if (value) document.documentElement.setAttribute("data-theme", value);
+        else document.documentElement.removeAttribute("data-theme");
+        $$("button", group).forEach((b) => b.setAttribute("aria-pressed", String(b === btn)));
+      });
+    });
+  });
+
   window.Contour = Object.freeze({
+    __loaded: true,
     version: "1.0",
     toast: showToast,
     setScheme: applyScheme,

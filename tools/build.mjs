@@ -47,9 +47,13 @@ function inline(file, seen = new Set()) {
 
   const source = readFileSync(path, "utf-8");
 
-  return source.replace(/@import\s+url\(["']?([^"')]+)["']?\)\s*layer\([^)]+\)\s*;/g, (_, target) => {
+  return source.replace(/@import\s+url\(["']?([^"')]+)["']?\)\s*layer\(([^)]+)\)\s*;/g, (_, target, layer) => {
     const resolved = join(dirname(file), target);
-    return inline(resolved, seen);
+    const inlined = inline(resolved, seen);
+    // Preserve the layer() semantics of the @import: wrap the inlined
+    // sheet in its named layer so unlayered rules in the source cannot
+    // escape into the bundle's top level.
+    return `@layer ${layer.trim()} {\n${inlined}\n}`;
   });
 }
 
@@ -120,6 +124,72 @@ function tokensToJson(css) {
   return tokens;
 }
 
+/**
+ * Assert that no style rule sits at the top level of a bundle outside an
+ * `@layer` block. Unlayered normal declarations outrank every layered rule,
+ * which is the cascade inversion this gate exists to prevent.
+ * @param {string} css
+ */
+function assertNoUnlayeredRules(css) {
+  // Strip comments.
+  const src = css.replace(/\/\*[\s\S]*?\*\//g, " ");
+  let depth = 0;
+  let i = 0;
+  // We scan for `{` and `}` tracking depth; an opening brace at depth 0 is a
+  // top-level block. It is legal only if it opens an @layer (or another
+  // wrapping at-rule) — never a bare selector list.
+  let violations = [];
+  // Find each top-level block opener.
+  const re = /\{/g;
+  let m;
+  // We'll walk manually.
+  let idx = 0;
+  let buf = "";
+  // Collect segments: track depth, record opener context.
+  let d = 0;
+  let lastNonWs = "";
+  // iterate char by char
+  let j = 0;
+  const n = src.length;
+  while (j < n) {
+    const ch = src[j];
+    if (ch === "{") {
+      if (d === 0) {
+        // gather the preceding statement
+        const stmt = buf.trim();
+        const isLayer = /^@layer\b/.test(stmt);
+        const isWrap = /^@(media|supports|keyframes|container|scope|page|font-face|property)\b/.test(stmt);
+        if (!isLayer && !isWrap && stmt.length > 0) {
+          violations.push(stmt.slice(0, 80));
+        }
+      }
+      d += 1;
+      buf = "";
+      j += 1;
+      continue;
+    }
+    if (ch === "}") {
+      d = Math.max(0, d - 1);
+      buf = "";
+      j += 1;
+      continue;
+    }
+    if (ch === ";") {
+      // statement boundary at depth 0 (e.g. @layer reset, tokens, ...;)
+      buf = "";
+      j += 1;
+      continue;
+    }
+    buf += ch;
+    j += 1;
+  }
+  if (violations.length) {
+    console.error("build: unlayered top-level rules in bundle:");
+    for (const v of violations.slice(0, 20)) console.error("  " + v);
+    process.exit(1);
+  }
+}
+
 // ---------------------------------------------------------------------------
 
 rmSync(dist, { recursive: true, force: true });
@@ -128,6 +198,7 @@ mkdirSync(dist, { recursive: true });
 // -- The stylesheet ---------------------------------------------------------
 const bundled = inline("src/css/ds.css");
 const css = `${LAYER_ORDER}\n${bundled.trim()}\n`;
+assertNoUnlayeredRules(css);
 writeFileSync(join(dist, "contour.css"), css, "utf-8");
 
 const minifiedCss = minifyCss(css);
@@ -166,7 +237,9 @@ const bundleOf = (files) =>
 
 const surfaceSizes = {};
 for (const [name, files] of Object.entries(SURFACES)) {
-  const min = minifyCss(bundleOf(files));
+  const bundle = bundleOf(files);
+  assertNoUnlayeredRules(bundle);
+  const min = minifyCss(bundle);
   writeFileSync(join(surfacesDir, `contour-${name}.min.css`), `${min}\n`, "utf-8");
   surfaceSizes[`surfaces/contour-${name}.min.css`] = Buffer.byteLength(min, "utf8") + 1;
 }
@@ -178,7 +251,20 @@ writeFileSync(join(dist, "contour.min.js"), `${minifyJs(js)}\n`, "utf-8");
 
 // -- The tokens -------------------------------------------------------------
 const tokens = tokensToJson(readFileSync(join(root, "src/css/tokens.css"), "utf-8"));
-writeFileSync(join(dist, "contour.tokens.json"), `${JSON.stringify(tokens, null, 2)}\n`, "utf-8");
+const dtcg = { "$schema": "https://tr.designtokens.org/format/", ...tokens };
+writeFileSync(join(dist, "contour.tokens.json"), `${JSON.stringify(dtcg, null, 2)}\n`, "utf-8");
+
+// -- The component contract (T-151) --------------------------------------
+const componentBlocks = [...new Set(
+  (bundled.match(/\.c-[a-z0-9-]+/g) || [])
+    .map((c) => c.replace(/^\./, "").replace(/__.*$/, "").replace(/--.*$/, ""))
+)].sort();
+const componentsJson = {
+  version: "1.0",
+  blocks: componentBlocks,
+  count: componentBlocks.length,
+};
+writeFileSync(join(dist, "contour.components.json"), `${JSON.stringify(componentsJson, null, 2)}\n`, "utf-8");
 
 // -- The map-chrome contract (T-93) -----------------------------------------
 const mapChromeContract = {

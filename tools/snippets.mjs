@@ -152,6 +152,16 @@ const nested = new Set(
   ),
 );
 
+// Guard (T-156): a data-snippet root must not carry guide spacing inline.
+for (const example of examples) {
+  if (example.attrs && example.attrs["data-snippet"] !== undefined) {
+    const style = example.attrs.style || "";
+    if (/margin-block-start/.test(style)) {
+      console.warn("snippets: warning — data-snippet root carries margin-block-start (move to docs.css):", style);
+    }
+  }
+}
+
 let count = 0;
 let nestedCount = 0;
 let emptyCount = 0;

@@ -318,6 +318,37 @@ function main() {
   const allChanges = [];
   const allMisses = [];
 
+  // Fact check (T-128): README API list must match window.Contour members.
+  const dsSource = readFileSync(join(ROOT, "src/js/ds.js"), "utf8");
+  const memberMatch = dsSource.match(/window\.Contour\s*=\s*Object\.freeze\(\{([\s\S]*?)\}\)/);
+  // Only top-level keys (depth 0 inside the freeze object).
+  const members = [];
+  if (memberMatch) {
+    let depth = 0;
+    let buf = "";
+    for (const ch of memberMatch[1]) {
+      if (ch === "{") { depth++; buf += ch; }
+      else if (ch === "}") { depth--; buf += ch; }
+      else if (ch === "," && depth === 0) {
+        const m = buf.trim().match(/^(\w+)\s*:/);
+        if (m && m[1] !== "__loaded") members.push(m[1]);
+        buf = "";
+      } else { buf += ch; }
+    }
+    const m = buf.trim().match(/^(\w+)\s*:/);
+    if (m && m[1] !== "__loaded") members.push(m[1]);
+  }
+  const readme = readFileSync(join(ROOT, "README.md"), "utf8");
+  const readmeApi = readme.match(/API on `window\.Contour` \(([^)]*)\)/);
+  if (readmeApi) {
+    const listed = readmeApi[1].split(",").map((s) => s.trim().replace(/`/g, ""));
+    const missing = members.filter((m) => !listed.includes(m));
+    const extra = listed.filter((m) => !members.includes(m));
+    if (missing.length || extra.length) {
+      allMisses.push(`README.md: API list drift — missing: ${missing.join(", ") || "none"}; extra: ${extra.join(", ") || "none"}`);
+    }
+  }
+
   for (const name of TARGETS) {
     const path = join(ROOT, name);
     let text;

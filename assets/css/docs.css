@@ -1048,4 +1048,12 @@
       gap: 0.35rem;
     }
   }
+
+
+  /* Content-visibility for the long guide (T-153). */
+  .section {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 800px;
+  }
+
 }

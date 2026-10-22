@@ -6,12 +6,23 @@
   "type": "module",
   "main": "dist/contour.css",
   "style": "dist/contour.css",
-  "files": ["dist/", "src/"],
+  "files": [
+    "dist/",
+    "src/"
+  ],
   "scripts": {
     "build": "node tools/build.mjs",
     "snippets": "node tools/snippets.mjs",
     "check:tokens": "node tools/check-tokens.mjs",
-    "validate": "npx html-validate index.html templates/*.html"
+    "validate": "npx html-validate index.html templates/*.html",
+    "prepack": "node tools/build.mjs"
   },
-  "keywords": ["design-system", "css", "tokens", "spatial", "maps", "geospatial"]
+  "keywords": [
+    "design-system",
+    "css",
+    "tokens",
+    "spatial",
+    "maps",
+    "geospatial"
+  ]
 }

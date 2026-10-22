@@ -56,6 +56,17 @@ console.log("\n=== adapted gate (adds oklch/oklab/hsl), against Contour src/css 
 console.log(findings.adapted.length + " violation(s)");
 findings.adapted.forEach((p) => console.log("  " + p));
 
+// Named-exemption ledger: these are legitimate (reduced-motion collapse,
+// mask alpha channels) and are ledgered rather than fixed.
+const EXEMPT = (v) => /0\.01ms|#000/.test(v);
+const unexempted = findings.adapted.filter((v) => !EXEMPT(v));
+if (unexempted.length) {
+  console.error("\nfamily-gate: " + unexempted.length + " non-exempt violation(s):");
+  unexempted.forEach((v) => console.error("  " + v));
+  process.exit(1);
+}
+console.log("\nfamily-gate: all violations are ledgered exemptions. OK");
+
 /* --- how many are in the component layer vs the token layer? --- */
 const comp = findings.adapted.filter((p) => !p.startsWith("tokens.css"));
 console.log(`\n${comp.length} of ${findings.adapted.length} are in the component/base/utility layers (tokens.css is exempt by definition).`);

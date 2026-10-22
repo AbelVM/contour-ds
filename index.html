@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Contour — a design system for spatial interfaces</title>
-    <meta name="description" content="Contour is a token-driven design system for spatial interfaces. Dark and light themes, 133 components, 269 design tokens, zero runtime dependencies." />
+    <meta name="description" content="Contour is a token-driven design system for spatial interfaces. Dark and light themes, 134 components, 272 design tokens, zero runtime dependencies." />
     <meta name="author" content="Abel Vázquez Montoro" />
     <meta name="color-scheme" content="light dark" />
     <script>
@@ -289,6 +289,30 @@
             <circle cx="9" cy="18" r="1.4" /><circle cx="15" cy="18" r="1.4" />
           </g>
         </symbol>
+      <!-- Colour-vision preview filters (Machado 2009, severity 1.0). -->
+      <filter id="contour-cvd-protanopia" color-interpolation-filters="sRGB">
+        <fecolormatrix type="matrix" values="0.152286 1.05034 -0.202644 0 0  0.114503 0.786281 0.0992164 0 0  -0.0038822 -0.0481759 1.05206 0 0  0 0 0 1 0" />
+      </filter>
+      <filter id="contour-cvd-deuteranopia" color-interpolation-filters="sRGB">
+        <fecolormatrix type="matrix" values="0.367322 0.860646 -0.227968 0 0  0.280085 0.672566 0.047349 0 0  -0.0124117 -0.0798947 1.09231 0 0  0 0 0 1 0" />
+      </filter>
+      <filter id="contour-cvd-tritanopia" color-interpolation-filters="sRGB">
+        <fecolormatrix type="matrix" values="1.25552 -0.0769692 -0.178925 0 0  -0.0784117 1.17015 -0.0917856 0 0  0.00473366 -0.00787813 1.00314 0 0  0 0 0 1 0" />
+      </filter>
+      <filter id="contour-cvd-achromatopsia" color-interpolation-filters="sRGB">
+        <fecolormatrix type="matrix" values="0.299 0.587 0.114 0 0  0.299 0.587 0.114 0 0  0.299 0.587 0.114 0 0  0 0 0 1 0" />
+      </filter>
+      <!-- Missing-data hatch pattern (T-133). -->
+      <pattern id="contour-hatch-missing" patternunits="userSpaceOnUse" width="6" height="6">
+        <path d="M0,6 L6,0" stroke="var(--chart-missing)" stroke-width="1" />
+      </pattern>
+      <!-- Hatch patterns for SVG marks (T-133). -->
+      <pattern id="contour-hatch-1" patternunits="userSpaceOnUse" width="6" height="6" patterntransform="rotate(45)">
+        <line x1="0" y1="0" x2="0" y2="6" stroke="var(--color-text-subtle)" stroke-width="1" />
+      </pattern>
+      <pattern id="contour-hatch-2" patternunits="userSpaceOnUse" width="8" height="8" patterntransform="rotate(45)">
+        <line x1="0" y1="0" x2="0" y2="8" stroke="var(--color-text-subtle)" stroke-width="1" />
+      </pattern>
       </defs>
     </svg>
 
@@ -312,7 +336,7 @@
         </nav>
 
         <div class="c-header__actions">
-          <button class="c-search-trigger c-search-trigger--header" type="button" data-command-open aria-label="Search the design system">
+          <button class="c-search-trigger c-search-trigger--header" type="button" data-command-open popovertarget="command-palette" aria-label="Search the design system">
             <svg aria-hidden="true"><use href="#i-search" /></svg>
             <span class="c-search-trigger__text">Search</span>
             <span class="c-search-trigger__kbd" aria-hidden="true">
@@ -391,8 +415,8 @@
               <div class="ds-hero__readout" role="group" aria-label="System parameters">
                 <span>GRID 0.88 m</span>
                 <span>H3 · RES 15</span>
-                <span><!-- ds:tokens -->269<!-- /ds:tokens --> tokens</span>
-                <span><!-- ds:components -->133<!-- /ds:components --> components</span>
+                <span><!-- ds:tokens -->272<!-- /ds:tokens --> tokens</span>
+                <span><!-- ds:components -->134<!-- /ds:components --> components</span>
                 <span>0 runtime deps</span>
                 <span>2 + system themes</span>
               </div>
@@ -1168,6 +1192,14 @@
                 sidebar and a card on a landing page breathe at the same rate.
               </p>
             </div>
+          </div>
+
+          <div class="c-segmented" data-cvd-toggle role="group" aria-label="Colour-vision preview">
+            <button type="button" data-cvd-value>Normal</button>
+            <button type="button" data-cvd-value="deuteranopia">Deuteranopia</button>
+            <button type="button" data-cvd-value="protanopia">Protanopia</button>
+            <button type="button" data-cvd-value="tritanopia">Tritanopia</button>
+            <button type="button" data-cvd-value="achromatopsia">Achromatopsia</button>
           </div>
 
           <div class="grid grid--2">
@@ -2604,7 +2636,7 @@
                     <a href="#data">Data</a>
                   </nav>
                   <div class="c-header__actions">
-                    <button class="c-search-trigger c-search-trigger--header" type="button" data-command-open aria-label="Search the design system">
+                    <button class="c-search-trigger c-search-trigger--header" type="button" data-command-open popovertarget="command-palette" aria-label="Search the design system">
                       <svg aria-hidden="true"><use href="#i-search" /></svg>
                       <span class="c-search-trigger__text">Search</span>
                     </button>
@@ -2645,7 +2677,7 @@
       &lt;a href="#data"&gt;Data&lt;/a&gt;
     &lt;/nav&gt;
     &lt;div class="c-header__actions"&gt;
-      &lt;button class="c-search-trigger c-search-trigger--header" type="button" data-command-open aria-label="Search the design system"&gt;
+      &lt;button class="c-search-trigger c-search-trigger--header" type="button" data-command-open popovertarget="command-palette" aria-label="Search the design system"&gt;
         &lt;svg aria-hidden="true"&gt;
           &lt;use href="#i-search" /&gt;
         &lt;/svg&gt;
@@ -2749,14 +2781,14 @@
                   </div>
                 </div>
 
-                <div class="c-tabs__panel" role="tabpanel" id="panel-2" aria-labelledby="tab-2" tabindex="0" hidden>
+                <div class="c-tabs__panel" role="tabpanel" id="panel-2" aria-labelledby="tab-2" tabindex="0">
                   <p class="muted">
                     Bidirectional A* with a geographic heuristic. Fastest for point-to-point queries
                     where both endpoints are known.
                   </p>
                 </div>
 
-                <div class="c-tabs__panel" role="tabpanel" id="panel-3" aria-labelledby="tab-3" tabindex="0" hidden>
+                <div class="c-tabs__panel" role="tabpanel" id="panel-3" aria-labelledby="tab-3" tabindex="0">
                   <p class="muted">
                     Adaptive barrier SSSP. Scales to very large networks by keeping the frontier
                     small.
@@ -2805,8 +2837,8 @@
       &lt;/div&gt;
     &lt;/div&gt;
   &lt;/div&gt;
-  &lt;div class="c-tabs__panel" role="tabpanel" id="panel-2" aria-labelledby="tab-2" tabindex="0" hidden&gt;&lt;/div&gt;
-  &lt;div class="c-tabs__panel" role="tabpanel" id="panel-3" aria-labelledby="tab-3" tabindex="0" hidden&gt;&lt;/div&gt;
+  &lt;div class="c-tabs__panel" role="tabpanel" id="panel-2" aria-labelledby="tab-2" tabindex="0"&gt;&lt;/div&gt;
+  &lt;div class="c-tabs__panel" role="tabpanel" id="panel-3" aria-labelledby="tab-3" tabindex="0"&gt;&lt;/div&gt;
 &lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
@@ -4252,7 +4284,7 @@
               pattern, and the legend previews that pattern. No chart asks the reader to tell two
               colours apart, and every series clears 3:1 against the panel it is drawn on.
             </p>
-            <div class="c-chart" style="margin-block-start: 1.25rem">
+            <div class="c-chart" role="img" aria-label="Line chart of three series over time" style="margin-block-start: 1.25rem">
               <div class="c-chart__plot">
                 <svg viewbox="0 0 300 120" preserveaspectratio="none" style="position: absolute; inset: 0; width: 100%; height: 100%">
                   <path class="c-chart__line" data-series="1" style="--c: var(--chart-1)" d="M0 70 50 60 100 66 150 40 200 46 250 26 300 30" />
@@ -4291,7 +4323,7 @@
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-55">&lt;div class="c-chart" style="margin-block-start: 1.25rem"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-55">&lt;div class="c-chart" role="img" aria-label="Line chart of three series over time" style="margin-block-start: 1.25rem"&gt;
   &lt;div class="c-chart__plot"&gt;
     &lt;svg viewbox="0 0 300 120" preserveaspectratio="none" style="position: absolute; inset: 0; width: 100%; height: 100%"&gt;
       &lt;path class="c-chart__line" data-series="1" style="--c: var(--chart-1)" d="M0 70 50 60 100 66 150 40 200 46 250 26 300 30" /&gt;
@@ -4644,8 +4676,8 @@
 
           <div class="grid grid--2" style="margin-block-start: var(--space-2xl)">
             <div class="ds-example" data-generated="wrap"><svg viewbox="0 0 120 60" width="120" height="60" data-snippet>
-              <path class="c-mark--isoline" d="M 0 30 Q 30 10 60 30 T 120 30" stroke="var(--chart-seq-4)" fill="none" stroke-width="1.5" />
-              <path class="c-mark--isoline" d="M 0 45 Q 30 25 60 45 T 120 45" stroke="var(--chart-seq-2)" fill="none" stroke-width="1.5" />
+              <path class="c-datamark--isoline" d="M 0 30 Q 30 10 60 30 T 120 30" stroke="var(--chart-seq-4)" fill="none" stroke-width="1.5" />
+              <path class="c-datamark--isoline" d="M 0 45 Q 30 25 60 45 T 120 45" stroke="var(--chart-seq-2)" fill="none" stroke-width="1.5" />
             </svg><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -4659,13 +4691,13 @@
                       </summary>
                       <div class="ds-code__body">
                         <pre class="ds-code__pre"><code id="ds-code-59">&lt;svg viewbox="0 0 120 60" width="120" height="60"&gt;
-  &lt;path class="c-mark--isoline" d="M 0 30 Q 30 10 60 30 T 120 30" stroke="var(--chart-seq-4)" fill="none" stroke-width="1.5" /&gt;
-  &lt;path class="c-mark--isoline" d="M 0 45 Q 30 25 60 45 T 120 45" stroke="var(--chart-seq-2)" fill="none" stroke-width="1.5" /&gt;
+  &lt;path class="c-datamark--isoline" d="M 0 30 Q 30 10 60 30 T 120 30" stroke="var(--chart-seq-4)" fill="none" stroke-width="1.5" /&gt;
+  &lt;path class="c-datamark--isoline" d="M 0 45 Q 30 25 60 45 T 120 45" stroke="var(--chart-seq-2)" fill="none" stroke-width="1.5" /&gt;
 &lt;/svg&gt;</code></pre>
                       </div>
                     </details></div>
             <div class="ds-example" data-generated="wrap"><svg viewbox="0 0 120 60" width="120" height="60" data-snippet>
-              <polygon class="c-mark--catchment" points="10,50 60,10 110,50" />
+              <polygon class="c-datamark--catchment" points="10,50 60,10 110,50" />
             </svg><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -4679,12 +4711,12 @@
                       </summary>
                       <div class="ds-code__body">
                         <pre class="ds-code__pre"><code id="ds-code-60">&lt;svg viewbox="0 0 120 60" width="120" height="60"&gt;
-  &lt;polygon class="c-mark--catchment" points="10,50 60,10 110,50" /&gt;
+  &lt;polygon class="c-datamark--catchment" points="10,50 60,10 110,50" /&gt;
 &lt;/svg&gt;</code></pre>
                       </div>
                     </details></div>
             <div class="ds-example" data-generated="wrap"><svg viewbox="0 0 120 60" width="120" height="60" data-snippet>
-              <path class="c-mark--route" d="M 10 50 L 40 20 L 80 35 L 110 10" />
+              <path class="c-datamark--route" d="M 10 50 L 40 20 L 80 35 L 110 10" />
             </svg><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -4698,12 +4730,12 @@
                       </summary>
                       <div class="ds-code__body">
                         <pre class="ds-code__pre"><code id="ds-code-61">&lt;svg viewbox="0 0 120 60" width="120" height="60"&gt;
-  &lt;path class="c-mark--route" d="M 10 50 L 40 20 L 80 35 L 110 10" /&gt;
+  &lt;path class="c-datamark--route" d="M 10 50 L 40 20 L 80 35 L 110 10" /&gt;
 &lt;/svg&gt;</code></pre>
                       </div>
                     </details></div>
             <div class="ds-example" data-generated="wrap"><svg viewbox="0 0 120 60" width="120" height="60" data-snippet>
-              <polygon class="c-mark--hex" points="60,5 110,30 60,55 10,30" />
+              <polygon class="c-datamark--hex" points="60,5 110,30 60,55 10,30" />
             </svg><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -4717,7 +4749,7 @@
                       </summary>
                       <div class="ds-code__body">
                         <pre class="ds-code__pre"><code id="ds-code-62">&lt;svg viewbox="0 0 120 60" width="120" height="60"&gt;
-  &lt;polygon class="c-mark--hex" points="60,5 110,30 60,55 10,30" /&gt;
+  &lt;polygon class="c-datamark--hex" points="60,5 110,30 60,55 10,30" /&gt;
 &lt;/svg&gt;</code></pre>
                       </div>
                     </details></div>
@@ -4925,6 +4957,231 @@
                     </details></div>
         </section>
 
+        <!-- ===================== 13b · FIELD (spatial differentiator) ===================== -->
+        <section class="section section--sunken" id="field">
+          <div class="c-section-head">
+            <h2 class="c-section-head__title">Field</h2>
+            <p class="c-section-head__lede">The cartographic half of the system, rendered.</p>
+          </div>
+
+          <div class="ds-example" data-generated="wrap"><div class="ds-spec">
+            <div class="ds-spec__label">Radio + radio list</div>
+            <div class="c-radio-list">
+              <label class="c-radio"><input type="radio" name="f" checked /> Alpha</label>
+              <label class="c-radio"><input type="radio" name="f" /> Beta</label>
+            </div>
+          </div><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-65" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-65">&lt;div class="ds-spec__label"&gt;Radio + radio list&lt;/div&gt;
+&lt;div class="c-radio-list"&gt;
+  &lt;label class="c-radio"&gt;
+    &lt;input type="radio" name="f" checked /&gt;
+    Alpha
+  &lt;/label&gt;
+  &lt;label class="c-radio"&gt;
+    &lt;input type="radio" name="f" /&gt;
+    Beta
+  &lt;/label&gt;
+&lt;/div&gt;</code></pre>
+                      </div>
+                    </details></div>
+
+          <div class="ds-example" data-generated="wrap"><div class="ds-spec">
+            <div class="ds-spec__label">Flag</div>
+            <span class="c-flag c-flag--danger">Hazard</span>
+          </div><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-66" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-66">&lt;div class="ds-spec__label"&gt;Flag&lt;/div&gt;
+&lt;span class="c-flag c-flag--danger"&gt;Hazard&lt;/span&gt;</code></pre>
+                      </div>
+                    </details></div>
+
+          <div class="ds-example" data-generated="wrap"><div class="ds-spec">
+            <div class="ds-spec__label">Instrument</div>
+            <span class="c-instrument">12.4 m</span>
+          </div><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-67" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-67">&lt;div class="ds-spec__label"&gt;Instrument&lt;/div&gt;
+&lt;span class="c-instrument"&gt;12.4 m&lt;/span&gt;</code></pre>
+                      </div>
+                    </details></div>
+
+          <div class="ds-example" data-generated="wrap"><div class="ds-spec">
+            <div class="ds-spec__label">Survey</div>
+            <span class="c-survey">WGS84 · 2026-06-14</span>
+          </div><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-68" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-68">&lt;div class="ds-spec__label"&gt;Survey&lt;/div&gt;
+&lt;span class="c-survey"&gt;WGS84 · 2026-06-14&lt;/span&gt;</code></pre>
+                      </div>
+                    </details></div>
+
+          <div class="ds-example" data-generated="wrap"><div class="ds-spec">
+            <div class="ds-spec__label">Scale bar</div>
+            <div class="c-scale-bar"><span>0</span><span>1 km</span></div>
+          </div><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-69" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-69">&lt;div class="ds-spec__label"&gt;Scale bar&lt;/div&gt;
+&lt;div class="c-scale-bar"&gt;
+  &lt;span&gt;0&lt;/span&gt;
+  &lt;span&gt;1 km&lt;/span&gt;
+&lt;/div&gt;</code></pre>
+                      </div>
+                    </details></div>
+
+          <div class="ds-example" data-generated="wrap"><div class="ds-spec">
+            <div class="ds-spec__label">Map area</div>
+            <div class="c-map-area" style="min-block-size: 6rem"></div>
+          </div><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-70" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-70">&lt;div class="ds-spec__label"&gt;Map area&lt;/div&gt;</code></pre>
+                      </div>
+                    </details></div>
+
+          <div class="ds-example" data-generated="wrap"><div class="ds-spec">
+            <div class="ds-spec__label">Layer switch</div>
+            <div class="c-layer-switch">
+              <button class="c-layer-switch__toggle" type="button" aria-pressed="true">Base</button>
+            </div>
+          </div><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-71" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-71">&lt;div class="ds-spec__label"&gt;Layer switch&lt;/div&gt;
+&lt;div class="c-layer-switch"&gt;
+  &lt;button class="c-layer-switch__toggle" type="button" aria-pressed="true"&gt;Base&lt;/button&gt;
+&lt;/div&gt;</code></pre>
+                      </div>
+                    </details></div>
+
+          <div class="ds-example" data-generated="wrap"><div class="ds-spec">
+            <div class="ds-spec__label">Bivariate legend</div>
+            <div class="c-bivariate" style="inline-size: 8rem; block-size: 8rem"></div>
+          </div><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-72" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-72">&lt;div class="ds-spec__label"&gt;Bivariate legend&lt;/div&gt;</code></pre>
+                      </div>
+                    </details></div>
+
+          <div class="ds-example" data-generated="wrap"><div class="ds-spec">
+            <div class="ds-spec__label">Tab</div>
+            <div class="c-tab">Tab label</div>
+          </div><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-73" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-73">&lt;div class="ds-spec__label"&gt;Tab&lt;/div&gt;
+&lt;div class="c-tab"&gt;Tab label&lt;/div&gt;</code></pre>
+                      </div>
+                    </details></div>
+
+          <div class="ds-example" data-generated="wrap"><div class="ds-spec">
+            <div class="ds-spec__label">Advanced</div>
+            <div class="c-advanced">Advanced block</div>
+          </div><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-74" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-74">&lt;div class="ds-spec__label"&gt;Advanced&lt;/div&gt;
+&lt;div class="c-advanced"&gt;Advanced block&lt;/div&gt;</code></pre>
+                      </div>
+                    </details></div>
+        </section>
+
         <!-- ===================== 14 · DOCUMENTATION ===================== -->
         <section class="section" id="docs">
           <div class="c-section-head">
@@ -5003,13 +5260,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-65" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-75" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-65">&lt;div class="grid grid--2" style="gap: var(--space-cluster); align-items: start"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-75">&lt;div class="grid grid--2" style="gap: var(--space-cluster); align-items: start"&gt;
   &lt;div class="c-callout c-callout--note"&gt;
     &lt;svg class="c-callout__icon" aria-hidden="true"&gt;
       &lt;use href="#i-info" /&gt;
@@ -5123,13 +5380,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-66" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-76" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-66">&lt;div class="c-do-dont"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-76">&lt;div class="c-do-dont"&gt;
   &lt;div class="c-do-dont__item c-do-dont__item--do"&gt;
     &lt;p class="c-do-dont__label"&gt;
       &lt;svg aria-hidden="true" style="width: 0.85rem; height: 0.85rem"&gt;
@@ -5196,13 +5453,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-67" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-77" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-67">&lt;div class="c-steps" style="margin-block-start: 1.25rem"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-77">&lt;div class="c-steps" style="margin-block-start: 1.25rem"&gt;
   &lt;div class="c-steps__item"&gt;
     &lt;h4 class="c-steps__title"&gt;Pick a tile source&lt;/h4&gt;
     &lt;p class="c-steps__body"&gt;
@@ -5258,10 +5515,10 @@
                 <div class="c-code-tabs__panel" role="tabpanel" id="ds-panel-npm" aria-labelledby="ds-tab-npm">
                   npm install omt-router
                 </div>
-                <div class="c-code-tabs__panel" role="tabpanel" id="ds-panel-pnpm" aria-labelledby="ds-tab-pnpm" hidden>
+                <div class="c-code-tabs__panel" role="tabpanel" id="ds-panel-pnpm" aria-labelledby="ds-tab-pnpm">
                   pnpm add omt-router
                 </div>
-                <div class="c-code-tabs__panel" role="tabpanel" id="ds-panel-yarn" aria-labelledby="ds-tab-yarn" hidden>
+                <div class="c-code-tabs__panel" role="tabpanel" id="ds-panel-yarn" aria-labelledby="ds-tab-yarn">
                   yarn add omt-router
                 </div>
               </div>
@@ -5271,21 +5528,21 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-68" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-78" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-68">&lt;div class="c-code-tabs" data-tabs&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-78">&lt;div class="c-code-tabs" data-tabs&gt;
   &lt;div class="c-code-tabs__list" role="tablist" aria-label="Package manager"&gt;
     &lt;button class="c-code-tabs__tab" role="tab" type="button" id="ds-tab-npm" aria-controls="ds-panel-npm" aria-selected="true"&gt;npm&lt;/button&gt;
     &lt;button class="c-code-tabs__tab" role="tab" type="button" id="ds-tab-pnpm" aria-controls="ds-panel-pnpm" aria-selected="false" tabindex="-1"&gt;pnpm&lt;/button&gt;
     &lt;button class="c-code-tabs__tab" role="tab" type="button" id="ds-tab-yarn" aria-controls="ds-panel-yarn" aria-selected="false" tabindex="-1"&gt;yarn&lt;/button&gt;
   &lt;/div&gt;
   &lt;div class="c-code-tabs__panel" role="tabpanel" id="ds-panel-npm" aria-labelledby="ds-tab-npm"&gt;npm install omt-router&lt;/div&gt;
-  &lt;div class="c-code-tabs__panel" role="tabpanel" id="ds-panel-pnpm" aria-labelledby="ds-tab-pnpm" hidden&gt;pnpm add omt-router&lt;/div&gt;
-  &lt;div class="c-code-tabs__panel" role="tabpanel" id="ds-panel-yarn" aria-labelledby="ds-tab-yarn" hidden&gt;yarn add omt-router&lt;/div&gt;
+  &lt;div class="c-code-tabs__panel" role="tabpanel" id="ds-panel-pnpm" aria-labelledby="ds-tab-pnpm"&gt;pnpm add omt-router&lt;/div&gt;
+  &lt;div class="c-code-tabs__panel" role="tabpanel" id="ds-panel-yarn" aria-labelledby="ds-tab-yarn"&gt;yarn add omt-router&lt;/div&gt;
 &lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
@@ -5321,13 +5578,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-69" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-79" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-69">&lt;div class="c-install"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-79">&lt;div class="c-install"&gt;
   &lt;span class="c-install__prompt" aria-hidden="true"&gt;$&lt;/span&gt;
   &lt;code class="c-install__command" id="ds-install-cmd"&gt;npm install omt-router&lt;/code&gt;
   &lt;button class="c-btn c-btn--ghost c-btn--icon c-btn--sm c-install__copy" type="button" data-copy="#ds-install-cmd" aria-label="Copy install command"&gt;
@@ -5384,13 +5641,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-70" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-80" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-70">&lt;div class="c-diff"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-80">&lt;div class="c-diff"&gt;
   &lt;div class="c-diff__line"&gt;
     &lt;span class="c-diff__sign"&gt;&lt;/span&gt;
     &lt;span class="c-diff__sign"&gt;9&lt;/span&gt;
@@ -5450,13 +5707,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-71" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-81" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-71">&lt;div class="ds-row" style="align-items: center"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-81">&lt;div class="ds-row" style="align-items: center"&gt;
   &lt;label class="c-field__label" for="doc-version"&gt;Version&lt;/label&gt;
   &lt;select class="c-version" id="doc-version"&gt;
     &lt;option value="1.0" selected&gt;v1.0 · current&lt;/option&gt;
@@ -5525,13 +5782,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-72" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-82" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-72">&lt;div class="c-tree"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-82">&lt;div class="c-tree"&gt;
   &lt;div class="c-tree__row c-tree__row--dir"&gt;
     &lt;svg aria-hidden="true"&gt;
       &lt;use href="#i-folder" /&gt;
@@ -5619,13 +5876,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-73" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-83" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-73">&lt;nav class="c-pager" aria-label="Section navigation" style="margin-block-start: 0"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-83">&lt;nav class="c-pager" aria-label="Section navigation" style="margin-block-start: 0"&gt;
   &lt;a class="c-pager__link" href="#data"&gt;
     &lt;span class="c-pager__dir"&gt;
       &lt;svg aria-hidden="true" style="width: 0.85rem; height: 0.85rem; transform: rotate(180deg)"&gt;
@@ -5695,13 +5952,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-74" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-84" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-74">&lt;div class="c-logos"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-84">&lt;div class="c-logos"&gt;
   &lt;span class="c-logos__item"&gt;Cartolab&lt;/span&gt;
   &lt;span class="c-logos__item"&gt;Nordwand&lt;/span&gt;
   &lt;span class="c-logos__item"&gt;Tidewater&lt;/span&gt;
@@ -5775,13 +6032,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-75" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-85" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-75">&lt;div class="c-showcase" style="margin-block-start: 1.25rem"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-85">&lt;div class="c-showcase" style="margin-block-start: 1.25rem"&gt;
   &lt;div class="c-showcase__media"&gt;
     &lt;svg viewbox="0 0 240 180" style="width: 100%; height: 100%" aria-hidden="true" focusable="false"&gt;
       &lt;g fill="none" stroke="var(--chart-1)" stroke-width="1.4" stroke-linecap="round" opacity="0.85"&gt;
@@ -5871,13 +6128,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-76" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-86" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-76">&lt;div class="c-metrics"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-86">&lt;div class="c-metrics"&gt;
   &lt;div class="c-metrics__item"&gt;
     &lt;span class="c-metrics__value"&gt;4.1M&lt;/span&gt;
     &lt;span class="c-metrics__label"&gt;Routes a day&lt;/span&gt;
@@ -5927,13 +6184,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-77" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-87" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-77">&lt;figure class="c-testimonial" style="margin-block-start: 1.25rem"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-87">&lt;figure class="c-testimonial" style="margin-block-start: 1.25rem"&gt;
   &lt;blockquote class="c-testimonial__quote"&gt;
     We replaced three services with one library and a weekend of reading the source. The part that surprised me was the cost breakdown — our planners could finally argue with a route instead of trusting it.
   &lt;/blockquote&gt;
@@ -6032,13 +6289,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-78" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-88" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-78">&lt;div class="c-pricing"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-88">&lt;div class="c-pricing"&gt;
   &lt;div class="c-price"&gt;
     &lt;span class="c-price__name"&gt;Solo&lt;/span&gt;
     &lt;p class="c-price__desc"&gt;For one person routing their own city.&lt;/p&gt;
@@ -6228,13 +6485,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-79" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-89" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-79">&lt;div class="c-table-wrap"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-89">&lt;div class="c-table-wrap"&gt;
   &lt;table class="c-compare"&gt;
     &lt;caption class="visually-hidden"&gt;Plan comparison&lt;/caption&gt;
     &lt;thead&gt;
@@ -6406,13 +6663,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-80" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-90" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-80">&lt;div class="c-faq"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-90">&lt;div class="c-faq"&gt;
   &lt;details class="c-faq__item" open&gt;
     &lt;summary class="c-faq__question"&gt;
       &lt;span&gt;Does Contour need a server?&lt;/span&gt;
@@ -6482,13 +6739,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-81" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-91" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-81">&lt;div class="c-cta" style="border-radius: var(--radius-xl)"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-91">&lt;div class="c-cta" style="border-radius: var(--radius-xl)"&gt;
   &lt;h3 class="c-cta__title"&gt;Start routing this afternoon.&lt;/h3&gt;
   &lt;p class="c-cta__text"&gt;
     One package, one tile source, and the same engine you can read line by line.
@@ -6551,13 +6808,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-82" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-92" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-82">&lt;span class="label"&gt;Split feature&lt;/span&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-92">&lt;span class="label"&gt;Split feature&lt;/span&gt;
 &lt;div class="split" style="margin-block-start: 1.25rem"&gt;
   &lt;div class="ds-stack"&gt;
     &lt;h3 class="c-card__title" style="font-size: var(--type-h2)"&gt;Fewer servers. Faster interactions.&lt;/h3&gt;
@@ -6619,13 +6876,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-83" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-93" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-83">&lt;span class="label"&gt;Stat band&lt;/span&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-93">&lt;span class="label"&gt;Stat band&lt;/span&gt;
 &lt;div class="grid grid--4" style="margin-block-start: 1.25rem"&gt;
   &lt;div class="c-stat"&gt;
     &lt;span class="c-stat__label"&gt;Average latency&lt;/span&gt;
@@ -6692,13 +6949,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-84" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-94" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-84">&lt;div class="c-affordance"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-94">&lt;div class="c-affordance"&gt;
   &lt;div class="c-affordance__demo"&gt;
     &lt;button class="c-btn c-btn--primary c-btn--sm" type="button"&gt;Press me&lt;/button&gt;
   &lt;/div&gt;
@@ -6729,13 +6986,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-85" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-95" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-85">&lt;div class="c-affordance"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-95">&lt;div class="c-affordance"&gt;
   &lt;div class="c-affordance__demo"&gt;
     &lt;label class="c-switch"&gt;
       &lt;input class="c-switch__input" type="checkbox" checked /&gt;
@@ -6766,13 +7023,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-86" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-96" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-86">&lt;div class="c-affordance"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-96">&lt;div class="c-affordance"&gt;
   &lt;div class="c-affordance__demo"&gt;
     &lt;input class="c-range" type="range" min="0" max="100" value="45" aria-label="Range" /&gt;
   &lt;/div&gt;
@@ -6799,13 +7056,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-87" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-97" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-87">&lt;div class="c-affordance"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-97">&lt;div class="c-affordance"&gt;
   &lt;div class="c-affordance__demo"&gt;
     &lt;input class="c-check__input" type="checkbox" checked aria-label="Checkbox" /&gt;
   &lt;/div&gt;
@@ -6839,13 +7096,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-88" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-98" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-88">&lt;div class="c-affordance"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-98">&lt;div class="c-affordance"&gt;
   &lt;div class="c-affordance__demo"&gt;
     &lt;span class="c-filter-pill" data-removable&gt;
       &lt;span class="c-filter-pill__key"&gt;Region&lt;/span&gt;
@@ -6883,13 +7140,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-89" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-99" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-89">&lt;div class="c-affordance"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-99">&lt;div class="c-affordance"&gt;
   &lt;div class="c-affordance__demo"&gt;
     &lt;button class="c-drag-handle" type="button" aria-label="Reorder"&gt;
       &lt;span&gt;&lt;/span&gt;
@@ -6929,13 +7186,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-90" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-100" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-90">&lt;div class="c-affordance"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-100">&lt;div class="c-affordance"&gt;
   &lt;div class="c-affordance__demo"&gt;
     &lt;th aria-sort="ascending" style="border: 0; padding: 0; color: var(--color-text-muted); font-family: var(--font-mono); font-size: var(--type-micro)"&gt;
       Latency
@@ -6975,13 +7232,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-91" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-101" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-91">&lt;div class="c-affordance"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-101">&lt;div class="c-affordance"&gt;
   &lt;div class="c-affordance__demo"&gt;
     &lt;details class="c-disclosure" style="width: 100%; border: 0"&gt;
       &lt;summary class="c-disclosure__summary" style="font-size: var(--type-xs); padding: 0"&gt;
@@ -7022,13 +7279,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-92" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-102" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-92">&lt;div class="c-affordance"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-102">&lt;div class="c-affordance"&gt;
   &lt;div class="c-affordance__demo"&gt;
     &lt;button class="c-btn c-btn--secondary c-btn--sm" type="button" data-copy="#affordance-copy"&gt;
       &lt;svg aria-hidden="true"&gt;
@@ -7062,13 +7319,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-93" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-103" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-93">&lt;div class="c-affordance"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-103">&lt;div class="c-affordance"&gt;
   &lt;div class="c-affordance__demo"&gt;
     &lt;a class="c-linkish" href="#affordances"&gt;A real link&lt;/a&gt;
   &lt;/div&gt;
@@ -7098,13 +7355,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-94" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-104" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-94">&lt;div class="c-affordance"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-104">&lt;div class="c-affordance"&gt;
   &lt;div class="c-affordance__demo"&gt;
     &lt;button class="c-btn c-btn--secondary c-btn--sm" type="button" disabled&gt;Disabled&lt;/button&gt;
   &lt;/div&gt;
@@ -7135,13 +7392,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-95" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-105" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-95">&lt;div class="c-affordance"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-105">&lt;div class="c-affordance"&gt;
   &lt;div class="c-affordance__demo"&gt;
     &lt;span class="c-cursor-demo" style="display: inline-flex; align-items: center; gap: 0.4rem; font-family: var(--font-mono); font-size: var(--type-micro); color: var(--color-text-muted)"&gt;
       &lt;svg aria-hidden="true" style="width: 0.9rem; height: 0.9rem"&gt;
@@ -7184,13 +7441,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-96" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-106" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-96">&lt;div class="c-menu"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-106">&lt;div class="c-menu"&gt;
   &lt;div class="c-menu__label"&gt;Actions&lt;/div&gt;
   &lt;button class="c-menu__item" type="button"&gt;
     &lt;svg aria-hidden="true"&gt;
@@ -7226,13 +7483,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-97" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-107" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-97">&lt;span class="c-tag"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-107">&lt;span class="c-tag"&gt;
   filter: active
   &lt;button class="c-tag__remove" type="button" aria-label="Remove"&gt;
     &lt;svg aria-hidden="true"&gt;
@@ -7260,13 +7517,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-98" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-108" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-98">&lt;details class="c-expandable"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-108">&lt;details class="c-expandable"&gt;
   &lt;summary&gt;Expandable section&lt;/summary&gt;
   &lt;p style="margin-block-start: var(--space-xs); font-size: var(--type-sm)"&gt;Hidden content revealed on toggle.&lt;/p&gt;
 &lt;/details&gt;</code></pre>
@@ -7279,13 +7536,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-99" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-109" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-99">&lt;button class="c-btn c-pressable" type="button"&gt;Pressable surface&lt;/button&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-109">&lt;button class="c-btn c-pressable" type="button"&gt;Pressable surface&lt;/button&gt;</code></pre>
                       </div>
                     </details></div>
 
@@ -7295,13 +7552,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-100" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-110" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-100">&lt;div class="c-reserved"&gt;Reserved space (min 1.25rem)&lt;/div&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-110">&lt;div class="c-reserved"&gt;Reserved space (min 1.25rem)&lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
 
@@ -7311,13 +7568,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-101" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-111" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-101">&lt;div class="c-scrim" style="position: relative; min-block-size: 4rem; border: 1px dashed var(--color-border)"&gt;Scrim overlay&lt;/div&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-111">&lt;div class="c-scrim" style="position: relative; min-block-size: 4rem; border: 1px dashed var(--color-border)"&gt;Scrim overlay&lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
 
@@ -7327,13 +7584,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-102" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-112" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-102">&lt;p class="c-destructive-hint"&gt;This action cannot be undone.&lt;/p&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-112">&lt;p class="c-destructive-hint"&gt;This action cannot be undone.&lt;/p&gt;</code></pre>
                       </div>
                     </details></div>
 
@@ -7343,13 +7600,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-103" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-113" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-103">&lt;div class="c-row-action" style="position: relative; padding: var(--space-sm); border: 1px solid var(--color-border)"&gt;Row action (clickable)&lt;/div&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-113">&lt;div class="c-row-action" style="position: relative; padding: var(--space-sm); border: 1px solid var(--color-border)"&gt;Row action (clickable)&lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
 
@@ -7362,13 +7619,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-104" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-114" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-104">&lt;div class="c-panel" style="position: relative; min-block-size: 4rem; padding: var(--space-md)"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-114">&lt;div class="c-panel" style="position: relative; min-block-size: 4rem; padding: var(--space-md)"&gt;
   Panel with resize handle
   &lt;div class="c-resize-handle" aria-label="Resize panel" role="separator" tabindex="0"&gt;&lt;/div&gt;
 &lt;/div&gt;</code></pre>
@@ -7392,13 +7649,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-105" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-115" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-105">&lt;div dir="rtl" style="margin-block-start: var(--space-lg); padding: var(--space-md); border: 1px solid var(--color-border); border-radius: var(--radius-md)"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-115">&lt;div dir="rtl" style="margin-block-start: var(--space-lg); padding: var(--space-md); border: 1px solid var(--color-border); border-radius: var(--radius-md)"&gt;
   &lt;p style="margin-block-end: var(--space-2xs)"&gt;RTL specimen — chevron flips to the inline-start side.&lt;/p&gt;
   &lt;div class="c-stack" style="gap: var(--space-2xs)"&gt;
     &lt;button class="c-btn c-btn--primary" type="button"&gt;RTL button&lt;/button&gt;
@@ -7434,13 +7691,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-106" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-116" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-106">&lt;div class="c-row"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-116">&lt;div class="c-row"&gt;
   &lt;span class="c-badge c-badge--primary"&gt;Primary&lt;/span&gt;
   &lt;span class="c-badge"&gt;Item&lt;/span&gt;
   &lt;span class="c-badge"&gt;Item&lt;/span&gt;
@@ -7462,13 +7719,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-107" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-117" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-107">&lt;div class="c-stack"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-117">&lt;div class="c-stack"&gt;
   &lt;span class="c-badge c-badge--primary"&gt;First&lt;/span&gt;
   &lt;span class="c-badge"&gt;Second&lt;/span&gt;
   &lt;span class="c-badge"&gt;Third&lt;/span&gt;
@@ -7492,13 +7749,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-108" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-118" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-108">&lt;div class="c-cluster"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-118">&lt;div class="c-cluster"&gt;
   &lt;span class="c-tag"&gt;alpha&lt;/span&gt;
   &lt;span class="c-tag"&gt;beta&lt;/span&gt;
   &lt;span class="c-tag"&gt;gamma&lt;/span&gt;
@@ -7520,13 +7777,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-109" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-119" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-109">&lt;div class="c-box c-box--border" style="min-block-size: 4rem"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-119">&lt;div class="c-box c-box--border" style="min-block-size: 4rem"&gt;
   &lt;p style="font-size: var(--type-sm); margin: 0"&gt;Default box (md padding)&lt;/p&gt;
 &lt;/div&gt;</code></pre>
                       </div>
@@ -7550,13 +7807,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-110" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-120" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-110">&lt;div class="c-map-slot" style="min-block-size: 10rem; border: 1px solid var(--color-border); border-radius: var(--radius-md)"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-120">&lt;div class="c-map-slot" style="min-block-size: 10rem; border: 1px solid var(--color-border); border-radius: var(--radius-md)"&gt;
   &lt;div class="c-map-slot__chrome"&gt;
     &lt;div class="c-map-slot__controls"&gt;
       &lt;button class="c-map-slot__control" type="button" aria-label="Zoom in"&gt;+&lt;/button&gt;
@@ -7585,13 +7842,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-111" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-121" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-111">&lt;div style="position: relative; min-block-size: 8rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-121">&lt;div style="position: relative; min-block-size: 8rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden"&gt;
   &lt;div class="c-map-panel c-map-panel--top c-map-panel--right" style="position: absolute"&gt;
     &lt;p style="font-size: var(--type-sm); margin: 0"&gt;Top-right panel&lt;/p&gt;
   &lt;/div&gt;
@@ -7622,13 +7879,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-112" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-122" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-112">&lt;div class="c-map-footer" style="min-block-size: 4rem; border: 1px solid var(--color-border); border-radius: var(--radius-md)"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-122">&lt;div class="c-map-footer" style="min-block-size: 4rem; border: 1px solid var(--color-border); border-radius: var(--radius-md)"&gt;
   &lt;div class="c-box"&gt;
     &lt;p style="font-size: var(--type-sm); margin: 0"&gt;Cell 1&lt;/p&gt;
   &lt;/div&gt;
@@ -7682,13 +7939,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-113" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-123" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-113">&lt;div class="c-app" style="min-block-size: 8rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-123">&lt;div class="c-app" style="min-block-size: 8rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden"&gt;
   &lt;div class="c-app-body"&gt;
     &lt;aside class="c-sidebar" aria-label="Sidebar" style="width: 12rem; border-inline-end: 1px solid var(--color-border)"&gt;
       &lt;div class="c-container" style="padding: var(--space-sm)"&gt;
@@ -7743,13 +8000,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-114" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-124" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-114">&lt;div class="c-app" style="min-block-size: 8rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-124">&lt;div class="c-app" style="min-block-size: 8rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden"&gt;
   &lt;div class="c-app-body"&gt;
     &lt;aside class="c-sidebar" aria-label="Sidebar (compact)" style="width: 8rem; padding: var(--space-sm); border-inline-end: 1px solid var(--color-border)"&gt;
       &lt;p style="font-size: var(--type-xs); margin: 0"&gt;Sidebar&lt;/p&gt;
@@ -8055,10 +8312,10 @@
                         <div class="c-code-tabs__panel" role="tabpanel" id="cp-npm" aria-labelledby="ct-npm">
                           npm install omt-router
                         </div>
-                        <div class="c-code-tabs__panel" role="tabpanel" id="cp-pnpm" aria-labelledby="ct-pnpm" hidden>
+                        <div class="c-code-tabs__panel" role="tabpanel" id="cp-pnpm" aria-labelledby="ct-pnpm">
                           pnpm add omt-router
                         </div>
-                        <div class="c-code-tabs__panel" role="tabpanel" id="cp-yarn" aria-labelledby="ct-yarn" hidden>
+                        <div class="c-code-tabs__panel" role="tabpanel" id="cp-yarn" aria-labelledby="ct-yarn">
                           yarn add omt-router
                         </div>
                       </div>
@@ -8342,7 +8599,7 @@
                         </div>
                       </div>
                       <div class="c-panel__body">
-                        <div class="c-chart">
+                        <div class="c-chart" role="img" aria-label="Chart">
                           <div class="c-chart__plot">
                             <svg viewbox="0 0 300 120" preserveaspectratio="none" style="position: absolute; inset: 0; width: 100%; height: 100%">
                               <path class="c-chart__line" data-series="1" style="--c: var(--chart-1)" d="M0 88 50 70 100 78 150 48 200 55 250 30 300 36" />
@@ -8382,7 +8639,7 @@
                         </div>
                       </div>
                       <div class="c-panel__body">
-                        <div class="c-chart">
+                        <div class="c-chart" role="img" aria-label="Chart">
                           <div class="c-chart__plot" style="aspect-ratio: 4 / 5">
                             <span class="c-chart__bar" style="--x: 0%; --h: 92%; --w: 15%; --c: var(--chart-1)"></span>
                             <span class="c-chart__bar" style="--x: 19%; --h: 74%; --w: 15%; --c: var(--chart-1)"></span>
@@ -8606,6 +8863,13 @@
             </div>
           </div>
 
+          <div class="c-segmented" data-theme-set role="group" aria-label="Theme set">
+            <button type="button" data-theme-value>Default</button>
+            <button type="button" data-theme-value="positron">Positron</button>
+            <button type="button" data-theme-value="dark-matter">Dark matter</button>
+            <button type="button" data-theme-value="high-contrast">High contrast</button>
+          </div>
+
           <div class="ds-theme-pair">
             <div class="ds-theme-card ds-theme-card--dark">
               <div class="ds-theme-card__bar">
@@ -8676,13 +8940,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-115" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-125" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-115">&lt;div class="c-segmented" role="radiogroup" aria-label="Colour scheme"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-125">&lt;div class="c-segmented" role="radiogroup" aria-label="Colour scheme"&gt;
   &lt;label class="c-segmented__option"&gt;
     &lt;input type="radio" name="scheme-demo" value="light dark" data-scheme-option="light dark" checked /&gt;
     &lt;svg aria-hidden="true"&gt;
@@ -8765,13 +9029,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-116" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-126" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-116">&lt;div class="ds-install" style="margin-block-start: 1rem"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-126">&lt;div class="ds-install" style="margin-block-start: 1rem"&gt;
   &lt;div class="ds-install__row"&gt;
     &lt;span class="ds-install__key"&gt;Contrast&lt;/span&gt;
     &lt;span&gt;
@@ -8977,7 +9241,7 @@
     </footer>
 
     <!-- ===================== OVERLAYS ===================== -->
-    <div id="toast-host" style="position: fixed; inset-block-end: 1.25rem; inset-inline-end: 1.25rem; z-index: 700; display: grid; gap: 0.5rem"></div>
+    <div id="toast-host" class="c-toast-host"></div>
 
     <dialog class="c-dialog" id="demo-dialog" aria-labelledby="demo-dialog-title">
       <div class="c-dialog__head">

@@ -932,6 +932,8 @@
     gap: 0.15rem;
     border-block-end: 1px solid var(--color-border);
     overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-padding-inline: 0.5rem;
     min-inline-size: 0;
     scrollbar-width: none;
   }
@@ -1462,6 +1464,8 @@
     margin: 0;
     padding: 1.15rem 1.25rem;
     overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-padding-inline: 0.5rem;
     font-family: var(--font-mono);
     font-size: 0.8125rem;
     line-height: 1.75;
@@ -1499,6 +1503,8 @@
   .c-table-wrap {
     position: relative;
     overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-padding-inline: 0.5rem;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     background: var(--color-surface-1);
@@ -2360,6 +2366,7 @@
     align-content: start;
     scrollbar-gutter: stable;
     overscroll-behavior: contain;
+    scroll-padding: 0.5rem;
   }
 
   .c-sheet__foot {
@@ -2367,7 +2374,7 @@
     border-block-start: 1px solid var(--color-border-subtle);
     background: var(--color-surface-2);
   }
-}
+
 
   /* -- Standalone radio ----------------------------------------------- */
   .c-radio {
@@ -2441,3 +2448,29 @@
       1.35rem calc(50% + 1px),
       1rem calc(50% + 1px);
   }
+
+
+/* Toast host — owned by the system so Contour.toast() works on any page. */
+.c-toast-host {
+  position: fixed;
+  inset-block-end: var(--space-md);
+  inset-inline-end: var(--space-md);
+  z-index: var(--z-toast);
+  display: grid;
+  gap: var(--space-2xs);
+  pointer-events: none;
+}
+.c-toast-host > * { pointer-events: auto; }
+
+
+
+  /* Per-component disabled treatment (T-154). */
+  .c-radio:has(input:disabled),
+  .c-tabs__tab:disabled,
+  .c-layer-switch__toggle:disabled,
+  .c-legend__item:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+}

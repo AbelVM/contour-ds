@@ -49,19 +49,25 @@ const CSS = join(ROOT, "src/css");
 // anywhere — including `assets/`, which was checked before deleting so nothing
 // in the guide's own chrome would break. This list is what is genuinely left.
 const LEDGER = {
-  // The toast stack's placement lives entirely in an inline `style` attribute on
-  // #toast-host in the guide; `.c-toast` in the system never sets a z-index, so
-  // no rule in src/ could consume this token today. Pointing the inline style at
-  // it would make a shipped token's only reader a guide attribute, which is the
-  // advertising-not-implementing pattern this census exists to catch. The honest
-  // fix is a `.c-toast-host` rule in src/ that owns the placement — a design call
-  // about where toast positioning belongs, so it stays visible here instead.
-  "--z-toast": { action: "wire", task: "T-103", verified: true, note: "needs a system-owned toast host rule, not a guide inline style" },
-
   // Added with the composable-surface work and not yet referenced by an exit
   // transition. Not deleted on purpose: this is another hand's in-flight edit.
   "--ease-exit": { action: "yours", task: "T-44", verified: true, note: "awaiting its exit-transition consumer" },
 };
+
+// Referenced-but-undefined tokens that are deliberate author hooks (component-scoped
+// custom properties with fallbacks). These are not declared in tokens.css on
+// purpose; they are documented hooks, not dead tokens.
+const HOOK_LEDGER = new Set([
+  "--bleed-left", "--bleed-right",
+  "--bv-cell", "--bv-cols", "--bv-rows",
+  "--c", "--fill", "--h", "--w", "--x", "--value", "--progress", "--target",
+  "--graticule-pitch", "--field-line",
+  "--btn-border", "--btn-bg", "--btn-fg", "--btn-shadow",
+  "--map-ctrl-gap", "--map-ctrl-size", "--map-ctrl-surface", "--map-ctrl-border", "--map-ctrl-radius", "--map-ctrl-icon",
+  "--meter-size", "--meter-value",
+  "--kbd-padding", "--kbd-font-size",
+  "--flow-space",
+]);
 
 const escapeRe = (s) => s.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");
 
@@ -110,7 +116,16 @@ function main() {
   // or the ledger keeps an exemption nobody needs.
   const staleEntries = ledgerKeys.filter((k) => !unread.includes(k));
   const unledgered = unread.filter((k) => !ledgerKeys.includes(k));
-  const widening = unledgered.length > 0 || staleEntries.length > 0;
+
+  // Two-way: referenced-but-undefined must be in the hook ledger.
+  const cssText = readdirSync(CSS).filter((f) => f.endsWith(".css")).map((f) => readFileSync(join(CSS, f), "utf8")).join("\n");
+  const jsText = readIf(join(ROOT, "src/js/ds.js"));
+  const htmlText = readIf(join(ROOT, "index.html"));
+  const allSrc = cssText + "\n" + jsText + "\n" + htmlText;
+  const referenced = new Set([...allSrc.matchAll(/var\(\s*(--[a-z0-9][a-z0-9-]*)/g)].map((m) => m[1]));
+  const declaredSet = new Set(names);
+  const orphanRefs = [...referenced].filter((t) => !declaredSet.has(t) && !HOOK_LEDGER.has(t));
+  const widening = unledgered.length > 0 || staleEntries.length > 0 || orphanRefs.length > 0;
 
   if (process.argv.includes("--json")) {
     console.log(JSON.stringify({ declaredUnique: names.length, unread: unread.length, ledger: ledgerKeys.length, unledgered, staleEntries, widening }, null, 2));
@@ -123,9 +138,10 @@ function main() {
   }
 
   if (widening) {
-    console.error(`check-tokens: ${unledgered.length + staleEntries.length} ledger discrepancy(ies).`);
+    console.error(`check-tokens: ${unledgered.length + staleEntries.length + orphanRefs.length} ledger discrepancy(ies).`);
     for (const t of unledgered) console.error(`  dead token with no reader and no ledger entry: ${t}`);
     for (const t of staleEntries) console.error(`  ledger entry is paid off — delete the line: ${t}`);
+    for (const t of orphanRefs) console.error(`  referenced-but-undefined token not in hook ledger: ${t}`);
     console.error("\nWire the token to a consumer, ledger it with a task, or remove it.");
     process.exit(1);
   }

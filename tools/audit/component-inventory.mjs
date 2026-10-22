@@ -34,13 +34,22 @@ const templates = fs.readdirSync(path.join(ROOT, "templates"))
   .map((f) => fs.readFileSync(path.join(ROOT, "templates", f), "utf8"))
   .join("\n");
 
+// Hooks are marker/utility classes that are not standalone components and are
+// ledgered rather than specimened.
+const HOOKS = new Set(["c-advanced"]);
+const isHook = (b) => HOOKS.has(b) || b.startsWith("is-") || b.startsWith("u-");
+
 const noSpecimen = [];
 const specimenOnly = [];
+const unshownBlocks = [];
 for (const b of [...blocks].sort()) {
+  if (isHook(b)) continue;
   const inGuide = new RegExp(`class="[^"]*\\b${b}\\b`).test(html);
   const inTpl = new RegExp(`class="[^"]*\\b${b}\\b`).test(templates);
-  if (!inGuide && !inTpl) noSpecimen.push(`${b}  (${blockFile.get(b)})`);
-  else if (!inGuide) specimenOnly.push(`${b}  (${blockFile.get(b)})`);
+  if (!inGuide && !inTpl) {
+    noSpecimen.push(`${b}  (${blockFile.get(b)})`);
+    unshownBlocks.push(b);
+  } else if (!inGuide) specimenOnly.push(`${b}  (${blockFile.get(b)})`);
 }
 console.log("=== COMPONENT INVENTORY ===");
 console.log("distinct .c-* blocks in src/css:", blocks.size);
@@ -48,6 +57,13 @@ console.log("\n--- NO SPECIMEN ANYWHERE (guide + templates): " + noSpecimen.leng
 noSpecimen.forEach((s) => console.log("  " + s));
 console.log("\n--- templates only, not in the guide: " + specimenOnly.length + " ---");
 specimenOnly.forEach((s) => console.log("  " + s));
+
+if (unshownBlocks.length) {
+  console.error("\nspecimen-gate: " + unshownBlocks.length + " shipped block(s) have no specimen anywhere:");
+  unshownBlocks.forEach((b) => console.error("  " + b));
+  console.error("\nAdd a specimen or remove the block. (Hooks are ledgered, not gated.)");
+  process.exit(1);
+}
 
 /* ---------- target sizes ---------- */
 const browser = await chromium.launch({ args: ["--no-sandbox"] });
