@@ -279,6 +279,7 @@ than the default, because light-on-dark text needs more air.
 | **Data** | table (a container query drops the optional columns), legend, readout, timeline, code block, pull quote, KPI tile, panel, filter bar, activity feed |
 | **Documentation** | nav tree, callout, do/don't, steps, code tabs, install block, diff, pager, version picker, file tree, prose |
 | **Landing** | logo wall, feature showcase, metrics band, testimonial, pricing, comparison matrix, FAQ, CTA band |
+| **Layout** | grid (2/3/4), row, stack (sm/lg), cluster, sidebar, box (s/m/l/xl, border, scroll), container (scrollable), map area, map panel (top/bottom/left/right/center), map footer, app shell, app body |
 
 Naming is `.c-<block>`, `.c-<block>__<element>`, `.c-<block>--<variant>`. Components do not reach
 into one another with descendant selectors, with three documented exceptions: the button group
