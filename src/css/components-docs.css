@@ -1,0 +1,739 @@
+/* ============================================================================
+   CONTOUR — Documentation components
+   ----------------------------------------------------------------------------
+   For documentation sites: navigation trees, on-page contents, callouts,
+   steps, code tabs and page pagers. Documentation differs from an app shell
+   in one way that matters: the URL is the state. Every element here is a
+   real link so it works without JavaScript and can be copied by right-click.
+   ========================================================================= */
+
+@layer components {
+  /* =======================================================================
+     1. NAVIGATION TREE
+     A sidebar that mirrors a file tree: nested groups, an expanded state,
+     and one active item.
+     ======================================================================= */
+  .c-docs-nav {
+    display: grid;
+    gap: var(--space-lg);
+    font-size: var(--type-xs);
+  }
+
+  .c-docs-nav__group-title {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+    margin-block-end: 0.5rem;
+    padding-inline-start: 0.5rem;
+  }
+
+  .c-docs-nav__list {
+    display: grid;
+    gap: 1px;
+  }
+
+  .c-docs-nav__link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.5rem;
+    border-radius: var(--radius-sm);
+    color: var(--color-text-muted);
+    text-decoration: none;
+    transition:
+      color var(--dur-fast) var(--ease-standard),
+      background-color var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-docs-nav__link:hover {
+    color: var(--color-text-strong);
+    background: var(--color-surface-2);
+  }
+
+  .c-docs-nav__link[aria-current="page"] {
+    color: var(--color-text-strong);
+    background: var(--color-primary-soft);
+    font-weight: var(--weight-semibold);
+  }
+
+  .c-docs-nav__link svg {
+    inline-size: 0.9rem;
+    block-size: 0.9rem;
+    opacity: 0.55;
+    flex: none;
+  }
+
+  .c-docs-nav__badge {
+    margin-inline-start: auto;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.04em;
+    color: var(--color-text-subtle);
+  }
+
+  /* Nested level */
+  .c-docs-nav__list--nested {
+    margin-inline-start: 0.75rem;
+    padding-inline-start: 0.5rem;
+    border-inline-start: 1px solid var(--color-border);
+  }
+
+  /* Collapsible group */
+  .c-docs-nav__group {
+    border: 0;
+    padding: 0;
+    margin: 0;
+  }
+
+  .c-docs-nav__group > summary {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.5rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+    transition: color var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-docs-nav__group > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .c-docs-nav__group > summary:hover {
+    color: var(--color-text-strong);
+  }
+
+  .c-docs-nav__chevron {
+    display: inline-flex;
+    transition: transform var(--dur-base) var(--ease-out-expo);
+  }
+
+  .c-docs-nav__group[open] .c-docs-nav__chevron {
+    transform: rotate(90deg);
+  }
+
+  /* =======================================================================
+     2. TABLE OF CONTENTS
+     "On this page". Real links, scroll-spy marks the current heading.
+     ======================================================================= */
+  .c-toc {
+    display: grid;
+    gap: 0.6rem;
+    font-size: var(--type-xs);
+  }
+
+  .c-toc__title {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  .c-toc__list {
+    display: grid;
+    gap: 1px;
+    border-inline-start: 1px solid var(--color-border);
+  }
+
+  .c-toc__link {
+    display: block;
+    padding: 0.25rem 0.65rem;
+    margin-inline-start: -1px;
+    border-inline-start: 1px solid transparent;
+    color: var(--color-text-subtle);
+    text-decoration: none;
+    transition:
+      color var(--dur-fast) var(--ease-standard),
+      border-color var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-toc__link:hover {
+    color: var(--color-text-strong);
+  }
+
+  .c-toc__link[aria-current="true"] {
+    color: var(--color-text-strong);
+    border-inline-start-color: var(--color-primary);
+  }
+
+  .c-toc__link--sub {
+    padding-inline-start: 1.4rem;
+    font-size: var(--type-micro);
+  }
+
+  /* =======================================================================
+     3. CALLOUT
+     The highlighted note. A title, an icon, and a semantic colour.
+     ======================================================================= */
+  .c-callout {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.7rem;
+    padding: var(--space-md);
+    border: 1px solid var(--color-border);
+    border-inline-start: 3px solid var(--color-text-subtle);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-1);
+    font-size: var(--type-sm);
+    line-height: var(--leading-relaxed);
+  }
+
+  .c-callout__icon {
+    inline-size: 1.15rem;
+    block-size: 1.15rem;
+    margin-block-start: 0.15rem;
+    flex: none;
+  }
+
+  .c-callout__title {
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-strong);
+    margin-block-end: 0.2rem;
+  }
+
+  .c-callout__body {
+    color: var(--color-text-muted);
+  }
+
+  .c-callout__body > * + * {
+    margin-block-start: 0.6rem;
+  }
+
+  .c-callout--note {
+    border-inline-start-color: var(--color-info);
+    background: var(--color-info-soft);
+  }
+  .c-callout--note .c-callout__icon {
+    color: var(--color-info-text);
+  }
+
+  .c-callout--tip {
+    border-inline-start-color: var(--color-success);
+    background: var(--color-success-soft);
+  }
+  .c-callout--tip .c-callout__icon {
+    color: var(--color-success-text);
+  }
+
+  .c-callout--warning {
+    border-inline-start-color: var(--color-warning);
+    background: var(--color-warning-soft);
+  }
+  .c-callout--warning .c-callout__icon {
+    color: var(--color-warning-text);
+  }
+
+  .c-callout--danger {
+    border-inline-start-color: var(--color-danger);
+    background: var(--color-danger-soft);
+  }
+  .c-callout--danger .c-callout__icon {
+    color: var(--color-danger-text);
+  }
+
+  .c-callout--accent {
+    border-inline-start-color: var(--color-accent);
+    background: var(--color-accent-soft);
+  }
+  .c-callout--accent .c-callout__icon {
+    color: var(--color-accent-text);
+  }
+
+  /* Do / Don't pair — the clearest way to teach a convention. */
+  .c-do-dont {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: var(--space-md);
+  }
+
+  .c-do-dont__item {
+    padding: var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-1);
+  }
+
+  .c-do-dont__label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    margin-block-end: 0.6rem;
+  }
+
+  .c-do-dont__item--do {
+    border-color: color-mix(in oklab, var(--color-success) 34%, transparent);
+  }
+
+  .c-do-dont__item--do .c-do-dont__label {
+    color: var(--color-success-text);
+  }
+
+  .c-do-dont__item--dont {
+    border-color: color-mix(in oklab, var(--color-danger) 34%, transparent);
+  }
+
+  .c-do-dont__item--dont .c-do-dont__label {
+    color: var(--color-danger-text);
+  }
+
+  .c-do-dont__item > :last-child {
+    margin-block-end: 0;
+  }
+
+  /* =======================================================================
+     4. STEPS
+     A numbered procedure. The number is a waypoint, not an ornament.
+     ======================================================================= */
+  .c-steps {
+    display: grid;
+    gap: var(--space-lg);
+    counter-reset: c-step;
+  }
+
+  .c-steps__item {
+    position: relative;
+    counter-increment: c-step;
+    padding-inline-start: 2.5rem;
+  }
+
+  .c-steps__item::before {
+    content: counter(c-step);
+    position: absolute;
+    inset-block-start: -0.1rem;
+    inset-inline-start: 0;
+    display: grid;
+    place-items: center;
+    inline-size: 1.6rem;
+    block-size: 1.6rem;
+    border-radius: 50%;
+    border: 1px solid var(--color-primary);
+    background: var(--color-primary-soft);
+    color: var(--color-primary-text);
+    font-family: var(--font-mono);
+    font-size: var(--type-xs);
+    font-weight: var(--weight-semibold);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* The connector line between steps. */
+  .c-steps__item:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    inset-block-start: 1.75rem;
+    inset-block-end: calc(-1 * var(--space-lg));
+    inset-inline-start: 0.8rem;
+    inline-size: 1px;
+    background: var(--color-border);
+  }
+
+  .c-steps__title {
+    font-family: var(--font-display);
+    font-size: var(--type-h4);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-strong);
+    margin-block-end: 0.25rem;
+  }
+
+  .c-steps__body {
+    color: var(--color-text-muted);
+    font-size: var(--type-sm);
+    line-height: var(--leading-relaxed);
+  }
+
+  /* =======================================================================
+     5. CODE TABS
+     One snippet, several package managers. The tabs remember their choice
+     per group, so a reader who prefers pnpm is not nagged.
+     ======================================================================= */
+  .c-code-tabs {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-code-bg);
+    overflow: hidden;
+  }
+
+  .c-code-tabs__list {
+    display: flex;
+    align-items: center;
+    gap: 0.15rem;
+    padding: 0.35rem 0.4rem 0;
+    background: var(--color-code-header-bg);
+    border-block-end: 1px solid var(--color-border-subtle);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .c-code-tabs__list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .c-code-tabs__tab {
+    padding: 0.45rem 0.7rem;
+    border: none;
+    background: none;
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    letter-spacing: 0.04em;
+    color: var(--color-text-subtle);
+    cursor: pointer;
+    white-space: nowrap;
+    transition:
+      color var(--dur-fast) var(--ease-standard),
+      background-color var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-code-tabs__tab:hover {
+    color: var(--color-text);
+  }
+
+  .c-code-tabs__tab[aria-selected="true"] {
+    color: var(--color-text-strong);
+    background: var(--color-code-bg);
+  }
+
+  .c-code-tabs__panel {
+    padding: 1.15rem 1.25rem;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    line-height: 1.75;
+    color: var(--color-text);
+  }
+
+  .c-code-tabs__panel[hidden] {
+    display: none;
+  }
+
+  /* =======================================================================
+     6. INSTALL BLOCK
+     A single command with a copy button. The most-used component on any
+     documentation site.
+     ======================================================================= */
+  .c-install {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: 0.75rem 0.75rem 0.75rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-code-bg);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--color-text);
+    overflow-x: auto;
+  }
+
+  .c-install__prompt {
+    color: var(--color-primary-text);
+    user-select: none;
+    flex: none;
+  }
+
+  .c-install__command {
+    white-space: nowrap;
+  }
+
+  .c-install__copy {
+    margin-inline-start: auto;
+    flex: none;
+  }
+
+  /* =======================================================================
+     7. DIFF
+     For changelogs and migration guides.
+     ======================================================================= */
+  .c-diff {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-code-bg);
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    line-height: 1.7;
+  }
+
+  .c-diff__line {
+    display: grid;
+    grid-template-columns: 2.5rem 2.5rem minmax(0, 1fr);
+    white-space: pre;
+  }
+
+  .c-diff__line--add {
+    background: color-mix(in oklab, var(--color-success) 14%, transparent);
+  }
+
+  .c-diff__line--del {
+    background: color-mix(in oklab, var(--color-danger) 14%, transparent);
+  }
+
+  .c-diff__sign {
+    color: var(--color-text-subtle);
+    text-align: center;
+    user-select: none;
+  }
+
+  .c-diff__line--add .c-diff__sign {
+    color: var(--color-success-text);
+  }
+
+  .c-diff__line--del .c-diff__sign {
+    color: var(--color-danger-text);
+  }
+
+  /* =======================================================================
+     8. PAGE PAGER
+     Previous / next at the foot of an article.
+     ======================================================================= */
+  .c-pager {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+    gap: var(--space-md);
+    margin-block-start: var(--space-2xl);
+    padding-block-start: var(--space-lg);
+    border-block-start: 1px solid var(--color-border);
+  }
+
+  .c-pager__link {
+    display: grid;
+    gap: 0.15rem;
+    padding: var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-1);
+    text-decoration: none;
+    transition:
+      border-color var(--dur-fast) var(--ease-standard),
+      background-color var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-pager__link:hover {
+    border-color: var(--color-border-strong);
+    background: var(--color-surface-2);
+  }
+
+  .c-pager__link--next {
+    text-align: end;
+  }
+
+  .c-pager__dir {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  .c-pager__link--next .c-pager__dir {
+    justify-content: flex-end;
+  }
+
+  .c-pager__title {
+    font-family: var(--font-display);
+    font-size: var(--type-h4);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-strong);
+  }
+
+  /* =======================================================================
+     9. VERSION SELECTOR
+     The versions are a set of choices, so the picker is a native select:
+     the platform gives the reader the list, the keyboard gives them the
+     arrow keys, and the control is one thing rather than three.
+     ======================================================================= */
+  .c-version {
+    appearance: none;
+    inline-size: auto;
+    padding: 0.3rem 1.6rem 0.3rem 0.65rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    background-color: var(--color-surface-1);
+    background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+      linear-gradient(135deg, currentColor 50%, transparent 50%);
+    background-position:
+      calc(100% - 0.95rem) calc(50% + 1px),
+      calc(100% - 0.7rem) calc(50% + 1px);
+    background-size:
+      6px 6px,
+      6px 6px;
+    background-repeat: no-repeat;
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--color-text);
+    cursor: pointer;
+    transition:
+      border-color var(--dur-fast) var(--ease-standard),
+      box-shadow var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-version:hover {
+    border-color: var(--color-border-strong);
+  }
+
+  .c-version:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-focus-halo);
+  }
+
+  /* "You are viewing an older version" banner. */
+  .c-version-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 0.9rem;
+    border-radius: var(--radius-md);
+    background: var(--color-warning-soft);
+    color: var(--color-warning-text);
+    font-size: var(--type-xs);
+  }
+
+  .c-version-banner svg {
+    inline-size: 1rem;
+    block-size: 1rem;
+    flex: none;
+  }
+
+  /* =======================================================================
+     10. PROSE
+     Documentation body copy. Constrained measure, generous leading.
+     ======================================================================= */
+  .c-prose {
+    max-inline-size: 72ch;
+    color: var(--color-text);
+    font-size: var(--type-body);
+    line-height: var(--leading-relaxed);
+  }
+
+  .c-prose > * + * {
+    margin-block-start: var(--space-md);
+  }
+
+  .c-prose h2 {
+    font-family: var(--font-display);
+    font-size: var(--type-h2);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-heading);
+    color: var(--color-text-strong);
+    margin-block-start: var(--space-2xl);
+    scroll-margin-block-start: calc(var(--header-height) + 1.5rem);
+  }
+
+  .c-prose h3 {
+    font-family: var(--font-display);
+    font-size: var(--type-h3);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-strong);
+    margin-block-start: var(--space-xl);
+    scroll-margin-block-start: calc(var(--header-height) + 1.5rem);
+  }
+
+  .c-prose a {
+    text-decoration: underline;
+    text-decoration-color: color-mix(in oklab, var(--color-link) 40%, transparent);
+    text-underline-offset: 0.2em;
+  }
+
+  .c-prose a:hover {
+    text-decoration-color: currentColor;
+  }
+
+  .c-prose ul,
+  .c-prose ol {
+    padding-inline-start: 1.35rem;
+    color: var(--color-text-muted);
+  }
+
+  .c-prose li + li {
+    margin-block-start: 0.35rem;
+  }
+
+  .c-prose code:not(pre code) {
+    padding: 0.12em 0.36em;
+    border-radius: var(--radius-xs);
+    background: var(--color-surface-3);
+    color: var(--color-text-strong);
+    font-size: 0.875em;
+  }
+
+  .c-prose blockquote {
+    padding-inline-start: var(--space-md);
+    border-inline-start: 2px solid var(--color-primary);
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
+
+  /* An anchor link that appears on hover next to a heading. */
+  .c-anchor {
+    opacity: 0;
+    margin-inline-start: 0.4rem;
+    color: var(--color-text-subtle);
+    text-decoration: none;
+    font-weight: var(--weight-regular);
+    transition: opacity var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-prose h2:hover .c-anchor,
+  .c-prose h3:hover .c-anchor,
+  .c-anchor:focus-visible {
+    opacity: 1;
+  }
+
+  /* =======================================================================
+     11. FILE TREE
+     A project tree in a code panel.
+     ======================================================================= */
+  .c-tree {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    line-height: 1.85;
+    color: var(--color-text-muted);
+  }
+
+  .c-tree__row {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    white-space: nowrap;
+  }
+
+  .c-tree__row svg {
+    inline-size: 0.9rem;
+    block-size: 0.9rem;
+    flex: none;
+    opacity: 0.6;
+  }
+
+  .c-tree__row--dir {
+    color: var(--color-text-strong);
+  }
+
+  .c-tree__row--active {
+    color: var(--color-primary-text);
+  }
+
+  .c-tree__indent {
+    display: inline-block;
+    inline-size: 1rem;
+    flex: none;
+  }
+}

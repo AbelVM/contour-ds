@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Contour — landing page template</title>
+    <meta name="color-scheme" content="light dark" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@500;600;700&display=swap"
+    />
+    <link rel="icon" href="../src/svg/contour-mark.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../src/css/ds.css" />
+    <script>
+      // Applied before first paint so the stored scheme never flashes.
+      try {
+        document
+          .querySelector('meta[name="color-scheme"]')
+          .content = localStorage.getItem("contour-scheme") ?? "light dark";
+      } catch (e) {
+        /* storage blocked — the system preference still applies */
+      }
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="c-header">
+      <div class="container c-header__inner">
+        <a class="c-brand" href="#top">
+          <span class="c-mark"><svg aria-hidden="true"><use href="#i-mark" /></svg></span>
+          <span class="c-brand__name">Contour</span>
+        </a>
+
+        <nav class="c-header__nav" aria-label="Sections">
+          <a href="#features">Features</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#faq">FAQ</a>
+        </nav>
+
+        <div class="c-header__actions">
+          <button
+            class="c-btn c-btn--icon c-btn--secondary c-scheme-toggle"
+            type="button"
+            data-scheme-toggle
+            aria-label="Switch to dark theme"
+          >
+            <span class="c-scheme-toggle__icons" aria-hidden="true">
+              <svg class="c-scheme-toggle__sun"><use href="#i-sun" /></svg>
+              <svg class="c-scheme-toggle__moon"><use href="#i-moon" /></svg>
+            </span>
+          </button>
+          <button class="c-btn c-btn--primary" type="button">Get started</button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- ===================== HERO ===================== -->
+      <section class="section" id="top">
+        <div class="container">
+          <div class="split">
+            <div>
+              <span class="label">Routing, in the browser</span>
+              <h1 class="display-2" style="margin-block: 0.75rem 1rem">
+                Every route,<br />with the cost that <em>produced it</em>.
+              </h1>
+              <p class="lead">
+                Contour computes the path and explains it: the edges crossed, the weights
+                applied, the engine that chose. Nothing about the result is a black box.
+              </p>
+              <div class="ds-row" style="margin-block-start: 1.75rem">
+                <button class="c-btn c-btn--primary" type="button">Read the docs</button>
+                <button class="c-btn c-btn--secondary" type="button">See it running</button>
+              </div>
+            </div>
+
+            <div class="c-card">
+              <div class="c-card__head">
+                <h2 class="c-card__title">Install</h2>
+              </div>
+              <div class="c-card__body">
+                <div class="c-install">
+                  <span class="c-install__prompt" aria-hidden="true">$</span>
+                  <code class="c-install__command" id="tpl-install">npm install omt-router</code>
+                  <button
+                    class="c-btn c-btn--ghost c-btn--icon c-btn--sm c-install__copy"
+                    type="button"
+                    data-copy="#tpl-install"
+                    aria-label="Copy install command"
+                  >
+                    <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                  </button>
+                </div>
+                <p class="muted" style="font-size: var(--type-xs); margin-block-start: 0.75rem">
+                  ESM only, 42&nbsp;kB gzipped, no peer dependencies beyond MapLibre.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== METRICS ===================== -->
+      <section class="section section--sunken">
+        <div class="container">
+          <div class="c-metrics">
+            <div class="c-metrics__item">
+              <span class="c-metrics__value">4.1M</span>
+              <span class="c-metrics__label">Routes a day</span>
+            </div>
+            <div class="c-metrics__item">
+              <span class="c-metrics__value">7<span style="font-size: 0.5em"> ms</span></span>
+              <span class="c-metrics__label">Median latency</span>
+            </div>
+            <div class="c-metrics__item">
+              <span class="c-metrics__value">99.98<span style="font-size: 0.5em">%</span></span>
+              <span class="c-metrics__label">Uptime</span>
+            </div>
+            <div class="c-metrics__item">
+              <span class="c-metrics__value">42<span style="font-size: 0.5em"> kB</span></span>
+              <span class="c-metrics__label">Bundle size</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== FEATURES ===================== -->
+      <section class="section section--sunken">
+        <div class="container">
+          <div class="c-logos">
+            <span class="c-logos__item">Cartolab</span>
+            <span class="c-logos__item">Nordwand</span>
+            <span class="c-logos__item">Tidewater</span>
+            <span class="c-logos__item">Meridian</span>
+            <span class="c-logos__item">Fieldnote</span>
+            <span class="c-logos__item">Terrapin</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="features">
+        <div class="container">
+          <div class="c-section-head">
+            <div>
+              <span class="label">What you get</span>
+              <h2 class="c-section-head__title">Built to be argued with.</h2>
+              <p class="c-section-head__desc">
+                A routing engine is only useful if the people relying on it can understand why
+                it went the way it went.
+              </p>
+            </div>
+          </div>
+
+          <div class="grid grid--3">
+            <article class="c-feature">
+              <span class="c-feature__index">01</span>
+              <h3 class="c-feature__title">Explainable cost</h3>
+              <p class="c-feature__body">
+                Every route carries the edges it crossed and what each one cost, so a planner
+                can argue with the result instead of trusting it.
+              </p>
+            </article>
+            <article class="c-feature">
+              <span class="c-feature__index">02</span>
+              <h3 class="c-feature__title">Runs in the browser</h3>
+              <p class="c-feature__body">
+                Point it at the tiles you already serve. There is no server to run, no key to
+                rotate and nothing to keep alive.
+              </p>
+            </article>
+            <article class="c-feature">
+              <span class="c-feature__index">03</span>
+              <h3 class="c-feature__title">One graph, two answers</h3>
+              <p class="c-feature__body">
+                Routes and isolines come out of the same pass over the same graph, so a
+                catchment and the road inside it always agree.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== PRICING ===================== -->
+      <section class="section">
+        <div class="container">
+          <div class="c-showcase" style="margin-block-start: 1.25rem">
+            <div class="c-showcase__media">
+              <svg viewBox="0 0 300 200" aria-hidden="true">
+                <rect width="300" height="200" fill="var(--color-canvas-sunken)" />
+                <path d="M20 150C56 132 74 96 112 92s52 22 84 4" fill="none" stroke="var(--chart-1)" stroke-width="2" stroke-linecap="round" />
+                <circle cx="20" cy="150" r="4" fill="var(--chart-1)" />
+                <circle cx="196" cy="96" r="4" fill="var(--chart-1)" />
+              </svg>
+            </div>
+            <div class="c-showcase__text">
+              <span class="label">How it works</span>
+              <h3 class="c-showcase__title">Every route, with the cost that produced it.</h3>
+              <p class="c-showcase__body">
+                The engine returns the path and the cost of every edge it crossed, so a
+                planner can argue with the result instead of trusting it.
+              </p>
+              <ul class="c-showcase__list">
+                <li>Edge-level cost breakdown</li>
+                <li>Isoline and route from one graph</li>
+                <li>Runs entirely in the browser</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--sunken" id="pricing">
+        <div class="container">
+          <div class="c-section-head">
+            <div>
+              <span class="label">Pricing</span>
+              <h2 class="c-section-head__title">Priced by what you route.</h2>
+            </div>
+          </div>
+
+          <div class="c-pricing">
+            <div class="c-price">
+              <span class="c-price__name">Solo</span>
+              <p class="c-price__desc">For one person routing their own city.</p>
+              <div class="c-price__amount">€0<span class="c-price__period">/ month</span></div>
+              <ul class="c-price__features">
+                <li><svg aria-hidden="true"><use href="#i-check" /></svg><span>10 000 routes a month</span></li>
+                <li><svg aria-hidden="true"><use href="#i-check" /></svg><span>Contour and isoline output</span></li>
+              </ul>
+              <button class="c-btn c-btn--secondary c-btn--block" type="button" style="margin-block-start: auto">
+                Start free
+              </button>
+            </div>
+
+            <div class="c-price c-price--featured">
+              <span class="c-price__tag">Most chosen</span>
+              <span class="c-price__name">Studio</span>
+              <p class="c-price__desc">For teams that ship maps every week.</p>
+              <div class="c-price__amount">€24<span class="c-price__period">/ month</span></div>
+              <ul class="c-price__features">
+                <li><svg aria-hidden="true"><use href="#i-check" /></svg><span>Unlimited routes, fair-use priced</span></li>
+                <li><svg aria-hidden="true"><use href="#i-check" /></svg><span>Batch routing and GeoJSON export</span></li>
+              </ul>
+              <button class="c-btn c-btn--primary c-btn--block" type="button" style="margin-block-start: auto">
+                Start 30-day trial
+              </button>
+            </div>
+
+            <div class="c-price">
+              <span class="c-price__name">Enterprise</span>
+              <p class="c-price__desc">For fleets, agencies and public infrastructure.</p>
+              <div class="c-price__amount">Custom</div>
+              <ul class="c-price__features">
+                <li><svg aria-hidden="true"><use href="#i-check" /></svg><span>Self-hosted tiles and graph</span></li>
+                <li><svg aria-hidden="true"><use href="#i-check" /></svg><span>Named engineer on call</span></li>
+              </ul>
+              <button class="c-btn c-btn--secondary c-btn--block" type="button" style="margin-block-start: auto">
+                Talk to us
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== TESTIMONIAL ===================== -->
+      <section class="section">
+        <div class="container">
+          <figure class="c-testimonial">
+            <blockquote class="c-testimonial__quote">
+              We replaced three services with one library and a weekend of reading the source.
+              The part that surprised me was the cost breakdown — our planners could finally
+              argue with a route instead of trusting it.
+            </blockquote>
+            <figcaption class="c-testimonial__byline">
+              <span class="c-testimonial__name">Marta Ruiz</span>
+              <span class="c-testimonial__role">Lead engineer · Cartolab</span>
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <!-- ===================== FAQ ===================== -->
+      <section class="section">
+        <div class="container">
+          <div class="c-section-head">
+            <div>
+              <span class="label">Compare</span>
+              <h2 class="c-section-head__title">Is it in my plan?</h2>
+              <p class="c-section-head__desc">
+                A matrix answers faster than three separate price cards.
+              </p>
+            </div>
+          </div>
+          <div class="c-table-wrap">
+            <table class="c-compare">
+              <caption class="visually-hidden">Plan comparison</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Feature</th>
+                  <th scope="col">Solo</th>
+                  <th scope="col" data-highlight="true">Studio</th>
+                  <th scope="col">Enterprise</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">Isoline export</th>
+                  <td data-feature><span class="c-compare__yes" aria-hidden="true"><svg aria-hidden="true"><use href="#i-check" /></svg></span><span class="visually-hidden">Included</span></td>
+                  <td data-feature><span class="c-compare__yes" aria-hidden="true"><svg aria-hidden="true"><use href="#i-check" /></svg></span><span class="visually-hidden">Included</span></td>
+                  <td data-feature><span class="c-compare__yes" aria-hidden="true"><svg aria-hidden="true"><use href="#i-check" /></svg></span><span class="visually-hidden">Included</span></td>
+                </tr>
+                <tr>
+                  <th scope="row">Contour tiles</th>
+                  <td data-feature><span class="c-compare__text">1 region</span></td>
+                  <td data-feature><span class="c-compare__text">Unlimited</span></td>
+                  <td data-feature><span class="c-compare__text">Unlimited</span></td>
+                </tr>
+                <tr>
+                  <th scope="row">Batch routing</th>
+                  <td data-feature><span class="c-compare__text">—</span></td>
+                  <td data-feature><span class="c-compare__yes" aria-hidden="true"><svg aria-hidden="true"><use href="#i-check" /></svg></span><span class="visually-hidden">Included</span></td>
+                  <td data-feature><span class="c-compare__yes" aria-hidden="true"><svg aria-hidden="true"><use href="#i-check" /></svg></span><span class="visually-hidden">Included</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--sunken" id="faq">
+        <div class="container">
+          <div class="c-section-head">
+            <div>
+              <span class="label">FAQ</span>
+              <h2 class="c-section-head__title">The questions we get first.</h2>
+            </div>
+          </div>
+
+          <div class="c-faq">
+            <details class="c-faq__item" open>
+              <summary class="c-faq__question">
+                <span>Does Contour need a server?</span>
+                <span class="c-faq__sign" aria-hidden="true"><svg aria-hidden="true"><use href="#i-plus" /></svg></span>
+              </summary>
+              <div class="c-faq__answer">
+                No. Everything runs in the browser against the tiles you point it at. A server
+                is only needed if you want to cache graphs between sessions.
+              </div>
+            </details>
+            <details class="c-faq__item">
+              <summary class="c-faq__question">
+                <span>Which tile sources are supported?</span>
+                <span class="c-faq__sign" aria-hidden="true"><svg aria-hidden="true"><use href="#i-plus" /></svg></span>
+              </summary>
+              <div class="c-faq__answer">
+                Anything that follows the OpenMapTiles schema and carries a routable profile.
+                OpenFreeMap and Protomaps work out of the box.
+              </div>
+            </details>
+            <details class="c-faq__item">
+              <summary class="c-faq__question">
+                <span>Can I use it commercially?</span>
+                <span class="c-faq__sign" aria-hidden="true"><svg aria-hidden="true"><use href="#i-plus" /></svg></span>
+              </summary>
+              <div class="c-faq__answer">
+                Yes. The library is MIT licensed; only the tile source you query has its own
+                terms.
+              </div>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== CTA ===================== -->
+      <section class="section">
+        <div class="container">
+          <div class="c-cta" style="border-radius: var(--radius-xl)">
+            <h3 class="c-cta__title">Start routing this afternoon.</h3>
+            <p class="c-cta__text">
+              One package, one tile source, and the same engine you can read line by line.
+            </p>
+            <div class="c-cta__actions">
+              <button class="c-btn c-btn--primary" type="button">Read the docs</button>
+              <button class="c-btn c-btn--secondary" type="button">Download</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="c-footer">
+      <div class="container c-footer__grid">
+        <div class="c-footer__brand">
+          <a class="c-brand" href="#top">
+            <span class="c-mark"><svg aria-hidden="true"><use href="#i-mark" /></svg></span>
+            <span class="c-brand__name">Contour</span>
+          </a>
+          <p class="c-footer__note">
+            A landing page template built with Contour. Copy it, break it, ship it.
+          </p>
+        </div>
+        <div class="c-footer__links">
+          <div class="c-footer__col">
+            <h3>Product</h3>
+            <a href="#features">Features</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#faq">FAQ</a>
+          </div>
+          <div class="c-footer__col">
+            <h3>Resources</h3>
+            <a href="#top">Documentation</a>
+            <a href="#top">Examples</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- The icon sprite. In a real project this is a build step. -->
+    <svg width="0" height="0" aria-hidden="true" focusable="false" style="position: absolute">
+      <defs>
+        <symbol id="i-mark" viewBox="0 0 32 32">
+          <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M 12.4 7.2 C 13.8 6.9 15.6 6.8 17.4 7.1 C 19.3 7.4 20.7 8.4 21.4 9.8 C 22.1 11.2 22.1 12.8 21.2 14.1 C 20.3 15.4 18.5 16.2 16.5 16.4 C 14.5 16.6 12.4 16.1 11.2 14.9 C 10 13.7 9.6 12 10 10.4 C 10.3 9.1 11.1 8 12.4 7.2 Z" opacity="0.5" />
+            <path d="M 14.1 10.4 C 15 10.1 16.1 10.1 17 10.4 C 18 10.7 18.7 11.4 19 12.2 C 19.3 13 19.2 13.9 18.8 14.6 C 18.3 15.3 17.5 15.8 16.4 15.9 C 15.3 16 14.2 15.7 13.5 15 C 12.9 14.3 12.7 13.3 12.9 12.4 C 13.1 11.5 13.5 10.8 14.1 10.4 Z" />
+          </g>
+        </symbol>
+        <symbol id="i-sun" viewBox="0 0 24 24">
+          <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+            <circle cx="12" cy="12" r="4.2" />
+            <path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4 17 7M7 17l-1.6 1.6" />
+          </g>
+        </symbol>
+        <symbol id="i-moon" viewBox="0 0 24 24">
+          <path
+            d="M20 14.2A8.4 8.4 0 0 1 9.8 4 8.4 8.4 0 1 0 20 14.2Z"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.7"
+            stroke-linejoin="round"
+          />
+        </symbol>
+        <symbol id="i-copy" viewBox="0 0 24 24">
+          <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round">
+            <rect x="8.5" y="8.5" width="11" height="11" rx="2" />
+            <path d="M15.5 5.5h-9a2 2 0 0 0-2 2v9" />
+          </g>
+        </symbol>
+        <symbol id="i-check" viewBox="0 0 24 24">
+          <path
+            d="m5 12.6 4.6 4.6L19 7.8"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.9"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </symbol>
+        <symbol id="i-plus" viewBox="0 0 24 24">
+          <path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" />
+        </symbol>
+      </defs>
+    </svg>
+
+    <script src="../src/js/ds.js"></script>
+  </body>
+</html>

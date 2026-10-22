@@ -1,0 +1,390 @@
+/* ============================================================================
+   CONTOUR — Patterns
+   ----------------------------------------------------------------------------
+   The three shells the system is built for. A pattern composes components
+   into a complete screen; a component is never designed for one pattern
+   alone.
+
+     1. Landing     — a marketing page that has to earn a click
+     2. Docs        — a reading surface where the URL is the state
+     3. Dashboard   — a scanning surface where density is the feature
+   ========================================================================= */
+
+@layer components {
+  /* =======================================================================
+     1. LANDING PAGE
+     ======================================================================= */
+  .c-landing-hero {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
+    gap: var(--space-2xl);
+    align-items: center;
+    padding-block: var(--space-3xl) var(--space-2xl);
+  }
+
+  .c-landing-hero__title {
+    font-family: var(--font-display);
+    font-size: var(--type-display-1);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-display);
+    line-height: var(--leading-tight);
+    color: var(--color-text-strong);
+    text-wrap: balance;
+    margin-block: 0.75rem 1rem;
+  }
+
+  .c-landing-hero__text {
+    font-size: var(--type-lead);
+    line-height: var(--leading-normal);
+    color: var(--color-text-muted);
+    max-inline-size: 54ch;
+  }
+
+  .c-landing-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-block-start: var(--space-lg);
+  }
+
+  /* The preview pane: a product shot that reads as a live surface. */
+  .c-landing-hero__preview {
+    position: relative;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-2xl);
+    background: var(--color-surface-1);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+
+  .c-landing-hero__preview-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.6rem 0.8rem;
+    border-block-end: 1px solid var(--color-border-subtle);
+    background: var(--color-surface-2);
+  }
+
+  .c-landing-hero__preview-dot {
+    inline-size: 0.5rem;
+    block-size: 0.5rem;
+    border-radius: 50%;
+    background: var(--color-border-strong);
+  }
+
+  .c-landing-hero__preview-body {
+    padding: var(--space-md);
+    display: grid;
+    gap: var(--space-sm);
+  }
+
+  /* Feature grid — deliberately not a uniform card grid. */
+  .c-landing-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+    gap: var(--space-xl) var(--space-lg);
+  }
+
+  .c-landing-features__item {
+    display: grid;
+    gap: 0.5rem;
+    align-content: start;
+  }
+
+  .c-landing-features__icon {
+    display: grid;
+    place-items: center;
+    inline-size: 2.5rem;
+    block-size: 2.5rem;
+    border-radius: var(--radius-md);
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+    margin-block-end: 0.35rem;
+  }
+
+  .c-landing-features__icon svg {
+    inline-size: 1.2rem;
+    block-size: 1.2rem;
+  }
+
+  .c-landing-features__title {
+    font-family: var(--font-display);
+    font-size: var(--type-h3);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-strong);
+  }
+
+  .c-landing-features__text {
+    color: var(--color-text-muted);
+    font-size: var(--type-sm);
+    line-height: var(--leading-relaxed);
+  }
+
+  /* =======================================================================
+     2. DOCUMENTATION SHELL
+     Left tree · reading column · on-this-page rail.
+     ======================================================================= */
+  .c-docs-shell {
+    display: grid;
+    grid-template-columns: 15rem minmax(0, 1fr) 13rem;
+    gap: var(--space-2xl);
+    align-items: start;
+  }
+
+  @media (width < 78rem) {
+    .c-docs-shell {
+      grid-template-columns: 15rem minmax(0, 1fr);
+    }
+    .c-docs-shell__toc {
+      display: none;
+    }
+  }
+
+  @media (width < 56rem) {
+    .c-docs-shell {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .c-docs-shell__nav {
+      display: none;
+    }
+  }
+
+  .c-docs-shell__nav,
+  .c-docs-shell__toc {
+    position: sticky;
+    inset-block-start: calc(var(--header-height) + 1.5rem);
+    max-block-size: calc(100svh - var(--header-height) - 3rem);
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+    overscroll-behavior: contain;
+  }
+
+  .c-docs-shell__article {
+    min-inline-size: 0;
+  }
+
+  .c-docs-shell__header {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-md);
+    flex-wrap: wrap;
+    margin-block-end: var(--space-lg);
+  }
+
+  .c-docs-shell__title {
+    font-family: var(--font-display);
+    font-size: var(--type-h1);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-heading);
+    color: var(--color-text-strong);
+  }
+
+  .c-docs-shell__lede {
+    margin-block-start: 0.5rem;
+    font-size: var(--type-lead);
+    line-height: var(--leading-normal);
+    color: var(--color-text-muted);
+    max-inline-size: 62ch;
+  }
+
+  /* =======================================================================
+     3. DASHBOARD SHELL
+     Sticky toolbar, filter bar, KPI row, chart grid, detail table.
+     ======================================================================= */
+  .c-dash-shell {
+    display: grid;
+    gap: var(--space-md);
+  }
+
+  .c-dash-toolbar {
+    position: sticky;
+    inset-block-start: var(--header-height);
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+    padding: 0.7rem var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: color-mix(in oklab, var(--color-canvas) 88%, transparent);
+    backdrop-filter: blur(14px);
+  }
+
+  .c-dash-toolbar__title {
+    font-family: var(--font-display);
+    font-size: var(--type-h3);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-strong);
+  }
+
+  .c-dash-toolbar__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-inline-start: auto;
+    flex-wrap: wrap;
+  }
+
+  .c-dash-kpi-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+    gap: var(--space-md);
+  }
+
+  /* A live indicator that says when the data was last refreshed. */
+  .c-dash-freshness {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--color-text-subtle);
+  }
+
+  /* =======================================================================
+     4. RECIPE FRAME
+     A recipe presents a complete screen inside the guide, so the system can
+     be judged in context rather than as a list of parts.
+     ======================================================================= */
+  .c-recipe {
+    display: grid;
+    gap: var(--space-md);
+    margin-block-start: var(--space-2xl);
+  }
+
+  .c-recipe__head {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space-md);
+    align-items: start;
+  }
+
+  .c-recipe__index {
+    display: grid;
+    place-items: center;
+    inline-size: 2.25rem;
+    block-size: 2.25rem;
+    border-radius: var(--radius-md);
+    background: var(--color-primary-soft);
+    color: var(--color-primary-text);
+    font-family: var(--font-mono);
+    font-size: var(--type-xs);
+    font-weight: var(--weight-semibold);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .c-recipe__title {
+    font-family: var(--font-display);
+    font-size: var(--type-h2);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-heading);
+    color: var(--color-text-strong);
+  }
+
+  .c-recipe__desc {
+    color: var(--color-text-muted);
+    font-size: var(--type-sm);
+    line-height: var(--leading-relaxed);
+    max-inline-size: 68ch;
+    margin-block-start: 0.3rem;
+  }
+
+  .c-recipe__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-block-start: 0.6rem;
+  }
+
+  /* The device frame the recipe renders inside. */
+  .c-recipe__frame {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    background: var(--color-canvas);
+    overflow: hidden;
+    container-type: inline-size;
+  }
+
+  .c-recipe__frame-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.75rem;
+    border-block-end: 1px solid var(--color-border-subtle);
+    background: var(--color-surface-2);
+  }
+
+  .c-recipe__frame-dot {
+    inline-size: 0.55rem;
+    block-size: 0.55rem;
+    border-radius: 50%;
+    background: var(--color-border-strong);
+  }
+
+  .c-recipe__frame-url {
+    margin-inline-start: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--color-text-subtle);
+  }
+
+  .c-recipe__canvas {
+    padding: var(--space-lg);
+  }
+
+  @container (inline-size < 46rem) {
+    .c-recipe__canvas {
+      padding: var(--space-md);
+    }
+  }
+
+  /* =======================================================================
+     5. AFFORDANCE SPECIMEN
+     Every interactive class, with the signifier that announces it.
+     ======================================================================= */
+  .c-affordances {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: var(--space-md);
+  }
+
+  .c-affordance {
+    display: grid;
+    gap: 0.6rem;
+    align-content: start;
+    padding: var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-1);
+  }
+
+  .c-affordance__demo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-block-size: 2.75rem;
+    padding: 0.5rem;
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-2);
+  }
+
+  .c-affordance__name {
+    font-family: var(--font-display);
+    font-size: var(--type-h4);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-strong);
+  }
+
+  .c-affordance__note {
+    font-size: var(--type-xs);
+    line-height: var(--leading-normal);
+    color: var(--color-text-muted);
+  }
+
+  .c-affordance__note b {
+    color: var(--color-text);
+    font-weight: var(--weight-semibold);
+  }
+}

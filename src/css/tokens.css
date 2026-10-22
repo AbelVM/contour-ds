@@ -1,0 +1,578 @@
+/* ============================================================================
+   CONTOUR — Design tokens
+   ----------------------------------------------------------------------------
+   Layer order: tokens → base → components → utilities
+   Theme model : `color-scheme` on :root, flipped by a <meta name="color-scheme">
+                 override. Colours use light-dark() so the system follows the OS
+                 by default and never depends on JavaScript to be readable.
+   ========================================================================= */
+
+@layer tokens {
+  :root {
+    /* ---------------------------------------------------------------------
+       1. PRIMITIVES — Basalt (cool ink neutrals)
+       --------------------------------------------------------------------- */
+    --basalt-50: oklch(99% 0.002 230);
+    --basalt-100: oklch(95.5% 0.005 230);
+    --basalt-200: oklch(90% 0.008 230);
+    --basalt-300: oklch(82% 0.01 230);
+    --basalt-400: oklch(72% 0.012 230);
+    --basalt-500: oklch(61% 0.014 230);
+    --basalt-600: oklch(51% 0.016 230);
+    --basalt-700: oklch(41% 0.018 230);
+    --basalt-800: oklch(31% 0.02 230);
+    --basalt-900: oklch(23% 0.02 230);
+    --basalt-950: oklch(17% 0.018 230);
+    --basalt-1000: oklch(12% 0.016 230);
+
+    /* ---------------------------------------------------------------------
+       2. PRIMITIVES — Tidal (teal · primary · success)
+       Anchored on the reference brand teal #14b8a6 at the 500 step.
+     --------------------------------------------------------------------- */
+    --tidal-100: oklch(96% 0.025 182.5);
+    --tidal-200: oklch(92% 0.05 182.5);
+    --tidal-300: oklch(85% 0.09 182.5);
+    --tidal-400: oklch(78% 0.11 182.5);
+    --tidal-500: oklch(70.4% 0.123 182.5);
+    --tidal-600: oklch(61% 0.115 183);
+    --tidal-700: oklch(51% 0.1 183);
+    --tidal-800: oklch(41% 0.082 183);
+    --tidal-900: oklch(31% 0.06 184);
+
+    /* ---------------------------------------------------------------------
+       3. PRIMITIVES — Lumen (azure · data · info)
+       --------------------------------------------------------------------- */
+    --lumen-100: oklch(96% 0.02 236);
+    --lumen-200: oklch(91% 0.045 236);
+    --lumen-300: oklch(85% 0.08 236);
+    --lumen-400: oklch(78% 0.11 236);
+    --lumen-500: oklch(71% 0.13 236);
+    --lumen-600: oklch(62% 0.125 238);
+    --lumen-700: oklch(52% 0.105 240);
+    --lumen-800: oklch(42% 0.08 242);
+
+    /* ---------------------------------------------------------------------
+       4. PRIMITIVES — Plasma (magenta · accent · live data)
+       Anchored on the reference brand magenta #f20084 at the 500 step.
+     --------------------------------------------------------------------- */
+    --plasma-100: oklch(96% 0.024 358.92);
+    --plasma-200: oklch(92% 0.06 358.92);
+    --plasma-300: oklch(85% 0.12 358.92);
+    --plasma-400: oklch(74% 0.2 358.92);
+    --plasma-500: oklch(62.36% 0.2534 358.92);
+    --plasma-600: oklch(52% 0.235 358.92);
+    --plasma-700: oklch(42% 0.185 358.92);
+    --plasma-800: oklch(32% 0.13 358.92);
+
+    /* ---------------------------------------------------------------------
+       5. PRIMITIVES — Sol (amber · caution · mid isoline bands)
+       --------------------------------------------------------------------- */
+    --sol-100: oklch(97% 0.025 85);
+    --sol-200: oklch(94% 0.055 85);
+    --sol-300: oklch(88% 0.105 80);
+    --sol-400: oklch(83% 0.135 78);
+    --sol-500: oklch(77% 0.145 75);
+    --sol-600: oklch(66% 0.135 70);
+    --sol-700: oklch(54% 0.11 65);
+    --sol-800: oklch(42% 0.085 60);
+
+    /* ---------------------------------------------------------------------
+       6. PRIMITIVES — Clay (red-orange · alarm · destructive)
+       --------------------------------------------------------------------- */
+    --clay-100: oklch(96% 0.02 32);
+    --clay-200: oklch(92% 0.045 31);
+    --clay-300: oklch(86% 0.08 30);
+    --clay-400: oklch(78% 0.13 29);
+    --clay-500: oklch(68% 0.175 27);
+    --clay-600: oklch(58% 0.18 26);
+    --clay-700: oklch(47% 0.15 26);
+    --clay-800: oklch(36% 0.1 28);
+
+    /* ---------------------------------------------------------------------
+       7. TYPOGRAPHY
+       --------------------------------------------------------------------- */
+    --font-display: "IBM Plex Sans Condensed", "IBM Plex Sans", ui-sans-serif,
+      system-ui, sans-serif;
+    --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system,
+      "Segoe UI", sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", "Cascadia Mono",
+      Menlo, monospace;
+
+    /* Display scale is fluid; the UI scale below it is fixed (product UIs need
+       spatial predictability). */
+    --type-display-1: clamp(2.75rem, 1.1rem + 6.4vw, 6rem);
+    --type-display-2: clamp(2.25rem, 1.4rem + 3.4vw, 4rem);
+    --type-h1: clamp(1.75rem, 1.45rem + 1.4vw, 2.5rem);
+    --type-h2: clamp(1.375rem, 1.24rem + 0.62vw, 1.875rem);
+    --type-h3: 1.25rem;
+    --type-h4: 1.0625rem;
+    --type-lead: 1.0625rem;
+    --type-body: 1rem;
+    --type-sm: 0.875rem;
+    --type-xs: 0.8125rem;
+    --type-micro: 0.6875rem;
+
+    --weight-regular: 400;
+    --weight-medium: 500;
+    --weight-semibold: 600;
+    --weight-bold: 700;
+
+    --leading-tight: 1.04;
+    --leading-snug: 1.22;
+    --leading-normal: 1.45;
+    --leading-relaxed: 1.65;
+
+    --tracking-display: -0.035em;
+    --tracking-heading: -0.022em;
+    --tracking-body: -0.006em;
+    --tracking-label: 0.14em;
+    --tracking-micro: 0.18em;
+
+    --measure-prose: 68ch;
+    --measure-tight: 46ch;
+
+    /* ---------------------------------------------------------------------
+       8. SPACE — 4px base, semantic aliases for the rhythm layer
+       Hand-picked steps, not a single ratio: the bottom half (0.25–1.25)
+       serves component internals; the top half (1.75–7) is a ~1.4 ratio
+       for page-level rhythm. A single ratio would not serve both.
+       --------------------------------------------------------------------- */
+    --space-0: 0;
+    --space-3xs: 0.25rem;
+    --space-2xs: 0.5rem;
+    --space-xs: 0.75rem;
+    --space-sm: 1rem;
+    --space-md: 1.25rem;
+    --space-lg: 1.75rem;
+    --space-xl: 2.5rem;
+    --space-2xl: 3.5rem;
+    --space-3xl: 5rem;
+    --space-4xl: 7rem;
+
+    /* Semantic rhythm */
+    --space-inline: 0.5rem; /* label ↔ value on one line */
+    --space-stack: 1.25rem; /* sibling blocks in a component */
+    --space-cluster: 2rem; /* groups of components */
+    --space-section: clamp(4rem, 2.5rem + 6vw, 7.5rem); /* page sections */
+    --gutter: clamp(1.25rem, 0.6rem + 2.4vw, 2.5rem);
+
+    /* ---------------------------------------------------------------------
+       9. RADIUS — generously round, but not uniformly soft
+       Driven by --radius-scale so a whole product can be tightened or
+       softened from one value.
+     --------------------------------------------------------------------- */
+    --radius-scale: 1;
+    --radius-xs: calc(6px * var(--radius-scale));
+    --radius-sm: calc(10px * var(--radius-scale));
+    --radius-md: calc(14px * var(--radius-scale));
+    --radius-lg: calc(20px * var(--radius-scale));
+    --radius-xl: calc(28px * var(--radius-scale));
+    --radius-2xl: calc(36px * var(--radius-scale));
+    --radius-pill: 999px;
+
+    /* ---------------------------------------------------------------------
+       10. ELEVATION
+
+       A shadow is black on a light surface and black on a dark one, but it
+       has to be much stronger on the dark one: a shadow of the same
+       strength simply disappears into the surface it falls on. The dark
+       values are near-black and opaque, so the elevation reads in both
+       themes.
+       --------------------------------------------------------------------- */
+    --shadow-xs: 0 1px 2px light-dark(oklch(10% 0.02 230 / 0.24), oklch(0% 0 0 / 0.45));
+    --shadow-sm: 0 2px 6px light-dark(oklch(10% 0.02 230 / 0.26), oklch(0% 0 0 / 0.5));
+    --shadow-md: 0 8px 24px light-dark(oklch(10% 0.02 230 / 0.3), oklch(0% 0 0 / 0.55));
+    --shadow-lg: 0 20px 50px light-dark(oklch(10% 0.02 230 / 0.36), oklch(0% 0 0 / 0.6));
+    --shadow-xl: 0 36px 90px light-dark(oklch(10% 0.02 230 / 0.42), oklch(0% 0 0 / 0.68));
+    --shadow-inset: inset 0 1px 0 oklch(100% 0 0 / 0.06);
+    --shadow-color-highlight: oklch(100% 0 0 / 0.22);
+    --shadow-color-primary: oklch(20% 0.04 var(--brand-hue) / 0.22);
+    --shadow-color-accent: oklch(20% 0.06 356 / 0.24);
+    --shadow-color-range: oklch(20% 0.04 var(--brand-hue) / 0.3);
+    --shadow-focus: 0 0 0 1px var(--color-focus-ring),
+      0 0 0 4px var(--color-focus-halo);
+
+    /* ---------------------------------------------------------------------
+       11. MOTION
+       --------------------------------------------------------------------- */
+    --dur-instant: 110ms;
+    --dur-fast: 180ms;
+    --dur-base: 260ms;
+    --dur-slow: 420ms;
+    --dur-deliberate: 680ms;
+    --dur-spin: 720ms;
+    --dur-spin-slow: 1s;
+    --dur-copy-tick: 220ms;
+    --dur-ambient: 14s;
+
+    --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+    --ease-entrance: cubic-bezier(0.16, 1, 0.3, 1);
+
+    /* ---------------------------------------------------------------------
+       12. LAYOUT & STACKING
+       --------------------------------------------------------------------- */
+    --container-sm: 40rem;
+    --container-md: 54rem;
+    --container-lg: 72rem;
+    --container-xl: 84rem;
+    --container-gutter: var(--gutter);
+    --header-height: 4.25rem;
+
+    --z-base: 0;
+    --z-raised: 10;
+    --z-sticky: 100;
+    --z-drawer: 300;
+    --z-header: 400;
+    --z-scrim: 500;
+    --z-modal: 600;
+    --z-toast: 700;
+    --z-tooltip: 800;
+
+    /* ---------------------------------------------------------------------
+       13. BORDERS
+       --------------------------------------------------------------------- */
+    --border-width: 1px;
+    --border-width-thick: 2px;
+    /* Target sizes by kind (WCAG 2.5.8). A control is pressed (44 px),
+       a listbox option is selected (24 px), a chart control is 24 px,
+       and a data mark is not a target at all. */
+    --target-control: 2.75rem;
+    --target-option: 1.5rem;
+    --target-chart: 1.5rem;
+    --hairline: var(--border-width) solid var(--color-border);
+  }
+
+  /* =======================================================================
+     14. SEMANTIC TOKENS
+     Every theme-sensitive value resolves through light-dark(), so the palette
+     follows the OS by default and follows the manual override when set.
+     ======================================================================= */
+  :root {
+    /* -- Brand knob ----------------------------------------------------
+       One hue drives the whole brand layer. Change it and every primary
+       surface, ring and tint follows. The documented ramps above stay
+       fixed, so the palette reference never drifts. */
+    --brand-hue: 182.5;
+    --brand-100: oklch(96% 0.025 var(--brand-hue));
+    --brand-200: oklch(92% 0.05 var(--brand-hue));
+    --brand-300: oklch(85% 0.09 var(--brand-hue));
+    --brand-400: oklch(78% 0.11 var(--brand-hue));
+    --brand-500: oklch(70.4% 0.123 var(--brand-hue));
+    --brand-600: oklch(61% 0.115 var(--brand-hue));
+    --brand-700: oklch(51% 0.1 var(--brand-hue));
+    --brand-800: oklch(41% 0.082 var(--brand-hue));
+    --brand-100: oklch(96% 0.025 var(--brand-hue));
+    --brand-200: oklch(92% 0.05 var(--brand-hue));
+
+    /* -- Surfaces --------------------------------------------------- */
+    --color-canvas: light-dark(oklch(98.2% 0.004 230), var(--basalt-1000));
+    --color-canvas-sunken: light-dark(oklch(95% 0.007 230), oklch(9% 0.014 230));
+    --color-surface-1: light-dark(oklch(100% 0 0), var(--basalt-950));
+    --color-surface-2: light-dark(oklch(96.6% 0.005 230), var(--basalt-900));
+    --color-surface-3: light-dark(oklch(93.5% 0.008 230), var(--basalt-800));
+    --color-surface-raised: light-dark(oklch(100% 0 0), var(--basalt-900));
+    --color-scrim: light-dark(oklch(30% 0.02 230 / 0.42), oklch(6% 0.014 230 / 0.7));
+
+    /* -- Text ------------------------------------------------------- */
+    --color-text-strong: light-dark(oklch(23% 0.02 230), var(--basalt-50));
+    --color-text: light-dark(oklch(33% 0.02 230), oklch(92% 0.008 230));
+    --color-text-muted: light-dark(oklch(47% 0.018 230), oklch(72% 0.014 230));
+    --color-text-subtle: light-dark(oklch(50% 0.018 230), oklch(62% 0.016 230));
+
+    /* -- Borders ---------------------------------------------------- */
+    --color-border-subtle: light-dark(oklch(88% 0.008 230), oklch(27% 0.018 230));
+    --color-border: light-dark(oklch(85% 0.01 230), oklch(33% 0.02 230));
+    --color-border-strong: light-dark(oklch(72% 0.014 230), oklch(46% 0.022 230));
+    /* Control edge: the border of an input, select, textarea or
+       secondary/outline button. Must clear 3:1 against every
+       surface it can sit on (WCAG 1.4.11). */
+    --color-control-edge: light-dark(oklch(62% 0.016 230), oklch(56% 0.022 230));
+
+    /* -- Density ------------------------------------------------------
+       A single multiplier that compresses row padding and gaps, so the
+       same table can serve a 34-inch analyst monitor and an embedded
+       widget. 1 = comfortable, 0.72 = compact. */
+    --density: 1;
+    --density-compact: 0.72;
+    --density-type: 1;
+    --density-type-compact: 0.875;
+    --density-row: calc(var(--space-2xs) + var(--space-2xs) * var(--density));
+
+    /* -- Primary (Tidal) --------------------------------------------- */
+    --color-primary: light-dark(var(--brand-600), var(--brand-400));
+    --color-primary-hover: light-dark(var(--brand-700), var(--brand-300));
+    --color-primary-active: light-dark(var(--brand-800), var(--brand-500));
+    --color-primary-text: light-dark(var(--brand-700), var(--brand-300));
+    --color-on-primary: light-dark(oklch(99% 0.01 var(--brand-hue)), var(--basalt-1000));
+    /* Filled surfaces need one extra step of depth so white text clears
+       4.5:1 on a light background. */
+    --color-primary-solid: light-dark(var(--brand-700), var(--brand-400));
+    --color-on-primary-solid: light-dark(
+      oklch(99% 0.01 var(--brand-hue)),
+      var(--basalt-1000)
+    );
+    --color-primary-soft: light-dark(
+      oklch(94% 0.035 var(--brand-hue)),
+      oklch(26% 0.05 var(--brand-hue))
+    );
+
+    /* -- Accent (Plasma) ----------------------------------------------- */
+    --color-accent: light-dark(var(--plasma-600), var(--plasma-500));
+    --color-accent-hover: light-dark(var(--plasma-700), var(--plasma-400));
+    --color-accent-text: light-dark(var(--plasma-700), var(--plasma-400));
+    --color-on-accent: light-dark(oklch(99% 0.01 359), var(--basalt-1000));
+    --color-accent-soft: light-dark(oklch(94% 0.035 358.92), oklch(28% 0.065 358.92));
+
+    /* -- Data (Lumen) ------------------------------------------------ */
+    --color-data: light-dark(var(--lumen-600), var(--lumen-400));
+    --color-data-text: light-dark(var(--lumen-700), var(--lumen-300));
+    --color-data-soft: light-dark(oklch(94% 0.035 236), oklch(27% 0.055 236));
+
+    /* -- Semantic states ---------------------------------------------- */
+    --color-success: light-dark(var(--tidal-700), var(--tidal-400));
+    --color-success-text: light-dark(var(--tidal-700), var(--tidal-300));
+    --color-success-soft: light-dark(oklch(94% 0.035 182.5), oklch(26% 0.05 182.5));
+
+    --color-warning: light-dark(var(--sol-600), var(--sol-400));
+    --color-warning-text: light-dark(var(--sol-800), var(--sol-300));
+    --color-warning-soft: light-dark(oklch(95% 0.045 85), oklch(28% 0.055 70));
+
+    --color-danger: light-dark(var(--clay-600), var(--clay-400));
+    --color-danger-hover: light-dark(var(--clay-700), var(--clay-300));
+    --color-danger-text: light-dark(var(--clay-700), var(--clay-300));
+    --color-on-danger: light-dark(oklch(99% 0.01 27), var(--basalt-1000));
+    --color-danger-soft: light-dark(oklch(94% 0.04 30), oklch(27% 0.06 27));
+
+    --color-info: light-dark(var(--lumen-600), var(--lumen-400));
+    --color-info-text: light-dark(var(--lumen-700), var(--lumen-300));
+    --color-info-soft: light-dark(oklch(94% 0.035 236), oklch(27% 0.055 236));
+
+    /* -- Focus -------------------------------------------------------- */
+    --color-focus-ring: light-dark(var(--brand-600), var(--brand-400));
+    --color-focus-halo: light-dark(
+      oklch(94% 0.05 var(--brand-hue) / 0.9),
+      oklch(78% 0.12 var(--brand-hue) / 0.24)
+    );
+    --focus-width: 2px;
+
+    /* -- Links -------------------------------------------------------- */
+    --color-link: light-dark(var(--brand-700), var(--brand-300));
+    --color-link-hover: light-dark(var(--brand-800), var(--brand-200));
+
+    /* -- Composite surfaces ------------------------------------------ */
+    --color-code-bg: light-dark(oklch(96% 0.008 230), oklch(14% 0.018 230));
+    --color-code-header-bg: light-dark(oklch(93% 0.01 230), oklch(18% 0.018 230));
+    --color-track: light-dark(oklch(90% 0.01 230), oklch(26% 0.018 230));
+    --color-skeleton: light-dark(oklch(92% 0.008 230), oklch(24% 0.018 230));
+
+    /* -- Syntax ------------------------------------------------------- */
+    --color-syntax-keyword: light-dark(var(--tidal-700), var(--tidal-400));
+    --color-syntax-string: light-dark(var(--plasma-600), var(--plasma-300));
+    --color-syntax-function: light-dark(var(--lumen-700), var(--lumen-300));
+    --color-syntax-punctuation: light-dark(oklch(55% 0.016 230), oklch(62% 0.016 230));
+    --color-syntax-comment: light-dark(oklch(55% 0.016 230), oklch(56% 0.016 230));
+    --color-syntax-number: light-dark(var(--sol-700), var(--sol-300));
+
+    /* -- Heat scale (multi-hue, for density and continuous surfaces) --
+       NOT a sequential ramp: luminance is not monotonic across the
+       six steps. Use --chart-seq-* for any ordered band. */
+    --color-heat-1: light-dark(var(--lumen-500), var(--lumen-600));
+    --color-heat-2: light-dark(var(--lumen-400), var(--lumen-500));
+    --color-heat-3: light-dark(var(--tidal-400), var(--tidal-500));
+    --color-heat-4: light-dark(var(--tidal-500), var(--tidal-400));
+    --color-heat-5: light-dark(var(--sol-500), var(--sol-500));
+    --color-heat-6: light-dark(var(--plasma-500), var(--plasma-500));
+
+    /* ==================================================================
+       CHART TOKEN LAYER
+       ------------------------------------------------------------------
+       A chart token maps a value to a *data role*; a semantic token maps a
+       value to *product meaning*. The two must stay separate: the same
+       magenta is a live-data accent in the UI and "series 4" in a chart.
+       ================================================================== */
+
+    /* Categorical — eight series, ordered so neighbouring hues stay apart.
+       Cap at eight: past that, adjacent colours stop being reliably
+       distinguishable and the tail should fold into "other". */
+    --chart-1: light-dark(oklch(55% 0.12 182), oklch(72% 0.13 182));
+    --chart-2: light-dark(oklch(52% 0.14 243), oklch(70% 0.14 243));
+    --chart-3: light-dark(oklch(50% 0.19 300), oklch(70% 0.18 300));
+    --chart-4: light-dark(oklch(52% 0.19 350), oklch(72% 0.18 350));
+    --chart-5: light-dark(oklch(56% 0.15 45), oklch(75% 0.15 45));
+    --chart-6: light-dark(oklch(62% 0.13 90), oklch(80% 0.13 90));
+    --chart-7: light-dark(oklch(54% 0.13 148), oklch(74% 0.13 148));
+    --chart-8: light-dark(oklch(52% 0.05 250), oklch(62% 0.05 250));
+
+    /* Sequential — one hue, rising lightness. */
+    --chart-seq-1: light-dark(oklch(92% 0.04 182), oklch(30% 0.06 182));
+    --chart-seq-2: light-dark(oklch(84% 0.08 182), oklch(40% 0.08 182));
+    --chart-seq-3: light-dark(oklch(75% 0.11 182), oklch(50% 0.1 182));
+    --chart-seq-4: light-dark(oklch(65% 0.13 182), oklch(60% 0.12 182));
+    --chart-seq-5: light-dark(oklch(55% 0.13 182), oklch(70% 0.13 182));
+    --chart-seq-6: light-dark(oklch(45% 0.11 182), oklch(80% 0.11 182));
+    --chart-seq-7: light-dark(oklch(35% 0.08 182), oklch(90% 0.07 182));
+
+    /* Diverging — reserved for a real midpoint (above/below target). */
+    --chart-div-neg: light-dark(var(--clay-500), var(--clay-400));
+    --chart-div-mid: light-dark(oklch(92% 0.01 230), var(--basalt-800));
+    --chart-div-pos: light-dark(var(--tidal-600), var(--tidal-400));
+
+    /* Dash patterns, one per series. Eight hues cannot all be separated by
+       lightness, so a chart never leans on hue alone: the line also carries a
+       pattern, and the legend previews that pattern. The chart stays
+       readable in greyscale, in print, and for a reader who cannot separate
+       the hues. */
+    --chart-dash-1: none;
+    --chart-dash-2: 7 4;
+    --chart-dash-3: 2 4;
+    --chart-dash-4: 9 4 2 4;
+    --chart-dash-5: 15 5;
+    --chart-dash-6: 6 3 1 3;
+
+    /* Fill patterns for polygon marks. A dash pattern is a stroke property
+       and cannot go on a filled polygon, so a separate vocabulary carries
+       the non-colour channel for choropleths, catchments and hex cells. */
+    --fill-hatch-1: repeating-linear-gradient(45deg, transparent 0 3px, var(--color-text-subtle) 3px 4px);
+    --fill-hatch-2: repeating-linear-gradient(45deg, transparent 0 6px, var(--color-text-subtle) 6px 7px);
+    --fill-hatch-3: repeating-linear-gradient(0deg, transparent 0 3px, var(--color-text-subtle) 3px 4px);
+    --fill-hatch-4: repeating-linear-gradient(90deg, transparent 0 3px, var(--color-text-subtle) 3px 4px);
+    --fill-hatch-5: repeating-linear-gradient(45deg, transparent 0 3px, var(--color-text-subtle) 3px 4px),
+                    repeating-linear-gradient(135deg, transparent 0 3px, var(--color-text-subtle) 3px 4px);
+    --fill-dot: radial-gradient(circle, var(--color-text-subtle) 1px, transparent 1px);
+
+    /* Chart chrome and states. */
+    --chart-grid: light-dark(oklch(91% 0.006 230), oklch(24% 0.016 230));
+    --chart-axis: light-dark(oklch(78% 0.01 230), oklch(40% 0.018 230));
+    --chart-label: light-dark(oklch(48% 0.018 230), oklch(66% 0.016 230));
+    --chart-missing: light-dark(oklch(88% 0.008 230), oklch(30% 0.018 230));
+    --chart-hover: light-dark(oklch(96% 0.006 230), oklch(27% 0.018 230));
+    --chart-selection: light-dark(
+      oklch(92% 0.04 182),
+      oklch(30% 0.05 182)
+    );
+    --chart-tooltip-bg: light-dark(oklch(26% 0.02 230), oklch(88% 0.014 230));
+    --chart-tooltip-fg: light-dark(oklch(97% 0.004 230), oklch(20% 0.018 230));
+
+    /* -- Gradients (composed from theme-aware tokens) ----------------- */
+    --gradient-canvas: radial-gradient(
+        120% 80% at 12% -10%,
+        color-mix(in oklab, var(--color-primary) 13%, transparent),
+        transparent 62%
+      ),
+      radial-gradient(
+        90% 70% at 96% 6%,
+        color-mix(in oklab, var(--color-data) 9%, transparent),
+        transparent 58%
+      ),
+      var(--color-canvas);
+    --gradient-plate: linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--color-surface-2) 92%, var(--color-primary)),
+      var(--color-surface-1)
+    );
+    --gradient-heat: linear-gradient(
+      90deg,
+      var(--color-heat-1),
+      var(--color-heat-3),
+      var(--color-heat-4),
+      var(--color-heat-5),
+      var(--color-heat-6)
+    );
+    --gradient-rule: linear-gradient(
+      90deg,
+      var(--color-border-strong),
+      var(--color-border-subtle) 55%,
+      transparent
+    );
+  }
+
+  /* =======================================================================
+     15. OVERRIDE CONTRACT
+     These two values are the global retheming surface. A consumer only ever
+     needs to set them on :root to retint and reshape the whole system.
+     ======================================================================= */
+  :root {
+    --brand-hue: 182.5; /* re-tints every primary surface */
+    --radius-scale: 1; /* scales every radius at once */
+  }
+
+  /* =======================================================================
+     16. THEME SCOPE
+     -------------------------------------------------------------------------
+     A custom property that contains var() is resolved against the element it
+     is declared on, then inherits that finished value. So a descendant that
+     merely changes --brand-hue would have no effect: --brand-600 was already
+     substituted on :root.
+
+     A theme scope solves this by re-deriving the whole brand layer from
+     local knobs. Declared on any element, it re-tints that subtree without
+     touching the document root.
+
+         <div class="c-theme-scope" style="--brand-hue: 250">
+     ======================================================================= */
+  .c-theme-scope {
+    --brand-100: oklch(96% 0.025 var(--brand-hue));
+    --brand-200: oklch(92% 0.05 var(--brand-hue));
+    --brand-300: oklch(85% 0.09 var(--brand-hue));
+    --brand-400: oklch(78% 0.11 var(--brand-hue));
+    --brand-500: oklch(70.4% 0.123 var(--brand-hue));
+    --brand-600: oklch(61% 0.115 var(--brand-hue));
+    --brand-700: oklch(51% 0.1 var(--brand-hue));
+    --brand-800: oklch(41% 0.082 var(--brand-hue));
+
+    --radius-xs: calc(6px * var(--radius-scale));
+    --radius-sm: calc(10px * var(--radius-scale));
+    --radius-md: calc(14px * var(--radius-scale));
+    --radius-lg: calc(20px * var(--radius-scale));
+    --radius-xl: calc(28px * var(--radius-scale));
+    --radius-2xl: calc(36px * var(--radius-scale));
+
+    --color-primary: light-dark(var(--brand-600), var(--brand-400));
+    --color-primary-hover: light-dark(var(--brand-700), var(--brand-300));
+    --color-primary-active: light-dark(var(--brand-800), var(--brand-500));
+    --color-primary-text: light-dark(var(--brand-700), var(--brand-300));
+    --color-on-primary: light-dark(oklch(99% 0.01 var(--brand-hue)), var(--basalt-1000));
+    --color-primary-solid: light-dark(var(--brand-700), var(--brand-400));
+    --color-on-primary-solid: light-dark(
+      oklch(99% 0.01 var(--brand-hue)),
+      var(--basalt-1000)
+    );
+    --color-primary-soft: light-dark(
+      oklch(94% 0.035 var(--brand-hue)),
+      oklch(26% 0.05 var(--brand-hue))
+    );
+    --color-focus-ring: light-dark(var(--brand-600), var(--brand-400));
+    --color-focus-halo: light-dark(
+      oklch(94% 0.05 var(--brand-hue) / 0.9),
+      oklch(78% 0.12 var(--brand-hue) / 0.24)
+    );
+    --color-link: light-dark(var(--brand-700), var(--brand-300));
+    --color-link-hover: light-dark(var(--brand-800), var(--brand-200));
+  }
+  /* =======================================================================
+     17. THEME SET — beyond light-dark()
+     light-dark() is a two-valued switch. A third (or fourth) theme is
+     expressed by re-pointing the semantic tokens on a subtree. The two
+     system themes (light, dark) keep working unchanged; a product that
+     needs more (positron, dark-matter, voyager, high-contrast) overrides
+     the semantic layer here.
+     ======================================================================= */
+  [data-theme="positron"] {
+    --color-canvas: oklch(98.5% 0.003 230);
+    --color-canvas-sunken: oklch(96% 0.005 230);
+    --color-surface-1: oklch(100% 0 0);
+    --color-surface-2: oklch(97% 0.004 230);
+    --color-surface-3: oklch(94% 0.006 230);
+    --color-text: oklch(30% 0.018 230);
+    --color-text-strong: oklch(20% 0.02 230);
+    --color-text-muted: oklch(45% 0.016 230);
+    --color-text-subtle: oklch(55% 0.014 230);
+    --color-border: oklch(82% 0.008 230);
+    --color-border-strong: oklch(65% 0.012 230);
+    --color-primary: var(--brand-600);
+    color-scheme: light;
+  }
+
+}

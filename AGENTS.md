@@ -1,0 +1,316 @@
+# AGENTS.md
+
+Working notes for anyone — human or agent — changing this repository.
+
+Read this before you touch a file. Most of the rules below exist because
+something went wrong once and cost an hour to find.
+
+---
+
+## What this is
+
+**Contour** — a token-driven design system for spatial interfaces (routing
+engines, pedestrian simulators, geospatial dashboards). It ships three
+surfaces: a **landing page**, a **documentation site** and a **technical
+dashboard**.
+
+- Dark and light themes, 119 components, 273 design tokens.
+- **Zero runtime dependencies, no build step.** `src/css/ds.css` is the whole
+  system and can be linked straight off a disk.
+- The style guide (`index.html`) is the documentation *and* the test suite.
+
+Design context — audience, use cases, tone, colour strategy and anti-goals —
+lives in `.impeccable.md`. Read it before changing anything visual.
+
+---
+
+## Layout
+
+```
+src/          the design system — this is what a consumer takes
+  css/           the stylesheets, ds.css is the entry point
+  js/ds.js       optional progressive enhancement
+  svg/           the brand mark
+assets/       guide-only — never shipped
+  css/docs.css   the style guide's own shell — NOT part of the system
+  js/guide.js    the guide's own behaviour (snippet disclosure), also not
+                 part of the system
+  svg/           the contour field behind the chart-paper texture
+tools/        build-time scripts, never shipped
+templates/    three starter pages
+```
+
+### The ownership rule
+
+> Anything that only makes sense inside this guide belongs in `assets/`,
+> not in `src/`.
+
+A consumer takes `src/` and nothing else, so a rule in `src/` must work
+without the guide. The rules that broke that rule and were moved:
+
+| Rule | Why it cannot live in the system |
+|---|---|
+| `.chart-paper` | Masked with `assets/svg/contour-field.svg` — a guide asset outside the system |
+| `.ridgeline` | A divider the guide puts between its own sections, not a component the system ships |
+| `--contour-field`, `--contour-opacity` | Tokens that exist only for the two rules above |
+
+**Check for leftovers before you finish:**
+
+```bash
+rg 'ridgeline|chart-paper|contour-field|contour-opacity|ds-' src/
+```
+
+Anything that matches is either a leak or a false positive you must justify.
+
+---
+
+## Commands
+
+| Command | What it does |
+|---|---|
+| `node tools/snippets.mjs` | Regenerates the code snippets in `index.html` — **run after editing any specimen** |
+| `node tools/build.mjs` | Bundles and minifies the **design system only** into `dist/` (no guide, no templates), exports the tokens as JSON |
+| `python3 tools/contour-gen.py` | Regenerates the contour artwork |
+| `npx html-validate index.html` | Markup validation |
+| `node --check src/js/ds.js assets/js/guide.js` | Script syntax |
+
+The audit harnesses live outside the repository (`/tmp/kilo/audit/`): contrast
+(146 targets × 2 themes), mobile overflow, the command palette, the snippet
+disclosure, and the chart series.
+
+---
+
+## Rules that will bite you
+
+### 1. The reset kills `margin: auto`
+
+`src/css/base.css` sets `* { margin: 0 }`. That also removes the `margin: auto`
+the platform uses to centre a modal `<dialog>`. `.c-dialog` puts it back — and
+if you add a component that centres itself, you must too.
+
+### 2. A popover's `display` must not be set unconditionally
+
+An author `display` on a `popover` element overrides the UA's `display: none`,
+so a closed popover becomes visible. Set `display` only when it is open:
+
+```css
+.c-command:popover-open,
+.c-command.is-open { display: flex; }
+```
+
+### 3. `var()` inside a custom property resolves eagerly
+
+A descendant that changes `--brand-hue` has no effect: `--brand-600` was
+already substituted on `:root`. That is why `.c-theme-scope` re-derives the
+whole brand layer instead of overriding one value.
+
+### 4. Hidden labels must be anchored, not static
+
+`position: absolute` with no `inset` uses the **static position**. Inside a
+horizontally scrolling table that put the label past the edge of the
+scroller, and because its containing block was above the scroller it escaped
+the clip and stretched the whole page by 14 px. `.visually-hidden` is
+anchored to its containing block for exactly this reason.
+
+### 5. Contour lines are generated, never drawn
+
+Iso-lines of different levels of the same continuous field **cannot cross**.
+Hand-drawn curves have no such relationship, which is why they intersect and
+form shelves. Every contour line in this repository comes from
+`tools/contour-gen.py` (marching squares over a real field, with the
+asymptotic saddle decider and a level-nudge pass that guarantees zero
+crossings).
+
+If you need a new contour shape: **add a field to the generator**, do not
+draw a path. The generator verifies its own output.
+
+### 6. The command palette index is built from the page
+
+`buildIndex()` reads the DOM, so renaming a section can never leave a stale
+search result. If you add a nav list, mark it `data-command-nav`.
+
+### 7. The snippet disclosure belongs to the tool
+
+A rendered example is either a `.ds-panel` / `.ds-spec` container, or any
+element marked `data-snippet`. `tools/snippets.mjs` wraps each example and
+its disclosure in a generated `.ds-example`, so the pair travels together and
+the disclosure can never land beside its example in a grid.
+
+Three things follow from that:
+
+- **Never hand-edit a snippet.** Run the tool; it extracts the markup from
+  the example itself.
+- **Never hand-edit a `.ds-example`.** It is generated (`data-generated="wrap"`),
+  and the tool removes and rebuilds it on every run.
+- **A new specimen needs `data-snippet`.** A `.ds-panel` / `.ds-spec` is
+  found by class; anything else has to say so.
+
+`data-snippet` means *this element is the example*: the snippet then shows
+the element itself, tag, classes and attributes included, because that is
+what a reader copies. A guide frame — anything with a `ds-` class — is only
+a frame, and its snippet shows what it holds. The marker itself never
+appears in a snippet.
+
+Keep the guide's own spacing out of the specimen markup: an inline
+`margin-block-start` on a component ends up in its snippet, where it means
+nothing to a consumer. The guide's stylesheet can space the specimens
+instead.
+
+The open disclosure floats: `.ds-code__body` is taken out of the flow, so
+opening a snippet never reflows the page. The section that holds it draws a
+scrim (`::after`, `position: fixed`) and the open example is raised above
+that scrim, so the example and its markup stay sharp while the page falls
+away. A section creates a stacking context (`isolation: isolate`), which is
+why the *section* is what gets raised — a descendant cannot escape it.
+
+The example cell is as tall as the tallest example beside it
+(`align-self: stretch`), the example takes that height
+(`grid-template-rows: 1fr auto`) and the disclosure sits on the cell's
+baseline (`align-self: end`). Without this, a row of specimens of different
+heights leaves the disclosures staggered — the bar stretched to fill the
+cell instead of sitting on one line.
+
+The copy action lives in the **summary row**, not over the code, and it is
+visible only while the disclosure is open — the space is reserved so opening
+one never shifts a pixel. A copy button inside a `<summary>` must not toggle
+the disclosure, so the handler in `src/js/ds.js` cancels the default action
+when the trigger is inside a `summary`.
+
+### 8. The HTML round trip must be a fixed point
+
+`tools/lib/html.mjs` parses a document and writes it back. If the parser
+keeps values raw while the serialiser escapes them, every run of a tool adds
+one level of escaping: `&amp;` becomes `&amp;amp;`, and the Google Fonts URL
+grows until the fonts stop loading.
+
+So the parser **decodes** entities and the serialiser **escapes** them, and
+the two must stay inverses. Three details keep it that way:
+
+- `decodeEntities()` decodes in a single pass, so `&amp;lt;` becomes `&lt;`
+  and not `<`.
+- Comments, the doctype and `script` / `style` text are written back
+  verbatim — they are not markup, and escaping them breaks them.
+- `format()` emits raw markup and the caller escapes once, for the place the
+  string goes into. Escaping in both places doubles every `&`.
+
+**Check it after touching the parser:**
+
+```bash
+node tools/snippets.mjs && git diff --stat index.html   # or: diff against a copy
+```
+
+The file must not change on a second run.
+
+### 9. A shadow of one strength cannot serve both themes
+
+The elevation tokens are `light-dark()` values. On a white surface a soft
+black shadow reads as depth; on a dark surface the same shadow disappears
+into the surface it falls on — the elevation specimen looked broken in dark
+mode until the dark values became near-black and opaque.
+
+Depth is carried by **surface lightness** first; the shadow only marks what
+genuinely floats. A card on a card of the same lightness has no elevation to
+show in either theme, so give it a raised surface (`--color-surface-raised`)
+rather than a bigger shadow.
+
+### 10. A component must not own its heading level
+
+A component that renders an `<h5>` (or any fixed level) inside a page
+whose outline is at `<h3>` produces a level jump. The type scale is the
+system's; the document outline is the author's. Ship the heading as a
+class (`.c-panel__title`) applied to whatever heading element the author
+chooses, and never hard-code the tag.
+
+### 11. The option list of a native select cannot be styled
+
+The list that opens under a `<select>` is drawn by the platform, in the
+platform's own colours. No rule in this repository reaches it, and the
+platform follows the operating system's theme rather than the page's — a
+dark page on a light machine opens a light list.
+
+So the design lives in the **closed** control: the surface, the border, the
+chevron, the focus ring. Style that, keep the native select, and do not
+reach for JavaScript to replace the list — a custom listbox is a widget
+with its own keyboard and focus rules, and the platform already ships one
+that works.
+
+The select inherits the page's `color-scheme`, so a browser that honours it
+draws the list in the page's theme. That is the most the platform gives.
+
+---
+
+## Conventions
+
+### CSS
+
+- Cascade layers, in this order: `reset, tokens, base, components, utilities`.
+  `src/css/ds.css` declares the order; a file may only add to a layer.
+- Naming: `.c-<block>` for the block, `.c-<block>__<element>` for parts,
+  `.c-<block>--<variant>` for variants. Guide-only classes are `ds-`.
+- Never rely on a descendant selector to reach into another component.
+- Tokens are defined in `src/css/tokens.css` and consumed as
+  `var(--color-…)`. A raw hex value in a component is a bug.
+- `light-dark()` for anything that changes between themes.
+
+### HTML
+
+- One `main`, one `h1`, headings in order.
+- Every control has an accessible name. Icon-only buttons get `aria-label`.
+- State is never carried by colour alone — a hue always comes with a shape,
+  an icon or a word.
+- Nothing is hidden behind JavaScript. The guide works with JS off, and so
+  must your component.
+
+### JavaScript (`src/js/ds.js`)
+
+- Progressive enhancement only. The page is fully usable without it.
+- Native elements first: `<dialog>`, `<details>`, popover, `<input type=range>`.
+  Add JavaScript only to add behaviour the platform cannot.
+
+---
+
+## The accessibility contract
+
+- Body text **4.5:1**, borders / focus rings / control edges **3:1**, in both
+  themes. Currently verified across 210 pairs per theme.
+- Every series in a chart carries a **dash pattern** as well as a hue, so no
+  chart asks the reader to tell two colours apart.
+- `prefers-reduced-motion: reduce` collapses every transition.
+- Forced Colors Mode removes the texture and the ridgelines and falls back to
+  a system `CanvasText` outline.
+- Sizes in `rem`; the layout reflows to 200 % zoom and to a 390 px viewport
+  with no horizontal page scroll.
+
+---
+
+## Working on the style guide
+
+- The guide is the specification. A component that is not shown is not
+  documented.
+- Every rendered example is followed by a `<details>` disclosure with the
+  markup behind it. **The snippet is extracted from the example**, so after
+  editing a specimen run `node tools/snippets.mjs` — never hand-edit a
+  snippet.
+- A specimen that is neither a `.ds-panel` nor a `.ds-spec` needs
+  `data-snippet`, or the tool will not find it.
+- The guide's own behaviour lives in `assets/js/guide.js`: one snippet open
+  at a time, click outside to close, Escape to close. The system script
+  (`src/js/ds.js`) must not know a guide class.
+- Section numbers are sequential (`00` … `21`). Adding a section means
+  renumbering the rail, the comment marker and the `label` in the head.
+- The rail, the header nav and the footer all link to section ids. A new
+  section goes in the rail and the footer.
+
+---
+
+## Before you finish
+
+```bash
+npx html-validate index.html templates/*.html
+node --check src/js/ds.js assets/js/guide.js
+node tools/snippets.mjs      # if you touched a specimen
+node tools/build.mjs         # if you touched src/
+```
+
+Then check the guide in both themes, at 1440 px and 390 px, and look for
+horizontal scroll.

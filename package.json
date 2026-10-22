@@ -1,0 +1,17 @@
+{
+  "name": "contour-ds",
+  "version": "1.0.0",
+  "description": "A token-driven design system for spatial interfaces",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/contour.css",
+  "style": "dist/contour.css",
+  "files": ["dist/", "src/"],
+  "scripts": {
+    "build": "node tools/build.mjs",
+    "snippets": "node tools/snippets.mjs",
+    "check:tokens": "node tools/check-tokens.mjs",
+    "validate": "npx html-validate index.html templates/*.html"
+  },
+  "keywords": ["design-system", "css", "tokens", "spatial", "maps", "geospatial"]
+}

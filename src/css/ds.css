@@ -1,0 +1,33 @@
+/* ============================================================================
+   CONTOUR — single entry point
+   ----------------------------------------------------------------------------
+   Usage:
+     <link rel="stylesheet" href="src/css/ds.css">
+
+   For bundlers, prefer importing the layers directly so the CSS is inlined:
+     @import "contour/tokens.css" layer(tokens);
+     @import "contour/base.css" layer(base);
+     @import "contour/components.css" layer(components);
+     @import "contour/components-shell.css" layer(components);
+     @import "contour/components-data.css" layer(components);
+     @import "contour/components-docs.css" layer(components);
+     @import "contour/components-landing.css" layer(components);
+     @import "contour/patterns.css" layer(components);
+     @import "contour/utilities.css" layer(utilities);
+
+   Layer order matters: utilities always win over components.
+   The component layer is split by audience, so a product that only needs
+   one surface can import one file and skip the rest.
+   ========================================================================= */
+
+@layer reset, tokens, base, components, utilities;
+
+@import url("./tokens.css") layer(tokens);
+@import url("./base.css") layer(base);
+@import url("./components.css") layer(components);
+@import url("./components-shell.css") layer(components);
+@import url("./components-data.css") layer(components);
+@import url("./components-docs.css") layer(components);
+@import url("./components-landing.css") layer(components);
+@import url("./patterns.css") layer(components);
+@import url("./utilities.css") layer(utilities);

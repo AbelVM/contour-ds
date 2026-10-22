@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Contour — dashboard template</title>
+    <meta name="color-scheme" content="light dark" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@500;600;700&display=swap"
+    />
+    <link rel="icon" href="../src/svg/contour-mark.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../src/css/ds.css" />
+    <link rel="stylesheet" href="../src/css/patterns.css" />
+    <script>
+      try {
+        document
+          .querySelector('meta[name="color-scheme"]')
+          .content = localStorage.getItem("contour-scheme") ?? "light dark";
+      } catch (e) {
+        /* storage blocked */
+      }
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="c-header">
+      <div class="container c-header__inner">
+        <a class="c-brand" href="#main">
+          <span class="c-mark"><svg aria-hidden="true"><use href="#i-mark" /></svg></span>
+          <span class="c-brand__name">Contour</span>
+          <span class="c-brand__tag">Console</span>
+        </a>
+
+        <div class="c-header__actions">
+          <button
+            class="c-btn c-btn--icon c-btn--secondary c-scheme-toggle"
+            type="button"
+            data-scheme-toggle
+            aria-label="Switch to dark theme"
+          >
+            <span class="c-scheme-toggle__icons" aria-hidden="true">
+              <svg class="c-scheme-toggle__sun"><use href="#i-sun" /></svg>
+              <svg class="c-scheme-toggle__moon"><use href="#i-moon" /></svg>
+            </span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="container" style="padding-block: var(--space-lg) var(--space-2xl)">
+      <!-- ===================== TOOLBAR ===================== -->
+      <div class="c-dash-toolbar">
+        <span class="c-dash-toolbar__title">Routing analytics</span>
+        <div class="c-segmented" role="group" aria-label="Time range" style="margin-inline-start: auto">
+          <button class="c-segmented__option" type="button" aria-pressed="false">24h</button>
+          <button class="c-segmented__option" type="button" aria-pressed="true">7d</button>
+          <button class="c-segmented__option" type="button" aria-pressed="false">30d</button>
+          <button class="c-segmented__option" type="button" aria-pressed="false">All</button>
+        </div>
+        <div class="c-dash-toolbar__actions">
+          <span class="c-dash-freshness">
+            <span class="c-dot c-dot--live c-dot--accent"></span>
+            Updated 3s ago
+          </span>
+          <div class="c-segmented" role="group" aria-label="Table density" data-density-toggle="#tpl-table">
+            <button class="c-segmented__option" type="button" data-value="comfortable" aria-pressed="true">Comfortable</button>
+            <button class="c-segmented__option" type="button" data-value="compact" aria-pressed="false">Compact</button>
+          </div>
+          <button class="c-btn c-btn--secondary c-btn--icon c-btn--sm" type="button" aria-label="Refresh">
+            <svg aria-hidden="true"><use href="#i-refresh" /></svg>
+          </button>
+          <button class="c-btn c-btn--secondary c-btn--icon c-btn--sm" type="button" aria-label="Export CSV">
+            <svg aria-hidden="true"><use href="#i-download" /></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- ===================== FILTERS ===================== -->
+      <div class="c-filter-bar">
+        <span class="c-filter-bar__label">Filters</span>
+        <span class="c-filter-pill" data-removable>
+          <span class="c-filter-pill__key">Region</span>
+          <span class="c-filter-pill__value">Madrid</span>
+          <button class="c-filter-pill__remove" type="button" data-remove aria-label="Remove region filter">
+            <svg aria-hidden="true"><use href="#i-x" /></svg>
+          </button>
+        </span>
+        <span class="c-filter-pill" data-removable>
+          <span class="c-filter-pill__key">Profile</span>
+          <span class="c-filter-pill__value">Car</span>
+          <button class="c-filter-pill__remove" type="button" data-remove aria-label="Remove profile filter">
+            <svg aria-hidden="true"><use href="#i-x" /></svg>
+          </button>
+        </span>
+        <button class="c-btn c-btn--ghost c-btn--sm" type="button">Clear all</button>
+        <span class="c-filter-bar__divider" aria-hidden="true"></span>
+        <button class="c-btn c-btn--secondary c-btn--sm" type="button">
+          <svg aria-hidden="true" style="width: 0.9rem; height: 0.9rem"><use href="#i-filter" /></svg>
+          Add filter
+        </button>
+      </div>
+
+      <!-- ===================== KPI ROW ===================== -->
+      <div class="c-dash-kpi-row">
+        <div class="c-kpi">
+          <div class="c-kpi__head">
+            <span class="c-kpi__label">Routes computed</span>
+          </div>
+          <span class="c-kpi__value">184,320</span>
+          <div class="c-kpi__foot">
+            <span class="c-delta c-delta--up">
+              <svg aria-hidden="true"><use href="#i-arrow-up" /></svg>
+              12.4%
+            </span>
+            <span class="c-kpi__note">vs last week</span>
+          </div>
+        </div>
+
+        <div class="c-kpi">
+          <div class="c-kpi__head">
+            <span class="c-kpi__label">Median latency</span>
+          </div>
+          <span class="c-kpi__value">7<span class="c-kpi__unit">ms</span></span>
+          <div class="c-kpi__foot">
+            <span class="c-delta c-delta--down">
+              <svg aria-hidden="true"><use href="#i-arrow-down" /></svg>
+              2.1%
+            </span>
+            <span class="c-kpi__note">vs last week</span>
+          </div>
+        </div>
+
+        <div class="c-kpi">
+          <div class="c-kpi__head">
+            <span class="c-kpi__label">Tile coverage</span>
+          </div>
+          <span class="c-kpi__value">94.2<span class="c-kpi__unit">%</span></span>
+          <div class="c-kpi__foot">
+            <div class="c-threshold" data-state="warning" style="flex: 1; min-inline-size: 4rem">
+              <span class="c-threshold__fill" style="--value: 94%"></span>
+              <span class="c-threshold__target" style="--target: 98%"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="c-kpi">
+          <div class="c-kpi__head">
+            <span class="c-kpi__label">Fallback rate</span>
+          </div>
+          <span class="c-kpi__value">0.8<span class="c-kpi__unit">%</span></span>
+          <svg class="c-sparkline" viewBox="0 0 100 24" preserveAspectRatio="none" aria-hidden="true">
+            <path class="c-sparkline__line" d="M0 12 14 11 28 14 42 9 56 10 70 6 84 8 100 5" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- ===================== PANELS ===================== -->
+      <div class="c-chart-grid">
+        <div class="c-panel" data-span="8">
+          <div class="c-panel__head">
+            <div>
+              <h2 class="c-panel__title">Routes by engine</h2>
+              <p class="c-panel__subtitle">Last 7 days · all profiles</p>
+            </div>
+            <div class="c-panel__actions">
+              <button class="c-btn c-btn--ghost c-btn--icon c-btn--sm" type="button" aria-label="Panel options">
+                <svg aria-hidden="true"><use href="#i-sliders" /></svg>
+              </button>
+            </div>
+          </div>
+          <div class="c-panel__body">
+            <div class="c-chart">
+              <div class="c-chart__plot">
+                <svg viewBox="0 0 300 120" preserveAspectRatio="none" style="position: absolute; inset: 0; width: 100%; height: 100%">
+                  <path class="c-chart__line" data-series="1" style="--c: var(--chart-1)" d="M0 88 50 70 100 78 150 48 200 55 250 30 300 36" />
+                  <path class="c-chart__line" data-series="2" style="--c: var(--chart-2)" d="M0 104 50 96 100 100 150 86 200 90 250 74 300 78" />
+                  <path class="c-chart__line" data-series="3" style="--c: var(--chart-4)" d="M0 114 50 110 100 112 150 106 200 108 250 100 300 102" />
+                </svg>
+              </div>
+              <div class="c-chart__axis">
+                <span>Mon</span><span>Tue</span><span>Wed</span>
+                <span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+              </div>
+            </div>
+          </div>
+          <div class="c-panel__foot">
+            <div class="c-legend c-legend--inline c-legend--interactive">
+              <button class="c-legend__item" type="button" aria-pressed="true">
+                <span class="c-legend__swatch c-legend__swatch--line" data-series="1" style="--c: var(--chart-1)"></span>
+                UltraDijkstra
+              </button>
+              <button class="c-legend__item" type="button" aria-pressed="true">
+                <span class="c-legend__swatch c-legend__swatch--line" data-series="2" style="--c: var(--chart-2)"></span>
+                A* Bidirectional
+              </button>
+              <button class="c-legend__item" type="button" aria-pressed="true">
+                <span class="c-legend__swatch c-legend__swatch--line" data-series="3" style="--c: var(--chart-4)"></span>
+                Delta-stepping
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="c-panel" data-span="4">
+          <div class="c-panel__head">
+            <div>
+              <h2 class="c-panel__title">Top regions</h2>
+              <p class="c-panel__subtitle">By route volume</p>
+            </div>
+          </div>
+          <div class="c-panel__body">
+            <div class="c-chart">
+              <div class="c-chart__plot" style="aspect-ratio: 4 / 5">
+                <span class="c-chart__bar" style="--x: 0%; --h: 92%; --w: 15%; --c: var(--chart-1)"></span>
+                <span class="c-chart__bar" style="--x: 19%; --h: 74%; --w: 15%; --c: var(--chart-1)"></span>
+                <span class="c-chart__bar" style="--x: 38%; --h: 61%; --w: 15%; --c: var(--chart-1)"></span>
+                <span class="c-chart__bar" style="--x: 57%; --h: 44%; --w: 15%; --c: var(--chart-1)"></span>
+                <span class="c-chart__bar" style="--x: 76%; --h: 29%; --w: 15%; --c: var(--chart-1)"></span>
+              </div>
+              <div class="c-chart__axis">
+                <span>Madrid</span><span>Berlin</span><span>Lisbon</span>
+                <span>Lyon</span><span>Oslo</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="c-panel" data-span="12" id="tpl-table">
+          <div class="c-panel__head">
+            <div>
+              <h2 class="c-panel__title">Recent computations</h2>
+              <p class="c-panel__subtitle">48 rows · sorted by latency</p>
+            </div>
+          </div>
+          <div class="c-panel__body c-panel__body--flush">
+            <div class="c-table-wrap" style="border: 0; border-radius: 0">
+              <table class="c-table c-table--dense" data-sortable>
+                <caption class="visually-hidden">Recent routing computations</caption>
+                <thead>
+                  <tr>
+                    <th scope="col" class="c-table__pinned">Route</th>
+                    <th scope="col" aria-sort="none" data-sort-type="text">
+                      <span class="c-table__sort">
+                        Engine
+                        <svg aria-hidden="true"><use href="#i-arrow-up" /></svg>
+                      </span>
+                    </th>
+                    <th scope="col" aria-sort="descending" data-sort-type="number">
+                      <span class="c-table__sort">
+                        Latency
+                        <svg aria-hidden="true"><use href="#i-arrow-down" /></svg>
+                      </span>
+                    </th>
+                    <th scope="col" aria-sort="none" data-sort-type="number">
+                      <span class="c-table__sort">
+                        Distance
+                        <svg aria-hidden="true"><use href="#i-arrow-up" /></svg>
+                      </span>
+                    </th>
+                    <th scope="col">State</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="c-table__pinned" data-mono>MAD → BCN</td>
+                    <td data-mono>UltraDijkstra</td>
+                    <td data-numeric data-value="7">7 ms</td>
+                    <td data-numeric data-value="505">505 km</td>
+                    <td><span class="c-badge c-badge--success">Resolved</span></td>
+                  </tr>
+                  <tr>
+                    <td class="c-table__pinned" data-mono>BER → HAM</td>
+                    <td data-mono>A* Bidirectional</td>
+                    <td data-numeric data-value="4">4 ms</td>
+                    <td data-numeric data-value="289">289 km</td>
+                    <td><span class="c-badge c-badge--success">Resolved</span></td>
+                  </tr>
+                  <tr>
+                    <td class="c-table__pinned" data-mono>LIS → POR</td>
+                    <td data-mono>Barrier SSSP</td>
+                    <td data-numeric data-value="22">22 ms</td>
+                    <td data-numeric data-value="313">313 km</td>
+                    <td><span class="c-badge c-badge--warning">Degraded</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <svg width="0" height="0" aria-hidden="true" focusable="false" style="position: absolute">
+      <defs>
+        <symbol id="i-mark" viewBox="0 0 32 32">
+          <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M 12.4 7.2 C 13.8 6.9 15.6 6.8 17.4 7.1 C 19.3 7.4 20.7 8.4 21.4 9.8 C 22.1 11.2 22.1 12.8 21.2 14.1 C 20.3 15.4 18.5 16.2 16.5 16.4 C 14.5 16.6 12.4 16.1 11.2 14.9 C 10 13.7 9.6 12 10 10.4 C 10.3 9.1 11.1 8 12.4 7.2 Z" opacity="0.5" />
+            <path d="M 14.1 10.4 C 15 10.1 16.1 10.1 17 10.4 C 18 10.7 18.7 11.4 19 12.2 C 19.3 13 19.2 13.9 18.8 14.6 C 18.3 15.3 17.5 15.8 16.4 15.9 C 15.3 16 14.2 15.7 13.5 15 C 12.9 14.3 12.7 13.3 12.9 12.4 C 13.1 11.5 13.5 10.8 14.1 10.4 Z" />
+          </g>
+        </symbol>
+        <symbol id="i-sun" viewBox="0 0 24 24">
+          <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+            <circle cx="12" cy="12" r="4.2" />
+            <path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4 17 7M7 17l-1.6 1.6" />
+          </g>
+        </symbol>
+        <symbol id="i-moon" viewBox="0 0 24 24">
+          <path d="M20 14.2A8.4 8.4 0 0 1 9.8 4 8.4 8.4 0 1 0 20 14.2Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-arrow-up" viewBox="0 0 24 24">
+          <path d="M12 19V5M6 11l6-6 6 6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-arrow-down" viewBox="0 0 24 24">
+          <path d="M12 5v14M18 13l-6 6-6-6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-x" viewBox="0 0 24 24">
+          <path d="m6 6 12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </symbol>
+        <symbol id="i-refresh" viewBox="0 0 24 24">
+          <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 11a8 8 0 0 0-13.7-5.3L3 9" />
+            <path d="M4 13a8 8 0 0 0 13.7 5.3L21 15" />
+            <path d="M3 4v5h5M21 20v-5h-5" />
+          </g>
+        </symbol>
+        <symbol id="i-download" viewBox="0 0 24 24">
+          <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3.5v11M7.5 10.5 12 15l4.5-4.5M4 19.5h16" />
+          </g>
+        </symbol>
+        <symbol id="i-sliders" viewBox="0 0 24 24">
+          <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+            <path d="M4 7h9M17.5 7H20M4 17h4.5M13 17h7" />
+            <circle cx="15" cy="7" r="2.1" />
+            <circle cx="10.5" cy="17" r="2.1" />
+          </g>
+        </symbol>
+        <symbol id="i-filter" viewBox="0 0 24 24">
+          <path d="M3 5h18l-7 8v6l-4 2v-8L3 5Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+        </symbol>
+      </defs>
+    </svg>
+
+    <script src="../src/js/ds.js"></script>
+  </body>
+</html>

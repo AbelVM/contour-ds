@@ -1,0 +1,372 @@
+/* ============================================================================
+   CONTOUR — Utilities
+   Single-purpose helpers. Anything used by more than two components should
+   become a component instead.
+   ========================================================================= */
+
+@layer utilities {
+  /* -- Flow ---------------------------------------------------------- */
+  .u-flow > * + * {
+    margin-block-start: var(--flow-space, var(--space-md));
+  }
+
+  .u-flow-sm {
+    --flow-space: var(--space-2xs);
+  }
+  .u-flow-lg {
+    --flow-space: var(--space-xl);
+  }
+
+  /* -- Alignment ------------------------------------------------------ */
+  .u-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+  }
+
+  .u-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .u-start {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .u-end {
+    display: flex;
+    align-items: flex-end;
+  }
+
+  .u-baseline {
+    display: flex;
+    align-items: baseline;
+  }
+
+  /* -- Text ----------------------------------------------------------- */
+  .u-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .u-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-clamp: 2;
+    overflow: clip;
+  }
+
+  .u-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    line-clamp: 3;
+    overflow: clip;
+  }
+
+  .u-nowrap {
+    white-space: nowrap;
+  }
+
+  .u-balance {
+    text-wrap: balance;
+  }
+
+  .u-pretty {
+    text-wrap: pretty;
+  }
+
+  .u-tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .u-upper {
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-label);
+  }
+
+  .u-mono {
+    font-family: var(--font-mono);
+  }
+
+  .u-display {
+    font-family: var(--font-display);
+  }
+
+  /* -- Color ---------------------------------------------------------- */
+  .u-primary {
+    color: var(--color-primary-text);
+  }
+  .u-accent {
+    color: var(--color-accent-text);
+  }
+  .u-data {
+    color: var(--color-data-text);
+  }
+  .u-success {
+    color: var(--color-success-text);
+  }
+  .u-warning {
+    color: var(--color-warning-text);
+  }
+  .u-danger {
+    color: var(--color-danger-text);
+  }
+  .u-muted {
+    color: var(--color-text-muted);
+  }
+  .u-subtle {
+    color: var(--color-text-subtle);
+  }
+  .u-strong {
+    color: var(--color-text-strong);
+  }
+
+  /* -- Surfaces -------------------------------------------------------- */
+  .u-surface {
+    background: var(--color-surface-1);
+  }
+  .u-surface-2 {
+    background: var(--color-surface-2);
+  }
+  .u-surface-3 {
+    background: var(--color-surface-3);
+  }
+  .u-sunken {
+    background: var(--color-canvas-sunken);
+  }
+  .u-raised {
+    background: var(--color-surface-2);
+    box-shadow: var(--shadow-md);
+  }
+  .u-paper {
+    background: var(--gradient-canvas);
+  }
+
+  /* -- Border ---------------------------------------------------------- */
+  .u-bordered {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+  }
+  .u-bordered-top {
+    border-block-start: 1px solid var(--color-border);
+  }
+  .u-bordered-bottom {
+    border-block-end: 1px solid var(--color-border);
+  }
+  .u-rule {
+    block-size: 1px;
+    background: var(--gradient-rule);
+    border: 0;
+  }
+
+  /* -- Radius ---------------------------------------------------------- */
+  .u-rounded-sm {
+    border-radius: var(--radius-sm);
+  }
+  .u-rounded {
+    border-radius: var(--radius-md);
+  }
+  .u-rounded-lg {
+    border-radius: var(--radius-lg);
+  }
+  .u-rounded-xl {
+    border-radius: var(--radius-xl);
+  }
+  .u-pill {
+    border-radius: var(--radius-pill);
+  }
+
+  /* -- Sizing ---------------------------------------------------------- */
+  .u-w-full {
+    inline-size: 100%;
+  }
+  .u-h-full {
+    block-size: 100%;
+  }
+  .u-min-h {
+    min-block-size: 100%;
+  }
+
+  /* -- Grid ------------------------------------------------------------ */
+  .u-cols-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+    gap: var(--space-cluster);
+  }
+
+  .u-cols-3 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: var(--space-cluster);
+  }
+
+  .u-auto-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+    gap: var(--space-md);
+  }
+
+  /* -- Position -------------------------------------------------------- */
+  .u-relative {
+    position: relative;
+  }
+  .u-sticky {
+    position: sticky;
+  }
+  .u-top-header {
+    inset-block-start: calc(var(--header-height) + 1rem);
+  }
+
+  /* -- Motion ---------------------------------------------------------- */
+  .u-fade-in {
+    animation: c-fade-in var(--dur-slow) var(--ease-out-expo) both;
+  }
+
+  @keyframes c-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.5rem);
+    }
+  }
+
+  .u-spin {
+    animation: c-spin var(--dur-spin-slow) linear infinite;
+  }
+
+  /* -- Forced colours -------------------------------------------------- */
+  @media (forced-colors: active) {
+    .u-bordered,
+    .c-card,
+    .c-chip,
+    .c-pill,
+    .c-btn,
+    .c-input,
+    .c-select,
+    .c-textarea,
+    .c-alert,
+    .c-badge,
+    .c-table,
+    .c-panel {
+      border: 1px solid CanvasText;
+    }
+
+    .c-btn--primary,
+    .c-btn--accent,
+    .c-btn--danger {
+      forced-color-adjust: none;
+    }
+  }
+}
+
+  /* -- Fill patterns (for polygon marks) ------------------------------ */
+  .u-hatch-1 { background-image: var(--fill-hatch-1); }
+  .u-hatch-2 { background-image: var(--fill-hatch-2); }
+  .u-hatch-3 { background-image: var(--fill-hatch-3); }
+  .u-hatch-4 { background-image: var(--fill-hatch-4); }
+  .u-hatch-5 { background-image: var(--fill-hatch-5); }
+  .u-dot { background-image: var(--fill-dot); background-size: 8px 8px; }
+
+  /* -- High contrast preference --------------------------------------- */
+  @media (prefers-contrast: more) {
+    :root {
+      --color-border: light-dark(oklch(70% 0.014 230), oklch(46% 0.022 230));
+      --color-border-strong: light-dark(oklch(55% 0.016 230), oklch(56% 0.022 230));
+      --color-text-subtle: light-dark(oklch(40% 0.018 230), oklch(72% 0.016 230));
+    }
+
+    .u-bordered,
+    .c-card,
+    .c-chip,
+    .c-pill {
+      border-width: 2px;
+    }
+  }
+
+  /* -- Reduced data preference ---------------------------------------- */
+  @media (prefers-reduced-data: reduce) {
+    .u-raised {
+      box-shadow: none;
+    }
+
+    .c-header {
+      backdrop-filter: none;
+    }
+
+    .u-fade-in {
+      animation: none;
+    }
+  }
+
+  /* -- Print: field sheet -------------------------------------------- */
+  @media print {
+    .c-header, .c-drawer, .c-toolbar, .ds-rail, .ds-nav {
+      display: none;
+    }
+
+    .c-panel {
+      border: 1px solid CanvasText;
+      break-inside: avoid;
+    }
+
+    .c-chart {
+      background: none;
+    }
+
+    .c-table {
+      font-size: var(--type-xs);
+    }
+
+    body {
+      background: white;
+      color: black;
+    }
+  }
+
+  /* -- Hazard hatch (stale data) -------------------------------------- */
+  .u-hatch-stale {
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent 0 3px,
+      var(--color-text-subtle) 3px 4px
+    );
+  }
+
+  /* -- Colour-vision preview (scoped to data surfaces) ----------------- */
+  [data-cvd="deuteranopia"] .u-cvd-target,
+  [data-cvd="deuteranopia"] .c-chart,
+  [data-cvd="deuteranopia"] .c-mark {
+    filter: url(#contour-cvd-deuteranopia);
+  }
+
+  [data-cvd="protanopia"] .u-cvd-target,
+  [data-cvd="protanopia"] .c-chart,
+  [data-cvd="protanopia"] .c-mark {
+    filter: url(#contour-cvd-protanopia);
+  }
+
+  [data-cvd="tritanopia"] .u-cvd-target,
+  [data-cvd="tritanopia"] .c-chart,
+  [data-cvd="tritanopia"] .c-mark {
+    filter: url(#contour-cvd-tritanopia);
+  }
+
+  [data-cvd="achromatopsia"] .u-cvd-target,
+  [data-cvd="achromatopsia"] .c-chart,
+  [data-cvd="achromatopsia"] .c-mark {
+    filter: grayscale(1);
+  }
+
+  /* -- Interface profiles (capability-based disclosure) ---------------- */
+  [data-profile="viewer"] .c-advanced {
+    display: none;
+  }
+
+  [data-profile="operator"] .c-advanced {
+    display: revert;
+  }

@@ -1,0 +1,1021 @@
+/* ============================================================================
+   CONTOUR — documentation shell
+   ----------------------------------------------------------------------------
+   Styles that belong to this style guide, not to the design system itself.
+   Kept in a separate file so `components.css` stays reusable.
+
+   The `@layer base` block below holds the guide-owned rules that used to sit
+   in `src/css/base.css`. They could not work for a consumer, which takes `src/`
+   and nothing else: `.chart-paper` is masked with `assets/svg/contour-field.svg`,
+   an asset outside the system; and `.ridgeline` is a divider the guide puts
+   between its own sections, not a component the system ships. Both keep their
+   layer assignment here, so only the file they live in changed.
+   ========================================================================= */
+
+@layer base {
+  /* -- Guide-owned tokens ---------------------------------------------- */
+  :root {
+    --contour-opacity: 0.075;
+    /* Resolved against this file: assets/css/ → assets/svg/. */
+    --contour-field: url("../svg/contour-field.svg");
+  }
+
+  .chart-paper {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .chart-paper::before {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    left: var(--bleed-left, 0);
+    right: var(--bleed-right, 0);
+    z-index: -1;
+    pointer-events: none;
+    /* The SVG is used as a mask so the line colour comes from the theme
+       rather than being baked into the asset. */
+    background-color: var(--color-text-strong);
+    -webkit-mask-image: var(--contour-field);
+    mask-image: var(--contour-field);
+    -webkit-mask-size: 600px 600px;
+    mask-size: 600px 600px;
+    -webkit-mask-repeat: repeat;
+    mask-repeat: repeat;
+    opacity: var(--contour-opacity, 0.075);
+  }
+
+  /* A whisper of graph paper under the contours. */
+  .chart-paper::after {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    left: var(--bleed-left, 0);
+    right: var(--bleed-right, 0);
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+      linear-gradient(to right, var(--color-text-strong) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--color-text-strong) 1px, transparent 1px);
+    background-size: 32px 32px;
+    opacity: calc(var(--contour-opacity, 0.075) * 0.42);
+  }
+
+  /* -- Ridgeline divider -----------------------------------------------
+     A terrain profile drawn between two sections of the guide.
+     -------------------------------------------------------------------- */
+  .ridgeline {
+    position: relative;
+    block-size: 3.5rem;
+    color: var(--color-border);
+    overflow: hidden;
+  }
+
+  .ridgeline svg {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    overflow: visible;
+  }
+
+  .ridgeline path {
+    fill: none;
+    stroke: url(#ridgeline-gradient);
+    stroke-width: 1.25;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .ridgeline path + path {
+    stroke: var(--color-border);
+    stroke-width: 0.75;
+    opacity: 0.55;
+  }
+
+  @media (forced-colors: active) {
+    .chart-paper::before,
+    .chart-paper::after {
+      display: none;
+    }
+
+    .ridgeline {
+      block-size: 1px;
+      background: CanvasText;
+    }
+
+    .ridgeline svg {
+      display: none;
+    }
+  }
+}
+
+@layer components {
+  /* -- Page grid ------------------------------------------------------ */
+  .ds-layout {
+    /* Frame geometry. The content column is offset by the spec rail, so a
+       full-bleed band has to reach further on the left than on the right.
+       --bleed-* are consumed by .section--* and .chart-paper. */
+    --frame-max: var(--container-xl);
+    --frame-pad: max(var(--gutter), (100vw - var(--frame-max)) / 2);
+    --rail-width: 14rem;
+    --layout-gap: clamp(2rem, 1rem + 3vw, 4rem);
+    --rail-offset: calc(var(--rail-width) + var(--layout-gap));
+    --bleed-left: calc(-1 * (var(--frame-pad) + var(--rail-offset)));
+    --bleed-right: calc(-1 * var(--frame-pad));
+
+    display: grid;
+    grid-template-columns: var(--rail-width) minmax(0, 1fr);
+    gap: var(--layout-gap);
+    align-items: start;
+  }
+
+  .ds-layout > main {
+    min-inline-size: 0;
+  }
+
+  @media (width < 68rem) {
+    .ds-layout {
+      --rail-offset: 0px;
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  /* -- Spec rail ------------------------------------------------------- */
+  .ds-rail {
+    position: sticky;
+    inset-block-start: calc(var(--header-height) + 1.5rem);
+    align-self: start;
+    max-block-size: calc(100svh - var(--header-height) - 3rem);
+    overflow-y: auto;
+    padding-block-end: 2rem;
+    scrollbar-gutter: stable;
+    /* Above the full-bleed section bands that pass beneath it. */
+    z-index: 2;
+  }
+
+  @media (width < 68rem) {
+    .ds-rail {
+      display: none;
+    }
+  }
+
+  .ds-rail__title {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-micro);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+    margin-block-end: 0.7rem;
+  }
+
+  .ds-rail__list {
+    display: grid;
+    gap: 1px;
+  }
+
+  .ds-rail__list a {
+    display: grid;
+    grid-template-columns: 1.6rem minmax(0, 1fr);
+    gap: 0.4rem;
+    padding: 0.3rem 0.5rem;
+    border-radius: var(--radius-sm);
+    font-size: var(--type-xs);
+    color: var(--color-text-subtle);
+    text-decoration: none;
+    transition:
+      color var(--dur-fast) var(--ease-standard),
+      background-color var(--dur-fast) var(--ease-standard);
+  }
+
+  .ds-rail__list a:hover {
+    color: var(--color-text-strong);
+    background: var(--color-surface-2);
+  }
+
+  .ds-rail__list a[aria-current="true"] {
+    color: var(--color-text-strong);
+    background: var(--color-primary-soft);
+  }
+
+  .ds-rail__num {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--color-text-subtle);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ds-rail__list a[aria-current="true"] .ds-rail__num {
+    color: var(--color-primary-text);
+  }
+
+  /* -- Hero ------------------------------------------------------------ */
+  .ds-hero {
+    position: relative;
+    padding-block: clamp(3.5rem, 2rem + 6vw, 7rem) clamp(3rem, 2rem + 4vw, 5.5rem);
+  }
+
+  .ds-hero__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.85fr);
+    gap: clamp(2rem, 1rem + 3vw, 4rem);
+    align-items: center;
+  }
+
+  @media (width < 60rem) {
+    .ds-hero__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .ds-hero__title {
+    margin-block: 1rem 0.9rem;
+  }
+
+  /* The highlighted phrase carries the accent colour — the system's
+     "look here" signal. The primary stays reserved for actions and states. */
+  .ds-hero__title em {
+    font-style: normal;
+    color: var(--color-accent);
+  }
+
+  .ds-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-block-start: 1.75rem;
+  }
+
+  .ds-hero__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-block-start: 2.5rem;
+    padding-block-start: 1.25rem;
+    border-block-start: 1px solid var(--color-border-subtle);
+  }
+
+  .ds-hero__meta div {
+    display: grid;
+    gap: 0.15rem;
+  }
+
+  .ds-hero__meta dt,
+  .ds-hero__meta .label {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  .ds-hero__meta dd,
+  .ds-hero__meta strong {
+    font-family: var(--font-mono);
+    font-size: var(--type-sm);
+    color: var(--color-text-strong);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* -- Instrument: the hero visualisation ------------------------------- */
+  .ds-instrument {
+    position: relative;
+    aspect-ratio: 1;
+    inline-size: 100%;
+    max-inline-size: 30rem;
+    margin-inline: auto;
+    display: grid;
+    place-items: center;
+    /* The instrument is a map sheet laid on the chart paper, not a second
+       layer of contour lines. Giving it a surface of its own keeps the two
+       apart: the background is texture, this is an object. */
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    /* Paper in daylight, a lit sheet at night — either way it sits above
+       the chart paper rather than in it. */
+    background: light-dark(var(--color-surface-1), var(--color-surface-2));
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+
+  .ds-instrument__rings {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  .ds-instrument__contours {
+    color: var(--color-border-strong);
+    stroke: currentColor;
+    stroke-width: 1;
+    stroke-linejoin: round;
+  }
+
+  .ds-instrument__summit {
+    color: var(--color-primary);
+    stroke: currentColor;
+    stroke-width: 1.2;
+    stroke-linejoin: round;
+    opacity: 0.8;
+  }
+
+  .ds-instrument__peak {
+    fill: var(--color-primary);
+  }
+
+  .ds-instrument__sonar {
+    position: absolute;
+    inline-size: 18%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 1px solid var(--color-primary);
+    animation: ds-sonar 5.5s var(--ease-out-expo) infinite;
+    pointer-events: none;
+    opacity: 0.55;
+  }
+
+  @keyframes ds-sonar {
+    0% {
+      transform: scale(0.85);
+      opacity: 0;
+    }
+    14% {
+      opacity: 0.5;
+    }
+    100% {
+      transform: scale(2.9);
+      opacity: 0;
+    }
+  }
+
+  .ds-instrument__core {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: 0.15rem;
+    text-align: center;
+    padding: 1rem 1.2rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    background: color-mix(in oklab, var(--color-surface-1) 82%, transparent);
+    backdrop-filter: blur(10px);
+  }
+
+  .ds-instrument__value {
+    font-family: var(--font-display);
+    font-size: 2.25rem;
+    font-weight: var(--weight-bold);
+    letter-spacing: -0.04em;
+    line-height: 1;
+    color: var(--color-text-strong);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ds-instrument__label {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  .ds-instrument__footer {
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline: 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.55rem 0.9rem;
+    background: color-mix(in oklab, var(--color-surface-1) 88%, transparent);
+    backdrop-filter: blur(6px);
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    letter-spacing: 0.06em;
+    color: var(--color-text-subtle);
+  }
+
+  /* -- Specimen blocks ------------------------------------------------- */
+  .ds-spec {
+    display: grid;
+    gap: var(--space-lg);
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Grid items default to a min-content floor, which lets a wide child
+     (a tab strip, a table) push the track past the viewport. */
+  .ds-spec > * {
+    min-inline-size: 0;
+  }
+
+  /* A specimen gets air above it, whatever precedes it — except straight
+     after the section head, which already carries its own. */
+  .section > .ds-spec {
+    margin-block-start: var(--space-xl);
+  }
+
+  .c-section-head + .ds-spec {
+    margin-block-start: 0;
+  }
+
+  /* A header specimen is a header, but it must not stick to the viewport
+     while the reader scrolls the page. The guide neutralises that here, so
+     the specimen markup stays what a consumer copies. */
+  .ds-panel .c-header {
+    position: static;
+  }
+
+  /* Same for the footer: inside a panel it needs an edge of its own, or it
+     melts into the surface behind it. */
+  .ds-panel .c-footer {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+  }
+
+  /* The landing bands sit next to each other, so each needs air above it.
+     That space belongs to the guide, not to the component: it lives here,
+     so the snippet shows the band itself and nothing else. */
+  #landing .c-metrics,
+  #landing .c-pricing,
+  #landing .c-cta {
+    margin-block-start: var(--space-cluster);
+  }
+
+  .ds-spec__head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+
+  .ds-spec__name {
+    font-family: var(--font-display);
+    font-size: var(--type-h4);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-strong);
+  }
+
+  .ds-spec__token {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--color-text-subtle);
+  }
+
+  .ds-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .ds-row--between {
+    justify-content: space-between;
+  }
+
+  .ds-stack {
+    display: grid;
+    gap: var(--space-md);
+  }
+
+  .ds-panel {
+    padding: var(--space-lg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-1);
+  }
+
+  .ds-panel--sunken {
+    background: var(--color-canvas-sunken);
+  }
+
+  .ds-panel--grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: var(--space-md);
+    align-items: start;
+  }
+
+  /* A bounded stage: the viewport a component believes it is in. Used for
+     drawers, sheets and anything else that would otherwise take the page. */
+  .ds-stage {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-canvas-sunken);
+  }
+
+  .ds-stage--flush {
+    border: 0;
+    border-radius: 0;
+    background: none;
+  }
+
+  /* An example and the disclosure that shows its markup travel together,
+     so the disclosure always sits under the example — even when the pair
+     is a cell in a two-up grid.
+
+     The cell is as tall as the tallest example beside it. The example
+     takes that height, so a row of specimens reads as one row, and the
+     disclosure sits on the cell's baseline, at the foot. `align-self`
+     says so explicitly: the grid it sits in may align its items to the
+     start, and the disclosures have to line up all the same. */
+  .ds-example {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    gap: 0.6rem;
+    grid-template-columns: minmax(0, 1fr);
+    align-self: stretch;
+    min-inline-size: 0;
+  }
+
+  .ds-example > .ds-code {
+    align-self: end;
+    margin-block-start: 0;
+  }
+
+  /* -- Code disclosure --------------------------------------------------
+     Every rendered example is followed by a disclosure that shows the
+     markup behind it. The snippet is extracted from the example itself,
+     so it can never drift out of date.
+
+     The body of an open disclosure floats: it is taken out of the flow
+     and drawn over the content below, so opening a snippet never pushes
+     the page down and never reflows what the reader is looking at.
+
+     While a snippet is open, the section that holds it draws a scrim
+     over the whole viewport, the way a dialog does. The open example is
+     raised above that scrim, so it and its markup stay sharp and
+     everything else — the section included — falls away.
+     -------------------------------------------------------------------- */
+  .section:has(.ds-code[open]) {
+    /* Above the rest of the page, so the scrim covers all of it. */
+    z-index: 150;
+  }
+
+  .section:has(.ds-code[open])::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    /* Above the section's own content, below the open example. */
+    z-index: 140;
+    background: var(--color-scrim);
+    backdrop-filter: blur(3px);
+  }
+
+  .section:has(.ds-code[open]) .ds-example:has(.ds-code[open]) {
+    position: relative;
+    z-index: 151;
+  }
+
+  .ds-code {
+    position: relative;
+    margin-block-start: 0.6rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-code-bg);
+  }
+
+  .ds-code[open] {
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+    border-block-end-color: transparent;
+  }
+
+  .ds-code__summary {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.45rem 0.75rem;
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+    transition: color var(--dur-fast) var(--ease-standard);
+  }
+
+  .ds-code__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .ds-code__summary:hover {
+    color: var(--color-text-strong);
+  }
+
+  .ds-code__summary svg {
+    inline-size: 0.85rem;
+    block-size: 0.85rem;
+    flex: none;
+  }
+
+  .ds-code__chevron {
+    display: inline-flex;
+    transition: transform var(--dur-base) var(--ease-out-expo);
+  }
+
+  .ds-code[open] .ds-code__chevron {
+    transform: rotate(90deg);
+  }
+
+  .ds-code[open] .ds-code__summary {
+    /* A separator that costs no layout: a border here would move the
+       content below by a pixel every time a snippet opens. */
+    box-shadow: inset 0 -1px 0 var(--color-border-subtle);
+  }
+
+  .ds-code__body {
+    /* Floats out of the flow and over the content below. */
+    position: absolute;
+    inset-inline: -1px;
+    inset-block-start: 100%;
+    z-index: 40;
+    margin-block-start: -1px;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-block-start: 0;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    background: var(--color-code-bg);
+    box-shadow: var(--shadow-md);
+  }
+
+  .ds-code__pre {
+    margin: 0;
+    padding: 0.9rem 1rem;
+    max-block-size: min(70vh, 36rem);
+    overflow: auto;
+    overscroll-behavior: contain;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    line-height: 1.7;
+    color: var(--color-text);
+    tab-size: 2;
+  }
+
+  .ds-code__copy {
+    /* The copy action sits in the summary row, to the right, so it never
+       covers the code it copies. */
+    margin-inline-start: auto;
+    min-block-size: 1.6rem;
+    padding-block: 0.15rem;
+    /* Only while the snippet is open: a closed disclosure has nothing to
+       copy. The space stays reserved, so opening one never shifts a
+       pixel, and `visibility: hidden` keeps the button out of the tab
+       order. */
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity var(--dur-fast) var(--ease-standard);
+  }
+
+  .ds-code[open] .ds-code__copy {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  /* -- Colour ramps ----------------------------------------------------- */
+  .ds-ramp {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .ds-ramp__head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+  }
+
+  .ds-ramp__name {
+    font-family: var(--font-display);
+    font-size: var(--type-h4);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-strong);
+  }
+
+  .ds-ramp__meta {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--color-text-subtle);
+  }
+
+  .ds-ramp__steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(3.25rem, 1fr));
+    gap: 3px;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+
+  .ds-swatch {
+    position: relative;
+    aspect-ratio: 1;
+    background: var(--swatch);
+    display: grid;
+    place-items: end center;
+    padding-block-end: 0.3rem;
+    font-family: var(--font-mono);
+    font-size: 0.5625rem;
+    color: var(--swatch-fg, var(--color-text-strong));
+  }
+
+  .ds-swatch[data-dark="true"] {
+    --swatch-fg: oklch(99% 0 0);
+  }
+
+  .ds-swatch[data-dark="false"] {
+    --swatch-fg: oklch(20% 0.02 230);
+  }
+
+  .ds-swatch::after {
+    content: attr(data-hex);
+    position: absolute;
+    inset-block-start: 0.3rem;
+    inset-inline: 0;
+    text-align: center;
+    font-size: 0.5rem;
+    opacity: 0.7;
+  }
+
+  /* -- Type specimen ---------------------------------------------------- */
+  .ds-specimen {
+    padding: var(--space-xl);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    background: var(--color-surface-1);
+    overflow: hidden;
+  }
+
+  .ds-specimen__meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+    margin-block-end: 1.5rem;
+    padding-block-end: 0.75rem;
+    border-block-end: 1px solid var(--color-border-subtle);
+  }
+
+  .ds-scale {
+    display: grid;
+    gap: 0;
+  }
+
+  .ds-scale__row {
+    display: grid;
+    grid-template-columns: 9rem minmax(0, 1fr);
+    gap: var(--space-md);
+    align-items: baseline;
+    padding-block: 0.7rem;
+    border-block-end: 1px solid var(--color-border-subtle);
+  }
+
+  .ds-scale__row:last-child {
+    border-block-end: none;
+  }
+
+  .ds-scale__token {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--color-text-subtle);
+  }
+
+  .ds-scale__sample {
+    color: var(--color-text-strong);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  @media (width < 48rem) {
+    .ds-scale__row {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.15rem;
+    }
+  }
+
+  /* -- Space / radius visualisers -------------------------------------- */
+  .ds-space-list {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .ds-space-list div {
+    display: grid;
+    grid-template-columns: 8rem minmax(0, 1fr);
+    gap: var(--space-sm);
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--color-text-subtle);
+  }
+
+  .ds-space-list i {
+    display: block;
+    block-size: 0.85rem;
+    border-radius: 2px;
+    background: var(--color-primary);
+    inline-size: var(--w);
+  }
+
+  .ds-radius-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr));
+    gap: var(--space-md);
+  }
+
+  .ds-radius-grid figure {
+    display: grid;
+    gap: 0.5rem;
+    justify-items: center;
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--color-text-subtle);
+  }
+
+  .ds-radius-grid i {
+    inline-size: 3.5rem;
+    block-size: 3.5rem;
+    border-radius: var(--r);
+    background: var(--color-primary-soft);
+    border: 1px solid color-mix(in oklab, var(--color-primary) 40%, transparent);
+  }
+
+  /* -- Motion demos ----------------------------------------------------- */
+  .ds-easing {
+    display: grid;
+    grid-template-columns: 11rem minmax(0, 1fr);
+    gap: var(--space-md);
+    align-items: center;
+    padding-block: 0.7rem;
+    border-block-end: 1px solid var(--color-border-subtle);
+  }
+
+  .ds-easing:last-child {
+    border-block-end: none;
+  }
+
+  .ds-easing__label {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--color-text-subtle);
+  }
+
+  .ds-easing__track {
+    position: relative;
+    block-size: 1.5rem;
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-2);
+    overflow: hidden;
+  }
+
+  .ds-easing__dot {
+    position: absolute;
+    inset-block: 0.25rem;
+    inline-size: 0.5rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-primary);
+    animation: ds-slide 2.4s var(--ease) infinite alternate;
+  }
+
+  @keyframes ds-slide {
+    from {
+      inset-inline-start: 0.25rem;
+    }
+    to {
+      inset-inline-start: calc(100% - 0.75rem);
+    }
+  }
+
+  /* -- Playground ------------------------------------------------------- */
+  .ds-playground {
+    display: grid;
+    grid-template-columns: 18rem minmax(0, 1fr);
+    gap: var(--space-xl);
+    align-items: start;
+  }
+
+  @media (width < 56rem) {
+    .ds-playground {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  .ds-playground__controls {
+    display: grid;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-1);
+  }
+
+  .ds-playground__stage {
+    display: grid;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-1);
+  }
+
+  /* -- Theme comparison -------------------------------------------------- */
+  .ds-theme-pair {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: var(--space-lg);
+  }
+
+  .ds-theme-card {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .ds-theme-card__bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.9rem;
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .ds-theme-card__body {
+    padding: var(--space-lg);
+  }
+
+  /* Light card forces the light palette via color-scheme on the subtree. */
+  .ds-theme-card--light {
+    color-scheme: light;
+    background: oklch(98.2% 0.004 230);
+    color: oklch(33% 0.02 230);
+  }
+
+  .ds-theme-card--dark {
+    color-scheme: dark;
+    background: oklch(12% 0.016 230);
+    color: oklch(92% 0.008 230);
+  }
+
+  .ds-theme-card--light .ds-theme-card__bar {
+    background: oklch(93% 0.008 230);
+    color: oklch(48% 0.018 230);
+  }
+
+  .ds-theme-card--dark .ds-theme-card__bar {
+    background: oklch(18% 0.018 230);
+    color: oklch(72% 0.014 230);
+  }
+
+  .ds-theme-card h3 {
+    color: currentColor;
+    margin-block-end: 0.4rem;
+  }
+
+  .ds-theme-card p {
+    font-size: var(--type-sm);
+    color: color-mix(in oklab, currentColor 72%, transparent);
+  }
+
+  /* -- Install ----------------------------------------------------------- */
+  .ds-install {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .ds-install__row {
+    display: grid;
+    grid-template-columns: 8rem minmax(0, 1fr);
+    gap: var(--space-md);
+    align-items: start;
+    padding-block: 0.75rem;
+    border-block-end: 1px solid var(--color-border-subtle);
+  }
+
+  .ds-install__row:last-child {
+    border-block-end: none;
+  }
+
+  .ds-install__key {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+    padding-block-start: 0.2rem;
+  }
+
+  @media (width < 40rem) {
+    .ds-install__row {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.35rem;
+    }
+  }
+}

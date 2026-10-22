@@ -1,0 +1,950 @@
+/* ============================================================================
+   CONTOUR — Data & dashboard components
+   ----------------------------------------------------------------------------
+   For technical dashboards: KPI tiles, panels, filter bars, dense tables,
+   chart frames and legends. These components read data; they are tuned for
+   scanning and comparison rather than for narrative.
+   ========================================================================= */
+
+@layer components {
+  /* =======================================================================
+     1. DASHBOARD GRID
+     A twelve-column grid, the standard for analytical layouts. Panels span
+     whole columns; on narrow screens everything stacks.
+     ======================================================================= */
+  .c-chart-grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: var(--space-md);
+  }
+
+  .c-chart-grid > * {
+    grid-column: span 12;
+  }
+
+  @media (width >= 40rem) {
+    .c-chart-grid > [data-span="4"] {
+      grid-column: span 4;
+    }
+    .c-chart-grid > [data-span="6"] {
+      grid-column: span 6;
+    }
+    .c-chart-grid > [data-span="8"] {
+      grid-column: span 8;
+    }
+  }
+
+  @media (width >= 64rem) {
+    .c-chart-grid > [data-span="3"] {
+      grid-column: span 3;
+    }
+    .c-chart-grid > [data-span="9"] {
+      grid-column: span 9;
+    }
+  }
+
+  /* =======================================================================
+     2. KPI TILE
+     The headline number. Value leads, label follows, context last.
+     ======================================================================= */
+  .c-kpi {
+    display: grid;
+    gap: 0.35rem;
+    align-content: start;
+    padding: var(--space-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-1);
+  }
+
+  .c-kpi__head {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .c-kpi__label {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  .c-kpi__value {
+    display: flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 1.3rem + 1.2vw, 2.25rem);
+    font-weight: var(--weight-bold);
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    color: var(--color-text-strong);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .c-kpi__unit {
+    font-size: 0.5em;
+    font-weight: var(--weight-medium);
+    color: var(--color-text-subtle);
+    letter-spacing: 0;
+  }
+
+  .c-kpi__foot {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-block-start: 0.15rem;
+  }
+
+  /* Delta — direction is carried by an arrow, not by colour alone. */
+  .c-delta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-family: var(--font-mono);
+    font-size: var(--type-xs);
+    font-variant-numeric: tabular-nums;
+    color: var(--color-text-muted);
+  }
+
+  .c-delta svg {
+    inline-size: 0.8rem;
+    block-size: 0.8rem;
+  }
+
+  .c-delta--up {
+    color: var(--color-success-text);
+  }
+
+  .c-delta--down {
+    color: var(--color-danger-text);
+  }
+
+  .c-delta--flat {
+    color: var(--color-text-subtle);
+  }
+
+  .c-kpi__note {
+    font-size: var(--type-xs);
+    color: var(--color-text-subtle);
+  }
+
+  /* Threshold bar — where the value sits against its target. */
+  .c-threshold {
+    position: relative;
+    block-size: 4px;
+    border-radius: var(--radius-pill);
+    background: var(--color-track);
+    overflow: hidden;
+  }
+
+  .c-threshold__fill {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    inline-size: var(--value, 0%);
+    border-radius: inherit;
+    background: var(--color-primary);
+  }
+
+  .c-threshold[data-state="warning"] .c-threshold__fill {
+    background: var(--color-warning);
+  }
+
+  .c-threshold[data-state="danger"] .c-threshold__fill {
+    background: var(--color-danger);
+  }
+
+  .c-threshold__target {
+    position: absolute;
+    inset-block: -2px;
+    inset-inline-start: var(--target, 50%);
+    inline-size: 1px;
+    background: var(--color-text-strong);
+    opacity: 0.55;
+  }
+
+  /* =======================================================================
+     3. SPARKLINE
+     A trend without axes. Always paired with a number.
+     ======================================================================= */
+  .c-sparkline {
+    display: block;
+    inline-size: 100%;
+    block-size: 2.25rem;
+    overflow: visible;
+  }
+
+  .c-sparkline__line {
+    fill: none;
+    stroke: var(--color-primary);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .c-sparkline__area {
+    fill: color-mix(in oklab, var(--color-primary) 16%, transparent);
+    stroke: none;
+  }
+
+  .c-sparkline--accent .c-sparkline__line {
+    stroke: var(--color-accent);
+  }
+
+  .c-sparkline--accent .c-sparkline__area {
+    fill: color-mix(in oklab, var(--color-accent) 16%, transparent);
+  }
+
+  .c-sparkline__dot {
+    fill: var(--color-primary);
+  }
+
+  .c-sparkline--accent .c-sparkline__dot {
+    fill: var(--color-accent);
+  }
+
+  /* =======================================================================
+     4. PANEL
+     The tile that holds a chart or a table. Header, body, and an optional
+     status — every panel reports its own state, so one broken widget never
+     blanks the screen.
+     ======================================================================= */
+  .c-panel {
+    container-type: inline-size;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-1);
+    overflow: hidden;
+  }
+
+  .c-panel__head {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    border-block-end: 1px solid var(--color-border-subtle);
+  }
+
+  .c-panel__title {
+    font-family: var(--font-display);
+    font-size: var(--type-h4);
+    font-weight: var(--weight-semibold);
+    letter-spacing: -0.012em;
+    color: var(--color-text-strong);
+  }
+
+  .c-panel__subtitle {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--color-text-subtle);
+    margin-block-start: 0.1rem;
+  }
+
+  .c-panel__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-inline-start: auto;
+  }
+
+  .c-panel__body {
+    flex: 1;
+    padding: var(--space-md);
+    min-block-size: 0;
+  }
+
+  .c-panel__body--flush {
+    padding: 0;
+  }
+
+  .c-panel__foot {
+    padding: 0.65rem var(--space-md);
+    border-block-start: 1px solid var(--color-border-subtle);
+    background: var(--color-surface-2);
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--color-text-subtle);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  /* Per-panel status */
+  .c-panel__status {
+    display: grid;
+    justify-items: center;
+    gap: 0.4rem;
+    padding: var(--space-xl) var(--space-md);
+    text-align: center;
+    color: var(--color-text-subtle);
+    font-size: var(--type-xs);
+  }
+
+  .c-panel__status svg {
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+    opacity: 0.7;
+  }
+
+  .c-panel__status--error {
+    color: var(--color-danger-text);
+  }
+
+  .c-panel__status--live {
+    color: var(--color-accent-text);
+  }
+
+  /* =======================================================================
+     5. CHART FRAME
+     A slot for a visualisation: grid lines, axis labels, and a legend.
+     ======================================================================= */
+  .c-chart {
+    position: relative;
+    display: grid;
+    grid-template-rows: 1fr auto;
+    gap: var(--space-2xs);
+  }
+
+  .c-chart__plot {
+    position: relative;
+    aspect-ratio: 16 / 7;
+    min-block-size: 8rem;
+    border-block-end: 1px solid var(--chart-axis);
+    background-image: repeating-linear-gradient(
+      to top,
+      var(--chart-grid) 0 1px,
+      transparent 1px 25%
+    );
+  }
+
+  .c-chart__axis {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--chart-label);
+  }
+
+  .c-chart__bar {
+    position: absolute;
+    inset-block-end: 0;
+    inline-size: var(--w, 30%);
+    inset-inline-start: var(--x, 0%);
+    block-size: var(--h, 50%);
+    border-radius: var(--radius-xs) var(--radius-xs) 0 0;
+    background: var(--c, var(--chart-1));
+  }
+
+  .c-chart__line {
+    fill: none;
+    stroke: var(--c, var(--chart-1));
+    stroke-width: 1.75;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  /* Series redundancy. The palette separates eight hues by hue, not by
+     lightness, so a line also carries a dash pattern. One rule, applied by
+     series index — the chart never asks the reader to tell two colours
+     apart. */
+  .c-chart__line[data-series="1"] {
+    stroke-dasharray: var(--chart-dash-1);
+  }
+  .c-chart__line[data-series="2"] {
+    stroke-dasharray: var(--chart-dash-2);
+  }
+  .c-chart__line[data-series="3"] {
+    stroke-dasharray: var(--chart-dash-3);
+  }
+  .c-chart__line[data-series="4"] {
+    stroke-dasharray: var(--chart-dash-4);
+  }
+  .c-chart__line[data-series="5"] {
+    stroke-dasharray: var(--chart-dash-5);
+  }
+  .c-chart__line[data-series="6"] {
+    stroke-dasharray: var(--chart-dash-6);
+  }
+
+  /* -- Chart states -------------------------------------------------- */
+  /* These tokens were declared and never read. They are the vocabulary the
+     chart frame needs for the states a real chart has: missing data, hover,
+     and a tooltip. Wiring them here makes them live. */
+  .c-chart__missing {
+    fill: var(--chart-missing);
+  }
+
+  .c-chart__hover {
+    fill: var(--chart-hover);
+  }
+
+  .c-chart__tooltip {
+    background: var(--chart-tooltip-bg);
+    color: var(--chart-tooltip-fg);
+  }
+
+  /* -- Sequential and diverging bands -------------------------------- */
+  /* The sequential ramp is for ordered data (isolines, density, choropleth
+     classes). The diverging ramp is for data with a real midpoint. Both
+     were declared and never consumed; they are the vocabulary the spatial
+     marks (T-50) will be built on. */
+  .c-chart__band--seq-1 { fill: var(--chart-seq-1); }
+  .c-chart__band--seq-2 { fill: var(--chart-seq-2); }
+  .c-chart__band--seq-3 { fill: var(--chart-seq-3); }
+  .c-chart__band--seq-4 { fill: var(--chart-seq-4); }
+  .c-chart__band--seq-5 { fill: var(--chart-seq-5); }
+  .c-chart__band--seq-6 { fill: var(--chart-seq-6); }
+  .c-chart__band--seq-7 { fill: var(--chart-seq-7); }
+
+  .c-chart__band--div-neg { fill: var(--chart-div-neg); }
+  .c-chart__band--div-mid { fill: var(--chart-div-mid); }
+  .c-chart__band--div-pos { fill: var(--chart-div-pos); }
+
+  /* The legend previews the pattern, so the key and the chart agree. */
+  .c-legend__swatch--line[data-series="2"] {
+    background-image: repeating-linear-gradient(
+      90deg,
+      var(--c) 0 7px,
+      transparent 7px 11px
+    );
+  }
+  .c-legend__swatch--line[data-series="3"] {
+    background-image: repeating-linear-gradient(
+      90deg,
+      var(--c) 0 2px,
+      transparent 2px 6px
+    );
+  }
+  .c-legend__swatch--line[data-series="4"] {
+    background-image: repeating-linear-gradient(
+      90deg,
+      var(--c) 0 9px,
+      transparent 9px 13px,
+      var(--c) 13px 15px,
+      transparent 15px 19px
+    );
+  }
+  .c-legend__swatch--line[data-series="5"] {
+    background-image: repeating-linear-gradient(
+      90deg,
+      var(--c) 0 15px,
+      transparent 15px 20px
+    );
+  }
+  .c-legend__swatch--line[data-series="6"] {
+    background-image: repeating-linear-gradient(
+      90deg,
+      var(--c) 0 6px,
+      transparent 6px 9px,
+      var(--c) 9px 10px,
+      transparent 10px 13px
+    );
+  }
+
+  .c-chart__point {
+    fill: var(--c, var(--chart-1));
+  }
+
+  /* Interactive legend */
+  .c-legend--interactive .c-legend__item {
+    cursor: pointer;
+    border-radius: var(--radius-xs);
+    padding: 0.25rem 0.4rem;
+    transition:
+      opacity var(--dur-fast) var(--ease-standard),
+      background-color var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-legend--interactive .c-legend__item:hover {
+    background: var(--color-surface-2);
+  }
+
+  .c-legend__item[aria-pressed="false"] {
+    opacity: 0.4;
+  }
+
+  .c-legend__swatch--line {
+    block-size: 3px;
+    border-radius: var(--radius-pill);
+  }
+
+  /* =======================================================================
+     6. FILTER BAR & PILLS
+     ======================================================================= */
+  .c-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    padding: 0.5rem 0.65rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-1);
+  }
+
+  .c-filter-bar__label {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+    padding-inline: 0.35rem;
+  }
+
+  .c-filter-bar__divider {
+    inline-size: 1px;
+    block-size: 1.25rem;
+    background: var(--color-border);
+  }
+
+  /* An active filter — removable, and always shows what it filters. */
+  .c-filter-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.2rem 0.3rem 0.2rem 0.55rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-2);
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--color-text);
+  }
+
+  .c-filter-pill__key {
+    color: var(--color-text-subtle);
+  }
+
+  .c-filter-pill__value {
+    color: var(--color-text-strong);
+    font-weight: var(--weight-medium);
+  }
+
+  .c-filter-pill__remove {
+    display: grid;
+    place-items: center;
+    inline-size: 1.05rem;
+    block-size: 1.05rem;
+    border-radius: 50%;
+    color: var(--color-text-subtle);
+    cursor: pointer;
+    transition:
+      background-color var(--dur-fast) var(--ease-standard),
+      color var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-filter-pill__remove:hover {
+    background: var(--color-danger-soft);
+    color: var(--color-danger-text);
+  }
+
+  .c-filter-pill__remove svg {
+    inline-size: 0.7rem;
+    block-size: 0.7rem;
+  }
+
+  /* =======================================================================
+     7. TABLE — sortable, selectable, density-aware
+     ======================================================================= */
+  .c-table th[aria-sort] {
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .c-table th[aria-sort] .c-table__sort {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .c-table__sort svg {
+    inline-size: 0.8rem;
+    block-size: 0.8rem;
+    opacity: 0.35;
+    transition: opacity var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-table th[aria-sort="ascending"] .c-table__sort svg,
+  .c-table th[aria-sort="descending"] .c-table__sort svg {
+    opacity: 1;
+    color: var(--color-primary-text);
+  }
+
+  /* Density modes. Comfortable by default; compact for scanning. */
+  [data-density="compact"] {
+    --density: var(--density-compact);
+    --density-type: var(--density-type-compact);
+  }
+
+  .c-table {
+    font-size: calc(var(--type-sm) * var(--density-type));
+  }
+
+  .c-table th,
+  .c-table td {
+    padding-block: var(--density-row);
+    padding-inline: var(--space-sm);
+  }
+
+  .c-table--dense {
+    font-size: var(--type-xs);
+  }
+
+  .c-table__pinned {
+    position: sticky;
+    inset-inline-start: 0;
+    z-index: 2;
+    background: var(--color-surface-1);
+    box-shadow: 1px 0 0 var(--color-border);
+  }
+
+  .c-table thead .c-table__pinned {
+    z-index: 3;
+    background: var(--color-surface-2);
+  }
+
+  .c-table__select {
+    inline-size: 2.5rem;
+    text-align: center;
+  }
+
+  .c-table tbody tr[aria-selected="true"] {
+    background: var(--chart-selection);
+  }
+
+  /* Row actions stay hidden until the row is hovered or focused. */
+  .c-table__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    justify-content: flex-end;
+    opacity: 0;
+    transition: opacity var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-table tbody tr:hover .c-table__actions,
+  .c-table tbody tr:focus-within .c-table__actions {
+    opacity: 1;
+  }
+
+  @media (hover: none) {
+    .c-table__actions {
+      opacity: 1;
+    }
+  }
+
+  /* =======================================================================
+     8. TIME RANGE
+     ======================================================================= */
+  .c-time-range {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    letter-spacing: 0.04em;
+    color: var(--color-text-subtle);
+  }
+
+  /* =======================================================================
+     9. ACTIVITY FEED
+     ======================================================================= */
+  .c-activity {
+    display: grid;
+    gap: var(--space-sm);
+  }
+
+  .c-activity__item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 0.6rem;
+    align-items: start;
+    font-size: var(--type-xs);
+  }
+
+  .c-activity__dot {
+    inline-size: 0.5rem;
+    block-size: 0.5rem;
+    margin-block-start: 0.35rem;
+    border-radius: 50%;
+    background: var(--color-text-subtle);
+  }
+
+  .c-activity__dot--primary {
+    background: var(--color-primary);
+  }
+  .c-activity__dot--accent {
+    background: var(--color-accent);
+  }
+  .c-activity__dot--danger {
+    background: var(--color-danger);
+  }
+
+  .c-activity__text {
+    color: var(--color-text);
+    line-height: 1.5;
+  }
+
+  .c-activity__time {
+    font-family: var(--font-mono);
+    color: var(--color-text-subtle);
+    white-space: nowrap;
+  }
+
+  /* =======================================================================
+     10. DRAWER
+     A sliding side panel for drill-down without losing context.
+     ======================================================================= */
+  .c-drawer {
+    position: fixed;
+    inset-block: 0;
+    inset-inline-end: 0;
+    inline-size: min(26rem, 100vw);
+    display: flex;
+    flex-direction: column;
+    border-inline-start: 1px solid var(--color-border);
+    background: var(--color-surface-1);
+    box-shadow: var(--shadow-xl);
+    z-index: var(--z-drawer);
+  }
+
+  .c-drawer__head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-md);
+    border-block-end: 1px solid var(--color-border-subtle);
+  }
+
+  .c-drawer__title {
+    font-family: var(--font-display);
+    font-size: var(--type-h4);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-strong);
+  }
+
+  .c-drawer__body {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-md);
+    display: grid;
+    gap: var(--space-md);
+    align-content: start;
+    scrollbar-gutter: stable;
+    overscroll-behavior: contain;
+  }
+
+  .c-drawer__foot {
+    padding: var(--space-md);
+    border-block-start: 1px solid var(--color-border-subtle);
+    background: var(--color-surface-2);
+  }
+
+  /* The inline variant. The base drawer is pinned to the viewport; this one
+     sits in normal flow, so a drawer can be shown inside a page, a recipe or
+     a specification without covering what it is describing. */
+  .c-drawer--inline {
+    position: relative;
+    inset: auto;
+    inline-size: min(26rem, 100%);
+    min-block-size: 20rem;
+    margin-inline-start: auto;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: none;
+    overflow: hidden;
+  }
+
+  .c-scrim {
+    position: fixed;
+    inset: 0;
+    background: var(--color-scrim);
+    z-index: calc(var(--z-drawer) - 1);
+  }
+}
+
+  /* =======================================================================
+     8. BIVARIATE LEGEND
+     A 2D colour matrix for two variables. The system owns the ramp, the
+     axis and the type; the consumer owns the data and the cell colour.
+     ======================================================================= */
+  .c-bivariate {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: 1fr auto;
+    gap: var(--space-2xs);
+    inline-size: fit-content;
+  }
+
+  .c-bivariate__matrix {
+    display: grid;
+    grid-template-columns: repeat(var(--bv-cols, 3), 1fr);
+    grid-template-rows: repeat(var(--bv-rows, 3), 1fr);
+    gap: 1px;
+    background: var(--color-border-subtle);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+
+  .c-bivariate__cell {
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    background: var(--bv-cell, var(--color-surface-2));
+  }
+
+  .c-bivariate__axis {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .c-bivariate__axis--x {
+    grid-column: 2;
+    grid-row: 2;
+    text-align: center;
+  }
+
+  .c-bivariate__axis--y {
+    grid-column: 1;
+    grid-row: 1;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+  }
+
+  /* =======================================================================
+     9. MAP SLOT — the chrome around a map
+     The system owns the chrome (zoom, attribution, scale, coordinates, layer
+     panel). The consumer owns the canvas. This is the contract that lets a
+     design system theme a map engine it does not ship.
+     ======================================================================= */
+  .c-map-slot {
+    position: relative;
+    isolation: isolate;
+    --map-ctrl-surface: var(--color-surface-1);
+    --map-ctrl-border: var(--color-border);
+    --map-ctrl-radius: var(--radius-md);
+    --map-ctrl-icon: var(--color-text-muted);
+    --map-ctrl-gap: var(--space-3xs);
+    --map-ctrl-size: 2rem;
+  }
+
+  .c-map-slot__chrome {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: var(--z-raised);
+  }
+
+  .c-map-slot__chrome > * {
+    pointer-events: auto;
+  }
+
+  .c-map-slot__controls {
+    position: absolute;
+    inset-block-start: var(--space-sm);
+    inset-inline-end: var(--space-sm);
+    display: flex;
+    flex-direction: column;
+    gap: var(--map-ctrl-gap);
+  }
+
+  .c-map-slot__control {
+    inline-size: var(--map-ctrl-size);
+    block-size: var(--map-ctrl-size);
+    display: grid;
+    place-items: center;
+    background: var(--map-ctrl-surface);
+    border: 1px solid var(--map-ctrl-border);
+    border-radius: var(--map-ctrl-radius);
+    color: var(--map-ctrl-icon);
+    cursor: pointer;
+  }
+
+  .c-map-slot__control:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+
+  .c-map-slot__scale {
+    position: absolute;
+    inset-block-end: var(--space-sm);
+    inset-inline-start: var(--space-sm);
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--color-text-muted);
+  }
+
+  .c-map-slot__attribution {
+    position: absolute;
+    inset-block-end: var(--space-3xs);
+    inset-inline-end: var(--space-3xs);
+    font-size: var(--type-micro);
+    color: var(--color-text-subtle);
+  }
+
+  .c-chart__control {
+    min-inline-size: var(--target-chart);
+    min-block-size: var(--target-chart);
+  }
+
+  /* =======================================================================
+     10. SURVEY LINE — provenance of a number
+     ======================================================================= */
+  .c-survey {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2xs);
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--color-text-subtle);
+    letter-spacing: var(--tracking-micro);
+    text-transform: uppercase;
+  }
+
+  .c-survey__value {
+    font-size: var(--type-body);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-strong);
+    letter-spacing: var(--tracking-body);
+    text-transform: none;
+  }
+
+  .c-survey__sep {
+    opacity: 0.4;
+  }
+
+  /* =======================================================================
+     11. SCALE BAR — unit-aware
+     ======================================================================= */
+  .c-scale-bar {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--color-text-muted);
+  }
+
+  .c-scale-bar__line {
+    block-size: 2px;
+    background: var(--color-text-muted);
+    border-radius: var(--radius-pill);
+  }
+
+  .c-scale-bar__label {
+    white-space: nowrap;
+  }

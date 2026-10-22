@@ -1,0 +1,2426 @@
+/* ============================================================================
+   CONTOUR — Components
+   ----------------------------------------------------------------------------
+   Naming: .c-<block> for the block, .c-<block>__<element> for parts,
+   .c-<block>--<variant> for variants. Elements never rely on descendant
+   selectors so components can be safely nested.
+   ========================================================================= */
+
+@layer components {
+  /* =======================================================================
+     1. BRAND MARK
+     ======================================================================= */
+  .c-mark {
+    display: grid;
+    place-items: center;
+    inline-size: 2.25rem;
+    block-size: 2.25rem;
+    border-radius: var(--radius-md);
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+    flex: none;
+  }
+
+  .c-mark svg {
+    inline-size: 1.35rem;
+    block-size: 1.35rem;
+  }
+
+  .c-mark--lg {
+    inline-size: 3rem;
+    block-size: 3rem;
+    border-radius: var(--radius-lg);
+  }
+
+  .c-mark--lg svg {
+    inline-size: 1.75rem;
+    block-size: 1.75rem;
+  }
+
+  .c-mark--solid {
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+  }
+
+  .c-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    text-decoration: none;
+    color: var(--color-text-strong);
+  }
+
+  .c-brand__name {
+    font-family: var(--font-display);
+    font-weight: var(--weight-bold);
+    font-size: 1.05rem;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+  }
+
+  .c-brand__tag {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-micro);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+    padding-inline-start: 0.7rem;
+    border-inline-start: 1px solid var(--color-border);
+  }
+
+  /* On very narrow screens the version tag is the first thing to go — the
+     wordmark carries the identity, the tag does not. */
+  @media (width < 30rem) {
+    .c-brand__tag {
+      display: none;
+    }
+  }
+
+  /* =======================================================================
+     2. SITE HEADER
+     ======================================================================= */
+  .c-header {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: var(--z-header);
+    background: color-mix(in oklab, var(--color-canvas) 86%, transparent);
+    backdrop-filter: blur(16px) saturate(1.4);
+    border-block-end: 1px solid var(--color-border-subtle);
+  }
+
+  .c-header__inner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    min-block-size: var(--header-height);
+  }
+
+  .c-header__nav {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-inline-start: auto;
+  }
+
+  .c-header__nav a {
+    padding: 0.45rem 0.7rem;
+    border-radius: var(--radius-sm);
+    font-size: var(--type-xs);
+    font-weight: var(--weight-medium);
+    color: var(--color-text-muted);
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      color var(--dur-fast) var(--ease-standard),
+      background-color var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-header__nav a:hover {
+    color: var(--color-text-strong);
+    background: var(--color-surface-2);
+  }
+
+  .c-header__nav a[aria-current="true"] {
+    color: var(--color-text-strong);
+    background: var(--color-primary-soft);
+  }
+
+  .c-header__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-inline-start: auto;
+  }
+
+  .c-header__nav + .c-header__actions {
+    margin-inline-start: var(--space-2xs);
+  }
+
+  @media (width < 60rem) {
+    .c-header__nav {
+      display: none;
+    }
+  }
+
+  /* =======================================================================
+     3. BUTTONS
+     ======================================================================= */
+  .c-btn {
+    --btn-bg: transparent;
+    --btn-fg: var(--color-text);
+    --btn-border: transparent;
+    --btn-shadow: none;
+
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.05rem;
+    min-block-size: var(--target-control);
+    border: 1px solid var(--btn-border);
+    border-radius: var(--radius-pill);
+    background: var(--btn-bg);
+    color: var(--btn-fg);
+    font-family: var(--font-sans);
+    font-size: var(--type-xs);
+    font-weight: var(--weight-semibold);
+    letter-spacing: -0.005em;
+    line-height: 1.1;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    box-shadow: var(--btn-shadow);
+    transition:
+      background-color var(--dur-fast) var(--ease-standard),
+      border-color var(--dur-fast) var(--ease-standard),
+      color var(--dur-fast) var(--ease-standard),
+      transform var(--dur-fast) var(--ease-standard),
+      box-shadow var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-btn:hover {
+    transform: translateY(-1px);
+  }
+
+  .c-btn:active {
+    transform: translateY(0);
+  }
+
+  .c-btn[disabled],
+  .c-btn[aria-disabled="true"] {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .c-btn svg {
+    inline-size: 1rem;
+    block-size: 1rem;
+    flex: none;
+  }
+
+  /* -- Variants ---------------------------------------------------- */
+  .c-btn--primary {
+    --btn-bg: var(--color-primary-solid);
+    --btn-fg: var(--color-on-primary-solid);
+    --btn-shadow: 0 1px 0 var(--shadow-color-highlight) inset,
+      0 6px 18px var(--shadow-color-primary);
+  }
+
+  .c-btn--primary:hover {
+    --btn-bg: var(--color-primary-hover);
+  }
+
+  .c-btn--primary:active {
+    --btn-bg: var(--color-primary-active);
+  }
+
+  .c-btn--secondary {
+    --btn-bg: var(--color-surface-2);
+    --btn-fg: var(--color-text-strong);
+    --btn-border: var(--color-border);
+  }
+
+  .c-btn--secondary:hover {
+    --btn-bg: var(--color-surface-3);
+    --btn-border: var(--color-border-strong);
+  }
+
+  .c-btn--outline {
+    --btn-bg: transparent;
+    --btn-fg: var(--color-text-strong);
+    --btn-border: var(--color-border-strong);
+  }
+
+  .c-btn--outline:hover {
+    --btn-bg: var(--color-surface-2);
+    --btn-border: var(--color-primary);
+    --btn-fg: var(--color-primary-text);
+  }
+
+  .c-btn--ghost {
+    --btn-bg: transparent;
+    --btn-fg: var(--color-text-muted);
+  }
+
+  .c-btn--ghost:hover {
+    --btn-bg: var(--color-surface-2);
+    --btn-fg: var(--color-text-strong);
+  }
+
+  .c-btn--accent {
+    --btn-bg: var(--color-accent);
+    --btn-fg: var(--color-on-accent);
+    --btn-shadow: 0 1px 0 var(--shadow-color-highlight) inset,
+      0 6px 18px var(--shadow-color-accent);
+  }
+
+  .c-btn--accent:hover {
+    --btn-bg: var(--color-accent-hover);
+  }
+
+  .c-btn--danger {
+    --btn-bg: var(--color-danger);
+    --btn-fg: var(--color-on-danger);
+  }
+
+  .c-btn--danger:hover {
+    --btn-bg: var(--color-danger-hover);
+  }
+
+  .c-btn--quiet-danger {
+    --btn-bg: transparent;
+    --btn-fg: var(--color-danger-text);
+    --btn-border: var(--color-border);
+  }
+
+  .c-btn--quiet-danger:hover {
+    --btn-bg: var(--color-danger-soft);
+    --btn-border: var(--color-danger);
+  }
+
+  /* -- Sizes -------------------------------------------------------- */
+  .c-btn--sm {
+    padding: 0.35rem 0.75rem;
+    min-block-size: 2rem;
+    font-size: var(--type-micro);
+    letter-spacing: 0.01em;
+  }
+
+  .c-btn--lg {
+    padding: 0.85rem 1.5rem;
+    min-block-size: 3.25rem;
+    font-size: var(--type-body);
+  }
+
+  .c-btn--icon {
+    inline-size: 2.5rem;
+    min-inline-size: 2.5rem;
+    padding: 0;
+  }
+
+  .c-btn--icon.c-btn--sm {
+    inline-size: 2rem;
+    min-inline-size: 2rem;
+  }
+
+  .c-btn--block {
+    inline-size: 100%;
+  }
+
+  /* -- Groups -------------------------------------------------------- */
+  .c-btn-group {
+    display: inline-flex;
+    align-items: stretch;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .c-btn-group--attached {
+    gap: 0;
+  }
+
+  .c-btn-group--attached .c-btn {
+    border-radius: 0;
+  }
+
+  .c-btn-group--attached .c-btn:first-child {
+    border-start-start-radius: var(--radius-pill);
+    border-end-start-radius: var(--radius-pill);
+  }
+
+  .c-btn-group--attached .c-btn:last-child {
+    border-start-end-radius: var(--radius-pill);
+    border-end-end-radius: var(--radius-pill);
+  }
+
+  .c-btn-group--attached .c-btn + .c-btn {
+    margin-inline-start: -1px;
+  }
+
+  /* -- Loading -------------------------------------------------------- */
+  .c-btn[data-loading="true"] {
+    color: transparent;
+    pointer-events: none;
+  }
+
+  .c-btn[data-loading="true"]::after {
+    content: "";
+    position: absolute;
+    inline-size: 1rem;
+    block-size: 1rem;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    border-block-start-color: transparent;
+    color: var(--btn-fg);
+    animation: c-spin var(--dur-spin) linear infinite;
+  }
+
+  @keyframes c-spin {
+    to {
+      transform: rotate(1turn);
+    }
+  }
+
+  /* -- Text link with arrow ------------------------------------------- */
+  .c-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: var(--type-xs);
+    font-weight: var(--weight-semibold);
+    color: var(--color-link);
+    text-decoration: none;
+  }
+
+  .c-link svg {
+    inline-size: 0.95rem;
+    block-size: 0.95rem;
+    transition: transform var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-link:hover svg {
+    transform: translateX(3px);
+  }
+
+  /* =======================================================================
+     4. BADGES, CHIPS, PILLS
+     ======================================================================= */
+  .c-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--radius-xs);
+    background: var(--color-surface-3);
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    font-weight: var(--weight-medium);
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  .c-badge--primary {
+    background: var(--color-primary-soft);
+    color: var(--color-primary-text);
+  }
+
+  .c-badge--accent {
+    background: var(--color-accent-soft);
+    color: var(--color-accent-text);
+  }
+
+  .c-badge--data {
+    background: var(--color-data-soft);
+    color: var(--color-data-text);
+  }
+
+  .c-badge--success {
+    background: var(--color-success-soft);
+    color: var(--color-success-text);
+  }
+
+  .c-badge--warning {
+    background: var(--color-warning-soft);
+    color: var(--color-warning-text);
+  }
+
+  .c-badge--danger {
+    background: var(--color-danger-soft);
+    color: var(--color-danger-text);
+  }
+
+  .c-badge--outline {
+    background: transparent;
+    border: 1px solid var(--color-control-edge);
+  }
+
+  /* Chip: a rounded readout with a leading state dot */
+  .c-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.7rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-1);
+    font-family: var(--font-mono);
+    font-size: var(--type-xs);
+    font-variant-numeric: tabular-nums;
+    color: var(--color-text);
+  }
+
+  .c-chip--primary {
+    border-color: color-mix(in oklab, var(--color-primary) 40%, transparent);
+    background: var(--color-primary-soft);
+    color: var(--color-primary-text);
+  }
+
+  .c-chip--accent {
+    border-color: color-mix(in oklab, var(--color-accent) 40%, transparent);
+    background: var(--color-accent-soft);
+    color: var(--color-accent-text);
+  }
+
+  .c-chip__value {
+    font-weight: var(--weight-semibold);
+  }
+
+  .c-chip__key {
+    color: var(--color-text-subtle);
+  }
+
+  .c-chip--primary .c-chip__key,
+  .c-chip--accent .c-chip__key {
+    color: currentColor;
+    opacity: 0.7;
+  }
+
+  /* Status pill — uppercase mono, used for state readouts */
+  .c-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-2);
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .c-pill--success {
+    border-color: color-mix(in oklab, var(--color-success) 40%, transparent);
+    background: var(--color-success-soft);
+    color: var(--color-success-text);
+  }
+
+  .c-pill--warning {
+    border-color: color-mix(in oklab, var(--color-warning) 40%, transparent);
+    background: var(--color-warning-soft);
+    color: var(--color-warning-text);
+  }
+
+  .c-pill--danger {
+    border-color: color-mix(in oklab, var(--color-danger) 40%, transparent);
+    background: var(--color-danger-soft);
+    color: var(--color-danger-text);
+  }
+
+  .c-pill--live {
+    border-color: color-mix(in oklab, var(--color-accent) 45%, transparent);
+    background: var(--color-accent-soft);
+    color: var(--color-accent-text);
+  }
+
+  /* Waypoint: the system's status dot. Ring + core; the live variant pulses. */
+  .c-dot {
+    position: relative;
+    display: inline-block;
+    inline-size: 0.55rem;
+    block-size: 0.55rem;
+    border-radius: 50%;
+    background: var(--color-text-subtle);
+    flex: none;
+  }
+
+  .c-dot--primary {
+    background: var(--color-primary);
+  }
+  .c-dot--accent {
+    background: var(--color-accent);
+  }
+  .c-dot--success {
+    background: var(--color-success);
+  }
+  .c-dot--warning {
+    background: var(--color-warning);
+  }
+  .c-dot--danger {
+    background: var(--color-danger);
+  }
+
+  .c-dot--live::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: inherit;
+    animation: c-ping 2.4s var(--ease-out-expo) infinite;
+  }
+
+  @keyframes c-ping {
+    0% {
+      transform: scale(1);
+      opacity: 0.7;
+    }
+    70%,
+    100% {
+      transform: scale(2.8);
+      opacity: 0;
+    }
+  }
+
+  /* -- Scheme toggle ---------------------------------------------------
+     The icon labels the ACTION, not the state: a sun means "click for
+     light", a moon means "click for dark". The icon is swapped in JS by
+     setting data-scheme-next on the button. */
+  .c-scheme-toggle__icons {
+    position: relative;
+    display: grid;
+    place-items: center;
+    inline-size: 1rem;
+    block-size: 1rem;
+  }
+
+  .c-scheme-toggle__icons svg {
+    grid-area: 1 / 1;
+    inline-size: 1rem;
+    block-size: 1rem;
+    transition:
+      opacity var(--dur-fast) var(--ease-standard),
+      transform var(--dur-base) var(--ease-out-expo);
+  }
+
+  .c-scheme-toggle__sun {
+    opacity: 0;
+    transform: rotate(-45deg) scale(0.65);
+  }
+
+  .c-scheme-toggle__moon {
+    opacity: 1;
+    transform: none;
+  }
+
+  .c-scheme-toggle[data-scheme-next="light"] .c-scheme-toggle__sun {
+    opacity: 1;
+    transform: none;
+  }
+
+  .c-scheme-toggle[data-scheme-next="light"] .c-scheme-toggle__moon {
+    opacity: 0;
+    transform: rotate(45deg) scale(0.65);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .c-scheme-toggle__icons svg {
+      transition: none;
+    }
+  }
+
+  /* =======================================================================
+     5. CARD & PLATE
+     ======================================================================= */
+  .c-card {
+    container-type: inline-size;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+    padding: var(--space-lg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-1);
+    transition:
+      border-color var(--dur-base) var(--ease-standard),
+      background-color var(--dur-base) var(--ease-standard),
+      transform var(--dur-base) var(--ease-standard);
+  }
+
+  /* A hairline "trace" that runs along the top edge and lights up on hover.
+     This replaces the reflex of adding a coloured left border. */
+  .c-card::before {
+    content: "";
+    position: absolute;
+    inset-block-start: -1px;
+    inset-inline: 22%;
+    block-size: 1px;
+    background: var(--color-primary);
+    opacity: 0;
+    transition: opacity var(--dur-base) var(--ease-standard);
+  }
+
+  .c-card:hover,
+  .c-card:focus-within {
+    border-color: var(--color-border-strong);
+    background: var(--color-surface-2);
+  }
+
+  .c-card:hover::before,
+  .c-card:focus-within::before {
+    opacity: 0.8;
+  }
+
+  .c-card__title {
+    font-family: var(--font-display);
+    font-size: var(--type-h4);
+    font-weight: var(--weight-semibold);
+    letter-spacing: -0.012em;
+    color: var(--color-text-strong);
+  }
+
+  .c-card__body {
+    color: var(--color-text-muted);
+    font-size: var(--type-sm);
+    line-height: var(--leading-normal);
+  }
+
+  .c-card__foot {
+    margin-block-start: auto;
+    padding-block-start: var(--space-sm);
+  }
+
+  .c-card--flat {
+    background: transparent;
+  }
+
+  .c-card--raised {
+    background: var(--color-surface-2);
+    box-shadow: var(--shadow-md);
+  }
+
+  .c-card--accent {
+    background: var(--color-accent-soft);
+    border-color: color-mix(in oklab, var(--color-accent) 32%, transparent);
+  }
+
+  .c-card--accent .c-card__title {
+    color: var(--color-accent-text);
+  }
+
+  .c-card--interactive {
+    cursor: pointer;
+  }
+
+  .c-card--interactive:hover {
+    transform: translateY(-3px);
+  }
+
+  /* Plate: a raised, gradient-backed specimen surface */
+  .c-plate {
+    position: relative;
+    overflow: hidden;
+    padding: var(--space-xl);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-2xl);
+    background: var(--gradient-plate);
+  }
+
+  .c-plate--contour::after {
+    content: "";
+    position: absolute;
+    inset-block-start: -30%;
+    inset-inline-end: -20%;
+    inline-size: 22rem;
+    block-size: 22rem;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      color-mix(in oklab, var(--color-primary) 22%, transparent),
+      transparent 62%
+    );
+    pointer-events: none;
+  }
+
+  /* Feature card: icon above a title, but with a mono index — the grid
+     monotony breaker used across the system. */
+  .c-feature {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    padding-block-start: var(--space-lg);
+    border-block-start: 1px solid var(--color-border);
+  }
+
+  .c-feature__index {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-label);
+    color: var(--color-text-subtle);
+  }
+
+  .c-feature__title {
+    font-family: var(--font-display);
+    font-size: var(--type-h3);
+    font-weight: var(--weight-semibold);
+    letter-spacing: -0.015em;
+    color: var(--color-text-strong);
+  }
+
+  .c-feature__body {
+    color: var(--color-text-muted);
+    font-size: var(--type-sm);
+    line-height: var(--leading-normal);
+  }
+
+  /* Icon badge: rounded square, tinted — the reference's shape language */
+  .c-icon-badge {
+    display: grid;
+    place-items: center;
+    inline-size: 2.75rem;
+    block-size: 2.75rem;
+    border-radius: var(--radius-md);
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+    flex: none;
+  }
+
+  .c-icon-badge svg {
+    inline-size: 1.35rem;
+    block-size: 1.35rem;
+  }
+
+  .c-icon-badge--accent {
+    background: var(--color-accent-soft);
+    color: var(--color-accent);
+  }
+
+  .c-icon-badge--data {
+    background: var(--color-data-soft);
+    color: var(--color-data);
+  }
+
+  .c-icon-badge--warning {
+    background: var(--color-warning-soft);
+    color: var(--color-warning);
+  }
+
+  /* =======================================================================
+     6. SECTION HEADER
+     ======================================================================= */
+  .c-section-head {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space-md);
+    align-items: start;
+    margin-block-end: var(--space-xl);
+    max-inline-size: 54rem;
+  }
+
+  .c-section-head__title {
+    font-family: var(--font-display);
+    font-size: var(--type-h2);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-heading);
+    color: var(--color-text-strong);
+    margin-block: 0.5rem 0;
+  }
+
+  .c-section-head__desc {
+    color: var(--color-text-muted);
+    font-size: var(--type-body);
+    line-height: var(--leading-relaxed);
+    max-inline-size: var(--measure-tight);
+  }
+
+  @media (width < 40rem) {
+    .c-section-head {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  /* =======================================================================
+     7. DATA READOUT
+     ======================================================================= */
+  .c-readout {
+    display: grid;
+    gap: 0;
+    font-family: var(--font-mono);
+    font-size: var(--type-xs);
+  }
+
+  .c-readout__row {
+    display: grid;
+    grid-template-columns: minmax(6rem, auto) minmax(0, 1fr);
+    gap: var(--space-sm);
+    align-items: baseline;
+    padding-block: 0.55rem;
+    border-block-end: 1px dashed var(--color-border-subtle);
+  }
+
+  .c-readout__row:last-child {
+    border-block-end: none;
+  }
+
+  .c-readout__key {
+    color: var(--color-text-subtle);
+    letter-spacing: 0.02em;
+  }
+
+  .c-readout__value {
+    color: var(--color-text-strong);
+    font-variant-numeric: tabular-nums;
+    text-align: end;
+  }
+
+  .c-readout__value--accent {
+    color: var(--color-accent-text);
+  }
+
+  .c-readout__value--primary {
+    color: var(--color-primary-text);
+  }
+
+  /* =======================================================================
+     8. STAT / METRIC
+     ======================================================================= */
+  .c-stat {
+    display: grid;
+    gap: 0.2rem;
+    align-content: start;
+  }
+
+  .c-stat__label {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  .c-stat__value {
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 1.4rem + 1.4vw, 2.5rem);
+    font-weight: var(--weight-bold);
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    color: var(--color-text-strong);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .c-stat__unit {
+    font-size: 0.5em;
+    color: var(--color-text-subtle);
+    margin-inline-start: 0.15em;
+  }
+
+  .c-stat__delta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-family: var(--font-mono);
+    font-size: var(--type-xs);
+    color: var(--color-success-text);
+  }
+
+  .c-stat--inline {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+  }
+
+  /* =======================================================================
+     9. TABS
+     ======================================================================= */
+  .c-tabs {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    /* A tab strip scrolls rather than forcing its container wider. */
+    min-inline-size: 0;
+  }
+
+  .c-tabs__list {
+    display: flex;
+    align-items: center;
+    gap: 0.15rem;
+    border-block-end: 1px solid var(--color-border);
+    overflow-x: auto;
+    min-inline-size: 0;
+    scrollbar-width: none;
+  }
+
+  .c-tabs__list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .c-tabs__tab {
+    position: relative;
+    padding: 0.7rem 0.9rem;
+    background: none;
+    border: none;
+    font-size: var(--type-xs);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-subtle);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-tabs__tab::after {
+    content: "";
+    position: absolute;
+    inset-block-end: -1px;
+    inset-inline: 0.6rem;
+    block-size: 2px;
+    background: var(--color-primary);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--dur-base) var(--ease-out-expo);
+  }
+
+  .c-tabs__tab:hover {
+    color: var(--color-text);
+  }
+
+  .c-tabs__tab[aria-selected="true"] {
+    color: var(--color-text-strong);
+  }
+
+  .c-tabs__tab[aria-selected="true"]::after {
+    transform: scaleX(1);
+  }
+
+  .c-tabs__panel[hidden] {
+    display: none;
+  }
+
+  .c-tabs__panel {
+    min-inline-size: 0;
+  }
+
+  /* Segmented control — a pill-shaped radio group */
+  .c-segmented {
+    display: inline-flex;
+    padding: 3px;
+    gap: 2px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-1);
+  }
+
+  .c-segmented__option {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.8rem;
+    border: none;
+    border-radius: var(--radius-pill);
+    background: transparent;
+    color: var(--color-text-muted);
+    font-size: var(--type-micro);
+    font-weight: var(--weight-semibold);
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    transition:
+      background-color var(--dur-fast) var(--ease-standard),
+      color var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-segmented__option:hover {
+    color: var(--color-text-strong);
+  }
+
+  .c-segmented__option[aria-pressed="true"],
+  .c-segmented__option[aria-checked="true"] {
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+  }
+
+  /* Segmented option wrapping a native radio. The input stays in the
+     accessibility tree and keeps native arrow-key navigation; the label
+     carries the visual state. */
+  .c-segmented__option:has(> input[type="radio"]) {
+    cursor: pointer;
+  }
+
+  .c-segmented__option input[type="radio"] {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .c-segmented__option:has(> input[type="radio"]:checked) {
+    background: var(--color-primary-solid);
+    color: var(--color-on-primary-solid);
+  }
+
+  .c-segmented__option:has(> input[type="radio"]:focus-visible) {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+
+  .c-segmented__option svg {
+    inline-size: 0.9rem;
+    block-size: 0.9rem;
+    flex: none;
+  }
+
+  /* =======================================================================
+     10. DISCLOSURE / ACCORDION
+     ======================================================================= */
+  .c-disclosure {
+    border-block-end: 1px solid var(--color-border-subtle);
+  }
+
+  .c-disclosure__summary {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding-block: 1rem;
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--font-display);
+    font-size: var(--type-h4);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-strong);
+  }
+
+  .c-disclosure__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .c-disclosure__summary::marker {
+    content: "";
+  }
+
+  .c-disclosure__icon {
+    margin-inline-start: auto;
+    display: grid;
+    place-items: center;
+    inline-size: 1.75rem;
+    block-size: 1.75rem;
+    border-radius: 50%;
+    border: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    transition:
+      transform var(--dur-base) var(--ease-out-expo),
+      background-color var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-disclosure__icon svg {
+    inline-size: 0.9rem;
+    block-size: 0.9rem;
+  }
+
+  .c-disclosure[open] .c-disclosure__icon {
+    transform: rotate(45deg);
+    background: var(--color-primary-soft);
+    color: var(--color-primary-text);
+    border-color: color-mix(in oklab, var(--color-primary) 35%, transparent);
+  }
+
+  .c-disclosure__body {
+    padding-block-end: 1.1rem;
+    color: var(--color-text-muted);
+    font-size: var(--type-sm);
+    line-height: var(--leading-relaxed);
+    max-inline-size: var(--measure-prose);
+  }
+
+  /* =======================================================================
+     11. FORM CONTROLS
+     ======================================================================= */
+  .c-field {
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .c-field__label {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  .c-field__hint {
+    font-size: var(--type-xs);
+    color: var(--color-text-subtle);
+  }
+
+  .c-field__error {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: var(--type-xs);
+    color: var(--color-danger-text);
+  }
+
+  .c-field__error svg {
+    inline-size: 0.9rem;
+    block-size: 0.9rem;
+    flex: none;
+  }
+
+  .c-input,
+  .c-select,
+  .c-textarea {
+    inline-size: 100%;
+    min-block-size: var(--target-control);
+    padding: 0.6rem 0.85rem;
+    border: 1px solid var(--color-control-edge);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-1);
+    color: var(--color-text);
+    font-size: var(--type-sm);
+    line-height: 1.4;
+    transition:
+      border-color var(--dur-fast) var(--ease-standard),
+      background-color var(--dur-fast) var(--ease-standard),
+      box-shadow var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-textarea {
+    min-block-size: 6rem;
+    resize: vertical;
+  }
+
+  .c-input:hover,
+  .c-select:hover,
+  .c-textarea:hover {
+    border-color: var(--color-border-strong);
+  }
+
+  .c-input:focus,
+  .c-select:focus,
+  .c-textarea:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px var(--color-focus-ring),
+      0 0 0 4px var(--color-focus-halo);
+  }
+
+  .c-input[aria-invalid="true"],
+  .c-textarea[aria-invalid="true"] {
+    border-color: var(--color-danger);
+  }
+
+  .c-input[aria-invalid="true"]:focus,
+  .c-textarea[aria-invalid="true"]:focus {
+    box-shadow: 0 0 0 3px
+      color-mix(in oklab, var(--color-danger) 25%, transparent);
+  }
+
+  .c-select {
+    appearance: none;
+    padding-inline-end: 2.25rem;
+    background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+      linear-gradient(135deg, currentColor 50%, transparent 50%);
+    background-position:
+      calc(100% - 1.15rem) calc(50% + 1px),
+      calc(100% - 0.8rem) calc(50% + 1px);
+    background-size:
+      6px 6px,
+      6px 6px;
+    background-repeat: no-repeat;
+    cursor: pointer;
+  }
+
+  .c-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .c-input-group svg {
+    position: absolute;
+    inset-inline-start: 0.8rem;
+    inline-size: 1rem;
+    block-size: 1rem;
+    color: var(--color-text-subtle);
+    pointer-events: none;
+  }
+
+  .c-input-group .c-input {
+    padding-inline-start: 2.4rem;
+  }
+
+  /* -- Range --------------------------------------------------------- */
+  .c-range {
+    inline-size: 100%;
+    appearance: none;
+    block-size: 1.5rem;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .c-range::-webkit-slider-runnable-track {
+    block-size: 4px;
+    border-radius: var(--radius-pill);
+    background: linear-gradient(
+      90deg,
+      var(--color-primary-solid) 0 var(--fill, 0%),
+      var(--color-track) var(--fill, 0%) 100%
+    );
+  }
+
+  .c-range::-moz-range-track {
+    block-size: 4px;
+    border-radius: var(--radius-pill);
+    background: var(--color-track);
+  }
+
+  .c-range::-moz-range-progress {
+    block-size: 4px;
+    border-radius: var(--radius-pill);
+    background: var(--color-primary-solid);
+  }
+
+  .c-range::-webkit-slider-thumb {
+    appearance: none;
+    inline-size: 1.15rem;
+    block-size: 1.15rem;
+    margin-block-start: -0.55rem;
+    border-radius: 50%;
+    background: var(--color-surface-1);
+    border: 2px solid var(--color-primary);
+    box-shadow: 0 2px 8px var(--shadow-color-range);
+    transition: transform var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-range::-moz-range-thumb {
+    inline-size: 1.15rem;
+    block-size: 1.15rem;
+    border-radius: 50%;
+    background: var(--color-surface-1);
+    border: 2px solid var(--color-primary);
+    box-shadow: 0 2px 8px var(--shadow-color-range);
+  }
+
+  .c-range:hover::-webkit-slider-thumb {
+    transform: scale(1.12);
+  }
+
+  .c-range:focus-visible::-webkit-slider-thumb {
+    box-shadow:
+      0 0 0 2px var(--color-focus-ring),
+      0 0 0 4px var(--color-focus-halo),
+      0 2px 8px var(--shadow-color-range);
+  }
+
+  .c-range-scale {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--color-text-subtle);
+    margin-block-start: -0.25rem;
+  }
+
+  /* -- Switch --------------------------------------------------------- */
+  .c-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    cursor: pointer;
+    font-size: var(--type-sm);
+    color: var(--color-text);
+  }
+
+  .c-switch__input {
+    appearance: none;
+    position: relative;
+    inline-size: 2.4rem;
+    block-size: 1.4rem;
+    margin: 0;
+    border-radius: var(--radius-pill);
+    background: var(--color-track);
+    border: 1px solid var(--color-control-edge);
+    cursor: pointer;
+    transition:
+      background-color var(--dur-base) var(--ease-standard),
+      border-color var(--dur-base) var(--ease-standard);
+  }
+
+  .c-switch__input::after {
+    content: "";
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 2px;
+    inline-size: 1.05rem;
+    block-size: 1.05rem;
+    border-radius: 50%;
+    background: var(--color-surface-1);
+    box-shadow: var(--shadow-xs);
+    transform: translateY(-50%);
+    transition: transform var(--dur-base) var(--ease-out-expo);
+  }
+
+  .c-switch__input:checked {
+    background: var(--color-primary-solid);
+    border-color: var(--color-primary-solid);
+  }
+
+  .c-switch__input:checked::after {
+    transform: translateY(-50%) translateX(1rem);
+    background: var(--color-on-primary-solid);
+  }
+
+  .c-switch__input:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* -- Checkbox / radio ----------------------------------------------- */
+  .c-check {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    cursor: pointer;
+    font-size: var(--type-sm);
+    line-height: 1.4;
+  }
+
+  .c-check__input {
+    appearance: none;
+    position: relative;
+    flex: none;
+    inline-size: 1.15rem;
+    block-size: 1.15rem;
+    margin: 0.15rem 0 0;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-xs);
+    background: var(--color-surface-1);
+    cursor: pointer;
+    transition:
+      background-color var(--dur-fast) var(--ease-standard),
+      border-color var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-check__input[type="radio"] {
+    border-radius: 50%;
+  }
+
+  .c-check__input::after {
+    content: "";
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    inline-size: 0.6rem;
+    block-size: 0.6rem;
+    border-radius: 2px;
+    background: var(--color-on-primary);
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform var(--dur-fast) var(--ease-out-expo);
+  }
+
+  .c-check__input[type="radio"]::after {
+    border-radius: 50%;
+    inline-size: 0.45rem;
+    block-size: 0.45rem;
+  }
+
+  .c-check__input:checked {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+
+  .c-check__input:checked::after {
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .c-check__input:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* =======================================================================
+     12. CODE
+     ======================================================================= */
+  .c-code {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-code-bg);
+    overflow: hidden;
+  }
+
+  .c-code__head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: 0.55rem 0.6rem 0.55rem 1rem;
+    background: var(--color-code-header-bg);
+    border-block-end: 1px solid var(--color-border-subtle);
+  }
+
+  .c-code__title {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  .c-code__copy {
+    margin-inline-start: auto;
+  }
+
+  .c-code pre {
+    margin: 0;
+    padding: 1.15rem 1.25rem;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    line-height: 1.75;
+    color: var(--color-text);
+    tab-size: 2;
+  }
+
+  .c-code code {
+    font-family: inherit;
+  }
+
+  .t-keyword {
+    color: var(--color-syntax-keyword);
+  }
+  .t-string {
+    color: var(--color-syntax-string);
+  }
+  .t-function {
+    color: var(--color-syntax-function);
+  }
+  .t-number {
+    color: var(--color-syntax-number);
+  }
+  .t-punct {
+    color: var(--color-syntax-punctuation);
+  }
+  .t-comment {
+    color: var(--color-syntax-comment);
+    font-style: italic;
+  }
+
+  /* =======================================================================
+     13. DATA TABLE
+     ======================================================================= */
+  .c-table-wrap {
+    position: relative;
+    overflow-x: auto;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-1);
+    container: table / inline-size;
+  }
+
+  /* Container query: the table drops its optional columns when the table
+     itself gets narrow — independent of the viewport. A wide table in a
+     narrow sidebar still loses them. */
+  @container table (inline-size < 40rem) {
+    .c-table [data-col="optional"] {
+      display: none;
+    }
+  }
+
+  .c-table {
+    inline-size: 100%;
+    border-collapse: collapse;
+    font-size: var(--type-sm);
+  }
+
+  .c-table th,
+  .c-table td {
+    padding: 0.75rem 1rem;
+    text-align: start;
+    border-block-end: 1px solid var(--color-border-subtle);
+    white-space: nowrap;
+  }
+
+  .c-table thead th {
+    position: sticky;
+    inset-block-start: 0;
+    background: var(--color-surface-2);
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+    z-index: 1;
+  }
+
+  .c-table tbody tr:last-child td {
+    border-block-end: none;
+  }
+
+  .c-table tbody tr {
+    transition: background-color var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-table tbody tr:hover {
+    background: var(--color-surface-2);
+  }
+
+  .c-table td[data-numeric],
+  .c-table th[data-numeric] {
+    text-align: end;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .c-table td[data-mono] {
+    font-family: var(--font-mono);
+    font-size: var(--type-xs);
+  }
+
+  .c-table--compact th,
+  .c-table--compact td {
+    padding: 0.45rem 0.8rem;
+  }
+
+  /* =======================================================================
+     14. CONTOUR METER — progress drawn as elevation rings
+     ======================================================================= */
+  .c-meter {
+    --meter-value: 0.72;
+    --meter-size: 6.5rem;
+    position: relative;
+    display: grid;
+    place-items: center;
+    inline-size: var(--meter-size);
+    block-size: var(--meter-size);
+    flex: none;
+  }
+
+  .c-meter::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: conic-gradient(
+      from -90deg,
+      var(--color-primary) calc(var(--meter-value) * 360deg),
+      transparent 0
+    );
+    -webkit-mask: radial-gradient(
+      circle,
+      transparent 0 62%,
+      #000 63% 100%
+    );
+    mask: radial-gradient(circle, transparent 0 62%, #000 63% 100%);
+  }
+
+  /* No bullseye. Concentric hairlines across the dial read as noise, not
+     as contour: the ring itself carries the progress, and the core carries
+     the number. */
+
+  .c-meter__core {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    gap: 0.1rem;
+    text-align: center;
+  }
+
+  .c-meter__value {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: var(--weight-bold);
+    letter-spacing: -0.03em;
+    color: var(--color-text-strong);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .c-meter__label {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  .c-meter--accent::before {
+    background: conic-gradient(
+      from -90deg,
+      var(--color-accent) calc(var(--meter-value) * 360deg),
+      transparent 0
+    );
+  }
+
+  .c-meter--data::before {
+    background: conic-gradient(
+      from -90deg,
+      var(--color-data) calc(var(--meter-value) * 360deg),
+      transparent 0
+    );
+  }
+
+  /* =======================================================================
+     15. PROGRESS BAR
+     ======================================================================= */
+  .c-progress {
+    block-size: 6px;
+    border-radius: var(--radius-pill);
+    background: var(--color-track);
+    overflow: hidden;
+  }
+
+  .c-progress__bar {
+    block-size: 100%;
+    inline-size: var(--progress, 0%);
+    border-radius: inherit;
+    background: var(--color-primary);
+    transition: inline-size var(--dur-slow) var(--ease-out-expo);
+  }
+
+  .c-progress--accent .c-progress__bar {
+    background: var(--color-accent);
+  }
+
+  /* =======================================================================
+     16. LEGEND
+     ======================================================================= */
+  .c-legend {
+    display: grid;
+    gap: 0.5rem;
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-1);
+    font-size: var(--type-xs);
+  }
+
+  /* The inline legend: a wrapping row of keys that sits on the surface it
+     belongs to — a panel foot, a chart caption. No box, no border, and never
+     a name broken across two lines. */
+  .c-legend--inline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 1rem;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+  }
+
+  .c-legend__title {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  .c-legend__ramp {
+    block-size: 10px;
+    border-radius: var(--radius-pill);
+    background: var(--gradient-heat);
+  }
+
+  .c-legend__scale {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--color-text-subtle);
+  }
+
+  .c-legend__items {
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .c-legend__item {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+  }
+
+  .c-legend__swatch {
+    inline-size: 0.85rem;
+    block-size: 0.85rem;
+    border-radius: 3px;
+    flex: none;
+    background: var(--c, var(--chart-1));
+  }
+
+  /* =======================================================================
+     17. ALERTS / CALLOUTS
+     ======================================================================= */
+  .c-alert {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 0.75rem;
+    align-items: start;
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--color-border);
+    border-inline-start: 3px solid var(--color-text-subtle);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-1);
+    font-size: var(--type-sm);
+    line-height: var(--leading-normal);
+  }
+
+  .c-alert__icon {
+    inline-size: 1.15rem;
+    block-size: 1.15rem;
+    margin-block-start: 0.1rem;
+    flex: none;
+  }
+
+  .c-alert__title {
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-strong);
+    margin-block-end: 0.15rem;
+  }
+
+  .c-alert__body {
+    color: var(--color-text-muted);
+  }
+
+  .c-alert--info {
+    border-inline-start-color: var(--color-info);
+    background: var(--color-info-soft);
+  }
+  .c-alert--info .c-alert__icon {
+    color: var(--color-info-text);
+  }
+
+  .c-alert--success {
+    border-inline-start-color: var(--color-success);
+    background: var(--color-success-soft);
+  }
+  .c-alert--success .c-alert__icon {
+    color: var(--color-success-text);
+  }
+
+  .c-alert--warning {
+    border-inline-start-color: var(--color-warning);
+    background: var(--color-warning-soft);
+  }
+  .c-alert--warning .c-alert__icon {
+    color: var(--color-warning-text);
+  }
+
+  .c-alert--danger {
+    border-inline-start-color: var(--color-danger);
+    background: var(--color-danger-soft);
+  }
+  .c-alert--danger .c-alert__icon {
+    color: var(--color-danger-text);
+  }
+
+  .c-alert--accent {
+    border-inline-start-color: var(--color-accent);
+    background: var(--color-accent-soft);
+  }
+  .c-alert--accent .c-alert__icon {
+    color: var(--color-accent-text);
+  }
+
+  .c-alert__close {
+    color: var(--color-text-subtle);
+    cursor: pointer;
+    padding: 0.15rem;
+    border-radius: var(--radius-xs);
+  }
+
+  .c-alert__close:hover {
+    color: var(--color-text-strong);
+    background: var(--color-surface-3);
+  }
+
+  /* =======================================================================
+     18. TOAST
+     ======================================================================= */
+  .c-toast {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-2);
+    box-shadow: var(--shadow-lg);
+    font-size: var(--type-sm);
+    color: var(--color-text);
+    inline-size: max-content;
+    max-inline-size: min(28rem, calc(100vw - 2rem));
+  }
+
+  .c-toast--success {
+    border-color: color-mix(in oklab, var(--color-success) 45%, transparent);
+  }
+
+  .c-toast--danger {
+    border-color: color-mix(in oklab, var(--color-danger) 45%, transparent);
+  }
+
+  /* =======================================================================
+     19. DIALOG
+     ======================================================================= */
+  .c-dialog {
+    /* The reset zeroes every margin, and that also removes the `margin: auto`
+       the platform uses to centre a modal dialog. Put it back. */
+    margin: auto;
+    max-block-size: calc(100dvh - 3rem);
+    inline-size: min(34rem, calc(100vw - 2rem));
+    padding: 0;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-xl);
+    background: var(--color-surface-1);
+    color: var(--color-text);
+    box-shadow: var(--shadow-xl);
+  }
+
+  .c-dialog::backdrop {
+    background: var(--color-scrim);
+    backdrop-filter: blur(3px);
+  }
+
+  .c-dialog__head {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-sm);
+    padding: 1.25rem 1.35rem 0.75rem;
+  }
+
+  .c-dialog__title {
+    font-family: var(--font-display);
+    font-size: var(--type-h3);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-strong);
+  }
+
+  .c-dialog__body {
+    padding: 0 1.35rem 0.5rem;
+    font-size: var(--type-sm);
+    color: var(--color-text-muted);
+    line-height: var(--leading-relaxed);
+  }
+
+  .c-dialog__foot {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding: 1rem 1.35rem 1.25rem;
+  }
+
+  .c-dialog__close {
+    margin-inline-start: auto;
+    color: var(--color-text-subtle);
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: var(--radius-xs);
+  }
+
+  .c-dialog__close:hover {
+    color: var(--color-text-strong);
+    background: var(--color-surface-3);
+  }
+
+  /* =======================================================================
+     20. TOOLTIP (popover hint)
+     ======================================================================= */
+  .c-tooltip {
+    position: fixed;
+    margin: 0;
+    max-inline-size: 17rem;
+    padding: 0.5rem 0.7rem;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-3);
+    color: var(--color-text);
+    font-size: var(--type-xs);
+    line-height: 1.45;
+    box-shadow: var(--shadow-md);
+  }
+
+  .c-tooltip::backdrop {
+    background: transparent;
+  }
+
+  @supports (anchor-name: --x) {
+    .c-tooltip {
+      position-area: block-start;
+      position-try-fallbacks: flip-block;
+      position-try-order: most-block-size;
+    }
+  }
+
+  /* =======================================================================
+     21. SKELETON & SPINNER & EMPTY STATE
+     ======================================================================= */
+  .c-skeleton {
+    block-size: 0.85rem;
+    border-radius: var(--radius-xs);
+    background: var(--color-skeleton);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .c-skeleton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in oklab, var(--color-text-strong) 8%, transparent),
+      transparent
+    );
+    animation: c-sweep 1.6s var(--ease-in-out) infinite;
+  }
+
+  @keyframes c-sweep {
+    to {
+      transform: translateX(100%);
+    }
+  }
+
+  .c-skeleton--title {
+    block-size: 1.35rem;
+    inline-size: 60%;
+  }
+
+  .c-skeleton--text {
+    inline-size: 100%;
+  }
+
+  .c-skeleton--text-short {
+    inline-size: 40%;
+  }
+
+  .c-spinner {
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    border-radius: 50%;
+    border: 2px solid var(--color-track);
+    border-block-start-color: var(--color-primary);
+    animation: c-spin var(--dur-spin) linear infinite;
+  }
+
+  .c-spinner--lg {
+    inline-size: 2.5rem;
+    block-size: 2.5rem;
+    border-width: 3px;
+  }
+
+  .c-empty {
+    display: grid;
+    justify-items: center;
+    gap: 0.5rem;
+    padding: var(--space-xl) var(--space-lg);
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-lg);
+    text-align: center;
+    background:
+      radial-gradient(
+        60% 80% at 50% 0%,
+        color-mix(in oklab, var(--color-primary) 6%, transparent),
+        transparent
+      ),
+      var(--color-surface-1);
+  }
+
+  .c-empty__icon {
+    display: grid;
+    place-items: center;
+    inline-size: 2.75rem;
+    block-size: 2.75rem;
+    border-radius: var(--radius-md);
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+    margin-block-end: 0.25rem;
+  }
+
+  .c-empty__icon svg {
+    inline-size: 1.3rem;
+    block-size: 1.3rem;
+  }
+
+  .c-empty__title {
+    font-family: var(--font-display);
+    font-size: var(--type-h4);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-strong);
+  }
+
+  .c-empty__text {
+    font-size: var(--type-sm);
+    color: var(--color-text-muted);
+    max-inline-size: 30ch;
+  }
+
+  /* =======================================================================
+     22. MISC ATOMS
+     ======================================================================= */
+  .c-avatar {
+    display: grid;
+    place-items: center;
+    inline-size: 2.25rem;
+    block-size: 2.25rem;
+    border-radius: 50%;
+    background: var(--color-primary-soft);
+    color: var(--color-primary-text);
+    font-family: var(--font-mono);
+    font-size: var(--type-xs);
+    font-weight: var(--weight-semibold);
+    flex: none;
+  }
+
+  .c-avatar--lg {
+    inline-size: 3rem;
+    block-size: 3rem;
+    font-size: var(--type-sm);
+  }
+
+  .c-avatar--accent {
+    background: var(--color-accent-soft);
+    color: var(--color-accent-text);
+  }
+
+  .c-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: var(--type-xs);
+    color: var(--color-text-subtle);
+    flex-wrap: wrap;
+  }
+
+  .c-breadcrumb a {
+    color: var(--color-text-muted);
+    text-decoration: none;
+  }
+
+  .c-breadcrumb a:hover {
+    color: var(--color-text-strong);
+  }
+
+  .c-breadcrumb__sep {
+    opacity: 0.5;
+  }
+
+  .c-pagination {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .c-pagination__link {
+    display: grid;
+    place-items: center;
+    min-inline-size: 2.25rem;
+    block-size: 2.25rem;
+    padding-inline: 0.5rem;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: var(--type-xs);
+    color: var(--color-text-muted);
+    text-decoration: none;
+  }
+
+  .c-pagination__link:hover {
+    background: var(--color-surface-2);
+    color: var(--color-text-strong);
+  }
+
+  .c-pagination__link[aria-current="page"] {
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+  }
+
+  .c-kbd {
+    display: inline-block;
+    padding: var(--kbd-padding, 0.1rem 0.4rem);
+    border: 1px solid var(--color-border);
+    border-block-end-width: 2px;
+    border-radius: var(--radius-xs);
+    background: var(--color-surface-2);
+    font-family: var(--font-mono);
+    font-size: var(--kbd-font-size, 0.75em);
+    color: var(--color-text-muted);
+  }
+
+  /* Timeline — an elevation profile of events */
+  .c-timeline {
+    display: grid;
+    gap: 0;
+  }
+
+  .c-timeline__item {
+    position: relative;
+    padding-inline-start: 1.75rem;
+    padding-block-end: 1.25rem;
+  }
+
+  .c-timeline__item::before {
+    content: "";
+    position: absolute;
+    inset-inline-start: 0.3rem;
+    inset-block-start: 0.55rem;
+    inline-size: 0.55rem;
+    block-size: 0.55rem;
+    border-radius: 50%;
+    background: var(--color-surface-1);
+    border: 2px solid var(--color-primary);
+  }
+
+  .c-timeline__item::after {
+    content: "";
+    position: absolute;
+    inset-inline-start: 0.56rem;
+    inset-block: 1.35rem 0;
+    inline-size: 1px;
+    background: var(--color-border);
+  }
+
+  .c-timeline__item:last-child::after {
+    display: none;
+  }
+
+  .c-timeline__time {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    letter-spacing: 0.04em;
+    color: var(--color-text-subtle);
+  }
+
+  .c-timeline__title {
+    font-size: var(--type-sm);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-strong);
+  }
+
+  .c-timeline__text {
+    font-size: var(--type-xs);
+    color: var(--color-text-muted);
+  }
+
+  /* Quote / callout */
+  .c-pullquote {
+    position: relative;
+    padding-inline-start: 1.5rem;
+    border-inline-start: 2px solid var(--color-primary);
+    font-family: var(--font-display);
+    font-size: var(--type-h3);
+    line-height: 1.35;
+    letter-spacing: -0.015em;
+    color: var(--color-text-strong);
+    max-inline-size: 32ch;
+  }
+
+  .c-pullquote cite {
+    display: block;
+    margin-block-start: 0.75rem;
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    font-style: normal;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  /* =======================================================================
+     23. FOOTER
+     ======================================================================= */
+  .c-footer {
+    border-block-start: 1px solid var(--color-border);
+    padding-block: var(--space-xl) var(--space-2xl);
+    background: var(--color-surface-1);
+  }
+
+  .c-footer__grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xl);
+    justify-content: space-between;
+  }
+
+  .c-footer__brand {
+    max-inline-size: 26rem;
+  }
+
+  .c-footer__note {
+    margin-block-start: 0.75rem;
+    font-size: var(--type-sm);
+    color: var(--color-text-muted);
+    line-height: var(--leading-normal);
+  }
+
+  .c-footer__links {
+    display: flex;
+    gap: var(--space-lg);
+    flex-wrap: wrap;
+  }
+
+  .c-footer__col h3 {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+    margin-block-end: 0.6rem;
+  }
+
+  .c-footer__col a {
+    display: block;
+    font-size: var(--type-sm);
+    color: var(--color-text-muted);
+    text-decoration: none;
+    padding-block: 0.18rem;
+  }
+
+  .c-footer__col a:hover {
+    color: var(--color-text-strong);
+  }
+
+  /* =======================================================================
+     24. TOOLBAR (map-style floating control bar)
+     ======================================================================= */
+  .c-toolbar {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    background: color-mix(in oklab, var(--color-surface-1) 88%, transparent);
+    backdrop-filter: blur(12px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .c-toolbar__btn {
+    display: grid;
+    place-items: center;
+    inline-size: 2.25rem;
+    block-size: 2.25rem;
+    border-radius: var(--radius-pill);
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition:
+      background-color var(--dur-fast) var(--ease-standard),
+      color var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-toolbar__btn svg {
+    inline-size: 1.1rem;
+    block-size: 1.1rem;
+  }
+
+  .c-toolbar__btn:hover {
+    background: var(--color-surface-3);
+    color: var(--color-text-strong);
+  }
+
+  .c-toolbar__btn[aria-pressed="true"] {
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+  }
+
+  /* =======================================================================
+     25. SHEET / PANEL (map side panel)
+     ======================================================================= */
+  .c-sheet {
+    display: flex;
+    flex-direction: column;
+    inline-size: min(24rem, 100%);
+    block-size: 100%;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    background: var(--color-surface-1);
+    overflow: hidden;
+  }
+
+  .c-sheet__head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: 1rem 1.1rem;
+    border-block-end: 1px solid var(--color-border-subtle);
+  }
+
+  .c-sheet__title {
+    font-family: var(--font-display);
+    font-size: var(--type-h4);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-strong);
+  }
+
+  .c-sheet__body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.1rem;
+    display: grid;
+    gap: var(--space-md);
+    align-content: start;
+    scrollbar-gutter: stable;
+    overscroll-behavior: contain;
+  }
+
+  .c-sheet__foot {
+    padding: 0.9rem 1.1rem;
+    border-block-start: 1px solid var(--color-border-subtle);
+    background: var(--color-surface-2);
+  }
+}
+
+  /* -- Standalone radio ----------------------------------------------- */
+  .c-radio {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    cursor: pointer;
+    font-size: var(--type-sm);
+  }
+
+  .c-radio__input {
+    appearance: none;
+    inline-size: var(--target-option);
+    block-size: var(--target-option);
+    margin: 0;
+    border: 2px solid var(--color-control-edge);
+    border-radius: 50%;
+    background: var(--color-surface-1);
+    cursor: pointer;
+    transition: border-color var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-radio__input:checked {
+    border-color: var(--color-primary);
+    background: radial-gradient(circle, var(--color-primary) 40%, transparent 41%);
+  }
+
+  .c-radio__input:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+
+  /* -- Radio list ----------------------------------------------------- */
+  .c-radio-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+  }
+
+  .c-radio-list .c-radio {
+    padding-block: var(--space-3xs);
+  }
+
+  /* -- Flag ----------------------------------------------------------- */
+  .c-flag {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--radius-sm);
+    font-size: var(--type-xs);
+    font-weight: var(--weight-medium);
+    background: var(--color-surface-2);
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+  }
+
+  .c-flag--primary {
+    background: var(--color-primary-soft);
+    color: var(--color-primary-text);
+    border-color: var(--color-primary);
+  }

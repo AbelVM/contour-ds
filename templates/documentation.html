@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Contour — documentation template</title>
+    <meta name="color-scheme" content="light dark" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@500;600;700&display=swap"
+    />
+    <link rel="icon" href="../src/svg/contour-mark.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../src/css/ds.css" />
+    <link rel="stylesheet" href="../src/css/patterns.css" />
+    <script>
+      try {
+        document
+          .querySelector('meta[name="color-scheme"]')
+          .content = localStorage.getItem("contour-scheme") ?? "light dark";
+      } catch (e) {
+        /* storage blocked */
+      }
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="c-header">
+      <div class="container c-header__inner">
+        <a class="c-brand" href="#main">
+          <span class="c-mark"><svg aria-hidden="true"><use href="#i-mark" /></svg></span>
+          <span class="c-brand__name">Contour</span>
+        </a>
+
+        <nav class="c-header__nav" aria-label="Sections">
+          <a href="#install">Install</a>
+          <a href="#options">Options</a>
+          <a href="#pager">Next</a>
+        </nav>
+
+        <div class="c-header__actions">
+          <button
+            class="c-btn c-btn--icon c-btn--secondary c-scheme-toggle"
+            type="button"
+            data-scheme-toggle
+            aria-label="Switch to dark theme"
+          >
+            <span class="c-scheme-toggle__icons" aria-hidden="true">
+              <svg class="c-scheme-toggle__sun"><use href="#i-sun" /></svg>
+              <svg class="c-scheme-toggle__moon"><use href="#i-moon" /></svg>
+            </span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="container">
+      <div class="c-docs-shell">
+        <!-- ===================== NAVIGATION ===================== -->
+        <nav class="c-docs-shell__nav" aria-label="Documentation">
+          <div class="c-docs-nav">
+            <div>
+              <p class="c-docs-nav__group-title">Getting started</p>
+              <ul class="c-docs-nav__list">
+                <li>
+                  <a class="c-docs-nav__link" href="#main" aria-current="page">
+                    <svg aria-hidden="true"><use href="#i-file" /></svg>
+                    Introduction
+                  </a>
+                </li>
+                <li>
+                  <a class="c-docs-nav__link" href="#install">
+                    <svg aria-hidden="true"><use href="#i-route" /></svg>
+                    Quickstart
+                  </a>
+                </li>
+                <li>
+                  <a class="c-docs-nav__link" href="#options">
+                    <svg aria-hidden="true"><use href="#i-grid" /></svg>
+                    Options
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <details class="c-docs-nav__group" open>
+              <summary>
+                <span class="c-docs-nav__chevron">
+                  <svg aria-hidden="true" style="width: 0.75rem; height: 0.75rem"><use href="#i-chevron-right" /></svg>
+                </span>
+                Reference
+              </summary>
+              <ul class="c-docs-nav__list c-docs-nav__list--nested" style="margin-block-start: 0.35rem">
+                <li>
+                  <a class="c-docs-nav__link" href="#options">route()<span class="c-docs-nav__badge">fn</span></a>
+                </li>
+                <li>
+                  <a class="c-docs-nav__link" href="#options">isoline()<span class="c-docs-nav__badge">fn</span></a>
+                </li>
+              </ul>
+            </details>
+          </div>
+        </nav>
+
+        <!-- ===================== ARTICLE ===================== -->
+        <article class="c-docs-shell__article">
+          <div class="c-docs-shell__header">
+            <div>
+              <nav class="c-breadcrumb" aria-label="Documentation breadcrumb">
+                <a href="#main">Docs</a>
+                <span class="c-breadcrumb__sep" aria-hidden="true">/</span>
+                <a href="#main">Getting started</a>
+                <span class="c-breadcrumb__sep" aria-hidden="true">/</span>
+                <span aria-current="page">Quickstart</span>
+              </nav>
+              <h1 class="c-docs-shell__title">Quickstart</h1>
+              <p class="c-docs-shell__lede">
+                Install the package, point it at a tile source, and compute your first route.
+                Four lines, no server.
+              </p>
+            </div>
+          </div>
+
+          <div class="c-prose">
+            <h2 id="install">
+              Install
+              <a class="c-anchor" href="#install" aria-label="Link to Install">#</a>
+            </h2>
+            <p>
+              The package ships ESM and type definitions. No peer dependencies beyond MapLibre,
+              and none of them are required for the core API.
+            </p>
+
+            <div class="c-code-tabs" data-tabs>
+              <div class="c-code-tabs__list" role="tablist" aria-label="Package manager">
+                <button class="c-code-tabs__tab" role="tab" type="button" id="tpl-tab-npm" aria-controls="tpl-panel-npm" aria-selected="true">npm</button>
+                <button class="c-code-tabs__tab" role="tab" type="button" id="tpl-tab-pnpm" aria-controls="tpl-panel-pnpm" aria-selected="false" tabindex="-1">pnpm</button>
+                <button class="c-code-tabs__tab" role="tab" type="button" id="tpl-tab-yarn" aria-controls="tpl-panel-yarn" aria-selected="false" tabindex="-1">yarn</button>
+              </div>
+              <div class="c-code-tabs__panel" role="tabpanel" id="tpl-panel-npm" aria-labelledby="tpl-tab-npm">
+                npm install omt-router
+              </div>
+              <div class="c-code-tabs__panel" role="tabpanel" id="tpl-panel-pnpm" aria-labelledby="tpl-tab-pnpm" hidden>
+                pnpm add omt-router
+              </div>
+              <div class="c-code-tabs__panel" role="tabpanel" id="tpl-panel-yarn" aria-labelledby="tpl-tab-yarn" hidden>
+                yarn add omt-router
+              </div>
+            </div>
+
+            <div class="c-install" style="margin-block-start: 1rem">
+              <span class="c-install__prompt" aria-hidden="true">$</span>
+              <code class="c-install__command" id="tpl-cmd">npm install omt-router</code>
+              <button
+                class="c-btn c-btn--ghost c-btn--icon c-btn--sm c-install__copy"
+                type="button"
+                data-copy="#tpl-cmd"
+                aria-label="Copy install command"
+              >
+                <svg aria-hidden="true"><use href="#i-copy" /></svg>
+              </button>
+            </div>
+
+            <h2 id="first-route">
+              Your first route
+              <a class="c-anchor" href="#first-route" aria-label="Link to Your first route">#</a>
+            </h2>
+            <p>
+              Call <code>route()</code> with a source, a destination and a tile URL. It returns
+              the geometry, the cost and the engine that produced them.
+            </p>
+
+            <div class="c-code">
+              <div class="c-code__head">
+                <span class="c-code__title">route.js</span>
+                <button
+                  class="c-btn c-btn--ghost c-btn--sm c-code__copy"
+                  type="button"
+                  data-copy="#tpl-code"
+                  aria-label="Copy code"
+                >
+                  <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                  Copy
+                </button>
+              </div>
+              <pre id="tpl-code"><code><span class="t-keyword">import</span> <span class="t-punctuation">{</span> route <span class="t-punctuation">}</span> <span class="t-keyword">from</span> <span class="t-string">'omt-router'</span><span class="t-punctuation">;</span>
+
+<span class="t-keyword">const</span> r = <span class="t-keyword">await</span> <span class="t-function">route</span>(<span class="t-punctuation">[</span><span class="t-number">-3.7038</span><span class="t-punctuation">,</span> <span class="t-number">40.4168</span><span class="t-punctuation">]</span><span class="t-punctuation">,</span> <span class="t-punctuation">[</span><span class="t-number">-3.6937</span><span class="t-punctuation">,</span> <span class="t-number">40.4101</span><span class="t-punctuation">]</span><span class="t-punctuation">,</span> <span class="t-string">'car'</span><span class="t-punctuation">,</span> url<span class="t-punctuation">);</span></code></pre>
+            </div>
+
+            <div class="c-callout c-callout--tip">
+              <svg class="c-callout__icon" aria-hidden="true"><use href="#i-info" /></svg>
+              <div>
+                <p class="c-callout__title">Tile preparation dominates</p>
+                <div class="c-callout__body">
+                  <p>
+                    The first call fetches and parses every tile in range. The search itself
+                    takes milliseconds — budget for the graph, not the query.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <h2 id="options">
+              Options
+              <a class="c-anchor" href="#options" aria-label="Link to Options">#</a>
+            </h2>
+
+            <div class="c-table-wrap">
+              <table class="c-table c-table--compact">
+                <caption class="visually-hidden">Route options</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Option</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Default</th>
+                    <th scope="col">Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td data-mono>costField</td>
+                    <td data-mono>"travelTime"</td>
+                    <td data-mono>"travelTime"</td>
+                    <td>Which weight the engine minimises.</td>
+                  </tr>
+                  <tr>
+                    <td data-mono>snapRadius</td>
+                    <td data-mono>number</td>
+                    <td data-mono>50</td>
+                    <td>Metres searched for a snap candidate.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <nav class="c-pager" aria-label="Page navigation" id="pager">
+            <a class="c-pager__link c-pager__link--prev" href="#main">
+              <span class="c-pager__dir">
+                <svg aria-hidden="true" style="width: 0.85rem; height: 0.85rem; transform: rotate(180deg)"><use href="#i-arrow-right" /></svg>
+                Previous
+              </span>
+              <span class="c-pager__title">Introduction</span>
+            </a>
+            <a class="c-pager__link c-pager__link--next" href="#options">
+              <span class="c-pager__dir">
+                Next
+                <svg aria-hidden="true" style="width: 0.85rem; height: 0.85rem"><use href="#i-arrow-right" /></svg>
+              </span>
+              <span class="c-pager__title">Routing engines</span>
+            </a>
+          </nav>
+        </article>
+
+        <!-- ===================== ON THIS PAGE ===================== -->
+        <aside class="c-docs-shell__toc" aria-label="On this page">
+          <div class="c-toc" data-toc>
+            <p class="c-toc__title">On this page</p>
+            <ul class="c-toc__list">
+              <li><a class="c-toc__link" href="#install">Install</a></li>
+              <li><a class="c-toc__link" href="#first-route">Your first route</a></li>
+              <li><a class="c-toc__link" href="#options">Options</a></li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <footer class="c-footer">
+      <div class="container c-footer__grid">
+        <div class="c-footer__brand">
+          <p class="c-footer__note">
+            A documentation template built with Contour. The URL is the state: every link here is
+            a real link, so it survives a right-click and works without JavaScript.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <svg width="0" height="0" aria-hidden="true" focusable="false" style="position: absolute">
+      <defs>
+        <symbol id="i-mark" viewBox="0 0 32 32">
+          <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M 12.4 7.2 C 13.8 6.9 15.6 6.8 17.4 7.1 C 19.3 7.4 20.7 8.4 21.4 9.8 C 22.1 11.2 22.1 12.8 21.2 14.1 C 20.3 15.4 18.5 16.2 16.5 16.4 C 14.5 16.6 12.4 16.1 11.2 14.9 C 10 13.7 9.6 12 10 10.4 C 10.3 9.1 11.1 8 12.4 7.2 Z" opacity="0.5" />
+            <path d="M 14.1 10.4 C 15 10.1 16.1 10.1 17 10.4 C 18 10.7 18.7 11.4 19 12.2 C 19.3 13 19.2 13.9 18.8 14.6 C 18.3 15.3 17.5 15.8 16.4 15.9 C 15.3 16 14.2 15.7 13.5 15 C 12.9 14.3 12.7 13.3 12.9 12.4 C 13.1 11.5 13.5 10.8 14.1 10.4 Z" />
+          </g>
+        </symbol>
+        <symbol id="i-sun" viewBox="0 0 24 24">
+          <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+            <circle cx="12" cy="12" r="4.2" />
+            <path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4 17 7M7 17l-1.6 1.6" />
+          </g>
+        </symbol>
+        <symbol id="i-moon" viewBox="0 0 24 24">
+          <path d="M20 14.2A8.4 8.4 0 0 1 9.8 4 8.4 8.4 0 1 0 20 14.2Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-copy" viewBox="0 0 24 24">
+          <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round">
+            <rect x="8.5" y="8.5" width="11" height="11" rx="2" />
+            <path d="M15.5 5.5h-9a2 2 0 0 0-2 2v9" />
+          </g>
+        </symbol>
+        <symbol id="i-file" viewBox="0 0 24 24">
+          <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Z" />
+            <path d="M14 3v5h5" />
+          </g>
+        </symbol>
+        <symbol id="i-route" viewBox="0 0 24 24">
+          <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="6" cy="18" r="2.6" />
+            <circle cx="18" cy="6" r="2.6" />
+            <path d="M8.6 18H14a3 3 0 0 0 0-6h-4a3 3 0 0 1 0-6h5.4" />
+          </g>
+        </symbol>
+        <symbol id="i-grid" viewBox="0 0 24 24">
+          <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round">
+            <rect x="3.5" y="3.5" width="7" height="7" rx="1.6" />
+            <rect x="13.5" y="3.5" width="7" height="7" rx="1.6" />
+            <rect x="3.5" y="13.5" width="7" height="7" rx="1.6" />
+            <rect x="13.5" y="13.5" width="7" height="7" rx="1.6" />
+          </g>
+        </symbol>
+        <symbol id="i-chevron-right" viewBox="0 0 24 24">
+          <path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-arrow-right" viewBox="0 0 24 24">
+          <path d="M4 12h15M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-info" viewBox="0 0 24 24">
+          <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="8.6" />
+            <path d="M12 11v5M12 7.8v.4" />
+          </g>
+        </symbol>
+      </defs>
+    </svg>
+
+    <script src="../src/js/ds.js"></script>
+  </body>
+</html>

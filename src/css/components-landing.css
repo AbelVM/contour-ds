@@ -1,0 +1,459 @@
+/* ============================================================================
+   CONTOUR — Landing page components
+   ----------------------------------------------------------------------------
+   For marketing pages: comparison tables, testimonials, pricing, calls to
+   action and logo walls. These read as persuasion, so the type is looser and
+   the surfaces are more generous than the dashboard set.
+   ========================================================================= */
+
+@layer components {
+  /* =======================================================================
+     1. COMPARISON TABLE
+     Feature matrices. The "yes" column must be unambiguous.
+     ======================================================================= */
+  .c-compare {
+    inline-size: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: var(--type-sm);
+  }
+
+  .c-compare th,
+  .c-compare td {
+    padding: var(--space-sm) var(--space-md);
+    text-align: start;
+    border-block-end: 1px solid var(--color-border-subtle);
+    vertical-align: top;
+  }
+
+  .c-compare thead th {
+    border-block-end: 1px solid var(--color-border);
+    font-family: var(--font-display);
+    font-size: var(--type-h4);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-strong);
+  }
+
+  .c-compare thead th[data-highlight="true"] {
+    color: var(--color-primary-text);
+  }
+
+  .c-compare tbody th {
+    font-weight: var(--weight-medium);
+    color: var(--color-text);
+  }
+
+  .c-compare td[data-feature] {
+    text-align: center;
+    color: var(--color-text-muted);
+  }
+
+  /* A check is a shape, not just a colour. */
+  .c-compare__yes {
+    display: inline-grid;
+    place-items: center;
+    inline-size: 1.4rem;
+    block-size: 1.4rem;
+    border-radius: 50%;
+    background: var(--color-success-soft);
+    color: var(--color-success-text);
+  }
+
+  .c-compare__yes svg {
+    inline-size: 0.8rem;
+    block-size: 0.8rem;
+  }
+
+  .c-compare__no {
+    color: var(--color-text-subtle);
+  }
+
+  .c-compare__text {
+    color: var(--color-text-muted);
+    font-size: var(--type-xs);
+  }
+
+  /* =======================================================================
+     2. TESTIMONIAL
+     ======================================================================= */
+  .c-testimonial {
+    display: grid;
+    gap: var(--space-md);
+    padding: var(--space-xl);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    background: var(--color-surface-1);
+  }
+
+  .c-testimonial__quote {
+    font-family: var(--font-display);
+    font-size: var(--type-h3);
+    line-height: 1.35;
+    letter-spacing: -0.015em;
+    color: var(--color-text-strong);
+    text-wrap: balance;
+  }
+
+  .c-testimonial__byline {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .c-testimonial__name {
+    font-size: var(--type-sm);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-strong);
+  }
+
+  .c-testimonial__role {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--color-text-subtle);
+  }
+
+  /* =======================================================================
+     3. CTA BAND
+     The full-width close. Deliberately the loudest surface on the page.
+     ======================================================================= */
+  .c-cta {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    justify-items: center;
+    gap: var(--space-md);
+    padding: var(--space-3xl) var(--gutter);
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .c-cta::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(
+        70% 120% at 50% -20%,
+        color-mix(in oklab, var(--color-primary) 22%, transparent),
+        transparent 70%
+      ),
+      var(--color-surface-1);
+  }
+
+  .c-cta__title {
+    font-family: var(--font-display);
+    font-size: var(--type-display-2);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-display);
+    line-height: 1.05;
+    color: var(--color-text-strong);
+    text-wrap: balance;
+    max-inline-size: 22ch;
+  }
+
+  .c-cta__text {
+    color: var(--color-text-muted);
+    max-inline-size: 52ch;
+    font-size: var(--type-body);
+    line-height: var(--leading-relaxed);
+  }
+
+  .c-cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    justify-content: center;
+    margin-block-start: 0.5rem;
+  }
+
+  /* =======================================================================
+     4. PRICING
+     ======================================================================= */
+  .c-pricing {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+    gap: var(--space-md);
+    align-items: start;
+  }
+
+  .c-price {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    background: var(--color-surface-1);
+  }
+
+  .c-price--featured {
+    border-color: color-mix(in oklab, var(--color-primary) 48%, transparent);
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-primary) 28%, transparent);
+  }
+
+  .c-price__tag {
+    align-self: flex-start;
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-primary-text);
+  }
+
+  .c-price__name {
+    font-family: var(--font-display);
+    font-size: var(--type-h3);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-strong);
+  }
+
+  .c-price__amount {
+    display: flex;
+    align-items: baseline;
+    gap: 0.3rem;
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    font-weight: var(--weight-bold);
+    letter-spacing: -0.035em;
+    line-height: 1;
+    color: var(--color-text-strong);
+  }
+
+  .c-price__period {
+    font-family: var(--font-mono);
+    font-size: var(--type-xs);
+    color: var(--color-text-subtle);
+    letter-spacing: 0;
+  }
+
+  .c-price__desc {
+    font-size: var(--type-sm);
+    color: var(--color-text-muted);
+    line-height: var(--leading-normal);
+  }
+
+  .c-price__features {
+    display: grid;
+    gap: 0.55rem;
+    font-size: var(--type-sm);
+    color: var(--color-text-muted);
+  }
+
+  .c-price__features li {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.5rem;
+    align-items: start;
+  }
+
+  .c-price__features svg {
+    inline-size: 0.9rem;
+    block-size: 0.9rem;
+    margin-block-start: 0.2rem;
+    color: var(--color-primary-text);
+  }
+
+  /* =======================================================================
+     5. LOGO WALL
+     A quiet row of names. Monochrome by default; colour on hover, if the
+     mark allows it.
+     ======================================================================= */
+  .c-logos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 6.5rem), 1fr));
+    gap: var(--space-lg);
+    align-items: center;
+    justify-items: center;
+  }
+
+  .c-logos__item {
+    font-family: var(--font-display);
+    font-size: var(--type-h4);
+    font-weight: var(--weight-semibold);
+    letter-spacing: -0.01em;
+    color: var(--color-text-subtle);
+    opacity: 0.7;
+    transition:
+      opacity var(--dur-base) var(--ease-standard),
+      color var(--dur-base) var(--ease-standard);
+  }
+
+  .c-logos__item:hover {
+    opacity: 1;
+    color: var(--color-text-strong);
+  }
+
+  /* =======================================================================
+     6. FEATURE SHOWCASE
+     An alternating image/text band. The text column is the anchor.
+     ======================================================================= */
+  .c-showcase {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+    gap: var(--space-2xl);
+    align-items: center;
+  }
+
+  .c-showcase--reverse .c-showcase__media {
+    order: -1;
+  }
+
+  .c-showcase__media {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 4 / 3;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    background:
+      radial-gradient(
+        60% 80% at 30% 20%,
+        color-mix(in oklab, var(--color-primary) 10%, transparent),
+        transparent 70%
+      ),
+      var(--color-surface-1);
+    overflow: hidden;
+  }
+
+  .c-showcase__title {
+    font-family: var(--font-display);
+    font-size: var(--type-h2);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-heading);
+    color: var(--color-text-strong);
+    margin-block: 0.5rem 0.75rem;
+    text-wrap: balance;
+  }
+
+  .c-showcase__text {
+    color: var(--color-text-muted);
+    font-size: var(--type-body);
+    line-height: var(--leading-relaxed);
+    max-inline-size: 46ch;
+  }
+
+  .c-showcase__list {
+    display: grid;
+    gap: 0.6rem;
+    margin-block-start: var(--space-md);
+  }
+
+  .c-showcase__list li {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.6rem;
+    align-items: start;
+    font-size: var(--type-sm);
+    color: var(--color-text);
+  }
+
+  .c-showcase__list svg {
+    inline-size: 1rem;
+    block-size: 1rem;
+    margin-block-start: 0.15rem;
+    color: var(--color-primary-text);
+    flex: none;
+  }
+
+  /* =======================================================================
+     7. HEADLINE METRICS
+     A row of numbers that carry a claim, not decoration.
+     ======================================================================= */
+  .c-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+    gap: var(--space-lg);
+    padding-block: var(--space-lg);
+    border-block: 1px solid var(--color-border);
+  }
+
+  .c-metrics__item {
+    display: grid;
+    gap: 0.2rem;
+  }
+
+  .c-metrics__value {
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 1.5rem + 1.1vw, 2.5rem);
+    font-weight: var(--weight-bold);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: var(--color-text-strong);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .c-metrics__label {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  /* =======================================================================
+     8. FAQ
+     ======================================================================= */
+  .c-faq {
+    display: grid;
+    gap: 0.5rem;
+    max-inline-size: 68ch;
+  }
+
+  .c-faq__item {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-1);
+    overflow: hidden;
+  }
+
+  .c-faq__question {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-md);
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--font-display);
+    font-size: var(--type-h4);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-strong);
+  }
+
+  .c-faq__question::-webkit-details-marker {
+    display: none;
+  }
+
+  .c-faq__sign {
+    margin-inline-start: auto;
+    display: grid;
+    place-items: center;
+    inline-size: 1.6rem;
+    block-size: 1.6rem;
+    border-radius: 50%;
+    border: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    flex: none;
+    transition:
+      transform var(--dur-base) var(--ease-out-expo),
+      background-color var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-faq__sign svg {
+    inline-size: 0.8rem;
+    block-size: 0.8rem;
+  }
+
+  .c-faq__item[open] .c-faq__sign {
+    transform: rotate(45deg);
+    background: var(--color-primary-soft);
+    color: var(--color-primary-text);
+    border-color: color-mix(in oklab, var(--color-primary) 35%, transparent);
+  }
+
+  .c-faq__answer {
+    padding: 0 var(--space-md) var(--space-md);
+    color: var(--color-text-muted);
+    font-size: var(--type-sm);
+    line-height: var(--leading-relaxed);
+  }
+}
