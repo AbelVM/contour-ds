@@ -385,11 +385,23 @@
     stroke-dasharray: var(--chart-dash-8);
   }
 
+  /* -- Chart geometry contract (T-136) --------------------------------
+     Gridlines are a 25%-interval CSS gradient by construction; a 5-tick axis
+     and a 4-band grid cannot align. The honest ceiling: the chart frame ships
+     the vocabulary (plot, axis, line, bar, point, band, missing, hover,
+     tooltip); tick placement and the tick->pixel step are the consumer's,
+     computed from Contour.chart.ticks(). Documented, not hidden.
+     ------------------------------------------------------------------ */
+
   /* -- Chart states -------------------------------------------------- */
   /* These tokens were declared and never read. They are the vocabulary the
      chart frame needs for the states a real chart has: missing data, hover,
      and a tooltip. Wiring them here makes them live. */
   .c-chart__missing {
+    fill: url(#contour-hatch-missing);
+  }
+
+  .c-chart__zero {
     fill: var(--chart-missing);
   }
 

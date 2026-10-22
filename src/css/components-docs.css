@@ -715,6 +715,8 @@
     font-size: 0.8125rem;
     line-height: 1.85;
     color: var(--color-text-muted);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
   }
 
   .c-tree__row {
