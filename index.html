@@ -7639,15 +7639,16 @@
 
           <div style="margin-block-start: var(--space-md)">
             <p class="u-mono u-subtle" style="font-size: var(--type-micro); margin-block-end: 0.5rem">.c-container — fixed (fit content) + scrollable (fill space)</p>
-            <div class="ds-example" data-generated="wrap"><div class="c-app" data-snippet style="min-block-size: 12rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden">
+            <div class="ds-example" data-generated="wrap"><div class="c-app" data-snippet style="min-block-size: 14rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden">
               <div class="c-app-body">
                 <aside class="c-sidebar" aria-label="Sidebar" style="width: 12rem; border-inline-end: 1px solid var(--color-border)">
-                  <div class="c-container">
+                  <div class="c-container" style="padding: var(--space-sm)">
                     <div class="c-box c-box--border">
-                      <p style="font-size: var(--type-xs); margin: 0">Fixed container — fits content</p>
+                      <p style="font-size: var(--type-xs); margin: 0; font-weight: var(--weight-medium)">Fixed container</p>
+                      <p style="font-size: var(--type-xs); margin: 0.25rem 0 0">Fits its content, stays put.</p>
                     </div>
                   </div>
-                  <div class="c-container c-container--scrollable">
+                  <div class="c-container c-container--scrollable" style="padding: var(--space-sm)">
                     <div class="c-box">
                       <p style="font-size: var(--type-xs); margin: 0">Scrollable container</p>
                     </div>
@@ -7656,6 +7657,12 @@
                     </div>
                     <div class="c-box">
                       <p style="font-size: var(--type-xs); margin: 0">And scrolls if needed</p>
+                    </div>
+                    <div class="c-box">
+                      <p style="font-size: var(--type-xs); margin: 0">More content here</p>
+                    </div>
+                    <div class="c-box">
+                      <p style="font-size: var(--type-xs); margin: 0">Even more content</p>
                     </div>
                   </div>
                 </aside>
@@ -7675,15 +7682,16 @@
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-113">&lt;div class="c-app" style="min-block-size: 12rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-113">&lt;div class="c-app" style="min-block-size: 14rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden"&gt;
   &lt;div class="c-app-body"&gt;
     &lt;aside class="c-sidebar" aria-label="Sidebar" style="width: 12rem; border-inline-end: 1px solid var(--color-border)"&gt;
-      &lt;div class="c-container"&gt;
+      &lt;div class="c-container" style="padding: var(--space-sm)"&gt;
         &lt;div class="c-box c-box--border"&gt;
-          &lt;p style="font-size: var(--type-xs); margin: 0"&gt;Fixed container — fits content&lt;/p&gt;
+          &lt;p style="font-size: var(--type-xs); margin: 0; font-weight: var(--weight-medium)"&gt;Fixed container&lt;/p&gt;
+          &lt;p style="font-size: var(--type-xs); margin: 0.25rem 0 0"&gt;Fits its content, stays put.&lt;/p&gt;
         &lt;/div&gt;
       &lt;/div&gt;
-      &lt;div class="c-container c-container--scrollable"&gt;
+      &lt;div class="c-container c-container--scrollable" style="padding: var(--space-sm)"&gt;
         &lt;div class="c-box"&gt;
           &lt;p style="font-size: var(--type-xs); margin: 0"&gt;Scrollable container&lt;/p&gt;
         &lt;/div&gt;
@@ -7692,6 +7700,12 @@
         &lt;/div&gt;
         &lt;div class="c-box"&gt;
           &lt;p style="font-size: var(--type-xs); margin: 0"&gt;And scrolls if needed&lt;/p&gt;
+        &lt;/div&gt;
+        &lt;div class="c-box"&gt;
+          &lt;p style="font-size: var(--type-xs); margin: 0"&gt;More content here&lt;/p&gt;
+        &lt;/div&gt;
+        &lt;div class="c-box"&gt;
+          &lt;p style="font-size: var(--type-xs); margin: 0"&gt;Even more content&lt;/p&gt;
         &lt;/div&gt;
       &lt;/div&gt;
     &lt;/aside&gt;
@@ -7702,6 +7716,8 @@
 &lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
+          </div>
+
           </div>
 
           <div style="margin-block-start: var(--space-md)">
@@ -7729,7 +7745,7 @@
                       <div class="ds-code__body">
                         <pre class="ds-code__pre"><code id="ds-code-114">&lt;div class="c-app" style="min-block-size: 8rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden"&gt;
   &lt;div class="c-app-body"&gt;
-    &lt;aside class="c-sidebar" aria-label="Sidebar" style="width: 8rem; padding: var(--space-sm); border-inline-end: 1px solid var(--color-border)"&gt;
+    &lt;aside class="c-sidebar" aria-label="Sidebar (compact)" style="width: 8rem; padding: var(--space-sm); border-inline-end: 1px solid var(--color-border)"&gt;
       &lt;p style="font-size: var(--type-xs); margin: 0"&gt;Sidebar&lt;/p&gt;
     &lt;/aside&gt;
     &lt;div style="padding: var(--space-sm)"&gt;
@@ -7740,7 +7756,7 @@
                       </div>
                     </details></div>
           </div>
-        </div>
+        </main></div>
 
         <!-- ===================== 18 · RECIPES ===================== -->        <!-- ===================== 18 · RECIPES ===================== -->        <!-- ===================== 18 · RECIPES ===================== -->
         <section class="section section--sunken" id="recipes">
@@ -8902,8 +8918,8 @@
             </div>
           </div>
         </section>
-      </main>
-    </div>
+
+
 
     <!-- ===================== FOOTER ===================== -->
     <footer class="c-footer">
