@@ -899,6 +899,103 @@
     color: var(--color-text-subtle);
   }
 
+  /* =======================================================================
+     MAP AREA — the canvas container (Airship-inspired)
+     ======================================================================= */
+  .c-map-area {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    overflow: hidden;
+    background: var(--color-canvas);
+  }
+
+  .c-map-area > .c-map-slot,
+  .c-map-area > [data-map] {
+    flex: 1 1 auto;
+    min-block-size: 0;
+  }
+
+  /* =======================================================================
+     MAP PANEL — positioned over the map (Airship-inspired)
+     ======================================================================= */
+  .c-map-panel {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+    padding: var(--space-sm);
+    max-inline-size: calc(100% - var(--space-lg));
+    max-block-size: calc(100% - var(--space-lg));
+    overflow: auto;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    pointer-events: auto;
+    z-index: var(--z-raised);
+  }
+
+  .c-map-panel--top { inset-block-start: var(--space-sm); }
+  .c-map-panel--bottom { inset-block-end: var(--space-sm); }
+  .c-map-panel--left { inset-inline-start: var(--space-sm); }
+  .c-map-panel--right { inset-inline-end: var(--space-sm); }
+  .c-map-panel--center {
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .c-map-panel--vertical { flex-direction: column; }
+
+  /* =======================================================================
+     MAP FOOTER — bottom panel for charts/tables (Airship-inspired)
+     ======================================================================= */
+  .c-map-footer {
+    display: flex;
+    flex: 0 0 auto;
+    max-block-size: 16rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border-block-start: 1px solid var(--color-border);
+    background: var(--color-surface-1);
+  }
+
+  .c-map-footer > * {
+    flex: 1 1 0;
+    min-inline-size: 12rem;
+    padding: var(--space-sm);
+  }
+
+  /* =======================================================================
+     APP SHELL (Airship-inspired)
+     ======================================================================= */
+  .c-app {
+    display: flex;
+    flex-direction: column;
+    min-block-size: 100dvh;
+    background: var(--color-canvas);
+    color: var(--color-text);
+  }
+
+  .c-app-body {
+    display: flex;
+    flex: 1 1 auto;
+    min-block-size: 0;
+    overflow: hidden;
+  }
+
+  .c-app-body > .c-sidebar {
+    flex: 0 0 auto;
+  }
+
+  .c-app-body > main {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+    overflow: auto;
+  }
+
   .c-chart__control {
     min-inline-size: var(--target-chart);
     min-block-size: var(--target-chart);
