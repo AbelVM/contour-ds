@@ -1007,6 +1007,7 @@
     flex: 1 1 auto;
     overflow-y: auto;
     min-block-size: 0;
+    scrollbar-width: auto;
   }
 
   .c-container--border > *:not(:last-child) {
