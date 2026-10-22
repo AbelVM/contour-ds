@@ -91,7 +91,7 @@ const COVERS = {
   "Space and layout": "the 4 px scale, containers, gutter, header height, target sizes",
   Shape: "radii, borders, hairline, shadows, elevation",
   Motion: "durations and easings",
-  "Z-index": "`--z-base` … `--z-tooltip`",
+  "Z-index": "`--z-raised` … `--z-tooltip`",
   Density: "row height, cell padding, label size",
   Focus: "the focus ring perimeter",
   Miscellaneous: "no documented prefix — fix the taxonomy",

@@ -43,39 +43,20 @@ const CSS = join(ROOT, "src/css");
  * in the source during this change; the rest carry a reviewer's judgement and
  * should be re-checked before the token is deleted.
  */
+// Sixteen of the eighteen entries that opened this session are gone: the
+// basalt steps are rendered by the guide's neutral ramp, --border-width-thick
+// is used by the eight real 2px borders, and the remaining nine had no consumer
+// anywhere — including `assets/`, which was checked before deleting so nothing
+// in the guide's own chrome would break. This list is what is genuinely left.
 const LEDGER = {
-  // The guide's toast host sets `z-index: 700`, which is exactly --z-toast.
-  "--z-toast": { action: "wire", task: "T-103", verified: true, note: "toast host uses the literal 700" },
-
-  // Several control edges are written as `border: 2px solid …`.
-  "--border-width-thick": { action: "wire", task: "T-26", verified: false, note: "raw 2px borders should use the token" },
-
-  // The guide heading promises "a neutral ramp" and renders five ramps; basalt
-  // appears nowhere in index.html, so its light steps read nothing. Adding the
-  // ramp row is the honest fix; deleting seven steps is the lazy one.
-  "--basalt-100": { action: "wire", task: "T-10", verified: true, note: "render the neutral ramp in the guide" },
-  "--basalt-200": { action: "wire", task: "T-10", verified: true, note: "render the neutral ramp in the guide" },
-  "--basalt-300": { action: "wire", task: "T-10", verified: true, note: "render the neutral ramp in the guide" },
-  "--basalt-400": { action: "wire", task: "T-10", verified: true, note: "render the neutral ramp in the guide" },
-  "--basalt-500": { action: "wire", task: "T-10", verified: true, note: "render the neutral ramp in the guide" },
-  "--basalt-600": { action: "wire", task: "T-10", verified: true, note: "render the neutral ramp in the guide" },
-  "--basalt-700": { action: "wire", task: "T-10", verified: true, note: "render the neutral ramp in the guide" },
-
-  // Dialog, popover and tooltip paint in the top layer, so no author z-index
-  // orders them, and the scrim behind a native <dialog> is a ::backdrop.
-  "--z-modal": { action: "delete", task: "T-103", verified: false, note: "top layer is not ordered by z-index" },
-  "--z-scrim": { action: "delete", task: "T-103", verified: false, note: "native ::backdrop draws it" },
-
-  // No `z-index: 0` declaration exists anywhere in src or the guide.
-  "--z-base": { action: "delete", task: "T-103", verified: true, note: "no z-index: 0 to replace" },
-
-  "--container-lg": { action: "delete", task: "T-79", verified: false, note: "no container of this width is declared" },
-  "--space-0": { action: "delete", task: "T-35", verified: false, note: "the zeros in the tree are resets, not rhythm" },
-  "--space-4xl": { action: "delete", task: "T-35", verified: false, note: "the guide's scale stops at 3xl" },
-  "--space-inline": { action: "delete", task: "T-35", verified: false, note: "duplicate of --space-2xs" },
-
-  // Declared three times, read once — never.
-  "--brand-100": { action: "delete", task: "T-35", verified: true, note: "declared 3x, read 0x" },
+  // The toast stack's placement lives entirely in an inline `style` attribute on
+  // #toast-host in the guide; `.c-toast` in the system never sets a z-index, so
+  // no rule in src/ could consume this token today. Pointing the inline style at
+  // it would make a shipped token's only reader a guide attribute, which is the
+  // advertising-not-implementing pattern this census exists to catch. The honest
+  // fix is a `.c-toast-host` rule in src/ that owns the placement — a design call
+  // about where toast positioning belongs, so it stays visible here instead.
+  "--z-toast": { action: "wire", task: "T-103", verified: true, note: "needs a system-owned toast host rule, not a guide inline style" },
 
   // Added with the composable-surface work and not yet referenced by an exit
   // transition. Not deleted on purpose: this is another hand's in-flight edit.

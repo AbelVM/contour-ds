@@ -677,7 +677,7 @@
 
   .c-prose blockquote {
     padding-inline-start: var(--space-md);
-    border-inline-start: 2px solid var(--color-primary);
+    border-inline-start: var(--border-width-thick) solid var(--color-primary);
     color: var(--color-text-muted);
     font-style: italic;
   }

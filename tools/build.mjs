@@ -91,6 +91,15 @@ function tokenBodies(css) {
  * @param {string} css
  * @returns {Record<string, string>}
  */
+function tokenType(value) {
+  const v = String(value).trim();
+  if (/oklch|rgb|hsl|#[0-9a-f]/i.test(v)) return "color";
+  if (/rem$|px$|em$|%$/.test(v)) return "dimension";
+  if (/^[0-9.]+$/.test(v)) return "number";
+  if (/^cubic-bezier|ease|linear/.test(v)) return "cubicBezier";
+  return "string";
+}
+
 function tokensToJson(css) {
   const tokens = {};
   const body = tokenBodies(css);
@@ -100,15 +109,12 @@ function tokensToJson(css) {
     const [, name, raw] = match;
     const value = raw.trim();
     // `light-dark(a, b)` is exported as both values, so a tool can pick. The
-    // split goes through tools/lib/lightdark.mjs rather than a regex here: `.`
-    // does not match a newline, and tokens.css writes several of these calls
-    // across lines, so a pattern-based split published --color-focus-halo,
-    // --color-primary-soft and --color-on-primary-solid as one opaque string.
+    // split goes through tools/lib/lightdark.mjs rather than a regex here.
     const pair = lightDarkPair(value);
     if (pair) {
-      tokens[name] = pair;
+      tokens[name] = { "$value": pair, "$type": "color" };
     } else {
-      tokens[name] = value;
+      tokens[name] = { "$value": value, "$type": tokenType(value) };
     }
   }
   return tokens;
@@ -173,6 +179,18 @@ writeFileSync(join(dist, "contour.min.js"), `${minifyJs(js)}\n`, "utf-8");
 // -- The tokens -------------------------------------------------------------
 const tokens = tokensToJson(readFileSync(join(root, "src/css/tokens.css"), "utf-8"));
 writeFileSync(join(dist, "contour.tokens.json"), `${JSON.stringify(tokens, null, 2)}\n`, "utf-8");
+
+// -- The map-chrome contract (T-93) -----------------------------------------
+const mapChromeContract = {
+  version: "1.0",
+  description: "Vendor-neutralisation contract for map chrome. A host re-keys a vendor control cluster onto Contour tokens.",
+  contourTokens: { surface: "--color-surface-1", border: "--color-border", radius: "--radius-md", icon: "--color-text-muted", gap: "--space-3xs" },
+  engines: {
+    maplibre: { controls: ["navigation","fullscreen","compass","geolocate","globe","terrain","scale","attribution","logo","layer-control"] },
+    mapbox: { controls: ["navigation","fullscreen","geolocate","scale","attribution","logo"] },
+  },
+};
+writeFileSync(join(dist, "map-chrome-contract.json"), `${JSON.stringify(mapChromeContract, null, 2)}\n`, "utf-8");
 
 // -- The assets -------------------------------------------------------------
 // The brand mark ships with the system (it is the favicon and the logo).

@@ -859,6 +859,58 @@
   });
 
   /* ---------------------------------------------------------------------
+     18b. Chart API (T-54) — a scale, a tick generator, a datum layer.
+     No charting library; the frame is Contour's own. The consumer owns the
+     geometry; the system owns the vocabulary.
+     --------------------------------------------------------------------- */
+  function linearScale(domain, range) {
+    const [d0, d1] = domain;
+    const [r0, r1] = range;
+    const span = d1 - d0 || 1;
+    return (v) => r0 + ((v - d0) / span) * (r1 - r0);
+  }
+
+  function niceTicks(min, max, count) {
+    count = count || 5;
+    const span = max - min || 1;
+    const step = Math.pow(10, Math.floor(Math.log10(span / count)));
+    const err = (count * step) / span;
+    let niceStep = step;
+    if (err <= 0.15) niceStep = 10 * step;
+    else if (err <= 0.35) niceStep = 5 * step;
+    else if (err <= 0.75) niceStep = 2 * step;
+    const niceMin = Math.floor(min / niceStep) * niceStep;
+    const niceMax = Math.ceil(max / niceStep) * niceStep;
+    const ticks = [];
+    for (let v = niceMin; v <= niceMax + niceStep / 2; v += niceStep) {
+      ticks.push(Math.round(v * 1e9) / 1e9);
+    }
+    return ticks;
+  }
+
+  function datum(x, y, r) {
+    r = r || 3;
+    return { cx: x, cy: y, r: r };
+  }
+
+  /* ---------------------------------------------------------------------
+     18c. Command registry (T-99) — a declarative shortcut format.
+     A consumer registers commands; the palette reads them. The guard
+     (editable-target) is absolute.
+     --------------------------------------------------------------------- */
+  const commandRegistry = [];
+  function registerCommand(cmd) {
+    if (!cmd || !cmd.id) return;
+    commandRegistry.push(Object.freeze({
+      id: cmd.id,
+      label: cmd.label || cmd.id,
+      shortcut: cmd.shortcut || null,
+      run: typeof cmd.run === "function" ? cmd.run : function () {},
+    }));
+  }
+  function listCommands() { return commandRegistry.slice(); }
+
+  /* ---------------------------------------------------------------------
      19. Public API
      The system's behaviour is progressive enhancement, but a consumer who
      wants a toast, a theme setter, a copy action or a scroll-to-section
@@ -874,5 +926,7 @@
       if (el) goTo(el);
     },
     copy: async (text) => copyText(text),
+    chart: { scale: linearScale, ticks: niceTicks, datum: datum },
+    commands: { register: registerCommand, list: listCommands },
   });
 })();

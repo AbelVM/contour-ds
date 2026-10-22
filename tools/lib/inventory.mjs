@@ -11,7 +11,8 @@
  *              `__element` and `--variant` suffixes away. `.c-btn`,
  *              `.c-btn--primary` and `.c-btn__icon` are one component.
  *   token      a distinct custom property *declared* in src/css/tokens.css.
- *              `--brand-100` declared three times is one token.
+ *              `--brand-200`, declared in `:root` and again in `.c-theme-scope`,
+ *              is one token: the scope re-derivation is the same declaration.
  *   read       a token named by a live `var()` in src/css, src/js,
  *              assets/js, index.html or templates. Comments are stripped
  *              first, so a token named only in prose is not read. A step

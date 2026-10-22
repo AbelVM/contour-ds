@@ -101,11 +101,12 @@ function main() {
     const source = inv.tokens.census[name];
     if (!source) continue;
     const declaredPair = lightDarkPair(source.value);
-    const exportedPair = Boolean(value && typeof value === "object");
+    const v = value && value.$value;
+    const exportedPair = Boolean(v && typeof v === "object" && "light" in v && "dark" in v);
     if (declaredPair && !exportedPair) {
       halfThemed.push(`${name} (declared light-dark(), published as one string)`);
     }
-    if (exportedPair && (!("light" in value) || !("dark" in value))) {
+    if (exportedPair && (!("light" in v) || !("dark" in v))) {
       halfThemed.push(`${name} (one theme only)`);
     }
   }
@@ -118,7 +119,7 @@ function main() {
     return 1;
   }
 
-  const themed = Object.values(exported).filter((v) => v && typeof v === "object").length;
+  const themed = Object.values(exported).filter((v) => v && v.$value && typeof v.$value === "object" && "light" in v.$value).length;
   console.log(`check-export: ${Object.keys(exported).length}/${declared.length} tokens exported, ${themed} as light/dark pairs, semantic layer present. OK`);
   return 0;
 }

@@ -134,10 +134,9 @@
     /* ---------------------------------------------------------------------
        8. SPACE — 4px base, semantic aliases for the rhythm layer
        Hand-picked steps, not a single ratio: the bottom half (0.25–1.25)
-       serves component internals; the top half (1.75–7) is a ~1.4 ratio
+       serves component internals; the top half (1.75–5) is a ~1.4 ratio
        for page-level rhythm. A single ratio would not serve both.
        --------------------------------------------------------------------- */
-    --space-0: 0;
     --space-3xs: 0.25rem;
     --space-2xs: 0.5rem;
     --space-xs: 0.75rem;
@@ -147,10 +146,8 @@
     --space-xl: 2.5rem;
     --space-2xl: 3.5rem;
     --space-3xl: 5rem;
-    --space-4xl: 7rem;
 
     /* Semantic rhythm */
-    --space-inline: 0.5rem; /* label ↔ value on one line */
     --space-stack: 1.25rem; /* sibling blocks in a component */
     --space-cluster: 2rem; /* groups of components */
     --space-section: clamp(4rem, 2.5rem + 6vw, 7.5rem); /* page sections */
@@ -217,18 +214,14 @@
        --------------------------------------------------------------------- */
     --container-sm: 40rem;
     --container-md: 54rem;
-    --container-lg: 72rem;
     --container-xl: 84rem;
     --container-gutter: var(--gutter);
     --header-height: 4.25rem;
 
-    --z-base: 0;
     --z-raised: 10;
     --z-sticky: 100;
     --z-drawer: 300;
     --z-header: 400;
-    --z-scrim: 500;
-    --z-modal: 600;
     --z-toast: 700;
     --z-tooltip: 800;
 
@@ -258,7 +251,6 @@
        surface, ring and tint follows. The documented ramps above stay
        fixed, so the palette reference never drifts. */
     --brand-hue: 182.5;
-    --brand-100: oklch(96% 0.025 var(--brand-hue));
     --brand-200: oklch(92% 0.05 var(--brand-hue));
     --brand-300: oklch(85% 0.09 var(--brand-hue));
     --brand-400: oklch(78% 0.11 var(--brand-hue));
@@ -266,8 +258,6 @@
     --brand-600: oklch(61% 0.115 var(--brand-hue));
     --brand-700: oklch(51% 0.1 var(--brand-hue));
     --brand-800: oklch(41% 0.082 var(--brand-hue));
-    --brand-100: oklch(96% 0.025 var(--brand-hue));
-    --brand-200: oklch(92% 0.05 var(--brand-hue));
 
     /* -- Surfaces --------------------------------------------------- */
     --color-canvas: light-dark(oklch(98.2% 0.004 230), var(--basalt-1000));
@@ -523,7 +513,6 @@
          <div class="c-theme-scope" style="--brand-hue: 250">
      ======================================================================= */
   .c-theme-scope {
-    --brand-100: oklch(96% 0.025 var(--brand-hue));
     --brand-200: oklch(92% 0.05 var(--brand-hue));
     --brand-300: oklch(85% 0.09 var(--brand-hue));
     --brand-400: oklch(78% 0.11 var(--brand-hue));
@@ -583,6 +572,38 @@
     --color-border: oklch(82% 0.008 230);
     --color-border-strong: oklch(65% 0.012 230);
     --color-primary: var(--brand-600);
+    color-scheme: light;
+  }
+
+  [data-theme="dark-matter"] {
+    --color-canvas: oklch(8% 0.012 230);
+    --color-canvas-sunken: oklch(6% 0.01 230);
+    --color-surface-1: oklch(11% 0.014 230);
+    --color-surface-2: oklch(15% 0.016 230);
+    --color-surface-3: oklch(19% 0.018 230);
+    --color-text: oklch(88% 0.012 230);
+    --color-text-strong: oklch(96% 0.008 230);
+    --color-text-muted: oklch(68% 0.014 230);
+    --color-text-subtle: oklch(52% 0.012 230);
+    --color-border: oklch(24% 0.014 230);
+    --color-border-strong: oklch(38% 0.016 230);
+    --color-primary: var(--brand-400);
+    color-scheme: dark;
+  }
+
+  [data-theme="high-contrast"] {
+    --color-canvas: oklch(100% 0 0);
+    --color-canvas-sunken: oklch(96% 0 0);
+    --color-surface-1: oklch(100% 0 0);
+    --color-surface-2: oklch(94% 0 0);
+    --color-surface-3: oklch(88% 0 0);
+    --color-text: oklch(0% 0 0);
+    --color-text-strong: oklch(0% 0 0);
+    --color-text-muted: oklch(20% 0 0);
+    --color-text-subtle: oklch(30% 0 0);
+    --color-border: oklch(0% 0 0);
+    --color-border-strong: oklch(0% 0 0);
+    --color-primary: oklch(0% 0 0);
     color-scheme: light;
   }
 

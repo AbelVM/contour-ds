@@ -878,7 +878,7 @@
   }
 
   .c-map-slot__control:focus-visible {
-    outline: 2px solid var(--color-focus-ring);
+    outline: var(--focus-width) solid var(--color-focus-ring);
     outline-offset: 2px;
   }
 
@@ -997,6 +997,42 @@
     block-size: var(--target-mark, 0);
     min-inline-size: 0;
     min-block-size: 0;
+  }
+
+  /* =======================================================================
+     SPATIAL MARKS (T-50) — the system owns how a mark looks; the pipeline
+     owns the geometry. Four marks, tokenised, no data.
+     ======================================================================= */
+  .c-mark--isoline {
+    fill: none;
+    stroke: var(--chart-seq-4);
+    stroke-width: 1.5;
+    stroke-dasharray: none;
+  }
+
+  .c-mark--catchment {
+    fill: var(--color-chart-selection, var(--color-primary-soft));
+    fill-opacity: 0.45;
+    stroke: var(--color-primary);
+    stroke-width: 1;
+  }
+
+  .c-mark--route {
+    fill: none;
+    stroke: var(--color-primary);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .c-mark--hex {
+    fill: var(--color-surface-2);
+    stroke: var(--color-border);
+    stroke-width: 1;
+  }
+
+  .c-mark--hex[data-class="critical"] {
+    fill: var(--color-danger-soft);
   }
 
 

@@ -288,7 +288,7 @@
     .c-card,
     .c-chip,
     .c-pill {
-      border-width: 2px;
+      border-width: var(--border-width-thick);
     }
   }
 
@@ -439,4 +439,108 @@
     .c-header {
       backdrop-filter: none;
     }
+  }
+
+  /* -- State contract (T-31) -----------------------------------------
+     Every interactive component renders three async states and one
+     disabled state through these modifiers, so a new component inherits
+     the contract for free. */
+  .is-disabled,
+  [aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .is-busy,
+  [aria-busy="true"] {
+    position: relative;
+    cursor: progress;
+  }
+
+  .is-busy::after,
+  [aria-busy="true"]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--color-surface-2);
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  .is-empty {
+    display: grid;
+    place-items: center;
+    min-block-size: 6rem;
+    color: var(--color-text-muted);
+    font-size: var(--type-sm);
+    text-align: center;
+  }
+
+  .c-input:disabled,
+  .c-select:disabled,
+  .c-textarea:disabled {
+    background: var(--color-surface-2);
+    color: var(--color-text-subtle);
+    border-color: var(--color-border-subtle);
+    cursor: not-allowed;
+  }
+
+  .c-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .c-chip:disabled,
+  .c-filter-pill:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .c-switch__input:disabled + .c-switch__track,
+  .c-check__input:disabled + .c-check__box {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .c-tab:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* -- Data grid (T-49): row selection + pagination ------------------ */
+  .c-table tbody tr.is-selected {
+    background: var(--color-selection);
+  }
+
+  .c-table tbody tr.is-selected td {
+    color: var(--color-text-strong);
+  }
+
+  .c-table__pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    border-block-start: 1px solid var(--color-border-subtle);
+    font-size: var(--type-xs);
+    color: var(--color-text-muted);
+  }
+
+  /* -- Undo / reset affordance (T-48) -------------------------------- */
+  .u-reset {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    font-size: var(--type-xs);
+    color: var(--color-text-muted);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in oklab, var(--color-text-muted) 40%, transparent);
+    cursor: pointer;
+  }
+
+  .u-reset:hover {
+    color: var(--color-text);
+    text-decoration-color: currentColor;
   }

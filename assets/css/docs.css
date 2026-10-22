@@ -277,6 +277,36 @@
     font-variant-numeric: tabular-nums;
   }
 
+  .ds-hero__readout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem 1.75rem;
+    margin-block-start: 2.5rem;
+    padding-block-start: 1.25rem;
+    border-block-start: 1px solid var(--color-border-subtle);
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  .ds-hero__readout span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .ds-hero__readout span::before {
+    content: "·";
+    color: var(--color-text-subtle);
+    opacity: 0.5;
+  }
+
+  .ds-hero__readout span:first-child::before {
+    content: none;
+  }
+
   /* -- Instrument: the hero visualisation ------------------------------- */
   .ds-instrument {
     position: relative;

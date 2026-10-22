@@ -14,7 +14,7 @@ engines, pedestrian simulators, geospatial dashboards). It ships three
 surfaces: a **landing page**, a **documentation site** and a **technical
 dashboard**.
 
-- Dark and light themes, <!-- ds:components -->121<!-- /ds:components --> components, <!-- ds:tokens -->277<!-- /ds:tokens --> design tokens.
+- Dark and light themes, <!-- ds:components -->122<!-- /ds:components --> components, <!-- ds:tokens -->269<!-- /ds:tokens --> design tokens.
 - **Zero runtime dependencies, no build step.** `src/css/ds.css` is the whole
   system and can be linked straight off a disk.
 - The style guide (`index.html`) is the documentation *and* the test suite.
@@ -312,6 +312,15 @@ draws the list in the page's theme. That is the most the platform gives.
   section goes in the rail and the footer.
 
 ---
+
+## Deprecation policy
+
+- A component, token or utility is deprecated by adding `@deprecated` to its
+  doc comment and a `--deprecated` suffix is never used; the name stays.
+- Deprecated items ship for at least one minor release with a console warning
+  in the guide's specimen, then are removed in the next major.
+- Removals are listed in `CHANGELOG.md` under a `### Removed` heading.
+- Consumers are pointed at the replacement in the same changelog entry.
 
 ## Before you finish
 
