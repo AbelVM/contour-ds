@@ -7638,11 +7638,26 @@
           </div>
 
           <div style="margin-block-start: var(--space-md)">
-            <p class="u-mono u-subtle" style="font-size: var(--type-micro); margin-block-end: 0.5rem">.c-app / .c-app-body — application shell</p>
-            <div class="ds-example" data-generated="wrap"><div class="c-app" data-snippet style="min-block-size: 8rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden">
+            <p class="u-mono u-subtle" style="font-size: var(--type-micro); margin-block-end: 0.5rem">.c-container — fixed (fit content) + scrollable (fill space)</p>
+            <div class="ds-example" data-generated="wrap"><div class="c-app" data-snippet style="min-block-size: 12rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden">
               <div class="c-app-body">
-                <aside class="c-sidebar" aria-label="Sidebar" style="width: 8rem; padding: var(--space-sm); border-inline-end: 1px solid var(--color-border)">
-                  <p style="font-size: var(--type-xs); margin: 0">Sidebar</p>
+                <aside class="c-sidebar" aria-label="Sidebar" style="width: 12rem; border-inline-end: 1px solid var(--color-border)">
+                  <div class="c-container">
+                    <div class="c-box c-box--border">
+                      <p style="font-size: var(--type-xs); margin: 0">Fixed container — fits content</p>
+                    </div>
+                  </div>
+                  <div class="c-container c-container--scrollable">
+                    <div class="c-box">
+                      <p style="font-size: var(--type-xs); margin: 0">Scrollable container</p>
+                    </div>
+                    <div class="c-box">
+                      <p style="font-size: var(--type-xs); margin: 0">Fills remaining space</p>
+                    </div>
+                    <div class="c-box">
+                      <p style="font-size: var(--type-xs); margin: 0">And scrolls if needed</p>
+                    </div>
+                  </div>
                 </aside>
                 <div style="padding: var(--space-sm)">
                   <p style="font-size: var(--type-sm); margin: 0">Main content area</p>
@@ -7660,7 +7675,59 @@
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-113">&lt;div class="c-app" style="min-block-size: 8rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-113">&lt;div class="c-app" style="min-block-size: 12rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden"&gt;
+  &lt;div class="c-app-body"&gt;
+    &lt;aside class="c-sidebar" aria-label="Sidebar" style="width: 12rem; border-inline-end: 1px solid var(--color-border)"&gt;
+      &lt;div class="c-container"&gt;
+        &lt;div class="c-box c-box--border"&gt;
+          &lt;p style="font-size: var(--type-xs); margin: 0"&gt;Fixed container — fits content&lt;/p&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="c-container c-container--scrollable"&gt;
+        &lt;div class="c-box"&gt;
+          &lt;p style="font-size: var(--type-xs); margin: 0"&gt;Scrollable container&lt;/p&gt;
+        &lt;/div&gt;
+        &lt;div class="c-box"&gt;
+          &lt;p style="font-size: var(--type-xs); margin: 0"&gt;Fills remaining space&lt;/p&gt;
+        &lt;/div&gt;
+        &lt;div class="c-box"&gt;
+          &lt;p style="font-size: var(--type-xs); margin: 0"&gt;And scrolls if needed&lt;/p&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/aside&gt;
+    &lt;div style="padding: var(--space-sm)"&gt;
+      &lt;p style="font-size: var(--type-sm); margin: 0"&gt;Main content area&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+                      </div>
+                    </details></div>
+          </div>
+
+          <div style="margin-block-start: var(--space-md)">
+            <p class="u-mono u-subtle" style="font-size: var(--type-micro); margin-block-end: 0.5rem">.c-app / .c-app-body — application shell</p>
+            <div class="ds-example" data-generated="wrap"><div class="c-app" data-snippet style="min-block-size: 8rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden">
+              <div class="c-app-body">
+                <aside class="c-sidebar" aria-label="Sidebar (compact)" style="width: 8rem; padding: var(--space-sm); border-inline-end: 1px solid var(--color-border)">
+                  <p style="font-size: var(--type-xs); margin: 0">Sidebar</p>
+                </aside>
+                <div style="padding: var(--space-sm)">
+                  <p style="font-size: var(--type-sm); margin: 0">Main content area</p>
+                </div>
+              </div>
+            </div><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-114" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-114">&lt;div class="c-app" style="min-block-size: 8rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden"&gt;
   &lt;div class="c-app-body"&gt;
     &lt;aside class="c-sidebar" aria-label="Sidebar" style="width: 8rem; padding: var(--space-sm); border-inline-end: 1px solid var(--color-border)"&gt;
       &lt;p style="font-size: var(--type-xs); margin: 0"&gt;Sidebar&lt;/p&gt;
@@ -8588,13 +8655,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-114" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-115" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-114">&lt;div class="c-segmented" role="radiogroup" aria-label="Colour scheme"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-115">&lt;div class="c-segmented" role="radiogroup" aria-label="Colour scheme"&gt;
   &lt;label class="c-segmented__option"&gt;
     &lt;input type="radio" name="scheme-demo" value="light dark" data-scheme-option="light dark" checked /&gt;
     &lt;svg aria-hidden="true"&gt;
@@ -8677,13 +8744,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-115" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-116" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-115">&lt;div class="ds-install" style="margin-block-start: 1rem"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-116">&lt;div class="ds-install" style="margin-block-start: 1rem"&gt;
   &lt;div class="ds-install__row"&gt;
     &lt;span class="ds-install__key"&gt;Contrast&lt;/span&gt;
     &lt;span&gt;

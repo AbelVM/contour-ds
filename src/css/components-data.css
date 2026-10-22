@@ -992,16 +992,25 @@
   }
 
   /* =======================================================================
-     CONTAINER — flex item used inside sidebars/panels (Airship-inspired)
+     CONTAINER — used inside sidebars (Airship-inspired)
+     Fixed: occupies as much vertical space as needed, stays put.
+     Scrollable: fills the space left by fixed containers, scrolls.
      ======================================================================= */
   .c-container {
-    flex: 0 1 auto;
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
   }
 
   .c-container--scrollable {
     flex: 1 1 auto;
     overflow-y: auto;
     min-block-size: 0;
+  }
+
+  .c-container--border > *:not(:last-child) {
+    border-block-end: 1px solid var(--color-border);
   }
 
   /* =======================================================================
@@ -1024,6 +1033,9 @@
 
   .c-app-body > .c-sidebar {
     flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
   }
 
   .c-app-body > main {
