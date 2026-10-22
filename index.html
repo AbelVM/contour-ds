@@ -7411,13 +7411,19 @@
           <h3 class="ds-spec__name">Layout primitives</h3>
           <p class="muted" style="font-size: var(--type-sm); margin-block: 0.35rem 1rem">
             The spatial dashboard skeleton: an app shell, a map area with floating panels, a footer
-            for charts, and the containers that fill them.
+            for charts, and the containers that fill them. Each specimen shows the layout behaviour,
+            not just the class name.
           </p>
+
           <div class="grid grid--2" style="gap: var(--space-md); align-items: start">
-            <div class="ds-example" data-generated="wrap"><div class="c-row" data-snippet>
-              <span class="c-badge c-badge--primary">Row</span>
-              <span class="c-badge">item</span>
-              <span class="c-badge">item</span>
+            <div class="ds-example" data-generated="wrap"><div data-snippet>
+              <p class="u-mono u-subtle" style="font-size: var(--type-micro); margin-block-end: 0.5rem">.c-row — horizontal flex, items centred</p>
+              <div class="c-row">
+                <span class="c-badge c-badge--primary">Primary</span>
+                <span class="c-badge">Item</span>
+                <span class="c-badge">Item</span>
+                <span class="c-badge">Item</span>
+              </div>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -7430,17 +7436,25 @@
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-106">&lt;div class="c-row"&gt;
-  &lt;span class="c-badge c-badge--primary"&gt;Row&lt;/span&gt;
-  &lt;span class="c-badge"&gt;item&lt;/span&gt;
-  &lt;span class="c-badge"&gt;item&lt;/span&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-106">&lt;div&gt;
+  &lt;p class="u-mono u-subtle" style="font-size: var(--type-micro); margin-block-end: 0.5rem"&gt;.c-row — horizontal flex, items centred&lt;/p&gt;
+  &lt;div class="c-row"&gt;
+    &lt;span class="c-badge c-badge--primary"&gt;Primary&lt;/span&gt;
+    &lt;span class="c-badge"&gt;Item&lt;/span&gt;
+    &lt;span class="c-badge"&gt;Item&lt;/span&gt;
+    &lt;span class="c-badge"&gt;Item&lt;/span&gt;
+  &lt;/div&gt;
 &lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
-            <div class="ds-example" data-generated="wrap"><div class="c-stack" data-snippet>
-              <span class="c-badge c-badge--primary">Stack</span>
-              <span class="c-badge">item</span>
-              <span class="c-badge">item</span>
+
+            <div class="ds-example" data-generated="wrap"><div data-snippet>
+              <p class="u-mono u-subtle" style="font-size: var(--type-micro); margin-block-end: 0.5rem">.c-stack — vertical, gap scales with --space-md</p>
+              <div class="c-stack">
+                <span class="c-badge c-badge--primary">First</span>
+                <span class="c-badge">Second</span>
+                <span class="c-badge">Third</span>
+              </div>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -7453,18 +7467,27 @@
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-107">&lt;div class="c-stack"&gt;
-  &lt;span class="c-badge c-badge--primary"&gt;Stack&lt;/span&gt;
-  &lt;span class="c-badge"&gt;item&lt;/span&gt;
-  &lt;span class="c-badge"&gt;item&lt;/span&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-107">&lt;div&gt;
+  &lt;p class="u-mono u-subtle" style="font-size: var(--type-micro); margin-block-end: 0.5rem"&gt;.c-stack — vertical, gap scales with --space-md&lt;/p&gt;
+  &lt;div class="c-stack"&gt;
+    &lt;span class="c-badge c-badge--primary"&gt;First&lt;/span&gt;
+    &lt;span class="c-badge"&gt;Second&lt;/span&gt;
+    &lt;span class="c-badge"&gt;Third&lt;/span&gt;
+  &lt;/div&gt;
 &lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
-            <div class="ds-example" data-generated="wrap"><div class="c-cluster" data-snippet>
-              <span class="c-tag">tag</span>
-              <span class="c-tag">tag</span>
-              <span class="c-tag">tag</span>
-              <span class="c-tag">tag</span>
+
+            <div class="ds-example" data-generated="wrap"><div data-snippet>
+              <p class="u-mono u-subtle" style="font-size: var(--type-micro); margin-block-end: 0.5rem">.c-cluster — wrapping, for tags and chips</p>
+              <div class="c-cluster">
+                <span class="c-tag">alpha</span>
+                <span class="c-tag">beta</span>
+                <span class="c-tag">gamma</span>
+                <span class="c-tag">delta</span>
+                <span class="c-tag">epsilon</span>
+                <span class="c-tag">zeta</span>
+              </div>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -7477,16 +7500,28 @@
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-108">&lt;div class="c-cluster"&gt;
-  &lt;span class="c-tag"&gt;tag&lt;/span&gt;
-  &lt;span class="c-tag"&gt;tag&lt;/span&gt;
-  &lt;span class="c-tag"&gt;tag&lt;/span&gt;
-  &lt;span class="c-tag"&gt;tag&lt;/span&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-108">&lt;div&gt;
+  &lt;p class="u-mono u-subtle" style="font-size: var(--type-micro); margin-block-end: 0.5rem"&gt;.c-cluster — wrapping, for tags and chips&lt;/p&gt;
+  &lt;div class="c-cluster"&gt;
+    &lt;span class="c-tag"&gt;alpha&lt;/span&gt;
+    &lt;span class="c-tag"&gt;beta&lt;/span&gt;
+    &lt;span class="c-tag"&gt;gamma&lt;/span&gt;
+    &lt;span class="c-tag"&gt;delta&lt;/span&gt;
+    &lt;span class="c-tag"&gt;epsilon&lt;/span&gt;
+    &lt;span class="c-tag"&gt;zeta&lt;/span&gt;
+  &lt;/div&gt;
 &lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
-            <div class="ds-example" data-generated="wrap"><div class="c-box c-box--border" data-snippet style="min-block-size: 4rem">
-              <p style="font-size: var(--type-sm)">Box — padded container</p>
+
+            <div class="ds-example" data-generated="wrap"><div data-snippet>
+              <p class="u-mono u-subtle" style="font-size: var(--type-micro); margin-block-end: 0.5rem">.c-box — padded container, size variants</p>
+              <div class="c-box c-box--border" style="min-block-size: 4rem">
+                <p style="font-size: var(--type-sm)">Default box (md padding)</p>
+              </div>
+              <div class="c-box c-box--border c-box--s" style="margin-block-start: var(--space-xs); min-block-size: 3rem">
+                <p style="font-size: var(--type-sm)">Small box (xs padding)</p>
+              </div>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -7499,12 +7534,19 @@
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-109">&lt;div class="c-box c-box--border" style="min-block-size: 4rem"&gt;
-  &lt;p style="font-size: var(--type-sm)"&gt;Box — padded container&lt;/p&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-109">&lt;div&gt;
+  &lt;p class="u-mono u-subtle" style="font-size: var(--type-micro); margin-block-end: 0.5rem"&gt;.c-box — padded container, size variants&lt;/p&gt;
+  &lt;div class="c-box c-box--border" style="min-block-size: 4rem"&gt;
+    &lt;p style="font-size: var(--type-sm)"&gt;Default box (md padding)&lt;/p&gt;
+  &lt;/div&gt;
+  &lt;div class="c-box c-box--border c-box--s" style="margin-block-start: var(--space-xs); min-block-size: 3rem"&gt;
+    &lt;p style="font-size: var(--type-sm)"&gt;Small box (xs padding)&lt;/p&gt;
+  &lt;/div&gt;
 &lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
-            <div class="ds-example" data-generated="wrap"><div class="c-map-slot" data-snippet style="min-block-size: 8rem; border: 1px solid var(--color-border); border-radius: var(--radius-md)">
+
+            <div class="ds-example" data-generated="wrap"><div class="c-map-slot" data-snippet style="min-block-size: 10rem; border: 1px solid var(--color-border); border-radius: var(--radius-md)">
               <div class="c-map-slot__chrome">
                 <div class="c-map-slot__controls">
                   <button class="c-map-slot__control" type="button" aria-label="Zoom in">+</button>
@@ -7525,7 +7567,7 @@
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-110">&lt;div class="c-map-slot" style="min-block-size: 8rem; border: 1px solid var(--color-border); border-radius: var(--radius-md)"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-110">&lt;div class="c-map-slot" style="min-block-size: 10rem; border: 1px solid var(--color-border); border-radius: var(--radius-md)"&gt;
   &lt;div class="c-map-slot__chrome"&gt;
     &lt;div class="c-map-slot__controls"&gt;
       &lt;button class="c-map-slot__control" type="button" aria-label="Zoom in"&gt;+&lt;/button&gt;
@@ -7537,8 +7579,14 @@
 &lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
-            <div class="ds-example" data-generated="wrap"><div class="c-map-panel c-map-panel--top c-map-panel--right" data-snippet style="position: relative; min-block-size: 6rem; min-inline-size: 10rem">
-              <p style="font-size: var(--type-sm)">Map panel</p>
+
+            <div class="ds-example" data-generated="wrap"><div data-snippet style="position: relative; min-block-size: 8rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden">
+              <div class="c-map-panel c-map-panel--top c-map-panel--right" style="position: absolute">
+                <p style="font-size: var(--type-sm); margin: 0">Map panel (top-right)</p>
+              </div>
+              <div class="c-map-panel c-map-panel--bottom c-map-panel--left" style="position: absolute">
+                <p style="font-size: var(--type-sm); margin: 0">Map panel (bottom-left)</p>
+              </div>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -7551,15 +7599,94 @@
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-111">&lt;div class="c-map-panel c-map-panel--top c-map-panel--right" style="position: relative; min-block-size: 6rem; min-inline-size: 10rem"&gt;
-  &lt;p style="font-size: var(--type-sm)"&gt;Map panel&lt;/p&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-111">&lt;div style="position: relative; min-block-size: 8rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden"&gt;
+  &lt;div class="c-map-panel c-map-panel--top c-map-panel--right" style="position: absolute"&gt;
+    &lt;p style="font-size: var(--type-sm); margin: 0"&gt;Map panel (top-right)&lt;/p&gt;
+  &lt;/div&gt;
+  &lt;div class="c-map-panel c-map-panel--bottom c-map-panel--left" style="position: absolute"&gt;
+    &lt;p style="font-size: var(--type-sm); margin: 0"&gt;Map panel (bottom-left)&lt;/p&gt;
+  &lt;/div&gt;
 &lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
+
+          <div class="ds-example" data-generated="wrap"><div data-snippet style="border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; min-block-size: 6rem">
+            <div class="c-map-footer">
+              <div class="c-box">
+                <p style="font-size: var(--type-sm); margin: 0">Footer cell 1</p>
+              </div>
+              <div class="c-box">
+                <p style="font-size: var(--type-sm); margin: 0">Footer cell 2</p>
+              </div>
+              <div class="c-box">
+                <p style="font-size: var(--type-sm); margin: 0">Footer cell 3</p>
+              </div>
+            </div>
+          </div><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-112" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-112">&lt;div style="border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; min-block-size: 6rem"&gt;
+  &lt;div class="c-map-footer"&gt;
+    &lt;div class="c-box"&gt;
+      &lt;p style="font-size: var(--type-sm); margin: 0"&gt;Footer cell 1&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class="c-box"&gt;
+      &lt;p style="font-size: var(--type-sm); margin: 0"&gt;Footer cell 2&lt;/p&gt;
+    &lt;/div&gt;
+    &lt;div class="c-box"&gt;
+      &lt;p style="font-size: var(--type-sm); margin: 0"&gt;Footer cell 3&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+                      </div>
+                    </details></div>
+
+          <div class="ds-example" data-generated="wrap"><div class="c-app" data-snippet style="min-block-size: 8rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden">
+            <div class="c-app-body">
+              <aside class="c-sidebar" aria-label="Sidebar" style="width: 8rem; padding: var(--space-sm); border-inline-end: 1px solid var(--color-border)">
+                <p style="font-size: var(--type-xs); margin: 0">Sidebar</p>
+              </aside>
+              <div style="padding: var(--space-sm)">
+                <p style="font-size: var(--type-sm); margin: 0">Main content area</p>
+              </div>
+            </div>
+          </div><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-113" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-113">&lt;div class="c-app" style="min-block-size: 8rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden"&gt;
+  &lt;div class="c-app-body"&gt;
+    &lt;aside class="c-sidebar" aria-label="Sidebar" style="width: 8rem; padding: var(--space-sm); border-inline-end: 1px solid var(--color-border)"&gt;
+      &lt;p style="font-size: var(--type-xs); margin: 0"&gt;Sidebar&lt;/p&gt;
+    &lt;/aside&gt;
+    &lt;div style="padding: var(--space-sm)"&gt;
+      &lt;p style="font-size: var(--type-sm); margin: 0"&gt;Main content area&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+                      </div>
+                    </details></div>
         </div>
 
-        <!-- ===================== 18 · RECIPES ===================== -->
+        <!-- ===================== 18 · RECIPES ===================== -->        <!-- ===================== 18 · RECIPES ===================== -->
         <section class="section section--sunken" id="recipes">
           <div class="c-section-head">
             <div class="c-icon-badge">
@@ -8472,13 +8599,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-112" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-114" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-112">&lt;div class="c-segmented" role="radiogroup" aria-label="Colour scheme"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-114">&lt;div class="c-segmented" role="radiogroup" aria-label="Colour scheme"&gt;
   &lt;label class="c-segmented__option"&gt;
     &lt;input type="radio" name="scheme-demo" value="light dark" data-scheme-option="light dark" checked /&gt;
     &lt;svg aria-hidden="true"&gt;
@@ -8561,13 +8688,13 @@
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-113" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-115" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-113">&lt;div class="ds-install" style="margin-block-start: 1rem"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-115">&lt;div class="ds-install" style="margin-block-start: 1rem"&gt;
   &lt;div class="ds-install__row"&gt;
     &lt;span class="ds-install__key"&gt;Contrast&lt;/span&gt;
     &lt;span&gt;
