@@ -2695,8 +2695,8 @@ Effort: **XS** half a day, **S** one to two days, **M** three to five days,
 | T-34 | ✅ | A `prefers-reduced-data` path and a documented degradation ladder for the heavy components | P2 | Med | Low | M | The motion twin is honoured; the data twin is not |
 | T-35 | ✅ | One ratio for the space scale, and remove the duplicated brand declarations | P2 | Low | Low | S | The ladder is two scales, and `--brand-100` is declared three times |
 | T-36 | ✅ | Specimens for the **nine** components that ship without one — the menu, the tag, the expandable, the pressable, the reserved space, the scrim, the destructive hint, the row action and the resize handle | P0 | High | Low | M | The guide is the specification, and the menu — 60 lines and nine rules — has never been rendered |
-| T-37 | ⏰ | A "how to add a component" page and a component contract template | P1 | Med | Low | M | The extension contract for third parties |
-| T-38 | ⏰ | The rename table — an existing class vocabulary mapped onto `.c-*` | P1 | Med | Low | S | Thirteen families exist under another name |
+| T-37 | ✅ | A "how to add a component" page and a component contract template | P1 | Med | Low | M | The extension contract for third parties |
+| T-38 | ✅ | The rename table — an existing class vocabulary mapped onto `.c-*` | P1 | Med | Low | S | Thirteen families exist under another name |
 | T-39 | ✅ | An RTL specimen, and the two physical `background-position` declarations fixed | P2 | Med | Low | S | The CSS is already structurally RTL-ready |
 | T-40 | ✅ | Decide the icon question — ship a Contour icon set, or state that icons are the consumer's | P1 | Med | Med | M | If Contour replaces the design layer, the family needs one icon language, not two |
 | T-41 | ✅ | The hero stat strip becomes the instrument readout | P1 | Med | Med | M | The hero metric strip is the one tell of the generic |

@@ -313,6 +313,10 @@ table is a different rhythm rather than a smaller font:
 <div data-density="compact"> … </div>
 ```
 
+**Data grid ceiling** — `.c-table` is for the first few hundred rows. It ships row selection,
+a sticky header, pagination and column visibility, but no virtualised body; a 50 000-row grid
+is out of scope for this release (T-70).
+
 ---
 
 ## Accessibility
