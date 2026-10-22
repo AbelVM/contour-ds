@@ -737,3 +737,10 @@
     flex: none;
   }
 }
+
+  /* RTL: flip the diff marker to the inline-start side */
+  [dir="rtl"] .c-diff__sign {
+    background-position:
+      0.95rem calc(50% + 1px),
+      0.7rem calc(50% + 1px);
+  }

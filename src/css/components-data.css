@@ -48,6 +48,7 @@
      The headline number. Value leads, label follows, context last.
      ======================================================================= */
   .c-kpi {
+    container-type: inline-size;
     display: grid;
     gap: 0.35rem;
     align-content: start;
@@ -308,6 +309,7 @@
      A slot for a visualisation: grid lines, axis labels, and a legend.
      ======================================================================= */
   .c-chart {
+    container-type: inline-size;
     position: relative;
     display: grid;
     grid-template-rows: 1fr auto;
@@ -533,8 +535,8 @@
   .c-filter-pill__remove {
     display: grid;
     place-items: center;
-    inline-size: 1.05rem;
-    block-size: 1.05rem;
+    inline-size: var(--target-option);
+    block-size: var(--target-option);
     border-radius: 50%;
     color: var(--color-text-subtle);
     cursor: pointer;
@@ -552,6 +554,7 @@
     inline-size: 0.7rem;
     block-size: 0.7rem;
   }
+
 
   /* =======================================================================
      7. TABLE — sortable, selectable, density-aware
@@ -603,13 +606,13 @@
   .c-table__pinned {
     position: sticky;
     inset-inline-start: 0;
-    z-index: 2;
+    z-index: var(--z-raised);
     background: var(--color-surface-1);
     box-shadow: 1px 0 0 var(--color-border);
   }
 
   .c-table thead .c-table__pinned {
-    z-index: 3;
+    z-index: var(--z-sticky);
     background: var(--color-surface-2);
   }
 
@@ -947,4 +950,119 @@
 
   .c-scale-bar__label {
     white-space: nowrap;
+  }
+
+
+  /* =======================================================================
+     INSTRUMENT READOUT — the parameters a spatial surface is drawn at
+     ======================================================================= */
+  .c-instrument {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  .c-instrument__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .c-instrument__item::before {
+    content: "·";
+    color: var(--color-text-muted);
+  }
+
+  .c-instrument__item:first-child::before {
+    content: none;
+  }
+
+  .c-instrument__value {
+    color: var(--color-text);
+    font-variant-numeric: tabular-nums;
+  }
+
+
+  /* =======================================================================
+     DATA MARK — a painted mark is not a target
+     ======================================================================= */
+  .c-mark {
+    display: inline-block;
+    inline-size: var(--target-mark, 0);
+    block-size: var(--target-mark, 0);
+    min-inline-size: 0;
+    min-block-size: 0;
+  }
+
+
+  /* =======================================================================
+     LAYER SWITCHER — the canonical map control
+     ======================================================================= */
+  .c-layer-switch {
+    display: grid;
+    gap: var(--space-2xs);
+    padding: var(--space-sm);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-1);
+  }
+
+  .c-layer-switch__item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-2xs) var(--space-xs);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: var(--type-sm);
+    transition: background-color var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-layer-switch__item:hover {
+    background: var(--color-surface-2);
+  }
+
+  .c-layer-switch__swatch {
+    inline-size: 1rem;
+    block-size: 1rem;
+    border-radius: var(--radius-xs);
+    border: 1px solid var(--color-border);
+    flex: none;
+  }
+
+  .c-layer-switch__name {
+    flex: 1;
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .c-layer-switch__count {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--color-text-subtle);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .c-layer-switch__toggle {
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    display: grid;
+    place-items: center;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--color-text-subtle);
+    border-radius: var(--radius-xs);
+  }
+
+  .c-layer-switch__toggle:hover {
+    color: var(--color-text);
+    background: var(--color-surface-3);
   }

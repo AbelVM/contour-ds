@@ -20,11 +20,13 @@
  *   dist/svg/contour-mark.svg the brand mark
  */
 
-import { readFileSync, writeFileSync, mkdirSync, rmSync, copyFileSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, rmSync, copyFileSync, existsSync, readdirSync, statSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 import { minifyCss, minifyJs } from "./lib/minify.mjs";
+import { lightDarkPair } from "./lib/lightdark.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
@@ -52,27 +54,59 @@ function inline(file, seen = new Set()) {
 }
 
 /**
+ * The token layer is not one block: `tokens.css` declares inside three
+ * separate `:root` rules — primitives and semantic colour, the brand layer,
+ * the override knobs. Matching a single block exported 151 of the 273 tokens,
+ * which is why the semantic half was missing from `contour.tokens.json`.
+ *
+ * Comments are dropped first, so a `:root` shown inside a code example is not
+ * mistaken for a declaration. Braces are counted, not matched lazily, so a
+ * nested `light-dark(…)` or `calc(…)` cannot end the block early.
+ *
+ * @param {string} css
+ * @returns {string} the concatenated body of every `:root { … }` block
+ */
+function tokenBodies(css) {
+  const source = css.replace(/\/\*[\s\S]*?\*\//g, " ");
+  const bodies = [];
+  const opener = /:root\s*\{/g;
+  let match;
+  while ((match = opener.exec(source))) {
+    let i = opener.lastIndex;
+    const start = i;
+    let depth = 1;
+    while (i < source.length && depth > 0) {
+      const ch = source[i];
+      if (ch === "{") depth += 1;
+      else if (ch === "}") depth -= 1;
+      i += 1;
+    }
+    bodies.push(source.slice(start, i - 1));
+  }
+  return bodies.join("\n");
+}
+
+/**
  * Read the token layer and write it out as JSON.
  * @param {string} css
  * @returns {Record<string, string>}
  */
 function tokensToJson(css) {
   const tokens = {};
-  // The semantic layer is the one a consumer overrides, so it is the one
-  // that is worth exporting with a resolved light and dark value.
-  const block = /:root\s*\{([\s\S]*?)\n\s*\}/.exec(css);
-  if (!block) return tokens;
-
-  const body = block[1];
+  const body = tokenBodies(css);
   const pattern = /(--[a-z0-9-]+)\s*:\s*([^;]+);/g;
   let match;
   while ((match = pattern.exec(body))) {
     const [, name, raw] = match;
     const value = raw.trim();
-    // `light-dark(a, b)` is exported as both values, so a tool can pick.
-    const lightDark = /^light-dark\(([^,]+),\s*(.+)\)$/.exec(value);
-    if (lightDark) {
-      tokens[name] = { light: lightDark[1].trim(), dark: lightDark[2].trim() };
+    // `light-dark(a, b)` is exported as both values, so a tool can pick. The
+    // split goes through tools/lib/lightdark.mjs rather than a regex here: `.`
+    // does not match a newline, and tokens.css writes several of these calls
+    // across lines, so a pattern-based split published --color-focus-halo,
+    // --color-primary-soft and --color-on-primary-solid as one opaque string.
+    const pair = lightDarkPair(value);
+    if (pair) {
+      tokens[name] = pair;
     } else {
       tokens[name] = value;
     }
@@ -92,6 +126,44 @@ writeFileSync(join(dist, "contour.css"), css, "utf-8");
 
 const minifiedCss = minifyCss(css);
 writeFileSync(join(dist, "contour.min.css"), `${minifiedCss}\n`, "utf-8");
+
+// -- The per-surface bundles -------------------------------------------------
+// The component layer is split by audience, and the README has always said a
+// product that needs one surface can take one file. Until now `dist/` proved
+// it: the only bundle shipped was the whole system, so the claim was about
+// `src/`, not about what a consumer downloads.
+//
+// `patterns.css` is composition, not audience — the dash, docs and landing
+// shells sit in one file — so it rides in core rather than being carved up
+// here. Splitting it is the follow-up that would make the per-surface
+// bundles smaller again.
+const CORE = [
+  "tokens.css",
+  "base.css",
+  "components.css",
+  "components-shell.css",
+  "patterns.css",
+  "utilities.css",
+];
+const SURFACES = {
+  core: CORE,
+  docs: [...CORE, "components-docs.css"],
+  data: [...CORE, "components-data.css"],
+  landing: [...CORE, "components-landing.css"],
+};
+
+const surfacesDir = join(dist, "surfaces");
+mkdirSync(surfacesDir, { recursive: true });
+
+const bundleOf = (files) =>
+  `${LAYER_ORDER}\n${files.map((f) => readFileSync(join(root, "src/css", f), "utf-8").trim()).join("\n")}\n`;
+
+const surfaceSizes = {};
+for (const [name, files] of Object.entries(SURFACES)) {
+  const min = minifyCss(bundleOf(files));
+  writeFileSync(join(surfacesDir, `contour-${name}.min.css`), `${min}\n`, "utf-8");
+  surfaceSizes[`surfaces/contour-${name}.min.css`] = Buffer.byteLength(min, "utf8") + 1;
+}
 
 // -- The script -------------------------------------------------------------
 const js = readFileSync(join(root, "src/js/ds.js"), "utf-8");
@@ -113,9 +185,40 @@ copyFileSync(
 
 const size = (path) => (existsSync(path) ? `${(readFileSync(path).length / 1024).toFixed(1)} kB` : "—");
 
+// -- The manifest ------------------------------------------------------------
+// A failed build leaves the previous `dist/` in place, and every lane that
+// runs after it then certifies code that was never built. The manifest is what
+// lets `tools/check-size.mjs` tell a large bundle apart from a stale one: it
+// records what the sources were at the moment this output was produced.
+const manifestSources = [
+  ...readdirSync(join(root, "src/css")).filter((f) => f.endsWith(".css")).map((f) => join(root, "src/css", f)),
+  join(root, "src/js/ds.js"),
+  join(root, "src/svg/contour-mark.svg"),
+];
+
+const manifest = {
+  builtAt: new Date().toISOString(),
+  sources: Object.fromEntries(
+    manifestSources.map((p) => {
+      const buf = readFileSync(p);
+      return [p.slice(root.length + 1), { bytes: buf.length, mtimeMs: statSync(p).mtimeMs, sha256: createHash("sha256").update(buf).digest("hex").slice(0, 16) }];
+    }),
+  ),
+  outputs: {
+    ...Object.fromEntries(
+      ["contour.css", "contour.min.css", "contour.js", "contour.min.js", "contour.tokens.json", "svg/contour-mark.svg"].map((f) => [f, statSync(join(dist, f)).size]),
+    ),
+    ...surfaceSizes,
+  },
+};
+writeFileSync(join(dist, "build-manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`, "utf-8");
+
 console.log("dist:");
 console.log(`  contour.css         ${size(join(dist, "contour.css"))}`);
 console.log(`  contour.min.css     ${size(join(dist, "contour.min.css"))}`);
+for (const name of Object.keys(SURFACES)) {
+  console.log(`  surfaces/contour-${name}.min.css ${size(join(surfacesDir, `contour-${name}.min.css`))}`);
+}
 console.log(`  contour.js          ${size(join(dist, "contour.js"))}`);
 console.log(`  contour.min.js      ${size(join(dist, "contour.min.js"))}`);
 console.log(`  contour.tokens.json ${size(join(dist, "contour.tokens.json"))}`);

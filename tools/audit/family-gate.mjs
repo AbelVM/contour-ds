@@ -1,6 +1,6 @@
 // Run libreship's token gate (scripts/check-widget-tokens.mjs) against Contour's
 // stylesheet, adapted to Contour's token names and to the oklch() colour space.
-// Run: node /tmp/kilo/audit/ds-gate.mjs
+// Run: node tools/audit/family-gate.mjs
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 

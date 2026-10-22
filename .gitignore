@@ -11,3 +11,5 @@ node_modules/
 .vscode/
 .zvec-grep/
 tmp/
+__pycache__/
+*.pyc

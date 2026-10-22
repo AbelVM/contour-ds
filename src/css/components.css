@@ -219,18 +219,18 @@
   .c-btn--secondary {
     --btn-bg: var(--color-surface-2);
     --btn-fg: var(--color-text-strong);
-    --btn-border: var(--color-border);
+    --btn-border: var(--color-control-edge);
   }
 
   .c-btn--secondary:hover {
     --btn-bg: var(--color-surface-3);
-    --btn-border: var(--color-border-strong);
+    --btn-border: var(--color-control-edge);
   }
 
   .c-btn--outline {
     --btn-bg: transparent;
     --btn-fg: var(--color-text-strong);
-    --btn-border: var(--color-border-strong);
+    --btn-border: var(--color-control-edge);
   }
 
   .c-btn--outline:hover {
@@ -552,7 +552,7 @@
     inset: 0;
     border-radius: 50%;
     background: inherit;
-    animation: c-ping 2.4s var(--ease-out-expo) infinite;
+    animation: c-ping var(--dur-ping) var(--ease-out-expo) infinite;
   }
 
   @keyframes c-ping {
@@ -1538,7 +1538,7 @@
     letter-spacing: var(--tracking-label);
     text-transform: uppercase;
     color: var(--color-text-subtle);
-    z-index: 1;
+    z-index: var(--z-raised);
   }
 
   .c-table tbody tr:last-child td {
@@ -1573,6 +1573,7 @@
      14. CONTOUR METER — progress drawn as elevation rings
      ======================================================================= */
   .c-meter {
+    container-type: inline-size;
     --meter-value: 0.72;
     --meter-size: 6.5rem;
     position: relative;
@@ -1607,7 +1608,7 @@
 
   .c-meter__core {
     position: relative;
-    z-index: 1;
+    z-index: var(--z-raised);
     display: grid;
     place-items: center;
     gap: 0.1rem;
@@ -1673,6 +1674,7 @@
      16. LEGEND
      ======================================================================= */
   .c-legend {
+    container-type: inline-size;
     display: grid;
     gap: 0.5rem;
     padding: 1rem 1.1rem;
@@ -1816,8 +1818,12 @@
   .c-alert__close {
     color: var(--color-text-subtle);
     cursor: pointer;
-    padding: 0.15rem;
+    padding: 0.35rem;
     border-radius: var(--radius-xs);
+    min-inline-size: var(--target-option);
+    min-block-size: var(--target-option);
+    display: inline-grid;
+    place-items: center;
   }
 
   .c-alert__close:hover {
@@ -1965,7 +1971,7 @@
       color-mix(in oklab, var(--color-text-strong) 8%, transparent),
       transparent
     );
-    animation: c-sweep 1.6s var(--ease-in-out) infinite;
+    animation: c-sweep var(--dur-sweep) var(--ease-in-out) infinite;
   }
 
   @keyframes c-sweep {
@@ -2423,4 +2429,11 @@
     background: var(--color-primary-soft);
     color: var(--color-primary-text);
     border-color: var(--color-primary);
+  }
+
+  /* RTL: flip the select chevron to the inline-start side */
+  [dir="rtl"] .c-select {
+    background-position:
+      1.15rem calc(50% + 1px),
+      0.8rem calc(50% + 1px);
   }

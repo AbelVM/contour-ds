@@ -14,7 +14,7 @@ engines, pedestrian simulators, geospatial dashboards). It ships three
 surfaces: a **landing page**, a **documentation site** and a **technical
 dashboard**.
 
-- Dark and light themes, 119 components, 273 design tokens.
+- Dark and light themes, <!-- ds:components -->121<!-- /ds:components --> components, <!-- ds:tokens -->277<!-- /ds:tokens --> design tokens.
 - **Zero runtime dependencies, no build step.** `src/css/ds.css` is the whole
   system and can be linked straight off a disk.
 - The style guide (`index.html`) is the documentation *and* the test suite.
@@ -72,11 +72,16 @@ Anything that matches is either a leak or a false positive you must justify.
 | `node tools/build.mjs` | Bundles and minifies the **design system only** into `dist/` (no guide, no templates), exports the tokens as JSON |
 | `python3 tools/contour-gen.py` | Regenerates the contour artwork |
 | `npx html-validate index.html` | Markup validation |
-| `node --check src/js/ds.js assets/js/guide.js` | Script syntax |
+| `node --check src/js/ds.js && node --check assets/js/guide.js` | Script syntax — **one file per invocation**: this tool reads only its first argument, so passing two files silently checks one |
 
-The audit harnesses live outside the repository (`/tmp/kilo/audit/`): contrast
-(146 targets × 2 themes), mobile overflow, the command palette, the snippet
-disclosure, and the chart series.
+The audit harnesses live in the repository, in `tools/audit/`, with a dev-only
+manifest of their own (`tools/audit/package.json`): contrast and the document
+contract (`contrast-and-aria.mjs`, which exits non-zero), the component inventory
+and target sizes (`component-inventory.mjs`), the token census report
+(`token-census.mjs`) and the family gate (`family-gate.mjs`). Their JSON output
+lands in the project's gitignored `tmp/audit/`. They discover a browser driver via
+`tools/audit/lib/browser.mjs` and **exit rather than skip** when none is found —
+a gate that silently does not run is a gate that silently passes.
 
 ---
 
@@ -272,7 +277,12 @@ draws the list in the page's theme. That is the most the platform gives.
 ## The accessibility contract
 
 - Body text **4.5:1**, borders / focus rings / control edges **3:1**, in both
-  themes. Currently verified across 210 pairs per theme.
+  themes. Enforced by `tools/audit/contrast-and-aria.mjs`, which measures the
+  control edge and the focus ring against every surface a control can sit on, in
+  both themes, and exits non-zero below 3:1 — WCAG 1.4.11 for adjacent contrast,
+  with 2.4.13 governing focus appearance. Keep pair counts out of this line: a
+  number no tool recomputes goes stale silently, which is what an earlier
+  revision of it did.
 - Every series in a chart carries a **dash pattern** as well as a hue, so no
   chart asks the reader to tell two colours apart.
 - `prefers-reduced-motion: reduce` collapses every transition.
@@ -307,9 +317,13 @@ draws the list in the page's theme. That is the most the platform gives.
 
 ```bash
 npx html-validate index.html templates/*.html
-node --check src/js/ds.js assets/js/guide.js
+node --check src/js/ds.js
+node --check assets/js/guide.js
+node tools/check-tokens.mjs   # the census: an unread token must be ledgered or gone
 node tools/snippets.mjs      # if you touched a specimen
 node tools/build.mjs         # if you touched src/
+node tools/check-size.mjs    # refuses a stale dist/, not only a big one
+node tools/stamp.mjs --check # published numbers must match src/
 ```
 
 Then check the guide in both themes, at 1440 px and 390 px, and look for

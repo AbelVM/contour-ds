@@ -357,8 +357,17 @@
   .c-tag__remove {
     display: grid;
     place-items: center;
-    inline-size: 0.9rem;
-    block-size: 0.9rem;
+    /* The hit area IS the target, so it is the box that has to reach 24 CSS px:
+       WCAG 2.5.8 and this system's own --target-option floor (a list option at
+       24), which is what a chip's remove control is. Measured at 0.9rem this
+       button was 14.4x14.4 — the only genuinely sub-floor discrete control in
+       the guide; the eight 21.4px text links are inline content 2.5.8 excuses.
+       What changes on screen: the box, and with it the circular hover wash
+       (border-radius 50% paints the whole box), grows from 14.4px to 24px and
+       lifts the chip's height with it. The glyph does not:
+       `.c-tag__remove svg` stays 0.65rem. */
+    inline-size: var(--target-option);
+    block-size: var(--target-option);
     margin-inline-end: -0.2rem;
     border-radius: 50%;
     color: currentColor;

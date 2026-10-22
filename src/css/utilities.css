@@ -252,7 +252,11 @@
     .c-alert,
     .c-badge,
     .c-table,
-    .c-panel {
+    .c-panel,
+    .c-chart,
+    .c-legend,
+    .c-kpi,
+    .c-meter {
       border: 1px solid CanvasText;
     }
 
@@ -328,6 +332,49 @@
     }
   }
 
+  /* -- Graticule (measurement grid for dense surfaces) ----------------- */
+  .u-graticule {
+    background-image:
+      repeating-linear-gradient(0deg, transparent 0 calc(var(--graticule-pitch, 1.5rem) - 1px), var(--color-border-subtle) calc(var(--graticule-pitch, 1.5rem) - 1px) var(--graticule-pitch, 1.5rem)),
+      repeating-linear-gradient(90deg, transparent 0 calc(var(--graticule-pitch, 1.5rem) - 1px), var(--color-border-subtle) calc(var(--graticule-pitch, 1.5rem) - 1px) var(--graticule-pitch, 1.5rem));
+    background-size: var(--graticule-pitch, 1.5rem) var(--graticule-pitch, 1.5rem);
+  }
+
+  /* -- Isoline field (asset-free topographic substrate) --------------- */
+  .u-isoline-field {
+    position: relative;
+    isolation: isolate;
+  }
+  .u-isoline-field::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      repeating-radial-gradient(circle at 20% 30%,
+        transparent 0 2.4rem, var(--field-line, oklch(70% 0.05 230 / 0.06)) 2.4rem 2.5rem),
+      repeating-radial-gradient(circle at 78% 72%,
+        transparent 0 3.6rem, var(--field-line, oklch(70% 0.05 230 / 0.06)) 3.6rem 3.7rem);
+    mask: linear-gradient(180deg, #000, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* -- Selection (data selection highlight) --------------------------- */
+  .u-selection {
+    background: var(--color-selection);
+  }
+
+  /* -- Ring geometry (one pitch for every circle) --------------------- */
+  .u-ring-1 { inline-size: var(--ring-1); block-size: var(--ring-1); border-width: var(--ring-weight); }
+  .u-ring-2 { inline-size: var(--ring-2); block-size: var(--ring-2); }
+  .u-ring-3 { inline-size: var(--ring-3); block-size: var(--ring-3); gap: var(--ring-pitch); }
+
+  /* -- Chart series swatches (series 5-8) ----------------------------- */
+  .u-series-5 { background: var(--chart-5); }
+  .u-series-6 { background: var(--chart-6); }
+  .u-series-7 { background: var(--chart-7); }
+  .u-series-8 { background: var(--chart-8); }
+
   /* -- Hazard hatch (stale data) -------------------------------------- */
   .u-hatch-stale {
     background-image: repeating-linear-gradient(
@@ -369,4 +416,27 @@
 
   [data-profile="operator"] .c-advanced {
     display: revert;
+  }
+
+  /* -- prefers-contrast: more ----------------------------------------- */
+  @media (prefers-contrast: more) {
+    :root {
+      --color-border: light-dark(oklch(78% 0.012 230), oklch(42% 0.016 230));
+      --color-border-strong: light-dark(oklch(62% 0.016 230), oklch(56% 0.022 230));
+    }
+    .c-card, .c-panel, .c-input, .c-select, .c-textarea {
+      background: var(--color-surface-1);
+    }
+  }
+
+  /* -- prefers-reduced-data ------------------------------------------- */
+  @media (prefers-reduced-data: reduce) {
+    .c-field::before,
+    .c-panel::before {
+      display: none;
+    }
+    .u-backdrop,
+    .c-header {
+      backdrop-filter: none;
+    }
   }

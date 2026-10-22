@@ -1,5 +1,14 @@
 name: CI
 
+# Every gate the review puts in this milestone (T-23): the markup, the scripts,
+# the token census, the size budget, the published numbers, the snippets fixed
+# point, the browser-measured contrast contract and the token export.
+#
+# Ordering is load-bearing. The build runs BEFORE the size budget, because a
+# failed build leaves the previous dist/ in place and the budget would then
+# certify bytes that were never produced from the current src/. check-size also
+# refuses a stale dist/ on its own, so the two protections are independent.
+
 on:
   push:
     branches: [main]
@@ -14,24 +23,58 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
+
       - name: Validate markup
         run: npx html-validate index.html templates/*.html
+
+      # node --check takes ONE file: `node --check a b` checks a and silently
+      # ignores b, so every script needs its own invocation. Verified with a
+      # probe: a broken second argument exits 0.
       - name: Check script syntax
-        run: node --check src/js/ds.js assets/js/guide.js
+        run: |
+          node --check src/js/ds.js
+          node --check assets/js/guide.js
+          find tools -name '*.mjs' -print0 | xargs -0 -n1 node --check
+
+      - name: Check python tooling compiles
+        run: python3 -m py_compile tools/contour-gen.py
+
       - name: Check token census
         run: node tools/check-tokens.mjs
+
+      - name: Build
+        run: node tools/build.mjs
+
+      - name: Check size budget and that dist is current
+        run: node tools/check-size.mjs
+
+      - name: Check the token export carries the whole token layer
+        run: node tools/check-export.mjs
+
+      - name: Check published numbers match the source
+        run: node tools/stamp.mjs --check
+
       - name: Check snippets idempotency
         run: |
           cp index.html /tmp/index-before.html
           node tools/snippets.mjs
           diff /tmp/index-before.html index.html
-      - name: Build
-        run: node tools/build.mjs
-      - name: Check token export
-        run: |
-          python3 -c "
-          import json
-          d = json.load(open('dist/contour.tokens.json'))
-          assert len(d) >= 200, f'Expected 200+ tokens, got {len(d)}'
-          print(f'Token export: {len(d)} entries OK')
-          "
+
+  # The browser gates are a separate job so a missing driver cannot take the
+  # static checks down with it, and so the install cost is visible on its own.
+  # The harnesses refuse to run — rather than skip — when no browser is found.
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install the audit harnesses' dev dependency
+        run: npm --prefix tools/audit install
+      - name: Install chromium
+        run: npx --yes playwright@1.64.1 install --with-deps chromium
+      - name: Contrast, focus, chart, palette and document contract
+        run: node tools/audit/contrast-and-aria.mjs
+      - name: Component inventory and target sizes
+        run: node tools/audit/component-inventory.mjs

@@ -795,10 +795,17 @@ if __name__ == "__main__":
     )
     import json
 
-    with open("/tmp/kilo/audit/instrument.json", "w", encoding="utf-8") as handle:
+    # These two JSON files are verification output: nothing in the repository
+    # reads them (checked by search), so they used to land in a temp directory
+    # that only existed on one machine. They now go under the project's own
+    # gitignored tmp/, beside the audit harnesses' output.
+    out_dir = os.path.join(root, "tmp", "audit")
+    os.makedirs(out_dir, exist_ok=True)
+
+    with open(os.path.join(out_dir, "instrument.json"), "w", encoding="utf-8") as handle:
         json.dump(instrument, handle)
 
     showcase = build_showcase()
-    with open("/tmp/kilo/audit/showcase.json", "w", encoding="utf-8") as handle:
+    with open(os.path.join(out_dir, "showcase.json"), "w", encoding="utf-8") as handle:
         json.dump(showcase, handle)
     print(f"showcase: {len(showcase)} contour lines")

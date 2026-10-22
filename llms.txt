@@ -1,6 +1,6 @@
 # Contour
 
-> A token-driven design system for spatial interfaces — routing engines, pedestrian simulators, map tooling and geospatial dashboards. Dark and light themes, 83 components, 260 design tokens (208 live), zero runtime dependencies, no build step.
+> A token-driven design system for spatial interfaces — routing engines, pedestrian simulators, map tooling and geospatial dashboards. Dark and light themes, 121 components, 277 design tokens (259 read, 18 unread), zero runtime dependencies, no build step.
 
 Contour covers three kinds of page: a **landing page** that has to persuade, a **documentation site** that has to explain, and a **technical dashboard** that has to be read at speed. All three share one token layer, one type scale and one set of affordance rules.
 
@@ -17,7 +17,7 @@ Contour covers three kinds of page: a **landing page** that has to persuade, a *
 - [Technical dashboard](https://abelvm.github.io/contour/#data): KPI tiles, panels, chart frame, interactive legend, filter bar, dense sortable table, activity feed, drawer.
 - [Recipes](https://abelvm.github.io/contour/#recipes): all three surfaces composed live.
 
-## Components (83 blocks in src/css/)
+## Components (121 blocks in src/css/)
 
 Actions: button (primary, secondary, outline, ghost, accent, danger, quiet-danger), sizes, icon, block, groups, loading, text link.
 Forms: field, input, select, textarea, search group, range, switch, checkbox, radio.
@@ -32,7 +32,7 @@ Landing: logo wall, feature showcase, metrics band, testimonial, pricing, compar
 
 ## Accessibility contract
 
-- Body text meets 4.5:1, borders / focus rings / control edges 3:1, in both themes — verified across 210 text and icon pairs per theme, zero failures.
+- Body text meets 4.5:1, borders / focus rings / control edges 3:1, in both themes — enforced by `node tools/audit/contrast-and-aria.mjs`, which measures the control edge and the focus ring against every surface a control can sit on, in both themes, and exits non-zero below 3:1.
 - State is never colour alone; every chart series carries a dash pattern as well as a hue.
 - `prefers-reduced-motion: reduce` collapses every transition.
 - Forced Colors Mode drops the texture and the ridgelines and falls back to a system `CanvasText` outline.
@@ -72,7 +72,7 @@ Landing: logo wall, feature showcase, metrics band, testimonial, pricing, compar
 
 ## Tokens
 
-- 273 custom properties in the token layer, in four layers: primitives, semantic, component, utility.
+- 277 custom properties in the token layer, in four layers: primitives, semantic, component, utility.
 - Primitives never change between themes; only the semantic layer does, so a theme swap is a one-line change.
 - Two values retheme and reshape everything: `--brand-hue` and `--radius-scale`.
 - `.c-theme-scope` re-derives the whole brand layer for a subtree, because a custom property containing `var()` is resolved eagerly.

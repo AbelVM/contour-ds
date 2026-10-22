@@ -200,7 +200,7 @@
   .c-dash-toolbar {
     position: sticky;
     inset-block-start: var(--header-height);
-    z-index: 20;
+    z-index: var(--z-sticky);
     display: flex;
     align-items: center;
     gap: var(--space-sm);

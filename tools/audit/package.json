@@ -1,0 +1,17 @@
+{
+  "name": "contour-audit",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Dev-only manifests for the Contour audit harnesses. Nothing here ships: src/ has zero runtime dependencies and no build step, and this package exists only so the test suite can be installed on a machine that does not happen to have a browser driver in a neighbouring project.",
+  "type": "module",
+  "scripts": {
+    "contrast": "node contrast-and-aria.mjs",
+    "inventory": "node component-inventory.mjs",
+    "census": "node token-census.mjs",
+    "family-gate": "node family-gate.mjs",
+    "gates": "node contrast-and-aria.mjs && node component-inventory.mjs"
+  },
+  "devDependencies": {
+    "playwright-core": "1.64.1"
+  }
+}

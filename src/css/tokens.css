@@ -168,6 +168,13 @@
     --radius-lg: calc(20px * var(--radius-scale));
     --radius-xl: calc(28px * var(--radius-scale));
     --radius-2xl: calc(36px * var(--radius-scale));
+
+    /* -- Ring geometry (one pitch for every circle in the system) ------- */
+    --ring-pitch: 0.5rem;
+    --ring-weight: 1px;
+    --ring-1: 0.75rem;
+    --ring-2: 1.5rem;
+    --ring-3: 3rem;
     --radius-pill: 999px;
 
     /* ---------------------------------------------------------------------
@@ -184,31 +191,26 @@
     --shadow-md: 0 8px 24px light-dark(oklch(10% 0.02 230 / 0.3), oklch(0% 0 0 / 0.55));
     --shadow-lg: 0 20px 50px light-dark(oklch(10% 0.02 230 / 0.36), oklch(0% 0 0 / 0.6));
     --shadow-xl: 0 36px 90px light-dark(oklch(10% 0.02 230 / 0.42), oklch(0% 0 0 / 0.68));
-    --shadow-inset: inset 0 1px 0 oklch(100% 0 0 / 0.06);
     --shadow-color-highlight: oklch(100% 0 0 / 0.22);
     --shadow-color-primary: oklch(20% 0.04 var(--brand-hue) / 0.22);
     --shadow-color-accent: oklch(20% 0.06 356 / 0.24);
     --shadow-color-range: oklch(20% 0.04 var(--brand-hue) / 0.3);
-    --shadow-focus: 0 0 0 1px var(--color-focus-ring),
-      0 0 0 4px var(--color-focus-halo);
-
     /* ---------------------------------------------------------------------
        11. MOTION
        --------------------------------------------------------------------- */
-    --dur-instant: 110ms;
     --dur-fast: 180ms;
     --dur-base: 260ms;
     --dur-slow: 420ms;
-    --dur-deliberate: 680ms;
     --dur-spin: 720ms;
     --dur-spin-slow: 1s;
     --dur-copy-tick: 220ms;
-    --dur-ambient: 14s;
+    --dur-ping: 2.4s;
+    --dur-sweep: 1.6s;
 
     --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
     --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
     --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-    --ease-entrance: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-exit: cubic-bezier(0.4, 0, 1, 1);
 
     /* ---------------------------------------------------------------------
        12. LAYOUT & STACKING
@@ -241,6 +243,7 @@
     --target-control: 2.75rem;
     --target-option: 1.5rem;
     --target-chart: 1.5rem;
+    --target-mark: 0; /* a data mark is not a target */
     --hairline: var(--border-width) solid var(--color-border);
   }
 
@@ -279,7 +282,7 @@
     --color-text-strong: light-dark(oklch(23% 0.02 230), var(--basalt-50));
     --color-text: light-dark(oklch(33% 0.02 230), oklch(92% 0.008 230));
     --color-text-muted: light-dark(oklch(47% 0.018 230), oklch(72% 0.014 230));
-    --color-text-subtle: light-dark(oklch(50% 0.018 230), oklch(62% 0.016 230));
+    --color-text-subtle: light-dark(oklch(44% 0.018 230), oklch(70% 0.016 230));
 
     /* -- Borders ---------------------------------------------------- */
     --color-border-subtle: light-dark(oklch(88% 0.008 230), oklch(27% 0.018 230));
@@ -287,8 +290,13 @@
     --color-border-strong: light-dark(oklch(72% 0.014 230), oklch(46% 0.022 230));
     /* Control edge: the border of an input, select, textarea or
        secondary/outline button. Must clear 3:1 against every
-       surface it can sit on (WCAG 1.4.11). */
-    --color-control-edge: light-dark(oklch(62% 0.016 230), oklch(56% 0.022 230));
+       surface it can sit on (WCAG 1.4.11).
+       The binding surface is --color-surface-3 in both themes: at the previous
+       62%/56% the edge measured 3.01:1 light and 2.84:1 dark there, so the dark
+       step failed the contract this comment states. 61%/58% measures 3.14 and
+       3.09 — the smallest change that clears 3:1 with margin, chosen by
+       sweeping the same canvas estimator the gate certifies with. */
+    --color-control-edge: light-dark(oklch(61% 0.016 230), oklch(58% 0.022 230));
 
     /* -- Density ------------------------------------------------------
        A single multiplier that compresses row padding and gaps, so the
@@ -350,11 +358,12 @@
     --color-info-soft: light-dark(oklch(94% 0.035 236), oklch(27% 0.055 236));
 
     /* -- Focus -------------------------------------------------------- */
-    --color-focus-ring: light-dark(var(--brand-600), var(--brand-400));
+    --color-focus-ring: light-dark(var(--brand-700), var(--brand-400));
     --color-focus-halo: light-dark(
       oklch(94% 0.05 var(--brand-hue) / 0.9),
       oklch(78% 0.12 var(--brand-hue) / 0.24)
     );
+    --color-selection: light-dark(oklch(92% 0.04 var(--brand-hue)), oklch(28% 0.05 var(--brand-hue)));
     --focus-width: 2px;
 
     /* -- Links -------------------------------------------------------- */
@@ -449,8 +458,8 @@
     --chart-missing: light-dark(oklch(88% 0.008 230), oklch(30% 0.018 230));
     --chart-hover: light-dark(oklch(96% 0.006 230), oklch(27% 0.018 230));
     --chart-selection: light-dark(
-      oklch(92% 0.04 182),
-      oklch(30% 0.05 182)
+      oklch(92% 0.04 var(--brand-hue)),
+      oklch(30% 0.05 var(--brand-hue))
     );
     --chart-tooltip-bg: light-dark(oklch(26% 0.02 230), oklch(88% 0.014 230));
     --chart-tooltip-fg: light-dark(oklch(97% 0.004 230), oklch(20% 0.018 230));
@@ -475,6 +484,7 @@
     --gradient-heat: linear-gradient(
       90deg,
       var(--color-heat-1),
+      var(--color-heat-2),
       var(--color-heat-3),
       var(--color-heat-4),
       var(--color-heat-5),
@@ -543,11 +553,12 @@
       oklch(94% 0.035 var(--brand-hue)),
       oklch(26% 0.05 var(--brand-hue))
     );
-    --color-focus-ring: light-dark(var(--brand-600), var(--brand-400));
+    --color-focus-ring: light-dark(var(--brand-700), var(--brand-400));
     --color-focus-halo: light-dark(
       oklch(94% 0.05 var(--brand-hue) / 0.9),
       oklch(78% 0.12 var(--brand-hue) / 0.24)
     );
+    --color-selection: light-dark(oklch(92% 0.04 var(--brand-hue)), oklch(28% 0.05 var(--brand-hue)));
     --color-link: light-dark(var(--brand-700), var(--brand-300));
     --color-link-hover: light-dark(var(--brand-800), var(--brand-200));
   }
@@ -568,7 +579,7 @@
     --color-text: oklch(30% 0.018 230);
     --color-text-strong: oklch(20% 0.02 230);
     --color-text-muted: oklch(45% 0.016 230);
-    --color-text-subtle: oklch(55% 0.014 230);
+    --color-text-subtle: oklch(48% 0.014 230);
     --color-border: oklch(82% 0.008 230);
     --color-border-strong: oklch(65% 0.012 230);
     --color-primary: var(--brand-600);

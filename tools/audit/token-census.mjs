@@ -1,5 +1,5 @@
 // Static audit of the Contour token layer + selector hygiene.
-// Run: node /tmp/kilo/audit/ds-static.mjs
+// Run: node tools/audit/token-census.mjs   (report only; the gate is tools/check-tokens.mjs)
 import fs from "node:fs";
 import path from "node:path";
 
