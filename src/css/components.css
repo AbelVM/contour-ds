@@ -2432,7 +2432,8 @@
   }
 
   /* RTL: flip the select chevron to the inline-start side */
-  [dir="rtl"] .c-select {
+  [dir="rtl"] .c-select,
+  .c-select:dir(rtl) {
     background-position:
       1.15rem calc(50% + 1px),
       0.8rem calc(50% + 1px);
