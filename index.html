@@ -36,16 +36,12 @@
         <!-- The ridgeline's paint server. A CSS gradient is not a valid SVG
              stroke, so the gradient lives here and the divider references
              it. The stops read the theme, so the divider re-tints with it. -->
-        <!-- Colour-vision preview filters (T-134). -->
-        <filter id="contour-cvd-protanopia">
-          <feColorMatrix type="matrix" values="0.56667 0.43333 0 0 0  0.55833 0.44167 0 0 0  0 0 1 0 0  0 0 0 1 0" />
-        </filter>
-        <filter id="contour-cvd-deuteranopia">
-          <feColorMatrix type="matrix" values="0.625 0.375 0 0 0  0.7 0.3 0 0 0  0 0.3 0.7 0 0  0 0 0 1 0" />
-        </filter>
-        <filter id="contour-cvd-tritanopia">
-          <feColorMatrix type="matrix" values="0.95 0.05 0 0 0  0 0.43333 0.56667 0 0  0 0.475 0.525 0 0  0 0 0 1 0" />
-        </filter>
+        <!-- The colour-vision preview filters (Machado 2009, severity 1.0) are
+             declared inline below, with the same ids as the consumer sprite
+             src/svg/cvd-filters.svg. The two copies are intentional: each
+             document sees exactly one definition, so neither is a duplicate
+             id, and <use href="…svg#…"> is not needed (it is blocked on
+             file:// origins, which is how this guide is linked). -->
 
         <!-- No-data hatch pattern (T-133). -->
         <pattern id="contour-hatch-nodata" patternUnits="userSpaceOnUse" width="6" height="6">
@@ -306,20 +302,27 @@
             <circle cx="9" cy="18" r="1.4" /><circle cx="15" cy="18" r="1.4" />
           </g>
         </symbol>
-      <!-- Colour-vision preview filters (Machado 2009, severity 1.0). -->
-      <filter id="contour-cvd-protanopia" color-interpolation-filters="sRGB">
-        <fecolormatrix type="matrix" values="0.152286 1.05034 -0.202644 0 0  0.114503 0.786281 0.0992164 0 0  -0.0038822 -0.0481759 1.05206 0 0  0 0 0 1 0" />
-      </filter>
-      <filter id="contour-cvd-deuteranopia" color-interpolation-filters="sRGB">
-        <fecolormatrix type="matrix" values="0.367322 0.860646 -0.227968 0 0  0.280085 0.672566 0.047349 0 0  -0.0124117 -0.0798947 1.09231 0 0  0 0 0 1 0" />
-      </filter>
-      <filter id="contour-cvd-tritanopia" color-interpolation-filters="sRGB">
-        <fecolormatrix type="matrix" values="1.25552 -0.0769692 -0.178925 0 0  -0.0784117 1.17015 -0.0917856 0 0  0.00473366 -0.00787813 1.00314 0 0  0 0 0 1 0" />
-      </filter>
-      <filter id="contour-cvd-achromatopsia" color-interpolation-filters="sRGB">
-        <fecolormatrix type="matrix" values="0.299 0.587 0.114 0 0  0.299 0.587 0.114 0 0  0.299 0.587 0.114 0 0  0 0 0 1 0" />
-      </filter>
-      <!-- Missing-data hatch pattern (T-133). -->
+        <!-- Colour-vision preview filters (Machado 2009, severity 1.0).
+             The matrices are duplicated in src/svg/cvd-filters.svg, which is
+             the sprite a consumer page includes. They live inline here
+             because <use href="…svg#…"> is blocked on file:// origins, and
+             the guide is linked off a disk. The two copies carry the same
+             ids on purpose: each document sees exactly one definition, so
+             neither is a duplicate id. -->
+        <filter id="contour-cvd-protanopia" color-interpolation-filters="sRGB">
+          <fecolormatrix type="matrix" values="0.152286 1.05034 -0.202644 0 0  0.114503 0.786281 0.0992164 0 0  -0.0038822 -0.0481759 1.05206 0 0  0 0 0 1 0" />
+        </filter>
+        <filter id="contour-cvd-deuteranopia" color-interpolation-filters="sRGB">
+          <fecolormatrix type="matrix" values="0.367322 0.860646 -0.227968 0 0  0.280085 0.672566 0.047349 0 0  -0.0124117 -0.0798947 1.09231 0 0  0 0 0 1 0" />
+        </filter>
+        <filter id="contour-cvd-tritanopia" color-interpolation-filters="sRGB">
+          <fecolormatrix type="matrix" values="1.25552 -0.0769692 -0.178925 0 0  -0.0784117 1.17015 -0.0917856 0 0  0.00473366 -0.00787813 1.00314 0 0  0 0 0 1 0" />
+        </filter>
+        <filter id="contour-cvd-achromatopsia" color-interpolation-filters="sRGB">
+          <fecolormatrix type="matrix" values="0.299 0.587 0.114 0 0  0.299 0.587 0.114 0 0  0.299 0.587 0.114 0 0  0 0 0 1 0" />
+        </filter>
+
+        <!-- Missing-data hatch pattern (T-133). -->
       <pattern id="contour-hatch-missing" patternunits="userSpaceOnUse" width="6" height="6">
         <path d="M0,6 L6,0" stroke="var(--chart-missing)" stroke-width="1" />
       </pattern>
@@ -9120,12 +9123,14 @@
             </div>
           </div>
 
+          <!-- The guide declares exactly one set of its own, `daylight`, in
+               assets/css/docs.css. It is not a token of the system: src/ ships the
+               [data-theme] mechanism and two themes, and a product names its own
+               sets — airship/libreship declares positron, dark-matter, voyager and
+               high-contrast there, not here. -->
           <div class="c-segmented" data-theme-set role="group" aria-label="Theme set">
             <button type="button" data-theme-value>Default</button>
-            <button type="button" data-theme-value="positron">Positron</button>
-            <button type="button" data-theme-value="dark-matter">Dark matter</button>
-            <button type="button" data-theme-value="high-contrast">High contrast</button>
-            <button type="button" data-theme-value="voyager">Voyager</button>
+            <button type="button" data-theme-value="daylight">Daylight</button>
           </div>
 
           <div class="ds-theme-pair">

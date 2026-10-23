@@ -8,8 +8,9 @@ repository: https://github.com/abelvm/contour-ds
 tokens:
   count: 272
   layers: [primitives, semantic, component, utility]
-  themes: [light, dark, positron, dark-matter, high-contrast, voyager]
+  themes: [light, dark]
   theme_mechanism: light-dark() + [data-theme]
+  theme_sets: declared by the product, not the system
   override_knobs: [brand-hue, radius-scale]
   theme_scope: .c-theme-scope
 
@@ -89,10 +90,13 @@ padding and label size together (compact mode via `data-density="compact"`).
 resolves through `light-dark()`. The page follows the OS until a choice is
 stored in `<meta name="color-scheme">`.
 
-An opt-in theme set sits on top of the two system themes — positron,
-dark-matter, high-contrast — applied via `data-theme` on a subtree. The
-two system themes keep working unchanged; a product that needs more
-overrides the semantic layer there.
+`data-theme` is an extension point, not a list of themes. The system ships two —
+`light` and `dark` — and declares no named set of its own: a set is a product
+decision, so a product writes one on the semantic layer in its own stylesheet
+(airship/libreship declares positron, dark-matter, voyager and high-contrast in
+`packages/styles/src/tokens/index.css`). A set re-points the semantic tokens it
+changes and sets `color-scheme` in the same block. The guide carries one worked
+example, `daylight`, in `assets/css/docs.css` — as a consumer, not as the system.
 
 ## Colour
 
@@ -125,7 +129,7 @@ from a button colour.
 - `--chart-1…8` — categorical series, ordered so neighbours stay apart
 - `--chart-seq-1…7` — one hue, rising lightness (sequential)
 - `--chart-div-neg/mid/pos` — diverging, for a real midpoint
-- `--chart-dash-1…6` — one dash pattern per series
+- `--chart-dash-1…8` — one dash pattern per series
 - `--color-heat-1…6` — multi-hue heat ramp (NOT sequential)
 
 ### Chart geometry contract (T-136)

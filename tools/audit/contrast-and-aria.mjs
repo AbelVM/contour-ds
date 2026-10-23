@@ -107,16 +107,12 @@ results.lightHeat = await ramp(["--color-heat-1","--color-heat-2","--color-heat-
 results.lightSeq = await ramp(["--chart-seq-1","--chart-seq-2","--chart-seq-3","--chart-seq-4","--chart-seq-5","--chart-seq-6","--chart-seq-7"]);
 results.lightDiv = await ramp(["--chart-div-neg","--chart-div-mid","--chart-div-pos"]);
 
-/* ---- chart categorical vs panel ---- */
-results.lightSeries = await page.evaluate(() => {
-  const out = [];
-  for (let i = 1; i <= 8; i++) {
-    const fg = window.__tokOver("--chart-" + i, "--color-surface-1");
-    const fg2 = window.__tokOver("--chart-" + i, "--color-surface-2");
-    out.push({ i, vsSurface1: window.__ratio(fg, window.__tok("--color-surface-1")), vsSurface2: window.__ratio(fg2, window.__tok("--color-surface-2")) });
-  }
-  return out;
-});
+/* ---- chart categorical vs the surfaces it is drawn on ---- */
+// The sweep lives beside SURFACES below, so the gate enumerates the same six
+// surfaces the control-edge contract already uses. It used to measure two
+// surfaces and assert one of them: vsSurface2 was computed for the light theme
+// and never checked, and surface-3 (the binding case) was never measured.
+// results.lightSeries / results.darkSeries are filled in below, after SURFACES.
 
 /* ---- focus indicator contrast ---- */
 results.focusLight = await page.evaluate(() => ({
@@ -158,7 +154,59 @@ const overSurfaces = () =>
     return out;
   }, SURFACES);
 
+// Every series against every surface it can be drawn on, keyed "series|surface".
+// The README contract is "every series clears 3:1 against the panel it is drawn
+// on, in both themes", so the enumeration is the whole point: a spot-check on
+// surface-1 certifies a sentence about all six. `--color-surface-raised`
+// resolves identically to surface-1 (light) and surface-2 (dark) — measured, not
+// assumed — so it is kept for completeness and costs no extra colour pairs.
+const SERIES_COUNT = 8;
+
+const seriesOverSurfaces = () =>
+  page.evaluate(
+    ({ surfaces, count }) => {
+      const out = {};
+      for (let i = 1; i <= count; i++) {
+        for (const bg of surfaces) {
+          out[`--chart-${i}|${bg}`] = window.__ratio(
+            window.__tokOver(`--chart-${i}`, bg),
+            window.__tok(bg)
+          );
+        }
+      }
+      return out;
+    },
+    { surfaces: SURFACES, count: SERIES_COUNT }
+  );
+
+// Each legend key, built exactly as a consumer builds one, measured against the
+// dash token its series carries. Synthesising them here rather than scraping the
+// guide's specimens means the check covers all eight series even though the guide
+// currently renders three.
+const legendKeysFor = () =>
+  page.evaluate((count) => {
+    const host = document.querySelector(".c-legend") || document.body;
+    const rootCS = getComputedStyle(document.documentElement);
+    const out = {};
+    for (let s = 1; s <= count; s++) {
+      const el = document.createElement("span");
+      el.className = "c-legend__swatch c-legend__swatch--line";
+      el.dataset.series = String(s);
+      el.style.cssText = "position:fixed;left:-9999px;top:0";
+      host.append(el);
+      const cs = getComputedStyle(el);
+      const dash = (rootCS.getPropertyValue(`--chart-dash-${s}`) || "").trim();
+      const image = cs.backgroundImage !== "none";
+      const color = cs.backgroundColor !== "rgba(0, 0, 0, 0)" && cs.backgroundColor !== "transparent";
+      out[s] = { dash, image, color, painted: image || color };
+      el.remove();
+    }
+    return out;
+  }, SERIES_COUNT);
+
 results.controlLight = await overSurfaces();
+results.lightSeries = await seriesOverSurfaces();
+results.legendKeys = await legendKeysFor();
 
 /* ---- scrollbar + border edges ---- */
 results.edgesLight = await page.evaluate(() => ({
@@ -330,17 +378,22 @@ results.dark = await page.evaluate(() => ({
 results.controlDark = await overSurfaces();
 results.darkHeat = await ramp(["--color-heat-1","--color-heat-2","--color-heat-3","--color-heat-4","--color-heat-5","--color-heat-6"]);
 results.darkSeq = await ramp(["--chart-seq-1","--chart-seq-2","--chart-seq-3","--chart-seq-4","--chart-seq-5","--chart-seq-6","--chart-seq-7"]);
-results.darkSeries = await page.evaluate(() => {
-  const out = [];
-  for (let i = 1; i <= 8; i++) {
-    const fg = window.__tokOver("--chart-" + i, "--color-surface-1");
-    out.push({ i, vsSurface1: window.__ratio(fg, window.__tok("--color-surface-1")) });
-  }
-  return out;
-});
+results.darkSeries = await seriesOverSurfaces();
 
 results.dataThemes = {};
-for (const theme of ["positron", "dark-matter", "high-contrast", "voyager"]) {
+// The theme names are read from the guide's own switcher rather than repeated here:
+// a hard-coded list is a gate that silently stops measuring the moment a set is
+// added, renamed or — as with the product sets that moved to airship-libreship —
+// removed. Zero declared sets is a failure, not a pass.
+const declaredThemes = await page.evaluate(() =>
+  [...document.querySelectorAll("[data-theme-set] [data-theme-value]")]
+    .map((b) => b.dataset.themeValue)
+    .filter(Boolean)
+);
+if (!declaredThemes.length) {
+  failures.push("themes: the guide declares no [data-theme] set, so the theme sweep measured nothing");
+}
+for (const theme of declaredThemes) {
   await page.evaluate((t) => {
     document.documentElement.setAttribute("data-theme", t);
   }, theme);
@@ -402,13 +455,41 @@ check("light: text-muted vs surface-3", results.edgesLight["text-muted vs surfac
 check("light: text-subtle vs surface-1", results.edgesLight["text-subtle vs surface-1"], TEXT_MIN, "1.4.3");
 check("dark: text-subtle vs surface-3", results.dark["text-subtle vs surface-3"], TEXT_MIN, "1.4.3");
 
-// Every categorical series clears the panel it is drawn on — the README says
-// all eight, in both themes.
+// Every categorical series clears 3:1 on every surface it can be drawn on, in
+// both themes — the README's sentence, enumerated. The count is asserted from
+// SURFACES rather than written down, so widening or shrinking the surface list
+// cannot leave the gate quietly checking less than it claims to.
+const SERIES_PAIRS = 8 * SURFACES.length;
 for (const [theme, key] of [
   ["light", "lightSeries"],
   ["dark", "darkSeries"],
 ]) {
-  for (const s of results[key]) check(`${theme}: --chart-${s.i} vs surface-1`, s.vsSurface1, SERIES_MIN, "chart contract");
+  const pairs = results[key] || {};
+  const got = Object.keys(pairs).length;
+  if (got !== SERIES_PAIRS) {
+    failures.push(`${theme}: series sweep measured ${got} of ${SERIES_PAIRS} pairs — the enumeration drifted, not a pass`);
+    continue;
+  }
+  for (const [pair, value] of Object.entries(pairs)) {
+    const [series, surface] = pair.split("|");
+    check(`${theme}: ${series} vs ${surface}`, value, SERIES_MIN, "chart contract");
+  }
+}
+
+// The legend key must preview the pattern the chart line carries: a dashed series
+// shows dashes, a solid one shows a solid bar. This is the promise the component
+// makes in its own comment, and until now nothing checked it — series 1 rendered
+// a 32x3 transparent gap in the guide's own specimen.
+const legendKeys = results.legendKeys || {};
+const legendMeasured = Object.keys(legendKeys).length;
+if (legendMeasured !== SERIES_COUNT) {
+  failures.push(`legend: measured ${legendMeasured} of ${SERIES_COUNT} keys — the sweep found nothing to check, not a pass`);
+}
+for (const [series, k] of Object.entries(legendKeys)) {
+  const solid = k.dash === "none" || k.dash === "";
+  if (!k.painted) failures.push(`legend: key for series ${series} paints nothing (no image, no colour)`);
+  else if (solid && !k.color) failures.push(`legend: series ${series} is solid (dash: none) but its key paints no colour`);
+  else if (!solid && !k.image) failures.push(`legend: series ${series} has dash "${k.dash}" but its key shows no pattern`);
 }
 
 // The sequential ramp is monotonic in lightness, and inverts between themes:

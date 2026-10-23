@@ -555,76 +555,20 @@
     --color-link-hover: light-dark(var(--brand-800), var(--brand-200));
   }
   /* =======================================================================
-     17. THEME SET — beyond light-dark()
-     light-dark() is a two-valued switch. A third (or fourth) theme is
-     expressed by re-pointing the semantic tokens on a subtree. The two
-     system themes (light, dark) keep working unchanged; a product that
-     needs more (positron, dark-matter, voyager, high-contrast) overrides
-     the semantic layer here.
+     17. THEME SET — the extension point, not a set of themes
+     light-dark() is a two-valued switch, so a third theme is expressed by
+     re-pointing the semantic tokens on a subtree. `[data-theme]` is that
+     mechanism, and it is declared nowhere in src/: a named set is a product
+     decision, not a system one. The two system themes (light, dark) are the
+     whole shipped set.
+
+     A product declares its own — airship/libreship does, in
+     packages/styles/src/tokens/index.css — and the guide carries a worked
+     example in assets/css/docs.css, because the guide is a consumer too.
+     What stays here is the contract: a set re-points the semantic tokens it
+     changes and sets `color-scheme` in the same block, or form controls,
+     scrollbars and the <select> picker keep the previous scheme.
      ======================================================================= */
-  [data-theme="positron"] {
-    --color-canvas: oklch(98.5% 0.003 230);
-    --color-canvas-sunken: oklch(96% 0.005 230);
-    --color-surface-1: oklch(100% 0 0);
-    --color-surface-2: oklch(97% 0.004 230);
-    --color-surface-3: oklch(94% 0.006 230);
-    --color-text: oklch(30% 0.018 230);
-    --color-text-strong: oklch(20% 0.02 230);
-    --color-text-muted: oklch(45% 0.016 230);
-    --color-text-subtle: oklch(48% 0.014 230);
-    --color-border: oklch(82% 0.008 230);
-    --color-border-strong: oklch(65% 0.012 230);
-    --color-primary: var(--brand-600);
-    color-scheme: light;
-  }
-
-  [data-theme="dark-matter"] {
-    --color-canvas: oklch(8% 0.012 230);
-    --color-canvas-sunken: oklch(6% 0.01 230);
-    --color-surface-1: oklch(11% 0.014 230);
-    --color-surface-2: oklch(15% 0.016 230);
-    --color-surface-3: oklch(19% 0.018 230);
-    --color-text: oklch(88% 0.012 230);
-    --color-text-strong: oklch(96% 0.008 230);
-    --color-text-muted: oklch(68% 0.014 230);
-    --color-text-subtle: oklch(52% 0.012 230);
-    --color-border: oklch(24% 0.014 230);
-    --color-border-strong: oklch(38% 0.016 230);
-    --color-primary: var(--brand-400);
-    color-scheme: dark;
-  }
-
-  [data-theme="voyager"] {
-    --color-canvas: oklch(6% 0.02 260);
-    --color-canvas-sunken: oklch(4% 0.018 260);
-    --color-surface-1: oklch(9% 0.022 260);
-    --color-surface-2: oklch(13% 0.024 260);
-    --color-surface-3: oklch(17% 0.026 260);
-    --color-text: oklch(86% 0.014 260);
-    --color-text-strong: oklch(96% 0.01 260);
-    --color-text-muted: oklch(66% 0.016 260);
-    --color-text-subtle: oklch(50% 0.014 260);
-    --color-border: oklch(22% 0.02 260);
-    --color-border-strong: oklch(36% 0.022 260);
-    --color-primary: var(--brand-400);
-    color-scheme: dark;
-  }
-
-  [data-theme="high-contrast"] {
-    --color-canvas: oklch(100% 0 0);
-    --color-canvas-sunken: oklch(96% 0 0);
-    --color-surface-1: oklch(100% 0 0);
-    --color-surface-2: oklch(94% 0 0);
-    --color-surface-3: oklch(88% 0 0);
-    --color-text: oklch(0% 0 0);
-    --color-text-strong: oklch(0% 0 0);
-    --color-text-muted: oklch(20% 0 0);
-    --color-text-subtle: oklch(30% 0 0);
-    --color-border: oklch(0% 0 0);
-    --color-border-strong: oklch(0% 0 0);
-    --color-primary: oklch(0% 0 0);
-    color-scheme: light;
-  }
 
 
 

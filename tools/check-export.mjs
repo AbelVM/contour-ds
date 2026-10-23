@@ -79,7 +79,12 @@ function main() {
 
   // Exporting more than is declared means the exporter is reading something it
   // should not — a comment block parsed as a declaration, for instance.
-  const extra = Object.keys(exported).filter((name) => !declared.includes(name));
+  // The envelope keys (`$schema`, and any future `$`-prefixed metadata) are
+  // not tokens and are not declared in tokens.css; comparing them against the
+  // declared set is what made this gate fail on a correct export.
+  const ENVELOPE = (name) => name.startsWith("$");
+  const tokenKeys = (o) => Object.keys(o).filter((k) => !ENVELOPE(k));
+  const extra = tokenKeys(exported).filter((name) => !declared.includes(name));
   if (extra.length) {
     failures.push(`${extra.length} token(s) in the export are not declared in tokens.css`);
     for (const e of extra.slice(0, 12)) failures.push(`    ${e}`);
@@ -120,7 +125,7 @@ function main() {
   }
 
   const themed = Object.values(exported).filter((v) => v && v.$value && typeof v.$value === "object" && "light" in v.$value).length;
-  console.log(`check-export: ${Object.keys(exported).length}/${declared.length} tokens exported, ${themed} as light/dark pairs, semantic layer present. OK`);
+  console.log(`check-export: ${tokenKeys(exported).length}/${declared.length} tokens exported, ${themed} as light/dark pairs, semantic layer present. OK`);
   return 0;
 }
 

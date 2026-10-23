@@ -52,6 +52,14 @@ const LEDGER = {
   // Added with the composable-surface work and not yet referenced by an exit
   // transition. Not deleted on purpose: this is another hand's in-flight edit.
   "--ease-exit": { action: "yours", task: "T-44", verified: true, note: "awaiting its exit-transition consumer" },
+  // A heat ramp is a legitimate vocabulary — density, hazard, continuous
+  // surfaces — and it is not the same thing as a sequential ramp. It lost its
+  // only consumer when the legend ramp was pointed at --chart-seq-* (the
+  // ramp that actually orders): --gradient-heat's lightness is 71, 78, 78,
+  // 70.4, 77, 62.36, non-monotonic by design, so it must never feed a ramp
+  // that implies order. Kept rather than deleted so a heat-scale surface still
+  // has a token to reach for. Consumer: the heat-scale specimen, T-161.
+  "--gradient-heat": { action: "yours", task: "T-161", verified: true, note: "heat ramp, non-ordered — needs a specimen, not a ramp" },
 };
 
 // Referenced-but-undefined tokens that are deliberate author hooks (component-scoped

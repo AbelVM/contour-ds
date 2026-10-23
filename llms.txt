@@ -1,6 +1,6 @@
 # Contour
 
-> A token-driven design system for spatial interfaces — routing engines, pedestrian simulators, map tooling and geospatial dashboards. Dark and light themes, 134 components, 272 design tokens (271 read, 1 unread), zero runtime dependencies, no build step.
+> A token-driven design system for spatial interfaces — routing engines, pedestrian simulators, map tooling and geospatial dashboards. Dark and light themes, 134 components, 272 design tokens (270 read, 2 unread), zero runtime dependencies, no build step.
 
 Contour covers three kinds of page: a **landing page** that has to persuade, a **documentation site** that has to explain, and a **technical dashboard** that has to be read at speed. All three share one token layer, one type scale and one set of affordance rules.
 
@@ -78,8 +78,8 @@ Landing: logo wall, feature showcase, metrics band, testimonial, pricing, compar
 - Primitives never change between themes; only the semantic layer does, so a theme swap is a one-line change.
 - Two values retheme and reshape everything: `--brand-hue` and `--radius-scale`.
 - `.c-theme-scope` re-derives the whole brand layer for a subtree, because a custom property containing `var()` is resolved eagerly.
-- An opt-in theme set beyond light/dark — positron, dark-matter, high-contrast, voyager — applied via `data-theme` on a subtree; the two system themes keep working unchanged.
-- A separate chart token layer: `--chart-1…8` categorical (all eight clear 3:1 against the panel), `--chart-seq-1…7` sequential (monotonic in lightness, dark-inverted), `--chart-div-*` diverging (real midpoint), `--chart-dash-1…6` one pattern per series. The chart *frame* ships, and `window.Contour.chart` ships `scale`, `ticks` and `datum` helpers for consumers who want them.
+- `data-theme` is an extension point, not a set of themes: the system ships `light` and `dark` only. A product declares its own sets by re-pointing the semantic layer, and must set `color-scheme` in the same block.
+- A separate chart token layer: `--chart-1…8` categorical (each series clears 3:1 against every surface it can be drawn on, in both themes), `--chart-seq-1…7` sequential (monotonic in lightness, dark-inverted), `--chart-div-*` diverging (real midpoint), `--chart-dash-1…8` one pattern per series, previewed by the legend key of the same series. Both contracts are enforced by `node tools/audit/contrast-and-aria.mjs`, which exits non-zero on either. The chart *frame* ships, and `window.Contour.chart` ships `scale`, `ticks` and `datum` helpers for consumers who want them.
 
 ## Rules the system holds itself to
 

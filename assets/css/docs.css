@@ -1076,3 +1076,38 @@
   }
 
 }
+
+/* ============================================================================
+   GUIDE AS CONSUMER — one worked theme set
+   ----------------------------------------------------------------------------
+   `src/` ships the `[data-theme]` mechanism and no named sets: positron,
+   dark-matter, voyager and high-contrast are airship/libreship's, declared in
+   its own packages/styles/src/tokens/index.css, because a named theme is a
+   product decision. The guide therefore declares its own set here rather than
+   borrowing a product's — which is the point of the mechanism, and the only
+   honest way to demonstrate it: this file is a consumer of `src/`.
+
+   `daylight` is the guide's: a high-key set for a bright room and for printed
+   plates. It keeps `@layer tokens`, so moving files did not change where these
+   rules sit in the cascade — within the tokens layer the guide's sheet loads
+   last, exactly as the deleted blocks came last within `tokens.css`.
+   `color-scheme` travels with it: without it, form controls, scrollbars and
+   the <select> picker keep the previous scheme.
+   ========================================================================== */
+@layer tokens {
+  [data-theme='daylight'] {
+    --color-canvas: oklch(98.5% 0.003 230);
+    --color-canvas-sunken: oklch(96% 0.005 230);
+    --color-surface-1: oklch(100% 0 0);
+    --color-surface-2: oklch(97% 0.004 230);
+    --color-surface-3: oklch(94% 0.006 230);
+    --color-text: oklch(30% 0.018 230);
+    --color-text-strong: oklch(20% 0.02 230);
+    --color-text-muted: oklch(45% 0.016 230);
+    --color-text-subtle: oklch(48% 0.014 230);
+    --color-border: oklch(82% 0.008 230);
+    --color-border-strong: oklch(65% 0.012 230);
+    --color-primary: var(--brand-600);
+    color-scheme: light;
+  }
+}
