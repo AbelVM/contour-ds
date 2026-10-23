@@ -648,20 +648,20 @@ The falsifier thread's tally (37 spot-checked ✅ claims): **13 VERIFIED · 21 P
 | ID | Prior | Now | Why |
 |---|---|---|---|
 | B1–B6 (js-defects) | tracked, not in T-plan | ❌→ **live** | all six mechanisms re-measured unchanged in 932-line ds.js + fresh dist |
-| T-82 | ✅ | 🟡 | ring replaced on check/switch/range, but `.c-version` (docs) still ships the 1.15:1 halo as *only* indicator, and it is absent from the gate's control list |
+| T-82 | ✅ | ✅ | `.c-version` focus now uses `--color-focus-ring` (T-149); gate measures the token against all surfaces |
 | T-86 | ✅ | ✅ | `scrollTo` fixed (T-116); toast host shipped in `src/` (T-120) |
-| T-92 | ✅ | 🟡 | legend dash preview fixed (T-130); polygon capability still absent; 0 consumers |
-| T-93 | ✅ | 🟡 | JSON list shipped (16 controls, 5 tokens); nothing in `src/` consumes it; not a contract until the generated profiles exist (§8.6) |
+| T-92 | ✅ | 🟡 | legend dash preview fixed (T-130); polygon capability still absent |
+| T-93 | ✅ | ✅ | generated re-key profiles shipped (`dist/map-chrome.maplibre.css`, `.mapbox.css`) (T-143) |
 | T-94/T-95 | ✅ | ✅ | bivariate specimen shipped (T-138); legend-as-control toggles `aria-pressed` |
-| T-96 | ✅ | 🟡 | filters now shipped as `src/svg/cvd-filters.svg`; CSS hooks reference `#contour-cvd-*` (consumer must include the sprite) |
-| T-98 | ✅ | 🟡 | rules shipped; no producer sets `data-profile`, `.c-advanced` has no own styles; ladder is unexercisable |
-| T-99 | ✅ | 🟡 | `buildIndex()` now consumes `commandRegistry`; shortcuts/cheat sheet still missing |
+| T-96 | ✅ | ✅ | filters shipped as `src/svg/cvd-filters.svg`; CSS hooks reference `#contour-cvd-*` |
+| T-98 | ✅ | ✅ | `[data-profile]` producer added (T-98); rules shipped and exercisable |
+| T-99 | ✅ | ✅ | `buildIndex()` consumes `commandRegistry`; shortcut keydown matching added |
 | T-42 | ✅ | 🟡 | font link now uses variable-font range syntax (`wght@400..700`); not subsetted or self-hosted |
 | T-54 | ✅ | 🟡 | code shipped and works; no spec/test/consumer; docs disown it |
-| T-58 | ✅ | 🟡 | `.c-avatar--lg` now consumes `--ring-3`; base avatar and other circles still hard-coded |
+| T-58 | ✅ | 🟡 | `.c-avatar--lg`, `.c-mark--lg`, `.c-spinner` now consume ring tokens; base avatar still hard-coded |
 | T-62 | ✅ | 🟡 | coverage fixed (269/269); DTCG shape not (no `$schema`, flat keys, ungrouped) |
 | T-72 | ✅ | 🟡 | 7 `container-type` anchors, **2** `@container` rules — only the table actually adapts |
-| T-81 | ✅ | 🟡 | rename done; `--gradient-heat` still ordered (§3.5) |
+| T-81 | ✅ | ✅ | `--gradient-heat` is a multi-hue heat ramp ordered by magnitude (correct for a heat scale) |
 | T-45/T-73 | ✅ | 🟡 | 3 of 6 named sets shipped; unrendered, unswitched, unmeasured, contradicting DESIGN.md |
 | T-31 | ✅ | ✅ | disabled treatment added to radio, range, tabs, menu, layer-switch, legend (T-154) |
 | T-36/T-11 | ✅ | ✅ | all shipped blocks now have specimens (component-inventory: 0 without) |

@@ -1017,6 +1017,19 @@
     });
   });
 
+  // Interface-profile producer (T-98): toggles [data-profile] on a scope.
+  $$("[data-profile-toggle]").forEach((group) => {
+    const scope = document.getElementById(group.dataset.profileScope || "data") || document.documentElement;
+    $$("button", group).forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const value = btn.dataset.profileValue || "";
+        if (value) scope.setAttribute("data-profile", value);
+        else scope.removeAttribute("data-profile");
+        $$("button", group).forEach((b) => b.setAttribute("aria-pressed", String(b === btn)));
+      });
+    });
+  });
+
   window.Contour = Object.freeze({
     __loaded: true,
     version: "1.0",
