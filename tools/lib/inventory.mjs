@@ -192,6 +192,7 @@ export function inventory() {
   const rawDurations = [];
   const rawZIndex = [];
   const colourLiterals = [];
+  const infiniteAnimations = [];
   for (const file of files) {
     for (const b of blocks(readFileSync(join(CSS_DIR, file), "utf8"))) {
       for (const stmt of b.body.split(";")) {
@@ -199,6 +200,18 @@ export function inventory() {
         if (!decl) continue;
         if (/^(animation|transition)\s*:/.test(decl) && !decl.includes("var(--dur") && /\b\d+(\.\d+)?m?s\b/.test(decl)) {
           rawDurations.push({ file, selector: b.selector, decl });
+        }
+        // Every `animation: … infinite` is a WCAG 2.2.2 candidate: it starts
+        // automatically and never stops on its own. The motion contract needs
+        // this list from the same parser the census uses, because a gate that
+        // re-derives it with its own regex disagrees with the published count.
+        if (/^animation\s*:/.test(decl) && /\binfinite\b/.test(decl)) {
+          infiniteAnimations.push({
+            file,
+            selector: b.selector,
+            decl,
+            duration: (decl.match(/var\(--dur-[a-z-]+\)|\b\d+(\.\d+)?m?s\b/) || [""])[0],
+          });
         }
         if (/^z-index\s*:/.test(decl) && !decl.includes("var(--z-")) {
           rawZIndex.push({ file, selector: b.selector, decl });
@@ -234,7 +247,7 @@ export function inventory() {
       groups,
       census: Object.fromEntries(census.map((c) => [c.name, c])),
     },
-    hygiene: { rawDurations, rawZIndex, colourLiterals },
+    hygiene: { rawDurations, rawZIndex, colourLiterals, infiniteAnimations },
     cssBytes: Object.fromEntries(files.map((f) => [f, statSync(join(CSS_DIR, f)).size])),
     dist: {
       css: distSize("contour.css"),

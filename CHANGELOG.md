@@ -9,6 +9,21 @@ the measurement that corrected it is named, so the next reader can re-run it.
 ## [Unreleased]
 
 ### Added
+- `[data-motion]` — the WCAG 2.2.2 pause mechanism. `paused` holds every
+  animation in its scope on the frame it is on, `running` overrides the media
+  query, and leaving it unset gives the choice back to the operating system.
+  `prefers-reduced-motion` does not discharge 2.2.2, because that is an OS
+  setting and the criterion asks for a mechanism on the page. The selector
+  reaches `::before`/`::after` deliberately: the infinite motion lives there.
+- `tools/check-motion.mjs` — the motion contract. Reads the infinite animations
+  from `tools/lib/inventory.mjs` rather than re-deriving them, and requires both
+  halves: a mechanism in `src/css` *and* a control on a shipped page. Either one
+  alone is the failure this repository keeps measuring.
+- `tools/audit/theme-render-probe.mjs` — the render probe. Mounts a freshly
+  created `.c-btn--primary` per declared theme set, decodes colours instead of
+  comparing their serialisations, and sweeps `--brand-hue` 0..360 in both themes
+  against the control-edge, focus-ring and button-label contracts. Sabotage
+  tested: deleting `daylight`'s hue turns it red on the predicted symptom.
 - `--color-control-edge` token for control borders (WCAG 1.4.11)
 - `--target-control`, `--target-option`, `--target-chart` and `--target-mark` tokens for target sizes by kind (a data mark is deliberately `0` — it is not a target)
 - `--fill-hatch-1…5` and `--fill-dot` fill-pattern vocabulary for polygon marks

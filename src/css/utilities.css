@@ -391,6 +391,39 @@
     display: revert;
   }
 
+  /* -- Motion pause (WCAG 2.2.2) --------------------------------------- */
+  /* 2.2.2 is Level A and `prefers-reduced-motion` does not discharge it: that
+     is an operating-system setting a reader may never have touched, and it
+     cannot be reached for one piece of content on one page. The criterion wants
+     a control on the page, so the system ships the mechanism and the author
+     ships the button that drives it.
+
+     One attribute, two values, no second switch: `paused` and `running` are the
+     reader's override and beat the media query; `auto` — the default, and any
+     value you do not set — leaves the media query in charge.
+
+     A pause holds the frame rather than deleting the animation, so a spinner
+     mid-rotation stays mid-rotation and still means "working", and the page
+     does not reflow when the pause is released.
+
+     The selector descends through pseudo-elements on purpose: the infinite
+     motion lives there. The live dot, the skeleton's sweep and the loading
+     button's ring are all `::after`, so a mechanism that stops only the element
+     would stop nothing. */
+  [data-motion="paused"],
+  [data-motion="paused"] *,
+  [data-motion="paused"] *::before,
+  [data-motion="paused"] *::after {
+    animation-play-state: paused;
+  }
+
+  [data-motion="running"],
+  [data-motion="running"] *,
+  [data-motion="running"] *::before,
+  [data-motion="running"] *::after {
+    animation-play-state: running;
+  }
+
   /* -- prefers-contrast: more ----------------------------------------- */
   @media (prefers-contrast: more) {
     :root {

@@ -42,6 +42,11 @@ jobs:
       - name: Check token census
         run: node tools/check-tokens.mjs
 
+      # WCAG 2.2.2 is Level A: every infinite animation must be pausable by a
+      # control that ships on a page, not only by an operating-system setting.
+      - name: Check the motion contract
+        run: node tools/check-motion.mjs
+
       - name: Build
         run: node tools/build.mjs
 

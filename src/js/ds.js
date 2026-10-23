@@ -1030,6 +1030,27 @@
     });
   });
 
+  // Motion-pause producer (C-26) for the [data-motion] mechanism in
+  // utilities.css. WCAG 2.2.2 is Level A, and prefers-reduced-motion does not
+  // discharge it: that is an operating-system setting, and the criterion asks
+  // for a control on the page. So the system ships the mechanism and the author
+  // ships the button that drives it.
+  // "auto" is the default and is taken off rather than written, which leaves
+  // the media query in charge until the reader overrides it.
+  $$("[data-motion-toggle]").forEach((group) => {
+    const scope =
+      (group.dataset.motionScope && document.getElementById(group.dataset.motionScope)) ||
+      document.documentElement;
+    $$("button", group).forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const value = btn.dataset.motionValue || "auto";
+        if (value === "auto") scope.removeAttribute("data-motion");
+        else scope.setAttribute("data-motion", value);
+        $$("button", group).forEach((b) => b.setAttribute("aria-pressed", String(b === btn)));
+      });
+    });
+  });
+
   window.Contour = Object.freeze({
     __loaded: true,
     version: "1.0",
