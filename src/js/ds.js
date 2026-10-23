@@ -308,20 +308,37 @@
     7. Toast
      --------------------------------------------------------------------- */
   let toastHost = $("#toast-host");
+  // The region is created at load and reused, never created around its own
+  // message. A live region that is inserted already containing text is the one
+  // case assistive tech is documented not to announce: it watches for changes
+  // inside a region that already exists, so a toast that builds itself with its
+  // message inside arrives as markup, not as news. (C-28, WCAG 4.1.3.)
+  //
+  // The attributes are set on WHICHEVER host is used, not only on one this
+  // function made. A page may ship its own `<div id="toast-host">` — the guide
+  // does — and an early `return` on that existing node would skip the fix in
+  // exactly the one place it can be seen working, leaving a change that edits
+  // bytes and alters nothing.
   const ensureToastHost = () => {
-    if (toastHost && document.contains(toastHost)) return toastHost;
-    toastHost = document.createElement("div");
-    toastHost.id = "toast-host";
-    toastHost.className = "c-toast-host";
-    document.body.append(toastHost);
+    if (!toastHost || !document.contains(toastHost)) {
+      toastHost = document.createElement("div");
+      toastHost.id = "toast-host";
+      toastHost.className = "c-toast-host";
+      document.body.append(toastHost);
+    }
+    if (!toastHost.getAttribute("role")) toastHost.setAttribute("role", "status");
+    if (!toastHost.hasAttribute("aria-live")) toastHost.setAttribute("aria-live", "polite");
     return toastHost;
   };
+  ensureToastHost();
   const showToast = (message, variant = "success") => {
     const host = ensureToastHost();
     if (!host) return;
     const toast = document.createElement("div");
     toast.className = `c-toast c-toast--${variant}`;
-    toast.setAttribute("role", "status");
+    // No role here: the host is the region. A `role="status"` on the toast as
+    // well nests one live region inside another, which is how a single message
+    // gets announced twice.
     toast.innerHTML = `<span class="c-dot c-dot--${variant === "danger" ? "danger" : "success"}"></span><span></span>`;
     toast.querySelector("span:last-child").textContent = message;
     host.append(toast);

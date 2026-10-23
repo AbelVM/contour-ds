@@ -256,11 +256,25 @@ function stamp(name, text) {
   }
 
   if (name === "index.html") {
-    out = out.replace(/(<meta name="description" content=")[^"]*(")/, (whole, head, tail) => {
-      const next = `${head}${DESCRIPTION}${tail}`;
-      if (next !== whole) changes.push(`${name}: meta description`);
-      return next;
-    });
+    // One sentence, two attributes. `og:description` is read by a crawler and
+    // `meta name="description"` by a search engine; if only one is generated the
+    // other goes stale by a whole number the moment the census moves — which is
+    // the hand-written-count failure this file exists to prevent, in a place no
+    // prose gate looks at.
+    for (const [attr, label] of [
+      ['name="description"', "meta description"],
+      ['property="og:description"', "og:description"],
+    ]) {
+      const re = new RegExp(`(<meta ${attr} content=")[^"]*(")`);
+      out = out.replace(re, (whole, head, tail) => {
+        const next = `${head}${DESCRIPTION}${tail}`;
+        if (next !== whole) changes.push(`${name}: ${label}`);
+        return next;
+      });
+      if (!out.includes(`${attr} content="${DESCRIPTION}"`)) {
+        misses.push(`${name}: ${label} — pattern found no match, or the attribute is absent`);
+      }
+    }
   }
 
   for (const r of REWRITES) {

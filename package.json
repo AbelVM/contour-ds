@@ -18,6 +18,7 @@
     "check:defs": "node tools/check-defs.mjs",
     "check:light-dark": "node tools/gen-light-dark.mjs --check",
     "check:claims": "node tools/check-claims.mjs",
+    "check:markup": "node tools/check-markup.mjs",
     "check:theme": "node tools/audit/theme-render-probe.mjs",
     "check:chart": "node tools/audit/chart-geometry.mjs",
     "validate": "npx html-validate index.html templates/*.html",

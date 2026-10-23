@@ -5,6 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Contour — a design system for spatial interfaces</title>
     <meta name="description" content="Contour is a token-driven design system for spatial interfaces. Dark and light themes, 134 components, 275 design tokens, zero runtime dependencies." />
+    <!-- One sentence, two readers: stamp.mjs generates BOTH descriptions from
+         the same computed string, so the crawler copy can never fall a whole
+         component count behind the search copy. `twitter:description` is
+         deliberately absent — a crawler falls back to og:description, and a
+         third copy is a third thing that can drift. No og:image either: the
+         system ships no raster, only the SVG mark, and the crawlers will not
+         render an SVG as a card image. Add it when a PNG is hosted at a URL
+         that resolves — a card pointing at a dead image is a claim, not a
+         fallback. -->
+    <meta property="og:title" content="Contour — a design system for spatial interfaces" />
+    <meta property="og:description" content="Contour is a token-driven design system for spatial interfaces. Dark and light themes, 134 components, 275 design tokens, zero runtime dependencies." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Contour — a design system for spatial interfaces" />
     <meta name="author" content="Abel Vázquez Montoro" />
     <meta name="color-scheme" content="light dark" />
     <script>
@@ -9645,7 +9659,11 @@
     </footer>
 
     <!-- ===================== OVERLAYS ===================== -->
-    <div id="toast-host" class="c-toast-host"></div>
+    <!-- The live region for toasts. `ds.js` asserts these attributes on
+         whichever host it finds, but the markup carries them so the region is
+         correct before any script runs, and so the guide is not an exception to
+         the pattern it documents. -->
+    <div id="toast-host" class="c-toast-host" role="status" aria-live="polite"></div>
 
     <dialog class="c-dialog" id="demo-dialog" aria-labelledby="demo-dialog-title">
       <div class="c-dialog__head">

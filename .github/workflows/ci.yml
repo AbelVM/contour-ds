@@ -82,6 +82,12 @@ jobs:
       - name: Check every published claim names the gate that owns it
         run: node tools/check-claims.mjs
 
+      # Missing preconnect hints and absent social metadata cost the reader and
+      # the share card, and change no other test result — so this is the only
+      # place either is checked.
+      - name: Check markup hygiene (font preconnects, share metadata)
+        run: node tools/check-markup.mjs
+
       - name: Check snippets idempotency
         run: |
           cp index.html /tmp/index-before.html

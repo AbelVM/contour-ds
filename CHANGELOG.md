@@ -120,6 +120,41 @@ the measurement that corrected it is named, so the next reader can re-run it.
   string, and `tools/check-dist.mjs` refuses a shipped artifact that nothing in
   the repository references. The three files were built, published by
   `files: ["dist/"]`, and reached by no document, link, specimen or gate.
+- Markup hygiene (C-53) — `tools/check-markup.mjs`, plus the fixes it guards.
+  Every shipped page linked Google Fonts and only the guide carried the
+  `preconnect` pair, so the shipped template was slower than the documentation
+  that recommends it; and no page carried any `og:`/`twitter:` metadata, so a
+  landing surface whose whole pitch is a visual identity shared into Slack, X and
+  GitHub with no card at all. All four pages now carry both hints (the `gstatic`
+  one with `crossorigin`, because the font fetch is CORS-mode) and
+  `og:title`/`og:description`/`og:type`/`twitter:card`. `stamp.mjs` generates the
+  guide's `meta description` **and** its `og:description` from one computed
+  string, so the crawler copy can never fall a component count behind the search
+  copy. The gate deliberately does not require `og:image`: the system ships no
+  raster, only the SVG mark, and crawlers will not render an SVG as a card image
+  — requiring the tag would be answered by a URL that renders nothing. What it
+  does require is that an `og:image`, if added, be absolute `https` and resolve to
+  a path that exists here.
+- The toast live region is declared before it has anything to say (C-28, WCAG
+  4.1.3). Each toast carried its own `role="status"` and arrived already
+  containing its message — the one case assistive tech is documented not to
+  announce, since a live region is watched for changes *inside a region that
+  already exists*. `#toast-host` is now the region (`role=status`,
+  `aria-live=polite`), created at load, and the toast inside it carries no role:
+  a nested region is how one message gets announced twice.
+- An open snippet now takes the rest of the page out of the tab order (C-29,
+  WCAG 2.4.11, Level AA). The scrim is `position: fixed` over the viewport while
+  every control behind it stayed focusable; 2.4.11 carries no exception for
+  author content that happens to be fixed or sticky, so `assets/js/guide.js`
+  modalises with `inert` on the *siblings of each ancestor* of the open example —
+  an ancestor cannot be inerted without hiding the snippet itself. With JS off the
+  disclosure is still a native `<details>`.
+- Verified in Chromium, not asserted: the host exists at load with
+  `role=status aria-live=polite` and no children; a fired toast lands inside it
+  with `role=null`; a second toast reuses the same host instead of building one.
+  Opening a snippet marks 42 elements inert, leaves the open example focusable,
+  inertates the rail, releases everything on close, and a header link behind the
+  scrim no longer accepts focus.
 - `--color-control-edge` token for control borders (WCAG 1.4.11)
 - `--target-control`, `--target-option`, `--target-chart` and `--target-mark` tokens for target sizes by kind (a data mark is deliberately `0` — it is not a target)
 - `--fill-hatch-1…5` and `--fill-dot` fill-pattern vocabulary for polygon marks

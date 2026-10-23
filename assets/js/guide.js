@@ -31,12 +31,45 @@
      only works for a single focus. */
   disclosures.forEach((details) => {
     details.addEventListener("toggle", () => {
-      if (!details.open) return;
+      if (!details.open) {
+        if (!openDisclosure()) releaseModal();
+        return;
+      }
       disclosures.forEach((other) => {
         if (other !== details) other.open = false;
       });
+      // WCAG 2.4.11 (Focus Not Obscured, Minimum) is Level AA and carries no
+      // exception for author content that happens to be fixed or sticky: while
+      // the scrim dims the whole page, every control still in the tab order is
+      // a control the reader can focus and cannot see. `inert` is what removes a
+      // subtree from the sequential focus ring, from hit-testing and from the
+      // accessibility tree at once — a focus trap written by hand would do the
+      // first of those three and forget the other two.
+      modalise(details);
     });
   });
+
+  let inerted = [];
+
+  /* Modalise the page around `keep` without hiding it. An ancestor cannot be
+     made inert, because inert reaches the whole subtree, so what gets inerted
+     is the SIBLING of each ancestor — the rail beside the section, the header
+     above it, the other sections — all the way out to the body. */
+  function modalise(keep) {
+    releaseModal();
+    for (let el = keep; el && el !== document.body; el = el.parentElement) {
+      for (const sib of el.parentElement.children) {
+        if (sib === el || sib.inert) continue;
+        sib.inert = true;
+        inerted.push(sib);
+      }
+    }
+  }
+
+  function releaseModal() {
+    inerted.forEach((el) => (el.inert = false));
+    inerted = [];
+  }
 
   /* Clicking outside the open example closes it, the way clicking outside a
      dialog does. The scrim is the section's own pseudo-element, so every
