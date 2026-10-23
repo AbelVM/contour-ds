@@ -55,7 +55,7 @@ browser_support:
 
 install:
   production: "dist/contour.css"
-  development: "src/css/ds.css (nine chained @import — waterfall)"
+  development: "src/css/ds.css (a chained @import per sheet — a request waterfall)"
   mandatory: ["src/css/tokens.css", "src/css/base.css"]
   optional_components: ["components-docs.css", "components-data.css", "components-landing.css", "patterns.css", "utilities.css"]
   behaviour: "src/js/ds.js (optional, exposes window.Contour)"

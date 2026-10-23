@@ -161,8 +161,60 @@ if (existsSync(REGISTER_PATH)) {
   }
 }
 
-if (!unknown.length && !rangesChecked && !ownedChecked) {
-  console.error("check-claims: FAIL — matched no names, no ranges and no owned claims, so it proved nothing");
+// ---- rule E: a documented import list must equal the real one ----------
+// README tells a bundler which sheets to import, in order. That list is a claim
+// about src/css/ds.css, and it drifted the moment C-51 added a sheet: the list
+// went stale, no gate noticed, and a consumer following the README would not get
+// the light-dark() fallback at all. So the list is checked, and no count is
+// written into the prose to rot a second time.
+const dsCss = read("src/css/ds.css") || "";
+const realImports = [...dsCss.matchAll(/@import\s+(?:url\()?"?\.\/([a-z0-9-]+\.css)"?\)?/g)].map((m) => m[1]);
+// README carries TWO @import blocks: the canonical bundler list, and a three-line
+// illustration under "tokens.css and base.css are not optional". Only the first
+// states an order. A global regex over the file merges them into a 13-name list
+// that exists nowhere and reports a false ordering failure — so the gate reads
+// the fence the claim lives in, not the whole document.
+const readme = read("README.md") || "";
+const listFence = readme.match(/import them in this order[\s\S]*?```css\n([\s\S]*?)```/);
+const documented = listFence
+  ? [...listFence[1].matchAll(/@import\s+"src\/css\/([a-z0-9-]+\.css)"/g)].map((m) => m[1])
+  : [];
+
+if (!realImports.length) {
+  errors.push("src/css/ds.css declares no @import — the list rule measured nothing");
+} else if (!documented.length) {
+  errors.push("README's bundler list was not found — the list rule measured nothing");
+} else {
+  const dupes = documented.filter((f, i) => documented.indexOf(f) !== i);
+  const missing = realImports.filter((f) => !documented.includes(f));
+  const extra = documented.filter((f) => !realImports.includes(f));
+  if (dupes.length) errors.push(`README's bundler list names ${[...new Set(dupes)].join(", ")} twice`);
+  if (missing.length)
+    errors.push(`README's bundler list omits ${missing.join(", ")} — a consumer following it ships without them`);
+  if (extra.length) errors.push(`README's bundler list names ${extra.join(", ")}, which ds.css does not import`);
+  // Order is part of the claim: within one @layer the later sheet wins, which is
+  // why the light-dark() fallback has to come last.
+  if (!missing.length && !extra.length && !dupes.length && documented.join() !== realImports.join()) {
+    errors.push("README's bundler list is out of order: within a layer the later sheet wins");
+  }
+}
+
+// A stated length for that list is a number that rots the moment a sheet is
+// added — which is precisely what happened: `ds.css` grew to ten imports while
+// README and DESIGN.md still said "nine chained". The list above is the claim;
+// no document may restate how long it is.
+const COUNT_WORDS = "one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|dozen";
+for (const doc of DOCS) {
+  const text = read(doc) || "";
+  for (const m of text.matchAll(new RegExp(`\\b(?:${COUNT_WORDS}|\\d+)\\s+(?:chained\\s+)?@import`, "gi"))) {
+    const line = text.slice(0, m.index).split("\n").length;
+    errors.push(`${doc}:${line} states how many @import statements there are — say which ones, or read them from ds.css`);
+  }
+}
+const listChecked = realImports.length && documented.length ? realImports.length : 0;
+
+if (!unknown.length && !rangesChecked && !ownedChecked && !listChecked) {
+  console.error("check-claims: FAIL — matched no names, ranges, owned claims or import lists, so it proved nothing");
   process.exit(1);
 }
 
@@ -174,5 +226,6 @@ if (errors.length) {
 console.log(
   `check-claims: OK — ${families.size} derived token families, ` +
     `${new Set(claimedNames.map((c) => c.raw)).size} cited name(s) all declared, ` +
-    `${rangesChecked} published range(s) counted, ${ownedChecked} claim(s) owned by a CI-wired gate.`,
+    `${rangesChecked} published range(s) counted, ${ownedChecked} claim(s) owned by a CI-wired gate, ` +
+    `README's ${documented.length}-sheet import list agrees with ds.css.`,
 );

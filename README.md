@@ -22,9 +22,11 @@ reference.
 
 ## Install
 
-**For production, use the bundle.** `src/css/ds.css` is nine chained
-`@import` statements — a nine-deep request waterfall on the critical path.
-The bundle is one file:
+**For production, use the bundle.** `src/css/ds.css` is a chain of
+`@import` statements — one extra request per sheet, a waterfall on the critical
+path. Which sheets, and in what order, is not typed here:
+`node tools/check-claims.mjs` reads that list from `ds.css` and fails if the
+list below drifts from it. The bundle is one file:
 
 ```html
 <link rel="stylesheet" href="dist/contour.css" />
@@ -43,6 +45,12 @@ Or, if you are inlining layers with a bundler, import them in this order
 @import "src/css/components-landing.css" layer(components);
 @import "src/css/patterns.css" layer(components);
 @import "src/css/utilities.css" layer(utilities);
+@import "src/css/light-dark-fallback.css";
+
+/* Last, and with no layer() clause: it declares its own layers, because it
+   writes into two of them. An engine without light-dark() needs it — see
+   Browser support. It must be listed after the sheets whose values it re-points,
+   because within a layer the later declaration wins. */
 ```
 
 **`tokens.css` and `base.css` are not optional.** A product that takes only

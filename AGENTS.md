@@ -68,17 +68,20 @@ Anything that matches is either a leak or a false positive you must justify.
 
 | Command | What it does |
 |---|---|
-| `node tools/snippets.mjs` | Regenerates the code snippets in `index.html` — **run after editing any specimen** |
-| `node tools/build.mjs` | Bundles and minifies the **design system only** into `dist/` (no guide, no templates), exports the tokens as JSON |
+| `node tools/snippets.mjs` | Regenerates the code snippets in `index.html` — **run after editing any specimen**. Also the spacing guard: it reads the **emitted** snippets and fails the build when one leads with guide spacing, so a warning is not a pass |
+| `node tools/build.mjs` | Bundles and minifies the **design system only** into `dist/` (no guide, no templates), exports the tokens as JSON. Its per-surface file list is **derived from `ds.css`** and asserted, so a new sheet cannot land in `contour.css` and miss every surface bundle |
+| `node tools/gen-light-dark.mjs` | Writes `src/css/light-dark-fallback.css` from the token layer; `--check` (CI) fails when the committed file is stale against `src/css` |
 | `python3 tools/contour-gen.py` | Regenerates the contour artwork |
-| `npx html-validate index.html` | Markup validation |
+| `npx html-validate index.html templates/*.html` | Markup validation |
 | `node --check src/js/ds.js && node --check assets/js/guide.js` | Script syntax — **one file per invocation**: this tool reads only its first argument, so passing two files silently checks one |
 
 The audit harnesses live in the repository, in `tools/audit/`, with a dev-only
 manifest of their own (`tools/audit/package.json`): contrast and the document
 contract (`contrast-and-aria.mjs`, which exits non-zero), the component inventory
 and target sizes (`component-inventory.mjs`), the token census report
-(`token-census.mjs`) and the family gate (`family-gate.mjs`). Their JSON output
+(`token-census.mjs`), the family gate (`family-gate.mjs`), the theme render probe
+(`theme-render-probe.mjs`) and the chart geometry seam
+(`chart-geometry.mjs`). Their JSON output
 lands in the project's gitignored `tmp/audit/`. They discover a browser driver via
 `tools/audit/lib/browser.mjs` and **exit rather than skip** when none is found —
 a gate that silently does not run is a gate that silently passes.
@@ -328,13 +331,27 @@ draws the list in the page's theme. That is the most the platform gives.
 npx html-validate index.html templates/*.html
 node --check src/js/ds.js
 node --check assets/js/guide.js
-node tools/check-tokens.mjs   # the census: an unread token must be ledgered or gone
-node tools/snippets.mjs      # if you touched a specimen
-node tools/build.mjs         # if you touched src/
-node tools/check-size.mjs    # refuses a stale dist/, not only a big one
-node tools/check-dist.mjs     # the shipped bundle loads cleanly and is free of minifier corruption
+node tools/check-tokens.mjs    # the census: an unread token must be ledgered or gone
+node tools/check-motion.mjs    # WCAG 2.2.2: every infinite animation pausable by a control on a page
+node tools/check-defs.mjs      # every url(#id) in src/css reaches a def inside src/
+node tools/check-markup.mjs    # font preconnects + share metadata on every shipped page
+node tools/snippets.mjs        # if you touched a specimen; also the snippet spacing guard
+node tools/build.mjs           # if you touched src/
+node tools/check-size.mjs      # refuses a stale dist/, not only a big one
+node tools/check-dist.mjs      # the shipped bundle loads cleanly and is free of minifier corruption
 node tools/check-ownership.mjs # no guide-only identifiers (ds-, ridgeline, …) leaked into src/
-node tools/stamp.mjs --check # published numbers must match src/
+node tools/gen-light-dark.mjs --check  # the light-dark() fallback matches src/css
+node tools/stamp.mjs --check   # published numbers match src/
+node tools/check-claims.mjs    # every published sentence names the gate that owns it
+```
+
+The browser gates need a driver and **exit rather than skip** without one:
+
+```bash
+node tools/audit/contrast-and-aria.mjs  # contrast, focus, chart, palette, document contract
+node tools/audit/component-inventory.mjs
+node tools/audit/theme-render-probe.mjs # does a theme set move a real control, and does --brand-hue hold the contract
+node tools/audit/chart-geometry.mjs     # is the gridline band derived from --chart-ticks
 ```
 
 Then check the guide in both themes, at 1440 px and 390 px, and look for

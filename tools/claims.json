@@ -72,6 +72,13 @@
       "threshold": "every url(#id) in src/css resolves to a def inside src/, with a fallback on a paint"
     },
     {
+      "id": "C-06-l",
+      "doc": "README.md",
+      "sentence": "Which sheets, and in what order, is not typed here:",
+      "owner": "node tools/check-claims.mjs",
+      "threshold": "rule E: README's bundler list must equal ds.css's @import list in name and order, and no document may restate its length"
+    },
+    {
       "id": "C-24-a",
       "doc": "DESIGN.md",
       "sentence": "and the gridline band is **derived** from `--chart-ticks` — one band per value",
