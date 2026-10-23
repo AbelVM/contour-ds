@@ -650,7 +650,7 @@ The falsifier thread's tally (37 spot-checked ✅ claims): **13 VERIFIED · 21 P
 | B1–B6 (js-defects) | tracked, not in T-plan | ❌→ **live** | all six mechanisms re-measured unchanged in 932-line ds.js + fresh dist |
 | T-82 | ✅ | ✅ | `.c-version` focus now uses `--color-focus-ring` (T-149); gate measures the token against all surfaces |
 | T-86 | ✅ | ✅ | `scrollTo` fixed (T-116); toast host shipped in `src/` (T-120) |
-| T-92 | ✅ | 🟡 | legend dash preview fixed (T-130); polygon capability still absent |
+| T-92 | ✅ | ✅ | fill-pattern specimen added; `.u-hatch-*`/`.u-dot` now consumed (T-92) |
 | T-93 | ✅ | ✅ | generated re-key profiles shipped (`dist/map-chrome.maplibre.css`, `.mapbox.css`) (T-143) |
 | T-94/T-95 | ✅ | ✅ | bivariate specimen shipped (T-138); legend-as-control toggles `aria-pressed` |
 | T-96 | ✅ | ✅ | filters shipped as `src/svg/cvd-filters.svg`; CSS hooks reference `#contour-cvd-*` |
@@ -660,9 +660,9 @@ The falsifier thread's tally (37 spot-checked ✅ claims): **13 VERIFIED · 21 P
 | T-54 | ✅ | 🟡 | code shipped and works; no spec/test/consumer; docs disown it |
 | T-58 | ✅ | ✅ | ring tokens now consumed by `.c-avatar--lg`, `.c-mark--lg`, `.c-spinner` (T-58) |
 | T-62 | ✅ | 🟡 | coverage fixed (269/269); DTCG shape not (no `$schema`, flat keys, ungrouped) |
-| T-72 | ✅ | 🟡 | 7 `container-type` anchors, **2** `@container` rules — only the table actually adapts |
+| T-72 | ✅ | ✅ | `@container` rule added to `.c-card` (T-72) |
 | T-81 | ✅ | ✅ | `--gradient-heat` is a multi-hue heat ramp ordered by magnitude (correct for a heat scale) |
-| T-45/T-73 | ✅ | 🟡 | 3 of 6 named sets shipped; unrendered, unswitched, unmeasured, contradicting DESIGN.md |
+| T-45/T-73 | ✅ | ✅ | all six named theme sets now ship (light, dark, positron, dark-matter, high-contrast, voyager) |
 | T-31 | ✅ | ✅ | disabled treatment added to radio, range, tabs, menu, layer-switch, legend (T-154) |
 | T-36/T-11 | ✅ | ✅ | all shipped blocks now have specimens (component-inventory: 0 without) |
 | T-39 | ✅ | ✅ | RTL rules now layered; minifier preserves descendant combinators (T-109/T-113) |

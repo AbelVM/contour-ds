@@ -8,7 +8,7 @@ repository: https://github.com/abelvm/contour-ds
 tokens:
   count: 272
   layers: [primitives, semantic, component, utility]
-  themes: [light, dark, positron, dark-matter, high-contrast]
+  themes: [light, dark, positron, dark-matter, high-contrast, voyager]
   theme_mechanism: light-dark() + [data-theme]
   override_knobs: [brand-hue, radius-scale]
   theme_scope: .c-theme-scope

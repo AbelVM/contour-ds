@@ -594,6 +594,22 @@
     color-scheme: dark;
   }
 
+  [data-theme="voyager"] {
+    --color-canvas: oklch(6% 0.02 260);
+    --color-canvas-sunken: oklch(4% 0.018 260);
+    --color-surface-1: oklch(9% 0.022 260);
+    --color-surface-2: oklch(13% 0.024 260);
+    --color-surface-3: oklch(17% 0.026 260);
+    --color-text: oklch(86% 0.014 260);
+    --color-text-strong: oklch(96% 0.01 260);
+    --color-text-muted: oklch(66% 0.016 260);
+    --color-text-subtle: oklch(50% 0.014 260);
+    --color-border: oklch(22% 0.02 260);
+    --color-border-strong: oklch(36% 0.022 260);
+    --color-primary: var(--brand-400);
+    color-scheme: dark;
+  }
+
   [data-theme="high-contrast"] {
     --color-canvas: oklch(100% 0 0);
     --color-canvas-sunken: oklch(96% 0 0);

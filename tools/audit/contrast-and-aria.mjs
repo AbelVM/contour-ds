@@ -340,7 +340,7 @@ results.darkSeries = await page.evaluate(() => {
 });
 
 results.dataThemes = {};
-for (const theme of ["positron", "dark-matter", "high-contrast"]) {
+for (const theme of ["positron", "dark-matter", "high-contrast", "voyager"]) {
   await page.evaluate((t) => {
     document.documentElement.setAttribute("data-theme", t);
   }, theme);
