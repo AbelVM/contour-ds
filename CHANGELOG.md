@@ -37,6 +37,25 @@ the measurement that corrected it is named, so the next reader can re-run it.
   silently corrects `fecolormatrix`, an XML parser sees an unknown element and
   the filter is inert — and `src/svg/cvd-filters.svg` carried that spelling while
   the guide printed it as the snippet a consumer copies.
+- `tools/check-claims.mjs` + `tools/claims.json` — the claims gate (C-06). Every
+  published sentence that makes a checkable promise now names the command that
+  enforces it, and the gate fails if the sentence is gone, if its owner is not a
+  real file, or if the owner runs in no CI lane. It also fails on any `--token`
+  cited in README/DESIGN/llms/the guide that `inventory()` does not declare, and
+  on any published range whose `1…N` disagrees with the steps that exist.
+  Token families are derived from the declared names, never listed by hand — a
+  hand-written list goes stale exactly like the number it guards, and the first
+  draft's hand-written list flagged `.c-btn--primary` and `--check` as undeclared
+  tokens. Ownership lives here rather than in `stamp`: stamp owns numbers, this
+  owns sentences. `CHANGELOG.md` is deliberately not a claim-bearing document —
+  it is a dated record of past states, and holding it to the current tree would
+  force history to be rewritten.
+- The motion gate also owns the calm half of the contract (the reduced-motion
+  block must cap `animation-iteration-count` and collapse `transition-duration`),
+  and `check-ownership` now owns "zero runtime dependencies": the manifest must
+  declare none and the shipped scripts must import nothing off a relative path.
+  A claim registered against a gate that does not check it is the same unowned
+  sentence in a smarter costume.
 - `--color-control-edge` token for control borders (WCAG 1.4.11)
 - `--target-control`, `--target-option`, `--target-chart` and `--target-mark` tokens for target sizes by kind (a data mark is deliberately `0` — it is not a target)
 - `--fill-hatch-1…5` and `--fill-dot` fill-pattern vocabulary for polygon marks

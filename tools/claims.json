@@ -1,0 +1,82 @@
+{
+  "_comment": "The claim register (C-06). Each entry is a published sentence, the command that enforces it, and the document it lives in. tools/check-claims.mjs fails if a sentence disappears (the claim was rewritten or lost), if its owner is not a file in this repo, or if the owner runs in no CI lane. Counts are NOT stored here — stamp.mjs owns every number, and a register that carried one would be the hand-written count this file exists to prevent. CHANGELOG.md is deliberately not a claim-bearing document: it is a dated record of past states.",
+  "claims": [
+    {
+      "id": "C-06-a",
+      "doc": "README.md",
+      "sentence": "Body text meets **4.5:1**, borders / focus rings / control edges **3:1**, in both themes —",
+      "owner": "node tools/audit/contrast-and-aria.mjs",
+      "threshold": "TEXT_MIN 4.5 / CONTROL_MIN 3.0 over SURFACES"
+    },
+    {
+      "id": "C-06-b",
+      "doc": "README.md",
+      "sentence": "the legend previews it. Every series clears **3:1** against every surface it can be drawn on, in",
+      "owner": "node tools/audit/contrast-and-aria.mjs",
+      "threshold": "SERIES_MIN 3.0 for 8 series x 6 surfaces, both themes"
+    },
+    {
+      "id": "C-06-c",
+      "doc": "llms.txt",
+      "sentence": "State is never colour alone; every chart series carries a dash pattern as well as a hue.",
+      "owner": "node tools/audit/contrast-and-aria.mjs",
+      "threshold": "legend key must preview the series' own dash or solid paint"
+    },
+    {
+      "id": "C-06-d",
+      "doc": "DESIGN.md",
+      "sentence": "text_contrast: \"4.5:1\"",
+      "owner": "node tools/audit/contrast-and-aria.mjs",
+      "threshold": "TEXT_MIN 4.5"
+    },
+    {
+      "id": "C-06-e",
+      "doc": "index.html",
+      "sentence": "and every series clears 3:1 against every surface it can be",
+      "owner": "node tools/audit/contrast-and-aria.mjs",
+      "threshold": "the sentence beside the chart — the one a reader actually sees"
+    },
+    {
+      "id": "C-06-f",
+      "doc": "README.md",
+      "sentence": "zero runtime dependencies, no build",
+      "owner": "node tools/check-ownership.mjs",
+      "threshold": "src/ imports nothing outside the repo; package.json declares no dependencies"
+    },
+    {
+      "id": "C-06-g",
+      "doc": "README.md",
+      "sentence": "`prefers-reduced-motion: reduce` collapses every transition",
+      "owner": "node tools/check-motion.mjs",
+      "threshold": "a reduce block in src/css collapses transition-duration and iteration-count"
+    },
+    {
+      "id": "C-06-h",
+      "doc": "index.html",
+      "sentence": "not the mechanism WCAG 2.2.2 asks for",
+      "owner": "node tools/check-motion.mjs",
+      "threshold": "every infinite animation is pausable and a control ships on a page"
+    },
+    {
+      "id": "C-06-i",
+      "doc": "src/css/tokens.css",
+      "sentence": "re-tints every primary surface",
+      "owner": "node tools/audit/theme-render-probe.mjs",
+      "threshold": "a root --brand-hue re-point must move a freshly mounted .c-btn--primary"
+    },
+    {
+      "id": "C-06-j",
+      "doc": "src/css/components-data.css",
+      "sentence": "The pattern is a def the host inlines",
+      "owner": "node tools/check-defs.mjs",
+      "threshold": "every url(#id) in src/css resolves to a def inside src/, with a fallback on a paint"
+    },
+    {
+      "id": "C-06-k",
+      "doc": "README.md",
+      "sentence": "<!-- ds:components-line -->",
+      "owner": "node tools/stamp.mjs --check",
+      "threshold": "the published component and token counts are computed from src/, never typed"
+    }
+  ]
+}

@@ -70,6 +70,12 @@ jobs:
       - name: Check published numbers match the source
         run: node tools/stamp.mjs --check
 
+      # A published sentence with no owning check is the failure this lane
+      # exists to end: every gate can be green while a document still claims
+      # something nothing measures.
+      - name: Check every published claim names the gate that owns it
+        run: node tools/check-claims.mjs
+
       - name: Check snippets idempotency
         run: |
           cp index.html /tmp/index-before.html

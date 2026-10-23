@@ -103,6 +103,56 @@ function parseDuration(value) {
   return m[2] === "ms" ? Number(m[1]) / 1000 : Number(m[1]);
 }
 
+// README also publishes the calm half of the contract: "prefers-reduced-motion:
+// reduce collapses every transition". That sentence needs an owner too, or this
+// gate enforces the pause while the collapse is unenforced.
+//
+// Comments are prose: a reduced-motion rule written only in a comment is not a
+// rule, so they come out first.
+const uncomment = (t) => t.replace(/\/\*[\s\S]*?\*\//g, " ");
+
+// The block is extracted by counting braces, not by a lazy `\}`. The reduce
+// block in base.css nests two rules inside itself, so a lazy match stops at the
+// first inner close and reads a body that contains neither assertion — which is
+// how a gate ends up passing a file it never actually looked at.
+function mediaBody(text, openIdx) {
+  let depth = 0;
+  for (let i = openIdx; i < text.length; i++) {
+    if (text[i] === "{") depth++;
+    else if (text[i] === "}") {
+      depth--;
+      if (depth === 0) return text.slice(openIdx + 1, i);
+    }
+  }
+  return null;
+}
+
+const reduceBlocks = [];
+for (const f of Object.keys(inv.cssBytes)) {
+  const css = uncomment(read("src/css", f));
+  const re = /@media[^{}]*prefers-reduced-motion[^{}]*\{/g;
+  let m;
+  while ((m = re.exec(css))) {
+    const body = mediaBody(css, m.index + m[0].length - 1);
+    if (body === null) {
+      errors.push(`src/css/${f}: an unclosed @media (prefers-reduced-motion) block — depth never returned to zero`);
+      continue;
+    }
+    reduceBlocks.push({ file: `src/css/${f}`, body });
+  }
+}
+if (!reduceBlocks.length) {
+  errors.push("no @media (prefers-reduced-motion: reduce) block in src/css — README says the media query collapses motion");
+} else {
+  const joined = reduceBlocks.map((b) => b.body).join("\n");
+  if (!/animation-iteration-count\s*:/.test(joined)) {
+    errors.push("the reduced-motion block does not cap animation-iteration-count — an infinite animation survives a 'reduce' reader");
+  }
+  if (!/transition-duration\s*:/.test(joined)) {
+    errors.push("the reduced-motion block does not collapse transition-duration, as the README claims");
+  }
+}
+
 if (errors.length) {
   console.error("check-motion: FAIL");
   errors.forEach((e) => console.error("  " + e));
