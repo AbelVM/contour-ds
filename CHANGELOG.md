@@ -9,6 +9,38 @@ the measurement that corrected it is named, so the next reader can re-run it.
 ## [Unreleased]
 
 ### Added
+- Chart geometry seam (C-24). The gridline band is now derived from
+  `--chart-ticks` — one band per value interval, `100% / (ticks - 1)` — instead of a
+  literal 25%, so the grid aligns with any tick count by construction. T-136 had
+  recorded the fixed 25% as a permanent ceiling ("a 5-tick axis and a 4-band grid
+  cannot align"); it was not permanent, only un-parameterised, and DESIGN.md's
+  contract paragraph is amended rather than left publishing a claim the CSS no longer
+  makes. The real limit is elsewhere and still true: there is no y-axis element, so
+  the value ticks are declared in `--chart-ticks` and rendered by nobody — and the
+  bands measure the *value* axis, while the `space-between` category axis (Mon…Sun) is
+  a different axis that nothing aligns to them. That distinction is written down
+  because the first draft of this row conflated the two.
+- `.c-chart__tooltip` had only a colour pair, so it had no offset, no padding and no
+  stacking — it could not float above the mark it describes — and nothing in the
+  repository used it. It is now positioned by its plot through
+  `--chart-tip-block-start` / `--chart-tip-inline-start` — declared in `tokens.css`
+  rather than invented at the point of use, because a `var()` to a token that exists
+  nowhere is the discrepancy `check-tokens` fails the build on — with
+  `z-index: var(--z-tooltip)` and
+  `pointer-events: none` (a tip that takes the pointer sits over its own mark,
+  cancels the `:hover` that opened it and flickers), and the guide's chart specimen
+  consumes it.
+- `.c-chart__hover` deleted: a class with zero consumers in the guide, the templates
+  and `ds.js` is a state no author can reach. Hover is now `:hover` on
+  `.c-chart__bar`, `__point` and `__band`, which works with no script at all.
+- `tools/audit/chart-geometry.mjs` — guards the construction, not the string: it
+  re-points `--chart-ticks` to five counts in a real browser and requires the rendered
+  band to follow each, then asserts the tooltip geometry and the hover state.
+  Measured 4 → 33.3333%, 5 → 25%, 6 → 20%, 9 → 12.5%, 11 → 10%. Two drafts of this
+  file were blind before that: one matched the literal word `transparent`, which never
+  survives serialisation, and one read only px lengths, so it took the 1px hairline for
+  the band and reported a working seam as "DOES NOT FOLLOW". Both failures were in the
+  ruler, not the CSS.
 - `[data-motion]` — the WCAG 2.2.2 pause mechanism. `paused` holds every
   animation in its scope on the frame it is on, `running` overrides the media
   query, and leaving it unset gives the choice back to the operating system.
@@ -150,5 +182,5 @@ the measurement that corrected it is named, so the next reader can re-run it.
 ### Corrections to this file's own claims
 Three entries above were overstated when first written, and are corrected here rather than quietly deleted:
 1. **"Nine unspecced components documented"** — six of nine, with 13 blocks still undocumented.
-2. **"`llms.txt` corrected (component count…)"** — was false when written here, and is now actually done. Both files published 83 components / 260 tokens while `src/` held **<!-- ds:components -->134<!-- /ds:components --> components, <!-- ds:tokens -->272<!-- /ds:tokens --> tokens, <!-- ds:tokens-read -->270<!-- /ds:tokens-read --> read, <!-- ds:tokens-unread -->2<!-- /ds:tokens-unread --> unread**. The root cause was in the gate, not the prose: `stamp` only visited files carrying markers, and neither file had any — `llms.txt` is machine-facing and `DESIGN.md`'s figures live in YAML front matter, where an HTML comment is not legal syntax — so `stamp --check` passed by never reading them. `stamp` now owns both (anchored rewrites for `llms.txt`, a key-path setter for front matter) and treats a declared pattern that matches nothing as an error, so a skipped file fails the build instead of greening it
+2. **"`llms.txt` corrected (component count…)"** — was false when written here, and is now actually done. Both files published 83 components / 260 tokens while `src/` held **<!-- ds:components -->134<!-- /ds:components --> components, <!-- ds:tokens -->275<!-- /ds:tokens --> tokens, <!-- ds:tokens-read -->273<!-- /ds:tokens-read --> read, <!-- ds:tokens-unread -->2<!-- /ds:tokens-unread --> unread**. The root cause was in the gate, not the prose: `stamp` only visited files carrying markers, and neither file had any — `llms.txt` is machine-facing and `DESIGN.md`'s figures live in YAML front matter, where an HTML comment is not legal syntax — so `stamp --check` passed by never reading them. `stamp` now owns both (anchored rewrites for `llms.txt`, a key-path setter for front matter) and treats a declared pattern that matches nothing as an error, so a skipped file fails the build instead of greening it
 3. **"focus ring (3.55:1)"** — that was the best-case surface. The binding measurement was 2.94:1, i.e. the contract did not hold until the change recorded above.

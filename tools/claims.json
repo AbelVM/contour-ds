@@ -72,6 +72,13 @@
       "threshold": "every url(#id) in src/css resolves to a def inside src/, with a fallback on a paint"
     },
     {
+      "id": "C-24-a",
+      "doc": "DESIGN.md",
+      "sentence": "and the gridline band is **derived** from `--chart-ticks` — one band per value",
+      "owner": "node tools/audit/chart-geometry.mjs",
+      "threshold": "re-pointing --chart-ticks must move the rendered band by 100/(ticks-1)"
+    },
+    {
       "id": "C-51-a",
       "doc": "README.md",
       "sentence": "A browser without it does not fail gracefully, and the reason is worth stating",

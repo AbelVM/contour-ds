@@ -419,6 +419,22 @@
     --chart-div-mid: light-dark(oklch(92% 0.01 230), var(--basalt-800));
     --chart-div-pos: light-dark(var(--tidal-600), var(--tidal-400));
 
+    /* The chart's tick count, and the reason the grid can align at all.
+       Gridlines are one repeating band, so a band is exactly
+       `100% / (ticks - 1)` wide and every line falls on a tick by
+       construction — see `.c-chart__plot`. An author sets this to the number
+       of labels their axis actually renders; `Contour.chart.ticks()` returns
+       that many values. Five is the CSS convention, not a ceiling. */
+    --chart-ticks: 5;
+
+    /* Where a tooltip sits inside its plot. Declared here rather than invented
+       at the point of use: a `var()` reference to a token that exists nowhere is
+       the exact discrepancy `node tools/check-tokens.mjs` fails the build on, and
+       a consumer overriding an undeclared knob gets nothing. Both default to the
+       plot's own origin, so a tooltip with no anchors is still positioned. */
+    --chart-tip-block-start: 0;
+    --chart-tip-inline-start: 0;
+
     /* Dash patterns, one per series. Eight hues cannot all be separated by
        lightness, so a chart never leans on hue alone: the line also carries a
        pattern, and the legend previews that pattern. The chart stays

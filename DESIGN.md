@@ -6,7 +6,7 @@ license: MIT
 repository: https://github.com/abelvm/contour-ds
 
 tokens:
-  count: 272
+  count: 275
   layers: [primitives, semantic, component, utility]
   themes: [light, dark]
   theme_mechanism: light-dark() + [data-theme]
@@ -132,15 +132,30 @@ from a button colour.
 - `--chart-dash-1…8` — one dash pattern per series
 - `--color-heat-1…6` — multi-hue heat ramp (NOT sequential)
 
-### Chart geometry contract (T-136)
+### Chart geometry contract (T-136, amended by C-24)
 
-The chart vocabulary is CSS-only: axes are `space-between` spans, gridlines are a
-fixed 25%-interval CSS gradient, and the tooltip reuses `.c-tooltip` recoloured
-via `--chart-tooltip-*`. Tick placement is the consumer's responsibility —
-`Contour.chart.ticks()` returns the values, the author maps them to pixels.
-There is no y-axis element in the vocabulary and no scrubber (T-137, deferred).
-This is the honest ceiling: the system ships the *tokens and the dash patterns*,
-not a charting engine.
+The chart vocabulary is CSS-only: the category axis is a `space-between` span,
+and the gridline band is **derived** from `--chart-ticks` — one band per value
+interval, `100% / (ticks - 1)` — so a gridline falls on every value tick by
+construction instead of agreeing with one tick count by luck. An earlier
+revision of this file called the fixed 25% gradient a permanent ceiling; it was
+not permanent, only un-parameterised.
+
+The real limit is elsewhere and is still true: the frame ships the vocabulary
+(plot, axis, line, bar, point, band, missing, hover, tooltip) and the *values*
+are the consumer's — `Contour.chart.ticks()` returns them, the author sets
+`--chart-ticks` to how many there are and maps data to pixels. There is no
+y-axis element to render those values and no scrubber (T-137, deferred), so the
+number is declared, not displayed. The bands measure the value axis; the
+category axis is a different axis and nothing aligns them. The tooltip is
+positioned by its plot through `--chart-tip-block-start` /
+`--chart-tip-inline-start`, both declared in the token layer rather than invented at
+the point of use, and hover is a `:hover` state on the marks rather than a class no
+author can reach. `node tools/check-chart-geometry.mjs` asserts the derivation and
+the tooltip geometry in a real browser.
+
+This is the honest ceiling: the system ships the *tokens, the dash patterns and
+the geometry seam*, not a charting engine.
 
 ## Rules
 

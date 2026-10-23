@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Contour — a design system for spatial interfaces</title>
-    <meta name="description" content="Contour is a token-driven design system for spatial interfaces. Dark and light themes, 134 components, 272 design tokens, zero runtime dependencies." />
+    <meta name="description" content="Contour is a token-driven design system for spatial interfaces. Dark and light themes, 134 components, 275 design tokens, zero runtime dependencies." />
     <meta name="author" content="Abel Vázquez Montoro" />
     <meta name="color-scheme" content="light dark" />
     <script>
@@ -438,7 +438,7 @@
               <div class="ds-hero__readout" role="group" aria-label="System parameters">
                 <span>GRID 0.88 m</span>
                 <span>H3 · RES 15</span>
-                <span><!-- ds:tokens -->272<!-- /ds:tokens --> tokens</span>
+                <span><!-- ds:tokens -->275<!-- /ds:tokens --> tokens</span>
                 <span><!-- ds:components -->134<!-- /ds:components --> components</span>
                 <span>0 runtime deps</span>
                 <span>2 + system themes</span>
@@ -4411,6 +4411,11 @@
                   <path class="c-chart__line" data-series="2" style="--c: var(--chart-2)" d="M0 92 50 84 100 88 150 72 200 78 250 60 300 64" />
                   <path class="c-chart__line" data-series="3" style="--c: var(--chart-3)" d="M0 112 50 108 100 110 150 102 200 104 250 96 300 98" />
                 </svg>
+                <!-- Positioned by its plot, not by a script: --chart-tip-* are
+                     the anchors the consumer sets from the datum it is showing. -->
+                <div class="c-chart__tooltip" style="--chart-tip-block-start: 22%; --chart-tip-inline-start: 46%">
+                  Thu · 40
+                </div>
               </div>
               <div class="c-chart__axis">
                 <span>Mon</span><span>Tue</span><span>Wed</span>
@@ -4450,6 +4455,9 @@
       &lt;path class="c-chart__line" data-series="2" style="--c: var(--chart-2)" d="M0 92 50 84 100 88 150 72 200 78 250 60 300 64" /&gt;
       &lt;path class="c-chart__line" data-series="3" style="--c: var(--chart-3)" d="M0 112 50 108 100 110 150 102 200 104 250 96 300 98" /&gt;
     &lt;/svg&gt;
+    &lt;!-- Positioned by its plot, not by a script: --chart-tip-* are
+                     the anchors the consumer sets from the datum it is showing. --&gt;
+    &lt;div class="c-chart__tooltip" style="--chart-tip-block-start: 22%; --chart-tip-inline-start: 46%"&gt;Thu · 40&lt;/div&gt;
   &lt;/div&gt;
   &lt;div class="c-chart__axis"&gt;
     &lt;span&gt;Mon&lt;/span&gt;

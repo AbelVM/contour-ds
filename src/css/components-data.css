@@ -327,10 +327,22 @@
     aspect-ratio: 16 / 7;
     min-block-size: 8rem;
     border-block-end: 1px solid var(--chart-axis);
+    /* One band per VALUE-axis interval, so a gridline lands on every value tick
+       BY CONSTRUCTION: a band is `100% / (ticks - 1)` tall. `--chart-ticks` is
+       how many values the author's scale produces — `Contour.chart.ticks()`
+       returns them — and a y-axis element, when the vocabulary grows one, uses
+       that same count, which is the whole point of making it a number rather
+       than a literal 25%.
+
+       It is NOT the category axis. `.c-chart__axis` below runs left-to-right
+       with `space-between` category labels (Mon…Sun); the bands are horizontal,
+       so they mark the value axis and never the category one. Measured: seven
+       category labels sit at 1.03…98.97% across, while the bands step 25% up —
+       two different axes, and no count of category labels can align with them. */
     background-image: repeating-linear-gradient(
       to top,
       var(--chart-grid) 0 1px,
-      transparent 1px 25%
+      transparent 1px calc(100% / (var(--chart-ticks, 5) - 1))
     );
   }
 
@@ -391,12 +403,19 @@
     stroke-dasharray: var(--chart-dash-8);
   }
 
-  /* -- Chart geometry contract (T-136) --------------------------------
-     Gridlines are a 25%-interval CSS gradient by construction; a 5-tick axis
-     and a 4-band grid cannot align. The honest ceiling: the chart frame ships
-     the vocabulary (plot, axis, line, bar, point, band, missing, hover,
-     tooltip); tick placement and the tick->pixel step are the consumer's,
-     computed from Contour.chart.ticks(). Documented, not hidden.
+  /* -- Chart geometry contract (T-136, superseded by C-24) -------------
+     The band is derived from `--chart-ticks`, so a gridline lands on every
+     value tick by construction; a literal 25% could only ever agree with one
+     particular tick count, which is what the earlier version of this note
+     called a permanent ceiling. It was not permanent, only un-parameterised.
+
+     Still the honest limit, and it is a different one: the frame ships the
+     vocabulary (plot, axis, line, bar, point, band, missing, hover, tooltip)
+     and the VALUE ticks are the consumer's, computed from
+     Contour.chart.ticks(). There is no y-axis element, so the number lives in
+     `--chart-ticks` and nothing renders it; the category axis is a separate
+     axis and is not what the bands measure. `node
+     tools/check-chart-geometry.mjs` asserts the derivation.
      ------------------------------------------------------------------ */
 
   /* -- Chart states -------------------------------------------------- */
@@ -416,13 +435,42 @@
     fill: var(--chart-missing);
   }
 
-  .c-chart__hover {
+  /* Hover is a STATE, not a class. `.c-chart__hover` was declared with zero
+     consumers in the guide, the templates and ds.js — a rule no author could
+     reach, which is the same failure as a token nobody reads. So the highlight
+     hangs off the marks themselves: it works with no script at all, and the two
+     paint routes are covered because a bar is a div (background) and a point is
+     an SVG mark (fill). A `fill` on a div and a `background` on an SVG element
+     are both ignored, so one rule serves both. */
+  .c-chart__bar:hover,
+  .c-chart__point:hover,
+  .c-chart__band:hover {
     fill: var(--chart-hover);
+    background: var(--chart-hover);
   }
 
+  /* The tooltip is positioned by its plot, not by a script: --chart-tip-* are
+     the anchors a consumer sets from the datum it is showing, declared in
+     tokens.css rather than invented here — a var() to a token that exists
+     nowhere is what check-tokens fails the build on. Before this the class
+     carried only a colour pair, so a tooltip had no size, no offset and no
+     stacking — it could not appear on top of the mark it describes. */
   .c-chart__tooltip {
+    position: absolute;
+    inset-block-start: var(--chart-tip-block-start);
+    inset-inline-start: var(--chart-tip-inline-start);
+    z-index: var(--z-tooltip);
+    padding: var(--space-2xs) var(--space-xs);
+    border-radius: var(--radius-xs);
     background: var(--chart-tooltip-bg);
     color: var(--chart-tooltip-fg);
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    white-space: nowrap;
+    /* The tooltip follows the pointer; it must not become the target. A tip that
+       captures pointer events sits over its own mark, cancels the :hover that
+       opened it, and flickers. */
+    pointer-events: none;
   }
 
   /* -- Sequential and diverging bands -------------------------------- */
