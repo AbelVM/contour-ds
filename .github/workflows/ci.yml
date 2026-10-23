@@ -84,3 +84,8 @@ jobs:
         run: node tools/audit/contrast-and-aria.mjs
       - name: Component inventory and target sizes
         run: node tools/audit/component-inventory.mjs
+      # Every other gate counts declarations. This one asks a browser what a
+      # freshly mounted control actually paints after a theme set is selected,
+      # and sweeps --brand-hue across both themes.
+      - name: Theme render probe
+        run: node tools/audit/theme-render-probe.mjs
