@@ -1096,6 +1096,7 @@
    ========================================================================== */
 @layer tokens {
   [data-theme='daylight'] {
+    --brand-hue: 230;
     --color-canvas: oklch(98.5% 0.003 230);
     --color-canvas-sunken: oklch(96% 0.005 230);
     --color-surface-1: oklch(100% 0 0);

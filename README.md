@@ -81,20 +81,6 @@ to drive the system's own feedback and navigation from their own code.
 <script src="src/js/ds.js" defer></script>
 ```
 
-```html
-<button class="c-btn c-btn--primary">Compute route</button>
-```
-
-**Fonts** — IBM Plex Sans, IBM Plex Sans Condensed and IBM Plex Mono from Google Fonts
-(`display=swap`). The system degrades to system UI fonts without them.
-
-**Behaviour** — optional. `src/js/ds.js` adds a command palette, a theme toggle, sortable
-tables, tabs and range output. Every page works without it.
-
-```html
-<script src="src/js/ds.js" defer></script>
-```
-
 **Bundle** — `node tools/build.mjs` writes `dist/`:
 
 | File | Contents |

@@ -971,10 +971,10 @@
               <div>
                 <h3 class="ds-spec__name">Sequential scale</h3>
                 <p class="muted" style="font-size: var(--type-sm)">
-                  For density, catchments and isoline bands. Six stops, perceptually even.
+                  For density, catchments and isoline bands. Seven stops, one hue, rising lightness.
                 </p>
               </div>
-              <span class="c-badge c-badge--outline">--color-heat-1…6</span>
+              <span class="c-badge c-badge--outline">--chart-seq-1…7</span>
             </div>
             <div class="c-legend" style="border: 0; padding: 0">
               <div class="c-legend__ramp"></div>
@@ -4334,7 +4334,8 @@
             <p class="muted" style="font-size: var(--type-sm); margin-block: 0.35rem 1rem">
               Eight hues separate by hue, not by lightness — so a line also carries a dash
               pattern, and the legend previews that pattern. No chart asks the reader to tell two
-              colours apart, and every series clears 3:1 against the panel it is drawn on.
+              colours apart, and every series clears 3:1 against every surface it can be
+              drawn on (canvas, canvas-sunken, surface-1/2/3, surface-raised), in both themes.
             </p>
             <div class="c-chart" role="img" aria-label="Line chart of three series over time" style="margin-block-start: 1.25rem">
               <div class="c-chart__plot">
