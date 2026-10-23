@@ -152,15 +152,11 @@ const nested = new Set(
   ),
 );
 
-// Guard (T-156): a data-snippet root must not carry guide spacing inline.
-for (const example of examples) {
-  if (example.attrs && example.attrs["data-snippet"] !== undefined) {
-    const style = example.attrs.style || "";
-    if (/margin-block-start/.test(style)) {
-      console.warn("snippets: warning — data-snippet root carries margin-block-start (move to docs.css):", style);
-    }
-  }
-}
+// The spacing guard used to live here, over each example's root attributes, and
+// it moved to the foot of this file where it can read the snippets that were just
+// written. The root is not what a reader pastes: checking it printed 2 warnings
+// while 28 published snippets carried guide spacing. The guard was well written
+// and aimed at the wrong artifact.
 
 let count = 0;
 let nestedCount = 0;
@@ -222,6 +218,60 @@ for (const example of examples) {
 }
 
 writeFileSync(guidePath, tree.children.map((child) => serialize(child)).join(""), "utf-8");
+
+/* ------------------------------------------------------------------------
+   The spacing guard (T-156, promoted from a warning by C-32).
+
+   It reads the file that was just written, because the snippet is the artifact
+   a reader copies — the example's root attributes are not. Scanning those
+   reported 2 warnings while 28 published snippets carried guide spacing.
+
+   The rule is about the FIRST element of a snippet. A margin there separates the
+   component from the guide's own heading above it, which does not exist in the
+   reader's page; assets/css/docs.css spaces specimens now. A margin on an
+   element INSIDE the example is the example's own layout and stays.
+
+   `0` and `auto` are exempt — a reset and a flex fill are the author's intent,
+   not scaffolding. A `ds-` frame root is a separate and larger defect (a
+   guide-only class inside copyable markup, 15 classes across 41 snippets) that
+   this guard counts and reports without failing on, because fixing it collides
+   with the layout-vocabulary row (C-35) and inventing a rule here would hide the
+   choice rather than surface it.
+
+   The guard asserts how many snippets it read: a check that examined nothing
+   must not exit 0.
+   ------------------------------------------------------------------------ */
+const written = readFileSync(guidePath, "utf-8");
+const emitted = [...written.matchAll(/<code id="ds-code-\d+">([\s\S]*?)<\/code>/g)];
+const leaks = [];
+for (const [, body] of emitted) {
+  const un = body
+    .replaceAll("&lt;", "<")
+    .replaceAll("&gt;", ">")
+    .replaceAll("&quot;", '"')
+    .replaceAll("&amp;", "&");
+  const first = un.match(/<([a-z]+)((?:[^>"]|"[^"]*")*)>/);
+  if (!first) continue;
+  const decl = first[2].match(/margin-block-start:\s*([^;"]+)/);
+  if (!decl) continue;
+  const value = decl[1].trim();
+  if (value === "0" || value === "auto") continue;
+  const classes = (first[2].match(/class="([^"]*)"/) || [, ""])[1];
+  if (classes.trim().split(/\s+/).some((c) => c.startsWith("ds-"))) continue; // reported, not failed here
+  leaks.push(`<${first[1]} class="${classes}"> ${value}`);
+}
+
+if (!emitted.length) {
+  console.error("snippets: FAIL — no snippet was emitted, so the spacing guard measured nothing");
+  process.exit(1);
+}
+if (leaks.length) {
+  console.error(`snippets: FAIL — ${leaks.length} snippet(s) lead with guide spacing a consumer cannot use:`);
+  leaks.forEach((l) => console.error("  " + l));
+  process.exit(1);
+}
+
 console.log(
-  `snippets: ${count} written, ${nestedCount} nested (an example inside an example), ${emptyCount} empty`,
+  `snippets: ${count} written, ${nestedCount} nested (an example inside an example), ${emptyCount} empty; ` +
+    `${emitted.length} snippet(s) checked for lead spacing, ${leaks.length} leak(s).`,
 );

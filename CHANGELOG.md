@@ -155,6 +155,35 @@ the measurement that corrected it is named, so the next reader can re-run it.
   Opening a snippet marks 42 elements inert, leaves the open example focusable,
   inertates the rail, releases everything on close, and a header link behind the
   scrim no longer accepts focus.
+- Snippet spacing guard promoted from a warning to a build failure (C-32), and
+  moved to the right artifact. It had inspected each example's **root attributes**;
+  the root is not what a reader pastes. Measured against the emitted snippets it
+  found 28 of 130 blocks carrying guide spacing while the guard reported 2.
+  Ten of those were the real defect — a system component leading an example with a
+  margin whose only job was separating it from the guide's heading — and are now
+  spaced by `assets/css/docs.css` instead. The rest are interior spacing inside an
+  example, which is the example's own layout and stays.
+- Exemptions in the guard are deliberate, not convenient: `0` and `auto` are a
+  reset and a flex fill (the author's intent, not scaffolding), and a margin on an
+  element *inside* the example is the example's layout. The guard prints how many
+  snippets it read and fails on zero, so a refactor that stops emitting snippets
+  cannot pass by inspecting nothing.
+- Every moved gap was measured to be identical to its previous value, not merely
+  non-zero: 20px where the inline style said `1.25rem`, 16px where it said `1rem`,
+  28px on the RTL stage where it said `var(--space-lg)` — the tokens happen to
+  equal those literals, so the move is invisible. Two earlier drafts of the rule
+  were caught by measuring rather than by reading the CSS: one targeted
+  `.ds-panel` alone and so left the readout specimen at 0 (`.ds-panel--grid` is a
+  separate class token), and one hung the RTL stage on a `:not(:first-child)`
+  selector that can never match it, because that example is the only child of its
+  generated `.ds-example` frame.
+- **C-33, recorded as not-a-task.** The row asked to merge duplicated
+  `prefers-contrast` (×2), `prefers-reduced-data` (×2) and
+  `prefers-reduced-transparency` (×2) media blocks. With comments stripped, each
+  occurs exactly **once** in `src/css/utilities.css`. The ×2 counted a comment line
+  beside its at-rule — a metric read as an assertion, the same failure mode the
+  `--brand-hue` sweep and the `--chart-axis` row both had. No merge was done.
+
 - `--color-control-edge` token for control borders (WCAG 1.4.11)
 - `--target-control`, `--target-option`, `--target-chart` and `--target-mark` tokens for target sizes by kind (a data mark is deliberately `0` — it is not a target)
 - `--fill-hatch-1…5` and `--fill-dot` fill-pattern vocabulary for polygon marks
