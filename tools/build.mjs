@@ -16,7 +16,10 @@
  *   dist/contour.min.css      the same, minified
  *   dist/contour.js           the optional enhancement
  *   dist/contour.min.js       the same, minified
- *   dist/contour.tokens.json  the token layer, for Figma or Style Dictionary
+ *   dist/contour.tokens.json  the token layer, as a DTCG 2025.10 Format document
+ *   dist/contour.themes.json  the dark branch of every light-dark() pair, as a
+ *                             Resolver document — the Format Module gives a token
+ *                             one value, so the theme axis cannot live there
  *   dist/svg/contour-mark.svg the brand mark
  */
 
@@ -26,7 +29,8 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 import { minifyCss, minifyJs } from "./lib/minify.mjs";
-import { lightDarkPair } from "./lib/lightdark.mjs";
+import { buildDocuments } from "./lib/dtcg.mjs";
+import { inventory } from "./lib/inventory.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
@@ -72,73 +76,6 @@ function inline(file, seen = new Set()) {
     if (seen.has(join(root, resolved))) return "";
     return inline(resolved, seen);
   });
-}
-
-/**
- * The token layer is not one block: `tokens.css` declares inside three
- * separate `:root` rules — primitives and semantic colour, the brand layer,
- * the override knobs. Matching a single block exported 151 of the 273 tokens,
- * which is why the semantic half was missing from `contour.tokens.json`.
- *
- * Comments are dropped first, so a `:root` shown inside a code example is not
- * mistaken for a declaration. Braces are counted, not matched lazily, so a
- * nested `light-dark(…)` or `calc(…)` cannot end the block early.
- *
- * @param {string} css
- * @returns {string} the concatenated body of every `:root { … }` block
- */
-function tokenBodies(css) {
-  const source = css.replace(/\/\*[\s\S]*?\*\//g, " ");
-  const bodies = [];
-  const opener = /:root\s*\{/g;
-  let match;
-  while ((match = opener.exec(source))) {
-    let i = opener.lastIndex;
-    const start = i;
-    let depth = 1;
-    while (i < source.length && depth > 0) {
-      const ch = source[i];
-      if (ch === "{") depth += 1;
-      else if (ch === "}") depth -= 1;
-      i += 1;
-    }
-    bodies.push(source.slice(start, i - 1));
-  }
-  return bodies.join("\n");
-}
-
-/**
- * Read the token layer and write it out as JSON.
- * @param {string} css
- * @returns {Record<string, string>}
- */
-function tokenType(value) {
-  const v = String(value).trim();
-  if (/oklch|rgb|hsl|#[0-9a-f]/i.test(v)) return "color";
-  if (/rem$|px$|em$|%$/.test(v)) return "dimension";
-  if (/^[0-9.]+$/.test(v)) return "number";
-  if (/^cubic-bezier|ease|linear/.test(v)) return "cubicBezier";
-  return "string";
-}
-
-function tokensToJson(css) {
-  const tokens = {};
-  const body = tokenBodies(css);
-  const pattern = /(--[a-z0-9-]+)\s*:\s*([^;]+);/g;
-  let match;
-  while ((match = pattern.exec(body))) {
-    const [, name, raw] = match;
-    const value = raw.trim();
-    // `light-dark(a, b)` is exported as both values, so a tool can pick. The
-    // split goes through tools/lib/lightdark.mjs rather than a regex here.
-    const pair = lightDarkPair(value);
-    if (pair) {
-      tokens[name] = { "$value": pair, "$type": "color" };
-    } else {
-      tokens[name] = { "$value": value, "$type": tokenType(value) };
-    }
-  }
-  return tokens;
 }
 
 /**
@@ -301,10 +238,19 @@ const js = readFileSync(join(root, "src/js/ds.js"), "utf-8");
 writeFileSync(join(dist, "contour.js"), js, "utf-8");
 writeFileSync(join(dist, "contour.min.js"), `${minifyJs(js)}\n`, "utf-8");
 
-// -- The tokens -------------------------------------------------------------
-const tokens = tokensToJson(readFileSync(join(root, "src/css/tokens.css"), "utf-8"));
-const dtcg = { "$schema": "https://tr.designtokens.org/format/", ...tokens };
-writeFileSync(join(dist, "contour.tokens.json"), `${JSON.stringify(dtcg, null, 2)}\n`, "utf-8");
+// -- The tokens (C-41) ------------------------------------------------------
+// The census in tools/lib/inventory.mjs is the only source for WHICH tokens exist
+// and WHAT they declare. This file used to parse `tokens.css` itself, and that
+// second parser is exactly how the export came to hold 151 tokens while the
+// census held 273 and neither looked wrong from inside.
+const tokensCss = readFileSync(join(root, "src/css/tokens.css"), "utf-8");
+const declared = Object.entries(inventory().tokens.census).map(([name, t]) => ({ name, value: t.value }));
+// src/css stays the source of truth: the artefact is a one-way export, and the
+// Format Module cannot carry `light-dark()` or the hue knob, so the dark branch
+// is published as a Resolver set and the knobs are annotated, never hidden.
+const dtcg = buildDocuments(declared, tokensCss);
+writeFileSync(join(dist, "contour.tokens.json"), `${JSON.stringify(dtcg.tokensDoc, null, 2)}\n`, "utf-8");
+writeFileSync(join(dist, "contour.themes.json"), `${JSON.stringify(dtcg.resolverDoc, null, 2)}\n`, "utf-8");
 
 // -- The component contract (T-151) --------------------------------------
 const componentBlocks = [...new Set(
@@ -378,7 +324,7 @@ const manifest = {
   ),
   outputs: {
     ...Object.fromEntries(
-      ["contour.css", "contour.min.css", "contour.js", "contour.min.js", "contour.tokens.json", "svg/contour-mark.svg"].map((f) => [f, statSync(join(dist, f)).size]),
+      ["contour.css", "contour.min.css", "contour.js", "contour.min.js", "contour.tokens.json", "contour.themes.json", "svg/contour-mark.svg"].map((f) => [f, statSync(join(dist, f)).size]),
     ),
     ...surfaceSizes,
   },
@@ -394,5 +340,10 @@ for (const name of Object.keys(SURFACES)) {
 console.log(`  contour.js          ${size(join(dist, "contour.js"))}`);
 console.log(`  contour.min.js      ${size(join(dist, "contour.min.js"))}`);
 console.log(`  contour.tokens.json ${size(join(dist, "contour.tokens.json"))}`);
+console.log(`  contour.themes.json ${size(join(dist, "contour.themes.json"))}`);
 console.log(`  svg/contour-mark.svg ${size(join(dist, "svg/contour-mark.svg"))}`);
-console.log(`  tokens exported     ${Object.keys(tokens).length}`);
+// The export accounting, printed from the build rather than from a note: every
+// declared token must land on one side of this sum or the export is partial.
+console.log(
+  `  tokens            ${dtcg.stats.exported} exported + ${dtcg.stats.refused} refused = ${dtcg.stats.declared} declared, ${dtcg.stats.pairs} as theme pairs`,
+);

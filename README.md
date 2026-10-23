@@ -95,7 +95,8 @@ to drive the system's own feedback and navigation from their own code.
 |---|---|
 | `contour.css` / `contour.min.css` | Every layer, in cascade order |
 | `contour.js` / `contour.min.js` | The optional enhancement |
-| `contour.tokens.json` | The semantic token layer for Figma or Style Dictionary; `light-dark()` values are split into `{ light, dark }` |
+| `contour.tokens.json` | The token layer as a **DTCG 2025.10 Format** document — colours as `{ colorSpace, components }`, aliases kept as `{references}` so the lineage survives serialisation, and every declared value the Format Module cannot express named in a ledger with its reason instead of dropped |
+| `contour.themes.json` | The dark branch of every `light-dark()` pair, as a **DTCG 2025.10 Resolver** document. A Format token has exactly one value, so the theme axis cannot live in it: `contour.tokens.json` *is* the light theme, and applying this set over it gives the dark one |
 | `map-chrome.maplibre.css` / `map-chrome.mapbox.css` | The vendor re-key profile, published under both engine names |
 | `map-chrome-contract.json` | The tokens a map control cluster is re-keyed onto, and the controls each engine ships |
 | `svg/contour-mark.svg` | The brand mark |

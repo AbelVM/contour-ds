@@ -39,11 +39,25 @@ const DIST = join(ROOT, "dist");
  *  previous figures is `src/css/light-dark-fallback.css` (C-51) — 452 generated
  *  declarations carried into every bundle, which is what a fallback layer costs.
  *  The figure is quoted from the build, not aspired to, so `check-size` stays
- *  able to tell a large bundle apart from a stale one. */
+ *  able to tell a large bundle apart from a stale one.
+ *
+ *  The two JSON budgets moved for one reason each, and neither is a page cost:
+ *  no browser loads either file, so they cannot regress the payload a consumer
+ *  ships. `contour.tokens.json` grew because a spec colour is
+ *  `{colorSpace, components, alpha}` rather than one CSS string, because the
+ *  document now names the declared values it cannot carry instead of dropping
+ *  them (C-41) — the cost of an export that accounts for itself — and because the
+ *  `$description` it harvests from `tokens.css` is the export's payload rather
+ *  than its overhead: the prose that makes `--color-control-edge` legible is the
+ *  same text that carries its 3:1 contract. The second raise is that harvest.
+ *  `contour.themes.json` is new: it is the dark branch of every light-dark() pair,
+ *  which the Format Module has no legal place for (C-43). It states values only —
+ *  a token's meaning is published once, in the Format document. */
 const BUDGETS = {
   "contour.min.css": 148 * 1024,
   "contour.min.js": 24 * 1024,
-  "contour.tokens.json": 31 * 1024,
+  "contour.tokens.json": 49 * 1024,
+  "contour.themes.json": 21 * 1024,
   "surfaces/contour-core.min.css": 106 * 1024,
   "surfaces/contour-docs.min.css": 119 * 1024,
   "surfaces/contour-data.min.css": 127 * 1024,

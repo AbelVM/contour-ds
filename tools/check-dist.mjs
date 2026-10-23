@@ -9,18 +9,25 @@ const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
 const errors = [];
 const js = readFileSync(join(ROOT, "dist/contour.min.js"), "utf8");
 const css = readFileSync(join(ROOT, "dist/contour.min.css"), "utf8");
-// Map-chrome artifacts (T-93) ship in dist/ and must not be orphaned.
-for (const f of ["map-chrome-contract.json","map-chrome.maplibre.css","map-chrome.mapbox.css"]) {
+// Shipped artifacts that must not be orphaned. C-16 found map chrome built into
+// `dist/`, published by `files`, and named by nothing; the token export (C-41)
+// and the Resolver set (C-43) are the same hazard in a new costume, so they are
+// covered by the same contract rather than a second one. One list, because the
+// last time this was written the names were repeated in three places and only
+// two of them got updated.
+const SHIPPED_JSON = ["map-chrome-contract.json", "contour.tokens.json", "contour.themes.json"];
+const SHIPPED_CSS_PROFILES = ["map-chrome.maplibre.css", "map-chrome.mapbox.css"];
+for (const f of [...SHIPPED_JSON, ...SHIPPED_CSS_PROFILES]) {
   if (!existsSync(join(ROOT, "dist", f))) errors.push("missing shipped artifact: " + f);
 }
 // -- Referenced, not merely present (C-16) ----------------------------------
-// Existence was never the failure. These three files shipped for weeks while
+// Existence was never the failure. The map-chrome files shipped for weeks while
 // nothing in the repository named them, linked them or described them, and every
 // gate stayed green because each one counted declarations in files the artifacts
 // were not in. So the contract here has two halves, and the second is the one
-// that decays: a shipped artifact must be *named* by a document and *loaded* by a
-// surface. A silent unlink — or a document section deleted — turns this red
-// instead of shipping an orphan again.
+// that decays: a shipped artifact must be *named* by a document, and a shipped
+// stylesheet must also be *loaded* by a surface. A silent unlink — or a document
+// section deleted — turns this red instead of shipping an orphan again.
 const SEARCH = ["README.md", "llms.txt", "index.html"];
 {
   const templatesDir = join(ROOT, "templates");
@@ -36,7 +43,7 @@ const SEARCH = ["README.md", "llms.txt", "index.html"];
     if (!body.trim()) { errors.push(`reference check: ${rel} is empty, so it cannot reference anything`); continue; }
     corpus.push({ rel, body });
   }
-  for (const f of ["map-chrome-contract.json", "map-chrome.maplibre.css", "map-chrome.mapbox.css"]) {
+  for (const f of [...SHIPPED_JSON, ...SHIPPED_CSS_PROFILES]) {
     const namer = corpus.filter((doc) => doc.body.includes(f)).map((doc) => doc.rel);
     if (!namer.length) errors.push(`shipped but named by nothing: dist/${f} is not referenced in ${SEARCH.join(", ")}`);
   }
@@ -52,7 +59,7 @@ const SEARCH = ["README.md", "llms.txt", "index.html"];
     errors.push("missing the map-chrome source: src/css/map-chrome.css, which dist/ profiles are copied from");
   } else {
     const want = readFileSync(source, "utf8");
-    for (const f of ["map-chrome.maplibre.css", "map-chrome.mapbox.css"]) {
+    for (const f of SHIPPED_CSS_PROFILES) {
       const path = join(ROOT, "dist", f);
       if (existsSync(path) && readFileSync(path, "utf8") !== want) {
         errors.push(`dist/${f} is not the source profile — rebuild, or the emitter has grown its own copy of the CSS`);

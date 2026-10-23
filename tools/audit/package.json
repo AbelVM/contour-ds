@@ -2,16 +2,18 @@
   "name": "contour-audit",
   "private": true,
   "version": "1.0.0",
-  "description": "Dev-only manifests for the Contour audit harnesses. Nothing here ships: src/ has zero runtime dependencies and no build step, and this package exists only so the test suite can be installed on a machine that does not happen to have a browser driver in a neighbouring project.",
+  "description": "Dev-only manifests for the Contour audit harnesses. Nothing here ships: src/ has zero runtime dependencies and no build step, and this package exists only so the test suite can be installed on a machine that does not happen to have a browser driver in a neighbouring project. dembrandt is here for the same reason and is used only by dtcg-contract.mjs — its DTCG validator is the independent implementation the token export is checked against, which is what lets the project claim it EXPORTS 2025.10 without claiming any design tool reads it back.",
   "type": "module",
   "scripts": {
     "contrast": "node contrast-and-aria.mjs",
     "inventory": "node component-inventory.mjs",
     "census": "node token-census.mjs",
     "family-gate": "node family-gate.mjs",
+    "dtcg": "node dtcg-contract.mjs",
     "gates": "node contrast-and-aria.mjs && node component-inventory.mjs"
   },
   "devDependencies": {
+    "dembrandt": "0.39.2",
     "playwright-core": "1.64.1"
   }
 }

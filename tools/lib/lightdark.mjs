@@ -26,10 +26,14 @@
 /**
  * Split a CSS value into whitespace-separated top-level chunks, respecting
  * parentheses and quotes.
+ *
+ * Exported: the DTCG exporter needs the same walk to split a font stack on its
+ * top-level commas, and a second splitter is how `contour.tokens.json` came to
+ * hold 151 tokens while the census reported 273.
  * @param {string} value
  * @returns {string[]}
  */
-function topLevelSplit(value, separator = ",") {
+export function topLevelSplit(value, separator = ",") {
   const parts = [];
   let depth = 0;
   let quote = null;

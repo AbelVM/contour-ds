@@ -189,6 +189,27 @@
       "sentence": "A classified ramp names its breaks and its denominator, so a count is never presented as a density",
       "owner": "node tools/audit/component-inventory.mjs",
       "threshold": "every .c-legend[data-classification] needs a non-empty .c-legend__method naming the scheme and a .c-legend__norm stating a denominator; 3-7 classes; empty population fails"
+    },
+    {
+      "id": "C-41-a",
+      "doc": "README.md",
+      "sentence": "The token layer as a **DTCG 2025.10 Format** document",
+      "owner": "node tools/audit/dtcg-contract.mjs",
+      "threshold": "dist/contour.tokens.json is validated by an independent implementation of the spec: zero errors, no $type outside the spec's vocabulary, the document is not read as a resolver document, the validator's own token count equals the artifact's, and every published colour is confirmed identical to the declaration it came from through that same implementation. Claims export only — never that a design tool reads it back"
+    },
+    {
+      "id": "C-41-b",
+      "doc": "README.md",
+      "sentence": "named in a ledger with its reason instead of dropped",
+      "owner": "node tools/check-export.mjs",
+      "threshold": "exported + ledgered must equal the census exactly, with no token on both sides and none on neither; every ledger reason must be one the exporter defines; the ledgered count must equal the tokens it lists; the shipped bytes must equal a fresh derivation from src/css, so a hand-edited dist/ fails"
+    },
+    {
+      "id": "C-43-a",
+      "doc": "README.md",
+      "sentence": "as a **DTCG 2025.10 Resolver** document",
+      "owner": "node tools/audit/dtcg-contract.mjs",
+      "threshold": "dist/contour.themes.json must be recognized as documentType \"resolver\", declare version 2025.10 and a non-empty resolutionOrder, validate with zero errors, and carry the dark branch of every declared light-dark() pair; the base document must not contain the pair object the Format Module does not define"
     }
   ]
 }

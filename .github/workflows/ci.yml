@@ -113,6 +113,18 @@ jobs:
         run: npm --prefix tools/audit install
       - name: Install chromium
         run: npx --yes playwright@1.64.1 install --with-deps chromium
+      # dist/ is gitignored, so a job that reads the shipped artifacts has to
+      # build them. The build runs first on purpose: a failed build leaves the
+      # previous dist/ in place, and a lane after it would then certify bytes
+      # that were never produced from the current src/.
+      - name: Build the artifacts the token contract reads
+        run: node tools/build.mjs
+      # Every other token gate counts declarations. This one asks an independent
+      # implementation of DTCG 2025.10 whether the shipped documents conform, and
+      # confirms each published colour against the declaration it came from.
+      # It exits rather than skipping when dembrandt is not installed.
+      - name: DTCG 2025.10 conformance of the shipped token export
+        run: node tools/audit/dtcg-contract.mjs
       - name: Contrast, focus, chart, palette and document contract
         run: node tools/audit/contrast-and-aria.mjs
       - name: Component inventory and target sizes

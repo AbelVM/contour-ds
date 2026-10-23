@@ -70,7 +70,9 @@ Anything that matches is either a leak or a false positive you must justify.
 |---|---|
 | `node tools/check-layout.mjs` | The layout ratchet: frozen primitive set, the `@deprecated` ledger, and the two gap tokens that make `.stack`/`.c-stack` different values | 
 | `node tools/snippets.mjs` | Regenerates the code snippets in `index.html` — **run after editing any specimen**. Also the spacing guard: it reads the **emitted** snippets and fails the build when one leads with guide spacing, so a warning is not a pass |
-| `node tools/build.mjs` | Bundles and minifies the **design system only** into `dist/` (no guide, no templates), exports the tokens as JSON. Its per-surface file list is **derived from `ds.css`** and asserted, so a new sheet cannot land in `contour.css` and miss every surface bundle |
+| `node tools/build.mjs` | Bundles and minifies the **design system only** into `dist/` (no guide, no templates), and exports the token layer as two DTCG 2025.10 documents: `contour.tokens.json` (Format) and `contour.themes.json` (Resolver). Its per-surface file list is **derived from `ds.css`** and asserted, so a new sheet cannot land in `contour.css` and miss every surface bundle |
+| `node tools/check-export.mjs` | The export's completeness contract: every declared token must be exported **or** named in the document's refusal ledger with a reason, the shipped bytes must equal a fresh derivation from `src/css`, and every theme pair must be published on both sides. Reads the artifact, not the source |
+| `node tools/audit/dtcg-contract.mjs` | Asks an independent implementation of DTCG 2025.10 (dembrandt) whether the two shipped documents conform, and confirms every published colour against the declaration it came from. **Exports the spec is all it claims** — never that a design tool reads it back. Exits rather than skipping when `npm --prefix tools/audit install` has not run |
 | `node tools/gen-light-dark.mjs` | Writes `src/css/light-dark-fallback.css` from the token layer; `--check` (CI) fails when the committed file is stale against `src/css` |
 | `python3 tools/contour-gen.py` | Regenerates the contour artwork |
 | `npx html-validate index.html templates/*.html` | Markup validation |
@@ -81,10 +83,13 @@ manifest of their own (`tools/audit/package.json`): contrast and the document
 contract (`contrast-and-aria.mjs`, which exits non-zero), the component inventory
 and target sizes (`component-inventory.mjs`), the token census report
 (`token-census.mjs`), the family gate (`family-gate.mjs`), the theme render probe
-(`theme-render-probe.mjs`), the chart geometry seam (`chart-geometry.mjs`)
-and the chart accessible names (`chart-names.mjs`). Their JSON output
-lands in the project's gitignored `tmp/audit/`. They discover a browser driver via
-`tools/audit/lib/browser.mjs` and **exit rather than skip** when none is found —
+(`theme-render-probe.mjs`), the chart geometry seam (`chart-geometry.mjs`),
+the chart accessible names (`chart-names.mjs`) and the DTCG conformance contract
+(`dtcg-contract.mjs`). Their JSON output
+lands in the project's gitignored `tmp/audit/`. The browser harnesses discover a
+driver via `tools/audit/lib/browser.mjs` and **exit rather than skip** when none
+is found; `dtcg-contract.mjs` needs no browser but resolves `dembrandt` through
+that same manifest, and **exits rather than skips** when it is not installed —
 a gate that silently does not run is a gate that silently passes.
 
 ---
@@ -354,6 +359,7 @@ node tools/snippets.mjs        # if you touched a specimen; also the snippet spa
 node tools/build.mjs           # if you touched src/
 node tools/check-size.mjs      # refuses a stale dist/, not only a big one
 node tools/check-dist.mjs      # the shipped bundle loads cleanly and is free of minifier corruption
+node tools/check-export.mjs    # every declared token is exported or ledgered with a reason; dist equals a fresh derivation
 node tools/check-ownership.mjs # no guide-only identifiers (ds-, ridgeline, …) leaked into src/
 node tools/check-layout.mjs     # layout primitives are a ratchet; @deprecated must match the ledger
 node tools/gen-light-dark.mjs --check  # the light-dark() fallback matches src/css
@@ -369,6 +375,17 @@ node tools/audit/component-inventory.mjs
 node tools/audit/theme-render-probe.mjs # does a theme set move a real control, and does --brand-hue hold the contract
 node tools/audit/chart-geometry.mjs     # is the gridline band derived from --chart-ticks
 node tools/audit/chart-names.mjs        # does every chart name what it plots, and does its data surface
+```
+
+`dtcg-contract.mjs` belongs to the same `contract` lane because that is the lane
+that installs `tools/audit`, but it needs no browser — it asks an independent
+implementation of DTCG 2025.10 whether the two shipped token documents conform,
+and confirms every published colour against the declaration it came from. It also
+builds first, since `dist/` is gitignored and the gate reads the shipped bytes:
+
+```bash
+node tools/build.mjs
+node tools/audit/dtcg-contract.mjs  # exports 2025.10 — validated, never asserted
 ```
 
 Then check the guide in both themes, at 1440 px and 390 px, and look for
