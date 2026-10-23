@@ -187,6 +187,92 @@
 
       <!-- ===================== PANELS ===================== -->
       <div class="c-chart-grid">
+        <!-- The spatial workspace (C-11): the same composition the guide's Field
+             section renders, so a consumer copying this file gets the differentiator
+             working, not just documented. `node
+             tools/audit/component-inventory.mjs` refuses any block the guide's
+             workspace composes that appears in no template. -->
+        <div class="c-panel" data-span="12" id="tpl-map">
+          <div class="c-panel__head">
+            <div>
+              <h2 class="c-panel__title">Catchment</h2>
+              <p class="c-panel__subtitle">Walk access, quantile classified · Madrid</p>
+            </div>
+            <div class="c-panel__actions">
+              <div class="c-segmented" role="group" aria-label="Base layer">
+                <button class="c-segmented__option" type="button" aria-pressed="true">Street</button>
+                <button class="c-segmented__option" type="button" aria-pressed="false">Satellite</button>
+              </div>
+            </div>
+          </div>
+          <div class="c-panel__body c-panel__body--flush">
+            <div class="c-map-area" style="min-block-size: 22rem">
+              <div class="c-map-slot">
+                <div data-map role="img" aria-label="Map canvas placeholder — connect a routing engine here"></div>
+                <div class="c-map-slot__chrome">
+                  <div class="c-map-slot__controls">
+                    <button class="c-map-slot__control" type="button" aria-label="Zoom in">+</button>
+                    <button class="c-map-slot__control" type="button" aria-label="Zoom out">−</button>
+                  </div>
+                  <div class="c-map-panel c-map-panel--top c-map-panel--left">
+                    <div class="c-layer-switch">
+                      <div class="c-layer-switch__item">
+                        <span class="c-layer-switch__swatch" style="background: var(--color-primary)"></span>
+                        <span class="c-layer-switch__name">Routing graph</span>
+                        <button class="c-layer-switch__toggle" type="button" aria-pressed="true" aria-label="Toggle routing graph">
+                          <svg aria-hidden="true"><use href="#i-check" /></svg>
+                        </button>
+                      </div>
+                      <div class="c-layer-switch__item">
+                        <span class="c-layer-switch__swatch" style="background: var(--color-accent)"></span>
+                        <span class="c-layer-switch__name">Catchment</span>
+                        <button class="c-layer-switch__toggle" type="button" aria-pressed="false" aria-label="Toggle catchment">
+                          <svg aria-hidden="true"><use href="#i-check" /></svg>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="c-readout" data-precision="6">
+                      <div class="c-readout__row">
+                        <span class="c-readout__key">Centre</span>
+                        <span class="c-readout__value c-readout__value--coord">-3.703790, 40.416775</span>
+                      </div>
+                      <div class="c-readout__row">
+                        <span class="c-readout__key">Crs</span>
+                        <span class="c-readout__value">EPSG:4326</span>
+                      </div>
+                      <span class="c-readout__order">lon, lat</span>
+                    </div>
+                  </div>
+                  <div class="c-map-slot__scale">
+                    <div class="c-scale-bar">
+                      <span class="c-scale-bar__line" style="inline-size: 4rem"></span>
+                      <span class="c-scale-bar__label">1 km</span>
+                    </div>
+                  </div>
+                  <!-- The credit line is the vendor's, not the designer's: it must stay
+                       visible over the map, it carries at least three text links, and its
+                       mark is never restyled. Geometry comes from --map-attribution-*. -->
+                  <div class="c-map-slot__attribution">
+                    <span class="c-map-slot__attribution-mark">© Contour</span>
+                    <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap</a>
+                    <a href="https://www.mapbox.com/about/maps/">Basemap</a>
+                    <a href="https://www.maxar.com/">Imagery</a>
+                  </div>
+                </div>
+              </div>
+              <div class="c-map-footer">
+                <div class="c-legend" data-classification="quantile">
+                  <span class="c-legend__title">Walks per km²</span>
+                  <div class="c-legend__ramp" role="presentation"></div>
+                  <div class="c-legend__scale"><span>1.2 k</span><span>8.9 k</span><span>18 k</span></div>
+                  <span class="c-legend__method">Quantile breaks · 5 classes</span>
+                  <span class="c-legend__norm">Normalised: walkers per km² per day, 2026-06-14</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="c-panel" data-span="8">
           <div class="c-panel__head">
             <div>
@@ -345,6 +431,16 @@
         </symbol>
         <symbol id="i-arrow-down" viewBox="0 0 24 24">
           <path d="M12 5v14M18 13l-6 6-6-6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="i-check" viewBox="0 0 24 24">
+          <path
+            d="m5 12.6 4.6 4.6L19 7.8"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.9"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
         </symbol>
         <symbol id="i-x" viewBox="0 0 24 24">
           <path d="m6 6 12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />

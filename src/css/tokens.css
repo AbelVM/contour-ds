@@ -435,6 +435,23 @@
     --chart-tip-block-start: 0;
     --chart-tip-inline-start: 0;
 
+    /* The attribution band (C-15). A map's credit line is the one piece of
+       chrome a consumer does not own: the vendor's terms say it must be visible
+       over the map, and let us choose its colour and size but not its presence.
+       So the geometry lives here rather than in the rule, because a dashboard
+       that wants the bottom-right corner has to move the band, and moving a
+       token is a reviewable act while overriding a rule is not.
+       The logo box is the size the vendor ships — 65px by 20px, published in
+       their own CSS — and it is a MINIMUM: the band reserves room for the mark
+       and never resizes it. */
+    --map-attribution-inset-block: 0.1875rem;
+    --map-attribution-inset-inline: 0.1875rem;
+    --map-attribution-logo-inline: 4.0625rem; /* 65px, the shipped mark */
+    --map-attribution-logo-block: 1.25rem; /* 20px, the shipped mark */
+    --map-attribution-padding-inline: var(--space-2xs);
+    --map-attribution-gap: var(--space-2xs);
+    --map-attribution-surface: var(--color-surface-1);
+
     /* Dash patterns, one per series. Eight hues cannot all be separated by
        lightness, so a chart never leans on hue alone: the line also carries a
        pattern, and the legend previews that pattern. The chart stays

@@ -172,6 +172,16 @@ export function inventory() {
   const components = [...byComponent.keys()].sort();
 
   const guideHtml = source.guide;
+  // Templates are read a second time, per file, and NOT folded into `areas()`:
+  // that map's labels are the census's own vocabulary, and a `templates/x.html`
+  // entry would silently relabel every token's `areas` in the published JSON.
+  // This exists so a gate can name WHICH surface renders a block — "some
+  // template uses it" cannot tell a dashboard-only primitive from a dead one.
+  const templateFiles = Object.fromEntries(
+    readdirSync(join(ROOT, "templates"))
+      .filter((f) => f.endsWith(".html"))
+      .map((f) => [f.replace(/\.html$/, ""), readFileSync(join(ROOT, "templates", f), "utf8")]),
+  );
   const templateHtml = source.templates;
   const renderedIn = (name) => {
     const patterns = [
@@ -179,7 +189,11 @@ export function inventory() {
       new RegExp(`class='[^']*\\b${escapeRe(name)}\\b`),
     ];
     const hit = (text) => patterns.some((re) => re.test(text));
-    return { guide: hit(guideHtml), templates: hit(templateHtml) };
+    return {
+      guide: hit(guideHtml),
+      templates: hit(templateHtml),
+      surfaces: Object.fromEntries(Object.entries(templateFiles).map(([f, text]) => [f, hit(text)])),
+    };
   };
   const specimens = Object.fromEntries(components.map((name) => [name, renderedIn(name)]));
   const noSpecimen = components.filter((name) => !specimens[name].guide);

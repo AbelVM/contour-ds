@@ -154,6 +154,41 @@
       "sentence": "While a snippet disclosure is open the rest of the page leaves the tab order, and closing it releases every inert subtree",
       "owner": "node tools/audit/contrast-and-aria.mjs",
       "threshold": "no focusable outside the open example stays reachable; the example itself is never inert; the rail is inert; zero inert attributes survive close; scroll-padding-block-start clears the measured header height"
+    },
+    {
+      "id": "C-10-a",
+      "doc": "index.html",
+      "sentence": "The spatial family as one surface rather than nine specimens: the shell, a canvas the consumer owns, the chrome the system owns, and the readouts that carry their own provenance",
+      "owner": "node tools/audit/component-inventory.mjs",
+      "threshold": "the family is read from [data-spatial-workspace] in the guide and every block it names must be rendered by at least one template; an empty family fails"
+    },
+    {
+      "id": "C-14-a",
+      "doc": "index.html",
+      "sentence": "Digits are not quality",
+      "owner": "node tools/audit/component-inventory.mjs",
+      "threshold": "each [data-ladder] row is recomputed from 111.32 km / 10^dp and must agree within 1%; data-precision must equal the decimals printed; a lon-then-lat order badge is required (RFC 7946 §3.1.1, §3.1.10)"
+    },
+    {
+      "id": "C-15-a",
+      "doc": "README.md",
+      "sentence": "the attribution band owns its corner through tokens, reserves the mark's shipped box and never restyles it",
+      "owner": "node tools/audit/component-inventory.mjs",
+      "threshold": "band inset/gap must equal --map-attribution-* through computed style, the mark slot must reserve 65x20, filter must be none, at least three text links, and the band must be visible"
+    },
+    {
+      "id": "C-12-a",
+      "doc": "index.html",
+      "sentence": "refuses a block that appears in this specimen and in no template",
+      "owner": "node tools/audit/component-inventory.mjs",
+      "threshold": "family discovered from [data-spatial-workspace]; every block must be rendered by at least one of templates/*.html; empty family or empty surface list fails"
+    },
+    {
+      "id": "C-13-a",
+      "doc": "README.md",
+      "sentence": "A classified ramp names its breaks and its denominator, so a count is never presented as a density",
+      "owner": "node tools/audit/component-inventory.mjs",
+      "threshold": "every .c-legend[data-classification] needs a non-empty .c-legend__method naming the scheme and a .c-legend__norm stating a denominator; 3-7 classes; empty population fails"
     }
   ]
 }

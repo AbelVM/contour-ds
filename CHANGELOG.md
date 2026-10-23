@@ -9,6 +9,54 @@ the measurement that corrected it is named, so the next reader can re-run it.
 ## [Unreleased]
 
 ### Added
+- M3 — the spatial family now renders as one surface, and a gate proves it
+  reaches a shipped page. The guide's Field section composes a
+  `[data-spatial-workspace]`: map area, slot chrome with its controls and scale,
+  an over-map panel carrying a coordinate readout and the theme set, a footer
+  with survey, instrument and a classified legend, and the attribution band. The
+  same composition is what `templates/dashboard.html` ships, so a consumer
+  copying a starter gets the differentiator working rather than merely
+  documented. `node tools/audit/component-inventory.mjs` discovers that family
+  from the specimen's own DOM — never from a list repeated in the gate — and
+  refuses any block that reaches no template, asserting the population it
+  scanned. `--surface` reports coverage per template file without gating it,
+  because the contract is "at least one", and `tools/lib/inventory.mjs` gained
+  the per-file hits so that count lives in the one place every other count comes
+  from. The rule fired on its first real run: `.c-layer-switch` was composed in
+  the guide and shipped nowhere, which is why the dashboard's map panel has a
+  layer switch today.
+- `.c-legend__method` and `.c-legend__norm` (C-13): a classified ramp states its
+  breaks and its denominator. The gate refuses a `.c-legend[data-classification]`
+  specimen missing either, or naming a class count outside 3–7. The review cited
+  a GeoLinter `NUM_CLASSES` rule and an EU data-visualisation guide for that
+  ceiling; `mapbox/geo-linter` answers the GitHub API with **Not Found** and both
+  EU URLs return **404**, so the bound ships as Contour's own stated rule with no
+  external attribution rather than a citation nobody can check.
+- The coordinate precision contract (C-14): `data-precision` on `.c-readout`
+  reserves the value column so a moving fix cannot reflow the panel, and
+  `.c-readout__order` names the axis order, which RFC 7946 §3.1.1 makes
+  normative. The guide's ladder table is derived, and the gate recomputes every
+  row from 111.32 km per degree divided by the decimal place, so a row that
+  disagrees with its own formula fails the build instead of shipping a confident
+  wrong number. The three RFC sentences this rests on were read from the RFC
+  itself, including §3.1.10's "MUST NOT be interpreted as an indication to the
+  level of uncertainty" and §11.2's "6 decimal places … amounts to about 10
+  centimeters".
+- The attribution band (C-15) is a token-owned layout zone: `--map-attribution-*`
+  carries its corner, its gaps, its surface and the vendor mark's shipped box,
+  which the band reserves and never restyles. The numbers came from the vendor's
+  own attribution page, fetched and read — the mark's `20px`/`65px`, "the text
+  attribution contains at least three links", and "you can adjust the font color
+  and size … but attribution must be legible" — which is why the band sets
+  `--color-text` on `--color-surface-1` where it previously used
+  `--color-text-subtle`. The gate measures the band's computed inset, gap and
+  mark box against the tokens, and its `filter` against the logo rule.
+  Falsified before merging, and the falsification found two defects in the new
+  gate rather than in the stylesheet: `parseFloat` on a token serialised as
+  `0.1875rem` returns a unitless number, which failed two checks loudly and — far
+  worse — let the two mark-box assertions pass quietly forever. Custom properties
+  are now measured through a real property on a probe, the same discipline the
+  `ch` width already used.
 - `tools/audit/contrast-and-aria.mjs` now holds the C-28 and C-29 assertions.
   The behaviours landed two commits earlier and every one of them was proved by
   a probe in `tmp/`, which is gitignored: a reader could not re-run the evidence,
@@ -329,5 +377,5 @@ the measurement that corrected it is named, so the next reader can re-run it.
 ### Corrections to this file's own claims
 Three entries above were overstated when first written, and are corrected here rather than quietly deleted:
 1. **"Nine unspecced components documented"** — six of nine, with 13 blocks still undocumented.
-2. **"`llms.txt` corrected (component count…)"** — was false when written here, and is now actually done. Both files published 83 components / 260 tokens while `src/` held **<!-- ds:components -->134<!-- /ds:components --> components, <!-- ds:tokens -->275<!-- /ds:tokens --> tokens, <!-- ds:tokens-read -->273<!-- /ds:tokens-read --> read, <!-- ds:tokens-unread -->2<!-- /ds:tokens-unread --> unread**. The root cause was in the gate, not the prose: `stamp` only visited files carrying markers, and neither file had any — `llms.txt` is machine-facing and `DESIGN.md`'s figures live in YAML front matter, where an HTML comment is not legal syntax — so `stamp --check` passed by never reading them. `stamp` now owns both (anchored rewrites for `llms.txt`, a key-path setter for front matter) and treats a declared pattern that matches nothing as an error, so a skipped file fails the build instead of greening it
+2. **"`llms.txt` corrected (component count…)"** — was false when written here, and is now actually done. Both files published 83 components / 260 tokens while `src/` held **<!-- ds:components -->134<!-- /ds:components --> components, <!-- ds:tokens -->282<!-- /ds:tokens --> tokens, <!-- ds:tokens-read -->280<!-- /ds:tokens-read --> read, <!-- ds:tokens-unread -->2<!-- /ds:tokens-unread --> unread**. The root cause was in the gate, not the prose: `stamp` only visited files carrying markers, and neither file had any — `llms.txt` is machine-facing and `DESIGN.md`'s figures live in YAML front matter, where an HTML comment is not legal syntax — so `stamp --check` passed by never reading them. `stamp` now owns both (anchored rewrites for `llms.txt`, a key-path setter for front matter) and treats a declared pattern that matches nothing as an error, so a skipped file fails the build instead of greening it
 3. **"focus ring (3.55:1)"** — that was the best-case surface. The binding measurement was 2.94:1, i.e. the contract did not hold until the change recorded above.

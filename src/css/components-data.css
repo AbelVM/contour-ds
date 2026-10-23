@@ -585,6 +585,26 @@
     background-color: transparent;
   }
 
+  /* Classification disclosure (C-13). A choropleth is a claim about the data,
+     not a picture of it: identical hues mean different places under equal
+     intervals and under quantiles, and an unnormalised count reads as density
+     wherever the population happens to be. So the method and the normalisation
+     are part of the legend rather than a caption an author might skip — and a
+     classified specimen that omits either is refused by the spatial contract
+     gate, which is the only way this rule survives the next refactor. */
+  .c-legend__method,
+  .c-legend__norm {
+    grid-column: 1 / -1;
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--color-text-subtle);
+  }
+
+  /* The method carries the claim, so it is not printed as a footnote. */
+  .c-legend__method {
+    color: var(--color-text-muted);
+  }
+
   /* =======================================================================
      6. FILTER BAR & PILLS
      ======================================================================= */
@@ -1017,12 +1037,50 @@
     color: var(--color-text-muted);
   }
 
+  /* The attribution band (C-15). A credit line is not decoration: the vendor's
+     terms let us choose its colour and size and forbid hiding it, so this is a
+     layout zone with an owned corner, and every geometry on it comes from
+     `--map-attribution-*` above — a consumer that needs the bottom-right corner
+     moves the band by setting tokens, never by overriding a rule and praying
+     about specificity.
+     The text is the body pair (`--color-text` on `--color-surface-1`), not
+     `--color-text-subtle`: the same promise `map-chrome.css` makes to the
+     engine's own control, and the reason `contrast-and-aria.mjs` already
+     measures it — a credit that falls below 4.5:1 is a credit nobody reads. */
   .c-map-slot__attribution {
     position: absolute;
-    inset-block-end: var(--space-3xs);
-    inset-inline-end: var(--space-3xs);
+    inset-block-end: var(--map-attribution-inset-block);
+    inset-inline-end: var(--map-attribution-inset-inline);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--map-attribution-gap);
+    max-inline-size: calc(100% - (var(--map-attribution-inset-inline) * 2));
+    padding-block: var(--space-3xs);
+    padding-inline: var(--map-attribution-padding-inline);
+    background: var(--map-attribution-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
     font-size: var(--type-micro);
-    color: var(--color-text-subtle);
+    color: var(--color-text);
+  }
+
+  /* The provider mark sits in a box this system reserves and never paints:
+     65×20 is the size the vendor ships, published in their own CSS as a minimum.
+     A mark that is recoloured or shrunk to suit the theme is the breach, so the
+     rule sizes the SLOT and stops there. */
+  .c-map-slot__attribution-mark {
+    flex: 0 0 auto;
+    min-inline-size: var(--map-attribution-logo-inline);
+    min-block-size: var(--map-attribution-logo-block);
+    display: inline-block;
+    object-fit: contain;
+  }
+
+  .c-map-slot__attribution a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
   }
 
   /* =======================================================================

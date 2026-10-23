@@ -151,6 +151,38 @@ for (const f of svgFiles) {
   }
 }
 
+/* ---- 3. a `<use>` in a shipped page resolves in THAT page ----------------
+   Rule 1 guards `url(#id)` written by the system's own CSS. The other half of
+   the promise is made in markup: every `<use href="#i-x">` inside `index.html`
+   or a template needs that symbol in the SAME document, because these pages are
+   opened on a `file://` origin where a cross-document `<use>` silently paints
+   nothing.
+
+   This rule was added the day it was needed: a new specimen referenced
+   `#i-check` in `templates/dashboard.html`, whose sprite does not define it, and
+   every gate stayed green — the broken icon was invisible to a check that only
+   read `src/css`. The sweep prints how many references it resolved, and a
+   document with no `<use>` at all is reported as unmeasured rather than passed. */
+const PAGES = ["index.html", "templates/landing.html", "templates/dashboard.html", "templates/docs.html"];
+let useChecked = 0;
+for (const page of PAGES) {
+  let text;
+  try {
+    text = read(page);
+  } catch {
+    continue; // a page that does not exist is not this gate's claim to make
+  }
+  const ids = new Set([...text.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]));
+  const uses = [...text.matchAll(/<use\b[^>]*?(?:xlink:)?href="#([^"]+)"/g)].map((m) => m[1]);
+  if (!uses.length) continue;
+  const missing = [...new Set(uses.filter((id) => !ids.has(id)))];
+  useChecked += uses.length;
+  if (missing.length)
+    errors.push(
+      `${page}: <use href="#${missing.join("#, ")}"> has no symbol defined in that document — the icon renders nothing on a file:// origin`,
+    );
+}
+
 if (errors.length) {
   console.error("check-defs: FAIL");
   errors.forEach((e) => console.error("  " + e));
@@ -158,5 +190,6 @@ if (errors.length) {
 }
 console.log(
   `check-defs: OK — ${refs.length} url(#id) reference(s) in src/css checked against ` +
-    `${defs.size} def(s) in src/svg; ${svgFiles.length} sprite file(s) audited for casing and inline notice.`,
+    `${defs.size} def(s) in src/svg; ${svgFiles.length} sprite file(s) audited for casing and inline notice; ` +
+    `${useChecked} <use> reference(s) in the shipped pages resolved inside their own document.`,
 );

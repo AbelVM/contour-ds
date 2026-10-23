@@ -497,6 +497,15 @@
     color: var(--color-text-subtle);
   }
 
+  /* Prose under a specimen head. The guide's own type, not the system's: a
+     specimen explanation is guide furniture, so it is spaced here and never
+     reaches a copyable snippet. */
+  .ds-spec__desc {
+    max-inline-size: 68ch;
+    margin-block: 0 var(--space-sm);
+    color: var(--color-text-muted);
+  }
+
   .ds-row {
     display: flex;
     flex-wrap: wrap;

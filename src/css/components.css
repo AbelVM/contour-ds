@@ -875,6 +875,37 @@
     color: var(--color-primary-text);
   }
 
+  /* Precision ladder (C-14). A coordinate stream repaints as the fix changes,
+     and a value column sized to its content reflows the whole panel one decimal
+     at a time. `data-precision` declares how many decimals the consumer prints;
+     the column reserves exactly that width, so the ladder is a layout contract
+     and not luck. The widest case is a signed three-digit longitude: sign,
+     three digits, the point, then the decimals — precision + 5 `ch`.
+     RFC 7946 §3.1.10 is why the digits themselves are not a quality claim:
+     "the number of digits of the values in coordinate positions MUST NOT be
+     interpreted as an indication to the level of uncertainty". So the badge
+     beside the value states the ORDER (§3.1.1 makes longitude first normative),
+     never how good the fix is. §11.2 puts six decimals at about ten centimetres,
+     which is what the guide's ladder table publishes. */
+  .c-readout[data-precision] .c-readout__value--coord {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .c-readout[data-precision="2"] .c-readout__value--coord { min-inline-size: 7ch; }
+  .c-readout[data-precision="3"] .c-readout__value--coord { min-inline-size: 8ch; }
+  .c-readout[data-precision="4"] .c-readout__value--coord { min-inline-size: 9ch; }
+  .c-readout[data-precision="5"] .c-readout__value--coord { min-inline-size: 10ch; }
+  .c-readout[data-precision="6"] .c-readout__value--coord { min-inline-size: 11ch; }
+  .c-readout[data-precision="7"] .c-readout__value--coord { min-inline-size: 12ch; }
+
+  .c-readout__order {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
   /* =======================================================================
      8. STAT / METRIC
      ======================================================================= */

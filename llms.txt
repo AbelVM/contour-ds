@@ -1,6 +1,6 @@
 # Contour
 
-> A token-driven design system for spatial interfaces — routing engines, pedestrian simulators, map tooling and geospatial dashboards. Dark and light themes, 134 components, 275 design tokens (273 read, 2 unread), zero runtime dependencies, no build step.
+> A token-driven design system for spatial interfaces — routing engines, pedestrian simulators, map tooling and geospatial dashboards. Dark and light themes, 134 components, 282 design tokens (280 read, 2 unread), zero runtime dependencies, no build step.
 
 Contour covers three kinds of page: a **landing page** that has to persuade, a **documentation site** that has to explain, and a **technical dashboard** that has to be read at speed. All three share one token layer, one type scale and one set of affordance rules.
 
@@ -75,7 +75,7 @@ Landing: logo wall, feature showcase, metrics band, testimonial, pricing, compar
 
 ## Tokens
 
-- 275 custom properties in the token layer, in four layers: primitives, semantic, component, utility.
+- 282 custom properties in the token layer, in four layers: primitives, semantic, component, utility.
 - Primitives never change between themes; only the semantic layer does, so a theme swap is a one-line change.
 - Two values retheme and reshape everything: `--brand-hue` and `--radius-scale`.
 - `.c-theme-scope` re-derives the whole brand layer for a subtree, because a custom property containing `var()` is resolved eagerly.
