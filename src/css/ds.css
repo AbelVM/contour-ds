@@ -31,3 +31,17 @@
 @import url("./components-landing.css") layer(components);
 @import url("./patterns.css") layer(components);
 @import url("./utilities.css") layer(utilities);
+
+/* Imported LAST, and with no layer() clause, because it declares its own: the
+   fallback writes into both the tokens and the utilities layer, so a single
+   layer() annotation could not express it. Being last is what makes it win
+   inside each layer.
+
+   `light-dark()` is Baseline newly-available May 2024 and widely available
+   2026-11-13. An engine without it does not fail gracefully: an unregistered
+   custom property accepts any token sequence, so `--x: light-dark(a, b)` stores
+   the TEXT, and the break surfaces one step later when var() substitutes it into
+   a real property — invalid at computed-value time, and the property drops to
+   its initial value. This sheet re-points the tokens to a value they can parse,
+   guarded on the value itself. */
+@import url("./light-dark-fallback.css");

@@ -88,9 +88,26 @@ to drive the system's own feedback and navigation from their own code.
 | `contour.css` / `contour.min.css` | Every layer, in cascade order |
 | `contour.js` / `contour.min.js` | The optional enhancement |
 | `contour.tokens.json` | The semantic token layer for Figma or Style Dictionary; `light-dark()` values are split into `{ light, dark }` |
+| `map-chrome.maplibre.css` / `map-chrome.mapbox.css` | The vendor re-key profile, published under both engine names |
+| `map-chrome-contract.json` | The tokens a map control cluster is re-keyed onto, and the controls each engine ships |
 | `svg/contour-mark.svg` | The brand mark |
 
 Only the system is bundled — the guide, the templates and the guide-only artwork stay out.
+
+**Map chrome** — a map engine paints its own control cluster over its canvas, and that
+markup belongs to the engine, so `.c-map-slot` cannot reach it. `src/css/map-chrome.css`
+re-keys the cluster onto the tokens the system already uses for its own controls — surface,
+edge, radius, glyph colour — and touches nothing else: the engine keeps the geometry. It is
+the one file in `src/css/` that `ds.css` does not import and the one that sits outside the
+cascade layers, and both are deliberate: a vendor sheet is unlayered, so a layered rule
+could not out-rule it whatever the link order, and a page with no map has no reason to load
+it. Link it *after* the engine's own stylesheet. `node tools/build.mjs` publishes the single
+source under both engine names (`dist/map-chrome.maplibre.css`, `dist/map-chrome.mapbox.css`)
+and writes `dist/map-chrome-contract.json` beside them, which names the tokens the re-key is
+made of and the control list each engine answers to. The Mapbox logo is out of reach by
+construction — `a.mapboxgl-ctrl-logo` carries no `.mapboxgl-ctrl` class — which is as well,
+since Mapbox's terms forbid styling it. `node tools/check-dist.mjs` fails if any of these
+files ships without something in the repository naming it and linking it.
 
 ---
 
@@ -330,14 +347,36 @@ Conformance target: **WCAG 2.2 AA**.
 ## Browser support
 
 Baseline *newly available* features, with progressive enhancement where noted.
-`light-dark()` is the system's most load-bearing feature — every one of the
-72 semantic colour tokens is a `light-dark()` call — and it is **newly
-available since 2024-05-13**, expected to be **widely available on
-2026-11-13**. A browser without it renders the page with no colours at all.
+`light-dark()` is the system's most load-bearing feature — every theme-sensitive
+colour token is a `light-dark()` call — and it is **newly available since
+2024-05-13**, expected to be **widely available on 2026-11-13**.
+
+A browser without it does not fail gracefully, and the reason is worth stating
+because it is not obvious: an unregistered custom property accepts any token
+sequence, so `--x: light-dark(a, b)` parses and stores the TEXT; the break comes
+one step later, when `var(--x)` substitutes it into a real property, which makes
+that declaration invalid at computed-value time and drops it to its initial
+value. Hence `src/css/light-dark-fallback.css`, generated from the token layer by
+`node tools/gen-light-dark.mjs` and guarded on the value —
+`@supports not (color: light-dark(white, black))`, never
+`@supports (color: var(--x))`, which is always true and would freeze a modern
+engine at the light branch. It re-points the tokens to the branch each engine can
+parse, covering the OS preference and the manual `<meta name="color-scheme">`
+flip. `color-scheme` is years older than `light-dark()`, so the population that
+needs this file is exactly the one that knows the scheme but not the function —
+which is why the dark branch is emitted twice, once for the media query and once
+for the flip. (No Baseline dates are claimed for `color-scheme` here: they were
+not recomputed from `web-features`/BCD in this pass, and a reused date note is how
+this file has previously published a wrong one.)
+
+The committed file is checked, not trusted: `node tools/gen-light-dark.mjs
+--check` regenerates it in memory and fails if the bytes differ, and
+`node tools/audit/contrast-and-aria.mjs` keeps measuring the real
+`light-dark()` path in both themes.
 
 | Feature | Status | Fallback |
 |---|---|---|
-| `light-dark()` (colour values) | Newly available since 2024-05-13; widely available from 2026-11-13 | Chrome 123+, Safari 17.5+, Firefox 120+ |
+| `light-dark()` (colour values) | Newly available since 2024-05-13; widely available from 2026-11-13 | `src/css/light-dark-fallback.css`, generated from the token layer and guarded on the value |
 | `light-dark()` (image values) | Newly available since 2026-09-14; widely available from 2029-03-14 | **Do not use** — a three-year support tail. The system's gradients adapt by mixing token colours instead |
 | `oklch()` | Widely available | Chrome 111+, Safari 15.4+, Firefox 113+ |
 | `:has()` | Widely available | Chrome 105+, Safari 15.4+, Firefox 121+ |

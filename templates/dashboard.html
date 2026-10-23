@@ -11,6 +11,12 @@
     />
     <link rel="icon" href="../src/svg/contour-mark.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="../src/css/ds.css" />
+    <!-- Map chrome: re-keys a map engine's own control cluster onto Contour
+         tokens. Unlayered on purpose, so it has to come last — after ds.css and
+         after the engine's stylesheet when the page has one. Delete this link on
+         a page that draws no map. The same sheet is published in the package as
+         dist/map-chrome.maplibre.css and dist/map-chrome.mapbox.css. -->
+    <link rel="stylesheet" href="../src/css/map-chrome.css" />
     <script>
       try {
         document

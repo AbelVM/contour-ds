@@ -64,8 +64,14 @@ jobs:
       - name: Check every url(#id) reference reaches a def in src/
         run: node tools/check-defs.mjs
 
-      - name: Check the token export carries the whole token layer
+      - name: Check the token export covers the whole token layer
         run: node tools/check-export.mjs
+
+      # The light-dark() fallback is generated from the token layer; a committed
+      # copy that no longer matches src/css is a fallback that lies about the
+      # system, so the regeneration is checked, not trusted.
+      - name: Check the light-dark() fallback is current against src/css
+        run: node tools/gen-light-dark.mjs --check
 
       - name: Check published numbers match the source
         run: node tools/stamp.mjs --check

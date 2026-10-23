@@ -56,6 +56,38 @@ the measurement that corrected it is named, so the next reader can re-run it.
   declare none and the shipped scripts must import nothing off a relative path.
   A claim registered against a gate that does not check it is the same unowned
   sentence in a smarter costume.
+- `src/css/light-dark-fallback.css` + `tools/gen-light-dark.mjs` — the
+  `light-dark()` fallback layer (C-51). `light-dark()` is Baseline newly-available
+  2024-05-13 and becomes widely available 2026-11-13; until then an engine without
+  it does not degrade, it loses every theme-sensitive colour, because an
+  unregistered custom property happily stores the raw `light-dark(a, b)` text and
+  the break surfaces one step later, when `var()` substitutes it into a real
+  property and the declaration becomes invalid at computed-value time. The sheet
+  is generated from the token layer by `tools/lib/lightdark.mjs` — the repo's one
+  parser, so there is no second opinion to disagree with — guarded on the value
+  (`@supports not (color: light-dark(white, black))`; `@supports (color: var(--x))`
+  is always true and would freeze modern engines at light), and it covers the OS
+  preference and the manual `<meta name="color-scheme">` flip. Measured in
+  Chromium: 97 generated declarations reproduce the colour `light-dark()` paints in
+  each scheme with zero sRGB drift, and the guard is inert there, so modern engines
+  see no change. Composition values are substituted, not split:
+  `0 1px 2px light-dark(A, B)` is not a colour anyone can publish as two themes, but
+  replacing the call with one branch is well-defined and is what keeps the shadow
+  painted at all. Costs ~17 kB minified, which is why the size budgets moved.
+- `tools/build.mjs` now DERIVES the surface-bundle file list from `ds.css`'s own
+  imports and asserts the split: a shared sheet must reach all four bundles, an
+  audience sheet only its own. It was a hand-maintained array beside `ds.css`, so
+  adding a sheet — exactly what C-51 did — landed it in `contour.css` and in no
+  surface bundle, silently, with every gate green.
+- `inline()` in `tools/build.mjs` resolves plain `@import url(…)` as well as the
+  `layer(…)` form, so a sheet that declares its own layers is inlined instead of
+  being left in the bundle as an unresolved import.
+- `src/css/map-chrome.css` is now the single source of truth for the vendor
+  re-key profile (C-16); `tools/build.mjs` copies it to
+  `dist/map-chrome.{maplibre,mapbox}.css` instead of generating the rules as a
+  string, and `tools/check-dist.mjs` refuses a shipped artifact that nothing in
+  the repository references. The three files were built, published by
+  `files: ["dist/"]`, and reached by no document, link, specimen or gate.
 - `--color-control-edge` token for control borders (WCAG 1.4.11)
 - `--target-control`, `--target-option`, `--target-chart` and `--target-mark` tokens for target sizes by kind (a data mark is deliberately `0` — it is not a target)
 - `--fill-hatch-1…5` and `--fill-dot` fill-pattern vocabulary for polygon marks

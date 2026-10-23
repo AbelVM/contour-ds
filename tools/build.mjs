@@ -47,13 +47,30 @@ function inline(file, seen = new Set()) {
 
   const source = readFileSync(path, "utf-8");
 
-  return source.replace(/@import\s+url\(["']?([^"')]+)["']?\)\s*layer\(([^)]+)\)\s*;/g, (_, target, layer) => {
+  const withLayer = source.replace(
+    /@import\s+url\(["']?([^"')]+)["']?\)\s*layer\(([^)]+)\)\s*;/g,
+    (_, target, layer) => {
+      const resolved = join(dirname(file), target);
+      const inlined = inline(resolved, seen);
+      // Preserve the layer() semantics of the @import: wrap the inlined
+      // sheet in its named layer so unlayered rules in the source cannot
+      // escape into the bundle's top level.
+      return `@layer ${layer.trim()} {\n${inlined}\n}`;
+    },
+  );
+
+  // Both forms are substituted in sequence, not one-or-the-other. A file that
+  // mixes them — ds.css does — would otherwise resolve its layered imports and
+  // leave the plain one sitting in the bundle as an unresolved @import, which
+  // still works off a disk and silently breaks for every consumer who inlines
+  // or re-hosts the stylesheet.
+  return withLayer.replace(/@import\s+url\(["']?([^"')]+)["']?\)\s*;/g, (_, target) => {
+    // A sheet that declares its OWN layers: the light-dark() fallback spans
+    // tokens and utilities, so no single layer() clause could express it, and
+    // inlining it as written is the only reading that keeps both.
     const resolved = join(dirname(file), target);
-    const inlined = inline(resolved, seen);
-    // Preserve the layer() semantics of the @import: wrap the inlined
-    // sheet in its named layer so unlayered rules in the source cannot
-    // escape into the bundle's top level.
-    return `@layer ${layer.trim()} {\n${inlined}\n}`;
+    if (seen.has(join(root, resolved))) return "";
+    return inline(resolved, seen);
   });
 }
 
@@ -214,20 +231,55 @@ writeFileSync(join(dist, "contour.min.css"), `${minifiedCss}\n`, "utf-8");
 // shells sit in one file — so it rides in core rather than being carved up
 // here. Splitting it is the follow-up that would make the per-surface
 // bundles smaller again.
-const CORE = [
-  "tokens.css",
-  "base.css",
-  "components.css",
-  "components-shell.css",
-  "patterns.css",
-  "utilities.css",
-];
+// The core list is DERIVED from ds.css rather than written out beside it. It was
+// a hand-maintained array, which is a second enumeration of the same fact: a
+// sheet added to ds.css — as the light-dark() fallback just was — lands in
+// `contour.css` and in no surface bundle, and every gate stayed green while that
+// happened. `inline()` resolves ds.css's own imports, so ds.css is the source of
+// truth for what the system contains.
+const dsImports = [
+  ...readFileSync(join(root, "src/css/ds.css"), "utf8").matchAll(/@import\s+url\(["']?\.\/([^"')]+)["']?\)/g),
+].map((m) => m[1]);
+
+// A component file split by audience stays out of the bundle that does not need
+// it; everything else ds.css imports is core to all four surfaces.
+const SURFACE_ONLY = {
+  "components-docs.css": "docs",
+  "components-data.css": "data",
+  "components-landing.css": "landing",
+};
+const CORE = dsImports.filter((f) => !(f in SURFACE_ONLY));
 const SURFACES = {
   core: CORE,
   docs: [...CORE, "components-docs.css"],
   data: [...CORE, "components-data.css"],
   landing: [...CORE, "components-landing.css"],
 };
+
+// The derivation is only trustworthy if it is checked. The rule is NOT "every
+// import in every bundle" — that would delete the whole point of a per-surface
+// bundle, and a first draft of this assertion failed the build for exactly that
+// reason. The rule is: a shared sheet must reach all four surfaces, and a sheet
+// split by audience must reach its own surface and no other.
+const bundleErrors = [];
+for (const f of dsImports) {
+  if (!existsSync(join(root, "src/css", f))) bundleErrors.push(`ds.css imports ./${f}, which does not exist in src/css`);
+  const home = SURFACE_ONLY[f];
+  for (const [surface, files] of Object.entries(SURFACES)) {
+    const inBundle = files.includes(f);
+    if (home === undefined && !inBundle) bundleErrors.push(`./${f} is shared but the ${surface} bundle omits it`);
+    if (home !== undefined && inBundle !== (surface === home)) {
+      bundleErrors.push(
+        `./${f} belongs to the ${home} surface, and the ${surface} bundle ${inBundle ? "carries it anyway" : "is missing it"}`,
+      );
+    }
+  }
+}
+if (bundleErrors.length) {
+  console.error("build: the surface bundles do not cover ds.css");
+  for (const e of bundleErrors) console.error("  " + e);
+  process.exit(1);
+}
 
 const surfacesDir = join(dist, "surfaces");
 mkdirSync(surfacesDir, { recursive: true });
@@ -279,13 +331,20 @@ const mapChromeContract = {
 writeFileSync(join(dist, "map-chrome-contract.json"), `${JSON.stringify(mapChromeContract, null, 2)}\n`, "utf-8");
 
 // Vendor re-key profiles (T-143): control-class → token overrides.
-const rekeyCss = (engine) =>
-  `/* Contour re-key profile for ${engine} map chrome. Apply after the vendor stylesheet. */\n` +
-  `.maplibregl-ctrl, .mapboxgl-ctrl { background: var(--color-surface-1); border: 1px solid var(--color-border); border-radius: var(--radius-md); color: var(--color-text); }\n` +
-  `.maplibregl-ctrl button, .mapboxgl-ctrl button { color: var(--color-text-muted); }\n` +
-  `.maplibregl-ctrl button:hover, .mapboxgl-ctrl button:hover { color: var(--color-text-strong); background: var(--color-surface-2); }\n`;
-writeFileSync(join(dist, "map-chrome.maplibre.css"), rekeyCss("MapLibre"), "utf-8");
-writeFileSync(join(dist, "map-chrome.mapbox.css"), rekeyCss("Mapbox"), "utf-8");
+// The rules live in `src/css/map-chrome.css`, not in this file. They were a
+// string literal here, which is the whole reason three artifacts shipped in
+// `dist/` referenced by nothing: the only copy of the CSS sat inside a build
+// script, so a consumer taking `src/` alone had nothing to link, a source
+// checkout had no `dist/` to link (it is gitignored), and no CSS-level gate —
+// the token census, def reachability, the ownership check — could read rules
+// that existed only as a JS string. Publishing a copy means `dist/` cannot
+// drift from `src/` and the profile is linkable from either.
+for (const engine of ["maplibre", "mapbox"]) {
+  copyFileSync(
+    join(root, "src/css/map-chrome.css"),
+    join(dist, `map-chrome.${engine}.css`),
+  );
+}
 
 // -- The assets -------------------------------------------------------------
 // The brand mark ships with the system (it is the favicon and the logo).

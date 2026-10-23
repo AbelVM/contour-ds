@@ -70,6 +70,7 @@ Landing: logo wall, feature showcase, metrics band, testimonial, pricing, compar
 - `src/js/ds.js` exposes `window.Contour` (`version`, `toast`, `setScheme`, `scrollTo`, `copy`, `chart`, `commands`) for consumers who want to drive the system's own feedback and navigation.
 - `src/` is the system: `src/css/` holds the stylesheets, `src/js/ds.js` the optional behaviour, `src/svg/contour-mark.svg` the brand mark. `assets/` is guide-only and never ships.
 - Colour-vision preview filters ship as `src/svg/cvd-filters.svg`; include the sprite in any page that uses the `[data-cvd]` preview.
+- Map chrome: `src/css/map-chrome.css` re-keys a map engine's own control cluster (`.maplibregl-ctrl`, `.mapboxgl-ctrl`) onto the tokens Contour uses for its own controls — surface, edge, radius, glyph colour — and never geometry. Load it after the engine's stylesheet. It is the sheet in `src/css/` that `ds.css` does not import and that sits outside the cascade layers, because a layered rule cannot out-rule an unlayered vendor one. `node tools/build.mjs` publishes it as `dist/map-chrome.maplibre.css` and `dist/map-chrome.mapbox.css`, with the token map and the controls each engine ships in `dist/map-chrome-contract.json`.
 - A bundler is provided for distribution only: `node tools/build.mjs` writes a minified stylesheet, the script, and the token layer as JSON.
 
 ## Tokens

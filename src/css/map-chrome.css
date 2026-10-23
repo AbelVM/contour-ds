@@ -1,0 +1,71 @@
+/* ============================================================================
+   CONTOUR — map chrome: the vendor re-key profile
+   ----------------------------------------------------------------------------
+   `.c-map-slot` themes the chrome Contour owns. A map engine paints a second
+   set of chrome over its own canvas — the zoom, compass and fullscreen cluster
+   — and that markup belongs to the engine, so it is not yours to rebuild. This
+   profile re-keys it onto Contour tokens instead, which is how one theme covers
+   both the system's controls and the engine's.
+
+   Load it after the system *and* after the engine's own stylesheet:
+
+     <link rel="stylesheet" href="src/css/ds.css" />
+     <link rel="stylesheet" href="…/maplibre-gl.css" />
+     <link rel="stylesheet" href="src/css/map-chrome.css" />
+
+   This file is deliberately the only one in `src/css/` that is **not** in a
+   cascade layer, and not `@import`ed by `ds.css`: the engine's sheet is
+   unlayered too, so a layered rule would lose to it whatever the link order,
+   and a sheet that must out-rule the engine cannot be baked into a bundle whose
+   layer order is fixed. It is also optional — a page with no map engine has no
+   reason to load it.
+
+   It sets surface, edge, radius and glyph colour, and never geometry or layout:
+   the cluster's size and position are the engine's business, and moving them is
+   how a re-key breaks a map.
+
+   Both vendor namespaces are selected here because the two engines emit the same
+   shape. MapLibre GL and Mapbox GL JS both wrap a control cluster in
+   `.…-ctrl`, and both nest its buttons in `.…-ctrl-group`; the prefixes differ
+   by history alone — MapLibre forked Mapbox GL JS and renamed the namespace. One
+   file therefore serves either engine. `build.mjs` publishes it under both engine
+   names (`map-chrome.maplibre.css`, `map-chrome.mapbox.css`) as byte-for-byte
+   copies, so a host links the name its map library answers to; they are copies
+   rather than two hand-kept files because there is exactly one thing to say here
+   and two names to say it under.
+
+   What this file must never reach is the Mapbox logo. The logo is
+   `a.mapboxgl-ctrl-logo` and carries no `.mapboxgl-ctrl` class, so the cluster
+   rule here cannot paint it — which is as well, because Mapbox's terms forbid
+   styling the logo at all. The attribution wrapper *is* a cluster
+   (`.mapboxgl-ctrl.mapboxgl-ctrl-attrib`), so it does take the theme: Mapbox
+   permits adjusting the attribution's colour and size and requires it to stay
+   legible, which is why the text token below is `--color-text` on
+   `--color-surface-1` — the same pair the system uses for body text everywhere
+   else, not a colour chosen for the map.
+
+   The tokens this re-key is made of, and the control names each engine ships,
+   are listed in `map-chrome-contract.json`. Its `gap` entry belongs to Contour's
+   own cluster — `.c-map-slot__controls` spaces its controls with
+   `--space-3xs` — and is not applied here, because a vendor cluster already lays
+   itself out and this profile does not move anything.
+   ========================================================================= */
+
+.maplibregl-ctrl,
+.mapboxgl-ctrl {
+  background: var(--color-surface-1);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+}
+
+.maplibregl-ctrl button,
+.mapboxgl-ctrl button {
+  color: var(--color-text-muted);
+}
+
+.maplibregl-ctrl button:hover,
+.mapboxgl-ctrl button:hover {
+  color: var(--color-text-strong);
+  background: var(--color-surface-2);
+}

@@ -93,6 +93,57 @@ export function lightDarkPair(value) {
 }
 
 /**
+ * Replace every `light-dark(a, b)` call in a value with one branch, walking
+ * balanced parentheses so a call nested inside a composition is handled too.
+ *
+ * This answers a DIFFERENT question from `lightDarkPair()`, which asks whether a
+ * value *is* a two-theme token. Splitting `0 1px 2px light-dark(A, B)` into "a
+ * light shadow" and "a dark shadow" is impossible — there is no colour token to
+ * publish, only a shadow whose colour changes per theme. But *substituting* the
+ * call for one branch is well-defined, and it is exactly what a fallback layer
+ * needs: an engine without the function must be left holding a value it can
+ * parse, or the whole declaration drops to its initial value and the shadow is
+ * gone rather than merely themeless.
+ *
+ * @param {string} value
+ * @param {"light"|"dark"} branch
+ * @returns {{ value: string, changed: number } | null} null when a call is
+ *   unbalanced or does not hold exactly two arguments, because guessing across a
+ *   paren error is how a generated file ends up shipping broken CSS.
+ */
+export function resolveLightDark(value, branch) {
+  if (typeof value !== "string") return null;
+  const OPEN = "light-dark(";
+  let out = "";
+  let i = 0;
+  let changed = 0;
+  while (i < value.length) {
+    const at = value.indexOf(OPEN, i);
+    if (at < 0) {
+      out += value.slice(i);
+      break;
+    }
+    out += value.slice(i, at);
+    let depth = 0;
+    let j = at + OPEN.length - 1;
+    for (; j < value.length; j++) {
+      if (value[j] === "(") depth++;
+      else if (value[j] === ")") {
+        depth--;
+        if (depth === 0) break;
+      }
+    }
+    if (depth !== 0 || j >= value.length) return null;
+    const args = topLevelSplit(value.slice(at + OPEN.length, j));
+    if (args.length !== 2) return null;
+    out += branch === "light" ? args[0] : args[1];
+    changed++;
+    i = j + 1;
+  }
+  return { value: out.replace(/\s+/g, " ").trim(), changed };
+}
+
+/**
  * The function name a value is *built from*, when the whole value is one call.
  * Used to tell `linear-gradient(...)` from a value that mentions a gradient.
  * @param {string} value

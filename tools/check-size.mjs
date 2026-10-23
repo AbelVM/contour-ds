@@ -35,15 +35,19 @@ import { join } from "node:path";
 const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
 const DIST = join(ROOT, "dist");
 
-/** Budgets in bytes. Measured 2026-10-22, ~3% headroom. */
+/** Budgets in bytes. Measured 2026-10-23, ~3% headroom. The step up from the
+ *  previous figures is `src/css/light-dark-fallback.css` (C-51) — 452 generated
+ *  declarations carried into every bundle, which is what a fallback layer costs.
+ *  The figure is quoted from the build, not aspired to, so `check-size` stays
+ *  able to tell a large bundle apart from a stale one. */
 const BUDGETS = {
-  "contour.min.css": 128 * 1024,
-  "contour.min.js": 23 * 1024,
-  "contour.tokens.json": 30 * 1024,
-  "surfaces/contour-core.min.css": 89 * 1024,
-  "surfaces/contour-docs.min.css": 100 * 1024,
-  "surfaces/contour-data.min.css": 107 * 1024,
-  "surfaces/contour-landing.min.css": 95 * 1024,
+  "contour.min.css": 148 * 1024,
+  "contour.min.js": 24 * 1024,
+  "contour.tokens.json": 31 * 1024,
+  "surfaces/contour-core.min.css": 106 * 1024,
+  "surfaces/contour-docs.min.css": 119 * 1024,
+  "surfaces/contour-data.min.css": 127 * 1024,
+  "surfaces/contour-landing.min.css": 113 * 1024,
 };
 
 const kB = (n) => `${(n / 1024).toFixed(1)} kB`;

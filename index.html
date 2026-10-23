@@ -24,6 +24,9 @@
 
     <link rel="icon" href="src/svg/contour-mark.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="src/css/ds.css" />
+    <!-- Map chrome: unlayered, so it must be last — the same order a consumer
+         uses, with the engine's own stylesheet in between. See §21. -->
+    <link rel="stylesheet" href="src/css/map-chrome.css" />
     <link rel="stylesheet" href="assets/css/docs.css" />
   </head>
 
@@ -9426,7 +9429,7 @@
               <span class="label">Getting started · 21</span>
               <h2 class="c-section-head__title">Install</h2>
               <p class="c-section-head__desc">
-                Ten plain CSS files in <code class="c-kbd">src/</code>, one entry point, no build
+                Plain CSS in <code class="c-kbd">src/</code>, one entry point, no build
                 step and no runtime. Link it and start using the class names.
               </p>
             </div>
@@ -9470,6 +9473,9 @@
                 <code class="c-kbd">components-landing.css</code> — the blocks for each surface.
                 <code class="c-kbd">patterns.css</code> — composed shells.
                 <code class="c-kbd">utilities.css</code> — escape hatches.
+                <code class="c-kbd">map-chrome.css</code> — the one sheet outside the
+                layers, and the only one <code class="c-kbd">ds.css</code> does not
+                import: see the specimen below.
               </span>
             </div>
             <div class="ds-install__row">
@@ -9513,6 +9519,68 @@
               <span class="ds-install__key">Licence</span>
               <span>MIT. Use it in anything, including closed-source products.</span>
             </div>
+          </div>
+
+          <div class="ds-spec ds-vendor-chrome">
+            <div class="ds-spec__head">
+              <span class="ds-spec__name">Vendor map chrome</span>
+              <span class="ds-spec__token">map-chrome.css</span>
+            </div>
+            <p class="muted">
+              A map engine paints its own control cluster over its canvas — zoom, compass,
+              fullscreen — and that markup belongs to the engine, so
+              <code class="c-kbd">.c-map-slot</code> cannot reach it.
+              <code class="c-kbd">src/css/map-chrome.css</code> re-keys the cluster onto the
+              tokens the system already uses for its own controls: surface, edge, radius, glyph
+              colour. Nothing else. The engine keeps the geometry, and the Mapbox logo keeps its
+              own paint — it is <code class="c-kbd">a.mapboxgl-ctrl-logo</code>, carries no
+              <code class="c-kbd">.mapboxgl-ctrl</code> class, and must not be styled. This is the
+              one sheet in <code class="c-kbd">src/css/</code> that sits outside the cascade
+              layers: the vendor's stylesheet is unlayered too, and a layered rule would lose to
+              it whatever the link order. Load it after the engine's own file. The guide ships no
+              engine, so the cluster's size and glyphs here are the guide's stand-in.
+            </p>
+            <div class="ds-example" data-generated="wrap"><div class="ds-panel ds-panel--sunken">
+              <div class="maplibregl-ctrl maplibregl-ctrl-top-right">
+                <div class="maplibregl-ctrl maplibregl-ctrl-group">
+                  <button class="maplibregl-ctrl-zoom-in" type="button" aria-label="Zoom in">
+                    <span class="maplibregl-ctrl-icon" aria-hidden="true">+</span>
+                  </button>
+                  <button class="maplibregl-ctrl-zoom-out" type="button" aria-label="Zoom out">
+                    <span class="maplibregl-ctrl-icon" aria-hidden="true">&amp;minus;</span>
+                  </button>
+                  <button class="maplibregl-ctrl-compass" type="button" aria-label="Reset bearing to north">
+                    <span class="maplibregl-ctrl-icon" aria-hidden="true">N</span>
+                  </button>
+                </div>
+              </div>
+            </div><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-130" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-130">&lt;div class="maplibregl-ctrl maplibregl-ctrl-top-right"&gt;
+  &lt;div class="maplibregl-ctrl maplibregl-ctrl-group"&gt;
+    &lt;button class="maplibregl-ctrl-zoom-in" type="button" aria-label="Zoom in"&gt;
+      &lt;span class="maplibregl-ctrl-icon" aria-hidden="true"&gt;+&lt;/span&gt;
+    &lt;/button&gt;
+    &lt;button class="maplibregl-ctrl-zoom-out" type="button" aria-label="Zoom out"&gt;
+      &lt;span class="maplibregl-ctrl-icon" aria-hidden="true"&gt;&amp;minus;&lt;/span&gt;
+    &lt;/button&gt;
+    &lt;button class="maplibregl-ctrl-compass" type="button" aria-label="Reset bearing to north"&gt;
+      &lt;span class="maplibregl-ctrl-icon" aria-hidden="true"&gt;N&lt;/span&gt;
+    &lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+                      </div>
+                    </details></div>
           </div>
         </section>
 

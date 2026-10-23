@@ -1025,6 +1025,45 @@
     gap: 0.75rem;
   }
 
+  /* -- Vendor map chrome -------------------------------------------------
+     The guide loads no map engine, so these rules stand in for the geometry a
+     vendor's own stylesheet would supply: a stacked cluster of square buttons.
+     They exist so `src/css/map-chrome.css` can be seen doing its job in the
+     Install section. Nothing here is part of the system — it is guide machinery,
+     and it is deliberately in a cascade layer, so the unlayered profile still
+     wins every colour the profile sets, exactly as it wins over a real vendor
+     sheet. The specimen's own space comes from here, not from the markup, so the
+     snippet shows only what a consumer would copy. */
+  #install .ds-spec {
+    margin-block-start: var(--space-cluster);
+  }
+
+  .ds-vendor-chrome .maplibregl-ctrl-group,
+  .ds-vendor-chrome .mapboxgl-ctrl-group {
+    display: grid;
+    inline-size: var(--map-ctrl-size, 2rem);
+    overflow: hidden;
+  }
+
+  .ds-vendor-chrome .maplibregl-ctrl-group button,
+  .ds-vendor-chrome .mapboxgl-ctrl-group button {
+    inline-size: var(--map-ctrl-size, 2rem);
+    block-size: var(--map-ctrl-size, 2rem);
+    display: grid;
+    place-items: center;
+    padding: 0;
+    background: none;
+    border: 0;
+    border-block-start: 1px solid var(--color-border);
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .ds-vendor-chrome .maplibregl-ctrl-group button:first-child,
+  .ds-vendor-chrome .mapboxgl-ctrl-group button:first-child {
+    border-block-start: 0;
+  }
+
   .ds-install__row {
     display: grid;
     grid-template-columns: 8rem minmax(0, 1fr);
