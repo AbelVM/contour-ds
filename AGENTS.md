@@ -80,8 +80,8 @@ manifest of their own (`tools/audit/package.json`): contrast and the document
 contract (`contrast-and-aria.mjs`, which exits non-zero), the component inventory
 and target sizes (`component-inventory.mjs`), the token census report
 (`token-census.mjs`), the family gate (`family-gate.mjs`), the theme render probe
-(`theme-render-probe.mjs`) and the chart geometry seam
-(`chart-geometry.mjs`). Their JSON output
+(`theme-render-probe.mjs`), the chart geometry seam (`chart-geometry.mjs`)
+and the chart accessible names (`chart-names.mjs`). Their JSON output
 lands in the project's gitignored `tmp/audit/`. They discover a browser driver via
 `tools/audit/lib/browser.mjs` and **exit rather than skip** when none is found —
 a gate that silently does not run is a gate that silently passes.
@@ -352,6 +352,7 @@ node tools/audit/contrast-and-aria.mjs  # contrast, focus, chart, palette, docum
 node tools/audit/component-inventory.mjs
 node tools/audit/theme-render-probe.mjs # does a theme set move a real control, and does --brand-hue hold the contract
 node tools/audit/chart-geometry.mjs     # is the gridline band derived from --chart-ticks
+node tools/audit/chart-names.mjs        # does every chart name what it plots, and does its data surface
 ```
 
 Then check the guide in both themes, at 1440 px and 390 px, and look for

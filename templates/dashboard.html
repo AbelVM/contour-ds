@@ -200,7 +200,7 @@
             </div>
           </div>
           <div class="c-panel__body">
-            <div class="c-chart">
+            <div class="c-chart" role="img" aria-label="Walks per weekday for three routes, Monday to Sunday" aria-describedby="tpl-week-data">
               <div class="c-chart__plot">
                 <svg viewBox="0 0 300 120" preserveAspectRatio="none" style="position: absolute; inset: 0; width: 100%; height: 100%">
                   <path class="c-chart__line" data-series="1" style="--c: var(--chart-1)" d="M0 88 50 70 100 78 150 48 200 55 250 30 300 36" />
@@ -213,6 +213,7 @@
                 <span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
               </div>
             </div>
+            <div id="tpl-week-data" class="visually-hidden">Mon is the lowest day for all three routes and Saturday the highest for each. <table class="c-table"><caption>Walks per weekday, route 1</caption><thead><tr><th scope="col">Day</th><th scope="col">Series 1 rank</th></tr></thead><tbody><tr><td>Mon</td><td>lowest</td></tr><tr><td>Tue</td><td>low</td></tr><tr><td>Wed</td><td>low-mid</td></tr><tr><td>Thu</td><td>high-mid</td></tr><tr><td>Fri</td><td>high</td></tr><tr><td>Sat</td><td>highest</td></tr><tr><td>Sun</td><td>second-highest</td></tr></tbody></table></div>
           </div>
           <div class="c-panel__foot">
             <div class="c-legend c-legend--inline c-legend--interactive">
@@ -240,7 +241,7 @@
             </div>
           </div>
           <div class="c-panel__body">
-            <div class="c-chart">
+            <div class="c-chart" role="img" aria-label="Route volume by region, five regions, descending" aria-describedby="tpl-region-data">
               <div class="c-chart__plot" style="aspect-ratio: 4 / 5">
                 <span class="c-chart__bar" style="--x: 0%; --h: 92%; --w: 15%; --c: var(--chart-1)"></span>
                 <span class="c-chart__bar" style="--x: 19%; --h: 74%; --w: 15%; --c: var(--chart-1)"></span>
@@ -253,6 +254,7 @@
                 <span>Lyon</span><span>Oslo</span>
               </div>
             </div>
+            <div id="tpl-region-data" class="visually-hidden"><table class="c-table"><caption>Route volume by region</caption><thead><tr><th scope="col">Region</th><th scope="col">Share of the plot</th></tr></thead><tbody><tr><th scope="row">Madrid</th><td>92%</td></tr><tr><th scope="row">Berlin</th><td>74%</td></tr><tr><th scope="row">Lisbon</th><td>61%</td></tr><tr><th scope="row">Lyon</th><td>44%</td></tr><tr><th scope="row">Oslo</th><td>29%</td></tr></tbody></table></div>
           </div>
         </div>
 

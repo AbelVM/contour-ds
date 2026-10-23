@@ -4418,7 +4418,7 @@
               colours apart, and every series clears 3:1 against every surface it can be
               drawn on (canvas, canvas-sunken, surface-1/2/3, surface-raised), in both themes.
             </p>
-            <div class="c-chart" role="img" aria-label="Line chart of three series over time">
+            <div class="c-chart" role="img" aria-label="Walks per weekday, three series, Monday to Sunday" aria-describedby="chart-week-data">
               <div class="c-chart__plot">
                 <svg viewbox="0 0 300 120" preserveaspectratio="none" style="position: absolute; inset: 0; width: 100%; height: 100%">
                   <path class="c-chart__line" data-series="1" style="--c: var(--chart-1)" d="M0 70 50 60 100 66 150 40 200 46 250 26 300 30" />
@@ -4436,6 +4436,7 @@
                 <span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
               </div>
             </div>
+            <div id="chart-week-data" class="visually-hidden">Mon is the lowest day for all three series and Saturday the highest. Series 1 stays above series 2, which stays above series 3. Ranking of series 1 across the week: <table class="c-table"><caption>Walks per weekday, series 1</caption><thead><tr><th scope="col">Day</th><th scope="col">Series 1 rank</th></tr></thead><tbody><tr><td>Mon</td><td>lowest</td></tr><tr><td>Tue</td><td>low</td></tr><tr><td>Wed</td><td>low-mid</td></tr><tr><td>Thu</td><td>high-mid</td></tr><tr><td>Fri</td><td>high</td></tr><tr><td>Sat</td><td>highest</td></tr><tr><td>Sun</td><td>second-highest</td></tr></tbody></table></div>
             <div class="c-legend c-legend--inline" style="margin-block-start: 1.1rem">
               <span class="c-legend__item">
                 <span class="c-legend__swatch c-legend__swatch--line" data-series="1" style="--c: var(--chart-1)"></span>
@@ -4462,7 +4463,7 @@
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-58">&lt;div class="c-chart" role="img" aria-label="Line chart of three series over time"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-58">&lt;div class="c-chart" role="img" aria-label="Walks per weekday, three series, Monday to Sunday" aria-describedby="chart-week-data"&gt;
   &lt;div class="c-chart__plot"&gt;
     &lt;svg viewbox="0 0 300 120" preserveaspectratio="none" style="position: absolute; inset: 0; width: 100%; height: 100%"&gt;
       &lt;path class="c-chart__line" data-series="1" style="--c: var(--chart-1)" d="M0 70 50 60 100 66 150 40 200 46 250 26 300 30" /&gt;
@@ -4482,6 +4483,48 @@
     &lt;span&gt;Sat&lt;/span&gt;
     &lt;span&gt;Sun&lt;/span&gt;
   &lt;/div&gt;
+&lt;/div&gt;
+&lt;div id="chart-week-data" class="visually-hidden"&gt;
+  Mon is the lowest day for all three series and Saturday the highest. Series 1 stays above series 2, which stays above series 3. Ranking of series 1 across the week:
+  &lt;table class="c-table"&gt;
+    &lt;caption&gt;Walks per weekday, series 1&lt;/caption&gt;
+    &lt;thead&gt;
+      &lt;tr&gt;
+        &lt;th scope="col"&gt;Day&lt;/th&gt;
+        &lt;th scope="col"&gt;Series 1 rank&lt;/th&gt;
+      &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+      &lt;tr&gt;
+        &lt;td&gt;Mon&lt;/td&gt;
+        &lt;td&gt;lowest&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+        &lt;td&gt;Tue&lt;/td&gt;
+        &lt;td&gt;low&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+        &lt;td&gt;Wed&lt;/td&gt;
+        &lt;td&gt;low-mid&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+        &lt;td&gt;Thu&lt;/td&gt;
+        &lt;td&gt;high-mid&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+        &lt;td&gt;Fri&lt;/td&gt;
+        &lt;td&gt;high&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+        &lt;td&gt;Sat&lt;/td&gt;
+        &lt;td&gt;highest&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+        &lt;td&gt;Sun&lt;/td&gt;
+        &lt;td&gt;second-highest&lt;/td&gt;
+      &lt;/tr&gt;
+    &lt;/tbody&gt;
+  &lt;/table&gt;
 &lt;/div&gt;
 &lt;div class="c-legend c-legend--inline" style="margin-block-start: 1.1rem"&gt;
   &lt;span class="c-legend__item"&gt;
@@ -8949,7 +8992,7 @@
                         </div>
                       </div>
                       <div class="c-panel__body">
-                        <div class="c-chart" role="img" aria-label="Chart">
+                        <div class="c-chart" role="img" aria-label="Walks per weekday for three routes, Monday to Sunday" aria-describedby="route-week-data">
                           <div class="c-chart__plot">
                             <svg viewbox="0 0 300 120" preserveaspectratio="none" style="position: absolute; inset: 0; width: 100%; height: 100%">
                               <path class="c-chart__line" data-series="1" style="--c: var(--chart-1)" d="M0 88 50 70 100 78 150 48 200 55 250 30 300 36" />
@@ -8962,6 +9005,7 @@
                             <span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
                           </div>
                         </div>
+                        <div id="route-week-data" class="visually-hidden">Mon is the lowest day for all three routes and Saturday the highest for each; the routes keep the same order all week. <table class="c-table"><caption>Walks per weekday, route 1</caption><thead><tr><th scope="col">Day</th><th scope="col">Series 1 rank</th></tr></thead><tbody><tr><td>Mon</td><td>lowest</td></tr><tr><td>Tue</td><td>low</td></tr><tr><td>Wed</td><td>low-mid</td></tr><tr><td>Thu</td><td>high-mid</td></tr><tr><td>Fri</td><td>high</td></tr><tr><td>Sat</td><td>highest</td></tr><tr><td>Sun</td><td>second-highest</td></tr></tbody></table></div>
                       </div>
                       <div class="c-panel__foot">
                         <div class="c-legend c-legend--inline c-legend--interactive">
@@ -8989,7 +9033,7 @@
                         </div>
                       </div>
                       <div class="c-panel__body">
-                        <div class="c-chart" role="img" aria-label="Chart">
+                        <div class="c-chart" role="img" aria-label="Route volume by region, five regions, descending" aria-describedby="region-data">
                           <div class="c-chart__plot" style="aspect-ratio: 4 / 5">
                             <span class="c-chart__bar" style="--x: 0%; --h: 92%; --w: 15%; --c: var(--chart-1)"></span>
                             <span class="c-chart__bar" style="--x: 19%; --h: 74%; --w: 15%; --c: var(--chart-1)"></span>
@@ -9002,6 +9046,8 @@
                             <span>Lyon</span><span>Oslo</span>
                           </div>
                         </div>
+                        <div id="region-data" class="visually-hidden"><table class="c-table"><caption>Route volume by region</caption><thead><tr><th scope="col">Region</th><th scope="col">Share of the plot</th></tr></thead><tbody><tr><th scope="row">Madrid</th><td>92%</td></tr><tr><th scope="row">Berlin</th><td>74%</td></tr><tr><th scope="row">Lisbon</th><td>61%</td></tr><tr><th scope="row">Lyon</th><td>44%</td></tr><tr><th scope="row">Oslo</th><td>29%</td></tr></tbody></table></div>
+
                       </div>
                     </div>
 

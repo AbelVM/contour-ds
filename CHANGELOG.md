@@ -9,6 +9,33 @@ the measurement that corrected it is named, so the next reader can re-run it.
 ## [Unreleased]
 
 ### Added
+- Chart accessible names and data alternatives (C-25), with
+  `tools/audit/chart-names.mjs` to hold them. Before: the guide had 3 charts, 2 of
+  them named with the single word "Chart", and no chart anywhere carried a data
+  alternative; the dashboard template's 2 charts had no `role` and no name at all.
+  Now all 5 name what they plot and each points `aria-describedby` at a sibling
+  text alternative, and the values in those tables were derived from the marks:
+  reading the paths, every series is lowest on Mon and highest on **Sat** — an
+  earlier hand-typed table said Sun, which is the exact defect this row is about,
+  committed by the person fixing it.
+- `tools/audit/chart-names.mjs` reads Chromium's accessibility tree, because a
+  grep cannot tell `aria-label="Chart"` from a name that means something. It
+  asserts the population it scanned (5 charts across 4 shipped pages) and fails on
+  a sweep that found none, and it checks the node itself carries a description —
+  not that an attribute is set. Sabotage-tested twice: deleting a template chart's
+  `aria-describedby` and re-nesting the data inside the image both turn it red on
+  the predicted symptom.
+
+### Changed
+- A chart's data alternative is a SIBLING of the named image, never a descendant.
+  Measured, because the obvious pattern is wrong: with the table nested inside
+  `role="img"` the image node had NO description even though Chromium still listed
+  the table; as an `aria-describedby` sibling it surfaced one. Chromium listing it
+  is not a thing to build on — `img` is a leaf role, so another reader may prune
+  it — and the sibling works either way. The probe's own validity rests on a
+  control: an `aria-hidden` subtree correctly surfaced nothing, which is what
+  proves the readout can see hiding at all.
+
 - Chart geometry seam (C-24). The gridline band is now derived from
   `--chart-ticks` — one band per value interval, `100% / (ticks - 1)` — instead of a
   literal 25%, so the grid aligns with any tick count by construction. T-136 had

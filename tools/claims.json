@@ -1,10 +1,10 @@
 {
-  "_comment": "The claim register (C-06). Each entry is a published sentence, the command that enforces it, and the document it lives in. tools/check-claims.mjs fails if a sentence disappears (the claim was rewritten or lost), if its owner is not a file in this repo, or if the owner runs in no CI lane. Counts are NOT stored here — stamp.mjs owns every number, and a register that carried one would be the hand-written count this file exists to prevent. CHANGELOG.md is deliberately not a claim-bearing document: it is a dated record of past states.",
+  "_comment": "The claim register (C-06). Each entry is a published sentence, the command that enforces it, and the document it lives in. tools/check-claims.mjs fails if a sentence disappears (the claim was rewritten or lost), if its owner is not a file in this repo, or if the owner runs in no CI lane. Counts are NOT stored here \u2014 stamp.mjs owns every number, and a register that carried one would be the hand-written count this file exists to prevent. CHANGELOG.md is deliberately not a claim-bearing document: it is a dated record of past states.",
   "claims": [
     {
       "id": "C-06-a",
       "doc": "README.md",
-      "sentence": "Body text meets **4.5:1**, borders / focus rings / control edges **3:1**, in both themes —",
+      "sentence": "Body text meets **4.5:1**, borders / focus rings / control edges **3:1**, in both themes \u2014",
       "owner": "node tools/audit/contrast-and-aria.mjs",
       "threshold": "TEXT_MIN 4.5 / CONTROL_MIN 3.0 over SURFACES"
     },
@@ -34,7 +34,7 @@
       "doc": "index.html",
       "sentence": "and every series clears 3:1 against every surface it can be",
       "owner": "node tools/audit/contrast-and-aria.mjs",
-      "threshold": "the sentence beside the chart — the one a reader actually sees"
+      "threshold": "the sentence beside the chart \u2014 the one a reader actually sees"
     },
     {
       "id": "C-06-f",
@@ -81,7 +81,7 @@
     {
       "id": "C-24-a",
       "doc": "DESIGN.md",
-      "sentence": "and the gridline band is **derived** from `--chart-ticks` — one band per value",
+      "sentence": "and the gridline band is **derived** from `--chart-ticks` \u2014 one band per value",
       "owner": "node tools/audit/chart-geometry.mjs",
       "threshold": "re-pointing --chart-ticks must move the rendered band by 100/(ticks-1)"
     },
@@ -98,6 +98,20 @@
       "sentence": "<!-- ds:components-line -->",
       "owner": "node tools/stamp.mjs --check",
       "threshold": "the published component and token counts are computed from src/, never typed"
+    },
+    {
+      "id": "C-25-a",
+      "doc": "README.md",
+      "sentence": "Every chart carries an accessible name that says what it plots, and a text alternative held in a **sibling** of the named image, never a descendant of it",
+      "owner": "node tools/audit/chart-names.mjs",
+      "threshold": "no generic name (\"Chart\"), and a non-empty AX description on the image node, on every shipped page"
+    },
+    {
+      "id": "C-25-b",
+      "doc": "DESIGN.md",
+      "sentence": "named image, not inside it: `role=\"img\"` is a leaf role, so a description nested in",
+      "owner": "node tools/audit/chart-names.mjs",
+      "threshold": "the data alternative must not be a descendant of the named image"
     }
   ]
 }

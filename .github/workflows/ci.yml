@@ -116,6 +116,10 @@ jobs:
       # --chart-ticks and requires the rendered band to follow it.
       - name: Chart geometry seam (derived band, tooltip, hover state)
         run: node tools/audit/chart-geometry.mjs
+      # A chart whose aria-label is the word "Chart" satisfies a grep and tells a
+      # blind reader nothing, so this reads the accessibility tree instead.
+      - name: Chart accessible names and data alternatives
+        run: node tools/audit/chart-names.mjs
       # Every other gate counts declarations. This one asks a browser what a
       # freshly mounted control actually paints after a theme set is selected,
       # and sweeps --brand-hue across both themes.

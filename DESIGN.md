@@ -154,8 +154,13 @@ the point of use, and hover is a `:hover` state on the marks rather than a class
 author can reach. `node tools/check-chart-geometry.mjs` asserts the derivation and
 the tooltip geometry in a real browser.
 
-This is the honest ceiling: the system ships the *tokens, the dash patterns and
-the geometry seam*, not a charting engine.
+The accessible name says what is plotted, and the data alternative sits beside the
+named image, not inside it: `role="img"` is a leaf role, so a description nested in
+the image may be pruned by a reader even where one engine lists it. Measured, then
+gated by `node tools/audit/chart-names.mjs`.
+
+This is the honest ceiling: the system ships the *tokens, the dash patterns, the
+geometry seam and the text alternative*, not a charting engine.
 
 ## Rules
 

@@ -338,6 +338,7 @@ Conformance target: **WCAG 2.2 AA**.
 
 - Body text meets **4.5:1**, borders / focus rings / control edges **3:1**, in both themes —
   enforced by `node tools/audit/contrast-and-aria.mjs`, which measures the control edge and the focus ring against every surface a control can sit on, in both themes, and fails the build below 3:1.
+- Every chart carries an accessible name that says what it plots, and a text alternative held in a **sibling** of the named image, never a descendant of it — enforced by `node tools/audit/chart-names.mjs`, which reads the accessibility tree and fails when a name is generic or the data never surfaces.
 - State is never colour alone; every chart series carries a dash pattern as well as a hue.
 - `prefers-reduced-motion: reduce` collapses every transition; Forced Colors Mode drops the
   texture and the ridgelines and falls back to a system `CanvasText` outline.

@@ -21,6 +21,7 @@
     "check:markup": "node tools/check-markup.mjs",
     "check:theme": "node tools/audit/theme-render-probe.mjs",
     "check:chart": "node tools/audit/chart-geometry.mjs",
+    "check:chart-names": "node tools/audit/chart-names.mjs",
     "validate": "npx html-validate index.html templates/*.html",
     "prepack": "node tools/build.mjs"
   },
