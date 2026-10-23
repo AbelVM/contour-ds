@@ -162,6 +162,29 @@ gated by `node tools/audit/chart-names.mjs`.
 This is the honest ceiling: the system ships the *tokens, the dash patterns, the
 geometry seam and the text alternative*, not a charting engine.
 
+## Layout vocabulary
+
+Three prefixes once did the same job, and the split was inherited rather than
+chosen: page furniture in `@layer base`, composition helpers in
+`@layer components`, and a grid set in `@layer utilities` that no page, template
+or rule ever used.
+
+The contract now, enforced by `node tools/check-layout.mjs`:
+
+| Family | Names | Status |
+|---|---|---|
+| Composition | `.c-row` `.c-stack` `.c-cluster` `.c-sidebar` | canonical — the `c-` prefix like every other block |
+| Page frame | `.container` `.section` `.grid` `.split` | unprefixed on purpose: document furniture, not a block a consumer composes |
+| Utility grid | `.u-cols-*` `.u-auto-grid` | `@deprecated`; zero consumers, removal is a v1.0 act, not a v2 one |
+
+Two rules that are easy to get wrong. `.stack` and `.c-stack` (and
+`.cluster`/`.c-cluster`) are **not** the same shape: they gap by different
+tokens, so an alias between them would silently restyle every use — the gate
+pins each token so the drift is visible. And a `@deprecated` note is a claim
+about a rule, so the gate requires the marker and the ledger to agree in both
+directions, which is what the policy in `AGENTS.md` always said and nothing ever
+checked.
+
 ## Rules
 
 1. Colour is a signal. ~85% of the interface is neutral.

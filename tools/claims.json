@@ -112,6 +112,20 @@
       "sentence": "named image, not inside it: `role=\"img\"` is a leaf role, so a description nested in",
       "owner": "node tools/audit/chart-names.mjs",
       "threshold": "the data alternative must not be a descendant of the named image"
+    },
+    {
+      "id": "C-35-a",
+      "doc": "DESIGN.md",
+      "sentence": "they gap by different tokens, so an alias between them would silently restyle every use",
+      "owner": "node tools/check-layout.mjs",
+      "threshold": "GAP_CONTRACT pins --space-stack/--space-sm and --space-2xs/--space-sm"
+    },
+    {
+      "id": "C-35-b",
+      "doc": "AGENTS.md",
+      "sentence": "`.stack` and `.c-stack` are NOT the same rule",
+      "owner": "node tools/check-layout.mjs",
+      "threshold": "the ratchet plus the gap contract; the ledger may only shrink"
     }
   ]
 }

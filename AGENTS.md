@@ -68,6 +68,7 @@ Anything that matches is either a leak or a false positive you must justify.
 
 | Command | What it does |
 |---|---|
+| `node tools/check-layout.mjs` | The layout ratchet: frozen primitive set, the `@deprecated` ledger, and the two gap tokens that make `.stack`/`.c-stack` different values | 
 | `node tools/snippets.mjs` | Regenerates the code snippets in `index.html` — **run after editing any specimen**. Also the spacing guard: it reads the **emitted** snippets and fails the build when one leads with guide spacing, so a warning is not a pass |
 | `node tools/build.mjs` | Bundles and minifies the **design system only** into `dist/` (no guide, no templates), exports the tokens as JSON. Its per-surface file list is **derived from `ds.css`** and asserted, so a new sheet cannot land in `contour.css` and miss every surface bundle |
 | `node tools/gen-light-dark.mjs` | Writes `src/css/light-dark-fallback.css` from the token layer; `--check` (CI) fails when the committed file is stale against `src/css` |
@@ -255,6 +256,13 @@ draws the list in the page's theme. That is the most the platform gives.
   `src/css/ds.css` declares the order; a file may only add to a layer.
 - Naming: `.c-<block>` for the block, `.c-<block>__<element>` for parts,
   `.c-<block>--<variant>` for variants. Guide-only classes are `ds-`.
+- Layout primitives are a closed set held by `node tools/check-layout.mjs`: the
+  composition primitives carry the `c-` prefix like every other block, the
+  document frame (`.container`, `.section`) stays unprefixed because it is page
+  furniture rather than a block a consumer composes, and a fifth name cannot
+  appear without editing that gate's ledger and giving a reason. `.stack` and
+  `.c-stack` are NOT the same rule — they gap by different tokens — so never
+  alias one onto the other; the gate pins both tokens for that reason.
 - Never rely on a descendant selector to reach into another component.
 - Tokens are defined in `src/css/tokens.css` and consumed as
   `var(--color-…)`. A raw hex value in a component is a bug.
@@ -340,6 +348,7 @@ node tools/build.mjs           # if you touched src/
 node tools/check-size.mjs      # refuses a stale dist/, not only a big one
 node tools/check-dist.mjs      # the shipped bundle loads cleanly and is free of minifier corruption
 node tools/check-ownership.mjs # no guide-only identifiers (ds-, ridgeline, …) leaked into src/
+node tools/check-layout.mjs     # layout primitives are a ratchet; @deprecated must match the ledger
 node tools/gen-light-dark.mjs --check  # the light-dark() fallback matches src/css
 node tools/stamp.mjs --check   # published numbers match src/
 node tools/check-claims.mjs    # every published sentence names the gate that owns it

@@ -30,6 +30,14 @@
  * Self-discipline, learned the hard way in this repo: it prints how many claims
  * it matched, and a register that matches nothing is a failure, not a pass.
  *
+ * KNOWN HOLE, on purpose rather than by oversight: this gate catches a claim
+ * whose sentence vanished, and a claim whose owner is missing or unwired. It
+ * cannot catch a claim that was DELETED from the register, because there is no
+ * second copy of the list to diff against — and deleting an entry is the cheap
+ * way to make a failing sentence "pass". The mitigation is editorial, not
+ * mechanical: removing a row means the sentence it guarded is no longer owned,
+ * so it has to be reviewed with the prose it refers to, not merged quietly.
+ *
  *   node tools/check-claims.mjs
  */
 import { readFileSync, existsSync } from "node:fs";
@@ -40,6 +48,13 @@ const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
 const read = (...p) => (existsSync(join(ROOT, ...p)) ? readFileSync(join(ROOT, ...p), "utf8") : null);
 
 const errors = [];
+/**
+ * Claim matching ignores line wrapping. Prose reflows in a commit, and a register
+ * that breaks whenever a paragraph is re-wrapped is a register people will delete
+ * rather than maintain — but it still has to reject a sentence that is genuinely
+ * absent, so the flattening is whitespace only, never case or punctuation.
+ */
+const flatten = (s) => s.replace(/\s+/g, " ").trim();
 const inv = inventory();
 const declared = new Set(Object.keys(inv.tokens.census));
 
@@ -148,7 +163,7 @@ if (existsSync(REGISTER_PATH)) {
     // the register is guarding a claim that has already been rewritten away.
     const text = read(claim.doc);
     if (text === null) errors.push(`claim ${claim.id}: document ${claim.doc} does not exist`);
-    else if (!text.includes(claim.sentence)) {
+    else if (!flatten(text).includes(flatten(claim.sentence))) {
       errors.push(
         `claim ${claim.id}: sentence is no longer in ${claim.doc} — either the claim was rewritten (update the register) or it was lost`,
       );

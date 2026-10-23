@@ -194,23 +194,33 @@
   }
 
   /* -- Grid ------------------------------------------------------------ */
+  /* @deprecated (C-35) — no consumer anywhere in src/, the guide or any shipped
+     template; `.grid--2` is the same rule, same gap token, and is what the guide
+     and the landing template actually use. Kept by name per the deprecation
+     policy: removal is a major-release act, not a cleanup.
+     `tools/check-layout.mjs` fails if this marker and the ledger drift apart. */
   .u-cols-2 {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
     gap: var(--space-cluster);
   }
 
+  /* @deprecated (C-35) — see .u-cols-2; `.grid--3` (min 17rem) is the used form. */
   .u-cols-3 {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
     gap: var(--space-cluster);
   }
 
+  /* @deprecated (C-35) — auto-fill differs from auto-fit only where tracks are
+     empty, and nothing in the system depends on that; `.grid` with a
+     `--grid-min` override, or `.grid--4`, is the live path. */
   .u-auto-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
     gap: var(--space-md);
   }
+
 
   /* -- Position -------------------------------------------------------- */
   .u-relative {

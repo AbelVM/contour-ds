@@ -9,6 +9,44 @@ the measurement that corrected it is named, so the next reader can re-run it.
 ## [Unreleased]
 
 ### Added
+- `tools/check-layout.mjs` — the layout vocabulary ratchet and, for the first
+  time, an executable deprecation. The repository carried three prefixes doing
+  the same job: page furniture in `@layer base` (`.container` `.stack`
+  `.cluster` `.section` `.grid` `.split`), component primitives in
+  `@layer components` (`.c-row` `.c-stack` `.c-cluster` `.c-sidebar`
+  `.c-container`), and a grid set in `@layer utilities` that
+  `git grep` over the whole repository proved had **zero** consumers — not in
+  `src/`, not in the guide, not in any template, not in any document. AGENTS.md
+  had a deprecation policy since well before this commit and `@deprecated`
+  appeared in **zero** files, so the policy described a mechanism that did not
+  exist. Both the three dead names and their markers are now checked in both
+  directions: a marker with no ledger entry fails, a ledger entry whose marker
+  went missing fails, and a marker attached to no selector fails.
+  Three assertions sabotage-tested (a fourth-vocabulary name, a changed gap
+  token, a stripped marker); each went red on its predicted symptom.
+- `.u-cols-2`, `.u-cols-3` and `.u-auto-grid` are marked `@deprecated`, kept by
+  name as the policy requires, and scheduled for removal at v1.0 rather than v2
+  — pre-release is the only moment a rename is free, which is the argument this
+  row had never made before.
+
+### Changed
+- Canonical names for composition layout are the `.c-*` set; `.container` and
+  `.section` stay unprefixed deliberately, as document furniture rather than a
+  block a consumer composes. `DESIGN.md` gains a Layout vocabulary section and
+  `AGENTS.md` a naming rule, both with no hand-typed counts — the gate prints
+  what it measured.
+- The `stack`/`c-stack` and `cluster`/`c-cluster` pairs are **not** merged.
+  They differ by value, not by shape: `--space-stack` is 1.25rem against
+  `--space-sm` at 1rem, and `--space-2xs` is 0.5rem against that same 1rem. An
+  alias would have silently restyled 118 uses, so the plan's
+  "pick `.c-*`, alias the rest" was rejected on measurement and the two gap
+  tokens are instead pinned by the gate, which fails if either drifts.
+- `tools/check-claims.mjs` matches a registered sentence with whitespace
+  collapsed. It previously compared raw substrings, so re-wrapping a paragraph
+  failed the build for moving a line break — a register that breaks on
+  formatting is a register people delete rather than maintain. Verified both
+  ways: a re-wrapped sentence passes, an invented one still fails.
+
 - Chart accessible names and data alternatives (C-25), with
   `tools/audit/chart-names.mjs` to hold them. Before: the guide had 3 charts, 2 of
   them named with the single word "Chart", and no chart anywhere carried a data
