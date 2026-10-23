@@ -9,6 +9,23 @@ the measurement that corrected it is named, so the next reader can re-run it.
 ## [Unreleased]
 
 ### Added
+- `tools/audit/contrast-and-aria.mjs` now holds the C-28 and C-29 assertions.
+  The behaviours landed two commits earlier and every one of them was proved by
+  a probe in `tmp/`, which is gitignored: a reader could not re-run the evidence,
+  and the next refactor could undo all of it with the suite green. The
+  measurements — the live host present and empty at load, a fired toast landing
+  inside it without a nested role, the whole page leaving the tab order while a
+  snippet is open and returning on close, scroll padding clearing the sticky
+  header — are now failures in the lane CI already runs.
+  `scroll-padding-block-start` was already in `base.css`, so this asserts that it
+  lands rather than adding a second rule for the same job.
+  Four sabotages produced nine failures, and one of them found a hole in the new
+  gate rather than in the code: a host pre-filled with a **text node** passed the
+  element-count check and was excluded from the pre-filled sweep by its own id,
+  which is the exact defect C-28 exists to catch. Both checks were rewritten and
+  the same sabotage then failed twice over.
+- `README.md` publishes the two contracts and `tools/claims.json` registers them
+  (C-28-a, C-29-a) against that gate, so the sentences cannot outlive the check.
 - `tools/check-layout.mjs` — the layout vocabulary ratchet and, for the first
   time, an executable deprecation. The repository carried three prefixes doing
   the same job: page furniture in `@layer base` (`.container` `.stack`

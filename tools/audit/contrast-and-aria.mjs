@@ -361,6 +361,97 @@ results.document = await page.evaluate(() => {
   };
 });
 
+/* ---- live regions, and the snippet scrim's tab order (C-28, C-29) ----
+   Both were "verified" once by a throwaway probe in tmp/, which is gitignored:
+   the behaviour shipped with nothing to hold it. These are the assertions that
+   should have existed the day the code did. */
+results.live = await page.evaluate(async () => {
+  const FOCUSABLE =
+    'a[href],button,input,select,textarea,summary,[tabindex]:not([tabindex="-1"])';
+  const regions = [...document.querySelectorAll('[role="status"],[role="alert"],[aria-live]')];
+  const out = {
+    hostAtLoad: null,
+    hostRole: null,
+    hostLive: null,
+    hostChildrenAtLoad: null,
+    hostTextAtLoad: null,
+    // A live region whose text is already in the DOM at load can never announce
+    // anything: it watches for CHANGES. An empty region with a name (a spinner)
+    // is fine; a pre-filled callout wearing the role is the defect. This scan
+    // runs before any toast is fired, so the toast host belongs in it — excluding
+    // it by id was a hole my own sabotage fell straight through.
+    prefilled: regions
+      .filter((r) => (r.textContent || "").trim() !== "")
+      .map((r) => `${r.tagName.toLowerCase()}#${r.id || "-"}="${r.textContent.trim().slice(0, 40)}"`),
+    regionCount: regions.length,
+    toastLandedIn: null,
+    toastHasOwnRole: null,
+    hostsAfter: null,
+    inert: null,
+    scrollPadding: null,
+    header: null,
+  };
+
+  const host = document.getElementById("toast-host");
+  if (host) {
+    out.hostAtLoad = true;
+    out.hostRole = host.getAttribute("role");
+    out.hostLive = host.getAttribute("aria-live");
+    out.hostChildrenAtLoad = host.children.length;
+    // Children alone lie: a text node pre-fills the region just as surely, and an
+    // element-count check let my own sabotage pass untouched.
+    out.hostTextAtLoad = (host.textContent || "").trim();
+  } else {
+    out.hostAtLoad = false;
+  }
+
+  // Fire a message and see where it lands.
+  if (window.Contour?.toast) {
+    window.Contour.toast("Route computed in 7 ms", "success");
+    const h = document.getElementById("toast-host");
+    const last = h?.lastElementChild;
+    out.toastLandedIn = h ? "toast-host" : null;
+    out.toastHasOwnRole = last ? last.getAttribute("role") : "no toast";
+    out.hostsAfter = document.querySelectorAll("#toast-host").length;
+    // Leave nothing behind: a toast still on screen would overlap the specimen
+    // measurements that run after this one.
+    if (h) h.replaceChildren();
+  }
+
+  // Scroll padding must actually clear the sticky header, or an anchored or
+  // focused element lands underneath it (WCAG 2.4.11 is about overlap).
+  const hdr = document.querySelector(".c-header");
+  out.header = hdr ? Math.round(hdr.getBoundingClientRect().height) : null;
+  out.scrollPadding = Math.round(
+    parseFloat(getComputedStyle(document.documentElement).scrollPaddingBlockStart) || 0,
+  );
+
+  // Open a snippet: everything outside it must leave the tab order, the open
+  // example must stay in it, and closing must release every inert.
+  const details = document.querySelector("details.ds-code");
+  if (details) {
+    details.open = true;
+    details.dispatchEvent(new Event("toggle"));
+    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+    const example = details.closest(".ds-example") || details;
+    const outside = [...document.querySelectorAll(FOCUSABLE)].filter((el) => !example.contains(el));
+    const reachable = outside.filter((el) => !el.closest("[inert]"));
+    out.inert = {
+      openInertCount: document.querySelectorAll("[inert]").length,
+      focusablesOutside: outside.length,
+      reachableOutside: reachable.length,
+      reachableSample: reachable.slice(0, 3).map((el) => `${el.tagName.toLowerCase()}.${el.className || "-"}`),
+      exampleInert: !!example.closest("[inert]"),
+      railInert: !!document.querySelector(".ds-rail")?.closest("[inert]"),
+    };
+    details.open = false;
+    details.dispatchEvent(new Event("toggle"));
+    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+    out.inert.afterClose = document.querySelectorAll("[inert]").length;
+  }
+  return out;
+});
+
 /* ---- dark theme repeat ---- */
 await page.evaluate(() => {
   const m = document.querySelector('meta[name="color-scheme"]');
@@ -514,6 +605,52 @@ if (d.unlabelledInputs.length) failures.push(`document: unlabelled inputs ${d.un
 if (d.headingJumpCount) failures.push(`document: ${d.headingJumpCount} heading level jump(s) ${JSON.stringify(d.headingJumps)}`);
 if (!d.skipLink) failures.push("document: no skip link");
 if (!d.lang) failures.push("document: no lang on <html>");
+
+/* ---- C-28 status messages (WCAG 4.1.3), C-29 the snippet scrim ----
+   These sit next to the document checks rather than in a gate of their own so
+   they ride the lane CI already runs: a guard nobody wires is a guard that
+   passes by never existing. */
+const l = results.live;
+if (!l || !l.inert) {
+  failures.push("live: the probe measured nothing (no snippet disclosure found) — an empty sweep is not a pass");
+} else {
+  if (!l.hostAtLoad)
+    failures.push('live: #toast-host does not exist at load — the region must be present before anything is said, or the first message announces nothing');
+  if (l.hostRole !== "status") failures.push(`live: #toast-host has role="${l.hostRole}" (want status)`);
+  if (l.hostLive !== "polite") failures.push(`live: #toast-host has aria-live="${l.hostLive}" (want polite)`);
+  if (l.hostChildrenAtLoad !== 0 || l.hostTextAtLoad !== "")
+    failures.push(
+      `live: #toast-host already holds "${String(l.hostTextAtLoad).slice(0, 40)}" at load (${l.hostChildrenAtLoad} element(s)) — a pre-filled region has no change left to announce`,
+    );
+  if (l.toastLandedIn !== "toast-host")
+    failures.push("live: Contour.toast() put its message somewhere other than the live host");
+  if (l.toastHasOwnRole !== null)
+    failures.push(`live: the toast carries its own role="${l.toastHasOwnRole}" — a region nested in a region double-announces; the host is the region`);
+  if (l.hostsAfter !== 1) failures.push(`live: ${l.hostsAfter} #toast-host elements after one toast — the producer must reuse the host it found`);
+  if (l.regionCount === 0)
+    failures.push("live: the page declares no live region at all, so the announcement sweep measured an empty population");
+  if (l.prefilled.length)
+    failures.push(`live: pre-filled region(s) that can never announce a change: ${l.prefilled.join(", ")}`);
+
+  // The scrim must take the rest of the page out of the tab order — WCAG 2.4.11
+  // is about a focused target being obscured, and a hidden-but-tabbable control
+  // under a scrim is the worse half of that.
+  const i = l.inert;
+  if (i.openInertCount === 0)
+    failures.push("scrim: opening a snippet inerted nothing — the rest of the page is still tabbable behind the scrim");
+  if (i.focusablesOutside === 0)
+    failures.push("scrim: no focusable was outside the open example, so the tab-order sweep measured nothing");
+  if (i.reachableOutside > 0)
+    failures.push(`scrim: ${i.reachableOutside}/${i.focusablesOutside} focusables outside the open snippet are still reachable ${JSON.stringify(i.reachableSample)}`);
+  if (i.exampleInert) failures.push("scrim: the open example itself is inert — the markup a reader came to read cannot be reached");
+  if (!i.railInert) failures.push("scrim: the rail stayed live while a snippet was open — the guide's own navigation is behind the scrim");
+  if (i.afterClose !== 0)
+    failures.push(`scrim: ${i.afterClose} inert attribute(s) left after closing — a leak makes the page permanently untabbable`);
+
+  if (!l.header) failures.push("scrim: no .c-header measured, so scroll padding was compared against nothing");
+  else if (l.scrollPadding < l.header)
+    failures.push(`scrim: scroll-padding-block-start ${l.scrollPadding}px does not clear the ${l.header}px sticky header — a focused or anchored target lands under it`);
+}
 
 // The palette must be operable and announced.
 const p = results.commandPalette;

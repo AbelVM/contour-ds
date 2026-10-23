@@ -339,6 +339,8 @@ Conformance target: **WCAG 2.2 AA**.
 - Body text meets **4.5:1**, borders / focus rings / control edges **3:1**, in both themes —
   enforced by `node tools/audit/contrast-and-aria.mjs`, which measures the control edge and the focus ring against every surface a control can sit on, in both themes, and fails the build below 3:1.
 - Every chart carries an accessible name that says what it plots, and a text alternative held in a **sibling** of the named image, never a descendant of it — enforced by `node tools/audit/chart-names.mjs`, which reads the accessibility tree and fails when a name is generic or the data never surfaces.
+- A status message is announced from a live region that exists, empty, before anything is said: the toast host carries `role="status"` and the toast carries no nested role of its own — enforced by `node tools/audit/contrast-and-aria.mjs`, which fails a region that is already filled at load, since a region watches for changes and a pre-filled one has none left to announce.
+- While a snippet disclosure is open the rest of the page leaves the tab order, and closing it releases every inert subtree — enforced by `node tools/audit/contrast-and-aria.mjs`, which fails a focusable that is still reachable behind the scrim and any `inert` left hanging after the disclosure closes.
 - State is never colour alone; every chart series carries a dash pattern as well as a hue.
 - `prefers-reduced-motion: reduce` collapses every transition; Forced Colors Mode drops the
   texture and the ridgelines and falls back to a system `CanvasText` outline.

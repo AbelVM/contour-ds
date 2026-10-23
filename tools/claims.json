@@ -126,6 +126,20 @@
       "sentence": "`.stack` and `.c-stack` are NOT the same rule",
       "owner": "node tools/check-layout.mjs",
       "threshold": "the ratchet plus the gap contract; the ledger may only shrink"
+    },
+    {
+      "id": "C-28-a",
+      "doc": "README.md",
+      "sentence": "A status message is announced from a live region that exists, empty, before anything is said",
+      "owner": "node tools/audit/contrast-and-aria.mjs",
+      "threshold": "host present at load wearing role=status and aria-live=polite and holding no text; a fired toast lands inside it and carries no role of its own; exactly one host afterwards; no live region pre-filled"
+    },
+    {
+      "id": "C-29-a",
+      "doc": "README.md",
+      "sentence": "While a snippet disclosure is open the rest of the page leaves the tab order, and closing it releases every inert subtree",
+      "owner": "node tools/audit/contrast-and-aria.mjs",
+      "threshold": "no focusable outside the open example stays reachable; the example itself is never inert; the rail is inert; zero inert attributes survive close; scroll-padding-block-start clears the measured header height"
     }
   ]
 }
