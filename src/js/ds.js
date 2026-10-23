@@ -603,6 +603,17 @@
         );
       });
 
+      // Registered commands (T-99): a consumer's declarative shortcuts.
+      commandRegistry.forEach((cmd) => {
+        push(
+          "Commands",
+          cmd.label,
+          cmd.shortcut || "",
+          "i-zap",
+          () => cmd.run(),
+        );
+      });
+
       return found;
     };
 
@@ -798,6 +809,26 @@
       ) {
         event.preventDefault();
         if (!isOpen()) open();
+      }
+
+      // Registered command shortcuts (T-99): run a command whose shortcut
+      // matches the pressed key combination.
+      if (!isTyping(event.target)) {
+        const mod = event.metaKey || event.ctrlKey;
+        for (const cmd of commandRegistry) {
+          if (!cmd.shortcut) continue;
+          const parts = String(cmd.shortcut).toLowerCase().split("+").map((p) => p.trim());
+          const needsMod = parts.includes("mod") || parts.includes("ctrl") || parts.includes("meta");
+          const key = parts.filter((p) => !["mod", "ctrl", "meta", "shift", "alt"].includes(p))[0];
+          if (needsMod !== mod) continue;
+          if (parts.includes("shift") !== event.shiftKey) continue;
+          if (parts.includes("alt") !== event.altKey) continue;
+          if (key && event.key.toLowerCase() === key) {
+            event.preventDefault();
+            cmd.run();
+            return;
+          }
+        }
       }
     });
 

@@ -649,16 +649,16 @@ The falsifier thread's tally (37 spot-checked ✅ claims): **13 VERIFIED · 21 P
 |---|---|---|---|
 | B1–B6 (js-defects) | tracked, not in T-plan | ❌→ **live** | all six mechanisms re-measured unchanged in 932-line ds.js + fresh dist |
 | T-82 | ✅ | 🟡 | ring replaced on check/switch/range, but `.c-version` (docs) still ships the 1.15:1 halo as *only* indicator, and it is absent from the gate's control list |
-| T-86 | ✅ | 🟡 | namespace shipped, but `scrollTo` throws (§2.5) and `toast` silently no-ops without a guide-only host (§6.8) |
+| T-86 | ✅ | ✅ | `scrollTo` fixed (T-116); toast host shipped in `src/` (T-120) |
 | T-92 | ✅ | 🟡 | tokens+utilities shipped; polygon capability absent; 0 consumers; legend preview does not exist (§3.4) |
 | T-93 | ✅ | 🟡 | JSON list shipped (16 controls, 5 tokens); nothing in `src/` consumes it; not a contract until the generated profiles exist (§8.6) |
-| T-94/T-95 | ✅ | 🟡 | shipped; no specimen (bivariate), and nothing toggles `aria-pressed` (legend-as-control is inert) |
-| T-96 | ✅ | ❌ | filters referenced do not exist anywhere (§3.3) |
+| T-94/T-95 | ✅ | ✅ | bivariate specimen shipped (T-138); legend-as-control toggles `aria-pressed` |
+| T-96 | ✅ | 🟡 | filters now shipped as `src/svg/cvd-filters.svg`; CSS hooks reference `#contour-cvd-*` (consumer must include the sprite) |
 | T-98 | ✅ | 🟡 | rules shipped; no producer sets `data-profile`, `.c-advanced` has no own styles; ladder is unexercisable |
-| T-99 | ✅ | ❌ | registry is dead code; `buildIndex` never reads it; the section's own comment is false |
-| T-42 | ✅ | ⬜ | fonts unchanged: 10 static cuts |
+| T-99 | ✅ | 🟡 | `buildIndex()` now consumes `commandRegistry`; shortcuts/cheat sheet still missing |
+| T-42 | ✅ | 🟡 | font link now uses variable-font range syntax (`wght@400..700`); not subsetted or self-hosted |
 | T-54 | ✅ | 🟡 | code shipped and works; no spec/test/consumer; docs disown it |
-| T-58 | ✅ | ⬜ | unification did not happen; ring vocabulary unread by components |
+| T-58 | ✅ | 🟡 | `.c-avatar--lg` now consumes `--ring-3`; base avatar and other circles still hard-coded |
 | T-62 | ✅ | 🟡 | coverage fixed (269/269); DTCG shape not (no `$schema`, flat keys, ungrouped) |
 | T-72 | ✅ | 🟡 | 7 `container-type` anchors, **2** `@container` rules — only the table actually adapts |
 | T-81 | ✅ | 🟡 | rename done; `--gradient-heat` still ordered (§3.5) |

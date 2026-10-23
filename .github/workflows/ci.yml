@@ -51,6 +51,9 @@ jobs:
       - name: Check the shipped bundle loads cleanly
         run: node tools/check-dist.mjs
 
+      - name: Check guide-only identifiers have not leaked into src/
+        run: node tools/check-ownership.mjs
+
       - name: Check the token export carries the whole token layer
         run: node tools/check-export.mjs
 

@@ -18,6 +18,8 @@ the measurement that corrected it is named, so the next reader can re-run it.
 - `.c-map-slot` component for map chrome
 - `.c-bivariate` component for bivariate legends
 - `window.Contour` public API (`version`, `toast`, `setScheme`, `scrollTo`, `copy`)
+- Layout primitives (`.c-row`, `.c-stack`, `.c-cluster`, `.c-sidebar`) moved from `@layer base` to `@layer components` (T-155)
+- `contour.min.js` size budget raised to 22 kB (T-99 command registry now consumed by `buildIndex`)
 - Per-surface distribution bundles: `dist/surfaces/contour-{core,docs,data,landing}.min.css`, so a product shipping one surface stops downloading the other two. Measured: full 117.3 kB, core 81.0, docs 93.4, data 97.5, landing 88.4 kB
 - `dist/build-manifest.json`, recording each source's content hash at build time, so a gate can tell a large bundle apart from a stale one
 - `tools/stamp.mjs` and `tools/lib/inventory.mjs` — every published count is computed from the source; `--check` fails the build when a document drifts. It owns a number by one of three means, because documents differ in what they may carry: a `<!-- ds:key -->` marker in prose, an anchored rewrite for machine-facing files that must not hold comments (`llms.txt`), or a YAML key path for front matter (`DESIGN.md`), where an HTML comment is not legal syntax

@@ -333,6 +333,7 @@ node tools/snippets.mjs      # if you touched a specimen
 node tools/build.mjs         # if you touched src/
 node tools/check-size.mjs    # refuses a stale dist/, not only a big one
 node tools/check-dist.mjs     # the shipped bundle loads cleanly and is free of minifier corruption
+node tools/check-ownership.mjs # no guide-only identifiers (ds-, ridgeline, …) leaked into src/
 node tools/stamp.mjs --check # published numbers must match src/
 ```
 
