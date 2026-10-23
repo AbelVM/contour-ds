@@ -12,16 +12,16 @@
      aria-hidden="true" focusable="false" style="position: absolute">
   <defs>
     <filter id="contour-cvd-protanopia" color-interpolation-filters="sRGB">
-      <fecolormatrix type="matrix" values="0.152286 1.05034 -0.202644 0 0  0.114503 0.786281 0.0992164 0 0  -0.0038822 -0.0481759 1.05206 0 0  0 0 0 1 0" />
+      <feColorMatrix type="matrix" values="0.152286 1.05034 -0.202644 0 0  0.114503 0.786281 0.0992164 0 0  -0.0038822 -0.0481759 1.05206 0 0  0 0 0 1 0" />
     </filter>
     <filter id="contour-cvd-deuteranopia" color-interpolation-filters="sRGB">
-      <fecolormatrix type="matrix" values="0.367322 0.860646 -0.227968 0 0  0.280085 0.672566 0.047349 0 0  -0.0124117 -0.0798947 1.09231 0 0  0 0 0 1 0" />
+      <feColorMatrix type="matrix" values="0.367322 0.860646 -0.227968 0 0  0.280085 0.672566 0.047349 0 0  -0.0124117 -0.0798947 1.09231 0 0  0 0 0 1 0" />
     </filter>
     <filter id="contour-cvd-tritanopia" color-interpolation-filters="sRGB">
-      <fecolormatrix type="matrix" values="1.25552 -0.0769692 -0.178925 0 0  -0.0784117 1.17015 -0.0917856 0 0  0.00473366 -0.00787813 1.00314 0 0  0 0 0 1 0" />
+      <feColorMatrix type="matrix" values="1.25552 -0.0769692 -0.178925 0 0  -0.0784117 1.17015 -0.0917856 0 0  0.00473366 -0.00787813 1.00314 0 0  0 0 0 1 0" />
     </filter>
     <filter id="contour-cvd-achromatopsia" color-interpolation-filters="sRGB">
-      <fecolormatrix type="matrix" values="0.299 0.587 0.114 0 0  0.299 0.587 0.114 0 0  0.299 0.587 0.114 0 0  0 0 0 1 0" />
+      <feColorMatrix type="matrix" values="0.299 0.587 0.114 0 0  0.299 0.587 0.114 0 0  0.299 0.587 0.114 0 0  0 0 0 1 0" />
     </filter>
   </defs>
 </svg>

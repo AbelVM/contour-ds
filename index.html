@@ -49,13 +49,13 @@
           <path d="M0,6 L6,0" stroke="var(--chart-missing)" stroke-width="1" />
         </pattern>
 
-        <lineargradient id="ridgeline-gradient" x1="0" y1="0" x2="1" y2="0">
+        <linearGradient id="ridgeline-gradient" x1="0" y1="0" x2="1" y2="0">
           <stop offset="0" style="stop-color: var(--color-primary); stop-opacity: 0" />
           <stop offset="0.22" style="stop-color: var(--color-primary)" />
           <stop offset="0.55" style="stop-color: var(--color-data)" />
           <stop offset="0.78" style="stop-color: var(--color-accent)" />
           <stop offset="1" style="stop-color: var(--color-accent); stop-opacity: 0" />
-        </lineargradient>
+        </linearGradient>
 
         <symbol id="i-mark" viewbox="0 0 32 32">
           <!-- Generated: the iso-lines of one peak, extracted with marching squares. -->
@@ -310,27 +310,27 @@
              ids on purpose: each document sees exactly one definition, so
              neither is a duplicate id. -->
         <filter id="contour-cvd-protanopia" color-interpolation-filters="sRGB">
-          <fecolormatrix type="matrix" values="0.152286 1.05034 -0.202644 0 0  0.114503 0.786281 0.0992164 0 0  -0.0038822 -0.0481759 1.05206 0 0  0 0 0 1 0" />
+          <feColorMatrix type="matrix" values="0.152286 1.05034 -0.202644 0 0  0.114503 0.786281 0.0992164 0 0  -0.0038822 -0.0481759 1.05206 0 0  0 0 0 1 0" />
         </filter>
         <filter id="contour-cvd-deuteranopia" color-interpolation-filters="sRGB">
-          <fecolormatrix type="matrix" values="0.367322 0.860646 -0.227968 0 0  0.280085 0.672566 0.047349 0 0  -0.0124117 -0.0798947 1.09231 0 0  0 0 0 1 0" />
+          <feColorMatrix type="matrix" values="0.367322 0.860646 -0.227968 0 0  0.280085 0.672566 0.047349 0 0  -0.0124117 -0.0798947 1.09231 0 0  0 0 0 1 0" />
         </filter>
         <filter id="contour-cvd-tritanopia" color-interpolation-filters="sRGB">
-          <fecolormatrix type="matrix" values="1.25552 -0.0769692 -0.178925 0 0  -0.0784117 1.17015 -0.0917856 0 0  0.00473366 -0.00787813 1.00314 0 0  0 0 0 1 0" />
+          <feColorMatrix type="matrix" values="1.25552 -0.0769692 -0.178925 0 0  -0.0784117 1.17015 -0.0917856 0 0  0.00473366 -0.00787813 1.00314 0 0  0 0 0 1 0" />
         </filter>
         <filter id="contour-cvd-achromatopsia" color-interpolation-filters="sRGB">
-          <fecolormatrix type="matrix" values="0.299 0.587 0.114 0 0  0.299 0.587 0.114 0 0  0.299 0.587 0.114 0 0  0 0 0 1 0" />
+          <feColorMatrix type="matrix" values="0.299 0.587 0.114 0 0  0.299 0.587 0.114 0 0  0.299 0.587 0.114 0 0  0 0 0 1 0" />
         </filter>
 
         <!-- Missing-data hatch pattern (T-133). -->
-      <pattern id="contour-hatch-missing" patternunits="userSpaceOnUse" width="6" height="6">
+      <pattern id="contour-hatch-missing" patternUnits="userSpaceOnUse" width="6" height="6">
         <path d="M0,6 L6,0" stroke="var(--chart-missing)" stroke-width="1" />
       </pattern>
       <!-- Hatch patterns for SVG marks (T-133). -->
-      <pattern id="contour-hatch-1" patternunits="userSpaceOnUse" width="6" height="6" patterntransform="rotate(45)">
+      <pattern id="contour-hatch-1" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
         <line x1="0" y1="0" x2="0" y2="6" stroke="var(--color-text-subtle)" stroke-width="1" />
       </pattern>
-      <pattern id="contour-hatch-2" patternunits="userSpaceOnUse" width="8" height="8" patterntransform="rotate(45)">
+      <pattern id="contour-hatch-2" patternUnits="userSpaceOnUse" width="8" height="8" patternTransform="rotate(45)">
         <line x1="0" y1="0" x2="0" y2="8" stroke="var(--color-text-subtle)" stroke-width="1" />
       </pattern>
       </defs>

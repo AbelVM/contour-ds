@@ -1,0 +1,32 @@
+<!-- Contour — chart fill patterns (C-31).
+
+   INLINE this file. It is not a link target: `fill: url(#id)` resolves only
+   inside the current document, and `<use href="…svg#…"> is blocked on a
+   file:// origin, which is how this system is opened off a disk. Paste the
+   <defs> into the page that draws the chart, once, the same way
+   src/svg/cvd-filters.svg is pasted for the [data-cvd] preview.
+
+   Why this file exists at all: `.c-chart__missing` in
+   src/css/components-data.css referenced `url(#contour-hatch-missing)` while
+   the only definition lived at `index.html:326`, inside the style guide. A
+   consumer who took `src/` and nothing else got a broken paint — initial black,
+   not "no texture". The guide still inlines its own copy so the specimen paints
+   off a disk; this sprite is the source of truth, and
+   `node tools/check-defs.mjs` fails if a src/css reference has no definition in
+   src/.
+
+   Element and attribute names here are the XML spellings (`feColorMatrix`,
+   `patternUnits`), not the ones the HTML parser silently repairs. The guide's
+   parser fixes the lowercase forms; an XML parser treats them as unknown
+   elements and the def is inert. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0"
+     aria-hidden="true" focusable="false" style="position: absolute">
+  <defs>
+    <!-- Missing data: a band of open hatching. Distinct from `.c-chart__zero`,
+         which paints a real zero with --chart-missing as a solid. -->
+    <pattern id="contour-hatch-missing" patternUnits="userSpaceOnUse" width="6" height="6">
+      <rect width="6" height="6" fill="transparent" />
+      <path d="M0,6 L6,0" stroke="var(--chart-missing)" stroke-width="1" />
+    </pattern>
+  </defs>
+</svg>

@@ -404,7 +404,12 @@
      chart frame needs for the states a real chart has: missing data, hover,
      and a tooltip. Wiring them here makes them live. */
   .c-chart__missing {
-    fill: url(#contour-hatch-missing);
+    /* The pattern is a def the host inlines (src/svg/chart-patterns.svg). SVG
+       paint takes a fallback colour, so a page that never inlines the sprite
+       still paints missing data instead of falling through to initial black.
+       `node tools/check-defs.mjs` requires both: a definition inside src/, and
+       a fallback on a paint property. */
+    fill: url(#contour-hatch-missing) var(--chart-missing);
   }
 
   .c-chart__zero {

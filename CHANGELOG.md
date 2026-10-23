@@ -24,6 +24,19 @@ the measurement that corrected it is named, so the next reader can re-run it.
   comparing their serialisations, and sweeps `--brand-hue` 0..360 in both themes
   against the control-edge, focus-ring and button-label contracts. Sabotage
   tested: deleting `daylight`'s hue turns it red on the predicted symptom.
+- `src/svg/chart-patterns.svg` + `tools/check-defs.mjs` — def reachability (C-31).
+  `.c-chart__missing` painted `fill: url(#contour-hatch-missing)` while the only
+  definition of that id lived at `index.html:326`, inside the style guide: a
+  consumer who took `src/` and nothing else got initial black, not a missing
+  texture. The pattern now ships in the system and the sprite says INLINE, not
+  include, because `url(#id)` resolves only in the current document and `<use
+  href>` is blocked on a `file://` origin — which is how this guide is opened.
+  The gate requires a definition *and*, on a paint property, a fallback colour;
+  those are different rules, and collapsing them let a renamed id pass. It also
+  checks the shipped SVGs for HTML-repaired element casing: the HTML parser
+  silently corrects `fecolormatrix`, an XML parser sees an unknown element and
+  the filter is inert — and `src/svg/cvd-filters.svg` carried that spelling while
+  the guide printed it as the snippet a consumer copies.
 - `--color-control-edge` token for control borders (WCAG 1.4.11)
 - `--target-control`, `--target-option`, `--target-chart` and `--target-mark` tokens for target sizes by kind (a data mark is deliberately `0` — it is not a target)
 - `--fill-hatch-1…5` and `--fill-dot` fill-pattern vocabulary for polygon marks

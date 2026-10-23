@@ -59,6 +59,11 @@ jobs:
       - name: Check guide-only identifiers have not leaked into src/
         run: node tools/check-ownership.mjs
 
+      # A url(#id) in src/css is a promise some document defines that id. This
+      # checks the promise is kept inside src/, not only inside the style guide.
+      - name: Check every url(#id) reference reaches a def in src/
+        run: node tools/check-defs.mjs
+
       - name: Check the token export carries the whole token layer
         run: node tools/check-export.mjs
 
