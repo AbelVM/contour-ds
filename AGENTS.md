@@ -297,6 +297,13 @@ draws the list in the page's theme. That is the most the platform gives.
 - Every series in a chart carries a **dash pattern** as well as a hue, so no
   chart asks the reader to tell two colours apart.
 - `prefers-reduced-motion: reduce` collapses every transition.
+- A status message is announced from a live region that exists, empty, before
+  anything is said: `#toast-host` carries the role, the toast carries none, and
+  a region that already holds text at load announces nothing. Enforced by
+  `tools/audit/contrast-and-aria.mjs`.
+- While a snippet disclosure is open the rest of the page leaves the tab order,
+  and closing it releases every inert subtree; `scroll-padding-block-start`
+  keeps an anchored or focused target clear of the sticky header. Same gate.
 - Forced Colors Mode removes the texture and the ridgelines and falls back to
   a system `CanvasText` outline.
 - Sizes in `rem`; the layout reflows to 200 % zoom and to a 390 px viewport

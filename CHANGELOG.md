@@ -24,8 +24,9 @@ the measurement that corrected it is named, so the next reader can re-run it.
   element-count check and was excluded from the pre-filled sweep by its own id,
   which is the exact defect C-28 exists to catch. Both checks were rewritten and
   the same sabotage then failed twice over.
-- `README.md` publishes the two contracts and `tools/claims.json` registers them
-  (C-28-a, C-29-a) against that gate, so the sentences cannot outlive the check.
+- `README.md` and the accessibility contract in `AGENTS.md` both publish the two
+  contracts, and `tools/claims.json` registers each sentence against that gate
+  (C-28-a/b, C-29-a/b), so the prose cannot outlive the check that owns it.
 - `tools/check-layout.mjs` — the layout vocabulary ratchet and, for the first
   time, an executable deprecation. The repository carried three prefixes doing
   the same job: page furniture in `@layer base` (`.container` `.stack`

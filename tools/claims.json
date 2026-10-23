@@ -135,6 +135,20 @@
       "threshold": "host present at load wearing role=status and aria-live=polite and holding no text; a fired toast lands inside it and carries no role of its own; exactly one host afterwards; no live region pre-filled"
     },
     {
+      "id": "C-28-b",
+      "doc": "AGENTS.md",
+      "sentence": "A status message is announced from a live region that exists, empty, before anything is said",
+      "owner": "node tools/audit/contrast-and-aria.mjs",
+      "threshold": "the same live-host assertions as C-28-a, measured in the guide's loaded document"
+    },
+    {
+      "id": "C-29-b",
+      "doc": "AGENTS.md",
+      "sentence": "While a snippet disclosure is open the rest of the page leaves the tab order, and closing it releases every inert subtree",
+      "owner": "node tools/audit/contrast-and-aria.mjs",
+      "threshold": "the same tab-order and scroll-padding assertions as C-29-a"
+    },
+    {
       "id": "C-29-a",
       "doc": "README.md",
       "sentence": "While a snippet disclosure is open the rest of the page leaves the tab order, and closing it releases every inert subtree",
