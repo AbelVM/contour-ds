@@ -210,6 +210,20 @@
       "sentence": "as a **DTCG 2025.10 Resolver** document",
       "owner": "node tools/audit/dtcg-contract.mjs",
       "threshold": "dist/contour.themes.json must be recognized as documentType \"resolver\", declare version 2025.10 and a non-empty resolutionOrder, validate with zero errors, and carry the dark branch of every declared light-dark() pair; the base document must not contain the pair object the Format Module does not define"
+    },
+    {
+      "id": "C-44-a",
+      "doc": "README.md",
+      "sentence": "The **component contract**: every block in `src/css` with its elements, variants and the states its selectors actually carry",
+      "owner": "node tools/check-components.mjs",
+      "threshold": "reads dist/contour.components.json and fails unless the block set equals the inventory's in both directions, every published count equals the arrays it summarizes, every element and variant folds back to the block that lists it, every claimed state appears in a src/css selector with comments stripped as the inventory strips them, every named sheet is a real file, and the shipped bytes equal a fresh derivation. Asserts the population it swept; a contract listing no blocks is a failure, not a pass"
+    },
+    {
+      "id": "C-44-b",
+      "doc": "README.md",
+      "sentence": "listed per block but deliberately absent from the token→block index",
+      "owner": "node tools/check-components.mjs",
+      "threshold": "each property a block reads must land in exactly one of three buckets, and the three must reconstruct the inventory's raw read list; `tokens` must be declared in the census and `vars` defined by some src/css sheet, while `inputs` must be neither; the index must agree with the per-block lists in both directions and contain no `input`, so a property the stylesheet never defines cannot be published as a retunable lever"
     }
   ]
 }

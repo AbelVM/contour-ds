@@ -73,6 +73,7 @@ Anything that matches is either a leak or a false positive you must justify.
 | `node tools/build.mjs` | Bundles and minifies the **design system only** into `dist/` (no guide, no templates), and exports the token layer as two DTCG 2025.10 documents: `contour.tokens.json` (Format) and `contour.themes.json` (Resolver). Its per-surface file list is **derived from `ds.css`** and asserted, so a new sheet cannot land in `contour.css` and miss every surface bundle |
 | `node tools/check-export.mjs` | The export's completeness contract: every declared token must be exported **or** named in the document's refusal ledger with a reason, the shipped bytes must equal a fresh derivation from `src/css`, and every theme pair must be published on both sides. Reads the artifact, not the source |
 | `node tools/audit/dtcg-contract.mjs` | Asks an independent implementation of DTCG 2025.10 (dembrandt) whether the two shipped documents conform, and confirms every published colour against the declaration it came from. **Exports the spec is all it claims** — never that a design tool reads it back. Exits rather than skipping when `npm --prefix tools/audit install` has not run |
+| `node tools/check-components.mjs` | The component contract's guard: reads `dist/contour.components.json` and fails unless its blocks, elements, variants and states all resolve in `src/css`, the three kinds of custom property a block reads (declared token / sheet-defaulted var / host-set input) reconstruct the inventory's raw read list, no host input is indexed as a retunable token, and the shipped bytes equal a fresh derivation. Reads the artifact, not the source |
 | `node tools/gen-light-dark.mjs` | Writes `src/css/light-dark-fallback.css` from the token layer; `--check` (CI) fails when the committed file is stale against `src/css` |
 | `python3 tools/contour-gen.py` | Regenerates the contour artwork |
 | `npx html-validate index.html templates/*.html` | Markup validation |
@@ -360,6 +361,7 @@ node tools/build.mjs           # if you touched src/
 node tools/check-size.mjs      # refuses a stale dist/, not only a big one
 node tools/check-dist.mjs      # the shipped bundle loads cleanly and is free of minifier corruption
 node tools/check-export.mjs    # every declared token is exported or ledgered with a reason; dist equals a fresh derivation
+node tools/check-components.mjs # the component contract resolves against src/css; no host-set input indexed as a token
 node tools/check-ownership.mjs # no guide-only identifiers (ds-, ridgeline, …) leaked into src/
 node tools/check-layout.mjs     # layout primitives are a ratchet; @deprecated must match the ledger
 node tools/gen-light-dark.mjs --check  # the light-dark() fallback matches src/css

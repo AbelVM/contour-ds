@@ -30,6 +30,7 @@ import { dirname, join } from "node:path";
 
 import { minifyCss, minifyJs } from "./lib/minify.mjs";
 import { buildDocuments } from "./lib/dtcg.mjs";
+import { buildComponentsDocument } from "./lib/components.mjs";
 import { inventory } from "./lib/inventory.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -252,17 +253,14 @@ const dtcg = buildDocuments(declared, tokensCss);
 writeFileSync(join(dist, "contour.tokens.json"), `${JSON.stringify(dtcg.tokensDoc, null, 2)}\n`, "utf-8");
 writeFileSync(join(dist, "contour.themes.json"), `${JSON.stringify(dtcg.resolverDoc, null, 2)}\n`, "utf-8");
 
-// -- The component contract (T-151) --------------------------------------
-const componentBlocks = [...new Set(
-  (bundled.match(/\.c-[a-z0-9-]+/g) || [])
-    .map((c) => c.replace(/^\./, "").replace(/__.*$/, "").replace(/--.*$/, ""))
-)].sort();
-const componentsJson = {
-  version: "1.0",
-  blocks: componentBlocks,
-  count: componentBlocks.length,
-};
-writeFileSync(join(dist, "contour.components.json"), `${JSON.stringify(componentsJson, null, 2)}\n`, "utf-8");
+// -- The component contract (T-151, C-44) --------------------------------
+// Derived from the inventory, not from a regex over `bundled`. This file used to
+// keep its own idea of which blocks exist, which made three lists of one thing —
+// here, in tools/lib/inventory.mjs, and in the audit harness — and they agreed
+// only by luck. The shape lives in tools/lib/components.mjs, which the gate also
+// calls, so a field the build invents cannot pass unnoticed.
+const componentsDoc = buildComponentsDocument(inventory());
+writeFileSync(join(dist, "contour.components.json"), `${JSON.stringify(componentsDoc, null, 2)}\n`, "utf-8");
 
 // -- The map-chrome contract (T-93) -----------------------------------------
 const mapChromeContract = {
@@ -324,7 +322,7 @@ const manifest = {
   ),
   outputs: {
     ...Object.fromEntries(
-      ["contour.css", "contour.min.css", "contour.js", "contour.min.js", "contour.tokens.json", "contour.themes.json", "svg/contour-mark.svg"].map((f) => [f, statSync(join(dist, f)).size]),
+      ["contour.css", "contour.min.css", "contour.js", "contour.min.js", "contour.tokens.json", "contour.themes.json", "contour.components.json", "svg/contour-mark.svg"].map((f) => [f, statSync(join(dist, f)).size]),
     ),
     ...surfaceSizes,
   },

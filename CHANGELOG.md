@@ -24,8 +24,52 @@
   frame hairline -- the same decorative class as --color-border, which the
   contract deliberately does not gate so a separator is never asked to be a
   signal.
+- The reason the component contract was thin was a bug in the parser every count
+  depends on, not a missing feature. The shared class pattern was
+  `\.(c-[a-z0-9-]+)`, which stops at the first underscore, so
+  `.c-map-slot__attribution` was read as `.c-map-slot` and `blockOf()`'s `__`
+  folding was unreachable code: the inventory reported no elements anywhere while
+  `src/css` contains 292 element classes across 73 blocks. The published count of
+  134 was never wrong — folding produced the same block name either way — so
+  nothing red caught it; what was invisible was the structure, and it stayed
+  invisible because no assertion read it. `CLASS_RE` and `blockOf` are now
+  exported from the inventory and shared by `tools/audit/component-inventory.mjs`
+  and `tools/audit/token-census.mjs`, each of which carried its own copy; the
+  `blockOf` inside `page.evaluate()` stays a deliberate copy, because that code
+  runs in the browser where there is no module resolution to import from.
+- `contour.components.json` shipped with no consumer and no namer: nothing in
+  `tools/`, `README.md`, `llms.txt`, `check-dist.mjs` or CI named it, which is the
+  C-16 orphan shape for the third time (map chrome, then the token export, then
+  this). `check-dist`'s naming contract now covers it, and README names it.
 
 ### Added
+- C-44: `dist/contour.components.json` is a contract now, not a list of names.
+  Each of the 134 blocks carries its elements (292 across 73 blocks), variants
+  (101 across 34), the states its selectors actually carry (213 across 71), the
+  sheets that define it, where it is exercised among the shipped templates, and
+  the custom properties it reads split into three kinds that behave differently:
+  1,348 attributions of `tokens` the token layer declares, 15 `vars` some other
+  sheet defaults on the block itself, and 12 attributions of 11 distinct `inputs`
+  the system reads and never defines at all (`--c`, `--w`, `--h`, `--x`, `--fill`,
+  `--value`, `--progress`, `--target`, `--bv-cell/cols/rows`) -- which is why
+  `--c` is listed per block but kept out of the token→block index: it reaches
+  `.c-chart` through the markup, and indexing it would advertise a global lever
+  the stylesheet never built. The file went from 2,386 B to 128.4 kB; no browser
+  loads it, so it cannot regress the payload a consumer ships.
+- `node tools/check-components.mjs` reads that shipped file and holds it against
+  `src/css`: the block set must equal the inventory's in both directions, every
+  published count must equal the arrays it summarizes, every element and variant
+  must fold back to the block listing it, every claimed state must survive in a
+  selector with comments stripped as the inventory strips them, and the shipped
+  bytes must equal a fresh derivation -- so a hand-edited or stale contract fails
+  rather than shipping. It reports the population it swept (`134 blocks asserted
+  present and unique`), because an artifact listing nothing must not be able to
+  report success, and it is wired into the same CI lane as the export gate. Six
+  sabotages were caught -- an invented block, `--c` promoted to a token, a state
+  no selector contains, reach claimed for a template that stopped using a block,
+  a reverse index missing a real owner, and the contract emptied of blocks -- each
+  after the mutation's hash was proven to have landed, and regeneration restored
+  byte-identical bytes.
 - M7 begins: the token export is now two DTCG 2025.10 documents that an
   independent implementation of the spec accepts. `dist/contour.tokens.json` is a
   Format document — colours as `{colorSpace, components, alpha}` read out of the

@@ -2,6 +2,13 @@
 // Run: node tools/audit/token-census.mjs   (report only; the gate is tools/check-tokens.mjs)
 import fs from "node:fs";
 import path from "node:path";
+// One class pattern for every reader of src/css. This file used to carry its own
+// `\.c-[a-z0-9-]+`, which stops at the first underscore, so the forced-colors
+// line below printed `.c-map-slot` for a selector written `.c-map-slot__attribution`
+// and the report quietly under-counted which parts of the system get
+// forced-colors treatment. Same bug, third copy; grepped out, not patched in
+// place.
+import { CLASS_RE } from "../lib/inventory.mjs";
 
 const ROOT = new URL("../..", import.meta.url).pathname.replace(/\/$/, "");
 const CSS = path.join(ROOT, "src/css");
@@ -134,7 +141,7 @@ for (const [t, n] of [...seen.entries()].filter(([, n]) => n > 1)) console.log(`
 console.log("\n=== forced-colors COVERAGE ===");
 for (const [f, text] of Object.entries(src)) {
   const m = text.match(/@media \(forced-colors: active\)\s*\{([\s\S]*?)\n {2}\}/);
-  if (m) console.log(`  src/${f}: ${[...m[1].matchAll(/\.(c-[a-z0-9-]+)/g)].map((x) => x[1]).join(", ")}`);
+  if (m) console.log(`  src/${f}: ${[...m[1].matchAll(CLASS_RE)].map((x) => x[1]).join(", ")}`);
 }
 const docs = fs.readFileSync(path.join(ROOT, "assets/css/docs.css"), "utf8");
 console.log(

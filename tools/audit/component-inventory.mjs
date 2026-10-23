@@ -4,6 +4,11 @@ import path from "node:path";
 // Discovered, not assumed: see ./lib/browser.mjs for the resolution order and
 // why a path into another project's store was removed.
 import { chromium } from "./lib/browser.mjs";
+// One class pattern and one fold, shared with the inventory that publishes every
+// count. This scan had its own `\.c-[a-z0-9-]+`, which stops at the first
+// underscore, so it reached the same block names only because folding happened to
+// agree — three readers of one vocabulary, each free to drift.
+import { CLASS_RE, blockOf } from "../lib/inventory.mjs";
 
 const ROOT = new URL("../..", import.meta.url).pathname.replace(/\/$/, "");
 const CSS = path.join(ROOT, "src/css");
@@ -20,8 +25,8 @@ for (const f of files) {
     for (const part of sel.split(",")) {
       const p = part.trim();
       if (!p) continue;
-      for (const c of p.matchAll(/\.(c-[a-z0-9-]+)/g)) {
-        const name = c[1].replace(/__.*$/, "").replace(/--.*$/, "");
+      for (const c of p.matchAll(CLASS_RE)) {
+        const name = blockOf(c[1]);
         blocks.add(name);
         if (!blockFile.has(name)) blockFile.set(name, f);
       }

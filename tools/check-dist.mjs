@@ -15,7 +15,7 @@ const css = readFileSync(join(ROOT, "dist/contour.min.css"), "utf8");
 // covered by the same contract rather than a second one. One list, because the
 // last time this was written the names were repeated in three places and only
 // two of them got updated.
-const SHIPPED_JSON = ["map-chrome-contract.json", "contour.tokens.json", "contour.themes.json"];
+const SHIPPED_JSON = ["map-chrome-contract.json", "contour.tokens.json", "contour.themes.json", "contour.components.json"];
 const SHIPPED_CSS_PROFILES = ["map-chrome.maplibre.css", "map-chrome.mapbox.css"];
 for (const f of [...SHIPPED_JSON, ...SHIPPED_CSS_PROFILES]) {
   if (!existsSync(join(ROOT, "dist", f))) errors.push("missing shipped artifact: " + f);

@@ -58,6 +58,14 @@ const BUDGETS = {
   "contour.min.js": 24 * 1024,
   "contour.tokens.json": 49 * 1024,
   "contour.themes.json": 21 * 1024,
+  // Measured 2026-10-23 at 128.4 kB (C-44), ~3% headroom. Large and correct:
+  // the contract carries every block's elements, variants, states and the three
+  // kinds of custom property it reads, plus the reverse index. No browser loads
+  // this file, so it cannot regress the payload a consumer ships — the budget
+  // exists to catch a jump nobody intended, not to keep the truth brief. A file
+  // absent from this map is not budgeted at all, which is how an artifact can
+  // grow without anyone noticing.
+  "contour.components.json": 132 * 1024,
   "surfaces/contour-core.min.css": 106 * 1024,
   "surfaces/contour-docs.min.css": 119 * 1024,
   "surfaces/contour-data.min.css": 127 * 1024,

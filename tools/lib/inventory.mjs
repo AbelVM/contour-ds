@@ -58,7 +58,18 @@ function blocks(css) {
   return out;
 }
 
-const blockOf = (cls) => cls.replace(/__.*$/, "").replace(/--.*$/, "");
+/**
+ * The classes a component is written with, exported so every reader of src/css
+ * shares one definition. The `_` matters: the character class used to be
+ * `[a-z0-9-]`, which silently stopped at the first underscore, so a selector like
+ * `.c-map-slot__attribution` was read as `.c-map-slot` and every block's element
+ * list came back empty — `blockOf()`'s `__` folding was unreachable code, and the
+ * inventory claimed a BEM vocabulary it could not see.
+ */
+export const CLASS_RE = /\.(c-[a-z0-9_-]+)/g;
+
+/** Fold an element or variant suffix away to reach the block it belongs to. */
+export const blockOf = (cls) => cls.replace(/__.*$/, "").replace(/--.*$/, "");
 
 /** The source areas the census searches, keyed by the label a report prints. */
 function areas() {
@@ -156,15 +167,45 @@ export function inventory() {
   });
 
   // ---- components -------------------------------------------------------
+  // The block, its elements, its variants, the states it is written for, the
+  // tokens it consumes and the sheets that define it are all collected HERE, in
+  // the one pass over the one CSS parser. `dist/contour.components.json` used to
+  // be built by a second regex over the bundled stylesheet, which agreed with
+  // this map by luck and could not be held to it: two derivations of the same
+  // list is how a published count and a shipped artifact drift apart while both
+  // look self-consistent.
   const byComponent = new Map();
+  const entry = (name) => {
+    if (!byComponent.has(name)) {
+      byComponent.set(name, { files: new Set(), rules: 0, elements: new Set(), variants: new Set(), states: new Set(), tokens: new Set() });
+    }
+    return byComponent.get(name);
+  };
   for (const file of files) {
     for (const b of blocks(readFileSync(join(CSS_DIR, file), "utf8"))) {
       for (const part of b.selector.split(",")) {
-        for (const cls of part.matchAll(/\.(c-[a-z0-9-]+)/g)) {
-          const name = blockOf(cls[1]);
-          if (!byComponent.has(name)) byComponent.set(name, { files: new Set(), rules: 0 });
-          byComponent.get(name).files.add(file);
-          byComponent.get(name).rules += 1;
+        // A shared rule (`.c-alert, .c-callout { … }`) credits every block it
+        // names with the tokens its body reads. That is the honest reading of
+        // "what moves if I retune this token", and it is what the artifact says.
+        const named = [...part.matchAll(CLASS_RE)];
+        if (!named.length) continue;
+        const touched = new Set(named.map((m) => entry(blockOf(m[1]))));
+        for (const t of b.body.matchAll(/var\((--[a-z0-9-]+)/g)) for (const e of touched) e.tokens.add(t[1]);
+        // Pseudo-classes, pseudo-elements, attribute selectors and the
+        // state classes the system actually writes. A block's states are how a
+        // consumer learns `.c-command` expects `:popover-open` / `.is-open`.
+        for (const s of part.matchAll(/::?[a-z-]+(?:\([^)]*\))?|\[[^\]]+\]|\.(?:is|has)-[a-z0-9-]+/g)) {
+          for (const e of touched) e.states.add(s[0]);
+        }
+        for (const m of named) {
+          const e = entry(blockOf(m[1]));
+          e.files.add(file);
+          e.rules += 1;
+          // An element modifier (`.c-activity__dot--accent`) is an element, not
+          // a block variant: `variants` holds only what hangs off the block
+          // itself, so a consumer mapping class → meaning never has to guess.
+          if (m[1].includes("__")) e.elements.add(m[1]);
+          else if (m[1].includes("--")) e.variants.add(m[1]);
         }
       }
     }
@@ -239,6 +280,23 @@ export function inventory() {
     }
   }
 
+  // Where each custom property is *defined*, across every shipped sheet. The
+  // token census answers "declared in tokens.css"; a component's own
+  // `--btn-bg`, and a host input like `--c` that the system never defines, are
+  // different things — and the component contract cannot tell a consumer which
+  // is which without this map. Read-only facts stay here; the interpretation
+  // into buckets belongs to tools/lib/components.mjs, which the gate calls too.
+  const definedProps = new Map();
+  for (const file of files) {
+    const text = withoutComments(readFileSync(join(CSS_DIR, file), "utf8"));
+    for (const m of text.matchAll(/(--[a-z0-9-]+)\s*:/g)) {
+      const list = definedProps.get(m[1]);
+      if (list) {
+        if (!list.includes(file)) list.push(file);
+      } else definedProps.set(m[1], [file]);
+    }
+  }
+
   const distSize = (p) => (existsSync(join(ROOT, "dist", p)) ? statSync(join(ROOT, "dist", p)).size : null);
 
   return {
@@ -246,11 +304,28 @@ export function inventory() {
     components: {
       count: components.length,
       names: components,
-      rules: Object.fromEntries([...byComponent].map(([k, v]) => [k, { files: [...v.files], rules: v.rules }])),
+      // Sorted so the shipped contract is deterministic: a byte-for-byte rebuild
+      // must match, or a gate cannot tell a real change from a Set ordering.
+      rules: Object.fromEntries(
+        [...byComponent].map(([k, v]) => [
+          k,
+          {
+            files: [...v.files].sort(),
+            rules: v.rules,
+            elements: [...v.elements].sort(),
+            variants: [...v.variants].sort(),
+            states: [...v.states].sort(),
+            tokens: [...v.tokens].sort(),
+          },
+        ]),
+      ),
       specimens,
       noSpecimen,
       specCount: components.length - noSpecimen.length,
     },
+    // Every custom property defined in src/css, with the sheets that define it.
+    // `{}` rather than a Map so a consumer can JSON-dump it without converting.
+    props: Object.fromEntries([...definedProps.entries()].sort((a, b) => a[0].localeCompare(b[0]))),
     tokens: {
       declarations: declarations.length,
       unique: names.length,
