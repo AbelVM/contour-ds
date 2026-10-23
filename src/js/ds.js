@@ -452,6 +452,26 @@
   });
 
   /* ---------------------------------------------------------------------
+   11b. Menu / drawer — popover open-close + aria-expanded (T-122)
+     --------------------------------------------------------------------- */
+  $$("[data-menu-toggle]").forEach((btn) => {
+    const menu = document.getElementById(btn.dataset.menuToggle);
+    if (!menu) return;
+    btn.setAttribute("popovertarget", menu.id);
+    menu.addEventListener("toggle", (e) => {
+      btn.setAttribute("aria-expanded", String(e.newState === "open"));
+    });
+  });
+  $$("[data-drawer-toggle]").forEach((btn) => {
+    const drawer = document.getElementById(btn.dataset.drawerToggle);
+    if (!drawer) return;
+    btn.setAttribute("popovertarget", drawer.id);
+    drawer.addEventListener("toggle", (e) => {
+      btn.setAttribute("aria-expanded", String(e.newState === "open"));
+    });
+  });
+
+  /* ---------------------------------------------------------------------
    12. Alerts — dismiss
      --------------------------------------------------------------------- */
   $$("[data-alert-close]").forEach((btn) => {

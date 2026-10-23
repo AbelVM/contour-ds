@@ -8,8 +8,8 @@ repository: https://github.com/abelvm/contour-ds
 tokens:
   count: 272
   layers: [primitives, semantic, component, utility]
-  themes: [light, dark]
-  theme_mechanism: light-dark()
+  themes: [light, dark, positron, dark-matter, high-contrast]
+  theme_mechanism: light-dark() + [data-theme]
   override_knobs: [brand-hue, radius-scale]
   theme_scope: .c-theme-scope
 
@@ -50,7 +50,7 @@ browser_support:
   oklch: "Widely available"
   has: "Widely available"
   container_queries: "Widely available"
-  color_mix: "Widely available"
+  anchor_positioning: "Newly available 2026-01 (parts vary); used behind @supports for tooltips/menus"
 
 install:
   production: "dist/contour.css"
@@ -80,13 +80,19 @@ Four layers, resolved in this order:
 
 Two knobs retheme and reshape everything: `--brand-hue` (default 182.5) and
 `--radius-scale` (default 1). `.c-theme-scope` re-derives the whole brand
-layer for a subtree.
+layer for a subtree. A third knob, `--density`, drives row height, cell
+padding and label size together (compact mode via `data-density="compact"`).
 
 ## Theming
 
 `color-scheme` on `:root` is the only switch. Every theme-sensitive colour
 resolves through `light-dark()`. The page follows the OS until a choice is
 stored in `<meta name="color-scheme">`.
+
+An opt-in theme set sits on top of the two system themes — positron,
+dark-matter, high-contrast — applied via `data-theme` on a subtree. The
+two system themes keep working unchanged; a product that needs more
+overrides the semantic layer there.
 
 ## Colour
 
@@ -121,6 +127,16 @@ from a button colour.
 - `--chart-div-neg/mid/pos` — diverging, for a real midpoint
 - `--chart-dash-1…6` — one dash pattern per series
 - `--color-heat-1…6` — multi-hue heat ramp (NOT sequential)
+
+### Chart geometry contract (T-136)
+
+The chart vocabulary is CSS-only: axes are `space-between` spans, gridlines are a
+fixed 25%-interval CSS gradient, and the tooltip reuses `.c-tooltip` recoloured
+via `--chart-tooltip-*`. Tick placement is the consumer's responsibility —
+`Contour.chart.ticks()` returns the values, the author maps them to pixels.
+There is no y-axis element in the vocabulary and no scrubber (T-137, deferred).
+This is the honest ceiling: the system ships the *tokens and the dash patterns*,
+not a charting engine.
 
 ## Rules
 

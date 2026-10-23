@@ -440,12 +440,17 @@
   }
 
   /* A specimen gets air above it, whatever precedes it — except straight
-     after the section head, which already carries its own. */
-  .section > .ds-spec {
+     after the section head, which already carries its own. The rule has to
+     name the generated wrapper as well as the block inside it:
+     tools/snippets.mjs wraps every specimen in a .ds-example, so a bare
+     `.section > .ds-spec` stopped matching and the sections lost their air. */
+  .section > .ds-spec,
+  .section > .ds-example {
     margin-block-start: var(--space-xl);
   }
 
-  .c-section-head + .ds-spec {
+  .c-section-head + .ds-spec,
+  .c-section-head + .ds-example {
     margin-block-start: 0;
   }
 
@@ -1050,10 +1055,24 @@
   }
 
 
-  /* Content-visibility for the long guide (T-153). */
+  /* Content-visibility for the long guide (T-153).
+     `auto` does not come alone: it brings paint and layout containment with
+     it, and both are fatal here. Paint containment clips the band that
+     `.section--sunken` deliberately bleeds past its own box, and layout
+     containment makes the section the containing block for a
+     `position: fixed` descendant — so the scrim and the floating snippet body
+     stay inside one section instead of covering the page. Two exemptions,
+     both for mechanisms the guide owns: the bands that bleed, and whichever
+     section currently holds an open disclosure. */
   .section {
     content-visibility: auto;
     contain-intrinsic-size: auto 800px;
+  }
+
+  .section--sunken,
+  .section--raised,
+  .section:has(.ds-code[open]) {
+    content-visibility: visible;
   }
 
 }

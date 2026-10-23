@@ -339,6 +339,17 @@ results.darkSeries = await page.evaluate(() => {
   return out;
 });
 
+results.dataThemes = {};
+for (const theme of ["positron", "dark-matter", "high-contrast"]) {
+  await page.evaluate((t) => {
+    document.documentElement.setAttribute("data-theme", t);
+  }, theme);
+  await page.waitForTimeout(200);
+  results.dataThemes[theme] = await overSurfaces();
+}
+// restore
+await page.evaluate(() => document.documentElement.removeAttribute("data-theme"));
+
 results.errors = errors;
 // Output lives in the repository's own gitignored `tmp/`, not in a temp
 // directory outside it: the harnesses are the system's test suite, and a test

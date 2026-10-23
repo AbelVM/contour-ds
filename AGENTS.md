@@ -14,7 +14,7 @@ engines, pedestrian simulators, geospatial dashboards). It ships three
 surfaces: a **landing page**, a **documentation site** and a **technical
 dashboard**.
 
-- Dark and light themes, <!-- ds:components -->134<!-- /ds:components --> components, <!-- ds:tokens -->272<!-- /ds:tokens --> design tokens.
+- Dark and light themes (plus an opt-in theme set: positron, dark-matter, high-contrast), <!-- ds:components -->134<!-- /ds:components --> components, <!-- ds:tokens -->272<!-- /ds:tokens --> design tokens.
 - **Zero runtime dependencies, no build step.** `src/css/ds.css` is the whole
   system and can be linked straight off a disk.
 - The style guide (`index.html`) is the documentation *and* the test suite.
@@ -248,7 +248,7 @@ draws the list in the page's theme. That is the most the platform gives.
 
 ### CSS
 
-- Cascade layers, in this order: `reset, tokens, base, components, utilities`.
+- Cascade layers, in this order: `tokens, base, components, utilities`. (The reset lives inside `base.css`; there is no separate `reset` layer.)
   `src/css/ds.css` declares the order; a file may only add to a layer.
 - Naming: `.c-<block>` for the block, `.c-<block>__<element>` for parts,
   `.c-<block>--<variant>` for variants. Guide-only classes are `ds-`.
@@ -332,6 +332,7 @@ node tools/check-tokens.mjs   # the census: an unread token must be ledgered or 
 node tools/snippets.mjs      # if you touched a specimen
 node tools/build.mjs         # if you touched src/
 node tools/check-size.mjs    # refuses a stale dist/, not only a big one
+node tools/check-dist.mjs     # the shipped bundle loads cleanly and is free of minifier corruption
 node tools/stamp.mjs --check # published numbers must match src/
 ```
 

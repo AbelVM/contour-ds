@@ -48,6 +48,9 @@ jobs:
       - name: Check size budget and that dist is current
         run: node tools/check-size.mjs
 
+      - name: Check the shipped bundle loads cleanly
+        run: node tools/check-dist.mjs
+
       - name: Check the token export carries the whole token layer
         run: node tools/check-export.mjs
 

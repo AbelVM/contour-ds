@@ -20,7 +20,7 @@
    one surface can import one file and skip the rest.
    ========================================================================= */
 
-@layer reset, tokens, base, components, utilities;
+@layer tokens, base, components, utilities;
 
 @import url("./tokens.css") layer(tokens);
 @import url("./base.css") layer(base);

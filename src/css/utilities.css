@@ -277,6 +277,9 @@
   .u-dot { background-image: var(--fill-dot); background-size: 8px 8px; }
 
   /* -- Print: field sheet -------------------------------------------- */
+  @page {
+    margin: 1.5cm;
+  }
   @media print {
     .c-header, .c-drawer, .c-toolbar {
       display: none;
@@ -293,6 +296,11 @@
 
     .c-table {
       font-size: var(--type-xs);
+    }
+
+    .c-mark, .c-datamark {
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
     }
 
     body {
@@ -346,11 +354,7 @@
 
   /* -- Hazard hatch (stale data) -------------------------------------- */
   .u-hatch-stale {
-    background-image: repeating-linear-gradient(
-      45deg,
-      transparent 0 3px,
-      var(--color-text-subtle) 3px 4px
-    );
+    background-image: var(--fill-hatch-1);
   }
 
   /* -- Colour-vision preview (scoped to data surfaces) ----------------- */

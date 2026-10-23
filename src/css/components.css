@@ -521,30 +521,34 @@
 
   /* Waypoint: the system's status dot. Ring + core; the live variant pulses. */
   .c-dot {
+    --dot-color: var(--color-text-subtle);
     position: relative;
     display: inline-block;
     inline-size: 0.55rem;
     block-size: 0.55rem;
     border-radius: 50%;
-    background: var(--color-text-subtle);
+    background: var(--dot-color);
+    color: var(--dot-color);
+    box-shadow: 0 0 0 1.5px color-mix(in oklch, var(--dot-color), transparent 55%);
     flex: none;
   }
 
-  .c-dot--primary {
-    background: var(--color-primary);
+  .c-dot::before {
+    content: "";
+    position: absolute;
+    inset: -0.3rem;
+    background:
+      linear-gradient(var(--dot-color), var(--dot-color)) center / 1px 100% no-repeat,
+      linear-gradient(var(--dot-color), var(--dot-color)) center / 100% 1px no-repeat;
+    opacity: 0.35;
+    pointer-events: none;
   }
-  .c-dot--accent {
-    background: var(--color-accent);
-  }
-  .c-dot--success {
-    background: var(--color-success);
-  }
-  .c-dot--warning {
-    background: var(--color-warning);
-  }
-  .c-dot--danger {
-    background: var(--color-danger);
-  }
+
+  .c-dot--primary { --dot-color: var(--color-primary); }
+  .c-dot--accent { --dot-color: var(--color-accent); }
+  .c-dot--success { --dot-color: var(--color-success); }
+  .c-dot--warning { --dot-color: var(--color-warning); }
+  .c-dot--danger { --dot-color: var(--color-danger); }
 
   .c-dot--live::after {
     content: "";
@@ -2438,15 +2442,17 @@
     border-color: var(--color-primary);
   }
 
-  /* RTL: flip the select chevron to the inline-start side */
+  /* RTL: move the chevron to the inline-start side.
+     Mirror the pair as a unit — the 45deg layer stays the left-hand stroke.
+     Writing the two offsets in the order they appear in the image list swaps
+     the strokes past each other, and the mark stops being a chevron; each
+     offset is the LTR distance from the edge less the 6px tile, so the gutter
+     the mark occupies is the same width on both sides. */
   [dir="rtl"] .c-select,
   .c-select:dir(rtl) {
-    background-size:
-      8px 8px,
-      8px 8px;
     background-position:
-      1.35rem calc(50% + 1px),
-      1rem calc(50% + 1px);
+      calc(0.8rem - 6px) calc(50% + 1px),
+      calc(1.15rem - 6px) calc(50% + 1px);
   }
 
 
@@ -2466,7 +2472,9 @@
 
   /* Per-component disabled treatment (T-154). */
   .c-radio:has(input:disabled),
+  .c-range:disabled,
   .c-tabs__tab:disabled,
+  .c-menu__item:disabled,
   .c-layer-switch__toggle:disabled,
   .c-legend__item:disabled {
     opacity: 0.5;

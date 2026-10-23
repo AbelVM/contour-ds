@@ -217,6 +217,12 @@
      blanks the screen.
      ======================================================================= */
   .c-panel {
+    /* The grip is `position: absolute` with `inset-block: 0`, so it needs the
+       panel as its containing block. `container-type: inline-size` does not
+       provide one in Chromium — measured, the grip resolved against the
+       section instead and stretched to the section's full height, painting its
+       bar hundreds of pixels outside the panel. Say it explicitly. */
+    position: relative;
     container-type: inline-size;
     display: flex;
     flex-direction: column;
@@ -757,6 +763,14 @@
 
   .c-scrim.is-open {
     display: block;
+  }
+
+  /* The inline variant, matching `.c-drawer--inline`: the base scrim is pinned
+     to the viewport because it dims the page behind an open layer, which makes
+     it impossible to show on its own. This one dims its nearest positioned
+     ancestor instead, so a stage can hold it. */
+  .c-scrim--inline {
+    position: absolute;
   }
 
   .c-drawer__head {

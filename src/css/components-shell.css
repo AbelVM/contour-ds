@@ -275,7 +275,7 @@
   }
 
   @supports (anchor-name: --x) {
-    .c-menu {
+    .c-menu:popover-open {
       position: absolute;
       inset: auto;
       margin: 0;
@@ -485,18 +485,32 @@
     position: absolute;
     inset-inline-end: 0;
     inset-block: 0;
-    inline-size: 0.5rem;
+    /* 24px, not 8px: this is an interactive control (`role="separator"`,
+       tabindex 0, `col-resize`), and the project enforces the WCAG 2.5.8 AA
+       24px floor as a hard gate — the inventory measured the old 0.5rem box at
+       8px and refused it. The visible mark stays the 2px bar below, centred by
+       `place-items`, so the panel looks the same and only the grab band grows.
+       Trade-off: a 24px band at the panel's inline-end now takes pointer
+       events over that strip, so do not put a link flush against the edge. */
+    inline-size: 1.5rem;
     cursor: col-resize;
     display: grid;
     place-items: center;
-    color: var(--color-text-subtle);
-    opacity: 0;
-    transition: opacity var(--dur-fast) var(--ease-standard);
+    /* The grip has to read before anything hovers it: the edge itself is the
+       only affordance, and a mark that appears on demand is implied rather
+       than shown. `--color-control-edge` is the token the 3:1 contract
+       measures control edges against — measured here on every surface a panel
+       can sit on, in both themes; the fainter colour it replaced failed at
+       1.94:1 light and 2.10:1 dark. */
+    color: var(--color-control-edge);
+    transition: color var(--dur-fast) var(--ease-standard);
   }
 
   .c-panel:hover .c-resize-handle,
-  .c-panel:focus-within .c-resize-handle {
-    opacity: 1;
+  .c-panel:focus-within .c-resize-handle,
+  .c-resize-handle:hover,
+  .c-resize-handle:focus-visible {
+    color: var(--color-text-muted);
   }
 
   .c-resize-handle::after {

@@ -67,6 +67,7 @@ Landing: logo wall, feature showcase, metrics band, testimonial, pricing, compar
 - The system needs no build step. `src/css/ds.css` can be linked straight off a file system.
 - The component layer is split by audience, so a product that only needs one surface can import one file: `components-docs.css`, `components-data.css` or `components-landing.css`.
 - `src/js/ds.js` is optional progressive enhancement. Every page works without it.
+- `src/js/ds.js` exposes `window.Contour` (`version`, `toast`, `setScheme`, `scrollTo`, `copy`, `chart`, `commands`) for consumers who want to drive the system's own feedback and navigation.
 - `src/` is the system: `src/css/` holds the stylesheets, `src/js/ds.js` the optional behaviour, `src/svg/contour-mark.svg` the brand mark. `assets/` is guide-only and never ships.
 - A bundler is provided for distribution only: `node tools/build.mjs` writes a minified stylesheet, the script, and the token layer as JSON.
 
@@ -76,6 +77,7 @@ Landing: logo wall, feature showcase, metrics band, testimonial, pricing, compar
 - Primitives never change between themes; only the semantic layer does, so a theme swap is a one-line change.
 - Two values retheme and reshape everything: `--brand-hue` and `--radius-scale`.
 - `.c-theme-scope` re-derives the whole brand layer for a subtree, because a custom property containing `var()` is resolved eagerly.
+- An opt-in theme set beyond light/dark — positron, dark-matter, high-contrast — applied via `data-theme` on a subtree; the two system themes keep working unchanged.
 - A separate chart token layer: `--chart-1…8` categorical (all eight clear 3:1 against the panel), `--chart-seq-1…7` sequential (monotonic in lightness, dark-inverted), `--chart-div-*` diverging (real midpoint), `--chart-dash-1…6` one pattern per series. The chart *frame* ships, and `window.Contour.chart` ships `scale`, `ticks` and `datum` helpers for consumers who want them.
 
 ## Rules the system holds itself to

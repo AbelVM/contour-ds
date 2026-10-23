@@ -32,7 +32,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
 const dist = join(root, "dist");
 
-const LAYER_ORDER = "@layer reset, tokens, base, components, utilities;";
+const LAYER_ORDER = "@layer tokens, base, components, utilities;";
 
 /**
  * Read a CSS file and inline its `@import` statements.
@@ -277,6 +277,15 @@ const mapChromeContract = {
   },
 };
 writeFileSync(join(dist, "map-chrome-contract.json"), `${JSON.stringify(mapChromeContract, null, 2)}\n`, "utf-8");
+
+// Vendor re-key profiles (T-143): control-class → token overrides.
+const rekeyCss = (engine) =>
+  `/* Contour re-key profile for ${engine} map chrome. Apply after the vendor stylesheet. */\n` +
+  `.maplibregl-ctrl, .mapboxgl-ctrl { background: var(--color-surface-1); border: 1px solid var(--color-border); border-radius: var(--radius-md); color: var(--color-text); }\n` +
+  `.maplibregl-ctrl button, .mapboxgl-ctrl button { color: var(--color-text-muted); }\n` +
+  `.maplibregl-ctrl button:hover, .mapboxgl-ctrl button:hover { color: var(--color-text-strong); background: var(--color-surface-2); }\n`;
+writeFileSync(join(dist, "map-chrome.maplibre.css"), rekeyCss("MapLibre"), "utf-8");
+writeFileSync(join(dist, "map-chrome.mapbox.css"), rekeyCss("Mapbox"), "utf-8");
 
 // -- The assets -------------------------------------------------------------
 // The brand mark ships with the system (it is the favicon and the logo).

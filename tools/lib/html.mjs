@@ -106,7 +106,8 @@ export function parse(html) {
     // Closing tag
     if (html.startsWith("</", lt)) {
       const end = html.indexOf(">", lt);
-      const name = html.slice(lt + 2, end).trim().toLowerCase();
+      const rawClose = html.slice(lt + 2, end).trim();
+      const name = /[A-Z]/.test(rawClose) ? rawClose : rawClose.toLowerCase();
       // Pop to the matching open tag, if there is one.
       for (let depth = stack.length - 1; depth > 0; depth--) {
         if (stack[depth].name === name) {
@@ -161,7 +162,10 @@ export function parse(html) {
 function parseTag(html, start) {
   const nameMatch = /^<([a-zA-Z][a-zA-Z0-9:-]*)/.exec(html.slice(start));
   if (!nameMatch) return null;
-  const name = nameMatch[1].toLowerCase();
+  const rawName = nameMatch[1];
+  // Preserve case for SVG (and other) elements written in camelCase, e.g.
+  // <feColorMatrix>, <linearGradient>. Plain HTML tags are lowercased.
+  const name = /[A-Z]/.test(rawName) ? rawName : rawName.toLowerCase();
 
   const attrs = {};
   let index = start + nameMatch[0].length;
@@ -188,7 +192,8 @@ function parseTag(html, start) {
       index++;
       continue;
     }
-    const attrName = attrMatch[1].toLowerCase();
+    const rawAttr = attrMatch[1];
+    const attrName = /[A-Z]/.test(rawAttr) ? rawAttr : rawAttr.toLowerCase();
     index += attrMatch[0].length;
 
     while (index < html.length && /\s/.test(html[index])) index++;
