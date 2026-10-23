@@ -1,14 +1,35 @@
-# Changelog
-
-All notable changes to Contour are documented here.
-
-Every number below is computed from `src/` by `node tools/stamp.mjs --json`, not
-counted by hand. Where a claim was previously overstated it is corrected here and
-the measurement that corrected it is named, so the next reader can re-run it.
-
 ## [Unreleased]
 
+### Fixed
+- --chart-label in the dark theme measured 4.23:1 against --color-surface-3,
+  under the 4.5:1 this file and the README publish for body text, and no gate
+  measured it at all -- so the number was unowned rather than visibly wrong
+  (C-23). Axis labels are --type-micro text, so the large-text exemption does
+  not reach them; the dark value is 70% now and the harness measures the label
+  and the no-data mark on every surface in both themes, asserting how many
+  pairs it checked. The review aimed this row at --chart-axis, which draws a
+  frame hairline -- the same decorative class as --color-border, which the
+  contract deliberately does not gate so a separator is never asked to be a
+  signal.
+
 ### Added
+- The chart's colour contract, measured on the harness's own estimator (C-18,
+  C-22). A threshold invented by a private script is a number CI can never
+  reproduce, and a hand-rolled CIEDE2000 has already shipped broken in this
+  repository once (ΔE00 = 737), so the contract is stated in the two quantities
+  this estimator can actually prove: contrast ratio, and luminance distance. It
+  gates `--chart-missing` at 3:1 (measured 4.09–6.44, which falsifies the
+  review's inherited "currently 1.03–1.43:1" — and the real pattern fill plus
+  the no-data / zero-data split had already landed with C-31), and reports
+  series separation without gating it: dark series 1 and 5 differ by ΔL 0.0001,
+  and light 2↔8 and 5↔7 collide, which is precisely why the dash pattern and
+  not lightness is what discharges WCAG 1.4.1. No ΔE floor is asserted, because
+  no WCAG criterion requires a distance between two data series.
+  Two defects the falsification pass found were in this round's own gate: a
+  `const` used by `chartContract()` sat in its temporal dead zone (a crash, not
+  a result), and the greyscale-collision filter tested `dL === 0` after rounding,
+  so a pair at ratio 1.00 reported as "no collisions" while the same number sat
+  one line above in `closest`.
 - M3 — the spatial family now renders as one surface, and a gate proves it
   reaches a shipped page. The guide's Field section composes a
   `[data-spatial-workspace]`: map area, slot chrome with its controls and scale,

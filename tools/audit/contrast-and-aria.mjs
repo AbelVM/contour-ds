@@ -162,6 +162,17 @@ const overSurfaces = () =>
 // assumed — so it is kept for completeness and costs no extra colour pairs.
 const SERIES_COUNT = 8;
 
+// Two series a contrast ratio apart by less than this cannot be told apart in
+// greyscale, or by a reader who cannot separate the hues — which is exactly why
+// the dash pattern is mandatory rather than decorative. Declared here because
+// chartContract() runs during the measurement phase: a const down in THE
+// CONTRACT section is in its temporal dead zone by then, which is a crash, not a
+// result. Deliberately a reporting threshold and not a failure: WCAG 1.4.1 is
+// discharged by the pattern (the legend-key check asserts every series really
+// carries one), and no criterion requires two data series to differ by a given
+// luminance distance.
+const GREY_COLLISION_MAX = 1.05;
+
 const seriesOverSurfaces = () =>
   page.evaluate(
     ({ surfaces, count }) => {
@@ -178,6 +189,62 @@ const seriesOverSurfaces = () =>
     },
     { surfaces: SURFACES, count: SERIES_COUNT }
   );
+
+// The chart's colour contract (C-18, C-22, C-23), measured with THIS harness's
+// own canvas estimator. That is deliberate: a floor derived from a private
+// script is a number CI will never reproduce, and a hand-rolled CIEDE2000 has
+// already shipped broken once in this repository (ΔE00 = 737). So the contract
+// is stated in the two quantities this estimator can prove — luminance distance
+// and contrast ratio — and is labelled as Contour's own bound, never as a WCAG
+// criterion: 1.4.1 (Use of Color) is discharged by the dash pattern, 1.4.11 is
+// adjacent contrast of a component against what surrounds it, and no WCAG
+// criterion mandates a ΔE between two data series.
+const chartContract = () =>
+  page.evaluate(({ surfaces, count, greyMax }) => {
+    const rootCS = getComputedStyle(document.documentElement);
+    // An undeclared token is invalid at computed-value time: the canvas would
+    // happily paint the INHERITED colour and print a confident ratio that
+    // measures nothing. Prove declaration before measuring.
+    const declared = (n) => rootCS.getPropertyValue(n).trim() !== "";
+    const lum = (n) => +window.__lum(window.__tok(n)).toFixed(4);
+    const over = (fg, bg) => window.__ratio(window.__tokOver(fg, bg), window.__tok(bg));
+
+    const seriesL = [];
+    for (let i = 1; i <= count; i++) {
+      const n = `--chart-${i}`;
+      if (!declared(n)) continue;
+      seriesL.push({ n, L: lum(n) });
+    }
+    // Every unordered pair, so the closest pair is FOUND rather than assumed
+    // from an inherited review number.
+    const pairs = [];
+    for (let i = 0; i < seriesL.length; i++)
+      for (let j = i + 1; j < seriesL.length; j++)
+        pairs.push({
+          pair: `${i + 1}↔${j + 1}`,
+          dL: Math.abs(+(seriesL[j].L - seriesL[i].L).toFixed(4)),
+          ratio: window.__ratio(window.__tok(seriesL[i].n), window.__tok(seriesL[j].n)),
+        });
+    pairs.sort((a, b) => a.dL - b.dL || a.ratio - b.ratio);
+
+    const out = {
+      seriesL,
+      closest: pairs.slice(0, 4),
+      // A greyscale collision is two series whose rendered colours carry no
+      // luminance difference at all — measured as contrast ratio, the quantity
+      // this estimator owns. First draft tested `dL === 0` after rounding, so
+      // dark series 1↔5 (ratio 1.00, utterly indistinguishable) reported as
+      // "no collisions" while the same number sat in `closest` two lines above.
+      greyCollisions: pairs.filter((p) => p.ratio < greyMax).map((p) => p.pair),
+      declared: {},
+    };
+    for (const tok of ["--chart-axis", "--chart-missing", "--chart-label", "--chart-grid", "--chart-cyc-1"]) {
+      out.declared[tok] = declared(tok);
+      if (!declared(tok)) continue;
+      for (const bg of surfaces) out[`${tok}|${bg}`] = over(tok, bg);
+    }
+    return out;
+  }, { surfaces: SURFACES, count: SERIES_COUNT, greyMax: GREY_COLLISION_MAX });
 
 // Each legend key, built exactly as a consumer builds one, measured against the
 // dash token its series carries. Synthesising them here rather than scraping the
@@ -206,6 +273,7 @@ const legendKeysFor = () =>
 
 results.controlLight = await overSurfaces();
 results.lightSeries = await seriesOverSurfaces();
+results.chart = await chartContract();
 results.legendKeys = await legendKeysFor();
 
 /* ---- scrollbar + border edges ---- */
@@ -470,6 +538,7 @@ results.controlDark = await overSurfaces();
 results.darkHeat = await ramp(["--color-heat-1","--color-heat-2","--color-heat-3","--color-heat-4","--color-heat-5","--color-heat-6"]);
 results.darkSeq = await ramp(["--chart-seq-1","--chart-seq-2","--chart-seq-3","--chart-seq-4","--chart-seq-5","--chart-seq-6","--chart-seq-7"]);
 results.darkSeries = await seriesOverSurfaces();
+results.chartDark = await chartContract();
 
 results.dataThemes = {};
 // The theme names are read from the guide's own switcher rather than repeated here:
@@ -650,6 +719,62 @@ if (!l || !l.inert) {
   if (!l.header) failures.push("scrim: no .c-header measured, so scroll padding was compared against nothing");
   else if (l.scrollPadding < l.header)
     failures.push(`scrim: scroll-padding-block-start ${l.scrollPadding}px does not clear the ${l.header}px sticky header — a focused or anchored target lands under it`);
+}
+
+/* ---- the chart's own colour contract (C-18, C-22, C-23) ----
+   Three rules, each on a quantity THIS estimator can prove, because a threshold
+   invented somewhere else is a number CI cannot reproduce:
+
+     --chart-label  ≥ 4.5  — axis labels are TEXT at --type-micro, so the
+                              large-text exemption does not reach them. This is
+                              the pair that was failing quietly at 4.23:1 on dark
+                              --color-surface-3; no gate measured it at all.
+     --chart-missing ≥ 3   — a no-data mark is signal, not decoration, so it is
+                              1.4.11 territory. Measured 4.93-6.44, which is why
+                              the review's "currently 1.03-1.43:1" is recorded as
+                              a falsified premise rather than acted on.
+     --chart-axis / --chart-grid are NOT gated. They are hairlines that draw a
+                              frame of reference — the same deliberate exclusion
+                              as --color-border above. A separator asked to be a
+                              signal is the failure T-26 was written to end.
+
+   Series separation is reported, never asserted as a ΔE floor: no WCAG criterion
+   mandates a distance between two data series, and 1.4.1 is discharged by the
+   dash pattern (the legend-key check below is what proves that pattern reaches
+   the key). Lightness collisions are printed so the greyscale claim stays
+   checkable: in dark, series 1 and 5 differ by ΔL 0.0001 — indistinguishable in
+   grey, separated only by their dash.
+   */
+const CHART_TEXT_MIN = 4.5;
+const MISSING_MIN = 3.0;
+for (const [theme, key] of [
+  ["light", "chart"],
+  ["dark", "chartDark"],
+]) {
+  const c = results[key];
+  if (!c || !c.seriesL || !c.seriesL.length) {
+    failures.push(`${theme}: chart contract measured no series — an empty sweep is not a pass`);
+    continue;
+  }
+  let labels = 0;
+  let missings = 0;
+  for (const [pair, value] of Object.entries(c)) {
+    if (!pair.includes("|")) continue;
+    const [tok, surface] = pair.split("|");
+    if (tok === "--chart-label") {
+      labels++;
+      check(`${theme}: ${tok} vs ${surface}`, value, CHART_TEXT_MIN, "1.4.3 — axis labels are text");
+    }
+    if (tok === "--chart-missing") {
+      missings++;
+      check(`${theme}: ${tok} vs ${surface}`, value, MISSING_MIN, "1.4.11 — no-data is signal");
+    }
+  }
+  const want = SURFACES.length;
+  if (labels !== want) failures.push(`${theme}: --chart-label measured on ${labels} of ${want} surfaces — the sweep drifted`);
+  if (missings !== want) failures.push(`${theme}: --chart-missing measured on ${missings} of ${want} surfaces — the sweep drifted`);
+  if (!c.declared["--chart-missing"]) failures.push(`${theme}: --chart-missing is not declared, so the no-data mark has no colour to measure`);
+  console.log(`${theme} chart: label floor over ${labels}/${want}, missing over ${missings}/${want}; closest series pair ${JSON.stringify(c.closest[0])}; grey collisions ${JSON.stringify(c.greyCollisions)}`);
 }
 
 // The palette must be operable and announced.

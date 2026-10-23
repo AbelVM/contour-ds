@@ -244,7 +244,7 @@
         --chart-div-pos: var(--tidal-400);
         --chart-grid: oklch(24% 0.016 230);
         --chart-axis: oklch(40% 0.018 230);
-        --chart-label: oklch(66% 0.016 230);
+        --chart-label: oklch(70% 0.016 230);
         --chart-missing: oklch(65% 0.02 230);
         --chart-hover: oklch(27% 0.018 230);
         --chart-selection: oklch(30% 0.05 var(--brand-hue));
@@ -366,7 +366,7 @@
       --chart-div-pos: var(--tidal-400);
       --chart-grid: oklch(24% 0.016 230);
       --chart-axis: oklch(40% 0.018 230);
-      --chart-label: oklch(66% 0.016 230);
+      --chart-label: oklch(70% 0.016 230);
       --chart-missing: oklch(65% 0.02 230);
       --chart-hover: oklch(27% 0.018 230);
       --chart-selection: oklch(30% 0.05 var(--brand-hue));
