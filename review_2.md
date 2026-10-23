@@ -650,7 +650,7 @@ The falsifier thread's tally (37 spot-checked ✅ claims): **13 VERIFIED · 21 P
 | B1–B6 (js-defects) | tracked, not in T-plan | ❌→ **live** | all six mechanisms re-measured unchanged in 932-line ds.js + fresh dist |
 | T-82 | ✅ | 🟡 | ring replaced on check/switch/range, but `.c-version` (docs) still ships the 1.15:1 halo as *only* indicator, and it is absent from the gate's control list |
 | T-86 | ✅ | ✅ | `scrollTo` fixed (T-116); toast host shipped in `src/` (T-120) |
-| T-92 | ✅ | 🟡 | tokens+utilities shipped; polygon capability absent; 0 consumers; legend preview does not exist (§3.4) |
+| T-92 | ✅ | 🟡 | legend dash preview fixed (T-130); polygon capability still absent; 0 consumers |
 | T-93 | ✅ | 🟡 | JSON list shipped (16 controls, 5 tokens); nothing in `src/` consumes it; not a contract until the generated profiles exist (§8.6) |
 | T-94/T-95 | ✅ | ✅ | bivariate specimen shipped (T-138); legend-as-control toggles `aria-pressed` |
 | T-96 | ✅ | 🟡 | filters now shipped as `src/svg/cvd-filters.svg`; CSS hooks reference `#contour-cvd-*` (consumer must include the sprite) |
@@ -663,10 +663,10 @@ The falsifier thread's tally (37 spot-checked ✅ claims): **13 VERIFIED · 21 P
 | T-72 | ✅ | 🟡 | 7 `container-type` anchors, **2** `@container` rules — only the table actually adapts |
 | T-81 | ✅ | 🟡 | rename done; `--gradient-heat` still ordered (§3.5) |
 | T-45/T-73 | ✅ | 🟡 | 3 of 6 named sets shipped; unrendered, unswitched, unmeasured, contradicting DESIGN.md |
-| T-31 | ✅ | 🟡 | generic states exist; six interactive components have no disabled treatment at all |
-| T-36/T-11 | ✅ | 🟡 | 11 shipped blocks have no specimen (§4) — new blocks joined the unshown set |
-| T-39 | ✅ | 🟡 | RTL rules shipped but land in the unlayered tails and the minifier eats the descendant combinators (§2.1, §2.3) |
-| T-87 | ✅ | 🟡 | `dist` still gitignored; `main`/`style` point into it; no `prepack` (§6.5) |
+| T-31 | ✅ | ✅ | disabled treatment added to radio, range, tabs, menu, layer-switch, legend (T-154) |
+| T-36/T-11 | ✅ | ✅ | all shipped blocks now have specimens (component-inventory: 0 without) |
+| T-39 | ✅ | ✅ | RTL rules now layered; minifier preserves descendant combinators (T-109/T-113) |
+| T-87 | ✅ | 🟡 | `prepack` added (T-115); `dist` still gitignored by design |
 
 **Reading the correction honestly:** none of it is dishonesty by the first pass — the ✅s
 were true of what they measured (the token, the rule, the export line). What the first
