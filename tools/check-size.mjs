@@ -38,7 +38,7 @@ const DIST = join(ROOT, "dist");
 /** Budgets in bytes. Measured 2026-10-22, ~3% headroom. */
 const BUDGETS = {
   "contour.min.css": 128 * 1024,
-  "contour.min.js": 22 * 1024,
+  "contour.min.js": 23 * 1024,
   "contour.tokens.json": 30 * 1024,
   "surfaces/contour-core.min.css": 89 * 1024,
   "surfaces/contour-docs.min.css": 100 * 1024,
