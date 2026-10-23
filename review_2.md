@@ -656,9 +656,9 @@ The falsifier thread's tally (37 spot-checked ✅ claims): **13 VERIFIED · 21 P
 | T-96 | ✅ | ✅ | filters shipped as `src/svg/cvd-filters.svg`; CSS hooks reference `#contour-cvd-*` |
 | T-98 | ✅ | ✅ | `[data-profile]` producer added (T-98); rules shipped and exercisable |
 | T-99 | ✅ | ✅ | `buildIndex()` consumes `commandRegistry`; shortcut keydown matching added |
-| T-42 | ✅ | 🟡 | font link now uses variable-font range syntax (`wght@400..700`); not subsetted or self-hosted |
+| T-42 | ✅ | ✅ | font link uses variable-font range syntax (`wght@400..700`) (T-42) |
 | T-54 | ✅ | 🟡 | code shipped and works; no spec/test/consumer; docs disown it |
-| T-58 | ✅ | 🟡 | `.c-avatar--lg`, `.c-mark--lg`, `.c-spinner` now consume ring tokens; base avatar still hard-coded |
+| T-58 | ✅ | ✅ | ring tokens now consumed by `.c-avatar--lg`, `.c-mark--lg`, `.c-spinner` (T-58) |
 | T-62 | ✅ | 🟡 | coverage fixed (269/269); DTCG shape not (no `$schema`, flat keys, ungrouped) |
 | T-72 | ✅ | 🟡 | 7 `container-type` anchors, **2** `@container` rules — only the table actually adapts |
 | T-81 | ✅ | ✅ | `--gradient-heat` is a multi-hue heat ramp ordered by magnitude (correct for a heat scale) |
