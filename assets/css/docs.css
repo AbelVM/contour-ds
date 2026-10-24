@@ -43,6 +43,18 @@
     -webkit-mask-repeat: repeat;
     mask-repeat: repeat;
     opacity: var(--contour-opacity, 0.075);
+    animation: contour-drift 120s linear infinite;
+  }
+
+  @keyframes contour-drift {
+    from { -webkit-mask-position: 0 0; mask-position: 0 0; }
+    to { -webkit-mask-position: 600px 600px; mask-position: 600px 600px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .chart-paper::before {
+      animation: none;
+    }
   }
 
   /* A whisper of graph paper under the contours. */
@@ -61,9 +73,31 @@
     opacity: calc(var(--contour-opacity, 0.075) * 0.42);
   }
 
-  /* -- Ridgeline divider -----------------------------------------------
-     A terrain profile drawn between two sections of the guide.
-     -------------------------------------------------------------------- */
+  /* -- Scroll-driven section reveals ----------------------------------- */
+  @supports (animation-timeline: view()) {
+    .ds-section {
+      animation: section-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 20%;
+    }
+
+    @keyframes section-reveal {
+      from {
+        opacity: 0;
+        transform: translateY(1rem);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ds-section {
+      animation: none;
+    }
+  }
   .ridgeline {
     position: relative;
     block-size: 3.5rem;
@@ -106,6 +140,15 @@
 
     .ridgeline svg {
       display: none;
+    }
+  }
+
+  /* -- Print: preserve contour lines and chart paper ---------- */
+  @media print {
+    .chart-paper::before {
+      opacity: 0.15 !important;
+      -webkit-mask-image: var(--contour-field);
+      mask-image: var(--contour-field);
     }
   }
 }
@@ -719,7 +762,8 @@
     inset-block-start: 100%;
     z-index: 40;
     margin-block-start: -1px;
-    overflow: hidden;
+    max-inline-size: 100%;
+    overflow: auto;
     border: 1px solid var(--color-border);
     border-block-start: 0;
     border-radius: 0 0 var(--radius-md) var(--radius-md);
@@ -731,6 +775,9 @@
     margin: 0;
     padding: 0.9rem 1rem;
     max-block-size: min(70vh, 36rem);
+    max-inline-size: 100%;
+    width: 100%;
+    min-width: 0;
     overflow: auto;
     overscroll-behavior: contain;
     font-family: var(--font-mono);

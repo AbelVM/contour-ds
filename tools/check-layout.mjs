@@ -56,7 +56,7 @@ const LEDGER = {
   base: ["container", "container--narrow", "container--reading", "stack", "stack--tight", "stack--loose",
     "cluster", "section", "section--sunken", "section--raised", "grid", "grid--2", "grid--3", "grid--4", "split"],
   // component-level layout, `@layer components`
-  components: ["c-row", "c-stack", "c-stack--sm", "c-stack--lg", "c-cluster", "c-sidebar", "c-container",
+  components: ["c-row", "c-row--wrap", "c-stack", "c-stack--sm", "c-stack--lg", "c-cluster", "c-sidebar", "c-container",
     "c-container--scrollable"],
   // utilities, `@layer utilities`
   utilities: ["u-cols-2", "u-cols-3", "u-auto-grid"],

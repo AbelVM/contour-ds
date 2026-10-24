@@ -190,10 +190,50 @@ if (desc && ogDesc && desc[1] !== ogDesc[1]) {
     }
   }
 
+// ---- 6. the guide's script budget, re-derived from the page -----------------
+// README.md states that number in prose. A published number no tool re-derives
+// is a number that decays, so the figure is read out of the document rather than
+// repeated here: change the sentence and the assertion changes with it, delete
+// the sentence and this fails. Three comparisons, because the sentence carries
+// three facts — how many scripts, how many are named, how many come from a CDN.
+// Every document that publishes the figure is compared, not the one that happens
+// to be right: README stated 3 external scripts while llms.txt stated 20+, and a
+// gate reading only README would have passed the false sentence. The copy under
+// .well-known/ is included because it is generated from llms.txt by
+// tools/gen-llms.mjs and nothing runs that generator.
+const BUDGET_DOCS = ["README.md", "llms.txt", ".well-known/llms.txt"];
+let budgetDocsCompared = 0;
+for (const doc of BUDGET_DOCS) {
+  const text = read(doc);
+  if (text === null) {
+    errors.push(`${doc} publishes the script budget but is missing — the gate refuses to pass a number it did not compare`);
+    continue;
+  }
+  const budget = /(\d+) external scripts(?:\s*\(([^)]*)\))?/.exec(text);
+  if (!budget) {
+    errors.push(`${doc} states no script budget as \`N external scripts\` — check-markup owns that number wherever it is published`);
+    continue;
+  }
+  budgetDocsCompared++;
+  const stated = Number(budget[1]);
+  if (stated !== guideScripts) {
+    errors.push(`${doc} says the guide loads ${stated} external scripts; index.html fetches ${guideScripts} <script src>`);
+  }
+  if (budget[2] == null) continue; // a bare figure is compared; a list must also add up
+  const listed = budget[2].split(",").map((s) => s.trim()).filter(Boolean);
+  const namedCdn = listed.filter((s) => /CDN/i.test(s)).length;
+  if (listed.length !== stated) {
+    errors.push(`${doc} says ${stated} external scripts but names ${listed.length} (${budget[2]}) — the sentence does not even agree with itself`);
+  }
+  if (namedCdn !== guideOffOrigin) {
+    errors.push(`${doc} names ${namedCdn} script(s) as coming from a CDN; index.html makes ${guideOffOrigin} off-origin script fetch(es)`);
+  }
+}
+
 // A run that looked at nothing is not a pass — including a budget sweep that
 // compared no document, which is what a renamed sentence or a moved file gives.
-if (!linkedFonts || !preloadedFonts || !metadataPages || !scriptLoads || !allowlisted.size) {
-  errors.push(`checked ${linkedFonts} self-hosted-font page(s), ${preloadedFonts} preloaded-font page(s), ${metadataPages} fully-described page(s), ${scriptLoads} script fetch(es), ${allowlisted.size} allowlisted origin(s) — nothing matched, so the gate proved nothing`);
+if (!linkedFonts || !preloadedFonts || !metadataPages || !scriptLoads || !allowlisted.size || !budgetDocsCompared) {
+  errors.push(`checked ${linkedFonts} self-hosted-font page(s), ${preloadedFonts} preloaded-font page(s), ${metadataPages} fully-described page(s), ${scriptLoads} script fetch(es), ${allowlisted.size} allowlisted origin(s) and ${budgetDocsCompared} budget document(s) — nothing matched, so the gate proved nothing`);
 }
 
 if (errors.length) {
@@ -205,6 +245,7 @@ console.log(
   `check-markup: OK — ${PAGES.length} shipped page(s): ${linkedFonts} use self-hosted fonts (no Google Fonts origin), ` +
     `${preloadedFonts} preload the critical face, ${metadataPages} carry title/description/og:type/twitter:card, ` +
     `${scriptLoads} script(s) fetched (${offOriginLoads} of them off-origin, every one named in OFF_ORIGIN_ALLOWLIST), ` +
+    `${budgetDocsCompared}/${BUDGET_DOCS.length} document(s) publishing the script budget agreed with the pages, ` +
     `${mentioned.size} off-origin pointer(s) named without being loaded, ` +
     `and the guide's two description attributes agree.`,
 );

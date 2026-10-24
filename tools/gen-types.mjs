@@ -1,0 +1,55 @@
+#!/usr/bin/env node
+import { inventory } from "./lib/inventory.mjs";
+import { writeFileSync } from "node:fs";
+import { join } from "node:path";
+
+const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
+const inv = inventory();
+const names = inv.components.names;
+const tokens = Object.keys(inv.tokens.census);
+
+const lines = [];
+lines.push("/**");
+lines.push(" * Contour Design System — TypeScript definitions");
+lines.push(" * Generated from src/css. Do not edit by hand.");
+lines.push(" */");
+lines.push("");
+lines.push("/** All component class names shipped by Contour. */");
+lines.push("export type ContourComponent =");
+names.map((n) => `  | "${n}"`).forEach((l) => lines.push(l));
+lines.push(";");
+lines.push("");
+lines.push("/** All design tokens declared by Contour. */");
+lines.push("export type ContourToken =");
+tokens.map((t) => `  | "${t}"`).forEach((l) => lines.push(l));
+lines.push(";");
+lines.push("");
+lines.push("/** The Contour JavaScript API (window.Contour). */");
+lines.push("export interface ContourAPI {");
+lines.push("  __loaded: true;");
+lines.push("  version: string;");
+lines.push("  toast: (message: string) => void;");
+lines.push("  setScheme: (scheme: 'dark' | 'light') => void;");
+lines.push("  scrollTo: (id: string | HTMLElement) => void;");
+lines.push("  copy: (text: string) => Promise<void>;");
+lines.push("  chart: {");
+lines.push("    scale: (domain: [number, number], range: [number, number]) => (v: number) => number;");
+lines.push("    ticks: (min: number, max: number, count: number) => number[];");
+lines.push("    datum: (x: number, y: number) => { x: number; y: number };");
+lines.push("  };");
+lines.push("  commands: {");
+lines.push("    register: (cmd: { title: string; hint?: string; icon?: string; shortcut?: string; run: () => void }) => void;");
+lines.push("    list: () => Array<{ title: string; hint: string; icon: string; shortcut: string | null }>; ");
+lines.push("  };");
+lines.push("}");
+lines.push("");
+lines.push("declare global {");
+lines.push("  interface Window {");
+lines.push("    Contour: ContourAPI;");
+lines.push("  }");
+lines.push("}");
+lines.push("");
+
+const out = join(ROOT, "dist", "contour.d.ts");
+writeFileSync(out, lines.join("\n"));
+console.log("Wrote", out, "—", names.length, "components,", tokens.length, "tokens");

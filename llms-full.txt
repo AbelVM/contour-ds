@@ -27,7 +27,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -52,7 +52,7 @@ Size and weight alone leave a page flat. Generous space around the thing that ma
 
 IBM Plex Mono is reserved for data, coordinates, labels and code. If it is prose, it is set in IBM Plex Sans. The split makes machine-read data instantly distinguishable.
 
-A control shows the action it performs, and the state it is in, before you touch it. Sort arrows, delta arrows, a copy button that becomes a tick. Affordable here means obvious.
+A control shows the action it performs, and the state it is in, before you touch it. Sort arrows, delta arrows, a copy button that becomes a tick. Affordance here means obvious.
 
 A landing page, a documentation site and a dashboard read as the same product: the same tokens, the same type scale, the same hairline. Only the density changes.
 
@@ -78,7 +78,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -101,11 +101,17 @@ Five elevation steps. In dark mode, higher means lighter — never a heavier sha
 
 For density, catchments and isoline bands. Seven stops, one hue, rising lightness.
 
+For bearing, aspect and phase. Eight stops, equal lightness, hue carries the encoding, wraps seamlessly from 360° back to 0°.
+
+For hazard, density and continuous surfaces. Six stops, non-monotonic lightness — hot, not ordered.
+
 ## Subsections
 
 - Semantic roles
 - Surfaces & text
 - Sequential scale
+- Cyclic scale
+- Heat scale
 
 ## Blocks documented here
 
@@ -122,7 +128,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -159,7 +165,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -199,7 +205,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -252,7 +258,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -285,7 +291,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -302,14 +308,21 @@ private until v1.0). See `index.json` for the whole set and the shared statement
 
 Controls sized for the hand and the keyboard. Every input has a visible label, a visible focus state and room for an error message that explains, not scolds. A select keeps its native option list: the platform draws that, so it follows the operating system's theme rather than the page's.
 
+Autocomplete input with keyboard navigation. Type to filter, arrow keys to navigate, Enter to select, Escape to close.
+
+## Subsections
+
+- Combobox
+
 ## Blocks documented here
 
-13 block(s). Their facts live in `../contour.components.json`;
+14 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
 - `.c-btn`
 - `.c-check`
+- `.c-combobox`
 - `.c-field`
 - `.c-icon-badge`
 - `.c-input`
@@ -324,7 +337,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -343,7 +356,7 @@ Badges carry a category. Chips carry a value. Pills carry a state. The waypoint 
 
 ## Blocks documented here
 
-9 block(s). Their facts live in `../contour.components.json`;
+10 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
@@ -353,13 +366,14 @@ starts disagreeing with itself.
 - `.c-chip`
 - `.c-dot`
 - `.c-icon-badge`
+- `.c-live-badge`
 - `.c-pill`
 - `.c-section-head`
 - `.c-tag`
 
 ---
 
-Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -424,7 +438,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -481,7 +495,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -551,7 +565,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -582,21 +596,26 @@ Why this route
 
 Crossing at the canal lock costs less than the detour around it.
 
+Modal dialog, hint tooltip, command palette and the toast live region. These ship as overlay primitives; the demo instances live in the page footer.
+
 ## Subsections
 
 - Side sheet
 - Desire Paths
 - Drawer
+- Dialog, tooltip, command palette & toast host
 
 ## Blocks documented here
 
-13 block(s). Their facts live in `../contour.components.json`;
+17 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
 - `.c-btn`
 - `.c-callout`
 - `.c-chip`
+- `.c-command`
+- `.c-dialog`
 - `.c-drawer`
 - `.c-field`
 - `.c-icon-badge`
@@ -607,10 +626,12 @@ starts disagreeing with itself.
 - `.c-scrim`
 - `.c-section-head`
 - `.c-sheet`
+- `.c-toast-host`
+- `.c-tooltip`
 
 ---
 
-Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -647,6 +668,12 @@ Tile parsing and graph construction moved fully client-side.
 
 Eight hues separate by hue, not by lightness — so a line also carries a dash pattern, and the legend previews that pattern. No chart asks the reader to tell two colours apart, and every series clears 3:1 against every surface it can be drawn on (canvas, canvas-sunken, surface-1/2/3, surface-raised), in both themes.
 
+Bars for magnitude, one hue per series. The same plot, axis and tooltip vocabulary as the line chart — only the mark changes.
+
+2D density with isoline overlay — the signature motif as function. Marching squares over a real field, same algorithm as the generator. No other design system ships this.
+
+Add data-chart-export to a chart to get an SVG download button. Exports vector graphics for reports and presentations.
+
 A panel always says where it stands. Empty is not an error, live is not idle, and the error state says what to do next.
 
 Nothing to show yet
@@ -676,6 +703,9 @@ A migration aid: the names a consumer may already know, and the Contour class th
 - Engine comparison
 - Release timeline
 - Chart series
+- Bar chart
+- Contour plot
+- Chart export
 - Panel states
 - Activity
 - Deltas
@@ -684,7 +714,7 @@ A migration aid: the names a consumer may already know, and the Contour class th
 
 ## Blocks documented here
 
-16 block(s). Their facts live in `../contour.components.json`;
+17 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
@@ -692,6 +722,7 @@ starts disagreeing with itself.
 - `.c-badge`
 - `.c-btn`
 - `.c-chart`
+- `.c-contour-plot`
 - `.c-datamark`
 - `.c-delta`
 - `.c-icon-badge`
@@ -707,7 +738,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -732,7 +763,7 @@ Shown — same markup, wider profile.
 
 ## Blocks documented here
 
-20 block(s). Their facts live in `../contour.components.json`;
+21 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
@@ -756,10 +787,11 @@ starts disagreeing with itself.
 - `.c-segmented`
 - `.c-survey`
 - `.c-table`
+- `.c-table-wrap`
 
 ---
 
-Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -864,7 +896,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -883,6 +915,10 @@ The persuasive set. These read as an argument rather than an instrument, so the 
 
 A quiet row of names. Monochrome until the pointer arrives.
 
+Does it speak my stack? Not who pays for it.
+
+Median ~600 kB of HTML carrying ~20 external scripts, vs. a shipped system of ~21 kB gzipped.
+
 Contour returns the line and the arithmetic behind it — the edges crossed, the weights applied, the engine that chose. Nothing about the result is a black box.
 
 For one person routing their own city.
@@ -900,6 +936,8 @@ One package, one tile source, and the same engine you can read line by line.
 ## Subsections
 
 - Logo wall
+- Interoperability wall
+- Cohort weight
 - Feature showcase
 - Every route, with the cost that produced it.
 - Testimonial
@@ -909,7 +947,7 @@ One package, one tile source, and the same engine you can read line by line.
 
 ## Blocks documented here
 
-13 block(s). Their facts live in `../contour.components.json`;
+14 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
@@ -924,12 +962,13 @@ starts disagreeing with itself.
 - `.c-pricing`
 - `.c-section-head`
 - `.c-showcase`
+- `.c-table`
 - `.c-table-wrap`
 - `.c-testimonial`
 
 ---
 
-Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -970,7 +1009,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1041,15 +1080,77 @@ This action cannot be undone.
 
 RTL specimen — chevron flips to the inline-start side.
 
+The spatial dashboard skeleton: an app shell, a map area with floating panels, a footer for charts, and the containers that fill them.
+
+.c-row — horizontal flex, items centered
+
+.c-stack — vertical, gap scales with --space-md
+
+.c-cluster — wrapping, for tags and chips
+
+.c-box — padded container, size variants
+
+Default box (md padding)
+
+.c-map-slot — map chrome container
+
+.c-map-panel — floating panel over the map
+
+Top-right panel
+
+Bottom-left panel
+
+.c-map-footer — bottom bar for charts and tables
+
+Cell 1
+
+Cell 2
+
+Cell 3
+
+.c-container — fixed (fit content) + scrollable (fill space)
+
+Fixed container
+
+Fits its content, stays put.
+
+Scrollable container
+
+Fills remaining space
+
+And scrolls if needed
+
+More content here
+
+Even more content
+
+Main content area
+
+.c-app / .c-app-body — application shell
+
+Sidebar
+
+Main content area
+
+## Subsections
+
+- Layout primitives
+
 ## Blocks documented here
 
-23 block(s). Their facts live in `../contour.components.json`;
+34 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
 - `.c-affordance`
 - `.c-affordances`
+- `.c-app`
+- `.c-app-body`
+- `.c-badge`
+- `.c-box`
 - `.c-btn`
+- `.c-cluster`
+- `.c-container`
 - `.c-destructive-hint`
 - `.c-disclosure`
 - `.c-drag-handle`
@@ -1057,16 +1158,21 @@ starts disagreeing with itself.
 - `.c-filter-pill`
 - `.c-icon-badge`
 - `.c-linkish`
+- `.c-map-footer`
+- `.c-map-panel`
+- `.c-map-slot`
 - `.c-menu`
 - `.c-panel`
 - `.c-pressable`
 - `.c-range`
 - `.c-reserved`
 - `.c-resize-handle`
+- `.c-row`
 - `.c-row-action`
 - `.c-scrim`
 - `.c-section-head`
 - `.c-select`
+- `.c-sidebar`
 - `.c-stack`
 - `.c-switch`
 - `.c-tag`
@@ -1080,7 +1186,7 @@ part of the component contract and nothing in an installed package defines them:
 
 ---
 
-Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1192,7 +1298,7 @@ part of the component contract and nothing in an installed package defines them:
 
 ---
 
-Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1236,7 +1342,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1282,7 +1388,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1301,6 +1407,8 @@ Plain CSS in src/, one entry point, no build step and no runtime. Link it and st
 
 A map engine paints its own control cluster over its canvas — zoom, compass, fullscreen — and that markup belongs to the engine, so .c-map-slot cannot reach it. src/css/map-chrome.css re-keys the cluster onto the tokens the system already uses for its own controls: surface, edge, radius, glyph colour. Nothing else. The engine keeps the geometry, and the Mapbox logo keeps its own paint — it is a.mapboxgl-ctrl-logo, carries no .mapboxgl-ctrl class, and must not be styled. This is the one sheet in src/css/ that sits outside the cascade layers: the vendor's stylesheet is unlayered too, and a layered rule would lose to it whatever the link order. Load it after the engine's own file. The guide ships no engine, so the cluster's size and glyphs here are the guide's stand-in.
 
+Contour ships no syntax highlighter (zero runtime dependencies); highlighting is the consumer's. src/css/hljs.css maps highlight.js token classes onto Contour tokens, so a consumer who runs that highlighter gets code that matches the system's palette in both themes. It sets colour only — never layout, never font-family. Load it after the library's own stylesheet.
+
 ## Blocks documented here
 
 5 block(s). Their facts live in `../contour.components.json`;
@@ -1315,5 +1423,5 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
 

@@ -519,7 +519,400 @@
     color: var(--color-accent-text);
   }
 
-  /* Waypoint: the system's status dot. Ring + core; the live variant pulses. */
+  /* Keyboard shortcut help overlay. */
+  .c-shortcut-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-toast, 900);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: color-mix(in oklab, var(--color-surface-1) 60%, transparent);
+    backdrop-filter: blur(4px);
+  }
+
+  .c-shortcut-overlay[hidden] {
+    display: none;
+  }
+
+  .c-shortcut-panel {
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    max-inline-size: 32rem;
+    inline-size: 90vw;
+    max-block-size: 80vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .c-shortcut-panel__title {
+    font-size: var(--type-h4);
+    font-weight: var(--weight-bold);
+    margin-block-end: var(--space-md);
+  }
+
+  .c-shortcut-list {
+    display: grid;
+    gap: var(--space-xs);
+  }
+
+  .c-shortcut-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    padding: var(--space-2xs) 0;
+  }
+
+  .c-shortcut-row__label {
+    color: var(--color-text);
+  }
+
+  .c-shortcut-row__keys {
+    display: flex;
+    gap: var(--space-2xs);
+  }
+  /* Combobox: autocomplete input with dropdown. */
+  .c-combobox {
+    position: relative;
+    display: inline-block;
+    inline-size: 100%;
+  }
+
+  .c-combobox__input {
+    inline-size: 100%;
+    min-block-size: var(--target-control);
+    padding: 0.6rem 0.85rem;
+    border: 1px solid var(--color-control-edge);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-1);
+    color: var(--color-text);
+    font-size: var(--type-sm);
+    line-height: 1.4;
+    transition:
+      border-color var(--dur-fast) var(--ease-standard),
+      box-shadow var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-combobox__input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px var(--color-focus-ring),
+      0 0 0 4px var(--color-focus-halo);
+    outline: none;
+  }
+
+  .c-combobox__list {
+    position: absolute;
+    inset-block-start: 100%;
+    inset-inline-start: 0;
+    inline-size: 100%;
+    max-block-size: 16rem;
+    overflow-y: auto;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    z-index: var(--z-tooltip, 100);
+    margin-block-start: var(--space-2xs);
+    padding: var(--space-2xs);
+    list-style: none;
+  }
+
+  .c-combobox__list[hidden] {
+    display: none;
+  }
+
+  .c-combobox__option {
+    padding: var(--space-2xs) var(--space-xs);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: var(--type-sm);
+  }
+
+  .c-combobox__option:hover,
+  .c-combobox__option[aria-selected="true"] {
+    background: var(--color-surface-2);
+  }
+
+  .c-combobox__option--active {
+    background: var(--color-primary-soft);
+    color: var(--color-primary-text);
+  }
+
+  /* Tree view: hierarchical list with expand/collapse. */
+  .c-tree {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .c-tree__node {
+    position: relative;
+  }
+
+  .c-tree__row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    padding: var(--space-2xs) var(--space-xs);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: var(--type-sm);
+    transition: background-color var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-tree__row:hover {
+    background: var(--color-surface-2);
+  }
+
+  .c-tree__row[aria-expanded="true"] {
+    font-weight: var(--weight-medium);
+  }
+
+  .c-tree__toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    flex: none;
+    color: var(--color-text-subtle);
+    transition: transform var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-tree__toggle[aria-expanded="true"] {
+    transform: rotate(90deg);
+  }
+
+  .c-tree__toggle svg {
+    inline-size: 0.75rem;
+    block-size: 0.75rem;
+  }
+
+  .c-tree__children {
+    list-style: none;
+    padding-inline-start: var(--space-md);
+    margin: 0;
+    overflow: hidden;
+    transition: block-size var(--dur-base) var(--ease-standard);
+  }
+
+  .c-tree__children[hidden] {
+    display: none;
+  }
+
+  .c-tree__leaf {
+    padding-inline-start: calc(var(--space-md) + 1rem);
+  }
+
+  /* Drag and drop: visual vocabulary for draggable items and drop zones. */
+  .c-draggable {
+    cursor: grab;
+    user-select: none;
+    transition: opacity var(--dur-fast) var(--ease-standard),
+      transform var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-draggable:active {
+    cursor: grabbing;
+  }
+
+  .c-draggable--dragging {
+    opacity: 0.5;
+    transform: scale(0.98);
+    transition: transform var(--dur-fast) var(--ease-standard),
+      opacity var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-draggable--reordering {
+    transition: transform var(--dur-base) var(--ease-standard);
+  }
+
+  /* Touch-friendly: larger hit area on touch devices. */
+  @media (pointer: coarse) {
+    .c-drag-handle {
+      inline-size: 2rem;
+      block-size: 2rem;
+    }
+
+    .c-draggable {
+      touch-action: none;
+    }
+  }
+
+  .c-drag-handle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+    color: var(--color-text-subtle);
+    cursor: grab;
+    flex: none;
+  }
+
+  .c-drag-handle svg {
+    inline-size: 0.875rem;
+    block-size: 0.875rem;
+  }
+
+  .c-drop-zone {
+    border: 2px dashed var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    transition: border-color var(--dur-fast) var(--ease-standard),
+      background-color var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-drop-zone--active {
+    border-color: var(--color-primary);
+    background: var(--color-primary-soft);
+  }
+
+  .c-drop-zone--reject {
+    border-color: var(--color-danger);
+    background: color-mix(in oklab, var(--color-danger) 8%, transparent);
+  }
+
+  .c-drop-indicator {
+    block-size: 2px;
+    background: var(--color-primary);
+    border-radius: 1px;
+    margin-block: var(--space-2xs);
+    opacity: 0;
+    transition: opacity var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-drop-indicator--visible {
+    opacity: 1;
+  }
+
+  /* Resizable panels: split-pane with drag handle. */
+  .c-resizable {
+    display: flex;
+    overflow: hidden;
+  }
+
+  .c-resizable--horizontal {
+    flex-direction: row;
+  }
+
+  .c-resizable--vertical {
+    flex-direction: column;
+  }
+
+  .c-resizable__pane {
+    overflow: auto;
+    flex: 1 1 0;
+    min-inline-size: 0;
+    min-block-size: 0;
+  }
+
+  .c-resize-handle {
+    flex: none;
+    inline-size: 1.5rem;
+    block-size: 100%;
+    display: grid;
+    place-items: center;
+    background: transparent;
+    position: relative;
+    touch-action: none;
+    cursor: col-resize;
+    transition: color var(--dur-fast) var(--ease-standard);
+    color: var(--color-control-edge);
+  }
+
+  .c-resizable--vertical .c-resize-handle {
+    inline-size: 100%;
+    block-size: 1.5rem;
+    cursor: row-resize;
+  }
+
+  /* Visible bar. */
+  .c-resize-handle::before {
+    content: "";
+    inline-size: 4px;
+    block-size: 1.5rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-border);
+    transition: background-color var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-resizable--vertical .c-resize-handle::before {
+    inline-size: 1.5rem;
+    block-size: 4px;
+  }
+
+  .c-resize-handle:hover::before,
+  .c-resize-handle--dragging::before {
+    background: var(--color-primary);
+  }
+
+  /* Snap indicator. */
+  .c-resize-handle::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    background: var(--color-primary);
+    opacity: 0;
+    transition: opacity var(--dur-fast) var(--ease-standard);
+    pointer-events: none;
+  }
+
+  .c-resize-handle--snapping::after {
+    opacity: 0.3;
+  }
+
+  /* View transitions: page-level morphing. */
+  @view-transition {
+    navigation: auto;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: var(--dur-base);
+    animation-timing-function: var(--ease-standard, ease);
+  }
+
+  ::view-transition-old(root) {
+    animation-name: view-fade-out;
+  }
+
+  ::view-transition-new(root) {
+    animation-name: view-fade-in;
+  }
+
+  @keyframes view-fade-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+
+  @keyframes view-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  [data-view-transition] {
+    view-transition-name: var(--view-transition-name, none);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation: none;
+    }
+  }
+
+  /* Virtual scroll container: CSS-only scroll optimization. */
+  .c-virtual-scroll {
+    overflow-y: auto;
+    contain: strict;
+    content-visibility: auto;
+    contain-intrinsic-size: auto 500px;
+  }
+
   .c-dot {
     --dot-color: var(--color-text-subtle);
     position: relative;
@@ -558,6 +951,36 @@
     background: inherit;
     animation: c-ping var(--dur-ping) var(--ease-out-expo) infinite;
   }
+
+  /* Live badge: pulsing indicator for real-time data streams. */
+  .c-live-badge {
+    --live-color: var(--color-accent);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    padding: var(--space-2xs) var(--space-xs);
+    border-radius: var(--radius-pill);
+    background: color-mix(in oklab, var(--live-color) 12%, transparent);
+    color: var(--live-color);
+    font-size: var(--type-xs);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  .c-live-badge::before {
+    content: "";
+    inline-size: 0.4rem;
+    block-size: 0.4rem;
+    border-radius: 50%;
+    background: var(--live-color);
+    animation: c-ping var(--dur-ping) var(--ease-out-expo) infinite;
+  }
+
+  .c-live-badge--connected { --live-color: var(--color-success); }
+  .c-live-badge--disconnected { --live-color: var(--color-danger); }
+  .c-live-badge--stale { --live-color: var(--color-warning); }
 
   @keyframes c-ping {
     0% {
@@ -654,6 +1077,13 @@
   .c-card:focus-within {
     border-color: var(--color-border-strong);
     background: var(--color-surface-2);
+  }
+
+  /* Container query: reduce padding when the card is narrow. */
+  @container (inline-size < 16rem) {
+    .c-card {
+      padding: var(--space-md);
+    }
   }
 
   .c-card:hover::before,
@@ -2580,6 +3010,10 @@
     gap: var(--space-sm);
   }
 
+  .c-row--wrap {
+    flex-wrap: wrap;
+  }
+
   .c-stack {
     display: flex;
     flex-direction: column;
@@ -2602,7 +3036,7 @@
     gap: var(--space-lg);
   }
 
-  @media (max-width: 48rem) {
+  @media (width < 48rem) {
     .c-sidebar { grid-template-columns: 1fr; }
   }
 }

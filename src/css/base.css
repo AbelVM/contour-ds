@@ -433,4 +433,62 @@
       scroll-behavior: auto !important;
     }
   }
+
+  /* -- Print: flatten chrome, preserve content ---------- */
+  @media print {
+    *,
+    *::before,
+    *::after {
+      animation: none !important;
+      transition: none !important;
+      box-shadow: none !important;
+    }
+
+    body {
+      background: var(--color-surface-1);
+      color: var(--color-text-strong);
+      font-size: 10pt;
+    }
+
+    /* Strip navigation, headers, footers, and interactive chrome. */
+    .c-header,
+    .c-footer,
+    .c-sidebar,
+    .c-command,
+    .c-toast-host,
+    .c-scrim {
+      display: none !important;
+    }
+
+    /* Flatten surfaces with a single hairline. */
+    .c-card,
+    .c-panel,
+    .c-kpi,
+    .c-table {
+      background: var(--color-surface-1);
+      border: 1px solid var(--color-border);
+      box-shadow: none;
+      break-inside: avoid;
+    }
+
+    /* Ensure links show their URL. */
+    a[href]::after {
+      content: " (" attr(href) ")";
+      font-size: 0.8em;
+      color: var(--color-text-subtle);
+    }
+
+    /* Avoid breaking inside components. */
+    .c-card,
+    .c-panel,
+    .c-kpi,
+    tr {
+      break-inside: avoid;
+    }
+
+    /* Page margins. */
+    @page {
+      margin: 1.5cm;
+    }
+  }
 }

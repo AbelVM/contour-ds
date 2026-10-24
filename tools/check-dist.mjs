@@ -22,7 +22,7 @@ const css = readFileSync(join(ROOT, "dist/contour.min.css"), "utf8");
 // every one of them, and `tools/check-docs.mjs` fails when a file on disk is
 // named by no row or a row names a file that is not on disk. Naming the index
 // here is what makes the package as a whole reachable from a document.
-const SHIPPED_JSON = ["map-chrome-contract.json", "contour.tokens.json", "contour.themes.json", "contour.components.json", "docs/index.json", "registry/registry.json", "agent-rules.json"];
+const SHIPPED_JSON = ["map-chrome-contract.json", "contour.tokens.json", "contour.themes.json", "contour.components.json", "docs/index.json", "registry/registry.json", "agent-rules.json", "contour.d.ts"];
 const SHIPPED_CSS_PROFILES = ["map-chrome.maplibre.css", "map-chrome.mapbox.css"];
 // The highlight.js companion (C-68) is copied from its own source, so it is listed
 // here and NOT in SHIPPED_CSS_PROFILES: that list feeds a loop which compares every

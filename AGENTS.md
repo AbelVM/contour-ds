@@ -14,7 +14,7 @@ engines, pedestrian simulators, geospatial dashboards). It ships three
 surfaces: a **landing page**, a **documentation site** and a **technical
 dashboard**.
 
-- Dark and light themes, <!-- ds:components -->134<!-- /ds:components --> components, <!-- ds:tokens -->290<!-- /ds:tokens --> design tokens.
+- Dark and light themes, <!-- ds:components -->159<!-- /ds:components --> components, <!-- ds:tokens -->290<!-- /ds:tokens --> design tokens.
 - **Zero runtime dependencies, no build step.** `src/css/ds.css` is the whole
   system and can be linked straight off a disk.
 - The style guide (`index.html`) is the documentation *and* the test suite.
@@ -376,7 +376,7 @@ node --check assets/js/guide.js
 node tools/check-tokens.mjs    # the census: an unread token must be ledgered or gone
 node tools/check-motion.mjs    # WCAG 2.2.2: every infinite animation pausable by a control on a page
 node tools/check-defs.mjs      # every url(#id) in src/css reaches a def inside src/
-node tools/check-markup.mjs    # self-hosted fonts, no unnamed off-origin load, share metadata
+node tools/check-markup.mjs    # self-hosted fonts, no unnamed off-origin load, share metadata, and the guide's published script budget
 node tools/snippets.mjs        # if you touched a specimen; also the snippet spacing guard
 node tools/build.mjs           # if you touched src/
 node tools/check-size.mjs      # refuses a stale dist/, not only a big one

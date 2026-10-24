@@ -272,7 +272,24 @@
       await navigator.clipboard.writeText(text);
       return true;
     } catch {
-      return false;
+      /* Clipboard API unavailable (insecure context, file://, etc.).
+         Fall back to a temporary textarea + execCommand, which works in
+         more contexts even though it is deprecated. */
+      try {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.setAttribute("readonly", "");
+        ta.style.position = "fixed";
+        ta.style.top = "-9999px";
+        ta.style.opacity = "0";
+        document.body.append(ta);
+        ta.select();
+        const ok = document.execCommand("copy");
+        ta.remove();
+        return ok;
+      } catch {
+        return false;
+      }
     }
   };
 
@@ -828,6 +845,34 @@
         if (!isOpen()) open();
       }
 
+      // "?" shows the keyboard shortcut help overlay.
+      if (
+        event.key === "?" &&
+        !event.metaKey &&
+        !event.ctrlKey &&
+        !event.altKey &&
+        !isTyping(event.target)
+      ) {
+        event.preventDefault();
+        const overlay = document.querySelector("[data-shortcut-overlay]");
+        if (overlay) {
+          if (overlay.hasAttribute("hidden")) {
+            overlay.removeAttribute("hidden");
+          } else {
+            overlay.setAttribute("hidden", "");
+          }
+        }
+        return;
+      }
+
+      // Escape closes the shortcut overlay.
+      if (event.key === "Escape") {
+        const overlay = document.querySelector("[data-shortcut-overlay]");
+        if (overlay && !overlay.hasAttribute("hidden")) {
+          overlay.setAttribute("hidden", "");
+        }
+      }
+
       // Registered command shortcuts (T-99): run a command whose shortcut
       // matches the pressed key combination.
       if (!isTyping(event.target)) {
@@ -967,7 +1012,9 @@
     const span = max - min || 1;
     const step = Math.pow(10, Math.floor(Math.log10(span / count)));
     const err = (count * step) / span;
+    if (!isFinite(step) || step <= 0) return [min, max];
     let niceStep = step;
+    if (!isFinite(niceStep) || niceStep <= 0) niceStep = step || 1;
     if (err <= 0.15) niceStep = 10 * step;
     else if (err <= 0.35) niceStep = 5 * step;
     else if (err <= 0.75) niceStep = 2 * step;
@@ -992,7 +1039,10 @@
      --------------------------------------------------------------------- */
   const commandRegistry = [];
   function registerCommand(cmd) {
-    if (!cmd || !cmd.id) return;
+    if (!cmd || !cmd.id || typeof cmd.id !== "string") return;
+    if (cmd.label != null && typeof cmd.label !== "string") return;
+    if (cmd.shortcut != null && typeof cmd.shortcut !== "string") return;
+    if (cmd.run != null && typeof cmd.run !== "function") return;
     commandRegistry.push(Object.freeze({
       id: cmd.id,
       label: cmd.label || cmd.id,
@@ -1068,6 +1118,384 @@
         else scope.setAttribute("data-motion", value);
         $$("button", group).forEach((b) => b.setAttribute("aria-pressed", String(b === btn)));
       });
+    });
+  });
+
+  /* ---------------------------------------------------------------------
+   19. Contour plot — marching squares over a 2D field (signature motif)
+     Generates isolines from a grid of values. The same algorithm as
+     tools/contour-gen.py, ported to the browser.
+     --------------------------------------------------------------------- */
+  const marchingSquares = (grid, level) => {
+    const rows = grid.length;
+    const cols = grid[0].length;
+    const segments = [];
+
+    const lerp = (a, b, va, vb) => {
+      if (vb === va) return 0.5;
+      return (level - va) / (vb - va);
+    };
+
+    for (let y = 0; y < rows - 1; y++) {
+      for (let x = 0; x < cols - 1; x++) {
+        const tl = grid[y][x];
+        const tr = grid[y][x + 1];
+        const bl = grid[y + 1][x];
+        const br = grid[y + 1][x + 1];
+
+        const code =
+          (tl >= level ? 8 : 0) |
+          (tr >= level ? 4 : 0) |
+          (br >= level ? 2 : 0) |
+          (bl >= level ? 1 : 0);
+
+        if (code === 0 || code === 15) continue;
+
+        const top = { x: x + lerp(tl, tr, tl, tr), y: y };
+        const right = { x: x + 1, y: y + lerp(tr, br, tr, br) };
+        const bottom = { x: x + lerp(bl, br, bl, br), y: y + 1 };
+        const left = { x: x, y: y + lerp(tl, bl, tl, bl) };
+
+        // Asymptotic decider for saddle cases (5 and 10).
+        let connect;
+        if (code === 5) {
+          const center = (tl + tr + bl + br) / 4;
+          connect = center >= level ? "top-bottom" : "left-right";
+        } else if (code === 10) {
+          const center = (tl + tr + bl + br) / 4;
+          connect = center >= level ? "left-right" : "top-bottom";
+        }
+
+        switch (code) {
+          case 1: case 14: segments.push([left, bottom]); break;
+          case 2: case 13: segments.push([bottom, right]); break;
+          case 3: case 12: segments.push([left, right]); break;
+          case 4: case 11: segments.push([top, right]); break;
+          case 6: case 9: segments.push([top, bottom]); break;
+          case 7: case 8: segments.push([left, top]); break;
+          case 5:
+            if (connect === "top-bottom") {
+              segments.push([top, bottom]);
+              segments.push([left, right]);
+            } else {
+              segments.push([top, right]);
+              segments.push([left, bottom]);
+            }
+            break;
+          case 10:
+            if (connect === "left-right") {
+              segments.push([left, right]);
+              segments.push([top, bottom]);
+            } else {
+              segments.push([top, right]);
+              segments.push([left, bottom]);
+            }
+            break;
+        }
+      }
+    }
+
+    return segments;
+  };
+
+  const renderContourPlot = (el) => {
+    const svg = el.querySelector("svg");
+    if (!svg) return;
+
+    const valuesAttr = el.getAttribute("data-values");
+    const levelsAttr = el.getAttribute("data-levels");
+    if (!valuesAttr) return;
+
+    let grid;
+    try { grid = JSON.parse(valuesAttr); } catch (e) { return; }
+    const levels = levelsAttr ? JSON.parse(levelsAttr) : [0.3, 0.5, 0.7];
+
+    const rows = grid.length;
+    const cols = grid[0].length;
+    const w = el.clientWidth || 300;
+    const h = el.clientHeight || 300;
+    const sx = w / (cols - 1);
+    const sy = h / (rows - 1);
+
+    // Clear previous contours.
+    svg.querySelectorAll(".c-contour-plot__contour").forEach((n) => n.remove());
+
+    levels.forEach((level, li) => {
+      const segs = marchingSquares(grid, level);
+      // Connect segments into paths (simple: just draw each segment).
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      let d = "";
+      for (const [a, b] of segs) {
+        d += `M ${a.x * sx} ${a.y * sy} L ${b.x * sx} ${b.y * sy} `;
+      }
+      path.setAttribute("d", d.trim());
+      path.setAttribute("class", "c-contour-plot__contour" + (li > 0 ? " c-contour-plot__contour--level-" + (li + 1) : ""));
+      svg.appendChild(path);
+    });
+  };
+
+  $$("[data-contour-plot]").forEach((el) => {
+    renderContourPlot(el);
+    // Re-render on resize.
+    if (typeof ResizeObserver !== "undefined") {
+      new ResizeObserver(() => renderContourPlot(el)).observe(el);
+    }
+  });
+
+  /* ---------------------------------------------------------------------
+   20. Chart export — SVG/PNG download for c-chart
+     --------------------------------------------------------------------- */
+  $$("[data-chart-export]").forEach((chart) => {
+    const btn = document.createElement("button");
+    btn.className = "c-btn c-btn--sm c-btn--ghost";
+    btn.textContent = "Export";
+    btn.setAttribute("aria-label", "Export chart");
+    btn.addEventListener("click", () => {
+      const svg = chart.querySelector("svg");
+      if (!svg) return;
+      const serializer = new XMLSerializer();
+      const svgStr = serializer.serializeToString(svg);
+      const blob = new Blob([svgStr], { type: "image/svg+xml" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "chart.svg";
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+    chart.appendChild(btn);
+  });
+
+  /* ---------------------------------------------------------------------
+   21. Combobox — autocomplete with keyboard navigation
+     --------------------------------------------------------------------- */
+  $$(".c-combobox").forEach((combo) => {
+    const input = combo.querySelector(".c-combobox__input");
+    const list = combo.querySelector(".c-combobox__list");
+    if (!input || !list) return;
+
+    const options = [...list.querySelectorAll(".c-combobox__option")];
+    let activeIndex = -1;
+
+    const filter = (query) => {
+      const q = query.toLowerCase();
+      options.forEach((opt) => {
+        const text = opt.textContent.toLowerCase();
+        opt.hidden = q && !text.includes(q);
+      });
+      activeIndex = -1;
+    };
+
+    const open = () => list.removeAttribute("hidden");
+    const close = () => list.setAttribute("hidden", "");
+
+    input.addEventListener("input", () => {
+      filter(input.value);
+      open();
+    });
+
+    input.addEventListener("focus", () => {
+      filter(input.value);
+      open();
+    });
+
+    input.addEventListener("keydown", (e) => {
+      const visible = options.filter((o) => !o.hidden);
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        activeIndex = Math.min(activeIndex + 1, visible.length - 1);
+        visible.forEach((o, i) => o.classList.toggle("c-combobox__option--active", i === activeIndex));
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        activeIndex = Math.max(activeIndex - 1, 0);
+        visible.forEach((o, i) => o.classList.toggle("c-combobox__option--active", i === activeIndex));
+      } else if (e.key === "Enter") {
+        e.preventDefault();
+        if (activeIndex >= 0 && visible[activeIndex]) {
+          input.value = visible[activeIndex].textContent;
+          close();
+        }
+      } else if (e.key === "Escape") {
+        close();
+      }
+    });
+
+    list.addEventListener("click", (e) => {
+      const opt = e.target.closest(".c-combobox__option");
+      if (opt) {
+        input.value = opt.textContent;
+        close();
+        input.focus();
+      }
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!combo.contains(e.target)) close();
+    });
+  });
+
+  /* ---------------------------------------------------------------------
+   22. Tree view — expand/collapse
+     --------------------------------------------------------------------- */
+  $$(".c-tree__toggle").forEach((toggle) => {
+    toggle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const expanded = toggle.getAttribute("aria-expanded") === "true";
+      toggle.setAttribute("aria-expanded", String(!expanded));
+      const row = toggle.closest(".c-tree__row");
+      if (row) row.setAttribute("aria-expanded", String(!expanded));
+      const children = toggle.closest(".c-tree__node")?.querySelector(":scope > .c-tree__children");
+      if (children) {
+        if (expanded) children.setAttribute("hidden", "");
+        else children.removeAttribute("hidden");
+      }
+    });
+  });
+
+  /* ---------------------------------------------------------------------
+   23. Resizable panels — pointer + keyboard
+     --------------------------------------------------------------------- */
+  $$(".c-resize-handle").forEach((handle) => {
+    handle.setAttribute("tabindex", "0");
+    handle.setAttribute("role", "separator");
+    handle.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      handle.setPointerCapture(e.pointerId);
+      handle.classList.add("c-resize-handle--dragging");
+      const resizable = handle.closest(".c-resizable");
+      const isHorizontal = resizable?.classList.contains("c-resizable--horizontal");
+      const prevPane = handle.previousElementSibling;
+      const nextPane = handle.nextElementSibling;
+      if (!prevPane || !nextPane) return;
+
+      const startPos = isHorizontal ? e.clientX : e.clientY;
+      const prevSize = isHorizontal ? prevPane.offsetWidth : prevPane.offsetHeight;
+      const nextSize = isHorizontal ? nextPane.offsetWidth : nextPane.offsetHeight;
+
+      const onMove = (ev) => {
+        const delta = (isHorizontal ? ev.clientX : ev.clientY) - startPos;
+        const newPrev = Math.max(50, prevSize + delta);
+        const newNext = Math.max(50, nextSize - delta);
+        prevPane.style.flex = "0 0 " + newPrev + "px";
+        nextPane.style.flex = "0 0 " + newNext + "px";
+      };
+
+      const onUp = () => {
+        handle.classList.remove("c-resize-handle--dragging");
+        handle.releasePointerCapture(e.pointerId);
+        document.removeEventListener("pointermove", onMove);
+        document.removeEventListener("pointerup", onUp);
+      };
+
+      document.addEventListener("pointermove", onMove);
+      document.addEventListener("pointerup", onUp);
+    });
+
+    handle.addEventListener("keydown", (e) => {
+      const resizable = handle.closest(".c-resizable");
+      const isHorizontal = resizable?.classList.contains("c-resizable--horizontal");
+      const prevPane = handle.previousElementSibling;
+      const nextPane = handle.nextElementSibling;
+      if (!prevPane || !nextPane) return;
+
+      const step = 10;
+      let delta = 0;
+      if (isHorizontal) {
+        if (e.key === "ArrowLeft") delta = -step;
+        else if (e.key === "ArrowRight") delta = step;
+      } else {
+        if (e.key === "ArrowUp") delta = -step;
+        else if (e.key === "ArrowDown") delta = step;
+      }
+
+      if (delta !== 0) {
+        e.preventDefault();
+        const prevSize = isHorizontal ? prevPane.offsetWidth : prevPane.offsetHeight;
+        const nextSize = isHorizontal ? nextPane.offsetWidth : nextPane.offsetHeight;
+        const newPrev = Math.max(50, prevSize + delta);
+        const newNext = Math.max(50, nextSize - delta);
+        prevPane.style.flex = "0 0 " + newPrev + "px";
+        nextPane.style.flex = "0 0 " + newNext + "px";
+      }
+    });
+  });
+
+  /* ---------------------------------------------------------------------
+   24. Drag and drop — native HTML5 DnD with reorder + keyboard + touch
+     --------------------------------------------------------------------- */
+  $$(".c-draggable").forEach((el) => {
+    el.setAttribute("draggable", "true");
+    el.setAttribute("tabindex", "0");
+    el.addEventListener("dragstart", (e) => {
+      el.classList.add("c-draggable--dragging");
+      e.dataTransfer?.setData("text/plain", el.textContent || "");
+    });
+    el.addEventListener("dragend", () => el.classList.remove("c-draggable--dragging"));
+
+    // Touch support: long-press to drag.
+    let touchTimer = null;
+    el.addEventListener("touchstart", () => {
+      touchTimer = setTimeout(() => {
+        el.classList.add("c-draggable--dragging");
+        el.style.opacity = "0.5";
+      }, 300);
+    }, { passive: true });
+    el.addEventListener("touchend", () => {
+      if (touchTimer) clearTimeout(touchTimer);
+      el.classList.remove("c-draggable--dragging");
+      el.style.opacity = "";
+    });
+    el.addEventListener("touchmove", () => {
+      if (touchTimer) clearTimeout(touchTimer);
+    }, { passive: true });
+
+    el.addEventListener("keydown", (e) => {
+      const parent = el.parentElement;
+      if (!parent) return;
+      const siblings = [...parent.querySelectorAll(".c-draggable")];
+      const idx = siblings.indexOf(el);
+      if (e.key === "ArrowUp" && idx > 0) {
+        e.preventDefault();
+        el.classList.add("c-draggable--reordering");
+        parent.insertBefore(el, siblings[idx - 1]);
+        el.focus();
+        setTimeout(() => el.classList.remove("c-draggable--reordering"), 200);
+      } else if (e.key === "ArrowDown" && idx < siblings.length - 1) {
+        e.preventDefault();
+        el.classList.add("c-draggable--reordering");
+        parent.insertBefore(siblings[idx + 1], el);
+        el.focus();
+        setTimeout(() => el.classList.remove("c-draggable--reordering"), 200);
+      }
+    });
+  });
+
+  $$(".c-drop-zone").forEach((zone) => {
+    zone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      zone.classList.add("c-drop-zone--active");
+      const indicator = zone.querySelector(".c-drop-indicator");
+      if (indicator) indicator.classList.add("c-drop-indicator--visible");
+    });
+    zone.addEventListener("dragleave", () => {
+      zone.classList.remove("c-drop-zone--active");
+      const indicator = zone.querySelector(".c-drop-indicator");
+      if (indicator) indicator.classList.remove("c-drop-indicator--visible");
+    });
+    zone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      zone.classList.remove("c-drop-zone--active");
+      const indicator = zone.querySelector(".c-drop-indicator");
+      if (indicator) indicator.classList.remove("c-drop-indicator--visible");
+      const data = e.dataTransfer?.getData("text/plain");
+      if (data) {
+        const item = document.createElement("span");
+        item.className = "c-draggable c-card";
+        item.style.padding = "var(--space-sm)";
+        item.textContent = data;
+        item.setAttribute("tabindex", "0");
+        zone.appendChild(item);
+      }
     });
   });
 

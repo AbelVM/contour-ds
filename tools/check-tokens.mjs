@@ -49,27 +49,6 @@ const CSS = join(ROOT, "src/css");
 // anywhere — including `assets/`, which was checked before deleting so nothing
 // in the guide's own chrome would break. This list is what is genuinely left.
 const LEDGER = {
-  // Added with the composable-surface work and not yet referenced by an exit
-  // transition. Not deleted on purpose: this is another hand's in-flight edit.
-  "--ease-exit": { action: "yours", task: "T-44", verified: true, note: "awaiting its exit-transition consumer" },
-  // A heat ramp is a legitimate vocabulary — density, hazard, continuous
-  // surfaces — and it is not the same thing as a sequential ramp. It lost its
-  // only consumer when the legend ramp was pointed at --chart-seq-* (the
-  // ramp that actually orders): --gradient-heat's lightness is 71, 78, 78,
-  // 70.4, 77, 62.36, non-monotonic by design, so it must never feed a ramp
-  // that implies order. Kept rather than deleted so a heat-scale surface still
-  // has a token to reach for. Consumer: the heat-scale specimen, T-161.
-  "--gradient-heat": { action: "yours", task: "T-161", verified: true, note: "heat ramp, non-ordered — needs a specimen, not a ramp" },
-  // Cyclic ramp (C-21): equal lightness, hue carries the encoding, wraps
-  // seamlessly. Vocabulary awaiting a consumer (bearing/aspect/phase specimen).
-  "--chart-cyc-1": { action: "yours", task: "C-21", verified: true, note: "cyclic ramp — awaiting a specimen" },
-  "--chart-cyc-2": { action: "yours", task: "C-21", verified: true, note: "cyclic ramp — awaiting a specimen" },
-  "--chart-cyc-3": { action: "yours", task: "C-21", verified: true, note: "cyclic ramp — awaiting a specimen" },
-  "--chart-cyc-4": { action: "yours", task: "C-21", verified: true, note: "cyclic ramp — awaiting a specimen" },
-  "--chart-cyc-5": { action: "yours", task: "C-21", verified: true, note: "cyclic ramp — awaiting a specimen" },
-  "--chart-cyc-6": { action: "yours", task: "C-21", verified: true, note: "cyclic ramp — awaiting a specimen" },
-  "--chart-cyc-7": { action: "yours", task: "C-21", verified: true, note: "cyclic ramp — awaiting a specimen" },
-  "--chart-cyc-8": { action: "yours", task: "C-21", verified: true, note: "cyclic ramp — awaiting a specimen" },
 };
 
 // Referenced-but-undefined tokens that are deliberate author hooks (component-scoped
@@ -85,7 +64,7 @@ const HOOK_LEDGER = new Set([
   "--meter-size", "--meter-value",
   "--kbd-padding", "--kbd-font-size",
   "--flow-space",
-  "--dot-color",
+  "--dot-color", "--live-color", "--view-transition-name",
 ]);
 
 const escapeRe = (s) => s.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");

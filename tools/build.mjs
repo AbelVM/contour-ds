@@ -265,6 +265,38 @@ for (const [name, files] of Object.entries(SURFACES)) {
 const js = readFileSync(join(root, "src/js/ds.js"), "utf-8");
 writeFileSync(join(dist, "contour.js"), js, "utf-8");
 writeFileSync(join(dist, "contour.min.js"), `${minifyJs(js)}\n`, "utf-8");
+
+// -- TypeScript definitions ------------------------------------------------
+const { inventory: invFn } = await import("./lib/inventory.mjs");
+const inv = invFn();
+const compNames = inv.components.names;
+const tokenNames = Object.keys(inv.tokens.census);
+const tsLines = [
+  "/** Contour Design System — TypeScript definitions. Generated. */",
+  "",
+  "export type ContourComponent =",
+  ...compNames.map((n) => `  | "${n}"`),
+  ";",
+  "",
+  "export type ContourToken =",
+  ...tokenNames.map((t) => `  | "${t}"`),
+  ";",
+  "",
+  "export interface ContourAPI {",
+  "  __loaded: true;",
+  "  version: string;",
+  "  toast: (message: string) => void;",
+  "  setScheme: (scheme: 'dark' | 'light') => void;",
+  "  scrollTo: (id: string | HTMLElement) => void;",
+  "  copy: (text: string) => Promise<void>;",
+  "  chart: { scale: (d: [number, number], r: [number, number]) => (v: number) => number; ticks: (min: number, max: number, count: number) => number[]; };",
+  "  commands: { register: (cmd: { title: string; hint?: string; icon?: string; shortcut?: string; run: () => void }) => void; list: () => Array<{ title: string; hint: string; icon: string; shortcut: string | null }>; };",
+  "}",
+  "",
+  "declare global { interface Window { Contour: ContourAPI; } }",
+  "",
+];
+writeFileSync(join(dist, "contour.d.ts"), tsLines.join("\n"), "utf-8");
 if (process.argv.includes("--single") && existsSync(join(dist, "contour.single.min.css"))) {
   const singleMinCss = readFileSync(join(dist, "contour.single.min.css"), "utf-8");
   const singleHtml = `<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8" />\n<meta name="viewport" content="width=device-width, initial-scale=1" />\n<title>Contour — single file</title>\n<style>\n${singleMinCss.trim()}\n</style>\n</head>\n<body>\n<main class="container section"><h1>Contour</h1><p>Single-file build.</p></main>\n<script>\n${minifyJs(js)}\n</script>\n</body>\n</html>\n`;

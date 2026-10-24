@@ -481,7 +481,7 @@
   }
 
   /* Resizable panel — a grip on the edge that invites the drag. */
-  .c-resize-handle {
+  .c-panel .c-resize-handle {
     position: absolute;
     inset-inline-end: 0;
     inset-block: 0;
@@ -508,12 +508,12 @@
 
   .c-panel:hover .c-resize-handle,
   .c-panel:focus-within .c-resize-handle,
-  .c-resize-handle:hover,
-  .c-resize-handle:focus-visible {
+  .c-panel .c-resize-handle:hover,
+  .c-panel .c-resize-handle:focus-visible {
     color: var(--color-text-muted);
   }
 
-  .c-resize-handle::after {
+  .c-panel .c-resize-handle::after {
     content: "";
     inline-size: 2px;
     block-size: 1.5rem;

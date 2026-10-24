@@ -285,6 +285,15 @@
     flex-wrap: wrap;
   }
 
+  /* Container query: reduce padding when the panel is narrow. */
+  @container (inline-size < 20rem) {
+    .c-panel__head,
+    .c-panel__body,
+    .c-panel__foot {
+      padding: var(--space-sm);
+    }
+  }
+
   /* Per-panel status */
   .c-panel__status {
     display: grid;
@@ -308,6 +317,146 @@
 
   .c-panel__status--live {
     color: var(--color-accent-text);
+  }
+
+  /* =======================================================================
+     3b. MEASURE OVERLAY
+     Distance/area measurement tool for maps.
+     ======================================================================= */
+  .c-measure {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: var(--z-raised, 10);
+  }
+
+  .c-measure__line {
+    stroke: var(--color-primary);
+    stroke-width: 2;
+    stroke-dasharray: 6 4;
+    fill: none;
+  }
+
+  .c-measure__point {
+    fill: var(--color-primary);
+    stroke: var(--color-surface-1);
+    stroke-width: 2;
+  }
+
+  .c-measure__label {
+    position: absolute;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: var(--space-2xs) var(--space-xs);
+    font-family: var(--font-mono);
+    font-size: var(--type-xs);
+    color: var(--color-text);
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  .c-measure__readout {
+    position: absolute;
+    bottom: var(--space-sm);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-xs) var(--space-sm);
+    font-family: var(--font-mono);
+    font-size: var(--type-sm);
+    color: var(--color-text);
+    pointer-events: none;
+  }
+
+  /* =======================================================================
+     4a. HEATMAP
+     2D grid with colour-encoded cells for density or magnitude.
+     ======================================================================= */
+  .c-heatmap {
+    display: grid;
+    gap: 1px;
+    background: var(--color-border);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .c-heatmap__cell {
+    aspect-ratio: 1;
+    background: var(--color-surface-1);
+    transition: opacity var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-heatmap__cell:hover {
+    opacity: 0.8;
+  }
+
+  .c-heatmap__legend {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: var(--type-xs);
+    color: var(--color-text-subtle);
+  }
+
+  .c-heatmap__legend-bar {
+    inline-size: 6rem;
+    block-size: 0.5rem;
+    border-radius: var(--radius-pill);
+    background: var(--gradient-heat);
+  }
+
+  /* =======================================================================
+     4b. CONTOUR PLOT
+     2D density with isoline overlay — the signature motif as function.
+     ======================================================================= */
+  .c-contour-plot {
+    position: relative;
+    inline-size: 100%;
+    aspect-ratio: 1;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .c-contour-plot svg {
+    inline-size: 100%;
+    block-size: 100%;
+    display: block;
+  }
+
+  .c-contour-plot__contour {
+    fill: none;
+    stroke: var(--color-primary);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+    opacity: 0.8;
+  }
+
+  .c-contour-plot__contour--level-2 { stroke: var(--chart-2, var(--color-primary)); }
+  .c-contour-plot__contour--level-3 { stroke: var(--chart-3, var(--color-primary)); }
+  .c-contour-plot__contour--level-4 { stroke: var(--chart-4, var(--color-primary)); }
+  .c-contour-plot__contour--level-5 { stroke: var(--chart-5, var(--color-primary)); }
+
+  .c-contour-plot__fill {
+    opacity: 0.12;
+  }
+
+  .c-contour-plot__axis {
+    stroke: var(--color-border);
+    stroke-width: 1;
+    opacity: 0.4;
+  }
+
+  .c-contour-plot__label {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    fill: var(--color-text-subtle);
   }
 
   /* =======================================================================
@@ -982,7 +1131,432 @@
   }
 
   /* =======================================================================
+     8b. COMPASS — orientation indicator for maps
+     ======================================================================= */
+  .c-compass {
+    position: relative;
+    inline-size: 2.5rem;
+    block-size: 2.5rem;
+    border-radius: 50%;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    display: grid;
+    place-items: center;
+    cursor: grab;
+    user-select: none;
+  }
+
+  .c-compass__needle {
+    position: relative;
+    inline-size: 0.125rem;
+    block-size: 1.25rem;
+    background: var(--color-danger);
+    transform-origin: center bottom;
+    transition: transform var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-compass__needle::before {
+    content: "";
+    position: absolute;
+    inset-block-start: -0.25rem;
+    inset-inline-start: -0.25rem;
+    inline-size: 0.625rem;
+    block-size: 0.625rem;
+    background: var(--color-danger);
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  }
+
+  .c-compass__label {
+    position: absolute;
+    font-family: var(--font-mono);
+    font-size: 0.5rem;
+    color: var(--color-text-subtle);
+    font-weight: var(--weight-bold);
+  }
+
+  .c-compass__label--n { inset-block-start: 0.125rem; inset-inline-start: 50%; transform: translateX(-50%); }
+  .c-compass__label--s { inset-block-end: 0.125rem; inset-inline-start: 50%; transform: translateX(-50%); }
+  .c-compass__label--e { inset-inline-end: 0.125rem; inset-block-start: 50%; transform: translateY(-50%); }
+  .c-compass__label--w { inset-inline-start: 0.125rem; inset-block-start: 50%; transform: translateY(-50%); }
+
+  /* =======================================================================
+     8c. MINIMAP — inset map with viewport rectangle
+     ======================================================================= */
+  .c-minimap {
+    position: absolute;
+    inset-block-end: var(--space-sm);
+    inset-inline-end: var(--space-sm);
+    inline-size: 8rem;
+    block-size: 6rem;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    z-index: var(--z-raised, 10);
+  }
+
+  .c-minimap__viewport {
+    position: absolute;
+    border: 2px solid var(--color-primary);
+    background: color-mix(in oklab, var(--color-primary) 15%, transparent);
+    pointer-events: none;
+  }
+
+  /* =======================================================================
+     8d. COORDINATE — lat/long display with copy
+     ======================================================================= */
+  .c-coordinate {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    padding: var(--space-2xs) var(--space-xs);
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: var(--type-xs);
+    color: var(--color-text);
+  }
+
+  .c-coordinate__value {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .c-coordinate__copy {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    color: var(--color-text-subtle);
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 0;
+  }
+
+  .c-coordinate__copy:hover {
+    color: var(--color-primary);
+  }
+
+  /* =======================================================================
+     8e. LAYER PANEL — toggleable layer list
+     ======================================================================= */
+  .c-layer-panel {
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-xs);
+    max-block-size: 16rem;
+    overflow-y: auto;
+  }
+
+  .c-layer-panel__item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-2xs) var(--space-xs);
+    border-radius: var(--radius-sm);
+    font-size: var(--type-sm);
+  }
+
+  .c-layer-panel__item:hover {
+    background: var(--color-surface-2);
+  }
+
+  .c-layer-panel__toggle {
+    inline-size: 1rem;
+    block-size: 1rem;
+    accent-color: var(--color-primary);
+  }
+
+  .c-layer-panel__opacity {
+    flex: 1;
+    min-block-size: 1.5rem;
+    accent-color: var(--color-primary);
+  }
+
+  .c-layer-panel__name {
+    flex: 1;
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* =======================================================================
+     8f. TIME SLIDER — temporal data scrubber
+     ======================================================================= */
+  .c-time-slider {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-xs);
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+  }
+
+  .c-time-slider__play {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 2rem;
+    block-size: 2rem;
+    border-radius: 50%;
+    background: var(--color-primary);
+    color: var(--color-primary-text, var(--color-text-strong));
+    border: none;
+    cursor: pointer;
+    flex: none;
+  }
+
+  .c-time-slider__play:hover {
+    background: var(--color-primary-hover, var(--color-primary));
+  }
+
+  .c-time-slider__track {
+    flex: 1;
+    min-block-size: 1.5rem;
+    accent-color: var(--color-primary);
+  }
+
+  .c-time-slider__time {
+    font-family: var(--font-mono);
+    font-size: var(--type-xs);
+    color: var(--color-text-subtle);
+    min-inline-size: 4rem;
+    text-align: end;
+  }
+
+  /* =======================================================================
+     8g. COMPARISON — before/after map comparison
+     ======================================================================= */
+  .c-comparison {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+  }
+
+  .c-comparison__pane {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+
+  .c-comparison__pane--before {
+    clip-path: inset(0 50% 0 0);
+  }
+
+  .c-comparison__divider {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 50%;
+    inline-size: 2px;
+    background: var(--color-primary);
+    cursor: col-resize;
+    z-index: 1;
+  }
+
+  .c-comparison__divider::before {
+    content: "";
+    position: absolute;
+    inset-block: 50%;
+    inset-inline-start: -0.75rem;
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    background: var(--color-primary);
+    border-radius: 50%;
+    transform: translateY(-50%);
+  }
+
+  .c-comparison__label {
+    position: absolute;
+    top: var(--space-xs);
+    padding: var(--space-2xs) var(--space-xs);
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-size: var(--type-xs);
+    color: var(--color-text);
+    z-index: 2;
+  }
+
+  .c-comparison__label--before { inset-inline-start: var(--space-xs); }
+  .c-comparison__label--after { inset-inline-end: var(--space-xs); }
+
+  /* =======================================================================
+     8h. HEXBIN — hexagonal binning for point density
+     ======================================================================= */
+  .c-hexbin {
+    display: grid;
+    gap: 2px;
+  }
+
+  .c-hexbin__cell {
+    aspect-ratio: 1;
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    background: var(--color-surface-2);
+    transition: background-color var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-hexbin__cell:hover {
+    opacity: 0.8;
+  }
+
+  /* =======================================================================
+     8i. FLOW MAP — origin-destination flows
+     ======================================================================= */
+  .c-flow-map {
+    position: relative;
+    inline-size: 100%;
+    aspect-ratio: 1;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .c-flow-map svg {
+    inline-size: 100%;
+    block-size: 100%;
+    display: block;
+  }
+
+  .c-flow-map__flow {
+    fill: none;
+    stroke: var(--color-primary);
+    stroke-width: 2;
+    stroke-linecap: round;
+    opacity: 0.6;
+    transition: opacity var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-flow-map__flow:hover {
+    opacity: 1;
+    stroke-width: 3;
+  }
+
+  .c-flow-map__node {
+    fill: var(--color-primary);
+    stroke: var(--color-surface-1);
+    stroke-width: 2;
+  }
+
+  .c-flow-map__node--source { fill: var(--chart-2, var(--color-primary)); }
+  .c-flow-map__node--target { fill: var(--chart-3, var(--color-primary)); }
+
+  /* =======================================================================
+     8j. ISOCHRONE — travel-time polygons
+     ======================================================================= */
+  .c-isochrone {
+    position: relative;
+    inline-size: 100%;
+    aspect-ratio: 1;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .c-isochrone svg {
+    inline-size: 100%;
+    block-size: 100%;
+    display: block;
+  }
+
+  .c-isochrone__ring {
+    fill: color-mix(in oklab, var(--color-primary) 15%, transparent);
+    stroke: var(--color-primary);
+    stroke-width: 1.5;
+    stroke-dasharray: 4 2;
+    opacity: 0.7;
+  }
+
+  .c-isochrone__ring--5min { fill: color-mix(in oklab, var(--color-primary) 25%, transparent); }
+  .c-isochrone__ring--10min { fill: color-mix(in oklab, var(--color-primary) 15%, transparent); }
+  .c-isochrone__ring--15min { fill: color-mix(in oklab, var(--color-primary) 8%, transparent); }
+
+  .c-isochrone__center {
+    fill: var(--color-danger);
+    stroke: var(--color-surface-1);
+    stroke-width: 2;
+  }
+
+  /* =======================================================================
+     8k. CATCHMENT — service area boundaries
+     ======================================================================= */
+  .c-catchment {
+    position: relative;
+    inline-size: 100%;
+    aspect-ratio: 1;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .c-catchment svg {
+    inline-size: 100%;
+    block-size: 100%;
+    display: block;
+  }
+
+  .c-catchment__area {
+    fill: color-mix(in oklab, var(--color-primary) 12%, transparent);
+    stroke: var(--color-primary);
+    stroke-width: 2;
+    stroke-dasharray: 8 4;
+  }
+
+  .c-catchment__center {
+    fill: var(--color-primary);
+    stroke: var(--color-surface-1);
+    stroke-width: 2;
+  }
+
+  .c-catchment__label {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    fill: var(--color-text-subtle);
+  }
+
+  /* =======================================================================
+     8l. STREAMING CHART — chart that appends data points
+     ======================================================================= */
+  .c-streaming-chart {
+    position: relative;
+    inline-size: 100%;
+    block-size: 12rem;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .c-streaming-chart svg {
+    inline-size: 100%;
+    block-size: 100%;
+    display: block;
+  }
+
+  .c-streaming-chart__line {
+    fill: none;
+    stroke: var(--color-primary);
+    stroke-width: 2;
+    stroke-linecap: round;
+    transition: d var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-streaming-chart__live-dot {
+    fill: var(--color-accent);
+    animation: c-ping var(--dur-ping) var(--ease-out-expo) infinite;
+  }
+
+  /* =======================================================================
      9. MAP SLOT — the chrome around a map
+     =======================================================================
      The system owns the chrome (zoom, attribution, scale, coordinates, layer
      panel). The consumer owns the canvas. This is the contract that lets a
      design system theme a map engine it does not ship.

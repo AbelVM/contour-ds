@@ -1,23 +1,23 @@
 # Contour
 
-> A token-driven design system for spatial interfaces — routing engines, pedestrian simulators, map tooling and geospatial dashboards. Dark and light themes, 134 components, 290 design tokens (280 read, 10 unread), zero runtime dependencies, no build step.
+> A token-driven design system for spatial interfaces — routing engines, pedestrian simulators, map tooling and geospatial dashboards. Dark and light themes, 141 components, 290 design tokens (290 read, 0 unread), zero runtime dependencies, no build step.
 
 Contour covers three kinds of page: a **landing page** that has to persuade, a **documentation site** that has to explain, and a **technical dashboard** that has to be read at speed. All three share one token layer, one type scale and one set of affordance rules.
 
 ## Start here
 
-- [Style guide](https://abelvm.github.io/contour/): the living specification, with a copyable code snippet behind every rendered example.
-- [Install](https://abelvm.github.io/contour/#install): one stylesheet, one optional script.
-- [Principles](https://abelvm.github.io/contour/#principles): the rules the system holds itself to.
+- Style guide: `index.html` in this repository — the living specification, with a copyable code snippet behind every rendered example. (Not yet hosted; the project is private until v1.0.)
+- Install: see README.md §Install — one stylesheet, one optional script.
+- Principles: see README.md §Principles — the rules the system holds itself to.
 
 ## Surfaces
 
-- [Landing page](https://abelvm.github.io/contour/#landing): logo wall, feature showcase, metrics band, testimonial, pricing, comparison matrix, FAQ, CTA band.
-- [Documentation site](https://abelvm.github.io/contour/#docs): navigation tree, table of contents, callouts, do/don't, steps, code tabs, install block, diff, pager, version picker, file tree.
-- [Technical dashboard](https://abelvm.github.io/contour/#data): KPI tiles, panels, chart frame, interactive legend, filter bar, dense sortable table, activity feed, drawer.
-- [Recipes](https://abelvm.github.io/contour/#recipes): all three surfaces composed live.
+- Landing page (index.html#landing): logo wall, feature showcase, metrics band, testimonial, pricing, comparison matrix, FAQ, CTA band.
+- Documentation site (index.html#docs): navigation tree, table of contents, callouts, do/don't, steps, code tabs, install block, diff, pager, version picker, file tree.
+- Technical dashboard (index.html#data): KPI tiles, panels, chart frame, interactive legend, filter bar, dense sortable table, activity feed, drawer.
+- Recipes (index.html#recipes): all three surfaces composed live.
 
-## Components (134 blocks in src/css/)
+## Components (141 blocks in src/css/)
 
 Actions: button (primary, secondary, outline, ghost, accent, danger, quiet-danger), sizes, icon, block, groups, loading, text link.
 Forms: field, input, select, textarea, search group, range, switch, checkbox, radio.
@@ -29,6 +29,12 @@ Overlays: dialog, tooltip, popover, command palette, drawer, scrim.
 Data: table (container query drops optional columns), legend, readout, timeline, code block, pull quote, KPI tile, panel, filter bar, activity feed, chart frame, sparkline, resize handle, drag handle, expandable, pressable, row action.
 Documentation: nav tree, callout, do/don't, steps, code tabs, install block, diff, pager, version picker, file tree, prose.
 Landing: logo wall, feature showcase, metrics band, testimonial, pricing, comparison matrix, FAQ, CTA band.
+
+## Machine-readable index
+
+- [llms-full.txt](./llms-full.txt): the full concatenated guide (all sections, all specimens) for agents that want the complete text in one fetch.
+- [contour.components.json](./dist/contour.components.json): the component contract (blocks, elements, variants, states).
+- [contour.tokens.json](./dist/contour.tokens.json): the token layer as DTCG 2025.10.
 
 ## Accessibility contract
 
@@ -49,10 +55,10 @@ Landing: logo wall, feature showcase, metrics band, testimonial, pricing, compar
 
 ## Foundations
 
-- [Colour](https://abelvm.github.io/contour/#colour): five OKLCH families plus a tinted neutral ramp. Tidal is action and state, Plasma is highlight.
-- [Typography](https://abelvm.github.io/contour/#type): IBM Plex Sans Condensed for display, IBM Plex Sans for body, IBM Plex Mono for data.
-- [Space and shape](https://abelvm.github.io/contour/#space): a 4 px base scale, soft radii, elevation by lightness rather than shadow.
-- [Motion](https://abelvm.github.io/contour/#motion): exponential easing for entrances, no bounce, honouring `prefers-reduced-motion`.
+- Colour (index.html#colour): five OKLCH families plus a tinted neutral ramp. Tidal is action and state, Plasma is highlight.
+- Typography (index.html#type): IBM Plex Sans Condensed for display, IBM Plex Sans for body, IBM Plex Mono for data.
+- Space and shape (index.html#space): a 4 px base scale, soft radii, elevation by lightness rather than shadow.
+- Motion (index.html#motion): exponential easing for entrances, no bounce, honouring `prefers-reduced-motion`.
 
 ## Using it
 
@@ -107,8 +113,8 @@ Landing: logo wall, feature showcase, metrics band, testimonial, pricing, compar
 
 ## Optional
 
-- [Templates](https://abelvm.github.io/contour/templates/landing.html): three starter pages, one per surface.
-- [Contour artwork](https://abelvm.github.io/contour/): every contour line is an iso-line of a real field, extracted with marching squares. Nothing is drawn by hand.
+- Templates: `templates/landing.html`, `templates/documentation.html`, `templates/dashboard.html` — three starter pages, one per surface.
+- Contour artwork: every contour line is an iso-line of a real field, extracted with marching squares. Nothing is drawn by hand.
 
 ## Honest limits
 

@@ -55,8 +55,9 @@ const DIST = join(ROOT, "dist");
  *  which the Format Module has no legal place for (C-43). It states values only —
  *  a token's meaning is published once, in the Format document. */
 const BUDGETS = {
-  "contour.min.css": 160 * 1024,
-  "contour.min.js": 32 * 1024,
+  "contour.min.css": 168 * 1024,
+  "contour.min.js": 34 * 1024,
+  "contour.d.ts": 12 * 1024,
   "contour.tokens.json": 50 * 1024,
   "contour.themes.json": 22 * 1024,
   // Measured 2026-10-23 at 128.4 kB (C-44), ~3% headroom. Large and correct:
@@ -66,7 +67,7 @@ const BUDGETS = {
   // exists to catch a jump nobody intended, not to keep the truth brief. A file
   // absent from this map is not budgeted at all, which is how an artifact can
   // grow without anyone noticing.
-  "contour.components.json": 140 * 1024,
+  "contour.components.json": 150 * 1024,
   // The docs package (C-45). Measured 2026-10-23 at 43.6 kB: 23 section files
   // (37.4 kB) plus the index (6.2 kB) — figures this gate recomputes and prints on
   // every run, so the numbers above are a dated record, not the thing enforced.
@@ -117,7 +118,7 @@ const BUDGETS = {
   "agent-rules.json": 12 * 1024,
   "surfaces/contour-core.min.css": 115 * 1024,
   "surfaces/contour-docs.min.css": 128 * 1024,
-  "surfaces/contour-data.min.css": 138 * 1024,
+  "surfaces/contour-data.min.css": 148 * 1024,
   "surfaces/contour-landing.min.css": 123 * 1024,
 };
 

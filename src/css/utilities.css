@@ -245,6 +245,17 @@
     }
   }
 
+  .u-fade-out {
+    animation: c-fade-out var(--dur-base) var(--ease-exit) both;
+  }
+
+  @keyframes c-fade-out {
+    to {
+      opacity: 0;
+      transform: translateY(0.5rem);
+    }
+  }
+
   .u-spin {
     animation: c-spin var(--dur-spin-slow) linear infinite;
   }
