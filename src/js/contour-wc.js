@@ -2578,3 +2578,21 @@
   shadowFactory("contour-shadow-version-banner", `<div class="c-version-banner" part="version-banner"><slot></slot></div>`);
   shadowFactory("contour-shadow-virtual-scroll", `<div class="c-virtual-scroll" part="virtual-scroll"><slot></slot></div>`);
 
+
+  // ---- Remaining shadow DOM components ----
+  shadowFactory("contour-shadow-avatar", `<span class="c-avatar" part="avatar"><slot></slot></span>`);
+  shadowFactory("contour-shadow-btn", `<button class="c-btn" part="btn"><slot></slot></button>`);
+  shadowFactory("contour-shadow-btn-group", `<div class="c-btn-group" part="btn-group"><slot></slot></div>`);
+  shadowFactory("contour-shadow-catchment", `<div class="c-catchment" part="catchment"><slot></slot></div>`);
+  shadowFactory("contour-shadow-chart-grid", `<div class="c-chart-grid" part="chart-grid"><slot></slot></div>`);
+  shadowFactory("contour-shadow-check", `<label class="c-check" part="check"><slot></slot></label>`);
+  shadowFactory("contour-shadow-chip", `<span class="c-chip" part="chip"><slot></slot></span>`);
+  shadowFactory("contour-shadow-code", `<pre class="c-code" part="code"><code><slot></slot></code></pre>`);
+  shadowFactory("contour-shadow-command", `<div class="c-command" part="command"><slot></slot></div>`);
+  shadowFactory("contour-shadow-docs-nav", `<nav class="c-docs-nav" part="docs-nav"><slot></slot></nav>`);
+  shadowFactory("contour-shadow-docs-shell", `<div class="c-docs-shell" part="docs-shell"><slot></slot></div>`);
+  shadowFactory("contour-shadow-landing-features", `<div class="c-landing-features" part="landing-features"><slot></slot></div>`);
+  shadowFactory("contour-shadow-landing-hero", `<div class="c-landing-hero" part="landing-hero"><slot></slot></div>`);
+  shadowFactory("contour-shadow-pagination", `<div class="c-pagination" part="pagination"><slot></slot></div>`);
+  shadowFactory("contour-shadow-streaming-chart", `<div class="c-streaming-chart" part="streaming-chart"><slot></slot></div>`);
+
