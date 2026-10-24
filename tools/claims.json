@@ -259,6 +259,27 @@
       "sentence": "dates itself from git rather than from the build",
       "owner": "node tools/check-docs.mjs",
       "threshold": "index.lastUpdated must equal `git log -1 --format=%cI -- index.html` recomputed by the gate, and every section file must carry that same date; null is permitted for a tarball with no history, an invented date is not"
+    },
+    {
+      "id": "C-46-a",
+      "doc": "README.md",
+      "sentence": "Conformance is answered by an independent implementation (ajv) against the pinned shadcn schemas vendored under `tools/audit/schema/`",
+      "owner": "node tools/audit/registry-contract.mjs",
+      "threshold": "ajv validates every shipped document (registry.json plus each item file) against the vendored draft-07 schemas with strict mode on; the vendored bytes must still match the sha256 recorded in sources.json; ajv's own count of items must equal the index's; and the gate first feeds itself documents that MUST be rejected — an unknown type, a root with neither items nor include, a registry:file entry with no target, a style key on a non-base item — and fails if its validator accepts any of them, because a relaxation never tested is indistinguishable from a disabled gate. Exits rather than skipping when ajv is absent"
+    },
+    {
+      "id": "C-46-b",
+      "doc": "README.md",
+      "sentence": "**Pointers, not copies** — inlining the stylesheets would duplicate bytes this package already ships",
+      "owner": "node tools/check-registry.mjs",
+      "threshold": "no files[] entry may carry `content`, and no item may carry it either; every `files[].path` must resolve inside dist/ and be relative, never absolute and never escaping with `..`. The registry's own byte total is budgeted, so a switch to inlined CSS is a budget failure as well as a gate failure"
+    },
+    {
+      "id": "C-46-c",
+      "doc": "README.md",
+      "sentence": "there is no `homepage` and no `url` field, because the project is private until v1.0",
+      "owner": "node tools/check-registry.mjs",
+      "threshold": "registry.json must carry neither key, and the only URLs permitted anywhere in the document are the two $schema identifiers; every item's registryDependencies must be empty, proven against the shipped CSS — the core bundle's selectors must appear in each surface bundle, so the shared layer really is inside it and a host installing two surfaces is not told to install the base twice"
     }
   ]
 }

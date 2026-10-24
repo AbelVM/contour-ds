@@ -90,6 +90,17 @@ jobs:
       - name: Check the docs package is the guide's own prose and nothing else
         run: node tools/check-docs.mjs
 
+      # The registry is generated from the built package, so it can go stale, point at
+      # a file that no longer exists, or quietly switch from pointers to inlined CSS —
+      # which would duplicate four stylesheets inside dist/. This gate reads
+      # dist/registry/ and checks resolution, the pointer shape, the honesty rules (no
+      # homepage, no url: the project is private until v1.0 and the deployment 404s),
+      # each item's published counts against the inventory, and that the core layer is
+      # really inside every surface bundle — which is why registryDependencies is empty.
+      # It claims structure only; conformance to the schema is the contract lane's job.
+      - name: Check the registry points at files that exist and says nothing untrue
+        run: node tools/check-registry.mjs
+
       # The light-dark() fallback is generated from the token layer; a committed
       # copy that no longer matches src/css is a fallback that lies about the
       # system, so the regeneration is checked, not trusted.
@@ -143,6 +154,14 @@ jobs:
       # It exits rather than skipping when dembrandt is not installed.
       - name: DTCG 2025.10 conformance of the shipped token export
         run: node tools/audit/dtcg-contract.mjs
+      # ajv, not this repository, answers whether dist/registry/ conforms to the live
+      # shadcn schemas — the same shape as the dembrandt gate above. The schemas are
+      # vendored under tools/audit/schema/ with their hashes in sources.json, so the
+      # check is deterministic and needs no network; the gate first proves its own
+      # validator still rejects non-conformant documents before reporting a pass, and
+      # exits rather than skipping when ajv is absent.
+      - name: Registry conformance against the vendored shadcn schemas
+        run: node tools/audit/registry-contract.mjs
       - name: Contrast, focus, chart, palette and document contract
         run: node tools/audit/contrast-and-aria.mjs
       - name: Component inventory and target sizes

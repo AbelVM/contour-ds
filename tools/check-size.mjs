@@ -92,6 +92,16 @@ const BUDGETS = {
   // this budget a pass at 4 kB over a 42 kB package.
   "docs/": 45 * 1024,
   "docs/index.json": 7 * 1024,
+  // The registry (C-46). Measured 2026-10-24 at 16,443 bytes across 5 files:
+  // registry.json 8,952 B plus four item files of 1,869–1,884 B — figures this gate
+  // recomputes and prints every run, so the numbers here are a dated record, not the
+  // thing enforced. The budget is deliberately small because the registry is POINTERS
+  // (`files[].path`): the alternative shape the live schema also allows,
+  // `files[].content`, would have copied the four stylesheets into JSON beside the
+  // files that already ship — 466,887 bytes measured, a 70% jump on all of dist/. If
+  // this line ever moves sharply, check whether someone inlined content before
+  // reaching for a bigger budget.
+  "registry/": 18 * 1024,
   "surfaces/contour-core.min.css": 106 * 1024,
   "surfaces/contour-docs.min.css": 119 * 1024,
   "surfaces/contour-data.min.css": 127 * 1024,
@@ -126,15 +136,20 @@ for (const [rel, recorded] of Object.entries(manifest.sources ?? {})) {
   if (hash !== recorded.sha256) stale.push(`${rel}: changed since the build`);
 }
 
-// The bundle must also be no older than any file it was built from. The hash
-// catches a content change; this catches a source the manifest never covered.
-const builtAt = Date.parse(manifest.builtAt);
-for (const rel of Object.keys(manifest.sources ?? {})) {
-  const path = join(ROOT, rel);
-  if (existsSync(path) && statSync(path).mtimeMs > builtAt && !stale.some((s) => s.startsWith(`${rel}:`))) {
-    stale.push(`${rel}: touched after the build`);
-  }
-}
+// There used to be a second staleness test here: any source whose mtime was newer than
+// `builtAt` was called stale, on the theory that it caught "a source the manifest never
+// covered". It could not — the loop iterated `manifest.sources`, every entry of which
+// the hash pass above already reads. So its only unique behaviour was to fire when the
+// CONTENT was identical and only the timestamp had moved, which is a false red.
+//
+// That stayed latent until C-46 made `index.html` a build input, because
+// `tools/snippets.mjs` rewrites `index.html` unconditionally (line 220 writes without
+// comparing). Running the documented order — snippets, build, check-size — then became
+// impossible: the repo's own tooling reported the bundle stale against bytes it had not
+// changed. The hash pass is strictly stronger in both directions: it fires on every
+// content change, including one restored by `cp` with an OLDER mtime that this branch
+// waved through, and it stays quiet on a touch-only rewrite. So the branch is gone
+// rather than narrowed, and `builtAt` with it.
 
 if (stale.length) {
   fail(["check-size: dist/ is STALE — the bytes below are not what the current src/ produces.", ...stale.map((s) => "  " + s), "\nRun: node tools/build.mjs"]);
