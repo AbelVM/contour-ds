@@ -94,6 +94,11 @@ if (existsSync(singleHtmlPath)) {
   const html = readFileSync(singleHtmlPath, "utf8");
   if (!/<style>/.test(html)) errors.push("contour.single.html is missing inlined CSS");
 }
+const singleJsPath = join(ROOT, "dist", "contour.single.min.js");
+if (existsSync(singleJsPath)) {
+  try { new Function(readFileSync(singleJsPath, "utf8")); }
+  catch (e) { errors.push("contour.single.min.js syntax: " + e.message); }
+}
 // JS syntax check via Function constructor (best-effort).
 try { new Function(js); } catch (e) { errors.push("JS syntax: " + e.message); }
 // Corruption patterns.

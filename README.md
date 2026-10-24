@@ -101,6 +101,7 @@ to drive the system's own feedback and navigation from their own code.
 | `contour.css` / `contour.min.css` | Every layer, in cascade order |
 | `contour.single.min.css` | Opt-in (`--single`): the minified CSS with the self-hosted fonts inlined as data URIs, so a consumer can ship one file. ~260 kB larger; off by default |
 | `contour.single.html` | Opt-in (`--single`): a one-file drop with the CSS (fonts inlined) and JS inlined |
+| `contour.single.min.js` | Opt-in (`--single-js`): a copy of the minified JS under the single.* prefix |
 | `contour.js` / `contour.min.js` | The optional enhancement |
 | `contour.tokens.json` | The token layer as a **DTCG 2025.10 Format** document — colours as `{ colorSpace, components }`, aliases kept as `{references}` so the lineage survives serialisation, and every declared value the Format Module cannot express named in a ledger with its reason instead of dropped |
 | `contour.themes.json` | The dark branch of every `light-dark()` pair, as a **DTCG 2025.10 Resolver** document. A Format token has exactly one value, so the theme axis cannot live in it: `contour.tokens.json` *is* the light theme, and applying this set over it gives the dark one |

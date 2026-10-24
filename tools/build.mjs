@@ -272,6 +272,14 @@ if (process.argv.includes("--single") && existsSync(join(dist, "contour.single.m
   console.log(`  contour.single.html written`);
 }
 
+// -- Opt-in single-file JS (--single-js) ----------------------------------
+// The JS is already a single file (contour.min.js); this flag emits a copy
+// under the single.* name so a consumer can reference one consistent prefix.
+if (process.argv.includes("--single-js")) {
+  writeFileSync(join(dist, "contour.single.min.js"), `${minifyJs(js)}\n`, "utf-8");
+  console.log(`  contour.single.min.js written`);
+}
+
 // -- The tokens (C-41) ------------------------------------------------------
 // The census in tools/lib/inventory.mjs is the only source for WHICH tokens exist
 // and WHAT they declare. This file used to parse `tokens.css` itself, and that
