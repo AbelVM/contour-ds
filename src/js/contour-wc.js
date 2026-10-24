@@ -2237,3 +2237,77 @@
     }
   }
   try { customElements.define("contour-shadow-badge", ContourShadowBadge); } catch (e) {}
+
+  // ---- Shadow DOM card with named slots ----
+  const shadowCardTemplate = document.createElement("template");
+  shadowCardTemplate.innerHTML = `
+    <div class="c-card" part="card">
+      <div class="c-card__head" part="head"><slot name="title">Untitled</slot></div>
+      <div class="c-card__body" part="body"><slot></slot></div>
+      <div class="c-card__foot" part="foot"><slot name="foot"></slot></div>
+    </div>
+  `;
+
+  class ContourShadowCard extends HTMLElement {
+    constructor() {
+      super();
+      const shadow = this.attachShadow({ mode: "open" });
+      const sheets = [];
+      for (const ss of document.styleSheets) {
+        try {
+          if (ss.href && new URL(ss.href).origin === location.origin) {
+            const sheet = new CSSStyleSheet();
+            sheet.replaceSync(Array.from(ss.cssRules).map((r) => r.cssText).join("\\n"));
+            sheets.push(sheet);
+          }
+        } catch (e) { /* cross-origin or unreadable */ }
+      }
+      if (sheets.length) shadow.adoptedStyleSheets = sheets;
+      shadow.appendChild(shadowCardTemplate.content.cloneNode(true));
+    }
+  }
+  try { customElements.define("contour-shadow-card", ContourShadowCard); } catch (e) {}
+
+  // ---- Shadow DOM dialog with named slots ----
+  const shadowDialogTemplate = document.createElement("template");
+  shadowDialogTemplate.innerHTML = `
+    <dialog class="c-dialog" part="dialog">
+      <div class="c-dialog__head" part="head">
+        <slot name="title"></slot>
+        <button class="c-btn c-btn--icon c-btn--ghost" part="close" type="button" aria-label="Close">
+          <svg aria-hidden="true"><use href="#i-close" /></svg>
+        </button>
+      </div>
+      <div class="c-dialog__body" part="body"><slot></slot></div>
+      <div class="c-dialog__foot" part="foot"><slot name="foot"></slot></div>
+    </dialog>
+  `;
+
+  class ContourShadowDialog extends HTMLElement {
+    constructor() {
+      super();
+      const shadow = this.attachShadow({ mode: "open" });
+      const sheets = [];
+      for (const ss of document.styleSheets) {
+        try {
+          if (ss.href && new URL(ss.href).origin === location.origin) {
+            const sheet = new CSSStyleSheet();
+            sheet.replaceSync(Array.from(ss.cssRules).map((r) => r.cssText).join("\\n"));
+            sheets.push(sheet);
+          }
+        } catch (e) { /* cross-origin or unreadable */ }
+      }
+      if (sheets.length) shadow.adoptedStyleSheets = sheets;
+      shadow.appendChild(shadowDialogTemplate.content.cloneNode(true));
+      const closeBtn = shadow.querySelector('[part="close"]');
+      if (closeBtn) closeBtn.addEventListener("click", () => {
+        const dialog = shadow.querySelector("dialog");
+        if (dialog) dialog.close();
+      });
+    }
+    show() {
+      const dialog = this.shadowRoot?.querySelector("dialog");
+      if (dialog) dialog.showModal();
+    }
+  }
+  try { customElements.define("contour-shadow-dialog", ContourShadowDialog); } catch (e) {}
