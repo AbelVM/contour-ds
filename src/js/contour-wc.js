@@ -12,9 +12,78 @@
     if (!customElements.get(name)) customElements.define(name, cls);
   };
 
-  // Simple component: just adds CSS classes.
-  const simple = (classes) => class extends HTMLElement {
+  // The attributes a component may READ from its host. This list is the render
+  // contract: an attribute that is not here cannot ask an element to re-render,
+  // and an attribute a component WRITES to itself must never be here, because
+  // that write would fire the callback that performs the render.
+  //
+  // Excluded because the render bodies below set them on the host:
+  //   role, open, aria-label, aria-valuenow, aria-valuemin, aria-valuemax, tabindex
+  // Adding one of those back to this list makes that component recurse.
+  const OBSERVED = [
+    "action", "after", "answer", "before", "body", "brand", "color", "columns",
+    "command", "copyable", "current", "date", "delta", "desc", "direction", "do",
+    "dont", "error", "features", "hint", "href", "icon", "instrument", "items",
+    "key", "label", "links", "live", "max", "media", "message", "min", "name",
+    "next", "options", "pages", "placeholder", "prev", "price", "prompt",
+    "question", "quote", "removable", "reverse", "rows", "series", "shortcut",
+    "size", "steps", "summary", "tabs", "tag", "text", "title", "type", "value",
+    "variant",
+  ];
+
+  // Base class: the lifecycle belongs here, the markup belongs to the subclass.
+  //
+  // A render body is written to run more than once, and it is idempotent because
+  // of this snapshot rather than because of its own guards. The first
+  // connectedCallback records the nodes and the class attribute the AUTHOR
+  // wrote; every later render drops everything, re-appends exactly those nodes,
+  // and runs again. So a body may keep the natural
+  // \`if (!this.querySelector(".c-card__title"))\` shape: after the reset the
+  // generated node is gone, the guard passes, and the changed attribute reaches
+  // the page. Without the reset the guard is permanent and reactivity is a lie.
+  //
+  // The snapshot holds node references, not a re-parsed string, so listeners a
+  // consumer put on authored children survive a re-render. The cost is honest:
+  // nodes a component generated are rebuilt, so state inside them (a typed
+  // value, a focus ring) is lost when a host attribute changes.
+  class ContourBase extends HTMLElement {
+    static get observedAttributes() {
+      return OBSERVED;
+    }
+
     connectedCallback() {
+      if (this._contourAuthored) return; // reconnected, not re-specified
+      this._contourAuthored = {
+        nodes: Array.from(this.childNodes),
+        cls: this.getAttribute("class"),
+      };
+      this.render();
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+      if (oldValue === newValue) return;
+      // Fires before connectedCallback during an upgrade: nothing to reset to
+      // yet, and connectedCallback will render with the final attributes.
+      if (!this.isConnected || !this._contourAuthored || this._contourRendering) return;
+      this._contourRendering = true;
+      try {
+        while (this.firstChild) this.removeChild(this.firstChild);
+        for (const node of this._contourAuthored.nodes) this.appendChild(node);
+        if (this._contourAuthored.cls === null) this.removeAttribute("class");
+        else this.setAttribute("class", this._contourAuthored.cls);
+        this.render();
+      } finally {
+        this._contourRendering = false;
+      }
+    }
+
+    // Subclasses override this. It must be safe to call repeatedly.
+    render() {}
+  }
+
+  // Simple component: just adds CSS classes.
+  const simple = (classes) => class extends ContourBase {
+    render() {
       classes.forEach((c) => this.classList.add(c));
       ["variant", "size", "color"].forEach((attr) => {
         if (this.hasAttribute(attr)) {
@@ -152,15 +221,12 @@
     "contour-virtual-scroll": ["c-virtual-scroll"],
   };
 
-  Object.entries(simpleMap).forEach(([name, classes]) => {
-    define(name, simple(classes));
-  });
 
   // ---- Complex components with scaffolding ----
 
   // Menu: generates <ul> with items from data-items attribute.
-  class ContourMenu extends HTMLElement {
-    connectedCallback() {
+  class ContourMenu extends ContourBase {
+    render() {
       this.classList.add("c-menu");
       if (!this.hasAttribute("role")) this.setAttribute("role", "menu");
       const items = this.getAttribute("items");
@@ -201,8 +267,8 @@
   define("contour-menu", ContourMenu);
 
   // Card: wraps slotted content in card structure.
-  class ContourCard extends HTMLElement {
-    connectedCallback() {
+  class ContourCard extends ContourBase {
+    render() {
       this.classList.add("c-card");
       // If title attribute provided, prepend title.
       const title = this.getAttribute("title");
@@ -217,8 +283,8 @@
   define("contour-card", ContourCard);
 
   // Dialog: ensures proper structure.
-  class ContourDialog extends HTMLElement {
-    connectedCallback() {
+  class ContourDialog extends ContourBase {
+    render() {
       this.classList.add("c-dialog");
       if (!this.hasAttribute("role")) this.setAttribute("role", "dialog");
       if (this.hasAttribute("open")) this.setAttribute("open", "");
@@ -227,8 +293,8 @@
   define("contour-dialog", ContourDialog);
 
   // Tabs: generates tab list from data-tabs attribute.
-  class ContourTabs extends HTMLElement {
-    connectedCallback() {
+  class ContourTabs extends ContourBase {
+    render() {
       this.classList.add("c-tabs");
       const tabs = this.getAttribute("tabs");
       if (tabs && !this.querySelector(".c-tabs__list")) {
@@ -253,8 +319,8 @@
   define("contour-tabs", ContourTabs);
 
   // Breadcrumb: generates from data-items.
-  class ContourBreadcrumb extends HTMLElement {
-    connectedCallback() {
+  class ContourBreadcrumb extends ContourBase {
+    render() {
       this.classList.add("c-breadcrumb");
       const items = this.getAttribute("items");
       if (items && !this.querySelector("a")) {
@@ -286,8 +352,8 @@
   define("contour-breadcrumb", ContourBreadcrumb);
 
   // Header: generates brand + nav + actions.
-  class ContourHeader extends HTMLElement {
-    connectedCallback() {
+  class ContourHeader extends ContourBase {
+    render() {
       this.classList.add("c-header");
       const brand = this.getAttribute("brand");
       const links = this.getAttribute("links");
@@ -330,8 +396,8 @@
   define("contour-header", ContourHeader);
 
   // Combobox: generates input + list from data-options.
-  class ContourCombobox extends HTMLElement {
-    connectedCallback() {
+  class ContourCombobox extends ContourBase {
+    render() {
       this.classList.add("c-combobox");
       const options = this.getAttribute("options");
       if (options && !this.querySelector(".c-combobox__input")) {
@@ -361,8 +427,8 @@
   define("contour-combobox", ContourCombobox);
 
   // Tree: generates from data-items.
-  class ContourTree extends HTMLElement {
-    connectedCallback() {
+  class ContourTree extends ContourBase {
+    render() {
       this.classList.add("c-tree");
       const items = this.getAttribute("items");
       if (items && !this.querySelector(".c-tree__node")) {
@@ -408,13 +474,12 @@
     }
   }
   define("contour-tree", ContourTree);
-})();
 
   // ---- Additional complex components with scaffolding ----
 
   // Dialog: generates head + body + foot from attributes.
-  class ContourDialogFull extends HTMLElement {
-    connectedCallback() {
+  class ContourDialogFull extends ContourBase {
+    render() {
       this.classList.add("c-dialog");
       if (!this.hasAttribute("role")) this.setAttribute("role", "dialog");
       const title = this.getAttribute("title");
@@ -435,14 +500,11 @@
       }
     }
   }
-  // Override the simple dialog.
-  if (customElements.get("contour-dialog")) customElements.upgrade(document.createElement("contour-dialog"));
-  // Re-define with full implementation.
-  try { customElements.define("contour-dialog", ContourDialogFull); } catch (e) { /* already defined */ }
+  define("contour-dialog", ContourDialogFull);
 
   // Alert: generates icon + title + body.
-  class ContourAlert extends HTMLElement {
-    connectedCallback() {
+  class ContourAlert extends ContourBase {
+    render() {
       this.classList.add("c-alert");
       const variant = this.getAttribute("variant");
       if (variant) this.classList.add("c-alert--" + variant);
@@ -455,11 +517,11 @@
       }
     }
   }
-  try { customElements.define("contour-alert", ContourAlert); } catch (e) { /* already defined */ }
+  define("contour-alert", ContourAlert);
 
   // Field: generates label + input + hint/error.
-  class ContourField extends HTMLElement {
-    connectedCallback() {
+  class ContourField extends ContourBase {
+    render() {
       this.classList.add("c-field");
       const label = this.getAttribute("label");
       const hint = this.getAttribute("hint");
@@ -492,11 +554,11 @@
       }
     }
   }
-  try { customElements.define("contour-c-field", ContourField); } catch (e) { /* already defined */ }
+  define("contour-c-field", ContourField);
 
   // Readout: generates rows from data-rows attribute.
-  class ContourReadout extends HTMLElement {
-    connectedCallback() {
+  class ContourReadout extends ContourBase {
+    render() {
       this.classList.add("c-readout");
       const rows = this.getAttribute("rows");
       if (rows && !this.querySelector(".c-readout__row")) {
@@ -519,11 +581,11 @@
       }
     }
   }
-  try { customElements.define("contour-readout", ContourReadout); } catch (e) { /* already defined */ }
+  define("contour-readout", ContourReadout);
 
   // KPI: generates value + label + delta.
-  class ContourKpi extends HTMLElement {
-    connectedCallback() {
+  class ContourKpi extends ContourBase {
+    render() {
       this.classList.add("c-kpi");
       const value = this.getAttribute("value");
       const label = this.getAttribute("label");
@@ -548,11 +610,11 @@
       }
     }
   }
-  try { customElements.define("contour-kpi", ContourKpi); } catch (e) { /* already defined */ }
+  define("contour-kpi", ContourKpi);
 
   // Accordion/Disclosure: generates summary + content.
-  class ContourDisclosure extends HTMLElement {
-    connectedCallback() {
+  class ContourDisclosure extends ContourBase {
+    render() {
       this.classList.add("c-disclosure");
       const summary = this.getAttribute("summary");
       if (summary && !this.querySelector("summary")) {
@@ -569,11 +631,11 @@
       }
     }
   }
-  try { customElements.define("contour-disclosure", ContourDisclosure); } catch (e) { /* already defined */ }
+  define("contour-disclosure", ContourDisclosure);
 
   // Table: generates from data-columns and data-rows.
-  class ContourTable extends HTMLElement {
-    connectedCallback() {
+  class ContourTable extends ContourBase {
+    render() {
       this.classList.add("c-table");
       const columns = this.getAttribute("columns");
       const rows = this.getAttribute("rows");
@@ -609,11 +671,11 @@
       }
     }
   }
-  try { customElements.define("contour-table", ContourTable); } catch (e) { /* already defined */ }
+  define("contour-table", ContourTable);
 
   // Chart: generates SVG plot from data-series.
-  class ContourChart extends HTMLElement {
-    connectedCallback() {
+  class ContourChart extends ContourBase {
+    render() {
       this.classList.add("c-chart");
       const series = this.getAttribute("series");
       if (series && !this.querySelector(".c-chart__plot")) {
@@ -640,7 +702,7 @@
       }
     }
   }
-  try { customElements.define("contour-chart", ContourChart); } catch (e) { /* already defined */ }
+  define("contour-chart", ContourChart);
 
   // Tabs: already defined above, but enhance with panel switching.
   // (The simple version just generates the tab list.)
@@ -652,15 +714,15 @@
 
   // ---- Additional map-native and chart components ----
 
-  class ContourMinimap extends HTMLElement {
-    connectedCallback() {
+  class ContourMinimap extends ContourBase {
+    render() {
       this.classList.add("c-minimap");
     }
   }
-  try { customElements.define("contour-minimap", ContourMinimap); } catch (e) {}
+  define("contour-minimap", ContourMinimap);
 
-  class ContourCoordinate extends HTMLElement {
-    connectedCallback() {
+  class ContourCoordinate extends ContourBase {
+    render() {
       this.classList.add("c-coordinate");
       const value = this.getAttribute("value");
       if (value && !this.querySelector(".c-coordinate__value")) {
@@ -671,65 +733,65 @@
       }
     }
   }
-  try { customElements.define("contour-coordinate", ContourCoordinate); } catch (e) {}
+  define("contour-coordinate", ContourCoordinate);
 
-  class ContourLayerPanel extends HTMLElement {
-    connectedCallback() {
+  class ContourLayerPanel extends ContourBase {
+    render() {
       this.classList.add("c-layer-panel");
     }
   }
-  try { customElements.define("contour-layer-panel", ContourLayerPanel); } catch (e) {}
+  define("contour-layer-panel", ContourLayerPanel);
 
-  class ContourTimeSlider extends HTMLElement {
-    connectedCallback() {
+  class ContourTimeSlider extends ContourBase {
+    render() {
       this.classList.add("c-time-slider");
     }
   }
-  try { customElements.define("contour-time-slider", ContourTimeSlider); } catch (e) {}
+  define("contour-time-slider", ContourTimeSlider);
 
-  class ContourComparison extends HTMLElement {
-    connectedCallback() {
+  class ContourComparison extends ContourBase {
+    render() {
       this.classList.add("c-comparison");
     }
   }
-  try { customElements.define("contour-comparison", ContourComparison); } catch (e) {}
+  define("contour-comparison", ContourComparison);
 
-  class ContourHexbin extends HTMLElement {
-    connectedCallback() {
+  class ContourHexbin extends ContourBase {
+    render() {
       this.classList.add("c-hexbin");
     }
   }
-  try { customElements.define("contour-hexbin", ContourHexbin); } catch (e) {}
+  define("contour-hexbin", ContourHexbin);
 
 
   // ---- Additional advanced chart and map components ----
 
-  class ContourFlowMap extends HTMLElement {
-    connectedCallback() { this.classList.add("c-flow-map"); }
+  class ContourFlowMap extends ContourBase {
+    render() { this.classList.add("c-flow-map"); }
   }
-  try { customElements.define("contour-flow-map", ContourFlowMap); } catch (e) {}
+  define("contour-flow-map", ContourFlowMap);
 
-  class ContourIsochrone extends HTMLElement {
-    connectedCallback() { this.classList.add("c-isochrone"); }
+  class ContourIsochrone extends ContourBase {
+    render() { this.classList.add("c-isochrone"); }
   }
-  try { customElements.define("contour-isochrone", ContourIsochrone); } catch (e) {}
+  define("contour-isochrone", ContourIsochrone);
 
-  class ContourCatchment extends HTMLElement {
-    connectedCallback() { this.classList.add("c-catchment"); }
+  class ContourCatchment extends ContourBase {
+    render() { this.classList.add("c-catchment"); }
   }
-  try { customElements.define("contour-catchment", ContourCatchment); } catch (e) {}
+  define("contour-catchment", ContourCatchment);
 
-  class ContourStreamingChart extends HTMLElement {
-    connectedCallback() { this.classList.add("c-streaming-chart"); }
+  class ContourStreamingChart extends ContourBase {
+    render() { this.classList.add("c-streaming-chart"); }
   }
-  try { customElements.define("contour-streaming-chart", ContourStreamingChart); } catch (e) {}
+  define("contour-streaming-chart", ContourStreamingChart);
 
 
   // ---- Additional complex components with scaffolding ----
 
   // Callout: generates icon + title + body.
-  class ContourCallout extends HTMLElement {
-    connectedCallback() {
+  class ContourCallout extends ContourBase {
+    render() {
       this.classList.add("c-callout");
       const variant = this.getAttribute("variant");
       if (variant) this.classList.add("c-callout--" + variant);
@@ -742,11 +804,11 @@
       }
     }
   }
-  try { customElements.define("contour-callout", ContourCallout); } catch (e) {}
+  define("contour-callout", ContourCallout);
 
   // Empty state: generates icon + title + body + action.
-  class ContourEmpty extends HTMLElement {
-    connectedCallback() {
+  class ContourEmpty extends ContourBase {
+    render() {
       this.classList.add("c-empty");
       const title = this.getAttribute("title");
       const body = this.getAttribute("body");
@@ -772,11 +834,11 @@
       }
     }
   }
-  try { customElements.define("contour-empty", ContourEmpty); } catch (e) {}
+  define("contour-empty", ContourEmpty);
 
   // FAQ: generates question + answer.
-  class ContourFaq extends HTMLElement {
-    connectedCallback() {
+  class ContourFaq extends ContourBase {
+    render() {
       this.classList.add("c-faq");
       const question = this.getAttribute("question");
       const answer = this.getAttribute("answer");
@@ -794,11 +856,11 @@
       }
     }
   }
-  try { customElements.define("contour-faq", ContourFaq); } catch (e) {}
+  define("contour-faq", ContourFaq);
 
   // Feature: generates icon + title + body.
-  class ContourFeature extends HTMLElement {
-    connectedCallback() {
+  class ContourFeature extends ContourBase {
+    render() {
       this.classList.add("c-feature");
       const title = this.getAttribute("title");
       const body = this.getAttribute("body");
@@ -823,11 +885,11 @@
       }
     }
   }
-  try { customElements.define("contour-feature", ContourFeature); } catch (e) {}
+  define("contour-feature", ContourFeature);
 
   // Code tabs: generates tab list + panels.
-  class ContourCodeTabs extends HTMLElement {
-    connectedCallback() {
+  class ContourCodeTabs extends ContourBase {
+    render() {
       this.classList.add("c-code-tabs");
       const tabs = this.getAttribute("tabs");
       if (tabs && !this.querySelector(".c-code-tabs__list")) {
@@ -849,11 +911,11 @@
       }
     }
   }
-  try { customElements.define("contour-code-tabs", ContourCodeTabs); } catch (e) {}
+  define("contour-code-tabs", ContourCodeTabs);
 
   // Steps: generates numbered steps.
-  class ContourSteps extends HTMLElement {
-    connectedCallback() {
+  class ContourSteps extends ContourBase {
+    render() {
       this.classList.add("c-steps");
       const steps = this.getAttribute("steps");
       if (steps && !this.querySelector(".c-steps__item")) {
@@ -876,13 +938,13 @@
       }
     }
   }
-  try { customElements.define("contour-steps", ContourSteps); } catch (e) {}
+  define("contour-steps", ContourSteps);
 
   // Callout: already defined above.
 
   // Accordion: generates details/summary.
-  class ContourAccordion extends HTMLElement {
-    connectedCallback() {
+  class ContourAccordion extends ContourBase {
+    render() {
       this.classList.add("c-accordion");
       const items = this.getAttribute("items");
       if (items && !this.querySelector("details")) {
@@ -904,14 +966,14 @@
       }
     }
   }
-  try { customElements.define("contour-accordion", ContourAccordion); } catch (e) {}
+  define("contour-accordion", ContourAccordion);
 
 
   // ---- Additional simple components with attribute scaffolding ----
 
   // Avatar: generates initials from name attribute.
-  class ContourAvatar extends HTMLElement {
-    connectedCallback() {
+  class ContourAvatar extends ContourBase {
+    render() {
       this.classList.add("c-avatar");
       const name = this.getAttribute("name");
       const size = this.getAttribute("size");
@@ -924,11 +986,11 @@
       }
     }
   }
-  try { customElements.define("contour-avatar", ContourAvatar); } catch (e) {}
+  define("contour-avatar", ContourAvatar);
 
   // Badge: generates text from label attribute.
-  class ContourBadgeFull extends HTMLElement {
-    connectedCallback() {
+  class ContourBadgeFull extends ContourBase {
+    render() {
       this.classList.add("c-badge");
       const variant = this.getAttribute("variant");
       if (variant) this.classList.add("c-badge--" + variant);
@@ -938,11 +1000,11 @@
       }
     }
   }
-  try { customElements.define("contour-badge", ContourBadgeFull); } catch (e) {}
+  define("contour-badge", ContourBadgeFull);
 
   // Chip: generates key + value from attributes.
-  class ContourChipFull extends HTMLElement {
-    connectedCallback() {
+  class ContourChipFull extends ContourBase {
+    render() {
       this.classList.add("c-chip");
       const variant = this.getAttribute("variant");
       if (variant) this.classList.add("c-chip--" + variant);
@@ -962,11 +1024,11 @@
       }
     }
   }
-  try { customElements.define("contour-chip", ContourChipFull); } catch (e) {}
+  define("contour-chip", ContourChipFull);
 
   // Tag: generates text + remove button.
-  class ContourTag extends HTMLElement {
-    connectedCallback() {
+  class ContourTag extends ContourBase {
+    render() {
       this.classList.add("c-tag");
       const variant = this.getAttribute("variant");
       if (variant) this.classList.add("c-tag--" + variant);
@@ -984,22 +1046,22 @@
       }
     }
   }
-  try { customElements.define("contour-tag", ContourTag); } catch (e) {}
+  define("contour-tag", ContourTag);
 
   // Dot: generates from variant attribute.
-  class ContourDot extends HTMLElement {
-    connectedCallback() {
+  class ContourDot extends ContourBase {
+    render() {
       this.classList.add("c-dot");
       const variant = this.getAttribute("variant");
       if (variant) this.classList.add("c-dot--" + variant);
       if (this.hasAttribute("live")) this.classList.add("c-dot--live");
     }
   }
-  try { customElements.define("contour-dot", ContourDot); } catch (e) {}
+  define("contour-dot", ContourDot);
 
   // Pill: generates text from label attribute.
-  class ContourPill extends HTMLElement {
-    connectedCallback() {
+  class ContourPill extends ContourBase {
+    render() {
       this.classList.add("c-pill");
       const variant = this.getAttribute("variant");
       if (variant) this.classList.add("c-pill--" + variant);
@@ -1010,11 +1072,11 @@
       if (this.hasAttribute("live")) this.classList.add("c-pill--live");
     }
   }
-  try { customElements.define("contour-pill", ContourPill); } catch (e) {}
+  define("contour-pill", ContourPill);
 
   // Kbd: generates key text.
-  class ContourKbd extends HTMLElement {
-    connectedCallback() {
+  class ContourKbd extends ContourBase {
+    render() {
       this.classList.add("c-kbd");
       const key = this.getAttribute("key");
       if (key && !this.textContent.trim()) {
@@ -1022,29 +1084,29 @@
       }
     }
   }
-  try { customElements.define("contour-kbd", ContourKbd); } catch (e) {}
+  define("contour-kbd", ContourKbd);
 
   // Spinner: simple class wrapper.
-  class ContourSpinner extends HTMLElement {
-    connectedCallback() {
+  class ContourSpinner extends ContourBase {
+    render() {
       this.classList.add("c-spinner");
       if (!this.hasAttribute("role")) this.setAttribute("role", "status");
       if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Loading");
     }
   }
-  try { customElements.define("contour-spinner", ContourSpinner); } catch (e) {}
+  define("contour-spinner", ContourSpinner);
 
   // Skeleton: simple class wrapper.
-  class ContourSkeleton extends HTMLElement {
-    connectedCallback() {
+  class ContourSkeleton extends ContourBase {
+    render() {
       this.classList.add("c-skeleton");
     }
   }
-  try { customElements.define("contour-skeleton", ContourSkeleton); } catch (e) {}
+  define("contour-skeleton", ContourSkeleton);
 
   // Breadcrumb & pagination: generates nav from items.
-  class ContourBreadcrumbFull extends HTMLElement {
-    connectedCallback() {
+  class ContourBreadcrumbFull extends ContourBase {
+    render() {
       this.classList.add("c-breadcrumb");
       const items = this.getAttribute("items");
       if (items && !this.querySelector("a")) {
@@ -1073,11 +1135,11 @@
       }
     }
   }
-  try { customElements.define("contour-breadcrumb", ContourBreadcrumbFull); } catch (e) {}
+  define("contour-breadcrumb", ContourBreadcrumbFull);
 
   // Pagination: generates page links.
-  class ContourPagination extends HTMLElement {
-    connectedCallback() {
+  class ContourPagination extends ContourBase {
+    render() {
       this.classList.add("c-pagination");
       const pages = this.getAttribute("pages");
       const current = parseInt(this.getAttribute("current") || "1", 10);
@@ -1096,29 +1158,29 @@
       }
     }
   }
-  try { customElements.define("contour-pagination", ContourPagination); } catch (e) {}
+  define("contour-pagination", ContourPagination);
 
   // Drawer: ensures proper role.
-  class ContourDrawer extends HTMLElement {
-    connectedCallback() {
+  class ContourDrawer extends ContourBase {
+    render() {
       this.classList.add("c-drawer");
       if (!this.hasAttribute("role")) this.setAttribute("role", "dialog");
     }
   }
-  try { customElements.define("contour-drawer", ContourDrawer); } catch (e) {}
+  define("contour-drawer", ContourDrawer);
 
   // Sheet: ensures proper role.
-  class ContourSheet extends HTMLElement {
-    connectedCallback() {
+  class ContourSheet extends ContourBase {
+    render() {
       this.classList.add("c-sheet");
       if (!this.hasAttribute("role")) this.setAttribute("role", "dialog");
     }
   }
-  try { customElements.define("contour-sheet", ContourSheet); } catch (e) {}
+  define("contour-sheet", ContourSheet);
 
   // Tooltip: generates text from label attribute.
-  class ContourTooltip extends HTMLElement {
-    connectedCallback() {
+  class ContourTooltip extends ContourBase {
+    render() {
       this.classList.add("c-tooltip");
       const text = this.getAttribute("text");
       if (text && !this.textContent.trim()) {
@@ -1126,11 +1188,11 @@
       }
     }
   }
-  try { customElements.define("contour-tooltip", ContourTooltip); } catch (e) {}
+  define("contour-tooltip", ContourTooltip);
 
   // Toast: generates message.
-  class ContourToast extends HTMLElement {
-    connectedCallback() {
+  class ContourToast extends ContourBase {
+    render() {
       this.classList.add("c-toast");
       const message = this.getAttribute("message");
       if (message && !this.textContent.trim()) {
@@ -1140,11 +1202,11 @@
       if (variant) this.classList.add("c-toast--" + variant);
     }
   }
-  try { customElements.define("contour-toast", ContourToast); } catch (e) {}
+  define("contour-toast", ContourToast);
 
   // Progress: generates from value attribute.
-  class ContourProgress extends HTMLElement {
-    connectedCallback() {
+  class ContourProgress extends ContourBase {
+    render() {
       this.classList.add("c-progress");
       const value = this.getAttribute("value");
       if (value) {
@@ -1156,11 +1218,11 @@
       if (!this.hasAttribute("aria-valuemax")) this.setAttribute("aria-valuemax", "100");
     }
   }
-  try { customElements.define("contour-progress", ContourProgress); } catch (e) {}
+  define("contour-progress", ContourProgress);
 
   // Meter: generates from value attribute.
-  class ContourMeter extends HTMLElement {
-    connectedCallback() {
+  class ContourMeter extends ContourBase {
+    render() {
       this.classList.add("c-meter");
       const value = this.getAttribute("value");
       if (value) {
@@ -1168,11 +1230,11 @@
       }
     }
   }
-  try { customElements.define("contour-meter", ContourMeter); } catch (e) {}
+  define("contour-meter", ContourMeter);
 
   // Range: generates from attributes.
-  class ContourRange extends HTMLElement {
-    connectedCallback() {
+  class ContourRange extends ContourBase {
+    render() {
       this.classList.add("c-range");
       if (!this.querySelector("input")) {
         const input = document.createElement("input");
@@ -1184,11 +1246,11 @@
       }
     }
   }
-  try { customElements.define("contour-range", ContourRange); } catch (e) {}
+  define("contour-range", ContourRange);
 
   // Switch: generates from label attribute.
-  class ContourSwitch extends HTMLElement {
-    connectedCallback() {
+  class ContourSwitch extends ContourBase {
+    render() {
       this.classList.add("c-switch");
       const label = this.getAttribute("label");
       if (label && !this.querySelector(".c-switch__label")) {
@@ -1199,11 +1261,11 @@
       }
     }
   }
-  try { customElements.define("contour-switch", ContourSwitch); } catch (e) {}
+  define("contour-switch", ContourSwitch);
 
   // Check: generates from label attribute.
-  class ContourCheck extends HTMLElement {
-    connectedCallback() {
+  class ContourCheck extends ContourBase {
+    render() {
       this.classList.add("c-check");
       const label = this.getAttribute("label");
       if (label && !this.querySelector(".c-check__label")) {
@@ -1214,11 +1276,11 @@
       }
     }
   }
-  try { customElements.define("contour-check", ContourCheck); } catch (e) {}
+  define("contour-check", ContourCheck);
 
   // Radio: generates from label attribute.
-  class ContourRadio extends HTMLElement {
-    connectedCallback() {
+  class ContourRadio extends ContourBase {
+    render() {
       this.classList.add("c-radio");
       const label = this.getAttribute("label");
       if (label && !this.querySelector(".c-radio__label")) {
@@ -1229,11 +1291,11 @@
       }
     }
   }
-  try { customElements.define("contour-radio", ContourRadio); } catch (e) {}
+  define("contour-radio", ContourRadio);
 
   // Select: generates from options attribute.
-  class ContourSelect extends HTMLElement {
-    connectedCallback() {
+  class ContourSelect extends ContourBase {
+    render() {
       this.classList.add("c-select");
       const options = this.getAttribute("options");
       if (options && !this.querySelector("option")) {
@@ -1253,11 +1315,11 @@
       }
     }
   }
-  try { customElements.define("contour-select", ContourSelect); } catch (e) {}
+  define("contour-select", ContourSelect);
 
   // Textarea: generates from placeholder attribute.
-  class ContourTextarea extends HTMLElement {
-    connectedCallback() {
+  class ContourTextarea extends ContourBase {
+    render() {
       this.classList.add("c-textarea");
       if (!this.querySelector("textarea")) {
         const ta = document.createElement("textarea");
@@ -1267,11 +1329,11 @@
       }
     }
   }
-  try { customElements.define("contour-textarea", ContourTextarea); } catch (e) {}
+  define("contour-textarea", ContourTextarea);
 
   // Input: generates from placeholder attribute.
-  class ContourInputFull extends HTMLElement {
-    connectedCallback() {
+  class ContourInputFull extends ContourBase {
+    render() {
       this.classList.add("c-input");
       if (!this.querySelector("input")) {
         const input = document.createElement("input");
@@ -1282,11 +1344,11 @@
       }
     }
   }
-  try { customElements.define("contour-input", ContourInputFull); } catch (e) {}
+  define("contour-input", ContourInputFull);
 
   // Link: generates from href and label.
-  class ContourLink extends HTMLElement {
-    connectedCallback() {
+  class ContourLink extends ContourBase {
+    render() {
       this.classList.add("c-link");
       const href = this.getAttribute("href");
       const label = this.getAttribute("label");
@@ -1298,29 +1360,29 @@
       }
     }
   }
-  try { customElements.define("contour-link", ContourLink); } catch (e) {}
+  define("contour-link", ContourLink);
 
   // Flag: generates from variant.
-  class ContourFlag extends HTMLElement {
-    connectedCallback() {
+  class ContourFlag extends ContourBase {
+    render() {
       this.classList.add("c-flag");
       const variant = this.getAttribute("variant");
       if (variant) this.classList.add("c-flag--" + variant);
     }
   }
-  try { customElements.define("contour-flag", ContourFlag); } catch (e) {}
+  define("contour-flag", ContourFlag);
 
   // Mark: generates from variant.
-  class ContourMark extends HTMLElement {
-    connectedCallback() {
+  class ContourMark extends ContourBase {
+    render() {
       this.classList.add("c-mark");
     }
   }
-  try { customElements.define("contour-mark", ContourMark); } catch (e) {}
+  define("contour-mark", ContourMark);
 
   // Brand: generates from name and tag.
-  class ContourBrand extends HTMLElement {
-    connectedCallback() {
+  class ContourBrand extends ContourBase {
+    render() {
       this.classList.add("c-brand");
       const name = this.getAttribute("name");
       const tag = this.getAttribute("tag");
@@ -1338,11 +1400,11 @@
       }
     }
   }
-  try { customElements.define("contour-brand", ContourBrand); } catch (e) {}
+  define("contour-brand", ContourBrand);
 
   // Section head: generates from title and desc.
-  class ContourSectionHead extends HTMLElement {
-    connectedCallback() {
+  class ContourSectionHead extends ContourBase {
+    render() {
       this.classList.add("c-section-head");
       const title = this.getAttribute("title");
       const desc = this.getAttribute("desc");
@@ -1360,13 +1422,13 @@
       }
     }
   }
-  try { customElements.define("contour-section-head", ContourSectionHead); } catch (e) {}
+  define("contour-section-head", ContourSectionHead);
 
   // Empty state: already defined above.
 
   // Loading: generates spinner.
-  class ContourLoading extends HTMLElement {
-    connectedCallback() {
+  class ContourLoading extends ContourBase {
+    render() {
       this.classList.add("c-loading");
       if (!this.querySelector(".c-spinner")) {
         const s = document.createElement("span");
@@ -1375,19 +1437,19 @@
       }
     }
   }
-  try { customElements.define("contour-loading", ContourLoading); } catch (e) {}
+  define("contour-loading", ContourLoading);
 
   // Elevation: simple class wrapper.
-  class ContourElevation extends HTMLElement {
-    connectedCallback() {
+  class ContourElevation extends ContourBase {
+    render() {
       this.classList.add("c-elevation");
     }
   }
-  try { customElements.define("contour-elevation", ContourElevation); } catch (e) {}
+  define("contour-elevation", ContourElevation);
 
   // Diff: generates from before/after attributes.
-  class ContourDiff extends HTMLElement {
-    connectedCallback() {
+  class ContourDiff extends ContourBase {
+    render() {
       this.classList.add("c-diff");
       const before = this.getAttribute("before");
       const after = this.getAttribute("after");
@@ -1405,11 +1467,11 @@
       }
     }
   }
-  try { customElements.define("contour-diff", ContourDiff); } catch (e) {}
+  define("contour-diff", ContourDiff);
 
   // Do/Don't: generates from do/dont attributes.
-  class ContourDoDont extends HTMLElement {
-    connectedCallback() {
+  class ContourDoDont extends ContourBase {
+    render() {
       this.classList.add("c-do-dont");
       const doText = this.getAttribute("do");
       const dontText = this.getAttribute("dont");
@@ -1427,7 +1489,7 @@
       }
     }
   }
-  try { customElements.define("contour-do-dont", ContourDoDont); } catch (e) {}
+  define("contour-do-dont", ContourDoDont);
 
   // Steps: already defined above.
 
@@ -1439,8 +1501,8 @@
   // ---- Additional complex components with scaffolding ----
 
   // Meter: generates core + value + label from attributes.
-  class ContourMeterFull extends HTMLElement {
-    connectedCallback() {
+  class ContourMeterFull extends ContourBase {
+    render() {
       this.classList.add("c-meter");
       const value = this.getAttribute("value") || "0";
       const label = this.getAttribute("label") || "";
@@ -1468,11 +1530,11 @@
       if (!this.hasAttribute("aria-valuemax")) this.setAttribute("aria-valuemax", "1");
     }
   }
-  try { customElements.define("contour-meter", ContourMeterFull); } catch (e) {}
+  define("contour-meter", ContourMeterFull);
 
   // Delta: generates arrow + value from attributes.
-  class ContourDelta extends HTMLElement {
-    connectedCallback() {
+  class ContourDelta extends ContourBase {
+    render() {
       this.classList.add("c-delta");
       const value = this.getAttribute("value") || "";
       const direction = this.getAttribute("direction") || "up";
@@ -1489,13 +1551,13 @@
       }
     }
   }
-  try { customElements.define("contour-delta", ContourDelta); } catch (e) {}
+  define("contour-delta", ContourDelta);
 
   // Readout: already defined above.
 
   // Stat: generates value + label + delta.
-  class ContourStat extends HTMLElement {
-    connectedCallback() {
+  class ContourStat extends ContourBase {
+    render() {
       this.classList.add("c-stat");
       const value = this.getAttribute("value");
       const label = this.getAttribute("label");
@@ -1520,13 +1582,13 @@
       }
     }
   }
-  try { customElements.define("contour-stat", ContourStat); } catch (e) {}
+  define("contour-stat", ContourStat);
 
   // KPI: already defined above.
 
   // Instrument readout: generates rows.
-  class ContourInstrument extends HTMLElement {
-    connectedCallback() {
+  class ContourInstrument extends ContourBase {
+    render() {
       this.classList.add("c-instrument");
       const rows = this.getAttribute("rows");
       if (rows && !this.querySelector(".c-instrument__row")) {
@@ -1549,11 +1611,11 @@
       }
     }
   }
-  try { customElements.define("contour-instrument", ContourInstrument); } catch (e) {}
+  define("contour-instrument", ContourInstrument);
 
   // Bivariate legend: generates matrix.
-  class ContourBivariate extends HTMLElement {
-    connectedCallback() {
+  class ContourBivariate extends ContourBase {
+    render() {
       this.classList.add("c-bivariate");
       const size = parseInt(this.getAttribute("size") || "3", 10);
       if (!this.querySelector(".c-bivariate__matrix")) {
@@ -1569,11 +1631,11 @@
       }
     }
   }
-  try { customElements.define("contour-bivariate", ContourBivariate); } catch (e) {}
+  define("contour-bivariate", ContourBivariate);
 
   // Threshold: generates from value.
-  class ContourThreshold extends HTMLElement {
-    connectedCallback() {
+  class ContourThreshold extends ContourBase {
+    render() {
       this.classList.add("c-threshold");
       const value = this.getAttribute("value");
       if (value && !this.querySelector(".c-threshold__value")) {
@@ -1584,19 +1646,19 @@
       }
     }
   }
-  try { customElements.define("contour-threshold", ContourThreshold); } catch (e) {}
+  define("contour-threshold", ContourThreshold);
 
   // Survey: generates from data.
-  class ContourSurvey extends HTMLElement {
-    connectedCallback() {
+  class ContourSurvey extends ContourBase {
+    render() {
       this.classList.add("c-survey");
     }
   }
-  try { customElements.define("contour-survey", ContourSurvey); } catch (e) {}
+  define("contour-survey", ContourSurvey);
 
   // Expandable: generates summary + content.
-  class ContourExpandable extends HTMLElement {
-    connectedCallback() {
+  class ContourExpandable extends ContourBase {
+    render() {
       this.classList.add("c-expandable");
       const summary = this.getAttribute("summary");
       if (summary && !this.querySelector("summary")) {
@@ -1613,11 +1675,11 @@
       }
     }
   }
-  try { customElements.define("contour-expandable", ContourExpandable); } catch (e) {}
+  define("contour-expandable", ContourExpandable);
 
   // Flag: generates from variant.
-  class ContourFlagFull extends HTMLElement {
-    connectedCallback() {
+  class ContourFlagFull extends ContourBase {
+    render() {
       this.classList.add("c-flag");
       const variant = this.getAttribute("variant");
       if (variant) this.classList.add("c-flag--" + variant);
@@ -1627,7 +1689,7 @@
       }
     }
   }
-  try { customElements.define("contour-flag", ContourFlagFull); } catch (e) {}
+  define("contour-flag", ContourFlagFull);
 
   // Link: already defined above.
 
@@ -1713,8 +1775,8 @@
   // ---- Additional complex components with scaffolding ----
 
   // Survey: generates from date and instrument attributes.
-  class ContourSurveyFull extends HTMLElement {
-    connectedCallback() {
+  class ContourSurveyFull extends ContourBase {
+    render() {
       this.classList.add("c-survey");
       const date = this.getAttribute("date");
       const instrument = this.getAttribute("instrument");
@@ -1726,11 +1788,11 @@
       }
     }
   }
-  try { customElements.define("contour-survey", ContourSurveyFull); } catch (e) {}
+  define("contour-survey", ContourSurveyFull);
 
   // Threshold: generates from value and label.
-  class ContourThresholdFull extends HTMLElement {
-    connectedCallback() {
+  class ContourThresholdFull extends ContourBase {
+    render() {
       this.classList.add("c-threshold");
       const value = this.getAttribute("value");
       const label = this.getAttribute("label");
@@ -1748,7 +1810,7 @@
       }
     }
   }
-  try { customElements.define("contour-threshold", ContourThresholdFull); } catch (e) {}
+  define("contour-threshold", ContourThresholdFull);
 
   // Expandable: already defined above.
 
@@ -1764,8 +1826,8 @@
   // ---- Expanded scaffolding for remaining components ----
 
   // Install: generates prompt + command + copy button.
-  class ContourInstallFull extends HTMLElement {
-    connectedCallback() {
+  class ContourInstallFull extends ContourBase {
+    render() {
       this.classList.add("c-install");
       const prompt = this.getAttribute("prompt") || "$";
       const command = this.getAttribute("command") || "";
@@ -1789,11 +1851,11 @@
       }
     }
   }
-  try { customElements.define("contour-install", ContourInstallFull); } catch (e) {}
+  define("contour-install", ContourInstallFull);
 
   // Pager: generates prev/next links.
-  class ContourPagerFull extends HTMLElement {
-    connectedCallback() {
+  class ContourPagerFull extends ContourBase {
+    render() {
       this.classList.add("c-pager");
       const prev = this.getAttribute("prev");
       const next = this.getAttribute("next");
@@ -1813,11 +1875,11 @@
       }
     }
   }
-  try { customElements.define("contour-pager", ContourPagerFull); } catch (e) {}
+  define("contour-pager", ContourPagerFull);
 
   // TOC: generates title + list from items.
-  class ContourTocFull extends HTMLElement {
-    connectedCallback() {
+  class ContourTocFull extends ContourBase {
+    render() {
       this.classList.add("c-toc");
       const title = this.getAttribute("title") || "On this page";
       const items = this.getAttribute("items");
@@ -1846,11 +1908,11 @@
       }
     }
   }
-  try { customElements.define("contour-toc", ContourTocFull); } catch (e) {}
+  define("contour-toc", ContourTocFull);
 
   // Version banner: generates icon + message.
-  class ContourVersionBannerFull extends HTMLElement {
-    connectedCallback() {
+  class ContourVersionBannerFull extends ContourBase {
+    render() {
       this.classList.add("c-version-banner");
       const message = this.getAttribute("message");
       if (message && !this.textContent.trim()) {
@@ -1864,11 +1926,11 @@
       }
     }
   }
-  try { customElements.define("contour-version-banner", ContourVersionBannerFull); } catch (e) {}
+  define("contour-version-banner", ContourVersionBannerFull);
 
   // Testimonial: generates quote + byline.
-  class ContourTestimonialFull extends HTMLElement {
-    connectedCallback() {
+  class ContourTestimonialFull extends ContourBase {
+    render() {
       this.classList.add("c-testimonial");
       const quote = this.getAttribute("quote");
       const name = this.getAttribute("name");
@@ -1896,11 +1958,11 @@
       }
     }
   }
-  try { customElements.define("contour-testimonial", ContourTestimonialFull); } catch (e) {}
+  define("contour-testimonial", ContourTestimonialFull);
 
   // Showcase: generates media + title + text + list.
-  class ContourShowcaseFull extends HTMLElement {
-    connectedCallback() {
+  class ContourShowcaseFull extends ContourBase {
+    render() {
       this.classList.add("c-showcase");
       if (this.hasAttribute("reverse")) this.classList.add("c-showcase--reverse");
       const title = this.getAttribute("title");
@@ -1940,11 +2002,11 @@
       }
     }
   }
-  try { customElements.define("contour-showcase", ContourShowcaseFull); } catch (e) {}
+  define("contour-showcase", ContourShowcaseFull);
 
   // Pricing: generates price + features.
-  class ContourPricingFull extends HTMLElement {
-    connectedCallback() {
+  class ContourPricingFull extends ContourBase {
+    render() {
       this.classList.add("c-pricing");
       const price = this.getAttribute("price");
       const label = this.getAttribute("label");
@@ -1975,11 +2037,11 @@
       }
     }
   }
-  try { customElements.define("contour-pricing", ContourPricingFull); } catch (e) {}
+  define("contour-pricing", ContourPricingFull);
 
   // Recipe: generates title + body.
-  class ContourRecipeFull extends HTMLElement {
-    connectedCallback() {
+  class ContourRecipeFull extends ContourBase {
+    render() {
       this.classList.add("c-recipe");
       const title = this.getAttribute("title");
       const body = this.getAttribute("body");
@@ -1997,30 +2059,30 @@
       }
     }
   }
-  try { customElements.define("contour-recipe", ContourRecipeFull); } catch (e) {}
+  define("contour-recipe", ContourRecipeFull);
 
   // Pressable: ensures role + tabindex.
-  class ContourPressableFull extends HTMLElement {
-    connectedCallback() {
+  class ContourPressableFull extends ContourBase {
+    render() {
       this.classList.add("c-pressable");
       if (!this.hasAttribute("role")) this.setAttribute("role", "button");
       if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
     }
   }
-  try { customElements.define("contour-pressable", ContourPressableFull); } catch (e) {}
+  define("contour-pressable", ContourPressableFull);
 
   // Resize handle: ensures role.
-  class ContourResizeHandleFull extends HTMLElement {
-    connectedCallback() {
+  class ContourResizeHandleFull extends ContourBase {
+    render() {
       this.classList.add("c-resize-handle");
       if (!this.hasAttribute("role")) this.setAttribute("role", "separator");
     }
   }
-  try { customElements.define("contour-resize-handle", ContourResizeHandleFull); } catch (e) {}
+  define("contour-resize-handle", ContourResizeHandleFull);
 
   // Search trigger: generates kbd hint.
-  class ContourSearchTriggerFull extends HTMLElement {
-    connectedCallback() {
+  class ContourSearchTriggerFull extends ContourBase {
+    render() {
       this.classList.add("c-search-trigger");
       const label = this.getAttribute("label") || "Search";
       if (!this.textContent.trim()) {
@@ -2034,16 +2096,16 @@
       }
     }
   }
-  try { customElements.define("contour-search-trigger", ContourSearchTriggerFull); } catch (e) {}
+  define("contour-search-trigger", ContourSearchTriggerFull);
 
   // Shortcut list/row/panel/overlay: simple class wrappers with scaffolding.
-  class ContourShortcutListFull extends HTMLElement {
-    connectedCallback() { this.classList.add("c-shortcut-list"); }
+  class ContourShortcutListFull extends ContourBase {
+    render() { this.classList.add("c-shortcut-list"); }
   }
-  try { customElements.define("contour-shortcut-list", ContourShortcutListFull); } catch (e) {}
+  define("contour-shortcut-list", ContourShortcutListFull);
 
-  class ContourShortcutRowFull extends HTMLElement {
-    connectedCallback() {
+  class ContourShortcutRowFull extends ContourBase {
+    render() {
       this.classList.add("c-shortcut-row");
       const key = this.getAttribute("key");
       const desc = this.getAttribute("desc");
@@ -2060,86 +2122,86 @@
       }
     }
   }
-  try { customElements.define("contour-shortcut-row", ContourShortcutRowFull); } catch (e) {}
+  define("contour-shortcut-row", ContourShortcutRowFull);
 
-  class ContourShortcutPanelFull extends HTMLElement {
-    connectedCallback() { this.classList.add("c-shortcut-panel"); }
+  class ContourShortcutPanelFull extends ContourBase {
+    render() { this.classList.add("c-shortcut-panel"); }
   }
-  try { customElements.define("contour-shortcut-panel", ContourShortcutPanelFull); } catch (e) {}
+  define("contour-shortcut-panel", ContourShortcutPanelFull);
 
-  class ContourShortcutOverlayFull extends HTMLElement {
-    connectedCallback() { this.classList.add("c-shortcut-overlay"); }
+  class ContourShortcutOverlayFull extends ContourBase {
+    render() { this.classList.add("c-shortcut-overlay"); }
   }
-  try { customElements.define("contour-shortcut-overlay", ContourShortcutOverlayFull); } catch (e) {}
+  define("contour-shortcut-overlay", ContourShortcutOverlayFull);
 
   // Row action: simple wrapper.
-  class ContourRowActionFull extends HTMLElement {
-    connectedCallback() { this.classList.add("c-row-action"); }
+  class ContourRowActionFull extends ContourBase {
+    render() { this.classList.add("c-row-action"); }
   }
-  try { customElements.define("contour-row-action", ContourRowActionFull); } catch (e) {}
+  define("contour-row-action", ContourRowActionFull);
 
   // Metrics: simple wrapper.
-  class ContourMetricsFull extends HTMLElement {
-    connectedCallback() { this.classList.add("c-metrics"); }
+  class ContourMetricsFull extends ContourBase {
+    render() { this.classList.add("c-metrics"); }
   }
-  try { customElements.define("contour-metrics", ContourMetricsFull); } catch (e) {}
+  define("contour-metrics", ContourMetricsFull);
 
   // Logos: simple wrapper.
-  class ContourLogosFull extends HTMLElement {
-    connectedCallback() { this.classList.add("c-logos"); }
+  class ContourLogosFull extends ContourBase {
+    render() { this.classList.add("c-logos"); }
   }
-  try { customElements.define("contour-logos", ContourLogosFull); } catch (e) {}
+  define("contour-logos", ContourLogosFull);
 
   // Landing features/hero: simple wrappers.
-  class ContourLandingFeaturesFull extends HTMLElement {
-    connectedCallback() { this.classList.add("c-landing-features"); }
+  class ContourLandingFeaturesFull extends ContourBase {
+    render() { this.classList.add("c-landing-features"); }
   }
-  try { customElements.define("contour-landing-features", ContourLandingFeaturesFull); } catch (e) {}
+  define("contour-landing-features", ContourLandingFeaturesFull);
 
-  class ContourLandingHeroFull extends HTMLElement {
-    connectedCallback() { this.classList.add("c-landing-hero"); }
+  class ContourLandingHeroFull extends ContourBase {
+    render() { this.classList.add("c-landing-hero"); }
   }
-  try { customElements.define("contour-landing-hero", ContourLandingHeroFull); } catch (e) {}
+  define("contour-landing-hero", ContourLandingHeroFull);
 
   // Linkish: simple wrapper.
-  class ContourLinkishFull extends HTMLElement {
-    connectedCallback() { this.classList.add("c-linkish"); }
+  class ContourLinkishFull extends ContourBase {
+    render() { this.classList.add("c-linkish"); }
   }
-  try { customElements.define("contour-linkish", ContourLinkishFull); } catch (e) {}
+  define("contour-linkish", ContourLinkishFull);
 
   // Compass: simple wrapper.
-  class ContourCompassFull extends HTMLElement {
-    connectedCallback() { this.classList.add("c-compass"); }
+  class ContourCompassFull extends ContourBase {
+    render() { this.classList.add("c-compass"); }
   }
-  try { customElements.define("contour-compass", ContourCompassFull); } catch (e) {}
+  define("contour-compass", ContourCompassFull);
 
   // Reserved: simple wrapper.
-  class ContourReservedFull extends HTMLElement {
-    connectedCallback() { this.classList.add("c-reserved"); }
+  class ContourReservedFull extends ContourBase {
+    render() { this.classList.add("c-reserved"); }
   }
-  try { customElements.define("contour-reserved", ContourReservedFull); } catch (e) {}
+  define("contour-reserved", ContourReservedFull);
 
   // Price: simple wrapper with value.
-  class ContourPriceFull extends HTMLElement {
-    connectedCallback() {
+  class ContourPriceFull extends ContourBase {
+    render() {
       this.classList.add("c-price");
       const value = this.getAttribute("value");
       if (value && !this.textContent.trim()) this.textContent = value;
     }
   }
-  try { customElements.define("contour-price", ContourPriceFull); } catch (e) {}
+  define("contour-price", ContourPriceFull);
 
   // Prose: simple wrapper.
-  class ContourProseFull extends HTMLElement {
-    connectedCallback() { this.classList.add("c-prose"); }
+  class ContourProseFull extends ContourBase {
+    render() { this.classList.add("c-prose"); }
   }
-  try { customElements.define("contour-prose", ContourProseFull); } catch (e) {}
+  define("contour-prose", ContourProseFull);
 
   // Theme scope: simple wrapper.
-  class ContourThemeScopeFull extends HTMLElement {
-    connectedCallback() { this.classList.add("c-theme-scope"); }
+  class ContourThemeScopeFull extends ContourBase {
+    render() { this.classList.add("c-theme-scope"); }
   }
-  try { customElements.define("contour-theme-scope", ContourThemeScopeFull); } catch (e) {}
+  define("contour-theme-scope", ContourThemeScopeFull);
 
 
   // Install: already defined above.
@@ -2195,3 +2257,15 @@
   // Theme scope: already defined above.
 
   // Field: already defined above.
+
+  // ---- Registration: the class-only wrappers run last ------------------
+  //
+  // Order is the contract. Every complex component above claims its own name and
+  // define() skips a name already claimed -- which is why
+  // <contour-menu items='["Cut"]'> builds a <ul> instead of only gaining a class.
+  // Move this loop back above the complex components and the scaffolding half of
+  // this file becomes dead code again: it did, and no gate noticed.
+  Object.entries(simpleMap).forEach(([name, classes]) => {
+    define(name, simple(classes));
+  });
+})();

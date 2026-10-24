@@ -266,6 +266,11 @@ const js = readFileSync(join(root, "src/js/ds.js"), "utf-8");
 writeFileSync(join(dist, "contour.js"), js, "utf-8");
 writeFileSync(join(dist, "contour.min.js"), `${minifyJs(js)}\n`, "utf-8");
 
+// -- Web components (optional progressive enhancement) ---------------------
+const wc = readFileSync(join(root, "src/js/contour-wc.js"), "utf-8");
+writeFileSync(join(dist, "contour-wc.js"), wc, "utf-8");
+writeFileSync(join(dist, "contour-wc.min.js"), `${minifyJs(wc)}\n`, "utf-8");
+
 // -- TypeScript definitions ------------------------------------------------
 const { inventory: invFn } = await import("./lib/inventory.mjs");
 const inv = invFn();

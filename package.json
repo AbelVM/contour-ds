@@ -1,1 +1,80 @@
-{"name":"contour-ds","version":"1.0.0","description":"A token-driven design system for spatial interfaces","license":"MIT","type":"module","main":"dist/contour.css","style":"dist/contour.css","files":["dist/","src/"],"scripts":{"build":"node tools/build.mjs","snippets":"node tools/snippets.mjs","check:tokens":"node tools/check-tokens.mjs","check:motion":"node tools/check-motion.mjs","check:defs":"node tools/check-defs.mjs","check:light-dark":"node tools/gen-light-dark.mjs --check","check:claims":"node tools/check-claims.mjs","check:markup":"node tools/check-markup.mjs","check:layout":"node tools/check-layout.mjs","check:theme":"node tools/audit/theme-render-probe.mjs","check:chart":"node tools/audit/chart-geometry.mjs","check:chart-names":"node tools/audit/chart-names.mjs","validate":"npx html-validate index.html templates/*.html","prepack":"node tools/build.mjs","check:docs-exec":"node tools/execute-docs.mjs","check:reflow":"node tools/audit/check-reflow.mjs","check:doctor":"node tools/doctor.mjs"},"keywords":["design-system","css","tokens","spatial","maps","geospatial"],"exports":{".":{"style":"./dist/contour.css","default":"./dist/contour.css"},"./contour.css":"./dist/contour.css","./contour.min.css":"./dist/contour.min.css","./contour.js":"./dist/contour.js","./contour.min.js":"./dist/contour.min.js","./surfaces/*":"./dist/surfaces/*","./fonts/*":"./dist/fonts/*","./tokens":"./dist/contour.tokens.json","./tokens.json":"./dist/contour.tokens.json","./themes":"./dist/contour.themes.json","./themes.json":"./dist/contour.themes.json","./components":"./dist/contour.components.json","./components.json":"./dist/contour.components.json","./map-chrome/*":"./dist/map-chrome.*.css","./svg/*":"./dist/svg/*","./hljs.css":"./dist/hljs.css","./contour.single.min.css":"./dist/contour.single.min.css","./contour.single.min.js":"./dist/contour.single.min.js","./map-chrome/mapbox":"./dist/map-chrome.mapbox.css","./map-chrome/maplibre":"./dist/map-chrome.maplibre.css"},"sideEffects":["*.css","*.js"],"engines":{"node":">=18"},"devDependencies":{"ajv":"8.20.0","dembrandt":"0.39.2","playwright-core":"1.64.1","html-validate":"11.17.0"}}
+{
+  "name": "contour-ds",
+  "version": "1.0.0",
+  "description": "A token-driven design system for spatial interfaces",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/contour.css",
+  "style": "dist/contour.css",
+  "files": [
+    "dist/",
+    "src/"
+  ],
+  "scripts": {
+    "build": "node tools/build.mjs",
+    "snippets": "node tools/snippets.mjs",
+    "check:tokens": "node tools/check-tokens.mjs",
+    "check:motion": "node tools/check-motion.mjs",
+    "check:defs": "node tools/check-defs.mjs",
+    "check:light-dark": "node tools/gen-light-dark.mjs --check",
+    "check:claims": "node tools/check-claims.mjs",
+    "check:markup": "node tools/check-markup.mjs",
+    "check:layout": "node tools/check-layout.mjs",
+    "check:theme": "node tools/audit/theme-render-probe.mjs",
+    "check:chart": "node tools/audit/chart-geometry.mjs",
+    "check:chart-names": "node tools/audit/chart-names.mjs",
+    "validate": "npx html-validate index.html templates/*.html",
+    "prepack": "node tools/build.mjs",
+    "check:docs-exec": "node tools/execute-docs.mjs",
+    "check:reflow": "node tools/audit/check-reflow.mjs",
+    "check:doctor": "node tools/doctor.mjs"
+  },
+  "keywords": [
+    "design-system",
+    "css",
+    "tokens",
+    "spatial",
+    "maps",
+    "geospatial"
+  ],
+  "exports": {
+    ".": {
+      "style": "./dist/contour.css",
+      "default": "./dist/contour.css"
+    },
+    "./contour.css": "./dist/contour.css",
+    "./contour.min.css": "./dist/contour.min.css",
+    "./contour.js": "./dist/contour.js",
+    "./contour.min.js": "./dist/contour.min.js",
+    "./surfaces/*": "./dist/surfaces/*",
+    "./fonts/*": "./dist/fonts/*",
+    "./tokens": "./dist/contour.tokens.json",
+    "./tokens.json": "./dist/contour.tokens.json",
+    "./themes": "./dist/contour.themes.json",
+    "./themes.json": "./dist/contour.themes.json",
+    "./components": "./dist/contour.components.json",
+    "./components.json": "./dist/contour.components.json",
+    "./map-chrome/*": "./dist/map-chrome.*.css",
+    "./svg/*": "./dist/svg/*",
+    "./hljs.css": "./dist/hljs.css",
+    "./contour.single.min.css": "./dist/contour.single.min.css",
+    "./contour.single.min.js": "./dist/contour.single.min.js",
+    "./map-chrome/mapbox": "./dist/map-chrome.mapbox.css",
+    "./map-chrome/maplibre": "./dist/map-chrome.maplibre.css",
+    "./contour-wc.js": "./dist/contour-wc.js",
+    "./contour-wc.min.js": "./dist/contour-wc.min.js"
+  },
+  "sideEffects": [
+    "*.css",
+    "*.js"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "ajv": "8.20.0",
+    "dembrandt": "0.39.2",
+    "playwright-core": "1.64.1",
+    "html-validate": "11.17.0"
+  }
+}

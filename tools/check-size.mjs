@@ -241,6 +241,8 @@ for (const [file, budget] of Object.entries(BUDGETS)) {
 const NAMED_UNBUDGETED = {
   "contour.css": "unminified twin of contour.min.css; read for its text, not its bytes",
   "contour.js": "unminified twin of contour.min.js",
+  "contour-wc.js": "unminified twin of contour-wc.min.js",
+  "contour-wc.min.js": "optional progressive enhancement; not loaded by the guide",
   "build-manifest.json": "this gate's own input",
   "map-chrome-contract.json": "the vendor-control contract; read by check-dist",
   "map-chrome.mapbox.css": "a copy of src/css/map-chrome.css; byte-equality is check-dist's job",

@@ -762,6 +762,7 @@
     border: 2px dashed var(--color-border);
     border-radius: var(--radius-md);
     padding: var(--space-md);
+    overflow: hidden;
     transition: border-color var(--dur-fast) var(--ease-standard),
       background-color var(--dur-fast) var(--ease-standard);
   }
@@ -777,15 +778,39 @@
   }
 
   .c-drop-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2xs);
     block-size: 2px;
     background: var(--color-primary);
     border-radius: 1px;
     margin-block: var(--space-2xs);
     opacity: 0;
+    transition: opacity var(--dur-fast) var(--ease-standard),
+      block-size var(--dur-fast) var(--ease-standard);
+    overflow: hidden;
+    color: var(--color-primary);
+    font-size: var(--type-micro);
+    font-family: var(--font-mono);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .c-drop-indicator::before {
+    content: "Drop here";
+    opacity: 0;
     transition: opacity var(--dur-fast) var(--ease-standard);
   }
 
   .c-drop-indicator--visible {
+    opacity: 1;
+    block-size: 1.5rem;
+    background: var(--color-primary-soft);
+    border: 1px dashed var(--color-primary);
+  }
+
+  .c-drop-indicator--visible::before {
     opacity: 1;
   }
 

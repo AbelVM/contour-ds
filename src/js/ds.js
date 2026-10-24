@@ -1423,14 +1423,20 @@
   /* ---------------------------------------------------------------------
    24. Drag and drop — native HTML5 DnD with reorder + keyboard + touch
      --------------------------------------------------------------------- */
+  let draggedEl = null;
   $$(".c-draggable").forEach((el) => {
     el.setAttribute("draggable", "true");
     el.setAttribute("tabindex", "0");
     el.addEventListener("dragstart", (e) => {
       el.classList.add("c-draggable--dragging");
+      draggedEl = el;
       e.dataTransfer?.setData("text/plain", el.textContent || "");
+      if (e.dataTransfer) e.dataTransfer.effectAllowed = "move";
     });
-    el.addEventListener("dragend", () => el.classList.remove("c-draggable--dragging"));
+    el.addEventListener("dragend", () => {
+      el.classList.remove("c-draggable--dragging");
+      draggedEl = null;
+    });
 
     // Touch support: long-press to drag.
     let touchTimer = null;
@@ -1487,14 +1493,24 @@
       zone.classList.remove("c-drop-zone--active");
       const indicator = zone.querySelector(".c-drop-indicator");
       if (indicator) indicator.classList.remove("c-drop-indicator--visible");
-      const data = e.dataTransfer?.getData("text/plain");
-      if (data) {
-        const item = document.createElement("span");
-        item.className = "c-draggable c-card";
-        item.style.padding = "var(--space-sm)";
-        item.textContent = data;
-        item.setAttribute("tabindex", "0");
-        zone.appendChild(item);
+      if (draggedEl && draggedEl.parentElement !== zone) {
+        zone.appendChild(draggedEl);
+        draggedEl.classList.remove("c-draggable--dragging");
+        draggedEl = null;
+      } else {
+        const data = e.dataTransfer?.getData("text/plain");
+        if (data) {
+          const item = document.createElement("span");
+          item.className = "c-draggable c-card";
+          item.style.padding = "var(--space-sm)";
+          item.style.overflow = "hidden";
+          item.style.textOverflow = "ellipsis";
+          item.style.whiteSpace = "nowrap";
+          item.style.maxInlineSize = "100%";
+          item.textContent = data;
+          item.setAttribute("tabindex", "0");
+          zone.appendChild(item);
+        }
       }
     });
   });
