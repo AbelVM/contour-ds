@@ -138,7 +138,12 @@ export function buildAgentRules(root) {
       jobText.set(heads[i][1], ci.slice(from, to));
     }
   }
-  const jobFor = (gate) => jobs.find((j) => (jobText.get(j) ?? "").includes(gate)) ?? null;
+  // A gate can legitimately run in more than one job — `tools/build.mjs` runs in
+  // validate, and again in contract because dist/ is gitignored so the second job has to
+  // produce the artifacts it reads. Reporting only the first match published that gate
+  // as `validate`, which was true but incomplete: the same class of error as naming a job
+  // that does not run it. So publish the whole set and let the guard compare sets.
+  const jobsFor = (gate) => jobs.filter((j) => (jobText.get(j) ?? "").includes(gate)).sort();
 
   const rules = [];
   const dangling = [];
@@ -147,14 +152,10 @@ export function buildAgentRules(root) {
   for (const r of RULES) {
     const enforcement = r.enforcement.map((e) => {
       const exists = existsSync(join(root, e.gate));
-      const inCi = ci.split("\n").some((line) => line.includes(e.gate));
-      const lane = jobs.find((j) => {
-        const body = ci.slice(ci.indexOf(`  ${j}:\n`));
-        return body.includes(e.gate);
-      });
+      const lane = jobsFor(e.gate);
       if (!exists) dangling.push(`${r.id}: ${e.gate}`);
-      else if (!inCi) unwired.push(`${r.id}: ${e.gate}`);
-      return { ...e, exists, job: lane ?? null };
+      else if (!lane.length) unwired.push(`${r.id}: ${e.gate}`);
+      return { ...e, exists, jobs: lane };
     });
     rules.push({
       id: r.id,
@@ -174,7 +175,6 @@ export function buildAgentRules(root) {
   }
 
   return {
-    $schema: RULES_SCHEMA_URL,
     version: AGENT_RULES_VERSION,
     name: "contour-agent-rules",
     audience: "an agent generating or reviewing UI code that uses Contour",

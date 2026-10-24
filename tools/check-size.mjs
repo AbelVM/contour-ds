@@ -108,6 +108,7 @@ const BUDGETS = {
   // catch an accidental doubling, not to keep it small.
   "contour.single.min.css": 500 * 1024,
   "contour.single.html": 520 * 1024,
+  "agent-rules.json": 12 * 1024,
   "surfaces/contour-core.min.css": 106 * 1024,
   "surfaces/contour-docs.min.css": 119 * 1024,
   "surfaces/contour-data.min.css": 127 * 1024,
