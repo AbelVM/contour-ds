@@ -15,6 +15,35 @@
   describe IBM Plex as loaded from Google Fonts.
 
 ### Fixed
+- `family-gate.mjs` could not see a **named colour at all**, and it is the only check that
+  enforces "read a token", so the rule the agent-rules artifact publishes as
+  machine-checkable was unenforced for the commonest way to write a raw colour. Every branch
+  of its vocabulary is a hash or a function name (`#hex`, `rgb(`, `oklch(`, `oklab(`, `hsl(`),
+  and a CSS colour keyword is a bare identifier. Measured in a scratch copy: a tree holding
+  `color: red; background: white; border-color: black; outline-color: green` was certified
+  `7 violation(s) ... every one excused`, while `color: #ff0000` added in the same run was
+  caught at its line. The escape was already documented in this repository --
+  `src/css/utilities.css` still carries a comment saying its old `background: white;
+  color: black` sat where "no colour gate could see" it.
+  The rule is **property-scoped, not a wider regex**: only declarations that can hold a paint
+  are read, and inside them custom-property names, `url(...)` and function names are masked,
+  because `white-space`, `print-color-adjust: exact`, `color-scheme: light`, `fill: none`,
+  `color: CanvasText` and `--color-gray-600` are correct CSS that a keyword-only regex would
+  refuse -- and `tan()` is a function while `tan` is a colour. The vocabulary is the CSS
+  Color 4 set (147 keywords + rebeccapurple) spliced from the pinned independent
+  implementation that `dtcg-contract.mjs` already asks, not typed by hand: the hand-typed
+  draft dropped `white` and invented `limeyellow` and `midnightwheat`, so the list's size and
+  four canaries are now asserted at startup and a dropped name fails the run instead of
+  quietly certifying `color: white`. Falsified 45/45 in a sandbox copy -- 14 raw shapes
+  caught, 16 look-alike declarations left clean, and every newly-caught shape re-run against
+  `HEAD`'s gate to prove the gap was real. Parity holds as an A/B of the two gates on one
+  untouched tree (byte-identical output, `5 violation(s) across 13 stylesheets`), so the
+  change refuses nothing in the system today; the live tree measures 7 across 14.
+  NOT fixed here, because the number is published: `tools/lib/inventory.mjs` keeps its own
+  colour vocabulary that still matches only `oklch(` and `#hex`, so the census under-reports
+  what enforcement now covers -- measured on the same four-colour tree, the inventory returned
+  1 `colourLiterals` entry and it was an unrelated `oklch()` fallback. Widening the census is a
+  row of its own, and `check-tokens.mjs`'s output feeds `stamp`, the docs and the token report.
 - `check-size.mjs` measured every budget key with `statSync(path).size`, which for a
   directory returns the size of its *inode* -- 4 kB here. The docs package's new `docs/`
   budget would therefore have passed at 4 kB while the package held 43.6 kB: a limit
