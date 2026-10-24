@@ -1515,6 +1515,40 @@
     });
   });
 
+  /* 25. Layer panel — drag to reorder layers */
+  $$(".c-layer-panel").forEach((panel) => {
+    const items = () => [...panel.querySelectorAll(".c-layer-panel__item")];
+    const reorder = (el, dir) => {
+      const s = items(), i = s.indexOf(el);
+      if (dir < 0 && i > 0) { el.classList.add("c-layer-panel__item--dragging"); panel.insertBefore(el, s[i - 1]); el.focus(); setTimeout(() => el.classList.remove("c-layer-panel__item--dragging"), 200); }
+      else if (dir > 0 && i < s.length - 1) { el.classList.add("c-layer-panel__item--dragging"); panel.insertBefore(s[i + 1], el); el.focus(); setTimeout(() => el.classList.remove("c-layer-panel__item--dragging"), 200); }
+    };
+    items().forEach((item) => {
+      item.setAttribute("draggable", "true");
+      item.setAttribute("tabindex", "0");
+      item.setAttribute("role", "listitem");
+      item.addEventListener("dragstart", (e) => {
+        const t = e.target;
+        if (t && t !== item && /^(INPUT|BUTTON|SELECT)$/.test(t.tagName) && !(t.classList && t.classList.contains("c-drag-handle"))) { e.preventDefault(); return; }
+        item.classList.add("c-layer-panel__item--dragging");
+        e.dataTransfer?.setData("text/plain", item.querySelector(".c-layer-panel__name")?.textContent || "");
+        if (e.dataTransfer) e.dataTransfer.effectAllowed = "move";
+      });
+      item.addEventListener("dragend", () => item.classList.remove("c-layer-panel__item--dragging"));
+      item.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        const dragged = panel.querySelector(".c-layer-panel__item--dragging");
+        if (!dragged || dragged === item) return;
+        const r = item.getBoundingClientRect(), mid = r.top + r.height / 2;
+        if (e.clientY < mid) panel.insertBefore(dragged, item); else panel.insertBefore(dragged, item.nextSibling);
+      });
+      item.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowUp") { e.preventDefault(); reorder(item, -1); }
+        else if (e.key === "ArrowDown") { e.preventDefault(); reorder(item, 1); }
+      });
+    });
+  });
+
   window.Contour = Object.freeze({
     __loaded: true,
     version: "1.0",

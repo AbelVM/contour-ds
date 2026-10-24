@@ -6701,23 +6701,32 @@ means obvious.
               <span class="ds-spec__token">.c-layer-panel</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-panel">
-              <div class="c-layer-panel">
-                <div class="c-layer-panel__item">
-                  <input class="c-layer-panel__toggle" type="checkbox" checked aria-label="Toggle layer" />
-                  <span class="c-layer-panel__name">Roads</span>
-                  <input class="c-layer-panel__opacity" type="range" min="0" max="100" value="80" aria-label="Layer opacity" />
-                </div>
-                <div class="c-layer-panel__item">
-                  <input class="c-layer-panel__toggle" type="checkbox" checked aria-label="Toggle layer" />
-                  <span class="c-layer-panel__name">Buildings</span>
-                  <input class="c-layer-panel__opacity" type="range" min="0" max="100" value="60" aria-label="Layer opacity" />
-                </div>
-                <div class="c-layer-panel__item">
-                  <input class="c-layer-panel__toggle" type="checkbox" aria-label="Toggle layer" />
-                  <span class="c-layer-panel__name">Water</span>
-                  <input class="c-layer-panel__opacity" type="range" min="0" max="100" value="40" aria-label="Layer opacity" />
-                </div>
-              </div>
+               <div class="c-layer-panel">
+                 <div class="c-layer-panel__item">
+                   <button class="c-drag-handle" type="button" aria-label="Reorder layer">
+                     <span></span><span></span><span></span><span></span><span></span><span></span>
+                   </button>
+                   <input class="c-layer-panel__toggle" type="checkbox" checked aria-label="Toggle layer" />
+                   <span class="c-layer-panel__name">Roads</span>
+                   <input class="c-layer-panel__opacity" type="range" min="0" max="100" value="80" aria-label="Layer opacity" />
+                 </div>
+                 <div class="c-layer-panel__item">
+                   <button class="c-drag-handle" type="button" aria-label="Reorder layer">
+                     <span></span><span></span><span></span><span></span><span></span><span></span>
+                   </button>
+                   <input class="c-layer-panel__toggle" type="checkbox" checked aria-label="Toggle layer" />
+                   <span class="c-layer-panel__name">Buildings</span>
+                   <input class="c-layer-panel__opacity" type="range" min="0" max="100" value="60" aria-label="Layer opacity" />
+                 </div>
+                 <div class="c-layer-panel__item">
+                   <button class="c-drag-handle" type="button" aria-label="Reorder layer">
+                     <span></span><span></span><span></span><span></span><span></span><span></span>
+                   </button>
+                   <input class="c-layer-panel__toggle" type="checkbox" aria-label="Toggle layer" />
+                   <span class="c-layer-panel__name">Water</span>
+                   <input class="c-layer-panel__opacity" type="range" min="0" max="100" value="40" aria-label="Layer opacity" />
+                 </div>
+               </div>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -6732,16 +6741,40 @@ means obvious.
                       <div class="ds-code__body">
                         <pre class="ds-code__pre"><code id="ds-code-99">&lt;div class="c-layer-panel"&gt;
   &lt;div class="c-layer-panel__item"&gt;
+    &lt;button class="c-drag-handle" type="button" aria-label="Reorder layer"&gt;
+      &lt;span&gt;&lt;/span&gt;
+      &lt;span&gt;&lt;/span&gt;
+      &lt;span&gt;&lt;/span&gt;
+      &lt;span&gt;&lt;/span&gt;
+      &lt;span&gt;&lt;/span&gt;
+      &lt;span&gt;&lt;/span&gt;
+    &lt;/button&gt;
     &lt;input class="c-layer-panel__toggle" type="checkbox" checked aria-label="Toggle layer" /&gt;
     &lt;span class="c-layer-panel__name"&gt;Roads&lt;/span&gt;
     &lt;input class="c-layer-panel__opacity" type="range" min="0" max="100" value="80" aria-label="Layer opacity" /&gt;
   &lt;/div&gt;
   &lt;div class="c-layer-panel__item"&gt;
+    &lt;button class="c-drag-handle" type="button" aria-label="Reorder layer"&gt;
+      &lt;span&gt;&lt;/span&gt;
+      &lt;span&gt;&lt;/span&gt;
+      &lt;span&gt;&lt;/span&gt;
+      &lt;span&gt;&lt;/span&gt;
+      &lt;span&gt;&lt;/span&gt;
+      &lt;span&gt;&lt;/span&gt;
+    &lt;/button&gt;
     &lt;input class="c-layer-panel__toggle" type="checkbox" checked aria-label="Toggle layer" /&gt;
     &lt;span class="c-layer-panel__name"&gt;Buildings&lt;/span&gt;
     &lt;input class="c-layer-panel__opacity" type="range" min="0" max="100" value="60" aria-label="Layer opacity" /&gt;
   &lt;/div&gt;
   &lt;div class="c-layer-panel__item"&gt;
+    &lt;button class="c-drag-handle" type="button" aria-label="Reorder layer"&gt;
+      &lt;span&gt;&lt;/span&gt;
+      &lt;span&gt;&lt;/span&gt;
+      &lt;span&gt;&lt;/span&gt;
+      &lt;span&gt;&lt;/span&gt;
+      &lt;span&gt;&lt;/span&gt;
+      &lt;span&gt;&lt;/span&gt;
+    &lt;/button&gt;
     &lt;input class="c-layer-panel__toggle" type="checkbox" aria-label="Toggle layer" /&gt;
     &lt;span class="c-layer-panel__name"&gt;Water&lt;/span&gt;
     &lt;input class="c-layer-panel__opacity" type="range" min="0" max="100" value="40" aria-label="Layer opacity" /&gt;
