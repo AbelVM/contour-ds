@@ -58,6 +58,13 @@ jobs:
       - name: Build
         run: node tools/build.mjs
 
+      - name: Build the opt-in single-file bundle
+        run: node tools/build.mjs --single
+
+      - name: Check the single-file bundle is self-contained
+        run: |
+          node -e "const fs=require('fs');const c=fs.readFileSync('dist/contour.single.min.css','utf8');if(/fonts\//.test(c)){console.error('single bundle still references fonts/');process.exit(1);}console.log('single bundle: fonts inlined, no external font references');"
+
       - name: Check size budget and that dist is current
         run: node tools/check-size.mjs
 
