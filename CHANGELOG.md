@@ -63,6 +63,64 @@
   this). `check-dist`'s naming contract now covers it, and README names it.
 
 ### Added
+- C-46: `dist/registry/` ships a shadcn registry — `registry.json` plus one item per
+  surface bundle, each pointing at its bundle and the shared contract files through
+  `files[].path`. **Pointers, not copies**: the live schema also allows
+  `files[].content`, and inlining the four stylesheets measured 466,887 bytes of CSS
+  copied into JSON beside the files that already ship in `dist/surfaces/` — a 70% jump
+  on all of `dist/` for the second copy of one truth. The pointer shape costs 16,443
+  bytes.
+  The row said verify the field list against the live schema before building, and the
+  fetched bytes disagree with the review in four places. `registryDependencies` **is**
+  a `registry-item.json` field, though the source thread retracted it as item-links-only;
+  we ship it empty anyway, for a measured reason — every surface bundle already contains
+  core's 704 selectors, so declaring a dependency would tell a host to install the shared
+  layer twice, and `check-registry.mjs` proves the containment against the shipped CSS
+  rather than asserting it. `url` is not a field at all. `cssVars` sits at item level, not
+  under `tailwind`. There is no `registry:css` type — CSS-only distribution rides on
+  `registry:style` with `registry:file` entries. And `files[]` carries a **conditional**
+  requirement (a `registry:file` entry needs `path`, `type` and `target`), which a reading
+  of `required` alone reports as "no required fields": my first grammar walk made exactly
+  that mistake and the conformance gate found it on its first run.
+- Nothing in the registry claims it is installable. The project is private until v1.0 and
+  the Pages deployment answers 404, so `homepage` and `url` are absent by rule and
+  `check-registry.mjs` enforces that absence — a pointer needs a host, and shipping a
+  pointer at a 404 would advertise a door that does not open. The claim is the shape, not
+  the reach.
+- `node tools/audit/registry-contract.mjs` answers conformance with **ajv**, not with a
+  hand-written loop, the same way the token export asks dembrandt: the schemas are pinned
+  copies under `tools/audit/schema/` (hashes and fetch date in `sources.json`), the root's
+  `$ref` to the item schema resolves from the vendored copy so the run needs no network,
+  and the vendored bytes must still match the recorded hash — because a silent edit to a
+  schema would redefine "conformant" underneath every artifact checked against it. Two
+  ajv configuration facts were found by measurement, not guessed: the schemas declare
+  `$schema` as `https://json-schema.org/draft-07/schema#` while ajv knows the draft-07
+  meta-schema only under its canonical `http://` URI, and ajv's `strictRequired` rejects
+  shadcn's own root schema, which states its requirement as
+  `anyOf: [{required:[items]}, {required:[include]}]`. `ajv` is now a declared dev
+  dependency of `tools/audit` — it had been reaching the repo only as a transitive
+  install, which any `npm install` could have removed.
+- **A relaxation that is not tested is a disabled gate with a comment on it.** Because
+  `strictRequired: false` was necessary, the contract gate runs four negative controls
+  before it reports anything about the shipped files — an unknown type, a root with
+  neither `items` nor `include`, a `registry:file` entry with no `target`, and a `style`
+  key on an item that is not `registry:base` — and fails the run if its validator accepts
+  any of them. The last one caught a second conditional the same way the first caught
+  `target`: `style`, `iconLibrary`, `baseColor` and `theme` are forbidden unless the item
+  is `registry:base`.
+- `node tools/check-registry.mjs` owns structure in the dependency-free validate lane:
+  items and bundles must agree in both directions, every `files[].path` must resolve
+  inside `dist/` and never escape it, no entry may carry `content`, the only permitted
+  URLs are the two `$schema` identifiers, each item's published block and token counts
+  must equal the inventory today and its byte count must equal the real file, and the
+  shipped bytes must equal a fresh derivation. That last rule was added after writing the
+  falsification set: without it, changing an item's `title` in `registry.json` and in its
+  item file — an internally consistent hand-edit — passes every other rule, because each
+  one only asks the artifact whether it agrees with itself.
+- The registry is wired into the seams that have orphaned artifacts three times before:
+  `check-dist.mjs` names `registry/registry.json`, `check-size.mjs` budgets the directory,
+  `build.mjs` records it in the manifest, both CI lanes run their gate, and `README.md`
+  says what it is and what it is not.
 - C-45: `dist/docs/` ships the documentation of the version a consumer installed.
   `index.html` is a good human artifact and a poor machine one -- 587,639 bytes
   (573.9 kB; `wc -m` says 587,188 characters, and the two differ because the guide
