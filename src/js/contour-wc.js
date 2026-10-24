@@ -2209,3 +2209,31 @@
   });
 })();
 
+
+  // ---- Shadow DOM + slots + template (opt-in, read-only attributes) ----
+  // A badge that uses Shadow DOM with a default slot. Styles are adopted
+  // from the document's same-origin stylesheets so ds.css still applies.
+  const badgeTemplate = document.createElement("template");
+  badgeTemplate.innerHTML = `
+    <span class="c-badge" part="badge"><slot></slot></span>
+  `;
+
+  class ContourShadowBadge extends HTMLElement {
+    constructor() {
+      super();
+      const shadow = this.attachShadow({ mode: "open" });
+      const sheets = [];
+      for (const ss of document.styleSheets) {
+        try {
+          if (ss.href && new URL(ss.href).origin === location.origin) {
+            const sheet = new CSSStyleSheet();
+            sheet.replaceSync(Array.from(ss.cssRules).map((r) => r.cssText).join("\\n"));
+            sheets.push(sheet);
+          }
+        } catch (e) { /* cross-origin or unreadable */ }
+      }
+      if (sheets.length) shadow.adoptedStyleSheets = sheets;
+      shadow.appendChild(badgeTemplate.content.cloneNode(true));
+    }
+  }
+  try { customElements.define("contour-shadow-badge", ContourShadowBadge); } catch (e) {}
