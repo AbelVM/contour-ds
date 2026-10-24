@@ -36,9 +36,29 @@ const read = (...p) => (existsSync(join(ROOT, ...p)) ? readFileSync(join(ROOT, .
 const PAGES = ["index.html", "templates/landing.html", "templates/dashboard.html", "templates/documentation.html"];
 const errors = [];
 
+// `rel` values that make the browser fetch something. A canonical or an
+// alternate link is a pointer a crawler reads, not a dependency the page needs
+// to render, so naming its origin is not the same act as loading from it.
+const LOAD_RELS = new Set(["stylesheet", "preload", "modulepreload", "icon", "apple-touch-icon", "manifest", "prefetch", "preconnect", "dns-prefetch"]);
+
+// The third-party origins a shipped page may fetch from, each with the reason
+// it was chosen. Empty is not the intent: the guide's highlighter is here
+// because showing the Contour theme on real tokenised code is a feature
+// (README.md discloses the script), and every other origin must be refused
+// until someone adds it on purpose.
+const OFF_ORIGIN_ALLOWLIST = {
+  "cdn.jsdelivr.net": "highlight.js — the guide loads it to render the Contour hljs theme on real highlighted code",
+};
+
 let linkedFonts = 0;
 let preloadedFonts = 0;
 let metadataPages = 0;
+let scriptLoads = 0;
+let offOriginLoads = 0;
+let guideScripts = 0;
+let guideOffOrigin = 0;
+const allowlisted = new Set();
+const mentioned = new Set();
 
 for (const page of PAGES) {
   const html = read(page);
@@ -75,6 +95,40 @@ for (const page of PAGES) {
     preloadedFonts++;
   }
 
+  // ---- 1c. a page may not depend on an origin this file does not name ----
+  // Rule 1 only ever looked at two named hosts, so any *other* third-party
+  // origin could arrive uninvited and every gate here would stay green. The
+  // guide does load one on purpose: highlight.js, so the Contour theme is shown
+  // on real highlighted code rather than on a hand-coloured mock (README.md
+  // discloses the script). So the contract is not "no off-origin loads", it is
+  // "every off-origin load is named in OFF_ORIGIN_ALLOWLIST with a reason", and
+  // an allowance that outlives its dependency is refused below.
+  for (const tag of html.match(/<(?:script|link|img|source)\b[^>]*>/gi) || []) {
+    const url = (tag.match(/\b(?:src|href|srcset)=["']([^"'\s]+)/i) || [])[1];
+    if (!url) continue;
+    const isScript = /^<script/i.test(tag);
+    // A script the page has to fetch counts toward the guide's script budget
+    // whether it came off disk or off a CDN: "external" in that sentence means
+    // "not inline", which is what a reader pays for, not where the bytes live.
+    if (isScript) {
+      scriptLoads++;
+      if (page === "index.html") guideScripts++;
+    }
+    if (!/^https?:\/\//i.test(url)) continue;
+    const origin = url.replace(/^https?:\/\/([^/]+).*/i, "$1");
+    if (/^<link/i.test(tag)) {
+      const rel = ((tag.match(/\brel=["']([^"']+)/i) || [])[1] || "").toLowerCase();
+      if (!LOAD_RELS.has(rel)) {
+        mentioned.add(`${origin} (link rel=${rel || "unset"}, a pointer, not a load)`);
+        continue;
+      }
+    }
+    offOriginLoads++;
+    if (isScript && page === "index.html") guideOffOrigin++;
+    if (OFF_ORIGIN_ALLOWLIST[origin]) allowlisted.add(origin);
+    else errors.push(`${page}: loads ${url} from ${origin}, which OFF_ORIGIN_ALLOWLIST does not name — either the page gains a dependency nobody chose, or the allowlist entry was deleted while the reference stayed`);
+  }
+
   // ---- 2. a page that can be shared should say what it is -------------
   const has = (re) => re.test(html);
   const missing = [
@@ -105,6 +159,16 @@ for (const page of PAGES) {
   }
 }
 
+// ---- 4b. an allowance nobody uses is a hole waiting for a tenant ------------
+// The allowlist exists to name a decision, so a listed origin that no shipped
+// page loads any more is not harmless: it is a standing permission for the next
+// person to reach off-origin without anyone choosing it.
+for (const origin of Object.keys(OFF_ORIGIN_ALLOWLIST)) {
+  if (!allowlisted.has(origin)) {
+    errors.push(`OFF_ORIGIN_ALLOWLIST names ${origin}, but no shipped page loads it any more — delete the entry, or the next off-origin reference is approved in advance`);
+  }
+}
+
 // ---- 4. one sentence, generated twice, must still be one sentence -------
 const guide = read("index.html") || "";
 const desc = /name=["']description["']\s+content=["']([^"']+)["']/.exec(guide);
@@ -126,9 +190,10 @@ if (desc && ogDesc && desc[1] !== ogDesc[1]) {
     }
   }
 
-// A run that looked at nothing is not a pass.
-if (!linkedFonts || !preloadedFonts || !metadataPages) {
-  errors.push(`checked ${linkedFonts} self-hosted-font page(s), ${preloadedFonts} preloaded-font page(s) and ${metadataPages} fully-described page(s) — nothing matched, so the gate proved nothing`);
+// A run that looked at nothing is not a pass — including a budget sweep that
+// compared no document, which is what a renamed sentence or a moved file gives.
+if (!linkedFonts || !preloadedFonts || !metadataPages || !scriptLoads || !allowlisted.size) {
+  errors.push(`checked ${linkedFonts} self-hosted-font page(s), ${preloadedFonts} preloaded-font page(s), ${metadataPages} fully-described page(s), ${scriptLoads} script fetch(es), ${allowlisted.size} allowlisted origin(s) — nothing matched, so the gate proved nothing`);
 }
 
 if (errors.length) {
@@ -139,5 +204,7 @@ if (errors.length) {
 console.log(
   `check-markup: OK — ${PAGES.length} shipped page(s): ${linkedFonts} use self-hosted fonts (no Google Fonts origin), ` +
     `${preloadedFonts} preload the critical face, ${metadataPages} carry title/description/og:type/twitter:card, ` +
+    `${scriptLoads} script(s) fetched (${offOriginLoads} of them off-origin, every one named in OFF_ORIGIN_ALLOWLIST), ` +
+    `${mentioned.size} off-origin pointer(s) named without being loaded, ` +
     `and the guide's two description attributes agree.`,
 );

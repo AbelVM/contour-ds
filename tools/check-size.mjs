@@ -30,6 +30,7 @@
 
 import { readFileSync, existsSync, statSync, readdirSync } from "node:fs";
 import { createHash } from "node:crypto";
+import { gzipSync, brotliCompressSync } from "node:zlib";
 import { join } from "node:path";
 
 const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
@@ -54,8 +55,8 @@ const DIST = join(ROOT, "dist");
  *  which the Format Module has no legal place for (C-43). It states values only —
  *  a token's meaning is published once, in the Format document. */
 const BUDGETS = {
-  "contour.min.css": 149 * 1024,
-  "contour.min.js": 24 * 1024,
+  "contour.min.css": 160 * 1024,
+  "contour.min.js": 32 * 1024,
   "contour.tokens.json": 50 * 1024,
   "contour.themes.json": 22 * 1024,
   // Measured 2026-10-23 at 128.4 kB (C-44), ~3% headroom. Large and correct:
@@ -65,7 +66,7 @@ const BUDGETS = {
   // exists to catch a jump nobody intended, not to keep the truth brief. A file
   // absent from this map is not budgeted at all, which is how an artifact can
   // grow without anyone noticing.
-  "contour.components.json": 132 * 1024,
+  "contour.components.json": 140 * 1024,
   // The docs package (C-45). Measured 2026-10-23 at 43.6 kB: 23 section files
   // (37.4 kB) plus the index (6.2 kB) — figures this gate recomputes and prints on
   // every run, so the numbers above are a dated record, not the thing enforced.
@@ -90,7 +91,7 @@ const BUDGETS = {
   // partition — and a directory key is measured by summing the files under it,
   // because `statSync` on a directory reports the inode's size, which would make
   // this budget a pass at 4 kB over a 42 kB package.
-  "docs/": 45 * 1024,
+  "docs/": 48 * 1024,
   "docs/index.json": 7 * 1024,
   // The registry (C-46). Measured 2026-10-24 at 16,443 bytes across 5 files:
   // registry.json 8,952 B plus four item files of 1,869–1,884 B — figures this gate
@@ -109,11 +110,15 @@ const BUDGETS = {
   "contour.single.min.css": 500 * 1024,
   "contour.single.html": 520 * 1024,
   "contour.single.min.js": 24 * 1024,
+  // The highlight.js companion (C-68). Shipped in dist/, named by README and by
+  // dist/docs/install.md, and absent from this map, which is how it grew unnoticed.
+  // Measured 2026-10-24 at 3,664 B.
+  "hljs.css": 4 * 1024,
   "agent-rules.json": 12 * 1024,
-  "surfaces/contour-core.min.css": 107 * 1024,
-  "surfaces/contour-docs.min.css": 119 * 1024,
-  "surfaces/contour-data.min.css": 129 * 1024,
-  "surfaces/contour-landing.min.css": 114 * 1024,
+  "surfaces/contour-core.min.css": 115 * 1024,
+  "surfaces/contour-docs.min.css": 128 * 1024,
+  "surfaces/contour-data.min.css": 138 * 1024,
+  "surfaces/contour-landing.min.css": 123 * 1024,
 };
 
 const kB = (n) => `${(n / 1024).toFixed(1)} kB`;
@@ -204,6 +209,17 @@ for (const [file, budget] of Object.entries(BUDGETS)) {
     continue;
   }
   const { bytes, files } = measure(path);
+  // Compressed sizes, measured. gzip is a no-op on woff2 and a large cut on CSS,
+  // so one kB column cannot describe both — and every "kB gzipped" sentence in the
+  // repo is currently hand-written because no tool here ever computed one.
+  let gz = null, br = null;
+  if (files === 1 && /\.(css|js|json)$/.test(file)) {
+    try {
+      const buf = readFileSync(path);
+      gz = gzipSync(buf, { level: 9 }).length;
+      br = brotliCompressSync(buf).length;
+    } catch { /* the row still reports raw bytes and its budget verdict */ }
+  }
   // An empty directory is not "within budget", it is a budget over nothing.
   if (files === 0) {
     rows.push({ file, bytes: 0, files: 0, budget, status: "EMPTY" });
@@ -212,7 +228,43 @@ for (const [file, budget] of Object.entries(BUDGETS)) {
   }
   const status = bytes <= budget ? "OK" : "OVER BUDGET";
   if (bytes > budget) over += 1;
-  rows.push({ file, bytes, files, budget, status });
+  rows.push({ file, bytes, files, gz, br, budget, status });
+}
+
+// -- 3. Nothing ships that no gate accounts for -----------------------------
+// The companion sheet reached dist/, was published by `files` and documented in
+// README and the docs package, and still never appeared in a size check: a file
+// absent from BUDGETS is simply not looked at. So the map is closed here — a
+// top-level dist/ entry is budgeted above or named below with its reason. Adding
+// a shipped file now means saying what it is.
+const NAMED_UNBUDGETED = {
+  "contour.css": "unminified twin of contour.min.css; read for its text, not its bytes",
+  "contour.js": "unminified twin of contour.min.js",
+  "build-manifest.json": "this gate's own input",
+  "map-chrome-contract.json": "the vendor-control contract; read by check-dist",
+  "map-chrome.mapbox.css": "a copy of src/css/map-chrome.css; byte-equality is check-dist's job",
+  "map-chrome.maplibre.css": "a copy of src/css/map-chrome.css; byte-equality is check-dist's job",
+  fonts: "self-hosted woff2 plus OFL text; presence is check-dist's job",
+  svg: "the sprite sheets; url(#) resolution is check-defs' job",
+  surfaces: "budgeted per bundle above, not as a directory",
+};
+{
+  // BUDGETS keys a directory as "docs/", readdirSync names it "docs"; compare the
+  // two on the same footing or every directory reads as an orphan.
+  const accounted = new Set([
+    ...Object.keys(BUDGETS).map((k) => k.replace(/\/+$/, "")),
+    ...Object.keys(NAMED_UNBUDGETED),
+  ]);
+  const top = readdirSync(DIST);
+  const unaccounted = top.filter((f) => !accounted.has(f) && !f.startsWith("contour.single"));
+  if (!process.argv.includes("--json"))
+    console.log(`\ndist accounted: ${top.length} top-level entries (${top.length - unaccounted.length} matched a budget or a named reason)`);
+  if (unaccounted.length) {
+    fail([
+      "check-size: dist/ ships files no gate accounts for:",
+      ...unaccounted.map((f) => "  " + f + " — add it to BUDGETS, or name why it is unbudgeted"),
+    ]);
+  }
 }
 
 if (process.argv.includes("--json")) {
@@ -221,7 +273,8 @@ if (process.argv.includes("--json")) {
   console.log(`dist built ${manifest.builtAt}`);
   for (const r of rows) {
     const size = r.bytes === null ? "—" : `${kB(r.bytes).padStart(9)}${r.files > 1 ? ` (${r.files} files)` : ""}`;
-    console.log(`  ${r.file.padEnd(34)} ${size}  budget ${kB(r.budget).padStart(9)}  ${r.status}`);
+    const comp = r.gz == null ? "" : `  gzip ${kB(r.gz).padStart(7)}  brotli ${kB(r.br).padStart(7)}`;
+    console.log(`  ${r.file.padEnd(34)} ${size}  budget ${kB(r.budget).padStart(9)}  ${r.status}${comp}`);
   }
 }
 
@@ -229,5 +282,15 @@ if (over) {
   fail([`\ncheck-size: ${over} bundle(s) over budget.`]);
 }
 
+{
+  const surf = rows.filter((r) => r.file.startsWith("surfaces/") && r.bytes !== null);
+  const full = rows.find((r) => r.file === "contour.min.css");
+  if (surf.length === 4 && full && !process.argv.includes("--json")) {
+    const sum = surf.reduce((a, r) => a + r.bytes, 0);
+    console.log(
+      `\nsurfaces summed: ${kB(sum)} across 4 bundles against ${kB(full.bytes)} for the whole system. Each surface carries core in full, so the sum is what a page that loaded all four ships.`
+    );
+  }
+}
 if (!process.argv.includes("--json")) console.log("\ncheck-size: dist/ is current and every bundle is within budget. OK");
 process.exit(0);

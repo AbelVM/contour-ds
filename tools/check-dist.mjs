@@ -24,6 +24,13 @@ const css = readFileSync(join(ROOT, "dist/contour.min.css"), "utf8");
 // here is what makes the package as a whole reachable from a document.
 const SHIPPED_JSON = ["map-chrome-contract.json", "contour.tokens.json", "contour.themes.json", "contour.components.json", "docs/index.json", "registry/registry.json", "agent-rules.json"];
 const SHIPPED_CSS_PROFILES = ["map-chrome.maplibre.css", "map-chrome.mapbox.css"];
+// The highlight.js companion (C-68) is copied from its own source, so it is listed
+// here and NOT in SHIPPED_CSS_PROFILES: that list feeds a loop which compares every
+// entry against src/css/map-chrome.css, and adding hljs.css to it made check-dist
+// report the theme against the wrong file. Existence and byte-equality against its
+// real source are both asserted below, which is the C-16 contract extended to a
+// third copied sheet.
+const COPIED_CSS_SOURCE = { "hljs.css": "src/css/hljs.css" };
 for (const f of [...SHIPPED_JSON, ...SHIPPED_CSS_PROFILES]) {
   if (!existsSync(join(ROOT, "dist", f))) errors.push("missing shipped artifact: " + f);
 }
@@ -68,6 +75,27 @@ const fontsDir = join(ROOT, "dist", "fonts");
 if (!existsSync(fontsDir)) errors.push("missing shipped directory: dist/fonts/");
 else if (readdirSync(fontsDir).filter((f) => f.endsWith(".woff2")).length < 3)
   errors.push("dist/fonts/ is missing the self-hosted woff2 files");
+
+let copiedCompared = 0;
+for (const [shipped, src] of Object.entries(COPIED_CSS_SOURCE)) {
+  const sourcePath = join(ROOT, src);
+  copiedCompared++;
+  if (!existsSync(sourcePath)) {
+    errors.push(`missing the source of dist/${shipped}: ${src}, which the build copies`);
+    continue;
+  }
+  const copied = join(ROOT, "dist", shipped);
+  if (!existsSync(copied)) {
+    errors.push(`missing shipped artifact: dist/${shipped}, copied from ${src}`);
+    continue;
+  }
+  if (readFileSync(copied, "utf8") !== readFileSync(sourcePath, "utf8")) {
+    errors.push(`dist/${shipped} is not ${src} — rebuild, or the build has stopped copying it`);
+    continue;
+  }
+}
+if (!errors.length)
+  console.log(`copied CSS compared against its source: ${copiedCompared + SHIPPED_CSS_PROFILES.length} profiles`);
 
 const source = join(ROOT, "src/css/map-chrome.css");
   if (!existsSync(source)) {

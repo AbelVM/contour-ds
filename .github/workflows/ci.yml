@@ -142,6 +142,11 @@ jobs:
       # place either is checked.
       - name: Check markup hygiene (font preconnects, share metadata)
         run: node tools/check-markup.mjs
+      # Mount every generated snippet in a page that links ds.css and validate it.
+      # The gate exists since C-58 but lived only in a package.json script, so it
+      # proved the snippets parse only when someone remembered to ask.
+      - name: Execute the docs (every snippet mounted and validated)
+        run: node tools/execute-docs.mjs
 
       - name: Check snippets idempotency
         run: |
@@ -187,6 +192,14 @@ jobs:
         run: node tools/audit/contrast-and-aria.mjs
       - name: Component inventory and target sizes
         run: node tools/audit/component-inventory.mjs
+      # The published reflow contract ("200 % zoom and a 390 px viewport with no
+      # horizontal page scroll") is a layout claim, and until this step no tool in
+      # the repository contained the strings `390` or `scrollWidth`: the guide
+      # shipped a 94 px clip under eighteen green lanes. It also refuses a
+      # `table.c-table` rendered without its `.c-table-wrap` scroller, so the next
+      # wide specimen cannot repeat that quietly.
+      - name: Reflow contract at the published widths
+        run: node tools/audit/check-reflow.mjs
       # The gridline band is a construction, not a string: this gate re-points
       # --chart-ticks and requires the rendered band to follow it.
       - name: Chart geometry seam (derived band, tooltip, hover state)

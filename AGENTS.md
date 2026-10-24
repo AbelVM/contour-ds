@@ -68,6 +68,10 @@ Anything that matches is either a leak or a false positive you must justify.
 
 | Command | What it does |
 |---|---|
+| `node tools/audit/check-reflow.mjs` | The responsive contract, measured: fails when a shipped page's `scrollWidth` exceeds its client width at any width it asserts, in both themes and with JavaScript off, and refuses a rendered `table.c-table` with no `.c-table-wrap` ancestor. Prints how many measurements it compared and refuses its own axes if they change nothing, so one state cannot be reported as four. Reports `overflow-x` because a mask is not reflow |
+| `node tools/execute-docs.mjs` | Mounts every generated snippet in a page that links `ds.css` and validates it, so markup the guide tells you to copy is tested as markup rather than as text. Prints the fragment exemption count, because `135/135 valid` over an uncounted exemption is not the pass it looks like |
+| `node tools/doctor.mjs` | Dispatches the node gates in one sweep for a human or an agent, and prints what it skipped: a gate absent from the artifact is reported as absent, and a sweep that dispatched nothing exits non-zero rather than going green on an empty run |
+| `node tools/gen-llms.mjs` | Regenerates `llms-full.txt` and `.well-known/llms.txt` from `dist/docs/` and `llms.txt`. Not a gate yet: the build does not emit those files and no lane runs this, so the copies it should keep current can drift; wiring it into the build is the open item |
 | `node tools/check-layout.mjs` | The layout ratchet: frozen primitive set, the `@deprecated` ledger, and the two gap tokens that make `.stack`/`.c-stack` different values | 
 | `node tools/snippets.mjs` | Regenerates the code snippets in `index.html` — **run after editing any specimen**. Also the spacing guard: it reads the **emitted** snippets and fails the build when one leads with guide spacing, so a warning is not a pass |
 | `node tools/build.mjs` | Bundles and minifies the **design system only** into `dist/` (no guide markup, no templates), and exports the token layer as two DTCG 2025.10 documents: `contour.tokens.json` (Format) and `contour.themes.json` (Resolver). Its per-surface file list is **derived from `ds.css`** and asserted, so a new sheet cannot land in `contour.css` and miss every surface bundle. The one guide-derived thing that ships is `dist/docs/` — prose and pointers, never specimen markup, and `check-docs.mjs` asserts that rather than asserting the sentence |
@@ -317,7 +321,16 @@ draws the list in the page's theme. That is the most the platform gives.
 - Forced Colors Mode removes the texture and the ridgelines and falls back to
   a system `CanvasText` outline.
 - Sizes in `rem`; the layout reflows to 200 % zoom and to a 390 px viewport
-  with no horizontal page scroll.
+  with no horizontal page scroll. Enforced by `tools/audit/check-reflow.mjs`,
+  which fails when a shipped page's `scrollWidth` exceeds its client width at any
+  width it asserts, in both themes, and refuses a rendered `table.c-table` that
+  has no `.c-table-wrap` ancestor — because the scroller ships, so a bare table is
+  markup omission, not a missing capability. It prints how many measurements it
+  compared, and it refuses its own axes if they change nothing. Read the claim
+  carefully: **a mask satisfies the words and breaks the intent.** With
+  `body { overflow-x: hidden }` nothing scrolls *and* the overflowing columns
+  become unreadable, which is worse than the scroll the sentence forbids — so the
+  gate reports `overflow-x` on every page rather than treating a zero as reflow.
 
 ---
 
@@ -334,8 +347,12 @@ draws the list in the page's theme. That is the most the platform gives.
 - The guide's own behaviour lives in `assets/js/guide.js`: one snippet open
   at a time, click outside to close, Escape to close. The system script
   (`src/js/ds.js`) must not know a guide class.
-- Section numbers are sequential (`00` … `21`). Adding a section means
-  renumbering the rail, the comment marker and the `label` in the head.
+- Section numbers are sequential two-digit markers, not a fixed range: read the
+  current ones from `index.html` rather than from this line, which has gone stale
+  twice. A section is a `<!-- ====== NN · NAME ====== -->` comment paired with a
+  `<span class="ds-rail__num">NN</span>` rail link, and the two must stay in
+  lockstep — adding a section means both, then a rebuild so `check-docs.mjs`
+  re-derives `dist/docs/` from the guide it just fell behind.
 - The rail, the header nav and the footer all link to section ids. A new
   section goes in the rail and the footer.
 
@@ -359,7 +376,7 @@ node --check assets/js/guide.js
 node tools/check-tokens.mjs    # the census: an unread token must be ledgered or gone
 node tools/check-motion.mjs    # WCAG 2.2.2: every infinite animation pausable by a control on a page
 node tools/check-defs.mjs      # every url(#id) in src/css reaches a def inside src/
-node tools/check-markup.mjs    # font preconnects + share metadata on every shipped page
+node tools/check-markup.mjs    # self-hosted fonts, no unnamed off-origin load, share metadata
 node tools/snippets.mjs        # if you touched a specimen; also the snippet spacing guard
 node tools/build.mjs           # if you touched src/
 node tools/check-size.mjs      # refuses a stale dist/, not only a big one
@@ -374,6 +391,8 @@ node tools/check-layout.mjs     # layout primitives are a ratchet; @deprecated m
 node tools/gen-light-dark.mjs --check  # the light-dark() fallback matches src/css
 node tools/stamp.mjs --check   # published numbers match src/
 node tools/check-claims.mjs    # every published sentence names the gate that owns it
+node tools/execute-docs.mjs    # every snippet the guide publishes is mounted and validated
+node tools/doctor.mjs          # one sweep of the node gates above; reports what it skipped
 ```
 
 The browser gates need a driver and **exit rather than skip** without one:
@@ -384,6 +403,7 @@ node tools/audit/component-inventory.mjs
 node tools/audit/theme-render-probe.mjs # does a theme set move a real control, and does --brand-hue hold the contract
 node tools/audit/chart-geometry.mjs     # is the gridline band derived from --chart-ticks
 node tools/audit/chart-names.mjs        # does every chart name what it plots, and does its data surface
+node tools/audit/check-reflow.mjs       # the reflow contract at the widths it names, both themes, JS off
 ```
 
 `dtcg-contract.mjs` belongs to the same `contract` lane because that is the lane

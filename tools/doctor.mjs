@@ -8,6 +8,7 @@
  * Run: node tools/doctor.mjs [--json]
  */
 import { execFileSync } from "node:child_process";
+import { existsSync } from "node:fs";
 import { join } from "node:path";
 
 const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
@@ -33,9 +34,21 @@ const gates = [
   ["family-gate", "node", ["tools/audit/family-gate.mjs"]],
 ];
 
+// A gate that is not in this artifact cannot pass, fail, or mean anything.
+// `files` ships dist/ and src/ only, so the published bin used to report
+// "FAIL check-tokens ... FAIL family-gate" — 17 failures on a healthy tree, because
+// every dispatched path was missing. Absent is reported as absent, and an empty run
+// is a failure rather than a pass.
+const present = gates.filter(([, , args]) => existsSync(join(ROOT, args[0])));
+const absent = gates.filter(([, , args]) => !existsSync(join(ROOT, args[0]))).map(([n]) => n);
+if (!present.length) {
+  console.error("doctor: no gates present in this artifact — that is a report of nothing, not a pass.");
+  process.exit(1);
+}
+
 const results = [];
 let allOk = true;
-for (const [name, cmd, args] of gates) {
+for (const [name, cmd, args] of present) {
   let exit = 0;
   let out = "";
   try {
@@ -51,7 +64,8 @@ for (const [name, cmd, args] of gates) {
   if (!json) console.log(`${ok ? "OK  " : "FAIL"} ${name}`);
 }
 
+if (!json && absent.length) console.log(`SKIP ${absent.length} gate(s) not shipped here: ${absent.join(", ")}`);
 if (json) {
-  console.log(JSON.stringify({ ok: allOk, gates: results }, null, 2));
+  console.log(JSON.stringify({ ok: allOk, gates: results, notShipped: absent }, null, 2));
 }
 process.exit(allOk ? 0 : 1);

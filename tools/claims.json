@@ -1,10 +1,10 @@
 {
-  "_comment": "The claim register (C-06). Each entry is a published sentence, the command that enforces it, and the document it lives in. tools/check-claims.mjs fails if a sentence disappears (the claim was rewritten or lost), if its owner is not a file in this repo, or if the owner runs in no CI lane. Counts are NOT stored here \u2014 stamp.mjs owns every number, and a register that carried one would be the hand-written count this file exists to prevent. CHANGELOG.md is deliberately not a claim-bearing document: it is a dated record of past states.",
+  "_comment": "The claim register (C-06). Each entry is a published sentence, the command that enforces it, and the document it lives in. tools/check-claims.mjs fails if a sentence disappears (the claim was rewritten or lost), if its owner is not a file in this repo, or if the owner runs in no CI lane. Counts are NOT stored here — stamp.mjs owns every number, and a register that carried one would be the hand-written count this file exists to prevent. CHANGELOG.md is deliberately not a claim-bearing document: it is a dated record of past states.",
   "claims": [
     {
       "id": "C-06-a",
       "doc": "README.md",
-      "sentence": "Body text meets **4.5:1**, borders / focus rings / control edges **3:1**, in both themes \u2014",
+      "sentence": "Body text meets **4.5:1**, borders / focus rings / control edges **3:1**, in both themes —",
       "owner": "node tools/audit/contrast-and-aria.mjs",
       "threshold": "TEXT_MIN 4.5 / CONTROL_MIN 3.0 over SURFACES"
     },
@@ -34,7 +34,7 @@
       "doc": "index.html",
       "sentence": "and every series clears 3:1 against every surface it can be",
       "owner": "node tools/audit/contrast-and-aria.mjs",
-      "threshold": "the sentence beside the chart \u2014 the one a reader actually sees"
+      "threshold": "the sentence beside the chart — the one a reader actually sees"
     },
     {
       "id": "C-06-f",
@@ -81,7 +81,7 @@
     {
       "id": "C-24-a",
       "doc": "DESIGN.md",
-      "sentence": "and the gridline band is **derived** from `--chart-ticks` \u2014 one band per value",
+      "sentence": "and the gridline band is **derived** from `--chart-ticks` — one band per value",
       "owner": "node tools/audit/chart-geometry.mjs",
       "threshold": "re-pointing --chart-ticks must move the rendered band by 100/(ticks-1)"
     },
@@ -294,6 +294,20 @@
       "sentence": "the agent-rules artifact cites only gates that exist and run in CI",
       "owner": "node tools/build.mjs",
       "threshold": "the emitter throws at build time, so no artifact with a dangling or unwired enforcement can be written at all — the guard is the backstop for a hand-edited file, not the first line. This clause exists because the row's own premise was false: it called three gates the proof, and reading their assertion loops found one owned no colour literal at all and the other ran in no CI lane while scanning whichever repo it was hard-coded to, not the one it stood in"
+    },
+    {
+      "id": "R4-05-a",
+      "doc": "AGENTS.md",
+      "sentence": "the layout reflows to 200 % zoom and to a 390 px viewport with no horizontal page scroll",
+      "owner": "node tools/audit/check-reflow.mjs",
+      "threshold": "scrollWidth <= clientWidth per asserted width, both themes, JS off; a .c-table without .c-table-wrap fails; overflow-x reported so a mask is not read as reflow"
+    },
+    {
+      "id": "R4-05-b",
+      "doc": "README.md",
+      "sentence": "the layout reflows to 200% zoom and to a 390 px viewport with no horizontal",
+      "owner": "node tools/audit/check-reflow.mjs",
+      "threshold": "same lane, run against every shipped page"
     }
   ]
 }

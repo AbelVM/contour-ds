@@ -102,7 +102,7 @@ Landing: logo wall, feature showcase, metrics band, testimonial, pricing, compar
 ## Performance
 
 - The system ships two artefacts: `src/css/ds.css` (unminified source, ~22 kB gzipped) and `dist/contour.min.css` (minified). The source is unminified on purpose — zero build step, linkable off a disk. Use the minified bundle in production.
-- The guide (`index.html`) is a 587 kB document that loads every component and 20+ external scripts; its Lighthouse score is not the system's score. The system's score is measured on `templates/landing.html`.
+- The guide (`index.html`) loads every component and 3 external scripts (highlight.js from a CDN, `ds.js`, `guide.js`); its Lighthouse score is not the system's score. The system's score is measured on `templates/landing.html`.
 - Fonts: self-hosted. Variable IBM Plex (Sans, Mono) and the Condensed weights used by the display scale, subsetted to Latin + Latin Extended, served under renamed family names (`Contour Plex Sans`, `Contour Plex Mono`, `Contour Plex Sans Condensed`) because the OFL treats subsetting as a modification and reserves the "Plex" name. Files live in `src/css/fonts/` (and `dist/fonts/` after a build) with the OFL text beside them. No third-party request chain, no IP transfer (see LG München I, 3 O 17493/20). `display=swap` on every `@font-face`.
 
 ## Commands
