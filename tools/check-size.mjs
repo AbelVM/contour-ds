@@ -28,7 +28,7 @@
  *   node tools/check-size.mjs --json   machine-readable report
  */
 
-import { readFileSync, existsSync, statSync } from "node:fs";
+import { readFileSync, existsSync, statSync, readdirSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { join } from "node:path";
 
@@ -66,6 +66,32 @@ const BUDGETS = {
   // absent from this map is not budgeted at all, which is how an artifact can
   // grow without anyone noticing.
   "contour.components.json": 132 * 1024,
+  // The docs package (C-45). Measured 2026-10-23 at 43.6 kB: 23 section files
+  // (37.4 kB) plus the index (6.2 kB) — figures this gate recomputes and prints on
+  // every run, so the numbers above are a dated record, not the thing enforced.
+  // The budget was first reached by removing content instead of raising the limit:
+  // the per-element, variant and state figures that already ship in
+  // `contour.components.json`, and a four-bullet provenance block repeated in
+  // every file where one line naming the source hash does the job.
+  //
+  // The index then grew 4.8 → 6.2 kB for one reason, and it is a deliverable
+  // rather than slack: the token census table, 1,284 bytes, which is 20% of the
+  // index and appears EXACTLY ONCE in the shipped package — no other artifact in
+  // `dist/` carries a `**Total**` row and no section file repeats it. C-45 asks the
+  // docs to carry the tables stamp computes, so the line moves; had the table been
+  // restated in the section files too, the answer would have been to delete the
+  // copies, not to raise the budget.
+  //
+  // It is budgeted as ONE directory total because its file count is the guide's
+  // section count: a per-file limit would be re-typed every time a section is
+  // added, which is a chore that quietly turns into a rubber stamp. The index gets
+  // its own tighter line so a change there is not hidden by the files around it
+  // shrinking. The two overlap on purpose — these are independent limits, not a
+  // partition — and a directory key is measured by summing the files under it,
+  // because `statSync` on a directory reports the inode's size, which would make
+  // this budget a pass at 4 kB over a 42 kB package.
+  "docs/": 45 * 1024,
+  "docs/index.json": 7 * 1024,
   "surfaces/contour-core.min.css": 106 * 1024,
   "surfaces/contour-docs.min.css": 119 * 1024,
   "surfaces/contour-data.min.css": 127 * 1024,
@@ -115,19 +141,53 @@ if (stale.length) {
 }
 
 // -- 2. Does each bundle fit? -------------------------------------------------
+/**
+ * Bytes of a shipped path, and how many files that figure was summed over.
+ *
+ * A budget key ending in `/` is a directory. `statSync` on a directory returns
+ * the size of its inode — 4 kB on this filesystem — so a 44 kB budget over a
+ * 42 kB package would have passed while measuring nothing at all. The file count
+ * travels with the bytes and is printed, so a pass states what it compared
+ * instead of implying it.
+ */
+function measure(path) {
+  const st = statSync(path);
+  if (!st.isDirectory()) return { bytes: st.size, files: 1 };
+  let bytes = 0;
+  let files = 0;
+  for (const entry of readdirSync(path, { withFileTypes: true })) {
+    const p = join(path, entry.name);
+    if (entry.isDirectory()) {
+      const nested = measure(p);
+      bytes += nested.bytes;
+      files += nested.files;
+    } else {
+      bytes += statSync(p).size;
+      files += 1;
+    }
+  }
+  return { bytes, files };
+}
+
 const rows = [];
 let over = 0;
 for (const [file, budget] of Object.entries(BUDGETS)) {
   const path = join(DIST, file);
   if (!existsSync(path)) {
-    rows.push({ file, bytes: null, budget, status: "MISSING" });
+    rows.push({ file, bytes: null, files: null, budget, status: "MISSING" });
     over += 1;
     continue;
   }
-  const bytes = statSync(path).size;
+  const { bytes, files } = measure(path);
+  // An empty directory is not "within budget", it is a budget over nothing.
+  if (files === 0) {
+    rows.push({ file, bytes: 0, files: 0, budget, status: "EMPTY" });
+    over += 1;
+    continue;
+  }
   const status = bytes <= budget ? "OK" : "OVER BUDGET";
   if (bytes > budget) over += 1;
-  rows.push({ file, bytes, budget, status });
+  rows.push({ file, bytes, files, budget, status });
 }
 
 if (process.argv.includes("--json")) {
@@ -135,7 +195,8 @@ if (process.argv.includes("--json")) {
 } else {
   console.log(`dist built ${manifest.builtAt}`);
   for (const r of rows) {
-    console.log(`  ${r.file.padEnd(34)} ${r.bytes === null ? "—" : kB(r.bytes).padStart(9)}  budget ${kB(r.budget).padStart(9)}  ${r.status}`);
+    const size = r.bytes === null ? "—" : `${kB(r.bytes).padStart(9)}${r.files > 1 ? ` (${r.files} files)` : ""}`;
+    console.log(`  ${r.file.padEnd(34)} ${size}  budget ${kB(r.budget).padStart(9)}  ${r.status}`);
   }
 }
 

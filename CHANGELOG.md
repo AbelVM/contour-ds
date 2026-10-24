@@ -1,6 +1,26 @@
 ## [Unreleased]
 
 ### Fixed
+- `check-size.mjs` measured every budget key with `statSync(path).size`, which for a
+  directory returns the size of its *inode* -- 4 kB here. The docs package's new `docs/`
+  budget would therefore have passed at 4 kB while the package held 43.6 kB: a limit
+  measuring nothing, and the same class of green lie as a gate that skips. Directory keys
+  now sum the files beneath them, an empty directory is reported as `EMPTY` rather than
+  within budget, and the row prints the count it summed (`43.6 kB (24 files)`) so a pass
+  states what it compared. Found by noticing that the comment justifying the budget
+  described a 42 kB package while the gate that would enforce it could not see one.
+- `dist/docs/` is derived from `index.html`, but `build.mjs`'s manifest listed only files
+  under `src/` as its sources -- so the guide could change and `check-size` would still
+  certify `dist/` as current. The staleness guard had a hole exactly as wide as the newest
+  output. `index.html` is a declared source now, which also means editing the guide
+  without rebuilding fails the build's own freshness check, as editing any sheet always has.
+- The docs' boundary scan demanded a leading `{` or `;` before a CSS declaration, so a bare
+  `color: var(--x);` line -- the commonest thing to fall out of a stylesheet -- walked past
+  it. Caught by the falsification harness, not by review: the mutation reported the wrong
+  rule, which is how a backstop firing hides the rule that was supposed to catch it. The
+  adopted shapes (a line-anchored declaration, and a rule block) were measured at zero
+  occurrences on the shipped bytes before being trusted, so this is a tightening that stays
+  exact rather than a rule loosened until the build went green.
 - The published description of the token export was falsified by measurement, and
   the gate that certified it was part of the cause. `README.md` promised "the
   semantic token layer for Figma or Style Dictionary" with `light-dark()` values
@@ -43,6 +63,64 @@
   this). `check-dist`'s naming contract now covers it, and README names it.
 
 ### Added
+- C-45: `dist/docs/` ships the documentation of the version a consumer installed.
+  `index.html` is a good human artifact and a poor machine one -- 587,639 bytes
+  (573.9 kB; `wc -m` says 587,188 characters, and the two differ because the guide
+  carries non-ASCII prose, a distinction a first draft of this entry got wrong by
+  quoting the character count as bytes) of specimens, CSS and script around prose an
+  agent has to dig out --
+  so the build now emits one markdown file per guide section (23) plus
+  `docs/index.json`, 43.6 kB for the package. Three rules, each kept because a
+  version of this failed without it: **nothing is authored** -- every paragraph is
+  the guide's own sentence lifted from its DOM, 187 of 187 measured verbatim against
+  the one tag-strip reduction that reproduces what the DOM reports (raw bytes left 24
+  paragraphs unexplained, stripping tags with a space left 8); **no URL appears** --
+  the project is private until v1.0, so a link inside an installed package would
+  instruct a reader to fetch a page that answers 404; and **a doc points at the
+  contracts instead of restating them** -- the per-element, variant and state figures
+  came out of the section files once `contour.components.json` published them, and the
+  four-bullet provenance block became one line naming the source hash, which took the
+  package from 52.3 kB to 43.6 kB by removing content rather than raising a limit.
+  The index carries the row's two remaining deliverables: `lastUpdated` from
+  `git log -1 --format=%cI -- index.html` (not a build timestamp -- that would move
+  every shipped byte on every rebuild and claim a freshness the file cannot show), and
+  `tables["taxonomy-table"]` taken from `tools/stamp.mjs --json` rather than computed
+  again here; stamp cannot be imported, because its module body ends in
+  `process.exit(main())` and an import would run the document-rewriting pass inside
+  the build. Where the docs are thin they say so: `coverage.notNamedByAnySection`
+  lists the 9 contract blocks no section documents (`c-app`, `c-app-body`, `c-box`,
+  `c-command`, `c-container`, `c-dialog`, `c-sidebar`, `c-toast-host`, `c-tooltip` --
+  measured cause: eight are the guide's own furniture and sit outside every
+  `<section id>` subtree the index scans, and `.c-dialog` reaches a section only as
+  escaped snippet text, so no live specimen carries the class), and `missingRail`
+  names `#field` -- the section holding this system's differentiator, which the
+  contents rail never links.
+- `node tools/check-docs.mjs` reads that shipped package and re-derives every byte of
+  it from the current guide, so a hand-edit, a stale `dist/` and an emitter that
+  drifted from its own recorded hash all fail. It sweeps every paragraph against the
+  guide's text, resolves each block a doc names in `contour.components.json` (and
+  requires a class filed as "not the system" to be genuinely absent from it),
+  reconciles the census table's rows against its own Total and against the inventory,
+  checks that `counts` and `coverage` agree with the arrays they summarize and that
+  the two coverage halves sum to the whole contract, requires a section outside the
+  rail to say so in its own file, and scans the package for a URL, markup, a CSS
+  declaration or rule block, an `assets/` path and an SVG reference. It prints how
+  many files, paragraphs and shapes it compared, because a sweep that silently matched
+  nothing would otherwise report a clean package forever. Falsified with 16 mutations:
+  13 against the shipped package, 3 against the generator. The generator mutations are
+  the load-bearing ones -- build and gate call the same library, so byte-equality is
+  silent by construction there, and only the prose and arithmetic rules can fire; the
+  harness asserts the byte rule stayed quiet for exactly those three.
+- `dist/docs/` is the one guide-derived thing in the package, so the build's contract
+  is now a checked property instead of a sentence: `index.html` joined
+  `build.mjs`'s manifest sources, `check-dist.mjs` names `docs/index.json` (its 23
+  files are named by the index, and `check-docs` fails if a file and an index row
+  disagree in either direction), and `check-size.mjs` budgets the package at 45 kB with
+  the index at 7 kB. The index's line moved from 5 kB for one reason: the census table,
+  1,284 bytes, which appears exactly once in the shipped package -- no other artifact
+  in `dist/` carries a `**Total**` row and no section file repeats it. Had it been
+  restated per section, the fix would have been to delete the copies, not to raise
+  the budget.
 - C-44: `dist/contour.components.json` is a contract now, not a list of names.
   Each of the 134 blocks carries its elements (292 across 73 blocks), variants
   (101 across 34), the states its selectors actually carry (213 across 71), the

@@ -224,6 +224,41 @@
       "sentence": "listed per block but deliberately absent from the token→block index",
       "owner": "node tools/check-components.mjs",
       "threshold": "each property a block reads must land in exactly one of three buckets, and the three must reconstruct the inventory's raw read list; `tokens` must be declared in the census and `vars` defined by some src/css sheet, while `inputs` must be neither; the index must agree with the per-block lists in both directions and contain no `input`, so a property the stylesheet never defines cannot be published as a retunable lever"
+    },
+    {
+      "id": "C-45-a",
+      "doc": "README.md",
+      "sentence": "Every sentence in it is the guide's own prose quoted from its DOM and every count is read from the inventory",
+      "owner": "node tools/check-docs.mjs",
+      "threshold": "every paragraph under a doc's \"What the guide says\" must be a substring of the guide's own text with its tags removed, using the one reduction measured to reproduce the DOM; the gate prints how many paragraphs it compared and fails when that is zero, so a sweep that matched nothing cannot pass as a clean report"
+    },
+    {
+      "id": "C-45-b",
+      "doc": "README.md",
+      "sentence": "publishes the blocks that no section documents rather than dropping them",
+      "owner": "node tools/check-docs.mjs",
+      "threshold": "coverage.namedBySections + coverage.notNamedByAnySection must equal coverage.contractBlocks, which must equal the shipped contract's block count; the gap list must be exactly the contract blocks no doc names, so the set cannot grow quietly and a block cannot be both documented and listed as missing"
+    },
+    {
+      "id": "C-45-c",
+      "doc": "README.md",
+      "sentence": "or if the package grew a URL, a tag or a CSS declaration",
+      "owner": "node tools/check-docs.mjs",
+      "threshold": "the package is scanned for a URL scheme, a www. host, a mail address, markup, a class or style attribute, a CSS declaration or rule block, an assets/ path and an SVG reference — shapes measured at zero occurrences on the shipped bytes, so the rule is exact rather than loosened until it passes; the project is private until v1.0, and docs/ is prose, not a copy of the specimen layer"
+    },
+    {
+      "id": "C-45-d",
+      "doc": "README.md",
+      "sentence": "carries the token census as the table `node tools/stamp.mjs` already computes (taken from stamp, never recomputed here)",
+      "owner": "node tools/check-docs.mjs",
+      "threshold": "the shipped table must equal what stamp's read-only --json path computes today, its Total row must equal the inventory's unique/read/unread counts, and its group rows must sum to that Total; proven independent of the byte-equality backstop by mutating the emitter, where the byte rule is silent by construction and only the arithmetic fires"
+    },
+    {
+      "id": "C-45-e",
+      "doc": "README.md",
+      "sentence": "dates itself from git rather than from the build",
+      "owner": "node tools/check-docs.mjs",
+      "threshold": "index.lastUpdated must equal `git log -1 --format=%cI -- index.html` recomputed by the gate, and every section file must carry that same date; null is permitted for a tarball with no history, an invented date is not"
     }
   ]
 }

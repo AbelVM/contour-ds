@@ -11,6 +11,14 @@
  * The output is the design system and nothing else: no style guide, no
  * starter templates, no guide-only artwork.
  *
+ * `dist/docs/` is the one guide-derived thing that ships, and it tests the rule
+ * rather than bending it: it carries the guide's prose and pointers, and no
+ * markup, CSS, artwork or URL. tools/check-docs.mjs asserts exactly that, so
+ * "the system and nothing else" is a checked property instead of a sentence
+ * somebody has to keep honest by hand. It exists because an agent that installs
+ * the package should read the documentation of the version it installed, and
+ * `index.html` is a good human artifact and a poor machine one.
+ *
  * Output:
  *   dist/contour.css          the bundled, readable stylesheet
  *   dist/contour.min.css      the same, minified
@@ -31,6 +39,7 @@ import { dirname, join } from "node:path";
 import { minifyCss, minifyJs } from "./lib/minify.mjs";
 import { buildDocuments } from "./lib/dtcg.mjs";
 import { buildComponentsDocument } from "./lib/components.mjs";
+import { buildDocs, guideProvenance, readGuide, stampTables } from "./lib/docs.mjs";
 import { inventory } from "./lib/inventory.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -262,6 +271,20 @@ writeFileSync(join(dist, "contour.themes.json"), `${JSON.stringify(dtcg.resolver
 const componentsDoc = buildComponentsDocument(inventory());
 writeFileSync(join(dist, "contour.components.json"), `${JSON.stringify(componentsDoc, null, 2)}\n`, "utf-8");
 
+// -- The docs package (C-45) -------------------------------------------------
+// Generated from the guide into dist/docs/. The guide is a large human artifact
+// and a poor machine one; an agent reading an installed package should get the
+// prose and the pointers, not the stylesheet. The provenance recipe lives in
+// tools/lib/docs.mjs because tools/check-docs.mjs has to run the SAME derivation
+// to prove the shipped bytes are not an edit — two recipes for one hash is how a
+// guard starts failing a current file, or passes a stale one.
+const guide = guideProvenance(root);
+const docs = buildDocs(readGuide(guide.source), inventory(), guide.src, stampTables(root));
+const docsDir = join(dist, "docs");
+mkdirSync(docsDir, { recursive: true });
+writeFileSync(join(docsDir, "index.json"), `${JSON.stringify(docs.index, null, 2)}\n`, "utf-8");
+for (const [rel, body] of Object.entries(docs.files)) writeFileSync(join(dist, rel), body, "utf-8");
+
 // -- The map-chrome contract (T-93) -----------------------------------------
 const mapChromeContract = {
   version: "1.0",
@@ -310,6 +333,13 @@ const manifestSources = [
   ...readdirSync(join(root, "src/css")).filter((f) => f.endsWith(".css")).map((f) => join(root, "src/css", f)),
   join(root, "src/js/ds.js"),
   join(root, "src/svg/contour-mark.svg"),
+  // `index.html` is a build input now that `dist/docs/` is derived from it. This
+  // list named only `src/`, so the guide could be edited and `check-size` would
+  // still certify `dist/` as current: the staleness guard had a hole exactly as
+  // wide as the newest output. `check-docs` re-derives the bytes independently,
+  // which catches an edit to a doc; this line catches the source it was generated
+  // from moving under a bundle nobody rebuilt.
+  join(root, "index.html"),
 ];
 
 const manifest = {
@@ -322,7 +352,7 @@ const manifest = {
   ),
   outputs: {
     ...Object.fromEntries(
-      ["contour.css", "contour.min.css", "contour.js", "contour.min.js", "contour.tokens.json", "contour.themes.json", "contour.components.json", "svg/contour-mark.svg"].map((f) => [f, statSync(join(dist, f)).size]),
+      ["contour.css", "contour.min.css", "contour.js", "contour.min.js", "contour.tokens.json", "contour.themes.json", "contour.components.json", "docs/index.json", "svg/contour-mark.svg"].map((f) => [f, statSync(join(dist, f)).size]),
     ),
     ...surfaceSizes,
   },

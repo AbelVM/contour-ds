@@ -15,7 +15,14 @@ const css = readFileSync(join(ROOT, "dist/contour.min.css"), "utf8");
 // covered by the same contract rather than a second one. One list, because the
 // last time this was written the names were repeated in three places and only
 // two of them got updated.
-const SHIPPED_JSON = ["map-chrome-contract.json", "contour.tokens.json", "contour.themes.json", "contour.components.json"];
+//
+// `docs/index.json` joins it for the same reason. Its 23 section files are not
+// listed one by one — they are generated from the guide's section count, so a
+// per-file entry would be re-typed on every added section — but the index names
+// every one of them, and `tools/check-docs.mjs` fails when a file on disk is
+// named by no row or a row names a file that is not on disk. Naming the index
+// here is what makes the package as a whole reachable from a document.
+const SHIPPED_JSON = ["map-chrome-contract.json", "contour.tokens.json", "contour.themes.json", "contour.components.json", "docs/index.json"];
 const SHIPPED_CSS_PROFILES = ["map-chrome.maplibre.css", "map-chrome.mapbox.css"];
 for (const f of [...SHIPPED_JSON, ...SHIPPED_CSS_PROFILES]) {
   if (!existsSync(join(ROOT, "dist", f))) errors.push("missing shipped artifact: " + f);

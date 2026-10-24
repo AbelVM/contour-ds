@@ -80,6 +80,16 @@ jobs:
       - name: Check the component contract resolves against src/css
         run: node tools/check-components.mjs
 
+      # The docs package is generated from index.html, so it can be hand-edited,
+      # stale or invented. This gate reads dist/docs/ and re-derives every shipped
+      # byte from the current guide: a sentence the guide never says, a block the
+      # component contract does not define, a summary count that disagrees with the
+      # array beside it, or a URL inside a private project's installed package all
+      # land here. It prints what it compared, because a scan that silently matched
+      # nothing would otherwise report a clean package forever.
+      - name: Check the docs package is the guide's own prose and nothing else
+        run: node tools/check-docs.mjs
+
       # The light-dark() fallback is generated from the token layer; a committed
       # copy that no longer matches src/css is a fallback that lies about the
       # system, so the regeneration is checked, not trusted.
