@@ -243,7 +243,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.6rem;
-    margin-block-start: 1.75rem;
+    margin-block-start: 2rem;
   }
 
   .ds-hero__meta {
@@ -618,7 +618,7 @@
 
   .ds-example > .ds-code {
     align-self: end;
-    margin-block-start: 0;
+    margin-block-start: 2rem;
   }
 
   /* -- Code disclosure --------------------------------------------------
@@ -672,7 +672,7 @@
     display: flex;
     align-items: center;
     gap: 0.45rem;
-    padding: 0.45rem 0.75rem;
+    padding: 0.6rem 0.75rem;
     cursor: pointer;
     list-style: none;
     font-family: var(--font-mono);
@@ -810,7 +810,7 @@
   }
 
   .ds-swatch[data-dark="false"] {
-    --swatch-fg: oklch(20% 0.02 230);
+    --swatch-fg: oklch(12% 0.02 230);
   }
 
   .ds-swatch::after {

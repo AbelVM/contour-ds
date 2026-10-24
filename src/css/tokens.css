@@ -91,11 +91,11 @@
     /* ---------------------------------------------------------------------
        7. TYPOGRAPHY
        --------------------------------------------------------------------- */
-    --font-display: "IBM Plex Sans Condensed", "IBM Plex Sans", ui-sans-serif,
+    --font-display: "Contour Plex Sans Condensed", "Contour Plex Sans", ui-sans-serif,
       system-ui, sans-serif;
-    --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system,
+    --font-sans: "Contour Plex Sans", ui-sans-serif, system-ui, -apple-system,
       "Segoe UI", sans-serif;
-    --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", "Cascadia Mono",
+    --font-mono: "Contour Plex Mono", ui-monospace, "SFMono-Regular", "Cascadia Mono",
       Menlo, monospace;
 
     /* Display scale is fluid; the UI scale below it is fixed (product UIs need
@@ -256,7 +256,7 @@
     --brand-300: oklch(85% 0.09 var(--brand-hue));
     --brand-400: oklch(78% 0.11 var(--brand-hue));
     --brand-500: oklch(70.4% 0.123 var(--brand-hue));
-    --brand-600: oklch(61% 0.115 var(--brand-hue));
+    --brand-600: oklch(50% 0.115 var(--brand-hue));
     --brand-700: oklch(51% 0.1 var(--brand-hue));
     --brand-800: oklch(41% 0.082 var(--brand-hue));
 

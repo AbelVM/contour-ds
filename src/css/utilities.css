@@ -313,9 +313,24 @@
       -webkit-print-color-adjust: exact;
     }
 
+    /* Paper, not #fff. This used to read `background: white; color: black`,
+       which no colour gate could see: family-gate's literal regex matches
+       hex/rgb/oklch/oklab/hsl, and the named colours matched none of them, so
+       the raw values in AGENTS.md calls a bug sat invisible to the lane that
+       owns it. `Canvas`/`CanvasText` are the same promise expressed in the
+       reader's own palette, and they survive Forced Colors Mode, where painted
+       white-on-black can overwrite a colour the reader chose.
+       `color-scheme: light` is load-bearing, not decoration: the system colours
+       resolve against the used scheme, so without pinning it a dark-preference
+       reader would print a dark page — which is the regression the swap would
+       otherwise introduce. */
+    :root {
+      color-scheme: light;
+    }
+
     body {
-      background: white;
-      color: black;
+      background: Canvas;
+      color: CanvasText;
     }
   }
 

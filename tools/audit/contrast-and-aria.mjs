@@ -284,6 +284,7 @@ results.edgesLight = await page.evaluate(() => ({
   "text-subtle vs surface-3": window.__ratio(window.__tokOver("--color-text-subtle", "--color-surface-3"), window.__tok("--color-surface-3")),
   "text-muted vs surface-3": window.__ratio(window.__tokOver("--color-text-muted", "--color-surface-3"), window.__tok("--color-surface-3")),
   "text-subtle vs surface-1": window.__ratio(window.__tokOver("--color-text-subtle", "--color-surface-1"), window.__tok("--color-surface-1")),
+  "on-primary vs primary": window.__ratio(window.__tokOver("--color-on-primary", "--color-primary"), window.__tok("--color-primary")),
 }));
 
 /* ---- keyboard focus: does :focus-visible change border-radius? ---- */
@@ -532,6 +533,7 @@ results.dark = await page.evaluate(() => ({
   "halo vs canvas": window.__ratio(window.__tokOver("--color-focus-halo", "--color-canvas"), window.__tok("--color-canvas")),
   "border-strong vs canvas": window.__ratio(window.__tokOver("--color-border-strong", "--color-canvas"), window.__tok("--color-canvas")),
   "text-subtle vs surface-3": window.__ratio(window.__tokOver("--color-text-subtle", "--color-surface-3"), window.__tok("--color-surface-3")),
+  "on-primary vs primary": window.__ratio(window.__tokOver("--color-on-primary", "--color-primary"), window.__tok("--color-primary")),
   haloRaw: window.__tok("--color-focus-halo").raw,
 }));
 results.controlDark = await overSurfaces();
@@ -613,7 +615,9 @@ for (const [theme, key] of [
 check("light: text-subtle vs surface-3", results.edgesLight["text-subtle vs surface-3"], TEXT_MIN, "1.4.3");
 check("light: text-muted vs surface-3", results.edgesLight["text-muted vs surface-3"], TEXT_MIN, "1.4.3");
 check("light: text-subtle vs surface-1", results.edgesLight["text-subtle vs surface-1"], TEXT_MIN, "1.4.3");
+check("light: on-primary vs primary", results.edgesLight["on-primary vs primary"], TEXT_MIN, "1.4.3");
 check("dark: text-subtle vs surface-3", results.dark["text-subtle vs surface-3"], TEXT_MIN, "1.4.3");
+check("dark: on-primary vs primary", results.dark["on-primary vs primary"], TEXT_MIN, "1.4.3");
 
 // Every categorical series clears 3:1 on every surface it can be drawn on, in
 // both themes — the README's sentence, enumerated. The count is asserted from

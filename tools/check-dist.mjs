@@ -22,7 +22,7 @@ const css = readFileSync(join(ROOT, "dist/contour.min.css"), "utf8");
 // every one of them, and `tools/check-docs.mjs` fails when a file on disk is
 // named by no row or a row names a file that is not on disk. Naming the index
 // here is what makes the package as a whole reachable from a document.
-const SHIPPED_JSON = ["map-chrome-contract.json", "contour.tokens.json", "contour.themes.json", "contour.components.json", "docs/index.json"];
+const SHIPPED_JSON = ["map-chrome-contract.json", "contour.tokens.json", "contour.themes.json", "contour.components.json", "docs/index.json", "registry/registry.json"];
 const SHIPPED_CSS_PROFILES = ["map-chrome.maplibre.css", "map-chrome.mapbox.css"];
 for (const f of [...SHIPPED_JSON, ...SHIPPED_CSS_PROFILES]) {
   if (!existsSync(join(ROOT, "dist", f))) errors.push("missing shipped artifact: " + f);
@@ -61,7 +61,15 @@ const SEARCH = ["README.md", "llms.txt", "index.html"];
   // The published profiles are copies of one source. If the emitter goes back to
   // writing its own CSS — which is how these files came to be invisible to every
   // CSS-level gate in this repository — the two halves diverge and this catches it.
-  const source = join(ROOT, "src/css/map-chrome.css");
+  // Self-hosted fonts (C-52): the @font-face rules in src/css/fonts.css point at
+// `fonts/...`, which must resolve in both src/ and dist/. Verify the directory
+// shipped and is non-empty.
+const fontsDir = join(ROOT, "dist", "fonts");
+if (!existsSync(fontsDir)) errors.push("missing shipped directory: dist/fonts/");
+else if (readdirSync(fontsDir).filter((f) => f.endsWith(".woff2")).length < 3)
+  errors.push("dist/fonts/ is missing the self-hosted woff2 files");
+
+const source = join(ROOT, "src/css/map-chrome.css");
   if (!existsSync(source)) {
     errors.push("missing the map-chrome source: src/css/map-chrome.css, which dist/ profiles are copied from");
   } else {

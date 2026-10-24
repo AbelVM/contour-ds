@@ -32,9 +32,7 @@
       }
     </script>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=IBM+Plex+Sans:wght@400..700&amp;family=IBM+Plex+Sans+Condensed:wght@500..700&amp;display=swap" rel="stylesheet" />
+    <!-- Fonts are self-hosted (src/css/fonts.css); no third-party request. -->
 
     <link rel="icon" href="src/svg/contour-mark.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="src/css/ds.css" />
@@ -369,6 +367,7 @@
           <a href="#forms">Forms</a>
           <a href="#surfaces">Surfaces</a>
           <a href="#data">Data</a>
+          <a href="#field">Field</a>
           <a href="#recipes">Recipes</a>
         </nav>
 
@@ -411,14 +410,15 @@
           <a href="#feedback"><span class="ds-rail__num">11</span> Feedback</a>
           <a href="#overlays"><span class="ds-rail__num">12</span> Overlays</a>
           <a href="#data"><span class="ds-rail__num">13</span> Data display</a>
-          <a href="#docs"><span class="ds-rail__num">14</span> Documentation</a>
-          <a href="#landing"><span class="ds-rail__num">15</span> Landing</a>
-          <a href="#patterns"><span class="ds-rail__num">16</span> Patterns</a>
-          <a href="#affordances"><span class="ds-rail__num">17</span> Affordances</a>
-          <a href="#recipes"><span class="ds-rail__num">18</span> Recipes</a>
-          <a href="#playground"><span class="ds-rail__num">19</span> Playground</a>
-          <a href="#theming"><span class="ds-rail__num">20</span> Theming</a>
-          <a href="#install"><span class="ds-rail__num">21</span> Install</a>
+          <a href="#field"><span class="ds-rail__num">14</span> Field</a>
+          <a href="#docs"><span class="ds-rail__num">15</span> Documentation</a>
+          <a href="#landing"><span class="ds-rail__num">16</span> Landing</a>
+          <a href="#patterns"><span class="ds-rail__num">17</span> Patterns</a>
+          <a href="#affordances"><span class="ds-rail__num">18</span> Affordances</a>
+          <a href="#recipes"><span class="ds-rail__num">19</span> Recipes</a>
+          <a href="#playground"><span class="ds-rail__num">20</span> Playground</a>
+          <a href="#theming"><span class="ds-rail__num">21</span> Theming</a>
+          <a href="#install"><span class="ds-rail__num">22</span> Install</a>
         </nav>
       </aside>
 
@@ -2812,7 +2812,7 @@
                 <li class="c-menu__item" role="menuitem">Open route</li>
                 <li class="c-menu__item" role="menuitem">Duplicate</li>
                 <li class="c-menu__separator" role="separator"></li>
-                <li class="c-menu__label">Danger zone</li>
+                <li class="c-menu__label" role="presentation">Danger zone</li>
                 <li class="c-menu__item c-menu__item--danger" role="menuitem">Delete route</li>
               </ul>
             </div><details class="ds-code" data-generated="code">
@@ -2831,7 +2831,7 @@
   &lt;li class="c-menu__item" role="menuitem"&gt;Open route&lt;/li&gt;
   &lt;li class="c-menu__item" role="menuitem"&gt;Duplicate&lt;/li&gt;
   &lt;li class="c-menu__separator" role="separator"&gt;&lt;/li&gt;
-  &lt;li class="c-menu__label"&gt;Danger zone&lt;/li&gt;
+  &lt;li class="c-menu__label" role="presentation"&gt;Danger zone&lt;/li&gt;
   &lt;li class="c-menu__item c-menu__item--danger" role="menuitem"&gt;Delete route&lt;/li&gt;
 &lt;/ul&gt;</code></pre>
                       </div>
@@ -3646,7 +3646,7 @@
             </div>
             <div class="c-panel" style="min-block-size: 6rem; padding: var(--space-lg)">
               <p class="muted" style="font-size: var(--type-sm)">Hover or focus the panel to strengthen the grip.</p>
-              <span class="c-resize-handle" role="separator" aria-label="Resize panel" tabindex="0"></span>
+              <span class="c-resize-handle" role="separator" aria-label="Resize panel" aria-orientation="vertical" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" tabindex="0"></span>
             </div>
           </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
@@ -3661,7 +3661,7 @@
                       </summary>
                       <div class="ds-code__body">
                         <pre class="ds-code__pre"><code id="ds-code-49">&lt;div class="c-panel" style="min-block-size: 6rem; padding: var(--space-lg)"&gt;
-  &lt;span class="c-resize-handle" role="separator" aria-label="Resize panel" tabindex="0"&gt;&lt;/span&gt;
+  &lt;span class="c-resize-handle" role="separator" aria-label="Resize panel" aria-orientation="vertical" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" tabindex="0"&gt;&lt;/span&gt;
 &lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
@@ -3698,11 +3698,11 @@
               <button class="c-btn c-btn--primary" type="button" data-dialog-open="demo-dialog">
                 Open dialog
               </button>
-              <button class="c-btn c-btn--secondary" type="button" data-tooltip="tip-1" aria-label="What is an isoline?">
+              <button class="c-btn c-btn--secondary" type="button" data-tooltip="tip-1">
                 <svg aria-hidden="true"><use href="#i-info" /></svg>
                 Tooltip
               </button>
-              <button class="c-btn c-btn--secondary" type="button" popovertarget="tip-1" aria-label="What is an isoline? (popover)">
+              <button class="c-btn c-btn--secondary" type="button" popovertarget="tip-1">
                 <svg aria-hidden="true"><use href="#i-info" /></svg>
                 Popover
               </button>
@@ -3721,13 +3721,13 @@
                       <div class="ds-code__body">
                         <pre class="ds-code__pre"><code id="ds-code-51">&lt;div class="ds-row"&gt;
   &lt;button class="c-btn c-btn--primary" type="button" data-dialog-open="demo-dialog"&gt;Open dialog&lt;/button&gt;
-  &lt;button class="c-btn c-btn--secondary" type="button" data-tooltip="tip-1" aria-label="What is an isoline?"&gt;
+  &lt;button class="c-btn c-btn--secondary" type="button" data-tooltip="tip-1"&gt;
     &lt;svg aria-hidden="true"&gt;
       &lt;use href="#i-info" /&gt;
     &lt;/svg&gt;
     Tooltip
   &lt;/button&gt;
-  &lt;button class="c-btn c-btn--secondary" type="button" popovertarget="tip-1" aria-label="What is an isoline? (popover)"&gt;
+  &lt;button class="c-btn c-btn--secondary" type="button" popovertarget="tip-1"&gt;
     &lt;svg aria-hidden="true"&gt;
       &lt;use href="#i-info" /&gt;
     &lt;/svg&gt;
@@ -5142,14 +5142,14 @@
                     </details></div>
         </section>
 
-                <!-- ===================== 13b · FIELD (spatial differentiator) ===================== -->
+                <!-- ===================== 14 · FIELD ===================== -->
         <section class="section section--sunken" id="field">
           <div class="c-section-head">
             <div class="c-icon-badge c-icon-badge--accent">
               <svg aria-hidden="true"><use href="#i-pin" /></svg>
             </div>
             <div>
-              <span class="label">Components · 13b</span>
+              <span class="label">Components · 16</span>
               <h2 class="c-section-head__title">Field</h2>
               <p class="c-section-head__desc">
                 The cartographic half of the system, rendered. These are the parts a routing or
@@ -5829,14 +5829,14 @@
           </div>
         </section>
 
-        <!-- ===================== 14 · DOCUMENTATION ===================== -->
+        <!-- ===================== 15 · DOCUMENTATION ===================== -->
         <section class="section" id="docs">
           <div class="c-section-head">
             <div class="c-icon-badge">
               <svg aria-hidden="true"><use href="#i-file" /></svg>
             </div>
             <div>
-              <span class="label">Components · 14</span>
+              <span class="label">Components · 16</span>
               <h2 class="c-section-head__title">Documentation</h2>
               <p class="c-section-head__desc">
                 The parts that make a manual usable: a callout that holds a rule, a list of steps
@@ -6500,14 +6500,14 @@
               survive a right-click and a middle click.
             </p>
             <nav class="c-pager" aria-label="Section navigation" style="margin-block-start: 0">
-              <a class="c-pager__link" href="#data">
+              <a class="c-pager__link" href="#field">
                 <span class="c-pager__dir">
                   <svg aria-hidden="true" style="width: 0.85rem; height: 0.85rem; transform: rotate(180deg)">
                     <use href="#i-arrow-right" />
                   </svg>
                   Previous
                 </span>
-                <span class="c-pager__title">Data display</span>
+                <span class="c-pager__title">Field</span>
               </a>
               <a class="c-pager__link c-pager__link--next" href="#landing">
                 <span class="c-pager__dir">
@@ -6530,14 +6530,14 @@
                       </summary>
                       <div class="ds-code__body">
                         <pre class="ds-code__pre"><code id="ds-code-87">&lt;nav class="c-pager" aria-label="Section navigation" style="margin-block-start: 0"&gt;
-  &lt;a class="c-pager__link" href="#data"&gt;
+  &lt;a class="c-pager__link" href="#field"&gt;
     &lt;span class="c-pager__dir"&gt;
       &lt;svg aria-hidden="true" style="width: 0.85rem; height: 0.85rem; transform: rotate(180deg)"&gt;
         &lt;use href="#i-arrow-right" /&gt;
       &lt;/svg&gt;
       Previous
     &lt;/span&gt;
-    &lt;span class="c-pager__title"&gt;Data display&lt;/span&gt;
+    &lt;span class="c-pager__title"&gt;Field&lt;/span&gt;
   &lt;/a&gt;
   &lt;a class="c-pager__link c-pager__link--next" href="#landing"&gt;
     &lt;span class="c-pager__dir"&gt;
@@ -6563,14 +6563,14 @@
 
         </section>
 
-        <!-- ===================== 15 · LANDING ===================== -->
+        <!-- ===================== 16 · LANDING ===================== -->
         <section class="section section--sunken" id="landing">
           <div class="c-section-head">
             <div class="c-icon-badge c-icon-badge--accent">
               <svg aria-hidden="true"><use href="#i-zap" /></svg>
             </div>
             <div>
-              <span class="label">Components · 15</span>
+              <span class="label">Components · 16</span>
               <h2 class="c-section-head__title">Landing</h2>
               <p class="c-section-head__desc">
                 The persuasive set. These read as an argument rather than an instrument, so the
@@ -7406,14 +7406,14 @@
                     </details></div>
         </section>
 
-        <!-- ===================== 16 · PATTERNS ===================== -->
+        <!-- ===================== 17 · PATTERNS ===================== -->
         <section class="section" id="patterns">
           <div class="c-section-head">
             <div class="c-icon-badge">
               <svg aria-hidden="true"><use href="#i-layers" /></svg>
             </div>
             <div>
-              <span class="label">Composition · 16</span>
+              <span class="label">Composition · 17</span>
               <h2 class="c-section-head__title">Patterns</h2>
               <p class="c-section-head__desc">
                 Recurring arrangements, documented so a landing page, a documentation site and a
@@ -7597,14 +7597,14 @@
 
         </section>
 
-        <!-- ===================== 17 · AFFORDANCES ===================== -->
+        <!-- ===================== 18 · AFFORDANCES ===================== -->
         <section class="section" id="affordances">
           <div class="c-section-head">
             <div class="c-icon-badge c-icon-badge--accent">
               <svg aria-hidden="true"><use href="#i-crosshair" /></svg>
             </div>
             <div>
-              <span class="label">Affordances · 17</span>
+              <span class="label">Affordances · 18</span>
               <h2 class="c-section-head__title">Affordances, made visible.</h2>
               <p class="c-section-head__desc">
                 An element should look like what it does before anyone touches it. Each interactive
@@ -7897,7 +7897,7 @@
             <div class="ds-example" data-generated="wrap"><div class="c-affordance" data-snippet>
               <div class="c-affordance__demo">
                 <details class="c-disclosure" style="width: 100%; border: 0">
-                  <summary class="c-disclosure__summary" style="font-size: var(--type-xs); padding: 0">
+                  <summary class="c-disclosure__summary" style="font-size: var(--type-xs); padding-block: var(--space-sm); min-block-size: 2.75rem">
                     More detail
                     <span class="c-disclosure__icon"><svg aria-hidden="true"><use href="#i-plus" /></svg></span>
                   </summary>
@@ -7923,7 +7923,7 @@
                         <pre class="ds-code__pre"><code id="ds-code-106">&lt;div class="c-affordance"&gt;
   &lt;div class="c-affordance__demo"&gt;
     &lt;details class="c-disclosure" style="width: 100%; border: 0"&gt;
-      &lt;summary class="c-disclosure__summary" style="font-size: var(--type-xs); padding: 0"&gt;
+      &lt;summary class="c-disclosure__summary" style="font-size: var(--type-xs); padding-block: var(--space-sm); min-block-size: 2.75rem"&gt;
         More detail
         &lt;span class="c-disclosure__icon"&gt;
           &lt;svg aria-hidden="true"&gt;
@@ -8294,7 +8294,7 @@
 
             <div class="ds-example" data-generated="wrap"><div class="c-panel" data-snippet style="position: relative; min-block-size: 4rem; padding: var(--space-md)">
               Panel with resize handle
-              <div class="c-resize-handle" aria-label="Resize panel" role="separator" tabindex="0"></div>
+              <div class="c-resize-handle" aria-label="Resize panel" role="separator" aria-orientation="vertical" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" tabindex="0"></div>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -8309,7 +8309,7 @@
                       <div class="ds-code__body">
                         <pre class="ds-code__pre"><code id="ds-code-119">&lt;div class="c-panel" style="position: relative; min-block-size: 4rem; padding: var(--space-md)"&gt;
   Panel with resize handle
-  &lt;div class="c-resize-handle" aria-label="Resize panel" role="separator" tabindex="0"&gt;&lt;/div&gt;
+  &lt;div class="c-resize-handle" aria-label="Resize panel" role="separator" aria-orientation="vertical" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" tabindex="0"&gt;&lt;/div&gt;
 &lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
@@ -8320,7 +8320,7 @@
             <p style="margin-block-end: var(--space-2xs)">RTL specimen — chevron flips to the inline-start side.</p>
             <div class="c-stack" style="gap: var(--space-2xs)">
               <button class="c-btn c-btn--primary" type="button">RTL button</button>
-              <select class="c-select" dir="rtl">
+              <select class="c-select" dir="rtl" aria-label="RTL select">
                 <option>خيار ١</option>
                 <option>خيار ٢</option>
               </select>
@@ -8341,7 +8341,7 @@
   &lt;p style="margin-block-end: var(--space-2xs)"&gt;RTL specimen — chevron flips to the inline-start side.&lt;/p&gt;
   &lt;div class="c-stack" style="gap: var(--space-2xs)"&gt;
     &lt;button class="c-btn c-btn--primary" type="button"&gt;RTL button&lt;/button&gt;
-    &lt;select class="c-select" dir="rtl"&gt;
+    &lt;select class="c-select" dir="rtl" aria-label="RTL select"&gt;
       &lt;option&gt;خيار ١&lt;/option&gt;
       &lt;option&gt;خيار ٢&lt;/option&gt;
     &lt;/select&gt;
@@ -8702,14 +8702,14 @@
                     </details></div>
           </div>
 
-        <!-- ===================== 18 · RECIPES ===================== -->
+        <!-- ===================== 19 · RECIPES ===================== -->
         <section class="section section--sunken" id="recipes">
           <div class="c-section-head">
             <div class="c-icon-badge">
               <svg aria-hidden="true"><use href="#i-grid" /></svg>
             </div>
             <div>
-              <span class="label">Composition · 18</span>
+              <span class="label">Composition · 19</span>
               <h2 class="c-section-head__title">Three shells, one system.</h2>
               <p class="c-section-head__desc">
                 Contour covers landing pages, documentation sites and technical dashboards. The
@@ -9452,14 +9452,14 @@
           </article>
         </section>
 
-        <!-- ===================== 19 · PLAYGROUND ===================== -->
+        <!-- ===================== 20 · PLAYGROUND ===================== -->
         <section class="section section--sunken" id="playground">
           <div class="c-section-head">
             <div class="c-icon-badge c-icon-badge--accent">
               <svg aria-hidden="true"><use href="#i-sliders" /></svg>
             </div>
             <div>
-              <span class="label">Live · 19</span>
+              <span class="label">Live · 20</span>
               <h2 class="c-section-head__title">Playground</h2>
               <p class="c-section-head__desc">
                 Every decision in the system is a custom property. Change one and watch the
@@ -9530,14 +9530,14 @@
           </div>
         </section>
 
-        <!-- ===================== 20 · THEMING ===================== -->
+        <!-- ===================== 21 · THEMING ===================== -->
         <section class="section" id="theming">
           <div class="c-section-head">
             <div class="c-icon-badge">
               <svg aria-hidden="true"><use href="#i-monitor" /></svg>
             </div>
             <div>
-              <span class="label">Architecture · 20</span>
+              <span class="label">Architecture · 21</span>
               <h2 class="c-section-head__title">Two themes, one cascade.</h2>
               <p class="c-section-head__desc">
                 The <code class="c-kbd">color-scheme</code> property on
@@ -9776,14 +9776,14 @@
 
         </section>
 
-        <!-- ===================== 21 · INSTALL ===================== -->
+        <!-- ===================== 22 · INSTALL ===================== -->
         <section class="section section--sunken" id="install">
           <div class="c-section-head">
             <div class="c-icon-badge">
               <svg aria-hidden="true"><use href="#i-terminal" /></svg>
             </div>
             <div>
-              <span class="label">Getting started · 21</span>
+              <span class="label">Getting started · 22</span>
               <h2 class="c-section-head__title">Install</h2>
               <p class="c-section-head__desc">
                 Plain CSS in <code class="c-kbd">src/</code>, one entry point, no build
@@ -9904,7 +9904,7 @@
                     <span class="maplibregl-ctrl-icon" aria-hidden="true">+</span>
                   </button>
                   <button class="maplibregl-ctrl-zoom-out" type="button" aria-label="Zoom out">
-                    <span class="maplibregl-ctrl-icon" aria-hidden="true">&amp;minus;</span>
+                    <span class="maplibregl-ctrl-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12" /></svg></span>
                   </button>
                   <button class="maplibregl-ctrl-compass" type="button" aria-label="Reset bearing to north">
                     <span class="maplibregl-ctrl-icon" aria-hidden="true">N</span>
@@ -9929,7 +9929,11 @@
       &lt;span class="maplibregl-ctrl-icon" aria-hidden="true"&gt;+&lt;/span&gt;
     &lt;/button&gt;
     &lt;button class="maplibregl-ctrl-zoom-out" type="button" aria-label="Zoom out"&gt;
-      &lt;span class="maplibregl-ctrl-icon" aria-hidden="true"&gt;&amp;minus;&lt;/span&gt;
+      &lt;span class="maplibregl-ctrl-icon" aria-hidden="true"&gt;
+        &lt;svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"&gt;
+          &lt;line x1="5" y1="12" x2="19" y2="12" /&gt;
+        &lt;/svg&gt;
+      &lt;/span&gt;
     &lt;/button&gt;
     &lt;button class="maplibregl-ctrl-compass" type="button" aria-label="Reset bearing to north"&gt;
       &lt;span class="maplibregl-ctrl-icon" aria-hidden="true"&gt;N&lt;/span&gt;
@@ -9972,13 +9976,18 @@
             <a href="#actions">Actions</a>
             <a href="#forms">Forms</a>
             <a href="#status">Status</a>
-            <a href="#data">Data display</a>
+            <a href="#surfaces">Surfaces</a>
+            <a href="#navigation">Navigation</a>
+            <a href="#feedback">Feedback</a>
             <a href="#overlays">Overlays</a>
+            <a href="#data">Data display</a>
+            <a href="#field">Field</a>
           </div>
           <div class="c-footer__col">
             <h3>Surfaces</h3>
             <a href="#docs">Documentation</a>
             <a href="#landing">Landing</a>
+            <a href="#patterns">Patterns</a>
             <a href="#recipes">Recipes</a>
             <a href="#affordances">Affordances</a>
           </div>

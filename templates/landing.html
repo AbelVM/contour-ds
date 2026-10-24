@@ -14,17 +14,7 @@
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="Contour — landing page template" />
-    <!-- The font sheet is cross-origin; without the pair of hints the connection
-         is still being negotiated when the sheet is asked for. googleapis serves
-         the CSS, gstatic serves the files, and the second preconnect needs
-         crossorigin because the font fetch is CORS-mode — without it the hint
-         opens a second connection nobody uses. -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@500;600;700&display=swap"
-    />
+    <!-- Fonts are self-hosted via src/css/ds.css (src/css/fonts/). -->
     <link rel="icon" href="../src/svg/contour-mark.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="../src/css/ds.css" />
     <script>

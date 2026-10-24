@@ -40,6 +40,7 @@ import { minifyCss, minifyJs } from "./lib/minify.mjs";
 import { buildDocuments } from "./lib/dtcg.mjs";
 import { buildComponentsDocument } from "./lib/components.mjs";
 import { buildDocs, guideProvenance, readGuide, stampTables } from "./lib/docs.mjs";
+import { buildRegistry, registryJson } from "./lib/registry.mjs";
 import { inventory } from "./lib/inventory.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -285,6 +286,18 @@ mkdirSync(docsDir, { recursive: true });
 writeFileSync(join(docsDir, "index.json"), `${JSON.stringify(docs.index, null, 2)}\n`, "utf-8");
 for (const [rel, body] of Object.entries(docs.files)) writeFileSync(join(dist, rel), body, "utf-8");
 
+// -- The registry export (C-46) -----------------------------------------------
+// One item per surface bundle, and the input is the build's OWN output directory, so
+// a fifth surface cannot appear in the registry without appearing in dist/surfaces —
+// and vice versa. That is why this reads dist/ rather than re-deriving the surface
+// list here: a second enumeration of the same fact is the failure this repository has
+// paid for repeatedly. Pointer-only by decision (see tools/lib/registry.mjs): the
+// alternative was 466,887 bytes of CSS copied into JSON beside the files it copies.
+const registry = buildRegistry(dist);
+mkdirSync(join(dist, "registry", "items"), { recursive: true });
+writeFileSync(join(dist, "registry", "registry.json"), registryJson(registry.index), "utf-8");
+for (const [rel, body] of Object.entries(registry.files)) writeFileSync(join(dist, rel), registryJson(body), "utf-8");
+
 // -- The map-chrome contract (T-93) -----------------------------------------
 const mapChromeContract = {
   version: "1.0",
@@ -322,6 +335,19 @@ copyFileSync(
   join(dist, "svg/contour-mark.svg"),
 );
 
+// -- Self-hosted fonts (C-52) ---------------------------------------------
+// IBM Plex ships with the system so a consumer does not depend on a
+// third-party font CDN (and the IP transfer that comes with it — see
+// README.md "Performance / Fonts" and LG München I, 3 O 17493/20).
+// The @font-face rules live in src/css/fonts.css and use relative
+// `fonts/...` paths, which resolve identically from src/css/ and dist/.
+mkdirSync(join(dist, "fonts"), { recursive: true });
+for (const f of readdirSync(join(root, "src/css/fonts"))) {
+  if (f === "OFL.txt") continue;
+  copyFileSync(join(root, "src/css/fonts", f), join(dist, "fonts", f));
+}
+copyFileSync(join(root, "src/css/fonts/OFL.txt"), join(dist, "fonts/OFL.txt"));
+
 const size = (path) => (existsSync(path) ? `${(readFileSync(path).length / 1024).toFixed(1)} kB` : "—");
 
 // -- The manifest ------------------------------------------------------------
@@ -352,7 +378,7 @@ const manifest = {
   ),
   outputs: {
     ...Object.fromEntries(
-      ["contour.css", "contour.min.css", "contour.js", "contour.min.js", "contour.tokens.json", "contour.themes.json", "contour.components.json", "docs/index.json", "svg/contour-mark.svg"].map((f) => [f, statSync(join(dist, f)).size]),
+      ["contour.css", "contour.min.css", "contour.js", "contour.min.js", "contour.tokens.json", "contour.themes.json", "contour.components.json", "docs/index.json", "registry/registry.json", "svg/contour-mark.svg"].map((f) => [f, statSync(join(dist, f)).size]),
     ),
     ...surfaceSizes,
   },
