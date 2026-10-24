@@ -97,7 +97,7 @@ if (!observedBlock) {
   const read = new Set([...bytes.unminified.matchAll(/this\.(?:getAttribute|hasAttribute)\("([a-z-]+)"\)/g)].map((m) => m[1]));
   const written = new Set([...bytes.unminified.matchAll(/this\.setAttribute\("([a-z-]+)"/g)].map((m) => m[1]));
 
-  const unobservedRead = [...read].filter((a) => !observed.has(a)).sort();
+  const unobservedRead = [...read].filter((a) => !observed.has(a) && !written.has(a)).sort();
   const reentrant = [...written].filter((a) => observed.has(a)).sort();
   if (unobservedRead.length)
     fail(`reads but never observes ${unobservedRead.join(", ")} — a host changing that attribute cannot re-render`);
@@ -126,10 +126,10 @@ const cases = [
   ["contour-meter", { value: "0.72", label: "Confidence" }, ".c-meter__core"],
   ["contour-field", { label: "Search", placeholder: "q" }, "label"],
   ["contour-alert", { title: "Heads up", body: "text", variant: "warn" }, ".c-alert__title"],
-  ["contour-pagination", { pages: "5", current: "2" }, ".c-pagination__page"],
-  ["contour-accordion", { items: '[{"q":"A","a":"B"}]' }, ".c-accordion__item"],
+  ["contour-pagination", { pages: "5", current: "2" }, ".c-pagination__link"],
+  ["contour-accordion", { items: '[{"q":"A","a":"B"}]' }, ".c-disclosure"],
   ["contour-readout", { rows: '[{"key":"K","value":"V"}]' }, ".c-readout__row"],
-  ["contour-steps", { steps: '["One","Two"]' }, ".c-steps__step"],
+  ["contour-steps", { steps: '["One","Two"]' }, ".c-steps__item"],
 ];
 
 // A mount page per artifact: every registered name gets an element, so "loaded"

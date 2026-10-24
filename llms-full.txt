@@ -27,7 +27,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -78,7 +78,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -128,7 +128,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -165,7 +165,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -205,7 +205,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -258,7 +258,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -291,7 +291,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -337,7 +337,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -373,7 +373,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -408,6 +408,8 @@ The end of the page: the brand, a line about what this is, and the links that st
 
 A design system for spatial interfaces. One set of rules for three surfaces.
 
+Scroll container with content-visibility for performance. Virtualization logic is the consumer's responsibility — this provides the CSS containment and scroll behavior.
+
 ## Subsections
 
 - Millisecond routing
@@ -420,7 +422,7 @@ A design system for spatial interfaces. One set of rules for three surfaces.
 
 ## Blocks documented here
 
-11 block(s). Their facts live in `../contour.components.json`;
+18 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
@@ -428,17 +430,24 @@ starts disagreeing with itself.
 - `.c-brand`
 - `.c-btn`
 - `.c-card`
+- `.c-coordinate`
+- `.c-draggable`
+- `.c-drop-indicator`
+- `.c-drop-zone`
 - `.c-feature`
 - `.c-footer`
 - `.c-icon-badge`
 - `.c-link`
 - `.c-mark`
 - `.c-plate`
+- `.c-resizable`
+- `.c-resize-handle`
 - `.c-section-head`
+- `.c-virtual-scroll`
 
 ---
 
-Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -447,7 +456,7 @@ Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+0
 
 # Navigation
 
-Section `navigation` — marker `10`, position 11 of 23 in the guide.
+Section `navigation` — marker `09`, position 11 of 23 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -469,7 +478,7 @@ On this page
 
 ## Blocks documented here
 
-19 block(s). Their facts live in `../contour.components.json`;
+20 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
@@ -492,10 +501,11 @@ starts disagreeing with itself.
 - `.c-tabs`
 - `.c-toc`
 - `.c-toolbar`
+- `.c-tree`
 
 ---
 
-Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -565,7 +575,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -631,7 +641,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -714,23 +724,28 @@ A migration aid: the names a consumer may already know, and the Contour class th
 
 ## Blocks documented here
 
-17 block(s). Their facts live in `../contour.components.json`;
+22 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
 - `.c-activity`
 - `.c-badge`
 - `.c-btn`
+- `.c-catchment`
 - `.c-chart`
 - `.c-contour-plot`
 - `.c-datamark`
 - `.c-delta`
+- `.c-flow-map`
+- `.c-heatmap`
 - `.c-icon-badge`
+- `.c-isochrone`
 - `.c-kpi`
 - `.c-legend`
 - `.c-panel`
 - `.c-readout`
 - `.c-section-head`
+- `.c-streaming-chart`
 - `.c-table`
 - `.c-table-wrap`
 - `.c-time-range`
@@ -738,7 +753,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -763,22 +778,28 @@ Shown — same markup, wider profile.
 
 ## Blocks documented here
 
-21 block(s). Their facts live in `../contour.components.json`;
+28 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
 - `.c-advanced`
 - `.c-bivariate`
 - `.c-btn`
+- `.c-comparison`
+- `.c-compass`
 - `.c-flag`
+- `.c-hexbin`
 - `.c-icon-badge`
 - `.c-instrument`
+- `.c-layer-panel`
 - `.c-layer-switch`
 - `.c-legend`
 - `.c-map-area`
 - `.c-map-footer`
 - `.c-map-panel`
 - `.c-map-slot`
+- `.c-measure`
+- `.c-minimap`
 - `.c-radio`
 - `.c-radio-list`
 - `.c-readout`
@@ -788,10 +809,11 @@ starts disagreeing with itself.
 - `.c-survey`
 - `.c-table`
 - `.c-table-wrap`
+- `.c-time-slider`
 
 ---
 
-Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -800,7 +822,7 @@ Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+0
 
 # Documentation
 
-Section `docs` — marker `15`, position 16 of 23 in the guide.
+Section `docs` — marker `14`, position 16 of 23 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -896,7 +918,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -968,7 +990,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1009,7 +1031,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1186,7 +1208,7 @@ part of the component contract and nothing in an installed package defines them:
 
 ---
 
-Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1298,7 +1320,7 @@ part of the component contract and nothing in an installed package defines them:
 
 ---
 
-Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1342,7 +1364,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1365,30 +1387,58 @@ A paper-white chart with ink text. The same five families, re-stepped for contra
 
 Stored in localStorage, applied before first paint.
 
+Page-level morphing via the View Transitions API. Add data-view-transition with a --view-transition-name to morph elements across navigations. Falls back gracefully in browsers without support.
+
+Morph a card between two states using the View Transitions API. The card's view-transition-name links the before and after states.
+
+Compact state
+
+Expanded state with more content and a wider layout.
+
+A card and a dialog share one view-transition-name, so the card morphs into the dialog (and back) instead of cross-fading. The name is the only link between the two surfaces.
+
+Compact surface that expands into a dialog.
+
+Expanded surface reached by morphing the card.
+
+A small preview surface morphs into its full detail surface. Both carry the same view-transition-name; the browser interpolates size, position and content between them.
+
+Thumbnail
+
+Full surface with the complete content and a wider layout.
+
 ## Subsections
 
 - Default
 - Daylight
 - Scheme preference
 - Accessibility contract
+- Before
+- After
+- Card
+- Preview
+- Detail
 
 ## Blocks documented here
 
-7 block(s). Their facts live in `../contour.components.json`;
+10 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
 - `.c-badge`
 - `.c-btn`
+- `.c-card`
+- `.c-dialog`
 - `.c-dot`
 - `.c-icon-badge`
 - `.c-kbd`
+- `.c-panel`
 - `.c-section-head`
 - `.c-segmented`
 
 ---
 
-Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1409,12 +1459,15 @@ A map engine paints its own control cluster over its canvas — zoom, compass, f
 
 Contour ships no syntax highlighter (zero runtime dependencies); highlighting is the consumer's. src/css/hljs.css maps highlight.js token classes onto Contour tokens, so a consumer who runs that highlighter gets code that matches the system's palette in both themes. It sets colour only — never layout, never font-family. Load it after the library's own stylesheet.
 
+Optional progressive enhancement. Load contour-wc.js after ds.css to use <contour-btn>, <contour-card>, and 150+ other custom elements that generate their scaffolding from attributes. All use light DOM so the cascade applies.
+
 ## Blocks documented here
 
-5 block(s). Their facts live in `../contour.components.json`;
+6 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
+- `.c-badge`
 - `.c-btn`
 - `.c-code`
 - `.c-icon-badge`
@@ -1423,5 +1476,5 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0a6e07d122143bc8` · last committed 2026-10-24T20:35:10+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
 

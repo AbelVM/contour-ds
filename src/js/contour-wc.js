@@ -21,13 +21,13 @@
   //   role, open, aria-label, aria-valuenow, aria-valuemin, aria-valuemax, tabindex
   // Adding one of those back to this list makes that component recurse.
   const OBSERVED = [
-    "action", "after", "answer", "before", "body", "brand", "color", "columns",
-    "command", "copyable", "current", "date", "delta", "desc", "direction", "do",
-    "dont", "error", "features", "hint", "href", "icon", "instrument", "items",
-    "key", "label", "links", "live", "max", "media", "message", "min", "name",
-    "next", "options", "pages", "placeholder", "prev", "price", "prompt",
-    "question", "quote", "removable", "reverse", "rows", "series", "shortcut",
-    "size", "steps", "summary", "tabs", "tag", "text", "title", "type", "value",
+    "action", "after", "answer", "before", "body", "brand", "columns", "command",
+    "copyable", "current", "date", "delta", "desc", "direction", "do", "dont",
+    "error", "features", "hint", "href", "icon", "instrument", "items", "key",
+    "label", "links", "live", "max", "media", "message", "min", "name", "next",
+    "options", "pages", "placeholder", "prev", "price", "prompt", "question",
+    "quote", "removable", "reverse", "rows", "series", "shortcut", "size",
+    "steps", "summary", "tabs", "tag", "text", "title", "type", "value",
     "variant",
   ];
 
@@ -66,7 +66,9 @@
         nodes: Array.from(this.childNodes),
         cls: this.getAttribute("class"),
       };
+      const before = Array.from(this.childNodes);
       this.render();
+      this._contourGenerated = Array.from(this.childNodes).filter((n) => !before.includes(n));
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
@@ -76,11 +78,22 @@
       if (!this.isConnected || !this._contourAuthored || this._contourRendering) return;
       this._contourRendering = true;
       try {
+        // Drop generated nodes from the previous render.
+        for (const g of (this._contourGenerated || [])) {
+          if (g.parentNode === this) this.removeChild(g);
+        }
+        // Refresh the authored snapshot so content added after connect survives.
+        const generated = new Set(this._contourGenerated || []);
+        const authoredNow = Array.from(this.childNodes).filter((n) => !generated.has(n));
+        this._contourAuthored.nodes = authoredNow;
+        // Clear and restore authored nodes.
         while (this.firstChild) this.removeChild(this.firstChild);
         for (const node of this._contourAuthored.nodes) this.appendChild(node);
         if (this._contourAuthored.cls === null) this.removeAttribute("class");
         else this.setAttribute("class", this._contourAuthored.cls);
+        const before = Array.from(this.childNodes);
         this.render();
+        this._contourGenerated = Array.from(this.childNodes).filter((n) => !before.includes(n));
       } finally {
         this._contourRendering = false;
       }
@@ -1118,6 +1131,7 @@
         for (let i = 1; i <= count; i++) {
           const btn = document.createElement("button");
           btn.type = "button";
+          btn.className = "c-pagination__link";
           btn.textContent = String(i);
           if (i === current) {
             btn.setAttribute("aria-current", "page");

@@ -1,6 +1,6 @@
 # Contour
 
-> A token-driven design system for spatial interfaces — routing engines, pedestrian simulators, map tooling and geospatial dashboards. Dark and light themes, 141 components, 290 design tokens (290 read, 0 unread), zero runtime dependencies, no build step.
+> A token-driven design system for spatial interfaces — routing engines, pedestrian simulators, map tooling and geospatial dashboards. Dark and light themes, 159 components, 290 design tokens (290 read, 0 unread), zero runtime dependencies, no build step.
 
 Contour covers three kinds of page: a **landing page** that has to persuade, a **documentation site** that has to explain, and a **technical dashboard** that has to be read at speed. All three share one token layer, one type scale and one set of affordance rules.
 
@@ -17,7 +17,7 @@ Contour covers three kinds of page: a **landing page** that has to persuade, a *
 - Technical dashboard (index.html#data): KPI tiles, panels, chart frame, interactive legend, filter bar, dense sortable table, activity feed, drawer.
 - Recipes (index.html#recipes): all three surfaces composed live.
 
-## Components (141 blocks in src/css/)
+## Components (159 blocks in src/css/)
 
 Actions: button (primary, secondary, outline, ghost, accent, danger, quiet-danger), sizes, icon, block, groups, loading, text link.
 Forms: field, input, select, textarea, search group, range, switch, checkbox, radio.
