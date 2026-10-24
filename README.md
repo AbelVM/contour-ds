@@ -336,6 +336,27 @@ resize handle (`.c-panel:hover .c-resize-handle`, a visibility dependency, not a
 `.c-*` blocks in the component layer; the composed shells in `patterns.css` and the guide's own
 shell are not counted.
 
+## Web components
+
+Contour ships an optional progressive-enhancement layer in `src/js/contour-wc.js` (also
+`dist/contour-wc.js` / `dist/contour-wc.min.js`). It defines 300+ custom elements
+(`<contour-btn>`, `<contour-card>`, `<contour-shadow-card>`, …) that generate their
+scaffolding from attributes and slotted content.
+
+- **Light DOM components** (`<contour-*>`) add CSS classes and generate structure from
+  attributes. They use light DOM so `ds.css` styles apply directly.
+- **Shadow DOM components** (`<contour-shadow-*>`) use Shadow DOM with named slots and
+  adopted stylesheets, for encapsulation where desired.
+- All components are attribute-reactive: changing an attribute re-renders the component.
+- No runtime dependencies; the file is optional and the page works without it.
+
+```html
+<script src="src/js/contour-wc.js"></script>
+<contour-card title="Hello">
+  <p>Slotted content</p>
+</contour-card>
+```
+
 ---
 
 ## Data
