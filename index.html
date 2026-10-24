@@ -384,8 +384,8 @@
 
           <button class="c-btn c-btn--icon c-btn--secondary c-scheme-toggle" type="button" data-scheme-toggle aria-label="Switch to dark theme">
             <span class="c-scheme-toggle__icons" aria-hidden="true">
-              <svg class="c-scheme-toggle__sun"><use href="#i-sun" /></svg>
-              <svg class="c-scheme-toggle__moon"><use href="#i-moon" /></svg>
+              <svg class="c-scheme-toggle__sun" aria-hidden="true"><use href="#i-sun" /></svg>
+              <svg class="c-scheme-toggle__moon" aria-hidden="true"><use href="#i-moon" /></svg>
             </span>
           </button>
         </div>
@@ -694,7 +694,7 @@ means obvious.
         </section>
 
         <div class="ridgeline" aria-hidden="true">
-          <svg viewbox="0 0 1200 56" preserveaspectratio="none">
+          <svg viewbox="0 0 1200 56" preserveaspectratio="none" aria-hidden="true">
             <path d="M0 30 52 22 104 36 156 14 208 30 260 8 312 28 364 18 416 40 468 20 520 34 572 12 624 30 676 10 728 34 780 18 832 42 884 22 936 38 988 16 1040 34 1092 20 1144 32 1200 26" />
             <path d="M0 44 52 38 104 48 156 32 208 44 260 28 312 42 364 34 416 50 468 36 520 46 572 30 624 42 676 28 728 44 780 34 832 50 884 36 936 48 988 32 1040 44 1092 36 1144 44 1200 40" />
           </svg>
@@ -2747,8 +2747,8 @@ means obvious.
                     </button>
                     <button class="c-btn c-btn--icon c-btn--secondary c-scheme-toggle" type="button" data-scheme-toggle aria-label="Switch to dark theme">
                       <span class="c-scheme-toggle__icons" aria-hidden="true">
-                        <svg class="c-scheme-toggle__sun"><use href="#i-sun" /></svg>
-                        <svg class="c-scheme-toggle__moon"><use href="#i-moon" /></svg>
+                        <svg class="c-scheme-toggle__sun" aria-hidden="true"><use href="#i-sun" /></svg>
+                        <svg class="c-scheme-toggle__moon" aria-hidden="true"><use href="#i-moon" /></svg>
                       </span>
                     </button>
                   </div>
@@ -2790,10 +2790,10 @@ means obvious.
       &lt;/button&gt;
       &lt;button class="c-btn c-btn--icon c-btn--secondary c-scheme-toggle" type="button" data-scheme-toggle aria-label="Switch to dark theme"&gt;
         &lt;span class="c-scheme-toggle__icons" aria-hidden="true"&gt;
-          &lt;svg class="c-scheme-toggle__sun"&gt;
+          &lt;svg class="c-scheme-toggle__sun" aria-hidden="true"&gt;
             &lt;use href="#i-sun" /&gt;
           &lt;/svg&gt;
-          &lt;svg class="c-scheme-toggle__moon"&gt;
+          &lt;svg class="c-scheme-toggle__moon" aria-hidden="true"&gt;
             &lt;use href="#i-moon" /&gt;
           &lt;/svg&gt;
         &lt;/span&gt;
@@ -4424,7 +4424,7 @@ means obvious.
             </p>
             <div class="c-chart" role="img" aria-label="Walks per weekday, three series, Monday to Sunday" aria-describedby="chart-week-data">
               <div class="c-chart__plot">
-                <svg viewbox="0 0 300 120" preserveaspectratio="none" style="position: absolute; inset: 0; width: 100%; height: 100%">
+                <svg viewbox="0 0 300 120" preserveaspectratio="none" style="position: absolute; inset: 0; width: 100%; height: 100%" aria-hidden="true">
                   <path class="c-chart__line" data-series="1" style="--c: var(--chart-1)" d="M0 70 50 60 100 66 150 40 200 46 250 26 300 30" />
                   <path class="c-chart__line" data-series="2" style="--c: var(--chart-2)" d="M0 92 50 84 100 88 150 72 200 78 250 60 300 64" />
                   <path class="c-chart__line" data-series="3" style="--c: var(--chart-3)" d="M0 112 50 108 100 110 150 102 200 104 250 96 300 98" />
@@ -4469,7 +4469,7 @@ means obvious.
                       <div class="ds-code__body">
                         <pre class="ds-code__pre"><code id="ds-code-58">&lt;div class="c-chart" role="img" aria-label="Walks per weekday, three series, Monday to Sunday" aria-describedby="chart-week-data"&gt;
   &lt;div class="c-chart__plot"&gt;
-    &lt;svg viewbox="0 0 300 120" preserveaspectratio="none" style="position: absolute; inset: 0; width: 100%; height: 100%"&gt;
+    &lt;svg viewbox="0 0 300 120" preserveaspectratio="none" style="position: absolute; inset: 0; width: 100%; height: 100%" aria-hidden="true"&gt;
       &lt;path class="c-chart__line" data-series="1" style="--c: var(--chart-1)" d="M0 70 50 60 100 66 150 40 200 46 250 26 300 30" /&gt;
       &lt;path class="c-chart__line" data-series="2" style="--c: var(--chart-2)" d="M0 92 50 84 100 88 150 72 200 78 250 60 300 64" /&gt;
       &lt;path class="c-chart__line" data-series="3" style="--c: var(--chart-3)" d="M0 112 50 108 100 110 150 102 200 104 250 96 300 98" /&gt;
@@ -5025,8 +5025,9 @@ means obvious.
               A migration aid: the names a consumer may already know, and the Contour class that
               replaces them.
             </p>
-            <table class="c-table">
-              <thead><tr><th>Legacy</th><th>Contour</th></tr></thead>
+            <div class="c-table-wrap">
+              <table class="c-table">
+                <thead><tr><th>Legacy</th><th>Contour</th></tr></thead>
               <tbody>
                 <tr><td><code>.btn</code></td><td><code>.c-btn</code></td></tr>
                 <tr><td><code>.card</code></td><td><code>.c-card</code></td></tr>
@@ -5040,6 +5041,7 @@ means obvious.
                 <tr><td><code>.drawer</code></td><td><code>.c-drawer</code></td></tr>
               </tbody>
             </table>
+            </div>
           </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -5052,96 +5054,98 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-67">&lt;table class="c-table"&gt;
-  &lt;thead&gt;
-    &lt;tr&gt;
-      &lt;th&gt;Legacy&lt;/th&gt;
-      &lt;th&gt;Contour&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;td&gt;
-        &lt;code&gt;.btn&lt;/code&gt;
-      &lt;/td&gt;
-      &lt;td&gt;
-        &lt;code&gt;.c-btn&lt;/code&gt;
-      &lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;
-        &lt;code&gt;.card&lt;/code&gt;
-      &lt;/td&gt;
-      &lt;td&gt;
-        &lt;code&gt;.c-card&lt;/code&gt;
-      &lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;
-        &lt;code&gt;.input&lt;/code&gt;
-      &lt;/td&gt;
-      &lt;td&gt;
-        &lt;code&gt;.c-input&lt;/code&gt;
-      &lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;
-        &lt;code&gt;.badge&lt;/code&gt;
-      &lt;/td&gt;
-      &lt;td&gt;
-        &lt;code&gt;.c-badge&lt;/code&gt;
-      &lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;
-        &lt;code&gt;.chip&lt;/code&gt;
-      &lt;/td&gt;
-      &lt;td&gt;
-        &lt;code&gt;.c-chip&lt;/code&gt;
-      &lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;
-        &lt;code&gt;.table&lt;/code&gt;
-      &lt;/td&gt;
-      &lt;td&gt;
-        &lt;code&gt;.c-table&lt;/code&gt;
-      &lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;
-        &lt;code&gt;.tabs&lt;/code&gt;
-      &lt;/td&gt;
-      &lt;td&gt;
-        &lt;code&gt;.c-tabs&lt;/code&gt;
-      &lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;
-        &lt;code&gt;.modal&lt;/code&gt;
-      &lt;/td&gt;
-      &lt;td&gt;
-        &lt;code&gt;.c-dialog&lt;/code&gt;
-      &lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;
-        &lt;code&gt;.toast&lt;/code&gt;
-      &lt;/td&gt;
-      &lt;td&gt;
-        &lt;code&gt;.c-toast&lt;/code&gt;
-      &lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;
-        &lt;code&gt;.drawer&lt;/code&gt;
-      &lt;/td&gt;
-      &lt;td&gt;
-        &lt;code&gt;.c-drawer&lt;/code&gt;
-      &lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-67">&lt;div class="c-table-wrap"&gt;
+  &lt;table class="c-table"&gt;
+    &lt;thead&gt;
+      &lt;tr&gt;
+        &lt;th&gt;Legacy&lt;/th&gt;
+        &lt;th&gt;Contour&lt;/th&gt;
+      &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+      &lt;tr&gt;
+        &lt;td&gt;
+          &lt;code&gt;.btn&lt;/code&gt;
+        &lt;/td&gt;
+        &lt;td&gt;
+          &lt;code&gt;.c-btn&lt;/code&gt;
+        &lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+        &lt;td&gt;
+          &lt;code&gt;.card&lt;/code&gt;
+        &lt;/td&gt;
+        &lt;td&gt;
+          &lt;code&gt;.c-card&lt;/code&gt;
+        &lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+        &lt;td&gt;
+          &lt;code&gt;.input&lt;/code&gt;
+        &lt;/td&gt;
+        &lt;td&gt;
+          &lt;code&gt;.c-input&lt;/code&gt;
+        &lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+        &lt;td&gt;
+          &lt;code&gt;.badge&lt;/code&gt;
+        &lt;/td&gt;
+        &lt;td&gt;
+          &lt;code&gt;.c-badge&lt;/code&gt;
+        &lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+        &lt;td&gt;
+          &lt;code&gt;.chip&lt;/code&gt;
+        &lt;/td&gt;
+        &lt;td&gt;
+          &lt;code&gt;.c-chip&lt;/code&gt;
+        &lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+        &lt;td&gt;
+          &lt;code&gt;.table&lt;/code&gt;
+        &lt;/td&gt;
+        &lt;td&gt;
+          &lt;code&gt;.c-table&lt;/code&gt;
+        &lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+        &lt;td&gt;
+          &lt;code&gt;.tabs&lt;/code&gt;
+        &lt;/td&gt;
+        &lt;td&gt;
+          &lt;code&gt;.c-tabs&lt;/code&gt;
+        &lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+        &lt;td&gt;
+          &lt;code&gt;.modal&lt;/code&gt;
+        &lt;/td&gt;
+        &lt;td&gt;
+          &lt;code&gt;.c-dialog&lt;/code&gt;
+        &lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+        &lt;td&gt;
+          &lt;code&gt;.toast&lt;/code&gt;
+        &lt;/td&gt;
+        &lt;td&gt;
+          &lt;code&gt;.c-toast&lt;/code&gt;
+        &lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+        &lt;td&gt;
+          &lt;code&gt;.drawer&lt;/code&gt;
+        &lt;/td&gt;
+        &lt;td&gt;
+          &lt;code&gt;.c-drawer&lt;/code&gt;
+        &lt;/td&gt;
+      &lt;/tr&gt;
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+&lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
         </section>
@@ -6667,13 +6671,15 @@ means obvious.
             <p class="muted" style="font-size: var(--type-sm); margin-block: 0.35rem 1.25rem">
               Median ~600 kB of HTML carrying ~20 external scripts, vs. a shipped system of ~21 kB gzipped.
             </p>
-            <table class="c-table">
-              <thead><tr><th scope="col">Surface</th><th scope="col">HTML</th><th scope="col">External scripts</th></tr></thead>
+            <div class="c-table-wrap">
+              <table class="c-table">
+                <thead><tr><th scope="col">Surface</th><th scope="col">HTML</th><th scope="col">External scripts</th></tr></thead>
               <tbody>
                 <tr><th scope="row">Cohort median</th><td>~600 kB</td><td>~20</td></tr>
                 <tr><th scope="row">Contour shipped</th><td>~21 kB gzipped</td><td>0</td></tr>
               </tbody>
             </table>
+            </div>
           </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -6686,30 +6692,32 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-90">&lt;table class="c-table"&gt;
-  &lt;thead&gt;
-    &lt;tr&gt;
-      &lt;th scope="col"&gt;Surface&lt;/th&gt;
-      &lt;th scope="col"&gt;HTML&lt;/th&gt;
-      &lt;th scope="col"&gt;External scripts&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;th scope="row"&gt;Cohort median&lt;/th&gt;
-      &lt;td&gt;~600 kB&lt;/td&gt;
-      &lt;td&gt;~20&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th scope="row"&gt;Contour shipped&lt;/th&gt;
-      &lt;td&gt;~21 kB gzipped&lt;/td&gt;
-      &lt;td&gt;0&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-90">&lt;div class="c-table-wrap"&gt;
+  &lt;table class="c-table"&gt;
+    &lt;thead&gt;
+      &lt;tr&gt;
+        &lt;th scope="col"&gt;Surface&lt;/th&gt;
+        &lt;th scope="col"&gt;HTML&lt;/th&gt;
+        &lt;th scope="col"&gt;External scripts&lt;/th&gt;
+      &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+      &lt;tr&gt;
+        &lt;th scope="row"&gt;Cohort median&lt;/th&gt;
+        &lt;td&gt;~600 kB&lt;/td&gt;
+        &lt;td&gt;~20&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+        &lt;th scope="row"&gt;Contour shipped&lt;/th&gt;
+        &lt;td&gt;~21 kB gzipped&lt;/td&gt;
+        &lt;td&gt;0&lt;/td&gt;
+      &lt;/tr&gt;
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+&lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
-          </section></main></div>
+
 
 
 
@@ -7499,7 +7507,9 @@ means obvious.
 &lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
-        
+
+
+          </section>
 
         <!-- ===================== 17 · PATTERNS ===================== -->
         <section class="section" id="patterns">
@@ -9379,7 +9389,7 @@ means obvious.
                       <div class="c-panel__body">
                         <div class="c-chart" role="img" aria-label="Walks per weekday for three routes, Monday to Sunday" aria-describedby="route-week-data">
                           <div class="c-chart__plot">
-                            <svg viewbox="0 0 300 120" preserveaspectratio="none" style="position: absolute; inset: 0; width: 100%; height: 100%">
+                            <svg viewbox="0 0 300 120" preserveaspectratio="none" style="position: absolute; inset: 0; width: 100%; height: 100%" aria-hidden="true">
                               <path class="c-chart__line" data-series="1" style="--c: var(--chart-1)" d="M0 88 50 70 100 78 150 48 200 55 250 30 300 36" />
                               <path class="c-chart__line" data-series="2" style="--c: var(--chart-2)" d="M0 104 50 96 100 100 150 86 200 90 250 74 300 78" />
                               <path class="c-chart__line" data-series="3" style="--c: var(--chart-4)" d="M0 114 50 110 100 112 150 106 200 108 250 100 300 102" />
@@ -10086,6 +10096,8 @@ means obvious.
                     </details></div>
           </div>
         </section>
+          </main></div>
+
 
 
 
@@ -10194,8 +10206,8 @@ means obvious.
       </div>
     </div>
 
-      
-    
+
+
 
     <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
     <script src="src/js/ds.js"></script>
