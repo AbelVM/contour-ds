@@ -49,7 +49,29 @@
     text-rendering: optimizeLegibility;
     font-kerning: normal;
     font-variant-ligatures: contextual;
-    overflow-x: clip;
+    overflow-x: hidden;
+  }
+
+  /* Opt-in motion (C-30): calm by default. A browser that does not answer
+     `prefers-reduced-motion` gets the still version; motion is restored only
+     under `no-preference`. The reduced-motion block below stays as the
+     explicit opt-out for browsers that answer `reduce`. */
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    *,
+    *::before,
+    *::after {
+      transition-duration: revert !important;
+      animation-duration: revert !important;
+      animation-iteration-count: revert !important;
+    }
   }
 
   img,

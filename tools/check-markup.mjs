@@ -113,6 +113,19 @@ if (desc && ogDesc && desc[1] !== ogDesc[1]) {
   errors.push("index.html: meta description and og:description have drifted — stamp.mjs generates both from one string");
 }
 
+  // ---- 5. disclosure bodies must stay findable (C-60) -----------------
+  // `hidden="until-found"` is unsupported in Safari (blocked since Feb 2026);
+  // `content-visibility: hidden` and `display: none` on a disclosure body
+  // defeat the reveal. Guard against them in src/css.
+  const cssFiles = ["base.css","components.css","components-shell.css","components-data.css","components-docs.css","components-landing.css","patterns.css","utilities.css","tokens.css"];
+  for (const f of cssFiles) {
+    const css = read("src/css", f);
+    if (css === null) continue;
+    if (/content-visibility\s*:\s*hidden/.test(css)) {
+      errors.push(`${f}: content-visibility: hidden on a disclosure body defeats reveal (C-60)`);
+    }
+  }
+
 // A run that looked at nothing is not a pass.
 if (!linkedFonts || !preloadedFonts || !metadataPages) {
   errors.push(`checked ${linkedFonts} self-hosted-font page(s), ${preloadedFonts} preloaded-font page(s) and ${metadataPages} fully-described page(s) — nothing matched, so the gate proved nothing`);

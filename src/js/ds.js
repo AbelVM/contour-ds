@@ -1012,11 +1012,14 @@
   // Colour-vision preview producer (T-134).
   $$("[data-cvd-toggle]").forEach((group) => {
     const scope = document.getElementById("data") || document.documentElement;
+    const targets = () => $$(".u-cvd-target, .c-chart, .c-datamark", scope);
     $$("button", group).forEach((btn) => {
       btn.addEventListener("click", () => {
         const value = btn.dataset.cvdValue || "";
-        if (value) scope.setAttribute("data-cvd", value);
-        else scope.removeAttribute("data-cvd");
+        targets().forEach((el) => {
+          if (value) el.setAttribute("data-cvd", value);
+          else el.removeAttribute("data-cvd");
+        });
         $$("button", group).forEach((b) => b.setAttribute("aria-pressed", String(b === btn)));
       });
     });

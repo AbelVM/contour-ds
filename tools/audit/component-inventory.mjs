@@ -41,7 +41,7 @@ const templates = fs.readdirSync(path.join(ROOT, "templates"))
 
 // Hooks are marker/utility classes that are not standalone components and are
 // ledgered rather than specimened.
-const HOOKS = new Set(["c-advanced"]);
+const HOOKS = new Set([]);
 const isHook = (b) => HOOKS.has(b) || b.startsWith("is-") || b.startsWith("u-");
 
 const noSpecimen = [];

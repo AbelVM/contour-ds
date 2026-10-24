@@ -395,7 +395,11 @@
 
     /* Categorical — eight series, ordered so neighbouring hues stay apart.
        Cap at eight: past that, adjacent colours stop being reliably
-       distinguishable and the tail should fold into "other". */
+       distinguishable and the tail should fold into "other".
+       Closest pairs by luminance (C-20, measured): light 2↔8 (ΔL .0053),
+       dark 1↔5 (ΔL .0001, ratio 1.00). Series 1 stays the default (brand
+       hue) by design; separation is reported, not gated, and the dash
+       pattern discharges WCAG 1.4.1. No reordering performed. */
     --chart-1: light-dark(oklch(55% 0.12 182), oklch(72% 0.13 182));
     --chart-2: light-dark(oklch(52% 0.14 243), oklch(70% 0.14 243));
     --chart-3: light-dark(oklch(50% 0.19 300), oklch(70% 0.18 300));
@@ -413,6 +417,20 @@
     --chart-seq-5: light-dark(oklch(55% 0.13 182), oklch(70% 0.13 182));
     --chart-seq-6: light-dark(oklch(45% 0.11 182), oklch(80% 0.11 182));
     --chart-seq-7: light-dark(oklch(35% 0.08 182), oklch(90% 0.07 182));
+
+    /* Cyclic — equal lightness, hue carries the encoding, wraps seamlessly.
+       For bearing/aspect/phase/time-of-day data where 0 and 360 are the same
+       value: index mod N, so the last stop meets the first. The seam is a
+       neutral (low chroma) so the wrap reads as continuous rather than as a
+       hard edge. */
+    --chart-cyc-1: light-dark(oklch(62% 0.02 182), oklch(72% 0.02 182));
+    --chart-cyc-2: light-dark(oklch(62% 0.12 227), oklch(72% 0.12 227));
+    --chart-cyc-3: light-dark(oklch(62% 0.12 272), oklch(72% 0.12 272));
+    --chart-cyc-4: light-dark(oklch(62% 0.12 317), oklch(72% 0.12 317));
+    --chart-cyc-5: light-dark(oklch(62% 0.12 2), oklch(72% 0.12 2));
+    --chart-cyc-6: light-dark(oklch(62% 0.12 47), oklch(72% 0.12 47));
+    --chart-cyc-7: light-dark(oklch(62% 0.12 92), oklch(72% 0.12 92));
+    --chart-cyc-8: light-dark(oklch(62% 0.02 137), oklch(72% 0.02 137));
 
     /* Diverging — reserved for a real midpoint (above/below target). */
     --chart-div-neg: light-dark(var(--clay-500), var(--clay-400));
@@ -453,10 +471,11 @@
     --map-attribution-surface: var(--color-surface-1);
 
     /* Dash patterns, one per series. Eight hues cannot all be separated by
-       lightness, so a chart never leans on hue alone: the line also carries a
-       pattern, and the legend previews that pattern. The chart stays
-       readable in greyscale, in print, and for a reader who cannot separate
-       the hues. */
+       lightness (series 2/4/8 collide in light mode, 1/4 in dark), so a chart
+       never leans on hue alone: the line also carries a pattern, and the legend
+       previews that pattern. Readability in greyscale, in print, and for a
+       reader who cannot separate the hues comes from the dash pattern, not
+       from lightness. */
     --chart-dash-1: none;
     --chart-dash-2: 7 4;
     --chart-dash-3: 2 4;

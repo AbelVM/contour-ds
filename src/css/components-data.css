@@ -322,6 +322,33 @@
     gap: var(--space-2xs);
   }
 
+  /* Colour-vision preview (C-34): owned by the component root. The filter
+     keys on the element's own [data-cvd] attribute, set by ds.js, so no
+     descendant selector reaches into another component. */
+  .u-cvd-target[data-cvd="deuteranopia"],
+  .c-chart[data-cvd="deuteranopia"],
+  .c-datamark[data-cvd="deuteranopia"] {
+    filter: url(#contour-cvd-deuteranopia);
+  }
+
+  .u-cvd-target[data-cvd="protanopia"],
+  .c-chart[data-cvd="protanopia"],
+  .c-datamark[data-cvd="protanopia"] {
+    filter: url(#contour-cvd-protanopia);
+  }
+
+  .u-cvd-target[data-cvd="tritanopia"],
+  .c-chart[data-cvd="tritanopia"],
+  .c-datamark[data-cvd="tritanopia"] {
+    filter: url(#contour-cvd-tritanopia);
+  }
+
+  .u-cvd-target[data-cvd="achromatopsia"],
+  .c-chart[data-cvd="achromatopsia"],
+  .c-datamark[data-cvd="achromatopsia"] {
+    filter: grayscale(1);
+  }
+
   .c-chart__plot {
     position: relative;
     aspect-ratio: 16 / 7;
@@ -706,26 +733,6 @@
   .c-table th[aria-sort="descending"] .c-table__sort svg {
     opacity: 1;
     color: var(--color-primary-text);
-  }
-
-  /* Density modes. Comfortable by default; compact for scanning. */
-  [data-density="compact"] {
-    --density: var(--density-compact);
-    --density-type: var(--density-type-compact);
-  }
-
-  .c-table {
-    font-size: calc(var(--type-sm) * var(--density-type));
-  }
-
-  .c-table th,
-  .c-table td {
-    padding-block: var(--density-row);
-    padding-inline: var(--space-sm);
-  }
-
-  .c-table--dense {
-    font-size: var(--type-xs);
   }
 
   .c-table__pinned {
@@ -1203,6 +1210,11 @@
   }
   .c-container--scrollable::-webkit-scrollbar {
     width: 10px;
+  }
+
+  .c-container--scrollable::-webkit-scrollbar-thumb {
+    background: var(--color-control-edge);
+    border-radius: var(--radius-pill);
   }
 
   .c-container--border > *:not(:last-child) {

@@ -357,6 +357,17 @@ for (const engine of ["maplibre", "mapbox"]) {
   );
 }
 
+// -- The highlight.js companion (optional) ----------------------------------
+// Maps highlight.js token classes onto Contour tokens. Not imported by ds.css
+// (highlight.js is a third-party library and Contour ships zero runtime deps),
+// so it ships as a separate, opt-in sheet — same shape as map-chrome.css.
+copyFileSync(
+  join(root, "src/css/hljs.css"),
+  join(dist, "hljs.css"),
+);
+
+
+
 // -- The agent-rules artifact (C-47) ---------------------------------------
 // Machine-readable constraints for an agent generating UI with Contour. Each rule
 // names the gate that enforces it; the build throws if a cited gate is missing

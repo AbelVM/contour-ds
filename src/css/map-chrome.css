@@ -69,3 +69,70 @@
   color: var(--color-text-strong);
   background: var(--color-surface-2);
 }
+
+/* Popups */
+.maplibregl-popup-content,
+.mapboxgl-popup-content {
+  background: var(--color-surface-1);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  font-family: var(--font-sans);
+  font-size: var(--type-sm);
+}
+
+.maplibregl-popup-tip,
+.mapboxgl-popup-tip {
+  border-top-color: var(--color-surface-1);
+}
+
+/* Attribution */
+.maplibregl-ctrl-attrib,
+.mapboxgl-ctrl-attrib {
+  background: var(--color-surface-1);
+  color: var(--color-text-muted);
+  font-size: var(--type-micro);
+}
+
+.maplibregl-ctrl-attrib a,
+.mapboxgl-ctrl-attrib a {
+  color: var(--color-link);
+}
+
+/* Scale bar */
+.maplibregl-ctrl-scale,
+.mapboxgl-ctrl-scale {
+  background: var(--color-surface-1);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  font-size: var(--type-micro);
+}
+
+/* Markers */
+.maplibregl-marker,
+.mapboxgl-marker {
+  color: var(--color-primary);
+}
+
+/* Layer switcher (common control name across engines) */
+.maplibregl-ctrl-layers,
+.mapboxgl-ctrl-layers {
+  background: var(--color-surface-1);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--type-sm);
+}
+
+.maplibregl-ctrl-layers button,
+.mapboxgl-ctrl-layers button {
+  color: var(--color-text-muted);
+}
+
+.maplibregl-ctrl-layers button:hover,
+.mapboxgl-ctrl-layers button:hover {
+  color: var(--color-text-strong);
+  background: var(--color-surface-2);
+}

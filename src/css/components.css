@@ -1544,6 +1544,7 @@
     overflow-x: auto;
     overscroll-behavior-x: contain;
     scroll-padding-inline: 0.5rem;
+    scroll-padding-block-start: 0.5rem;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     background: var(--color-surface-1);
@@ -1609,9 +1610,40 @@
     font-size: var(--type-xs);
   }
 
+  /* Density modes. Comfortable by default; compact for scanning.
+     Merged from components-data.css (C-36) so density no longer depends on
+     both files loading. */
+  [data-density="compact"] {
+    --density: var(--density-compact);
+    --density-type: var(--density-type-compact);
+  }
+
+  .c-table {
+    font-size: calc(var(--type-sm) * var(--density-type));
+  }
+
+  .c-table th,
+  .c-table td {
+    padding-block: var(--density-row);
+    padding-inline: var(--space-sm);
+  }
+
+  .c-table--dense {
+    font-size: var(--type-xs);
+  }
+
   .c-table--compact th,
   .c-table--compact td {
     padding: 0.45rem 0.8rem;
+  }
+
+  /* =======================================================================
+     13b. ADVANCED DISCLOSURE — capability-gated block (C-34)
+     ======================================================================= */
+  .c-advanced {
+    display: block;
+    font-size: var(--type-sm);
+    color: var(--color-text);
   }
 
   /* =======================================================================
@@ -2008,6 +2040,9 @@
     background: transparent;
   }
 
+  /* Static-position fallback: when anchor positioning is unsupported, the
+     tooltip falls back to absolute positioning with inset (base rule above).
+     Anchor positioning is enhancement-only (Limited support). */
   @supports (anchor-name: --x) {
     .c-tooltip {
       position-area: block-start;

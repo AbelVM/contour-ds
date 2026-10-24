@@ -60,6 +60,16 @@ const LEDGER = {
   // that implies order. Kept rather than deleted so a heat-scale surface still
   // has a token to reach for. Consumer: the heat-scale specimen, T-161.
   "--gradient-heat": { action: "yours", task: "T-161", verified: true, note: "heat ramp, non-ordered — needs a specimen, not a ramp" },
+  // Cyclic ramp (C-21): equal lightness, hue carries the encoding, wraps
+  // seamlessly. Vocabulary awaiting a consumer (bearing/aspect/phase specimen).
+  "--chart-cyc-1": { action: "yours", task: "C-21", verified: true, note: "cyclic ramp — awaiting a specimen" },
+  "--chart-cyc-2": { action: "yours", task: "C-21", verified: true, note: "cyclic ramp — awaiting a specimen" },
+  "--chart-cyc-3": { action: "yours", task: "C-21", verified: true, note: "cyclic ramp — awaiting a specimen" },
+  "--chart-cyc-4": { action: "yours", task: "C-21", verified: true, note: "cyclic ramp — awaiting a specimen" },
+  "--chart-cyc-5": { action: "yours", task: "C-21", verified: true, note: "cyclic ramp — awaiting a specimen" },
+  "--chart-cyc-6": { action: "yours", task: "C-21", verified: true, note: "cyclic ramp — awaiting a specimen" },
+  "--chart-cyc-7": { action: "yours", task: "C-21", verified: true, note: "cyclic ramp — awaiting a specimen" },
+  "--chart-cyc-8": { action: "yours", task: "C-21", verified: true, note: "cyclic ramp — awaiting a specimen" },
 };
 
 // Referenced-but-undefined tokens that are deliberate author hooks (component-scoped

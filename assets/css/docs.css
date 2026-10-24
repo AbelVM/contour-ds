@@ -1202,3 +1202,42 @@
     color-scheme: light;
   }
 }
+
+/* -- Print: field sheet (guide-owned) ---------------------------------- */
+@layer base {
+  @page {
+    margin: 1.5cm;
+  }
+  @media print {
+    .c-header, .c-drawer, .c-toolbar {
+      display: none;
+    }
+
+    .c-panel {
+      border: 1px solid CanvasText;
+      break-inside: avoid;
+    }
+
+    .c-chart {
+      background: none;
+    }
+
+    .c-table {
+      font-size: var(--type-xs);
+    }
+
+    .c-mark, .c-datamark {
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+
+    :root {
+      color-scheme: light;
+    }
+
+    body {
+      background: Canvas;
+      color: CanvasText;
+    }
+  }
+}

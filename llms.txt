@@ -1,6 +1,6 @@
 # Contour
 
-> A token-driven design system for spatial interfaces — routing engines, pedestrian simulators, map tooling and geospatial dashboards. Dark and light themes, 134 components, 282 design tokens (280 read, 2 unread), zero runtime dependencies, no build step.
+> A token-driven design system for spatial interfaces — routing engines, pedestrian simulators, map tooling and geospatial dashboards. Dark and light themes, 134 components, 290 design tokens (280 read, 10 unread), zero runtime dependencies, no build step.
 
 Contour covers three kinds of page: a **landing page** that has to persuade, a **documentation site** that has to explain, and a **technical dashboard** that has to be read at speed. All three share one token layer, one type scale and one set of affordance rules.
 
@@ -29,6 +29,12 @@ Overlays: dialog, tooltip, popover, command palette, drawer, scrim.
 Data: table (container query drops optional columns), legend, readout, timeline, code block, pull quote, KPI tile, panel, filter bar, activity feed, chart frame, sparkline, resize handle, drag handle, expandable, pressable, row action.
 Documentation: nav tree, callout, do/don't, steps, code tabs, install block, diff, pager, version picker, file tree, prose.
 Landing: logo wall, feature showcase, metrics band, testimonial, pricing, comparison matrix, FAQ, CTA band.
+
+## Machine-readable index
+
+- [llms-full.txt](./llms-full.txt): the full concatenated guide (all sections, all specimens) for agents that want the complete text in one fetch.
+- [contour.components.json](./dist/contour.components.json): the component contract (blocks, elements, variants, states).
+- [contour.tokens.json](./dist/contour.tokens.json): the token layer as DTCG 2025.10.
 
 ## Accessibility contract
 
@@ -75,7 +81,7 @@ Landing: logo wall, feature showcase, metrics band, testimonial, pricing, compar
 
 ## Tokens
 
-- 282 custom properties in the token layer, in four layers: primitives, semantic, component, utility.
+- 290 custom properties in the token layer, in four layers: primitives, semantic, component, utility.
 - Primitives never change between themes; only the semantic layer does, so a theme swap is a one-line change.
 - Two values retheme and reshape everything: `--brand-hue` and `--radius-scale`.
 - `.c-theme-scope` re-derives the whole brand layer for a subtree, because a custom property containing `var()` is resolved eagerly.
@@ -109,3 +115,7 @@ Landing: logo wall, feature showcase, metrics band, testimonial, pricing, compar
 
 - [Templates](https://abelvm.github.io/contour/templates/landing.html): three starter pages, one per surface.
 - [Contour artwork](https://abelvm.github.io/contour/): every contour line is an iso-line of a real field, extracted with marching squares. Nothing is drawn by hand.
+
+## Honest limits
+
+- No measurement shows a design-system MCP server improves generated-UI conformance: the CHI study measures registries, and the audits count artifact existence. Contour ships `dist/agent-rules.json` and `dist/contour.components.json` as the machine surface instead, and validates them with `check-components.mjs` and `check-registry.mjs`.

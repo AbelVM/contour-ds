@@ -1,0 +1,1319 @@
+# Contour — full documentation
+
+Generated from dist/docs/. See llms.txt for the index.
+
+
+---
+
+# overview
+
+# overview
+
+Section `overview` — marker `00`, position 1 of 23 in the guide.
+Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
+private until v1.0). See `index.json` for the whole set and the shared statement.
+
+## What the guide says
+
+A token-driven interface system for three kinds of page: a landing page that has to persuade, a documentation site that has to explain, and a dashboard that has to be read at speed. Ink-dark by default, daylight-ready by design, and built around the one curve that makes a map a map: the isoline.
+
+## Blocks documented here
+
+1 block(s). Their facts live in `../contour.components.json`;
+only the names are here, because the same figure in two files is how a document
+starts disagreeing with itself.
+
+- `.c-btn`
+
+---
+
+Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+
+
+---
+
+# Six rules that break every tie.
+
+# Six rules that break every tie.
+
+Section `principles` — marker `01`, position 2 of 23 in the guide.
+Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
+private until v1.0). See `index.json` for the whole set and the shared statement.
+
+## What the guide says
+
+When a decision is not obvious, these decide it. They are ordered by how often they come up.
+
+In a dark chart, elevation is expressed by surface lightness and a single hairline. Shadows are reserved for things that genuinely float: menus, dialogs, toasts.
+
+Eighty-five percent of the interface is neutral. Tidal marks action and success, Plasma marks live data, Clay marks failure. Nothing is coloured decoratively.
+
+Size and weight alone leave a page flat. Generous space around the thing that matters does the same job, without adding another colour or border.
+
+IBM Plex Mono is reserved for data, coordinates, labels and code. If it is prose, it is set in IBM Plex Sans. The split makes machine-read data instantly distinguishable.
+
+A control shows the action it performs, and the state it is in, before you touch it. Sort arrows, delta arrows, a copy button that becomes a tick. Affordable here means obvious.
+
+A landing page, a documentation site and a dashboard read as the same product: the same tokens, the same type scale, the same hairline. Only the density changes.
+
+## Subsections
+
+- Lighter, not shadowed
+- Colour is a signal
+- Space carries the hierarchy
+- Mono means "machine"
+- Obvious, not guessed
+- One system, three surfaces
+
+## Blocks documented here
+
+4 block(s). Their facts live in `../contour.components.json`;
+only the names are here, because the same figure in two files is how a document
+starts disagreeing with itself.
+
+- `.c-btn`
+- `.c-feature`
+- `.c-icon-badge`
+- `.c-section-head`
+
+---
+
+Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+
+
+---
+
+# Colour, in five families and a neutral ramp.
+
+# Colour, in five families and a neutral ramp.
+
+Section `colour` — marker `02`, position 3 of 23 in the guide.
+Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
+private until v1.0). See `index.json` for the whole set and the shared statement.
+
+## What the guide says
+
+Every value is defined in OKLCH so lightness steps read evenly. Neutrals are tinted toward the brand hue — never pure grey. Themes are semantic: swap the semantic layer and the primitives stay put.
+
+What a component asks for, not what a colour happens to be. The same role resolves differently in each theme.
+
+Five elevation steps. In dark mode, higher means lighter — never a heavier shadow.
+
+For density, catchments and isoline bands. Seven stops, one hue, rising lightness.
+
+## Subsections
+
+- Semantic roles
+- Surfaces & text
+- Sequential scale
+
+## Blocks documented here
+
+6 block(s). Their facts live in `../contour.components.json`;
+only the names are here, because the same figure in two files is how a document
+starts disagreeing with itself.
+
+- `.c-badge`
+- `.c-btn`
+- `.c-icon-badge`
+- `.c-legend`
+- `.c-row`
+- `.c-section-head`
+
+---
+
+Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+
+
+---
+
+# Two families, one superfamily.
+
+# Two families, one superfamily.
+
+Section `type` — marker `03`, position 4 of 23 in the guide.
+Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
+private until v1.0). See `index.json` for the whole set and the shared statement.
+
+## What the guide says
+
+IBM Plex Sans Condensed sets the display voice; IBM Plex Sans carries body copy; IBM Plex Mono is reserved for anything the machine produced. Contrast comes from proportion, not from mixing unrelated typefaces.
+
+Contour lines 0123456789
+
+Backend-less routing
+
+16.4 km · 19 min
+
+Body copy is capped at 68 characters and set at 1.65 leading — looser than the default, because light-on-dark text needs more air.
+
+## Blocks documented here
+
+3 block(s). Their facts live in `../contour.components.json`;
+only the names are here, because the same figure in two files is how a document
+starts disagreeing with itself.
+
+- `.c-btn`
+- `.c-icon-badge`
+- `.c-section-head`
+
+---
+
+Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+
+
+---
+
+# A 4px base, and shapes that stay soft.
+
+# A 4px base, and shapes that stay soft.
+
+Section `space` — marker `04`, position 5 of 23 in the guide.
+Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
+private until v1.0). See `index.json` for the whole set and the shared statement.
+
+## What the guide says
+
+Spacing is a scale, not a decision. Components inherit the rhythm so a card in a sidebar and a card on a landing page breathe at the same rate.
+
+Shadows only for things that genuinely float above the page. Everything else uses surface lightness.
+
+## Subsections
+
+- Space scale
+- Radius scale
+- Elevation
+
+## Blocks documented here
+
+6 block(s). Their facts live in `../contour.components.json`;
+only the names are here, because the same figure in two files is how a document
+starts disagreeing with itself.
+
+- `.c-badge`
+- `.c-btn`
+- `.c-card`
+- `.c-icon-badge`
+- `.c-section-head`
+- `.c-segmented`
+
+---
+
+Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+
+
+---
+
+# Motion that decelerates, never bounces.
+
+# Motion that decelerates, never bounces.
+
+Section `motion` — marker `05`, position 6 of 23 in the guide.
+Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
+private until v1.0). See `index.json` for the whole set and the shared statement.
+
+## What the guide says
+
+Exponential easing for entrances, tight linear curves for continuous motion, and a hard stop for anything the user did not ask for. Every animation respects prefers-reduced-motion.
+
+prefers-reduced-motion is an operating-system setting, so it is not the mechanism WCAG 2.2.2 asks for: a reader cannot reach it for one part of one page, and most have never opened it. [data-motion] is the page's own switch. paused holds every animation in its scope on the frame it is on — a spinner stays mid-rotation and still means working. running overrides the media query; leaving the attribute unset gives the choice back to the system.
+
+The same attribute is the seam for content that updates on a timer: when a live region stops being live, the producer that polls it should set data-motion="paused" too, because 2.2.2 covers auto-updating information, not only motion.
+
+Hover, focus and press. Anything that must feel instantaneous.
+
+State changes on surfaces: border, background, transform.
+
+Entrances, reveals and anything that moves the eye across a gap.
+
+## Subsections
+
+- Motion a reader can stop
+
+## Blocks documented here
+
+13 block(s). Their facts live in `../contour.components.json`;
+only the names are here, because the same figure in two files is how a document
+starts disagreeing with itself.
+
+- `.c-badge`
+- `.c-btn`
+- `.c-card`
+- `.c-cluster`
+- `.c-dot`
+- `.c-icon-badge`
+- `.c-kbd`
+- `.c-pill`
+- `.c-row`
+- `.c-section-head`
+- `.c-segmented`
+- `.c-skeleton`
+- `.c-spinner`
+
+---
+
+Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+
+
+---
+
+# Actions
+
+# Actions
+
+Section `actions` — marker `06`, position 7 of 23 in the guide.
+Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
+private until v1.0). See `index.json` for the whole set and the shared statement.
+
+## What the guide says
+
+One primary action per view. Everything else is secondary, ghost or a plain link. Buttons are pills because a rounded target reads as a target on a map.
+
+## Blocks documented here
+
+7 block(s). Their facts live in `../contour.components.json`;
+only the names are here, because the same figure in two files is how a document
+starts disagreeing with itself.
+
+- `.c-btn`
+- `.c-btn-group`
+- `.c-expandable`
+- `.c-icon-badge`
+- `.c-link`
+- `.c-pressable`
+- `.c-section-head`
+
+---
+
+Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+
+
+---
+
+# Forms
+
+# Forms
+
+Section `forms` — marker `07`, position 8 of 23 in the guide.
+Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
+private until v1.0). See `index.json` for the whole set and the shared statement.
+
+## What the guide says
+
+Controls sized for the hand and the keyboard. Every input has a visible label, a visible focus state and room for an error message that explains, not scolds. A select keeps its native option list: the platform draws that, so it follows the operating system's theme rather than the page's.
+
+## Blocks documented here
+
+13 block(s). Their facts live in `../contour.components.json`;
+only the names are here, because the same figure in two files is how a document
+starts disagreeing with itself.
+
+- `.c-btn`
+- `.c-check`
+- `.c-field`
+- `.c-icon-badge`
+- `.c-input`
+- `.c-input-group`
+- `.c-kbd`
+- `.c-range`
+- `.c-range-scale`
+- `.c-section-head`
+- `.c-select`
+- `.c-switch`
+- `.c-textarea`
+
+---
+
+Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+
+
+---
+
+# Status & labels
+
+# Status & labels
+
+Section `status` — marker `08`, position 9 of 23 in the guide.
+Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
+private until v1.0). See `index.json` for the whole set and the shared statement.
+
+## What the guide says
+
+Badges carry a category. Chips carry a value. Pills carry a state. The waypoint dot carries presence. Four jobs, four shapes — never interchangeable.
+
+## Blocks documented here
+
+9 block(s). Their facts live in `../contour.components.json`;
+only the names are here, because the same figure in two files is how a document
+starts disagreeing with itself.
+
+- `.c-avatar`
+- `.c-badge`
+- `.c-btn`
+- `.c-chip`
+- `.c-dot`
+- `.c-icon-badge`
+- `.c-pill`
+- `.c-section-head`
+- `.c-tag`
+
+---
+
+Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+
+
+---
+
+# Surfaces
+
+# Surfaces
+
+Section `surfaces` — marker `09`, position 10 of 23 in the guide.
+Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
+private until v1.0). See `index.json` for the whole set and the shared statement.
+
+## What the guide says
+
+Cards are for things that are independently actionable. Information that only belongs to its group does not get a container — it gets space and a rule.
+
+Route calculation runs in single-digit milliseconds once the tile graph is built.
+
+Catchment areas and travel-time bands, with inner breaks for context.
+
+Every result exports as GeoJSON, ready for QGIS, ArcGIS or a paper map.
+
+Used once per page. If two plates meet, one of them should be a card.
+
+Borderless, indexed, ruled at the top. The counter-move to the card grid.
+
+No routing server, no third-party API, no latency tax.
+
+The same query always returns the same engine and result.
+
+The end of the page: the brand, a line about what this is, and the links that stay reachable.
+
+A design system for spatial interfaces. One set of rules for three surfaces.
+
+## Subsections
+
+- Millisecond routing
+- Isolines, built in
+- GeoJSON out
+- A raised surface for hero content
+- Feature blocks
+- Foundations
+- Components
+
+## Blocks documented here
+
+11 block(s). Their facts live in `../contour.components.json`;
+only the names are here, because the same figure in two files is how a document
+starts disagreeing with itself.
+
+- `.c-badge`
+- `.c-brand`
+- `.c-btn`
+- `.c-card`
+- `.c-feature`
+- `.c-footer`
+- `.c-icon-badge`
+- `.c-link`
+- `.c-mark`
+- `.c-plate`
+- `.c-section-head`
+
+---
+
+Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+
+
+---
+
+# Navigation
+
+# Navigation
+
+Section `navigation` — marker `10`, position 11 of 23 in the guide.
+Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
+private until v1.0). See `index.json` for the whole set and the shared statement.
+
+## What the guide says
+
+Tabs for peer views, segmented controls for exclusive choices, a toolbar for map-level actions. Each one announces its state to assistive technology.
+
+The bar that holds the brand, the section links and the actions. It sticks to the top of the page; below 48 rem the links move into a drawer.
+
+Handles high-degree road networks with predictable memory use.
+
+Bidirectional A* with a geographic heuristic. Fastest for point-to-point queries where both endpoints are known.
+
+Adaptive barrier SSSP. Scales to very large networks by keeping the frontier small.
+
+The headings of the page being read, with the current one marked. The guide's own rail is the same idea, numbered and built from the page.
+
+On this page
+
+## Blocks documented here
+
+19 block(s). Their facts live in `../contour.components.json`;
+only the names are here, because the same figure in two files is how a document
+starts disagreeing with itself.
+
+- `.c-badge`
+- `.c-brand`
+- `.c-breadcrumb`
+- `.c-btn`
+- `.c-card`
+- `.c-disclosure`
+- `.c-header`
+- `.c-icon-badge`
+- `.c-mark`
+- `.c-menu`
+- `.c-pagination`
+- `.c-readout`
+- `.c-scheme-toggle`
+- `.c-search-trigger`
+- `.c-section-head`
+- `.c-segmented`
+- `.c-tabs`
+- `.c-toc`
+- `.c-toolbar`
+
+---
+
+Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+
+
+---
+
+# Feedback
+
+# Feedback
+
+Section `feedback` — marker `11`, position 12 of 23 in the guide.
+Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
+private until v1.0). See `index.json` for the whole set and the shared statement.
+
+## What the guide says
+
+Every state the interface can be in has a component: empty, loading, error, done. Each one teaches rather than decorates.
+
+Tile cache is empty
+
+The first route will fetch and parse every tile in range.
+
+Snapshot ahead of coverage
+
+No road data within 120 m. Choose a closer endpoint.
+
+Route failed
+
+Every engine returned no safe path between these points.
+
+Streaming live
+
+312 walkers are moving. The flow network updates as they go.
+
+Exported
+
+catchment-15min.geojson is ready to open in QGIS.
+
+No waypoints yet
+
+Pick a start and an end on the map, then reveal the desire lines.
+
+Progress drawn as elevation rings rather than a bar — the system's own shape language applied to a data component.
+
+## Subsections
+
+- Loading
+- Empty state
+- Contour meter
+- Progress & toasts
+
+## Blocks documented here
+
+11 block(s). Their facts live in `../contour.components.json`;
+only the names are here, because the same figure in two files is how a document
+starts disagreeing with itself.
+
+- `.c-alert`
+- `.c-btn`
+- `.c-dot`
+- `.c-empty`
+- `.c-icon-badge`
+- `.c-meter`
+- `.c-progress`
+- `.c-section-head`
+- `.c-skeleton`
+- `.c-spinner`
+- `.c-toast`
+
+---
+
+Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+
+
+---
+
+# Overlays
+
+# Overlays
+
+Section `overlays` — marker `12`, position 13 of 23 in the guide.
+Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
+private until v1.0). See `index.json` for the whole set and the shared statement.
+
+## What the guide says
+
+Dialogs for decisions that need focus, a command palette for the whole system, a drawer for drill-down, and tooltips that appear on interest rather than on click.
+
+Hover or focus the panel to strengthen the grip.
+
+Content behind the scrim.
+
+The classic map-tool panel: a scrollable body, a fixed footer, and a grip that collapses it on small screens.
+
+Walking instinct lab
+
+A drill-down that slides over the content without losing it. Pinned to the viewport in an app; inline here, so it can be read next to the thing it describes.
+
+Why this route
+
+Crossing at the canal lock costs less than the detour around it.
+
+## Subsections
+
+- Side sheet
+- Desire Paths
+- Drawer
+
+## Blocks documented here
+
+13 block(s). Their facts live in `../contour.components.json`;
+only the names are here, because the same figure in two files is how a document
+starts disagreeing with itself.
+
+- `.c-btn`
+- `.c-callout`
+- `.c-chip`
+- `.c-drawer`
+- `.c-field`
+- `.c-icon-badge`
+- `.c-panel`
+- `.c-range`
+- `.c-readout`
+- `.c-resize-handle`
+- `.c-scrim`
+- `.c-section-head`
+- `.c-sheet`
+
+---
+
+Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+
+
+---
+
+# Data display
+
+# Data display
+
+Section `data` — marker `13`, position 14 of 23 in the guide.
+Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
+private until v1.0). See `index.json` for the whole set and the shared statement.
+
+## What the guide says
+
+Numbers are set in mono with tabular figures so columns align. Readouts use dotted rules instead of boxes, which keeps dense data calm — and no two series are ever separated by hue alone.
+
+The friction cost of each surface, and where people end up walking anyway.
+
+Walking resistance
+
+Where people choose to walk
+
+Stable release
+
+Deterministic engine selection, GeoJSON export, MapLibre control.
+
+Isolines and catchment analysis
+
+IsoPHAST integrated, with inner pretty-breaks for context.
+
+Public beta
+
+Tile parsing and graph construction moved fully client-side.
+
+Eight hues separate by hue, not by lightness — so a line also carries a dash pattern, and the legend previews that pattern. No chart asks the reader to tell two colours apart, and every series clears 3:1 against every surface it can be drawn on (canvas, canvas-sunken, surface-1/2/3, surface-raised), in both themes.
+
+A panel always says where it stands. Empty is not an error, live is not idle, and the error state says what to do next.
+
+Nothing to show yet
+
+No isolines for this catchment.
+
+Streaming
+
+Receiving routes.
+
+Source unreachable
+
+Tile server did not answer.
+
+What just happened, newest first. The dot carries the severity; the time stays in mono so a column of them still scans.
+
+Direction is drawn as well as named — an arrow, a word, and a colour that agrees.
+
+The contract a third party follows. A component is a CSS block in the right layer, a specimen in the guide, and a snippet the tool extracts.
+
+A migration aid: the names a consumer may already know, and the Contour class that replaces them.
+
+## Subsections
+
+- Engine readout
+- Walking resistance
+- Engine comparison
+- Release timeline
+- Chart series
+- Panel states
+- Activity
+- Deltas
+- How to add a component
+- Rename table (legacy → Contour)
+
+## Blocks documented here
+
+16 block(s). Their facts live in `../contour.components.json`;
+only the names are here, because the same figure in two files is how a document
+starts disagreeing with itself.
+
+- `.c-activity`
+- `.c-badge`
+- `.c-btn`
+- `.c-chart`
+- `.c-datamark`
+- `.c-delta`
+- `.c-icon-badge`
+- `.c-kpi`
+- `.c-legend`
+- `.c-panel`
+- `.c-readout`
+- `.c-section-head`
+- `.c-table`
+- `.c-table-wrap`
+- `.c-time-range`
+- `.c-timeline`
+
+---
+
+Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+
+
+---
+
+# Field
+
+# Field
+
+Section `field` — marker `14`, position 15 of 23 in the guide.
+Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
+private until v1.0). See `index.json` for the whole set and the shared statement.
+
+## What the guide says
+
+The cartographic half of the system, rendered. These are the parts a routing or survey surface is built from — a mark is not a target, a number carries its provenance, and a map slot themes an engine the system does not ship.
+
+The consumer owns this canvas; the system themes the chrome around it.
+
+Hidden — the block is not rendered.
+
+Shown — same markup, wider profile.
+
+## Blocks documented here
+
+20 block(s). Their facts live in `../contour.components.json`;
+only the names are here, because the same figure in two files is how a document
+starts disagreeing with itself.
+
+- `.c-advanced`
+- `.c-bivariate`
+- `.c-btn`
+- `.c-flag`
+- `.c-icon-badge`
+- `.c-instrument`
+- `.c-layer-switch`
+- `.c-legend`
+- `.c-map-area`
+- `.c-map-footer`
+- `.c-map-panel`
+- `.c-map-slot`
+- `.c-radio`
+- `.c-radio-list`
+- `.c-readout`
+- `.c-scale-bar`
+- `.c-section-head`
+- `.c-segmented`
+- `.c-survey`
+- `.c-table`
+
+---
+
+Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+
+
+---
+
+# Documentation
+
+# Documentation
+
+Section `docs` — marker `15`, position 16 of 23 in the guide.
+Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
+private until v1.0). See `index.json` for the whole set and the shared statement.
+
+## What the guide says
+
+The parts that make a manual usable: a callout that holds a rule, a list of steps that holds an order, a diff that holds a change, and a pager that holds the way out.
+
+Five tones. Each carries an icon and a word, so the meaning survives a monochrome print and a reader who cannot tell red from green.
+
+Note
+
+Tile URLs are parsed once and cached for the rest of the session.
+
+Tip
+
+Pre-warm the tile cache before the first query for the fastest start.
+
+Caution
+
+Avoid routing on a carriageway — the graph has no turn restrictions there.
+
+Unsupported
+
+Isoline extraction needs a time-based weight; other costs cannot be contoured.
+
+New in 1.0
+
+Delta-stepping is now the default engine for weighted graphs — 4× faster than the previous selector, with the same results.
+
+The clearest way to teach a convention is to show both outcomes, side by side.
+
+Do
+
+Name the axis a number is measured on. 7 ms median is a fact; 7 is a rumour.
+
+Don't
+
+Drop the unit or the comparison period. A delta without a baseline cannot be argued with.
+
+A numbered procedure. The number is a waypoint, not an ornament — the rule and the connector between numbers both say the order is not optional.
+
+Any vector tileset with a routable profile works. Contour reads the standard schema, so there is nothing to pre-process.
+
+Give it a start and an end. The default radius of 50 m covers most addresses; raise it only for rural geometry.
+
+You get geometry, cost and the engine that produced them — enough to draw the line and to explain the number beside it.
+
+One snippet, three package managers. The choice is remembered per group, so a reader who prefers pnpm is not nagged on every page.
+
+A single command with a copy button — the most-used component on any documentation site.
+
+ESM only, 42 kB gzipped, no peer dependencies beyond MapLibre.
+
+For changelogs and migration guides. The removed line and its replacement sit on adjacent rows, so the eye can compare them without counting.
+
+A version picker in the header, and a banner when the reader is on an old one.
+
+A project tree in a code panel, with the file under the cursor marked.
+
+The way out of a long page, at the foot of it. Both links are real links, so they survive a right-click and a middle click.
+
+## Subsections
+
+- Callouts
+- Do / Don't
+- Steps
+- Code tabs
+- Install
+- Diff
+- Versions
+- File tree
+- Pager
+
+## Blocks documented here
+
+13 block(s). Their facts live in `../contour.components.json`;
+only the names are here, because the same figure in two files is how a document
+starts disagreeing with itself.
+
+- `.c-btn`
+- `.c-callout`
+- `.c-code-tabs`
+- `.c-diff`
+- `.c-do-dont`
+- `.c-icon-badge`
+- `.c-install`
+- `.c-pager`
+- `.c-section-head`
+- `.c-steps`
+- `.c-tree`
+- `.c-version`
+- `.c-version-banner`
+
+---
+
+Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+
+
+---
+
+# Landing
+
+# Landing
+
+Section `landing` — marker `16`, position 17 of 23 in the guide.
+Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
+private until v1.0). See `index.json` for the whole set and the shared statement.
+
+## What the guide says
+
+The persuasive set. These read as an argument rather than an instrument, so the surfaces breathe and the type is set looser than anywhere else in the system.
+
+A quiet row of names. Monochrome until the pointer arrives.
+
+Contour returns the line and the arithmetic behind it — the edges crossed, the weights applied, the engine that chose. Nothing about the result is a black box.
+
+For one person routing their own city.
+
+For teams that ship maps every week.
+
+For fleets, agencies and public infrastructure.
+
+A matrix answers "is it in my plan" faster than three separate price cards. The check is a shape, not just a colour, so it survives a monochrome page.
+
+Native disclosure elements, so the answer is in the page before anyone clicks.
+
+One package, one tile source, and the same engine you can read line by line.
+
+## Subsections
+
+- Logo wall
+- Feature showcase
+- Every route, with the cost that produced it.
+- Testimonial
+- Feature comparison
+- FAQ
+- Start routing this afternoon.
+
+## Blocks documented here
+
+13 block(s). Their facts live in `../contour.components.json`;
+only the names are here, because the same figure in two files is how a document
+starts disagreeing with itself.
+
+- `.c-btn`
+- `.c-compare`
+- `.c-cta`
+- `.c-faq`
+- `.c-icon-badge`
+- `.c-logos`
+- `.c-metrics`
+- `.c-price`
+- `.c-pricing`
+- `.c-section-head`
+- `.c-showcase`
+- `.c-table-wrap`
+- `.c-testimonial`
+
+---
+
+Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+
+
+---
+
+# Patterns
+
+# Patterns
+
+Section `patterns` — marker `17`, position 18 of 23 in the guide.
+Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
+private until v1.0). See `index.json` for the whole set and the shared statement.
+
+## What the guide says
+
+Recurring arrangements, documented so a landing page, a documentation site and a dashboard speak the same visual language.
+
+Run routing without dedicated infrastructure and keep the deployment footprint minimal. The data never leaves the browser.
+
+Every desire line is the map arguing with the plan.
+
+## Subsections
+
+- Fewer servers. Faster interactions.
+
+## Blocks documented here
+
+7 block(s). Their facts live in `../contour.components.json`;
+only the names are here, because the same figure in two files is how a document
+starts disagreeing with itself.
+
+- `.c-btn`
+- `.c-icon-badge`
+- `.c-link`
+- `.c-plate`
+- `.c-pullquote`
+- `.c-section-head`
+- `.c-stat`
+
+---
+
+Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+
+
+---
+
+# Affordances, made visible.
+
+# Affordances, made visible.
+
+Section `affordances` — marker `18`, position 19 of 23 in the guide.
+Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
+private until v1.0). See `index.json` for the whole set and the shared statement.
+
+## What the guide says
+
+An element should look like what it does before anyone touches it. Each interactive class in the system carries a signifier — a shape, a handle, an arrow — that announces its behaviour. Nothing is implied by position alone, and nothing is left to be guessed at.
+
+Button
+
+Filled, raised, pill-shaped with a shadow that implies height. It lifts on hover and presses on activation.
+
+Switch
+
+A knob that slides. Position carries the state, so the meaning survives greyscale.
+
+Slider
+
+A track with a filled portion and a round thumb. The fill shows the value without a number.
+
+Checkbox
+
+A square that fills with a tick. Round for radio, square for multiple.
+
+Filter pill
+
+Names its key and value, and carries a visible remove control. Nothing is removable by guesswork.
+
+Drag handle
+
+Six dots. The near-universal signifier for reordering, and it changes the cursor on hover.
+
+Sortable column
+
+An arrow appears on hover and locks to a direction once sorted. The sort state is announced to assistive technology.
+
+Disclosure
+
+A chevron that rotates. A plus becomes a cross when open, so the control reads as reversible.
+
+Copy
+
+The icon becomes a tick for a moment. The result is visible without a toast and without reading a label.
+
+Link
+
+Underlined in prose and coloured outside it. A link never looks like a button.
+
+Disabled
+
+Dimmed, with a not-allowed cursor. Disabled is a state, never a silent dead end.
+
+Cursor
+
+Every clickable thing declares its cursor — pointer, grab, col-resize. The cheapest signifier there is.
+
+Hidden content revealed on toggle.
+
+This action cannot be undone.
+
+RTL specimen — chevron flips to the inline-start side.
+
+## Blocks documented here
+
+23 block(s). Their facts live in `../contour.components.json`;
+only the names are here, because the same figure in two files is how a document
+starts disagreeing with itself.
+
+- `.c-affordance`
+- `.c-affordances`
+- `.c-btn`
+- `.c-destructive-hint`
+- `.c-disclosure`
+- `.c-drag-handle`
+- `.c-expandable`
+- `.c-filter-pill`
+- `.c-icon-badge`
+- `.c-linkish`
+- `.c-menu`
+- `.c-panel`
+- `.c-pressable`
+- `.c-range`
+- `.c-reserved`
+- `.c-resize-handle`
+- `.c-row-action`
+- `.c-scrim`
+- `.c-section-head`
+- `.c-select`
+- `.c-stack`
+- `.c-switch`
+- `.c-tag`
+
+### Defined by the guide, not the system
+
+These appear in the specimen markup and in no sheet under `src/css`, so they are not
+part of the component contract and nothing in an installed package defines them:
+
+- `.c-cursor-demo`
+
+---
+
+Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+
+
+---
+
+# Three shells, one system.
+
+# Three shells, one system.
+
+Section `recipes` — marker `19`, position 20 of 23 in the guide.
+Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
+private until v1.0). See `index.json` for the whole set and the shared statement.
+
+## What the guide says
+
+Contour covers landing pages, documentation sites and technical dashboards. The components are shared; the composition, density and type scale change. Below are all three, rendered live.
+
+A page whose only job is to earn a click. Generous type, one primary action, and a hero that shows the product rather than describing it. The contour field runs full-bleed behind everything.
+
+Compute routes and isolines from OpenMapTiles entirely client-side. No routing server, no third-party API, no data leaving the device.
+
+No routing infrastructure to size, monitor or pay for. The deployment footprint stays flat.
+
+Millisecond-scale responses with no round trip, so the map feels like a surface rather than a request.
+
+Routing, isolines, a MapLibre control and GeoJSON export in one package.
+
+A reading surface where the URL is the state. A navigation tree on the left, a measured prose column in the middle, an on-this-page rail on the right. Every entry is a real link, so it all works without JavaScript.
+
+Getting started
+
+Install the package, point it at a tile source, and compute your first route. Four lines, no server.
+
+The package ships ESM and type definitions. No peer dependencies beyond MapLibre, and none of them are required for the core API.
+
+Call route() with a source, a destination and a tile URL. It returns the geometry, the cost and the engine that produced them.
+
+Tile preparation dominates
+
+The first call fetches and parses every tile in range. The search itself takes milliseconds — budget for the graph, not the query.
+
+On this page
+
+A scanning surface. Density is the feature: comfortable by default, one toggle for compact. Every panel reports its own state, and chart colours come from a dedicated token layer so series stay distinguishable.
+
+Last 7 days · all profiles
+
+By route volume
+
+48 rows · sorted by latency
+
+## Subsections
+
+- Landing page
+- Documentation site
+- Technical dashboard
+
+## Blocks documented here
+
+39 block(s). Their facts live in `../contour.components.json`;
+only the names are here, because the same figure in two files is how a document
+starts disagreeing with itself.
+
+- `.c-anchor`
+- `.c-badge`
+- `.c-breadcrumb`
+- `.c-btn`
+- `.c-callout`
+- `.c-chart`
+- `.c-chart-grid`
+- `.c-chip`
+- `.c-code`
+- `.c-code-tabs`
+- `.c-dash-freshness`
+- `.c-dash-kpi-row`
+- `.c-dash-shell`
+- `.c-dash-toolbar`
+- `.c-delta`
+- `.c-docs-nav`
+- `.c-docs-shell`
+- `.c-dot`
+- `.c-filter-bar`
+- `.c-filter-pill`
+- `.c-icon-badge`
+- `.c-install`
+- `.c-kpi`
+- `.c-landing-features`
+- `.c-landing-hero`
+- `.c-legend`
+- `.c-metrics`
+- `.c-pager`
+- `.c-panel`
+- `.c-prose`
+- `.c-readout`
+- `.c-recipe`
+- `.c-section-head`
+- `.c-segmented`
+- `.c-sparkline`
+- `.c-table`
+- `.c-table-wrap`
+- `.c-threshold`
+- `.c-toc`
+
+### Defined by the guide, not the system
+
+These appear in the specimen markup and in no sheet under `src/css`, so they are not
+part of the component contract and nothing in an installed package defines them:
+
+- `.c-cursor-demo`
+
+---
+
+Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+
+
+---
+
+# Playground
+
+# Playground
+
+Section `playground` — marker `20`, position 21 of 23 in the guide.
+Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
+private until v1.0). See `index.json` for the whole set and the shared statement.
+
+## What the guide says
+
+Every decision in the system is a custom property. Change one and watch the component respond — this is the same mechanism a consumer would use to retheme. The playground writes into a .c-theme-scope, a subtree that re-derives the brand layer from its own knobs.
+
+The playground writes directly to the scoped container. Nothing here is a special case — it is the same custom-property contract the tokens expose.
+
+## Subsections
+
+- A component under test
+
+## Blocks documented here
+
+12 block(s). Their facts live in `../contour.components.json`;
+only the names are here, because the same figure in two files is how a document
+starts disagreeing with itself.
+
+- `.c-badge`
+- `.c-btn`
+- `.c-card`
+- `.c-chip`
+- `.c-dot`
+- `.c-field`
+- `.c-icon-badge`
+- `.c-kbd`
+- `.c-pill`
+- `.c-range`
+- `.c-section-head`
+- `.c-theme-scope`
+
+---
+
+Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+
+
+---
+
+# Two themes, one cascade.
+
+# Two themes, one cascade.
+
+Section `theming` — marker `21`, position 22 of 23 in the guide.
+Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
+private until v1.0). See `index.json` for the whole set and the shared statement.
+
+## What the guide says
+
+The color-scheme property on :root is the only switch. Every semantic token resolves through light-dark(), so the palette follows the OS by default — and CSS never depends on JavaScript to be readable.
+
+Deeper surfaces, one hairline, no shadows. Designed for long sessions in a dim room and for maps that need to glow against the page.
+
+A paper-white chart with ink text. The same five families, re-stepped for contrast on light surfaces — not an inversion of the dark palette.
+
+Stored in localStorage, applied before first paint.
+
+## Subsections
+
+- Default
+- Daylight
+- Scheme preference
+- Accessibility contract
+
+## Blocks documented here
+
+7 block(s). Their facts live in `../contour.components.json`;
+only the names are here, because the same figure in two files is how a document
+starts disagreeing with itself.
+
+- `.c-badge`
+- `.c-btn`
+- `.c-dot`
+- `.c-icon-badge`
+- `.c-kbd`
+- `.c-section-head`
+- `.c-segmented`
+
+---
+
+Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+
+
+---
+
+# Install
+
+# Install
+
+Section `install` — marker `22`, position 23 of 23 in the guide.
+Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
+private until v1.0). See `index.json` for the whole set and the shared statement.
+
+## What the guide says
+
+Plain CSS in src/, one entry point, no build step and no runtime. Link it and start using the class names.
+
+A map engine paints its own control cluster over its canvas — zoom, compass, fullscreen — and that markup belongs to the engine, so .c-map-slot cannot reach it. src/css/map-chrome.css re-keys the cluster onto the tokens the system already uses for its own controls: surface, edge, radius, glyph colour. Nothing else. The engine keeps the geometry, and the Mapbox logo keeps its own paint — it is a.mapboxgl-ctrl-logo, carries no .mapboxgl-ctrl class, and must not be styled. This is the one sheet in src/css/ that sits outside the cascade layers: the vendor's stylesheet is unlayered too, and a layered rule would lose to it whatever the link order. Load it after the engine's own file. The guide ships no engine, so the cluster's size and glyphs here are the guide's stand-in.
+
+## Blocks documented here
+
+5 block(s). Their facts live in `../contour.components.json`;
+only the names are here, because the same figure in two files is how a document
+starts disagreeing with itself.
+
+- `.c-btn`
+- `.c-code`
+- `.c-icon-badge`
+- `.c-kbd`
+- `.c-section-head`
+
+---
+
+Source `index.html` @ `554aba0d1d1be196` · last committed 2026-10-24T14:37:12+02:00 · no URL: the project is private until v1.0.
+

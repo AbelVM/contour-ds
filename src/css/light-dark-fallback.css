@@ -16,7 +16,7 @@
    is deferred to `var(--x)` substitution, which makes the real declaration
    invalid at computed-value time and drops it to its initial value.
 
-   108 two-theme token(s) and 5 composition(s) rewritten, from tokens.css, utilities.css.
+   116 two-theme token(s) and 5 composition(s) rewritten, from tokens.css, utilities.css.
 
    A composition is substituted, not split: `0 1px 2px light-dark(A, B)` is not
    a colour a tool can publish as two themes, but replacing the call with one
@@ -121,6 +121,14 @@
       --chart-seq-5: oklch(55% 0.13 182);
       --chart-seq-6: oklch(45% 0.11 182);
       --chart-seq-7: oklch(35% 0.08 182);
+      --chart-cyc-1: oklch(62% 0.02 182);
+      --chart-cyc-2: oklch(62% 0.12 227);
+      --chart-cyc-3: oklch(62% 0.12 272);
+      --chart-cyc-4: oklch(62% 0.12 317);
+      --chart-cyc-5: oklch(62% 0.12 2);
+      --chart-cyc-6: oklch(62% 0.12 47);
+      --chart-cyc-7: oklch(62% 0.12 92);
+      --chart-cyc-8: oklch(62% 0.02 137);
       --chart-div-neg: var(--clay-500);
       --chart-div-mid: oklch(92% 0.01 230);
       --chart-div-pos: var(--tidal-600);
@@ -239,6 +247,14 @@
         --chart-seq-5: oklch(70% 0.13 182);
         --chart-seq-6: oklch(80% 0.11 182);
         --chart-seq-7: oklch(90% 0.07 182);
+        --chart-cyc-1: oklch(72% 0.02 182);
+        --chart-cyc-2: oklch(72% 0.12 227);
+        --chart-cyc-3: oklch(72% 0.12 272);
+        --chart-cyc-4: oklch(72% 0.12 317);
+        --chart-cyc-5: oklch(72% 0.12 2);
+        --chart-cyc-6: oklch(72% 0.12 47);
+        --chart-cyc-7: oklch(72% 0.12 92);
+        --chart-cyc-8: oklch(72% 0.02 137);
         --chart-div-neg: var(--clay-400);
         --chart-div-mid: var(--basalt-800);
         --chart-div-pos: var(--tidal-400);
@@ -361,6 +377,14 @@
       --chart-seq-5: oklch(70% 0.13 182);
       --chart-seq-6: oklch(80% 0.11 182);
       --chart-seq-7: oklch(90% 0.07 182);
+      --chart-cyc-1: oklch(72% 0.02 182);
+      --chart-cyc-2: oklch(72% 0.12 227);
+      --chart-cyc-3: oklch(72% 0.12 272);
+      --chart-cyc-4: oklch(72% 0.12 317);
+      --chart-cyc-5: oklch(72% 0.12 2);
+      --chart-cyc-6: oklch(72% 0.12 47);
+      --chart-cyc-7: oklch(72% 0.12 92);
+      --chart-cyc-8: oklch(72% 0.02 137);
       --chart-div-neg: var(--clay-400);
       --chart-div-mid: var(--basalt-800);
       --chart-div-pos: var(--tidal-400);
@@ -477,6 +501,14 @@
       --chart-seq-5: oklch(55% 0.13 182);
       --chart-seq-6: oklch(45% 0.11 182);
       --chart-seq-7: oklch(35% 0.08 182);
+      --chart-cyc-1: oklch(62% 0.02 182);
+      --chart-cyc-2: oklch(62% 0.12 227);
+      --chart-cyc-3: oklch(62% 0.12 272);
+      --chart-cyc-4: oklch(62% 0.12 317);
+      --chart-cyc-5: oklch(62% 0.12 2);
+      --chart-cyc-6: oklch(62% 0.12 47);
+      --chart-cyc-7: oklch(62% 0.12 92);
+      --chart-cyc-8: oklch(62% 0.02 137);
       --chart-div-neg: var(--clay-500);
       --chart-div-mid: oklch(92% 0.01 230);
       --chart-div-pos: var(--tidal-600);

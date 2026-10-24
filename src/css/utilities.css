@@ -286,54 +286,6 @@
   .u-hatch-5 { background-image: var(--fill-hatch-5); }
   .u-dot { background-image: var(--fill-dot); background-size: 8px 8px; }
 
-  /* -- Print: field sheet -------------------------------------------- */
-  @page {
-    margin: 1.5cm;
-  }
-  @media print {
-    .c-header, .c-drawer, .c-toolbar {
-      display: none;
-    }
-
-    .c-panel {
-      border: 1px solid CanvasText;
-      break-inside: avoid;
-    }
-
-    .c-chart {
-      background: none;
-    }
-
-    .c-table {
-      font-size: var(--type-xs);
-    }
-
-    .c-mark, .c-datamark {
-      print-color-adjust: exact;
-      -webkit-print-color-adjust: exact;
-    }
-
-    /* Paper, not #fff. This used to read `background: white; color: black`,
-       which no colour gate could see: family-gate's literal regex matches
-       hex/rgb/oklch/oklab/hsl, and the named colours matched none of them, so
-       the raw values in AGENTS.md calls a bug sat invisible to the lane that
-       owns it. `Canvas`/`CanvasText` are the same promise expressed in the
-       reader's own palette, and they survive Forced Colors Mode, where painted
-       white-on-black can overwrite a colour the reader chose.
-       `color-scheme: light` is load-bearing, not decoration: the system colours
-       resolve against the used scheme, so without pinning it a dark-preference
-       reader would print a dark page — which is the regression the swap would
-       otherwise introduce. */
-    :root {
-      color-scheme: light;
-    }
-
-    body {
-      background: Canvas;
-      color: CanvasText;
-    }
-  }
-
   /* -- Graticule (measurement grid for dense surfaces) ----------------- */
   .u-graticule {
     background-image:
@@ -382,30 +334,9 @@
     background-image: var(--fill-hatch-1);
   }
 
-  /* -- Colour-vision preview (scoped to data surfaces) ----------------- */
-  [data-cvd="deuteranopia"] .u-cvd-target,
-  [data-cvd="deuteranopia"] .c-chart,
-  [data-cvd="deuteranopia"] .c-datamark {
-    filter: url(#contour-cvd-deuteranopia);
-  }
-
-  [data-cvd="protanopia"] .u-cvd-target,
-  [data-cvd="protanopia"] .c-chart,
-  [data-cvd="protanopia"] .c-datamark {
-    filter: url(#contour-cvd-protanopia);
-  }
-
-  [data-cvd="tritanopia"] .u-cvd-target,
-  [data-cvd="tritanopia"] .c-chart,
-  [data-cvd="tritanopia"] .c-datamark {
-    filter: url(#contour-cvd-tritanopia);
-  }
-
-  [data-cvd="achromatopsia"] .u-cvd-target,
-  [data-cvd="achromatopsia"] .c-chart,
-  [data-cvd="achromatopsia"] .c-datamark {
-    filter: grayscale(1);
-  }
+  /* -- Colour-vision preview moved to components-data.css (C-34): owned by
+     the chart component rather than the utilities layer. Selectors kept as
+     descendant rules because [data-cvd] is set on a scope, not on the chart. */
 
   /* -- Interface profiles (capability-based disclosure) ---------------- */
   [data-profile="viewer"] .c-advanced {

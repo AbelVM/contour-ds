@@ -303,7 +303,7 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius-xl);
     background: var(--color-canvas);
-    overflow: hidden;
+    overflow: clip;
     container-type: inline-size;
   }
 

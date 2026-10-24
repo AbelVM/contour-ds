@@ -1,0 +1,115 @@
+# Contour
+
+> A token-driven design system for spatial interfaces — routing engines, pedestrian simulators, map tooling and geospatial dashboards. Dark and light themes, 134 components, 290 design tokens (280 read, 10 unread), zero runtime dependencies, no build step.
+
+Contour covers three kinds of page: a **landing page** that has to persuade, a **documentation site** that has to explain, and a **technical dashboard** that has to be read at speed. All three share one token layer, one type scale and one set of affordance rules.
+
+## Start here
+
+- [Style guide](https://abelvm.github.io/contour/): the living specification, with a copyable code snippet behind every rendered example.
+- [Install](https://abelvm.github.io/contour/#install): one stylesheet, one optional script.
+- [Principles](https://abelvm.github.io/contour/#principles): the rules the system holds itself to.
+
+## Surfaces
+
+- [Landing page](https://abelvm.github.io/contour/#landing): logo wall, feature showcase, metrics band, testimonial, pricing, comparison matrix, FAQ, CTA band.
+- [Documentation site](https://abelvm.github.io/contour/#docs): navigation tree, table of contents, callouts, do/don't, steps, code tabs, install block, diff, pager, version picker, file tree.
+- [Technical dashboard](https://abelvm.github.io/contour/#data): KPI tiles, panels, chart frame, interactive legend, filter bar, dense sortable table, activity feed, drawer.
+- [Recipes](https://abelvm.github.io/contour/#recipes): all three surfaces composed live.
+
+## Components (134 blocks in src/css/)
+
+Actions: button (primary, secondary, outline, ghost, accent, danger, quiet-danger), sizes, icon, block, groups, loading, text link.
+Forms: field, input, select, textarea, search group, range, switch, checkbox, radio.
+Status: badge, chip, status pill, waypoint dot, avatar.
+Surfaces: card, plate, feature block, icon badge, section head, stat, footer.
+Navigation: header, table of contents, tabs, segmented control, disclosure, breadcrumb, pagination, toolbar, sheet, menu, tag.
+Feedback: alert, toast, progress, contour meter, skeleton, spinner, empty state, destructive hint, reserved space.
+Overlays: dialog, tooltip, popover, command palette, drawer, scrim.
+Data: table (container query drops optional columns), legend, readout, timeline, code block, pull quote, KPI tile, panel, filter bar, activity feed, chart frame, sparkline, resize handle, drag handle, expandable, pressable, row action.
+Documentation: nav tree, callout, do/don't, steps, code tabs, install block, diff, pager, version picker, file tree, prose.
+Landing: logo wall, feature showcase, metrics band, testimonial, pricing, comparison matrix, FAQ, CTA band.
+
+## Accessibility contract
+
+- Body text meets 4.5:1, borders / focus rings / control edges 3:1, in both themes — enforced by `node tools/audit/contrast-and-aria.mjs`, which measures the control edge and the focus ring against every surface a control can sit on, in both themes, and exits non-zero below 3:1.
+- State is never colour alone; every chart series carries a dash pattern as well as a hue.
+- `prefers-reduced-motion: reduce` collapses every transition.
+- Forced Colors Mode drops the texture and the ridgelines and falls back to a system `CanvasText` outline.
+- Tabs and segmented groups use roving tabindex and arrow keys; exclusive choices use native radio inputs; dialogs use native `<dialog>`; the palette uses the popover API.
+- Sizes are in `rem`; the layout reflows to 200% zoom and to a 390 px viewport with no horizontal page scroll.
+- Conformance target: WCAG 2.2 AA (named). `light-dark()` is Baseline newly available (2024-05-13), widely available from 2026-11-13.
+
+## Platform requirements
+
+- `light-dark()` requires `color-scheme: light dark` on `:root` (set by the system).
+- `oklch()`, `:has()`, container queries, `color-mix()` are widely available.
+- The native `<select>` option list is drawn by the platform and follows the OS theme, not the page's.
+- The page is fully usable with JavaScript disabled.
+
+## Foundations
+
+- [Colour](https://abelvm.github.io/contour/#colour): five OKLCH families plus a tinted neutral ramp. Tidal is action and state, Plasma is highlight.
+- [Typography](https://abelvm.github.io/contour/#type): IBM Plex Sans Condensed for display, IBM Plex Sans for body, IBM Plex Mono for data.
+- [Space and shape](https://abelvm.github.io/contour/#space): a 4 px base scale, soft radii, elevation by lightness rather than shadow.
+- [Motion](https://abelvm.github.io/contour/#motion): exponential easing for entrances, no bounce, honouring `prefers-reduced-motion`.
+
+## Using it
+
+```html
+<link rel="stylesheet" href="src/css/ds.css" />
+```
+
+```html
+<button class="c-btn c-btn--primary">Compute route</button>
+```
+
+- The system needs no build step. `src/css/ds.css` can be linked straight off a file system.
+- The component layer is split by audience, so a product that only needs one surface can import one file: `components-docs.css`, `components-data.css` or `components-landing.css`.
+- `src/js/ds.js` is optional progressive enhancement. Every page works without it.
+- `src/js/ds.js` exposes `window.Contour` (`version`, `toast`, `setScheme`, `scrollTo`, `copy`, `chart`, `commands`) for consumers who want to drive the system's own feedback and navigation.
+- `src/` is the system: `src/css/` holds the stylesheets, `src/js/ds.js` the optional behaviour, `src/svg/contour-mark.svg` the brand mark. `assets/` is guide-only and never ships.
+- Colour-vision preview filters ship as `src/svg/cvd-filters.svg`; include the sprite in any page that uses the `[data-cvd]` preview.
+- Map chrome: `src/css/map-chrome.css` re-keys a map engine's own control cluster (`.maplibregl-ctrl`, `.mapboxgl-ctrl`) onto the tokens Contour uses for its own controls — surface, edge, radius, glyph colour — and never geometry. Load it after the engine's stylesheet. It is the sheet in `src/css/` that `ds.css` does not import and that sits outside the cascade layers, because a layered rule cannot out-rule an unlayered vendor one. `node tools/build.mjs` publishes it as `dist/map-chrome.maplibre.css` and `dist/map-chrome.mapbox.css`, with the token map and the controls each engine ships in `dist/map-chrome-contract.json`.
+- A bundler is provided for distribution only: `node tools/build.mjs` writes a minified stylesheet, the script, and the token layer as JSON.
+
+## Tokens
+
+- 290 custom properties in the token layer, in four layers: primitives, semantic, component, utility.
+- Primitives never change between themes; only the semantic layer does, so a theme swap is a one-line change.
+- Two values retheme and reshape everything: `--brand-hue` and `--radius-scale`.
+- `.c-theme-scope` re-derives the whole brand layer for a subtree, because a custom property containing `var()` is resolved eagerly.
+- `data-theme` is an extension point, not a set of themes: the system ships `light` and `dark` only. A product declares its own sets by re-pointing the semantic layer, and must set `color-scheme` in the same block.
+- A separate chart token layer: `--chart-1…8` categorical (each series clears 3:1 against every surface it can be drawn on, in both themes), `--chart-seq-1…7` sequential (monotonic in lightness, dark-inverted), `--chart-div-*` diverging (real midpoint), `--chart-dash-1…8` one pattern per series, previewed by the legend key of the same series. Both contracts are enforced by `node tools/audit/contrast-and-aria.mjs`, which exits non-zero on either. The chart *frame* ships, and `window.Contour.chart` ships `scale`, `ticks` and `datum` helpers for consumers who want them.
+
+## Rules the system holds itself to
+
+- **Colour is a signal.** About 85 % of the interface is neutral. Tidal marks action and success, Plasma marks live data, Clay marks failure.
+- **State is never colour alone.** Every status pairs a hue with a shape, an icon or a word.
+- **No chart leans on hue alone.** Each series carries a dash pattern, and the legend previews it.
+- **Contrast is a contract.** Body text meets 4.5:1 and control edges 3:1, in both themes.
+- **Affordable means obvious.** A control shows the action it performs and the state it is in, before you touch it.
+- **Depth is lightness, not shadow.** Shadows are reserved for things that genuinely float.
+- **Mono means "machine".** Data, coordinates, labels and code — never prose.
+- **The URL is the state.** On a documentation site every link is a real link.
+
+## Performance
+
+- The system ships two artefacts: `src/css/ds.css` (unminified source, ~22 kB gzipped) and `dist/contour.min.css` (minified). The source is unminified on purpose — zero build step, linkable off a disk. Use the minified bundle in production.
+- The guide (`index.html`) is a 587 kB document that loads every component and 20+ external scripts; its Lighthouse score is not the system's score. The system's score is measured on `templates/landing.html`.
+- Fonts: self-hosted. Variable IBM Plex (Sans, Mono) and the Condensed weights used by the display scale, subsetted to Latin + Latin Extended, served under renamed family names (`Contour Plex Sans`, `Contour Plex Mono`, `Contour Plex Sans Condensed`) because the OFL treats subsetting as a modification and reserves the "Plex" name. Files live in `src/css/fonts/` (and `dist/fonts/` after a build) with the OFL text beside them. No third-party request chain, no IP transfer (see LG München I, 3 O 17493/20). `display=swap` on every `@font-face`.
+
+## Commands
+
+- `node tools/snippets.mjs` — regenerate the code snippets in the style guide.
+- `node tools/build.mjs` — bundle and minify into `dist/`.
+- `python3 tools/contour-gen.py` — regenerate the contour artwork.
+
+## Optional
+
+- [Templates](https://abelvm.github.io/contour/templates/landing.html): three starter pages, one per surface.
+- [Contour artwork](https://abelvm.github.io/contour/): every contour line is an iso-line of a real field, extracted with marching squares. Nothing is drawn by hand.
+
+## Honest limits
+
+- No measurement shows a design-system MCP server improves generated-UI conformance: the CHI study measures registries, and the audits count artifact existence. Contour ships `dist/agent-rules.json` and `dist/contour.components.json` as the machine surface instead, and validates them with `check-components.mjs` and `check-registry.mjs`.

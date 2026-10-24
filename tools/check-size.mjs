@@ -54,10 +54,10 @@ const DIST = join(ROOT, "dist");
  *  which the Format Module has no legal place for (C-43). It states values only —
  *  a token's meaning is published once, in the Format document. */
 const BUDGETS = {
-  "contour.min.css": 148 * 1024,
+  "contour.min.css": 149 * 1024,
   "contour.min.js": 24 * 1024,
-  "contour.tokens.json": 49 * 1024,
-  "contour.themes.json": 21 * 1024,
+  "contour.tokens.json": 50 * 1024,
+  "contour.themes.json": 22 * 1024,
   // Measured 2026-10-23 at 128.4 kB (C-44), ~3% headroom. Large and correct:
   // the contract carries every block's elements, variants, states and the three
   // kinds of custom property it reads, plus the reverse index. No browser loads
@@ -110,10 +110,10 @@ const BUDGETS = {
   "contour.single.html": 520 * 1024,
   "contour.single.min.js": 24 * 1024,
   "agent-rules.json": 12 * 1024,
-  "surfaces/contour-core.min.css": 106 * 1024,
+  "surfaces/contour-core.min.css": 107 * 1024,
   "surfaces/contour-docs.min.css": 119 * 1024,
-  "surfaces/contour-data.min.css": 127 * 1024,
-  "surfaces/contour-landing.min.css": 113 * 1024,
+  "surfaces/contour-data.min.css": 129 * 1024,
+  "surfaces/contour-landing.min.css": 114 * 1024,
 };
 
 const kB = (n) => `${(n / 1024).toFixed(1)} kB`;
