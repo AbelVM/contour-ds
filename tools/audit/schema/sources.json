@@ -1,0 +1,75 @@
+{
+  "fetchedAt": "2026-10-24",
+  "note": "Pinned copies of the live shadcn registry schemas, vendored so the conformance gate is deterministic and needs no network. The gate validates dist/registry/ against THESE bytes; registry-drift.mjs (manual, non-blocking) re-fetches and reports when upstream has moved.",
+  "documents": {
+    "registry.json": {
+      "sourceUrl": "https://ui.shadcn.com/schema/registry.json",
+      "file": "registry.schema.json",
+      "sha256": "e716ebe595bbc189db2627cb75f0484cd765a09eb397a89b1f1c49074220d4bb",
+      "bytes": 1862,
+      "draft": "https://json-schema.org/draft-07/schema#",
+      "rootAnyOf": [
+        {
+          "required": [
+            "items"
+          ]
+        },
+        {
+          "required": [
+            "include"
+          ]
+        }
+      ],
+      "rootRequiredAtDocument": null,
+      "itemRef": "https://ui.shadcn.com/schema/registry-item.json",
+      "includeDescription": "An array of relative paths to registry.json files to include in this registry."
+    },
+    "registry-item.json": {
+      "sourceUrl": "https://ui.shadcn.com/schema/registry-item.json",
+      "file": "registry-item.schema.json",
+      "sha256": "cdf0fba75a26ebf594018264eff2d55407ec14deb3071d0fce0e2b20848e5d44",
+      "bytes": 10075,
+      "draft": "https://json-schema.org/draft-07/schema#",
+      "required": [
+        "name",
+        "type"
+      ],
+      "itemTypes": [
+        "registry:lib",
+        "registry:block",
+        "registry:component",
+        "registry:ui",
+        "registry:hook",
+        "registry:theme",
+        "registry:page",
+        "registry:file",
+        "registry:style",
+        "registry:base",
+        "registry:font",
+        "registry:item"
+      ],
+      "fileTypes": [
+        "registry:lib",
+        "registry:block",
+        "registry:component",
+        "registry:ui",
+        "registry:hook",
+        "registry:theme",
+        "registry:page",
+        "registry:file",
+        "registry:style",
+        "registry:base",
+        "registry:item"
+      ],
+      "fileEntryRequired": null,
+      "fieldsAbsentFromLiveSchema": [
+        "url"
+      ],
+      "notes": {
+        "registryDependencies": "PRESENT in the live schema (array of strings). The review retracted it as item-links-only; the fetched bytes contradict that retraction, so the field exists and is simply not used here.",
+        "cssVars": "item-level (tailwind.cssVars is not the path the research note claimed).",
+        "extends": "available for registry:style items only — which is what a CSS-only bundle item is."
+      }
+    }
+  }
+}
