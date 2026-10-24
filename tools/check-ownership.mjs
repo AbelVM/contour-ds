@@ -13,8 +13,8 @@ const SRC = join(ROOT, "src");
 const FORBIDDEN = [
   "ridgeline",
   "chart-paper",
-  "contour-field",
-  "contour-opacity",
+  "--contour-field",
+  "--contour-opacity",
 ];
 
 function walk(dir) {

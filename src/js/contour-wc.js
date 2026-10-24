@@ -1,16 +1,40 @@
 /* ============================================================================
    CONTOUR — Web Components (progressive enhancement)
    ----------------------------------------------------------------------------
-   Thin wrappers around the CSS classes. Simple components just add classes.
-   Complex components generate their full HTML scaffolding from attributes
-   and slotted content. No shadow DOM — styles come from ds.css.
+   Two layers over the same blocks. The light-DOM wrappers add the CSS classes
+   the block already has and, where a block needs scaffolding, generate it from
+   attributes; styles come straight from ds.css. The contour-shadow-* wrappers
+   are an opt-in alternative for consumers who want an isolated root with named
+   parts to style through ::part(); they hold a template and slots and share the
+   document's sheets. Neither layer replaces a native element, and nothing here
+   is required for a page to work.
+
+   What this file registers is published as the frozen array
+   `window.ContourElements`, because `customElements` cannot be enumerated and a
+   reader should not have to infer the registry by scraping quoted strings out of
+   the source. A scrape counts whatever shape the prose happens to be in: it is
+   how a gate came to certify a fraction of this file's elements as the whole of
+   them, and call the difference a pass. No number is written down here for that
+   reason — the array is the count, and the contract gate reads it.
    ========================================================================= */
 (function () {
   "use strict";
 
+  // Every name this file actually registers, in registration order. define() is
+  // the only door to the registry, so the list cannot drift from what the
+  // browser was handed.
+  const REGISTERED = [];
+
   const define = (name, cls) => {
-    if (!customElements.get(name)) customElements.define(name, cls);
+    if (customElements.get(name)) return;
+    customElements.define(name, cls);
+    REGISTERED.push(name);
   };
+
+  // The attributes a consumer may set to ask for a modifier class. Both layers
+  // read this one list: a wrapper that added a modifier from a different list is
+  // how the light and shadow halves drifted apart over "color".
+  const MODS = ["variant", "size", "color"];
 
   // The attributes a component may READ from its host. This list is the render
   // contract: an attribute that is not here cannot ask an element to re-render,
@@ -21,7 +45,7 @@
   //   role, open, aria-label, aria-valuenow, aria-valuemin, aria-valuemax, tabindex
   // Adding one of those back to this list makes that component recurse.
   const OBSERVED = [
-    "action", "after", "answer", "before", "body", "brand", "columns", "command",
+    "action", "after", "answer", "before", "body", "brand", "columns", "color", "command",
     "copyable", "current", "date", "delta", "desc", "direction", "do", "dont",
     "error", "features", "hint", "href", "icon", "instrument", "items", "key",
     "label", "links", "live", "max", "media", "message", "min", "name", "next",
@@ -111,7 +135,7 @@
   const simple = (classes) => class extends ContourBase {
     render() {
       classes.forEach((c) => this.classList.add(c));
-      ["variant", "size", "color"].forEach((attr) => {
+      MODS.forEach((attr) => {
         if (this.hasAttribute(attr)) {
           const val = this.getAttribute(attr);
           classes.forEach((c) => {
@@ -123,129 +147,31 @@
     }
   };
 
-  // ---- Simple components (class-only) ----
-  const simpleMap = {
-    "contour-activity": ["c-activity"],
-    "contour-advanced": ["c-advanced"],
-    "contour-affordance": ["c-affordance"],
-    "contour-affordances": ["c-affordances"],
-    "contour-alert": ["c-alert"],
-    "contour-anchor": ["c-anchor"],
-    "contour-app": ["c-app"],
-    "contour-app-body": ["c-app-body"],
-    "contour-avatar": ["c-avatar"],
-    "contour-badge": ["c-badge"],
-    "contour-bivariate": ["c-bivariate"],
-    "contour-box": ["c-box"],
-    "contour-brand": ["c-brand"],
-    "contour-breadcrumb": ["c-breadcrumb"],
-    "contour-btn": ["c-btn"],
-    "contour-btn-group": ["c-btn-group"],
-    "contour-callout": ["c-callout"],
-    "contour-card": ["c-card"],
-    "contour-chart": ["c-chart"],
-    "contour-chart-grid": ["c-chart-grid"],
-    "contour-check": ["c-check"],
-    "contour-chip": ["c-chip"],
-    "contour-cluster": ["c-cluster"],
-    "contour-code": ["c-code"],
-    "contour-code-tabs": ["c-code-tabs"],
-    "contour-combobox": ["c-combobox"],
-    "contour-command": ["c-command"],
-    "contour-compare": ["c-compare"],
-    "contour-container": ["c-container"],
-    "contour-contour-plot": ["c-contour-plot"],
-    "contour-cta": ["c-cta"],
-    "contour-dash-freshness": ["c-dash-freshness"],
-    "contour-dash-kpi-row": ["c-dash-kpi-row"],
-    "contour-dash-shell": ["c-dash-shell"],
-    "contour-dash-toolbar": ["c-dash-toolbar"],
-    "contour-datamark": ["c-datamark"],
-    "contour-delta": ["c-delta"],
-    "contour-destructive-hint": ["c-destructive-hint"],
-    "contour-dialog": ["c-dialog"],
-    "contour-diff": ["c-diff"],
-    "contour-disclosure": ["c-disclosure"],
-    "contour-do-dont": ["c-do-dont"],
-    "contour-docs-nav": ["c-docs-nav"],
-    "contour-docs-shell": ["c-docs-shell"],
-    "contour-dot": ["c-dot"],
-    "contour-drag-handle": ["c-drag-handle"],
-    "contour-draggable": ["c-draggable"],
-    "contour-drawer": ["c-drawer"],
-    "contour-drop-indicator": ["c-drop-indicator"],
-    "contour-drop-zone": ["c-drop-zone"],
-    "contour-empty": ["c-empty"],
-    "contour-expandable": ["c-expandable"],
-    "contour-faq": ["c-faq"],
-    "contour-feature": ["c-feature"],
-    "contour-field": ["c-field"],
-    "contour-filter-bar": ["c-filter-bar"],
-    "contour-filter-pill": ["c-filter-pill"],
-    "contour-flag": ["c-flag"],
-    "contour-footer": ["c-footer"],
-    "contour-header": ["c-header"],
-    "contour-heatmap": ["c-heatmap"],
-    "contour-icon-badge": ["c-icon-badge"],
-    "contour-input": ["c-input"],
-    "contour-input-group": ["c-input-group"],
-    "contour-instrument": ["c-instrument"],
-    "contour-kbd": ["c-kbd"],
-    "contour-kpi": ["c-kpi"],
-    "contour-layer-switch": ["c-layer-switch"],
-    "contour-legend": ["c-legend"],
-    "contour-link": ["c-link"],
-    "contour-live-badge": ["c-live-badge"],
-    "contour-map-area": ["c-map-area"],
-    "contour-map-footer": ["c-map-footer"],
-    "contour-map-panel": ["c-map-panel"],
-    "contour-map-slot": ["c-map-slot"],
-    "contour-mark": ["c-mark"],
-    "contour-measure": ["c-measure"],
-    "contour-menu": ["c-menu"],
-    "contour-meter": ["c-meter"],
-    "contour-pagination": ["c-pagination"],
-    "contour-panel": ["c-panel"],
-    "contour-pill": ["c-pill"],
-    "contour-plate": ["c-plate"],
-    "contour-progress": ["c-progress"],
-    "contour-pullquote": ["c-pullquote"],
-    "contour-radio": ["c-radio"],
-    "contour-radio-list": ["c-radio-list"],
-    "contour-range": ["c-range"],
-    "contour-range-scale": ["c-range-scale"],
-    "contour-readout": ["c-readout"],
-    "contour-resizable": ["c-resizable"],
-    "contour-row": ["c-row"],
-    "contour-scale-bar": ["c-scale-bar"],
-    "contour-scheme-toggle": ["c-scheme-toggle"],
-    "contour-scrim": ["c-scrim"],
-    "contour-section-head": ["c-section-head"],
-    "contour-segmented": ["c-segmented"],
-    "contour-select": ["c-select"],
-    "contour-sheet": ["c-sheet"],
-    "contour-sidebar": ["c-sidebar"],
-    "contour-skeleton": ["c-skeleton"],
-    "contour-spinner": ["c-spinner"],
-    "contour-sparkline": ["c-sparkline"],
-    "contour-stack": ["c-stack"],
-    "contour-stat": ["c-stat"],
-    "contour-survey": ["c-survey"],
-    "contour-switch": ["c-switch"],
-    "contour-table": ["c-table"],
-    "contour-table-wrap": ["c-table-wrap"],
-    "contour-tabs": ["c-tabs"],
-    "contour-textarea": ["c-textarea"],
-    "contour-threshold": ["c-threshold"],
-    "contour-timeline": ["c-timeline"],
-    "contour-time-range": ["c-time-range"],
-    "contour-toast": ["c-toast"],
-    "contour-toast-host": ["c-toast-host"],
-    "contour-toolbar": ["c-toolbar"],
-    "contour-tooltip": ["c-tooltip"],
-    "contour-tree": ["c-tree"],
-    "contour-virtual-scroll": ["c-virtual-scroll"],
-  };
+  // ---- Class-only blocks ----
+  //
+  // A block in this list needs nothing but its own class: the element name is
+  // \`contour-<block>\` and the class is \`c-<block>\`, which is why the table holds
+  // the block and not two spellings of it. Blocks that need scaffolding are not
+  // here — they declare a class above, and their presence in this list would be
+  // a fallback that only runs when the real component is broken, so the
+  // registration loop skips a name an explicit component already claimed.
+  const CLASS_ONLY = [
+    "activity", "advanced", "affordance", "affordances", "alert", "anchor", "app", "app-body",
+    "avatar", "badge", "bivariate", "box", "brand", "breadcrumb", "btn", "btn-group",
+    "callout", "card", "chart", "chart-grid", "check", "chip", "cluster", "code",
+    "code-tabs", "combobox", "command", "compare", "container", "contour-plot", "cta", "dash-freshness",
+    "dash-kpi-row", "dash-shell", "dash-toolbar", "datamark", "delta", "destructive-hint", "dialog", "diff",
+    "disclosure", "do-dont", "docs-nav", "docs-shell", "dot", "drag-handle", "draggable", "drawer",
+    "drop-indicator", "drop-zone", "empty", "expandable", "faq", "feature", "field", "filter-bar",
+    "filter-pill", "flag", "footer", "header", "heatmap", "icon-badge", "input", "input-group",
+    "instrument", "kbd", "kpi", "layer-switch", "legend", "link", "live-badge", "map-area",
+    "map-footer", "map-panel", "map-slot", "mark", "measure", "menu", "meter", "pagination",
+    "panel", "pill", "plate", "progress", "pullquote", "radio", "radio-list", "range",
+    "range-scale", "readout", "resizable", "row", "scale-bar", "scheme-toggle", "scrim", "section-head",
+    "segmented", "select", "sheet", "sidebar", "skeleton", "sparkline", "spinner", "stack",
+    "stat", "survey", "switch", "table", "table-wrap", "tabs", "textarea", "threshold",
+    "time-range", "timeline", "toast", "toast-host", "toolbar", "tooltip", "tree", "virtual-scroll"
+  ];
 
 
   // ---- Complex components with scaffolding ----
@@ -347,7 +273,11 @@
         const brandEl = document.createElement("a");
         brandEl.className = "c-brand";
         brandEl.href = "#";
-        brandEl.innerHTML = `<span class="c-mark"><svg aria-hidden="true"><use href="#i-mark" /></svg></span><span class="c-brand__name">${brand}</span>`;
+        brandEl.innerHTML = `<span class="c-mark"><svg aria-hidden="true"><use href="#i-mark" /></svg></span>`;
+        const brandName = document.createElement("span");
+        brandName.className = "c-brand__name";
+        brandName.textContent = brand;
+        brandEl.appendChild(brandName);
         inner.appendChild(brandEl);
         // Nav
         if (links) {
@@ -619,7 +549,11 @@
   // Table: generates from data-columns and data-rows.
   class ContourTable extends ContourBase {
     render() {
-      this.classList.add("c-table");
+      // The host is not a <table>, so it carries no table rule. The scroller the
+      // reflow contract requires is a real block element inside it: a custom
+      // element is display: inline, and overflow does not apply to an inline
+      // box, so putting c-table-wrap on the host would satisfy the selector and
+      // break the scroll — which is the exact failure that gate was written for.
       const columns = this.getAttribute("columns");
       const rows = this.getAttribute("rows");
       if (columns && rows && !this.querySelector("thead")) {
@@ -648,8 +582,11 @@
             tbody.appendChild(tr);
           });
           table.appendChild(tbody);
+          const wrap = document.createElement("div");
+          wrap.className = "c-table-wrap";
+          wrap.appendChild(table);
           this.innerHTML = "";
-          this.appendChild(table);
+          this.appendChild(wrap);
         } catch (e) { /* keep existing */ }
       }
     }
@@ -851,7 +788,12 @@
       if (icon && !this.querySelector(".c-feature__icon")) {
         const i = document.createElement("div");
         i.className = "c-feature__icon";
-        i.innerHTML = `<svg aria-hidden="true"><use href="#${icon}" /></svg>`;
+        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("aria-hidden", "true");
+        const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+        use.setAttribute("href", "#" + String(icon).replace(/[^a-zA-Z0-9_-]/g, ""));
+        svg.appendChild(use);
+        i.appendChild(svg);
         this.appendChild(i);
       }
       if (title && !this.querySelector(".c-feature__title")) {
@@ -1197,7 +1139,11 @@
         this.style.setProperty("--progress", value + "%");
       }
       if (!this.hasAttribute("role")) this.setAttribute("role", "progressbar");
-      if (!this.hasAttribute("aria-valuenow")) this.setAttribute("aria-valuenow", value || "0");
+      const prevVal = this._progressAriaValue;
+      if (!this.hasAttribute("aria-valuenow") || this.getAttribute("aria-valuenow") === prevVal) {
+        this.setAttribute("aria-valuenow", value || "0");
+        this._progressAriaValue = value || "0";
+      }
       if (!this.hasAttribute("aria-valuemin")) this.setAttribute("aria-valuemin", "0");
       if (!this.hasAttribute("aria-valuemax")) this.setAttribute("aria-valuemax", "100");
     }
@@ -1288,6 +1234,32 @@
     }
   }
   define("contour-select", ContourSelect);
+
+  // Version: a native select styled as a version picker.
+  class ContourVersion extends ContourBase {
+    render() {
+      this.classList.add("c-version");
+      const options = this.getAttribute("options");
+      if (options && !this.querySelector("option")) {
+        try {
+          const parsed = JSON.parse(options);
+          const select = document.createElement("select");
+          select.className = "c-version";
+          parsed.forEach((opt) => {
+            const option = document.createElement("option");
+            if (typeof opt === "string") { option.value = opt; option.textContent = opt; }
+            else { option.value = opt.value || opt.label; option.textContent = opt.label || opt.value; if (opt.selected) option.selected = true; }
+            select.appendChild(option);
+          });
+          this.innerHTML = "";
+          this.appendChild(select);
+          this.classList.remove("c-version");
+          select.classList.add("c-version");
+        } catch (e) { /* keep existing */ }
+      }
+    }
+  }
+  define("contour-version", ContourVersion);
 
   // Textarea: generates from placeholder attribute.
   class ContourTextarea extends ContourBase {
@@ -1487,7 +1459,11 @@
         this.appendChild(core);
       }
       if (!this.hasAttribute("role")) this.setAttribute("role", "meter");
-      if (!this.hasAttribute("aria-valuenow")) this.setAttribute("aria-valuenow", value);
+      const prevVal = this._meterAriaValue;
+      if (!this.hasAttribute("aria-valuenow") || this.getAttribute("aria-valuenow") === prevVal) {
+        this.setAttribute("aria-valuenow", value);
+        this._meterAriaValue = value;
+      }
       if (!this.hasAttribute("aria-valuemin")) this.setAttribute("aria-valuemin", "0");
       if (!this.hasAttribute("aria-valuemax")) this.setAttribute("aria-valuemax", "1");
     }
@@ -1720,9 +1696,20 @@
       const date = this.getAttribute("date");
       const instrument = this.getAttribute("instrument");
       if (date && !this.querySelector(".c-survey__value")) {
-        this.innerHTML = `Surveyed <span class="c-survey__value">${date}</span>`;
+        this.textContent = "Surveyed ";
+        const v = document.createElement("span");
+        v.className = "c-survey__value";
+        v.textContent = date;
+        this.appendChild(v);
         if (instrument) {
-          this.innerHTML += ` <span class="c-survey__sep">·</span> <span class="c-survey__value">${instrument}</span>`;
+          const sep = document.createElement("span");
+          sep.className = "c-survey__sep";
+          sep.textContent = "·";
+          this.appendChild(sep);
+          const v2 = document.createElement("span");
+          v2.className = "c-survey__value";
+          v2.textContent = instrument;
+          this.appendChild(v2);
         }
       }
     }
@@ -1802,14 +1789,28 @@
         const a = document.createElement("a");
         a.className = "c-pager__link";
         a.href = prev.split("|")[1] || "#";
-        a.innerHTML = `<span class="c-pager__dir">← Previous</span><span class="c-pager__title">${prev.split("|")[0]}</span>`;
+        const dir = document.createElement("span");
+        dir.className = "c-pager__dir";
+        dir.textContent = "← Previous";
+        a.appendChild(dir);
+        const title = document.createElement("span");
+        title.className = "c-pager__title";
+        title.textContent = prev.split("|")[0];
+        a.appendChild(title);
         this.appendChild(a);
       }
       if (next && !this.querySelector(".c-pager__link--next")) {
         const a = document.createElement("a");
         a.className = "c-pager__link c-pager__link--next";
         a.href = next.split("|")[1] || "#";
-        a.innerHTML = `<span class="c-pager__dir">Next →</span><span class="c-pager__title">${next.split("|")[0]}</span>`;
+        const dir = document.createElement("span");
+        dir.className = "c-pager__dir";
+        dir.textContent = "Next →";
+        a.appendChild(dir);
+        const title = document.createElement("span");
+        title.className = "c-pager__title";
+        title.textContent = next.split("|")[0];
+        a.appendChild(title);
         this.appendChild(a);
       }
     }
@@ -1900,6 +1901,9 @@
   define("contour-testimonial", ContourTestimonialFull);
 
   // Showcase: generates media + title + text + list.
+  // Note: the `media` attribute is intentionally treated as raw HTML so a
+  // consumer can embed arbitrary media markup (images, video, iframes). It is
+  // NOT sanitized — only pass trusted content; sanitize untrusted input first.
   class ContourShowcaseFull extends ContourBase {
     render() {
       this.classList.add("c-showcase");
@@ -2204,395 +2208,212 @@
   // <contour-menu items='["Cut"]'> builds a <ul> instead of only gaining a class.
   // Move this loop back above the complex components and the scaffolding half of
   // this file becomes dead code again: it did, and no gate noticed.
-  Object.entries(simpleMap).forEach(([name, classes]) => {
-    define(name, simple(classes));
-  });
-})();
+  for (const block of CLASS_ONLY) {
+    define("contour-" + block, simple(["c-" + block]));
+  }
 
-
-
-
-  // ---- Shadow DOM factory: reduces boilerplate for slot-based components ----
-  const shadowFactory = (name, templateHtml) => {
-    const tpl = document.createElement("template");
-    tpl.innerHTML = templateHtml;
-    class ShadowComp extends HTMLElement {
-      constructor() {
-        super();
-        const shadow = this.attachShadow({ mode: "open" });
-        const sheets = [];
-        for (const ss of document.styleSheets) {
-          try {
-            if (ss.href && new URL(ss.href).origin === location.origin) {
-              const sheet = new CSSStyleSheet();
-              sheet.replaceSync(Array.from(ss.cssRules).map((r) => r.cssText).join("\n"));
-              sheets.push(sheet);
-            }
-          } catch (e) { /* cross-origin or unreadable */ }
+  // ---- Shadow DOM wrappers (opt-in) ------------------------------------
+  //
+  // Every block below already ships a light-DOM element; a shadow wrapper is not
+  // extra capability, it is the same block handed to a consumer who wants an
+  // isolated root and named parts to style through ::part(). So the two tables
+  // name the same blocks and must stay in step with each other, which is what
+  // the contract gate checks.
+  //
+  // A CSSStyleSheet is adoptable by any number of roots, so the document's
+  // same-origin sheets are serialised and parsed ONCE and shared. Rebuilding
+  // them per instance re-parsed the whole 190 kB sheet for every element a page
+  // mounted. The cache is keyed on the sheet list, so a stylesheet linked after
+  // load is still picked up by the next element.
+  let ADOPTED = null;
+  let ADOPTED_KEY = "";
+  const adoptedSheets = () => {
+    const key = Array.from(document.styleSheets, (s) => s.href || "").join("|");
+    if (ADOPTED && key === ADOPTED_KEY) return ADOPTED;
+    ADOPTED_KEY = key;
+    ADOPTED = [];
+    for (const sheet of document.styleSheets) {
+      try {
+        if (sheet.href && new URL(sheet.href).origin === location.origin) {
+          const built = new CSSStyleSheet();
+          built.replaceSync(Array.from(sheet.cssRules, (r) => r.cssText).join("\n"));
+          ADOPTED.push(built);
         }
-        if (sheets.length) shadow.adoptedStyleSheets = sheets;
-        shadow.appendChild(tpl.content.cloneNode(true));
-      }
+      } catch (e) { /* cross-origin or unreadable */ }
     }
-    try { customElements.define(name, ShadowComp); } catch (e) {}
+    return ADOPTED;
   };
 
-  // ---- Shadow DOM + slots + template (opt-in, read-only attributes) ----
-  // A badge that uses Shadow DOM with a default slot. Styles are adopted
-  // from the document's same-origin stylesheets so ds.css still applies.
-  const badgeTemplate = document.createElement("template");
-  badgeTemplate.innerHTML = `
-    <span class="c-badge" part="badge"><slot></slot></span>
-  `;
-
-  class ContourShadowBadge extends HTMLElement {
+  // One base for every wrapper: adopt the sheets, clone the subclass template,
+  // then keep the root's modifier classes in step with MODS on the host. The
+  // base classes are snapshotted at construction, so a re-render cannot
+  // accumulate a stale modifier the way an additive classList would.
+  class ContourShadow extends HTMLElement {
+    static get observedAttributes() { return MODS; }
     constructor() {
       super();
-      const shadow = this.attachShadow({ mode: "open" });
-      const sheets = [];
-      for (const ss of document.styleSheets) {
-        try {
-          if (ss.href && new URL(ss.href).origin === location.origin) {
-            const sheet = new CSSStyleSheet();
-            sheet.replaceSync(Array.from(ss.cssRules).map((r) => r.cssText).join("\\n"));
-            sheets.push(sheet);
-          }
-        } catch (e) { /* cross-origin or unreadable */ }
+      const root = this.attachShadow({ mode: "open" });
+      const sheets = adoptedSheets();
+      if (sheets.length) root.adoptedStyleSheets = sheets;
+      root.appendChild(this.constructor.contourTemplate.content.cloneNode(true));
+      this._shadowBase = root.firstElementChild ? root.firstElementChild.className : "";
+      this.enhance(root);
+    }
+    // Subclasses with behaviour beyond the template override this.
+    enhance() {}
+    connectedCallback() { this.applyMods(); }
+    attributeChangedCallback() { this.applyMods(); }
+    applyMods() {
+      const el = this.shadowRoot.firstElementChild;
+      if (!el || !this._shadowBase) return;
+      const mods = [];
+      for (const attr of MODS) {
+        const val = this.getAttribute(attr);
+        if (!val) continue;
+        for (const cls of this._shadowBase.split(/\s+/)) {
+          if (cls) mods.push("c-" + cls.replace(/^c-/, "") + "--" + val);
+        }
       }
-      if (sheets.length) shadow.adoptedStyleSheets = sheets;
-      shadow.appendChild(badgeTemplate.content.cloneNode(true));
+      el.className = (this._shadowBase + " " + mods.join(" ")).trim();
     }
   }
-  try { customElements.define("contour-shadow-badge", ContourShadowBadge); } catch (e) {}
 
-  // ---- Shadow DOM card with named slots ----
-  const shadowCardTemplate = document.createElement("template");
-  shadowCardTemplate.innerHTML = `
-    <div class="c-card" part="card">
-      <div class="c-card__head" part="head"><slot name="title">Untitled</slot></div>
-      <div class="c-card__body" part="body"><slot></slot></div>
-      <div class="c-card__foot" part="foot"><slot name="foot"></slot></div>
-    </div>
-  `;
+  // Registers a wrapper. The template is parsed once into a <template> and
+  // cloned per instance, so the markup below is the markup the root gets.
+  const shadow = (name, markup) => {
+    const tpl = document.createElement("template");
+    tpl.innerHTML = markup;
+    const cls = class extends ContourShadow {};
+    cls.contourTemplate = tpl;
+    define(name, cls);
+  };
 
-  class ContourShadowCard extends HTMLElement {
-    constructor() {
-      super();
-      const shadow = this.attachShadow({ mode: "open" });
-      const sheets = [];
-      for (const ss of document.styleSheets) {
-        try {
-          if (ss.href && new URL(ss.href).origin === location.origin) {
-            const sheet = new CSSStyleSheet();
-            sheet.replaceSync(Array.from(ss.cssRules).map((r) => r.cssText).join("\\n"));
-            sheets.push(sheet);
-          }
-        } catch (e) { /* cross-origin or unreadable */ }
-      }
-      if (sheets.length) shadow.adoptedStyleSheets = sheets;
-      shadow.appendChild(shadowCardTemplate.content.cloneNode(true));
+  // A wrapper that is one default slot needs no markup of its own: the element,
+  // the class, the part and the name all follow from the block, so the table
+  // holds the block and the tag.
+  const slotWrapper = (tag, block, part) =>
+    "<" + tag + ' class="c-' + block + '" part="' + (part || block) + '"><slot></slot></' + tag + ">";
+  const SHADOW_SLOTS = {
+    div: [
+      "accordion", "activity", "advanced", "affordance", "affordances", "app", "app-body", "box",
+      "btn-group", "catchment", "chart-grid", "cluster", "command", "compare", "comparison", "compass",
+      "contour-plot", "cta", "dash-freshness", "dash-kpi-row", "dash-shell", "dash-toolbar", "datamark", "delta",
+      "destructive-hint", "docs-shell", "drag-handle", "draggable", "drawer", "drop-indicator", "drop-zone", "elevation",
+      "filter-bar", "filter-pill", "flow-map", "heatmap", "hexbin", "icon-badge", "input-group", "instrument",
+      "isochrone", "landing-features", "landing-hero", "layer-panel", "layer-switch", "legend", "logos", "map-area",
+      "map-footer", "map-panel", "map-slot", "measure", "metrics", "minimap", "pager", "pagination",
+      "panel", "plate", "price", "pricing", "progress", "prose", "pullquote", "radio-list",
+      "range", "range-scale", "readout", "recipe", "reserved", "resizable", "resize-handle", "row",
+      "row-action", "scale-bar", "scrim", "segmented", "sheet", "shortcut-list", "shortcut-overlay", "shortcut-panel",
+      "shortcut-row", "showcase", "sidebar", "skeleton", "sparkline", "stack", "steps", "streaming-chart",
+      "survey", "table-wrap", "theme-scope", "time-range", "time-slider", "timeline", "toast", "toast-host",
+      "toolbar", "tooltip", "tree", "version", "version-banner", "virtual-scroll"
+    ],
+    button: [
+      "btn", "pressable", "scheme-toggle"
+    ],
+    span: [
+      "avatar", "badge", "chip", "dot", "flag", "live-badge", "mark", "pill",
+      "tag"
+    ],
+    a: [
+      "anchor", "link", "linkish"
+    ],
+    kbd: [
+      "kbd"
+    ],
+    label: [
+      "check", "radio", "switch"
+    ],
+    select: [
+      "select"
+    ],
+    nav: [
+      "docs-nav"
+    ],
+  };
+
+  // Two wrappers name their part after the region it holds rather than after
+  // the block, and one names it after the banner. Pinned here because the part
+  // is the contract a consumer styles against. Declared before the loop that
+  // reads it: a const in a temporal dead zone throws at load and takes the
+  // whole file down with it.
+  const SHADOW_PARTS = {
+    "version-banner": "banner",
+    "contour-plot": "plot",
+  };
+
+  for (const [tag, blocks] of Object.entries(SHADOW_SLOTS)) {
+    for (const block of blocks) {
+      const part = SHADOW_PARTS[block] || block;
+      shadow("contour-shadow-" + block, slotWrapper(tag, block, part));
     }
   }
-  try { customElements.define("contour-shadow-card", ContourShadowCard); } catch (e) {}
 
-  // ---- Shadow DOM dialog with named slots ----
-  const shadowDialogTemplate = document.createElement("template");
-  shadowDialogTemplate.innerHTML = `
-    <dialog class="c-dialog" part="dialog">
-      <div class="c-dialog__head" part="head">
-        <slot name="title"></slot>
-        <button class="c-btn c-btn--icon c-btn--ghost" part="close" type="button" aria-label="Close">
-          <svg aria-hidden="true"><use href="#i-close" /></svg>
-        </button>
-      </div>
-      <div class="c-dialog__body" part="body"><slot></slot></div>
-      <div class="c-dialog__foot" part="foot"><slot name="foot"></slot></div>
-    </dialog>
-  `;
+  // Structured templates: more than one slot, or a class that is not the block's
+  // own, so the markup is the definition and is written out.
+  shadow("contour-shadow-callout", `<div class="c-callout" part="callout"><div class="c-callout__title" part="title"><slot name="title"></slot></div><div class="c-callout__body" part="body"><slot></slot></div></div>`);
+  shadow("contour-shadow-empty", `<div class="c-empty" part="empty"><div class="c-empty__title" part="title"><slot name="title"></slot></div><div class="c-empty__body" part="body"><slot></slot></div><div class="c-empty__action" part="action"><slot name="action"></slot></div></div>`);
+  shadow("contour-shadow-feature", `<div class="c-feature" part="feature"><div class="c-feature__icon" part="icon"><slot name="icon"></slot></div><div class="c-feature__title" part="title"><slot name="title"></slot></div><div class="c-feature__body" part="body"><slot></slot></div></div>`);
+  shadow("contour-shadow-kpi", `<div class="c-kpi" part="kpi"><div class="c-kpi__value" part="value"><slot name="value"></slot></div><div class="c-kpi__label" part="label"><slot name="label"></slot></div><div class="c-kpi__delta" part="delta"><slot name="delta"></slot></div></div>`);
+  shadow("contour-shadow-stat", `<div class="c-stat" part="stat"><div class="c-stat__value" part="value"><slot name="value"></slot></div><div class="c-stat__label" part="label"><slot name="label"></slot></div><div class="c-stat__delta" part="delta"><slot name="delta"></slot></div></div>`);
+  shadow("contour-shadow-meter", `<div class="c-meter" part="meter"><span class="c-meter__core" part="core"><span class="c-meter__value" part="value"><slot name="value"></slot></span><span class="c-meter__label" part="label"><slot name="label"></slot></span></span></div>`);
+  shadow("contour-shadow-diff", `<div class="c-diff" part="diff"><div class="c-diff__before" part="before"><slot name="before"></slot></div><div class="c-diff__after" part="after"><slot name="after"></slot></div></div>`);
+  shadow("contour-shadow-do-dont", `<div class="c-do-dont" part="do-dont"><div class="c-do-dont__do" part="do"><slot name="do"></slot></div><div class="c-do-dont__dont" part="dont"><slot name="dont"></slot></div></div>`);
+  shadow("contour-shadow-threshold", `<div class="c-threshold" part="threshold"><span class="c-threshold__value" part="value"><slot name="value"></slot></span><span class="c-threshold__label" part="label"><slot name="label"></slot></span></div>`);
+  shadow("contour-shadow-coordinate", `<div class="c-coordinate" part="coordinate"><span class="c-coordinate__value" part="value"><slot name="value"></slot></span></div>`);
+  shadow("contour-shadow-install", `<div class="c-install" part="install"><span class="c-install__prompt" part="prompt"><slot name="prompt"></slot></span><span class="c-install__command" part="command"><slot name="command"></slot></span></div>`);
+  shadow("contour-shadow-toc", `<div class="c-toc" part="toc"><div class="c-toc__title" part="title"><slot name="title"></slot></div><nav class="c-toc__list" part="list"><slot></slot></nav></div>`);
+  shadow("contour-shadow-testimonial", `<div class="c-testimonial" part="testimonial"><blockquote class="c-testimonial__quote" part="quote"><slot name="quote"></slot></blockquote><div class="c-testimonial__byline" part="byline"><span class="c-testimonial__name" part="name"><slot name="name"></slot></span><span class="c-testimonial__role" part="role"><slot name="role"></slot></span></div></div>`);
+  shadow("contour-shadow-search-trigger", `<button class="c-search-trigger" part="trigger"><span><slot name="label"></slot></span><kbd class="c-kbd"><slot name="shortcut"></slot></kbd></button>`);
+  shadow("contour-shadow-brand", `<a class="c-brand" part="brand"><span class="c-mark" part="mark"><slot name="mark"></slot></span><span class="c-brand__name" part="name"><slot name="name"></slot></span></a>`);
+  shadow("contour-shadow-section-head", `<div class="c-section-head" part="head"><h2 class="c-section-head__title" part="title"><slot name="title"></slot></h2><p class="c-section-head__desc" part="desc"><slot name="desc"></slot></p></div>`);
+  shadow("contour-shadow-loading", `<div class="c-loading" part="loading"><span class="c-spinner" part="spinner"></span><slot></slot></div>`);
+  shadow("contour-shadow-tabs", `<div class="c-tabs" part="tabs"><div class="c-tabs__list" part="list"><slot name="tabs"></slot></div><div class="c-tabs__panels" part="panels"><slot></slot></div></div>`);
+  shadow("contour-shadow-breadcrumb", `<nav class="c-breadcrumb" part="breadcrumb" aria-label="Breadcrumb"><ol part="list"><slot></slot></ol></nav>`);
+  shadow("contour-shadow-menu", `<div class="c-menu" part="menu" role="menu"><slot></slot></div>`);
+  shadow("contour-shadow-combobox", `<div class="c-combobox" part="combobox"><input class="c-combobox__input" part="input" type="text" /><ul class="c-combobox__list" part="list" hidden><slot></slot></ul></div>`);
+  shadow("contour-shadow-table", `<div class="c-table-wrap" part="wrap"><table class="c-table" part="table"><thead part="head"><slot name="head"></slot></thead><tbody part="body"><slot></slot></tbody></table></div>`);
+  shadow("contour-shadow-chart", `<div class="c-chart" part="chart"><div class="c-chart__plot" part="plot"><slot></slot></div></div>`);
+  shadow("contour-shadow-bivariate", `<div class="c-bivariate" part="bivariate"><div class="c-bivariate__matrix" part="matrix"><slot></slot></div></div>`);
+  shadow("contour-shadow-expandable", `<details class="c-expandable" part="expandable"><summary part="summary"><slot name="summary"></slot></summary><div class="c-expandable__body" part="body"><slot></slot></div></details>`);
+  shadow("contour-shadow-disclosure", `<details class="c-disclosure" part="disclosure"><summary part="summary"><slot name="summary"></slot></summary><div class="c-disclosure__body" part="body"><slot></slot></div></details>`);
+  shadow("contour-shadow-faq", `<div class="c-faq" part="faq"><div class="c-faq__question" part="question"><slot name="question"></slot></div><div class="c-faq__answer" part="answer"><slot name="answer"></slot></div></div>`);
+  shadow("contour-shadow-code-tabs", `<div class="c-code-tabs" part="code-tabs"><div class="c-code-tabs__list" part="list"><slot name="tabs"></slot></div><div class="c-code-tabs__panels" part="panels"><slot></slot></div></div>`);
+  shadow("contour-shadow-header", `<header class="c-header" part="header"><div class="container c-header__inner" part="inner"><a class="c-brand" part="brand"><slot name="brand"></slot></a><nav class="c-header__nav" part="nav"><slot name="nav"></slot></nav><div class="c-header__actions" part="actions"><slot name="actions"></slot></div></div></header>`);
+  shadow("contour-shadow-footer", `<footer class="c-footer" part="footer"><div class="container c-footer__grid" part="grid"><div class="c-footer__brand" part="brand"><slot name="brand"></slot></div><div class="c-footer__links" part="links"><slot name="links"></slot></div></div></footer>`);
+  shadow("contour-shadow-container", `<div class="container" part="container"><slot></slot></div>`);
+  shadow("contour-shadow-input", `<input class="c-input" part="input" />`);
+  shadow("contour-shadow-spinner", `<span class="c-spinner" part="spinner" role="status" aria-label="Loading"></span>`);
+  shadow("contour-shadow-textarea", `<textarea class="c-textarea" part="textarea"></textarea>`);
+  shadow("contour-shadow-code", `<pre class="c-code" part="code"><code><slot></slot></code></pre>`);
+  // (folded in from the hand-written component that used to carry its own copy of the sheet logic)
+  shadow("contour-shadow-card", `<div class="c-card" part="card"> <div class="c-card__head" part="head"><slot name="title">Untitled</slot></div> <div class="c-card__body" part="body"><slot></slot></div> <div class="c-card__foot" part="foot"><slot name="foot"></slot></div> </div>`);
+  // (folded in from the hand-written component that used to carry its own copy of the sheet logic)
+  // (folded in from the hand-written component that used to carry its own copy of the sheet logic)
+  shadow("contour-shadow-field", `<div class="c-field" part="field"> <label class="c-field__label" part="label"><slot name="label">Label</slot></label> <slot name="input"></slot> <span class="c-field__hint" part="hint"><slot name="hint"></slot></span> </div>`);
+  // (folded in from the hand-written component that used to carry its own copy of the sheet logic)
+  shadow("contour-shadow-alert", `<div class="c-alert" part="alert"> <div class="c-alert__title" part="title"><slot name="title"></slot></div> <div class="c-alert__body" part="body"><slot></slot></div> </div>`);
 
-  class ContourShadowDialog extends HTMLElement {
-    constructor() {
-      super();
-      const shadow = this.attachShadow({ mode: "open" });
-      const sheets = [];
-      for (const ss of document.styleSheets) {
-        try {
-          if (ss.href && new URL(ss.href).origin === location.origin) {
-            const sheet = new CSSStyleSheet();
-            sheet.replaceSync(Array.from(ss.cssRules).map((r) => r.cssText).join("\\n"));
-            sheets.push(sheet);
-          }
-        } catch (e) { /* cross-origin or unreadable */ }
-      }
-      if (sheets.length) shadow.adoptedStyleSheets = sheets;
-      shadow.appendChild(shadowDialogTemplate.content.cloneNode(true));
-      const closeBtn = shadow.querySelector('[part="close"]');
-      if (closeBtn) closeBtn.addEventListener("click", () => {
-        const dialog = shadow.querySelector("dialog");
-        if (dialog) dialog.close();
-      });
+  // The dialog is the one wrapper with behaviour, because a close button that
+  // does not close is a control the reader cannot use.
+  class ContourShadowDialog extends ContourShadow {
+    static contourTemplate = (() => {
+      const tpl = document.createElement("template");
+      tpl.innerHTML = "<dialog class=\"c-dialog\" part=\"dialog\"> <div class=\"c-dialog__head\" part=\"head\"> <slot name=\"title\"></slot> <button class=\"c-btn c-btn--icon c-btn--ghost\" part=\"close\" type=\"button\" aria-label=\"Close\"> <svg aria-hidden=\"true\"><use href=\"#i-close\" /></svg> </button> </div> <div class=\"c-dialog__body\" part=\"body\"><slot></slot></div> <div class=\"c-dialog__foot\" part=\"foot\"><slot name=\"foot\"></slot></div> </dialog>";
+      return tpl;
+    })();
+    enhance(root) {
+      const close = root.querySelector('[part="close"]');
+      if (close) close.addEventListener("click", () => root.querySelector("dialog")?.close());
     }
-    show() {
-      const dialog = this.shadowRoot?.querySelector("dialog");
-      if (dialog) dialog.showModal();
-    }
+    show() { this.shadowRoot?.querySelector("dialog")?.showModal(); }
   }
-  try { customElements.define("contour-shadow-dialog", ContourShadowDialog); } catch (e) {}
+  define("contour-shadow-dialog", ContourShadowDialog);
 
-  // ---- Shadow DOM field with slots ----
-  const shadowFieldTemplate = document.createElement("template");
-  shadowFieldTemplate.innerHTML = `
-    <div class="c-field" part="field">
-      <label class="c-field__label" part="label"><slot name="label">Label</slot></label>
-      <slot name="input"></slot>
-      <span class="c-field__hint" part="hint"><slot name="hint"></slot></span>
-    </div>
-  `;
-
-  class ContourShadowField extends HTMLElement {
-    constructor() {
-      super();
-      const shadow = this.attachShadow({ mode: "open" });
-      const sheets = [];
-      for (const ss of document.styleSheets) {
-        try {
-          if (ss.href && new URL(ss.href).origin === location.origin) {
-            const sheet = new CSSStyleSheet();
-            sheet.replaceSync(Array.from(ss.cssRules).map((r) => r.cssText).join("\\n"));
-            sheets.push(sheet);
-          }
-        } catch (e) { /* cross-origin or unreadable */ }
-      }
-      if (sheets.length) shadow.adoptedStyleSheets = sheets;
-      shadow.appendChild(shadowFieldTemplate.content.cloneNode(true));
-    }
-  }
-  try { customElements.define("contour-shadow-field", ContourShadowField); } catch (e) {}
-
-  // ---- Shadow DOM alert with slots ----
-  const shadowAlertTemplate = document.createElement("template");
-  shadowAlertTemplate.innerHTML = `
-    <div class="c-alert" part="alert">
-      <div class="c-alert__title" part="title"><slot name="title"></slot></div>
-      <div class="c-alert__body" part="body"><slot></slot></div>
-    </div>
-  `;
-
-  class ContourShadowAlert extends HTMLElement {
-    constructor() {
-      super();
-      const shadow = this.attachShadow({ mode: "open" });
-      const sheets = [];
-      for (const ss of document.styleSheets) {
-        try {
-          if (ss.href && new URL(ss.href).origin === location.origin) {
-            const sheet = new CSSStyleSheet();
-            sheet.replaceSync(Array.from(ss.cssRules).map((r) => r.cssText).join("\\n"));
-            sheets.push(sheet);
-          }
-        } catch (e) { /* cross-origin or unreadable */ }
-      }
-      if (sheets.length) shadow.adoptedStyleSheets = sheets;
-      shadow.appendChild(shadowAlertTemplate.content.cloneNode(true));
-    }
-  }
-  try { customElements.define("contour-shadow-alert", ContourShadowAlert); } catch (e) {}
-
-
-  // ---- Shadow DOM components (factory-based) ----
-  shadowFactory("contour-shadow-callout", `<div class="c-callout" part="callout"><div class="c-callout__title" part="title"><slot name="title"></slot></div><div class="c-callout__body" part="body"><slot></slot></div></div>`);
-  shadowFactory("contour-shadow-empty", `<div class="c-empty" part="empty"><div class="c-empty__title" part="title"><slot name="title"></slot></div><div class="c-empty__body" part="body"><slot></slot></div><div class="c-empty__action" part="action"><slot name="action"></slot></div></div>`);
-  shadowFactory("contour-shadow-feature", `<div class="c-feature" part="feature"><div class="c-feature__icon" part="icon"><slot name="icon"></slot></div><div class="c-feature__title" part="title"><slot name="title"></slot></div><div class="c-feature__body" part="body"><slot></slot></div></div>`);
-  shadowFactory("contour-shadow-kpi", `<div class="c-kpi" part="kpi"><div class="c-kpi__value" part="value"><slot name="value"></slot></div><div class="c-kpi__label" part="label"><slot name="label"></slot></div><div class="c-kpi__delta" part="delta"><slot name="delta"></slot></div></div>`);
-  shadowFactory("contour-shadow-stat", `<div class="c-stat" part="stat"><div class="c-stat__value" part="value"><slot name="value"></slot></div><div class="c-stat__label" part="label"><slot name="label"></slot></div><div class="c-stat__delta" part="delta"><slot name="delta"></slot></div></div>`);
-  shadowFactory("contour-shadow-tooltip", `<div class="c-tooltip" part="tooltip"><slot></slot></div>`);
-  shadowFactory("contour-shadow-toast", `<div class="c-toast" part="toast"><slot></slot></div>`);
-  shadowFactory("contour-shadow-progress", `<div class="c-progress" part="progress"><slot></slot></div>`);
-  shadowFactory("contour-shadow-meter", `<div class="c-meter" part="meter"><span class="c-meter__core" part="core"><span class="c-meter__value" part="value"><slot name="value"></slot></span><span class="c-meter__label" part="label"><slot name="label"></slot></span></span></div>`);
-  shadowFactory("contour-shadow-diff", `<div class="c-diff" part="diff"><div class="c-diff__before" part="before"><slot name="before"></slot></div><div class="c-diff__after" part="after"><slot name="after"></slot></div></div>`);
-  shadowFactory("contour-shadow-do-dont", `<div class="c-do-dont" part="do-dont"><div class="c-do-dont__do" part="do"><slot name="do"></slot></div><div class="c-do-dont__dont" part="dont"><slot name="dont"></slot></div></div>`);
-  shadowFactory("contour-shadow-threshold", `<div class="c-threshold" part="threshold"><span class="c-threshold__value" part="value"><slot name="value"></slot></span><span class="c-threshold__label" part="label"><slot name="label"></slot></span></div>`);
-  shadowFactory("contour-shadow-coordinate", `<div class="c-coordinate" part="coordinate"><span class="c-coordinate__value" part="value"><slot name="value"></slot></span></div>`);
-  shadowFactory("contour-shadow-install", `<div class="c-install" part="install"><span class="c-install__prompt" part="prompt"><slot name="prompt"></slot></span><span class="c-install__command" part="command"><slot name="command"></slot></span></div>`);
-  shadowFactory("contour-shadow-toc", `<div class="c-toc" part="toc"><div class="c-toc__title" part="title"><slot name="title"></slot></div><nav class="c-toc__list" part="list"><slot></slot></nav></div>`);
-  shadowFactory("contour-shadow-version-banner", `<div class="c-version-banner" part="banner"><slot></slot></div>`);
-  shadowFactory("contour-shadow-testimonial", `<div class="c-testimonial" part="testimonial"><blockquote class="c-testimonial__quote" part="quote"><slot name="quote"></slot></blockquote><div class="c-testimonial__byline" part="byline"><span class="c-testimonial__name" part="name"><slot name="name"></slot></span><span class="c-testimonial__role" part="role"><slot name="role"></slot></span></div></div>`);
-  shadowFactory("contour-shadow-pressable", `<button class="c-pressable" part="pressable"><slot></slot></button>`);
-  shadowFactory("contour-shadow-search-trigger", `<button class="c-search-trigger" part="trigger"><span><slot name="label"></slot></span><kbd class="c-kbd"><slot name="shortcut"></slot></kbd></button>`);
-  shadowFactory("contour-shadow-price", `<div class="c-price" part="price"><slot></slot></div>`);
-  shadowFactory("contour-shadow-prose", `<div class="c-prose" part="prose"><slot></slot></div>`);
-  shadowFactory("contour-shadow-elevation", `<div class="c-elevation" part="elevation"><slot></slot></div>`);
-  shadowFactory("contour-shadow-mark", `<span class="c-mark" part="mark"><slot></slot></span>`);
-  shadowFactory("contour-shadow-link", `<a class="c-link" part="link"><slot></slot></a>`);
-  shadowFactory("contour-shadow-flag", `<span class="c-flag" part="flag"><slot></slot></span>`);
-  shadowFactory("contour-shadow-brand", `<a class="c-brand" part="brand"><span class="c-mark" part="mark"><slot name="mark"></slot></span><span class="c-brand__name" part="name"><slot name="name"></slot></span></a>`);
-  shadowFactory("contour-shadow-section-head", `<div class="c-section-head" part="head"><h2 class="c-section-head__title" part="title"><slot name="title"></slot></h2><p class="c-section-head__desc" part="desc"><slot name="desc"></slot></p></div>`);
-  shadowFactory("contour-shadow-loading", `<div class="c-loading" part="loading"><span class="c-spinner" part="spinner"></span><slot></slot></div>`);
-
-
-  // ---- More shadow DOM components ----
-  shadowFactory("contour-shadow-tabs", `<div class="c-tabs" part="tabs"><div class="c-tabs__list" part="list"><slot name="tabs"></slot></div><div class="c-tabs__panels" part="panels"><slot></slot></div></div>`);
-  shadowFactory("contour-shadow-breadcrumb", `<nav class="c-breadcrumb" part="breadcrumb" aria-label="Breadcrumb"><ol part="list"><slot></slot></ol></nav>`);
-  shadowFactory("contour-shadow-tree", `<div class="c-tree" part="tree"><slot></slot></div>`);
-  shadowFactory("contour-shadow-menu", `<div class="c-menu" part="menu" role="menu"><slot></slot></div>`);
-  shadowFactory("contour-shadow-combobox", `<div class="c-combobox" part="combobox"><input class="c-combobox__input" part="input" type="text" /><ul class="c-combobox__list" part="list" hidden><slot></slot></ul></div>`);
-  shadowFactory("contour-shadow-table", `<div class="c-table-wrap" part="wrap"><table class="c-table" part="table"><thead part="head"><slot name="head"></slot></thead><tbody part="body"><slot></slot></tbody></table></div>`);
-  shadowFactory("contour-shadow-chart", `<div class="c-chart" part="chart"><div class="c-chart__plot" part="plot"><slot></slot></div></div>`);
-  shadowFactory("contour-shadow-readout", `<div class="c-readout" part="readout"><slot></slot></div>`);
-  shadowFactory("contour-shadow-instrument", `<div class="c-instrument" part="instrument"><slot></slot></div>`);
-  shadowFactory("contour-shadow-bivariate", `<div class="c-bivariate" part="bivariate"><div class="c-bivariate__matrix" part="matrix"><slot></slot></div></div>`);
-  shadowFactory("contour-shadow-survey", `<div class="c-survey" part="survey"><slot></slot></div>`);
-  shadowFactory("contour-shadow-expandable", `<details class="c-expandable" part="expandable"><summary part="summary"><slot name="summary"></slot></summary><div class="c-expandable__body" part="body"><slot></slot></div></details>`);
-  shadowFactory("contour-shadow-disclosure", `<details class="c-disclosure" part="disclosure"><summary part="summary"><slot name="summary"></slot></summary><div class="c-disclosure__body" part="body"><slot></slot></div></details>`);
-  shadowFactory("contour-shadow-faq", `<div class="c-faq" part="faq"><div class="c-faq__question" part="question"><slot name="question"></slot></div><div class="c-faq__answer" part="answer"><slot name="answer"></slot></div></div>`);
-  shadowFactory("contour-shadow-steps", `<div class="c-steps" part="steps"><slot></slot></div>`);
-  shadowFactory("contour-shadow-accordion", `<div class="c-accordion" part="accordion"><slot></slot></div>`);
-  shadowFactory("contour-shadow-code-tabs", `<div class="c-code-tabs" part="code-tabs"><div class="c-code-tabs__list" part="list"><slot name="tabs"></slot></div><div class="c-code-tabs__panels" part="panels"><slot></slot></div></div>`);
-  shadowFactory("contour-shadow-header", `<header class="c-header" part="header"><div class="container c-header__inner" part="inner"><a class="c-brand" part="brand"><slot name="brand"></slot></a><nav class="c-header__nav" part="nav"><slot name="nav"></slot></nav><div class="c-header__actions" part="actions"><slot name="actions"></slot></div></div></header>`);
-  shadowFactory("contour-shadow-footer", `<footer class="c-footer" part="footer"><div class="container c-footer__grid" part="grid"><div class="c-footer__brand" part="brand"><slot name="brand"></slot></div><div class="c-footer__links" part="links"><slot name="links"></slot></div></div></footer>`);
-  shadowFactory("contour-shadow-container", `<div class="container" part="container"><slot></slot></div>`);
-  shadowFactory("contour-shadow-box", `<div class="c-box" part="box"><slot></slot></div>`);
-  shadowFactory("contour-shadow-cluster", `<div class="c-cluster" part="cluster"><slot></slot></div>`);
-  shadowFactory("contour-shadow-app", `<div class="c-app" part="app"><slot></slot></div>`);
-  shadowFactory("contour-shadow-app-body", `<div class="c-app-body" part="app-body"><slot></slot></div>`);
-  shadowFactory("contour-shadow-anchor", `<a class="c-anchor" part="anchor"><slot></slot></a>`);
-  shadowFactory("contour-shadow-affordance", `<div class="c-affordance" part="affordance"><slot></slot></div>`);
-  shadowFactory("contour-shadow-affordances", `<div class="c-affordances" part="affordances"><slot></slot></div>`);
-  shadowFactory("contour-shadow-advanced", `<div class="c-advanced" part="advanced"><slot></slot></div>`);
-  shadowFactory("contour-shadow-activity", `<div class="c-activity" part="activity"><slot></slot></div>`);
-  shadowFactory("contour-shadow-compare", `<div class="c-compare" part="compare"><slot></slot></div>`);
-  shadowFactory("contour-shadow-comparison", `<div class="c-comparison" part="comparison"><slot></slot></div>`);
-  shadowFactory("contour-shadow-compass", `<div class="c-compass" part="compass"><slot></slot></div>`);
-  shadowFactory("contour-shadow-contour-plot", `<div class="c-contour-plot" part="plot"><slot></slot></div>`);
-  shadowFactory("contour-shadow-coordinate", `<div class="c-coordinate" part="coordinate"><span class="c-coordinate__value" part="value"><slot name="value"></slot></span></div>`);
-  shadowFactory("contour-shadow-cta", `<div class="c-cta" part="cta"><slot></slot></div>`);
-  shadowFactory("contour-shadow-dash-freshness", `<div class="c-dash-freshness" part="dash-freshness"><slot></slot></div>`);
-  shadowFactory("contour-shadow-dash-kpi-row", `<div class="c-dash-kpi-row" part="dash-kpi-row"><slot></slot></div>`);
-  shadowFactory("contour-shadow-dash-shell", `<div class="c-dash-shell" part="dash-shell"><slot></slot></div>`);
-  shadowFactory("contour-shadow-dash-toolbar", `<div class="c-dash-toolbar" part="dash-toolbar"><slot></slot></div>`);
-  shadowFactory("contour-shadow-datamark", `<div class="c-datamark" part="datamark"><slot></slot></div>`);
-  shadowFactory("contour-shadow-delta", `<div class="c-delta" part="delta"><slot></slot></div>`);
-  shadowFactory("contour-shadow-destructive-hint", `<div class="c-destructive-hint" part="destructive-hint"><slot></slot></div>`);
-  shadowFactory("contour-shadow-diff", `<div class="c-diff" part="diff"><div class="c-diff__before" part="before"><slot name="before"></slot></div><div class="c-diff__after" part="after"><slot name="after"></slot></div></div>`);
-  shadowFactory("contour-shadow-dot", `<span class="c-dot" part="dot"><slot></slot></span>`);
-  shadowFactory("contour-shadow-drag-handle", `<div class="c-drag-handle" part="drag-handle"><slot></slot></div>`);
-  shadowFactory("contour-shadow-draggable", `<div class="c-draggable" part="draggable"><slot></slot></div>`);
-  shadowFactory("contour-shadow-drawer", `<div class="c-drawer" part="drawer"><slot></slot></div>`);
-  shadowFactory("contour-shadow-drop-indicator", `<div class="c-drop-indicator" part="drop-indicator"><slot></slot></div>`);
-  shadowFactory("contour-shadow-drop-zone", `<div class="c-drop-zone" part="drop-zone"><slot></slot></div>`);
-  shadowFactory("contour-shadow-empty", `<div class="c-empty" part="empty"><div class="c-empty__title" part="title"><slot name="title"></slot></div><div class="c-empty__body" part="body"><slot></slot></div><div class="c-empty__action" part="action"><slot name="action"></slot></div></div>`);
-  shadowFactory("contour-shadow-expandable", `<details class="c-expandable" part="expandable"><summary part="summary"><slot name="summary"></slot></summary><div class="c-expandable__body" part="body"><slot></slot></div></details>`);
-  shadowFactory("contour-shadow-faq", `<div class="c-faq" part="faq"><div class="c-faq__question" part="question"><slot name="question"></slot></div><div class="c-faq__answer" part="answer"><slot name="answer"></slot></div></div>`);
-  shadowFactory("contour-shadow-feature", `<div class="c-feature" part="feature"><div class="c-feature__icon" part="icon"><slot name="icon"></slot></div><div class="c-feature__title" part="title"><slot name="title"></slot></div><div class="c-feature__body" part="body"><slot></slot></div></div>`);
-  shadowFactory("contour-shadow-filter-bar", `<div class="c-filter-bar" part="filter-bar"><slot></slot></div>`);
-  shadowFactory("contour-shadow-filter-pill", `<div class="c-filter-pill" part="filter-pill"><slot></slot></div>`);
-  shadowFactory("contour-shadow-flag", `<span class="c-flag" part="flag"><slot></slot></span>`);
-  shadowFactory("contour-shadow-flow-map", `<div class="c-flow-map" part="flow-map"><slot></slot></div>`);
-  shadowFactory("contour-shadow-footer", `<footer class="c-footer" part="footer"><div class="container c-footer__grid" part="grid"><div class="c-footer__brand" part="brand"><slot name="brand"></slot></div><div class="c-footer__links" part="links"><slot name="links"></slot></div></div></footer>`);
-  shadowFactory("contour-shadow-header", `<header class="c-header" part="header"><div class="container c-header__inner" part="inner"><a class="c-brand" part="brand"><slot name="brand"></slot></a><nav class="c-header__nav" part="nav"><slot name="nav"></slot></nav><div class="c-header__actions" part="actions"><slot name="actions"></slot></div></div></header>`);
-  shadowFactory("contour-shadow-heatmap", `<div class="c-heatmap" part="heatmap"><slot></slot></div>`);
-  shadowFactory("contour-shadow-hexbin", `<div class="c-hexbin" part="hexbin"><slot></slot></div>`);
-  shadowFactory("contour-shadow-icon-badge", `<div class="c-icon-badge" part="icon-badge"><slot></slot></div>`);
-  shadowFactory("contour-shadow-input", `<input class="c-input" part="input" />`);
-  shadowFactory("contour-shadow-input-group", `<div class="c-input-group" part="input-group"><slot></slot></div>`);
-  shadowFactory("contour-shadow-instrument", `<div class="c-instrument" part="instrument"><slot></slot></div>`);
-  shadowFactory("contour-shadow-isochrone", `<div class="c-isochrone" part="isochrone"><slot></slot></div>`);
-  shadowFactory("contour-shadow-kbd", `<kbd class="c-kbd" part="kbd"><slot></slot></kbd>`);
-  shadowFactory("contour-shadow-kpi", `<div class="c-kpi" part="kpi"><div class="c-kpi__value" part="value"><slot name="value"></slot></div><div class="c-kpi__label" part="label"><slot name="label"></slot></div><div class="c-kpi__delta" part="delta"><slot name="delta"></slot></div></div>`);
-  shadowFactory("contour-shadow-layer-panel", `<div class="c-layer-panel" part="layer-panel"><slot></slot></div>`);
-  shadowFactory("contour-shadow-layer-switch", `<div class="c-layer-switch" part="layer-switch"><slot></slot></div>`);
-  shadowFactory("contour-shadow-legend", `<div class="c-legend" part="legend"><slot></slot></div>`);
-  shadowFactory("contour-shadow-link", `<a class="c-link" part="link"><slot></slot></a>`);
-  shadowFactory("contour-shadow-linkish", `<a class="c-linkish" part="linkish"><slot></slot></a>`);
-  shadowFactory("contour-shadow-live-badge", `<span class="c-live-badge" part="live-badge"><slot></slot></span>`);
-  shadowFactory("contour-shadow-logos", `<div class="c-logos" part="logos"><slot></slot></div>`);
-  shadowFactory("contour-shadow-map-area", `<div class="c-map-area" part="map-area"><slot></slot></div>`);
-  shadowFactory("contour-shadow-map-footer", `<div class="c-map-footer" part="map-footer"><slot></slot></div>`);
-  shadowFactory("contour-shadow-map-panel", `<div class="c-map-panel" part="map-panel"><slot></slot></div>`);
-  shadowFactory("contour-shadow-map-slot", `<div class="c-map-slot" part="map-slot"><slot></slot></div>`);
-  shadowFactory("contour-shadow-mark", `<span class="c-mark" part="mark"><slot></slot></span>`);
-  shadowFactory("contour-shadow-measure", `<div class="c-measure" part="measure"><slot></slot></div>`);
-  shadowFactory("contour-shadow-menu", `<div class="c-menu" part="menu" role="menu"><slot></slot></div>`);
-  shadowFactory("contour-shadow-meter", `<div class="c-meter" part="meter"><span class="c-meter__core" part="core"><span class="c-meter__value" part="value"><slot name="value"></slot></span><span class="c-meter__label" part="label"><slot name="label"></slot></span></span></div>`);
-  shadowFactory("contour-shadow-metrics", `<div class="c-metrics" part="metrics"><slot></slot></div>`);
-  shadowFactory("contour-shadow-minimap", `<div class="c-minimap" part="minimap"><slot></slot></div>`);
-  shadowFactory("contour-shadow-pager", `<div class="c-pager" part="pager"><slot></slot></div>`);
-  shadowFactory("contour-shadow-panel", `<div class="c-panel" part="panel"><slot></slot></div>`);
-  shadowFactory("contour-shadow-pill", `<span class="c-pill" part="pill"><slot></slot></span>`);
-  shadowFactory("contour-shadow-plate", `<div class="c-plate" part="plate"><slot></slot></div>`);
-  shadowFactory("contour-shadow-price", `<div class="c-price" part="price"><slot></slot></div>`);
-  shadowFactory("contour-shadow-pricing", `<div class="c-pricing" part="pricing"><slot></slot></div>`);
-  shadowFactory("contour-shadow-progress", `<div class="c-progress" part="progress"><slot></slot></div>`);
-  shadowFactory("contour-shadow-prose", `<div class="c-prose" part="prose"><slot></slot></div>`);
-  shadowFactory("contour-shadow-pullquote", `<div class="c-pullquote" part="pullquote"><slot></slot></div>`);
-  shadowFactory("contour-shadow-radio", `<label class="c-radio" part="radio"><slot></slot></label>`);
-  shadowFactory("contour-shadow-radio-list", `<div class="c-radio-list" part="radio-list"><slot></slot></div>`);
-  shadowFactory("contour-shadow-range", `<div class="c-range" part="range"><slot></slot></div>`);
-  shadowFactory("contour-shadow-range-scale", `<div class="c-range-scale" part="range-scale"><slot></slot></div>`);
-  shadowFactory("contour-shadow-readout", `<div class="c-readout" part="readout"><slot></slot></div>`);
-  shadowFactory("contour-shadow-recipe", `<div class="c-recipe" part="recipe"><slot></slot></div>`);
-  shadowFactory("contour-shadow-reserved", `<div class="c-reserved" part="reserved"><slot></slot></div>`);
-  shadowFactory("contour-shadow-resizable", `<div class="c-resizable" part="resizable"><slot></slot></div>`);
-  shadowFactory("contour-shadow-resize-handle", `<div class="c-resize-handle" part="resize-handle"><slot></slot></div>`);
-  shadowFactory("contour-shadow-row", `<div class="c-row" part="row"><slot></slot></div>`);
-  shadowFactory("contour-shadow-row-action", `<div class="c-row-action" part="row-action"><slot></slot></div>`);
-  shadowFactory("contour-shadow-scale-bar", `<div class="c-scale-bar" part="scale-bar"><slot></slot></div>`);
-  shadowFactory("contour-shadow-scheme-toggle", `<button class="c-scheme-toggle" part="scheme-toggle"><slot></slot></button>`);
-  shadowFactory("contour-shadow-scrim", `<div class="c-scrim" part="scrim"><slot></slot></div>`);
-  shadowFactory("contour-shadow-search-trigger", `<button class="c-search-trigger" part="search-trigger"><slot></slot></button>`);
-  shadowFactory("contour-shadow-section-head", `<div class="c-section-head" part="section-head"><h2 class="c-section-head__title" part="title"><slot name="title"></slot></h2><p class="c-section-head__desc" part="desc"><slot name="desc"></slot></p></div>`);
-  shadowFactory("contour-shadow-segmented", `<div class="c-segmented" part="segmented"><slot></slot></div>`);
-  shadowFactory("contour-shadow-select", `<select class="c-select" part="select"><slot></slot></select>`);
-  shadowFactory("contour-shadow-sheet", `<div class="c-sheet" part="sheet"><slot></slot></div>`);
-  shadowFactory("contour-shadow-shortcut-list", `<div class="c-shortcut-list" part="shortcut-list"><slot></slot></div>`);
-  shadowFactory("contour-shadow-shortcut-overlay", `<div class="c-shortcut-overlay" part="shortcut-overlay"><slot></slot></div>`);
-  shadowFactory("contour-shadow-shortcut-panel", `<div class="c-shortcut-panel" part="shortcut-panel"><slot></slot></div>`);
-  shadowFactory("contour-shadow-shortcut-row", `<div class="c-shortcut-row" part="shortcut-row"><slot></slot></div>`);
-  shadowFactory("contour-shadow-showcase", `<div class="c-showcase" part="showcase"><slot></slot></div>`);
-  shadowFactory("contour-shadow-sidebar", `<div class="c-sidebar" part="sidebar"><slot></slot></div>`);
-  shadowFactory("contour-shadow-skeleton", `<div class="c-skeleton" part="skeleton"><slot></slot></div>`);
-  shadowFactory("contour-shadow-spinner", `<span class="c-spinner" part="spinner" role="status" aria-label="Loading"></span>`);
-  shadowFactory("contour-shadow-sparkline", `<div class="c-sparkline" part="sparkline"><slot></slot></div>`);
-  shadowFactory("contour-shadow-stack", `<div class="c-stack" part="stack"><slot></slot></div>`);
-  shadowFactory("contour-shadow-stat", `<div class="c-stat" part="stat"><div class="c-stat__value" part="value"><slot name="value"></slot></div><div class="c-stat__label" part="label"><slot name="label"></slot></div><div class="c-stat__delta" part="delta"><slot name="delta"></slot></div></div>`);
-  shadowFactory("contour-shadow-steps", `<div class="c-steps" part="steps"><slot></slot></div>`);
-  shadowFactory("contour-shadow-survey", `<div class="c-survey" part="survey"><slot></slot></div>`);
-  shadowFactory("contour-shadow-switch", `<label class="c-switch" part="switch"><slot></slot></label>`);
-  shadowFactory("contour-shadow-table-wrap", `<div class="c-table-wrap" part="table-wrap"><slot></slot></div>`);
-  shadowFactory("contour-shadow-tabs", `<div class="c-tabs" part="tabs"><div class="c-tabs__list" part="list"><slot name="tabs"></slot></div><div class="c-tabs__panels" part="panels"><slot></slot></div></div>`);
-  shadowFactory("contour-shadow-tag", `<span class="c-tag" part="tag"><slot></slot></span>`);
-  shadowFactory("contour-shadow-testimonial", `<div class="c-testimonial" part="testimonial"><blockquote class="c-testimonial__quote" part="quote"><slot name="quote"></slot></blockquote><div class="c-testimonial__byline" part="byline"><span class="c-testimonial__name" part="name"><slot name="name"></slot></span><span class="c-testimonial__role" part="role"><slot name="role"></slot></span></div></div>`);
-  shadowFactory("contour-shadow-textarea", `<textarea class="c-textarea" part="textarea"></textarea>`);
-  shadowFactory("contour-shadow-theme-scope", `<div class="c-theme-scope" part="theme-scope"><slot></slot></div>`);
-  shadowFactory("contour-shadow-threshold", `<div class="c-threshold" part="threshold"><span class="c-threshold__value" part="value"><slot name="value"></slot></span><span class="c-threshold__label" part="label"><slot name="label"></slot></span></div>`);
-  shadowFactory("contour-shadow-time-range", `<div class="c-time-range" part="time-range"><slot></slot></div>`);
-  shadowFactory("contour-shadow-time-slider", `<div class="c-time-slider" part="time-slider"><slot></slot></div>`);
-  shadowFactory("contour-shadow-timeline", `<div class="c-timeline" part="timeline"><slot></slot></div>`);
-  shadowFactory("contour-shadow-toast", `<div class="c-toast" part="toast"><slot></slot></div>`);
-  shadowFactory("contour-shadow-toast-host", `<div class="c-toast-host" part="toast-host"><slot></slot></div>`);
-  shadowFactory("contour-shadow-toc", `<div class="c-toc" part="toc"><div class="c-toc__title" part="title"><slot name="title"></slot></div><nav class="c-toc__list" part="list"><slot></slot></nav></div>`);
-  shadowFactory("contour-shadow-toolbar", `<div class="c-toolbar" part="toolbar"><slot></slot></div>`);
-  shadowFactory("contour-shadow-tooltip", `<div class="c-tooltip" part="tooltip"><slot></slot></div>`);
-  shadowFactory("contour-shadow-tree", `<div class="c-tree" part="tree"><slot></slot></div>`);
-  shadowFactory("contour-shadow-version", `<div class="c-version" part="version"><slot></slot></div>`);
-  shadowFactory("contour-shadow-version-banner", `<div class="c-version-banner" part="version-banner"><slot></slot></div>`);
-  shadowFactory("contour-shadow-virtual-scroll", `<div class="c-virtual-scroll" part="virtual-scroll"><slot></slot></div>`);
-
-
-  // ---- Remaining shadow DOM components ----
-  shadowFactory("contour-shadow-avatar", `<span class="c-avatar" part="avatar"><slot></slot></span>`);
-  shadowFactory("contour-shadow-btn", `<button class="c-btn" part="btn"><slot></slot></button>`);
-  shadowFactory("contour-shadow-btn-group", `<div class="c-btn-group" part="btn-group"><slot></slot></div>`);
-  shadowFactory("contour-shadow-catchment", `<div class="c-catchment" part="catchment"><slot></slot></div>`);
-  shadowFactory("contour-shadow-chart-grid", `<div class="c-chart-grid" part="chart-grid"><slot></slot></div>`);
-  shadowFactory("contour-shadow-check", `<label class="c-check" part="check"><slot></slot></label>`);
-  shadowFactory("contour-shadow-chip", `<span class="c-chip" part="chip"><slot></slot></span>`);
-  shadowFactory("contour-shadow-code", `<pre class="c-code" part="code"><code><slot></slot></code></pre>`);
-  shadowFactory("contour-shadow-command", `<div class="c-command" part="command"><slot></slot></div>`);
-  shadowFactory("contour-shadow-docs-nav", `<nav class="c-docs-nav" part="docs-nav"><slot></slot></nav>`);
-  shadowFactory("contour-shadow-docs-shell", `<div class="c-docs-shell" part="docs-shell"><slot></slot></div>`);
-  shadowFactory("contour-shadow-landing-features", `<div class="c-landing-features" part="landing-features"><slot></slot></div>`);
-  shadowFactory("contour-shadow-landing-hero", `<div class="c-landing-hero" part="landing-hero"><slot></slot></div>`);
-  shadowFactory("contour-shadow-pagination", `<div class="c-pagination" part="pagination"><slot></slot></div>`);
-  shadowFactory("contour-shadow-streaming-chart", `<div class="c-streaming-chart" part="streaming-chart"><slot></slot></div>`);
-
+  // Published once, at the end, so the array holds what the browser was actually
+  // handed rather than what the source appears to say. Frozen: a page that
+  // reshapes it would make the next reader's count wrong, which is the failure
+  // this array exists to prevent.
+  window.ContourElements = Object.freeze(REGISTERED.slice());
+})();
