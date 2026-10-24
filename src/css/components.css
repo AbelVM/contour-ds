@@ -711,6 +711,10 @@
   .c-draggable {
     cursor: grab;
     user-select: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-inline-size: 100%;
     transition: opacity var(--dur-fast) var(--ease-standard),
       transform var(--dur-fast) var(--ease-standard);
   }

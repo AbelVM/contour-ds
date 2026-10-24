@@ -1493,24 +1493,24 @@
       zone.classList.remove("c-drop-zone--active");
       const indicator = zone.querySelector(".c-drop-indicator");
       if (indicator) indicator.classList.remove("c-drop-indicator--visible");
-      if (draggedEl && draggedEl.parentElement !== zone) {
+      if (draggedEl) {
         zone.appendChild(draggedEl);
         draggedEl.classList.remove("c-draggable--dragging");
         draggedEl = null;
-      } else {
-        const data = e.dataTransfer?.getData("text/plain");
-        if (data) {
-          const item = document.createElement("span");
-          item.className = "c-draggable c-card";
-          item.style.padding = "var(--space-sm)";
-          item.style.overflow = "hidden";
-          item.style.textOverflow = "ellipsis";
-          item.style.whiteSpace = "nowrap";
-          item.style.maxInlineSize = "100%";
-          item.textContent = data;
-          item.setAttribute("tabindex", "0");
-          zone.appendChild(item);
-        }
+        return;
+      }
+      const data = e.dataTransfer?.getData("text/plain");
+      if (data) {
+        const item = document.createElement("span");
+        item.className = "c-draggable c-card";
+        item.style.padding = "var(--space-sm)";
+        item.style.overflow = "hidden";
+        item.style.textOverflow = "ellipsis";
+        item.style.whiteSpace = "nowrap";
+        item.style.maxInlineSize = "100%";
+        item.textContent = data;
+        item.setAttribute("tabindex", "0");
+        zone.appendChild(item);
       }
     });
   });
