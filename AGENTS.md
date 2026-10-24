@@ -369,6 +369,7 @@ node tools/check-components.mjs # the component contract resolves against src/cs
 node tools/check-docs.mjs      # dist/docs/ is the guide's own prose re-derived byte for byte: no URL, no markup, census rows reconcile
 node tools/check-registry.mjs  # dist/registry/ points at files that exist, says nothing about a host it does not have, and equals a fresh derivation
 node tools/check-ownership.mjs # no guide-only identifiers (ds-, ridgeline, …) leaked into src/
+node tools/check-agent-rules.mjs # the agent-rules artifact cites only gates that exist and run in CI
 node tools/check-layout.mjs     # layout primitives are a ratchet; @deprecated must match the ledger
 node tools/gen-light-dark.mjs --check  # the light-dark() fallback matches src/css
 node tools/stamp.mjs --check   # published numbers match src/

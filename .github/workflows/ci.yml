@@ -77,6 +77,9 @@ jobs:
       - name: Check guide-only identifiers have not leaked into src/
         run: node tools/check-ownership.mjs
 
+      - name: Check the agent-rules artifact
+        run: node tools/check-agent-rules.mjs
+
       # Layout primitives are a ratchet: a fourth vocabulary cannot appear
       # silently, and a @deprecated note must match the gate's ledger.
       - name: Check the layout vocabulary and its deprecation ledger

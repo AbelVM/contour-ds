@@ -29,7 +29,6 @@ import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 
 export const AGENT_RULES_VERSION = "1.0";
-export const RULES_SCHEMA_URL = "https://contour.invalid/schema/agent-rules.json";
 
 /**
  * The gates, in the order an agent should run them. `path` is resolved for existence at
@@ -124,11 +123,22 @@ export function buildAgentRules(root) {
     ? readFileSync(join(root, CI_FILE), "utf8")
     : (() => { throw new Error(`buildAgentRules: ${CI_FILE} is missing, so no enforcement could be verified`); })();
 
-  const jobOf = (lane) => {
-    const m = new RegExp(`^  (\\w[\\w-]*):\\n(?:.*\\n)*?  \\1:`, "m").test(ci) ? lane : null;
-    return m;
-  };
   const jobs = [...ci.matchAll(/^  ([a-z][\w-]*):\n    runs-on:/gm)].map((m) => m[1]);
+  // Slice each job's own text between its header and the next job's, not to EOF. The
+  // first version took `ci.slice(indexOf("  validate:"))`, which therefore also held
+  // the contract job, so every gate — including the browser ones — was published as
+  // `validate`. The artifact claims where each check runs; that claim has to be read
+  // out of the file rather than assumed from the first match.
+  const jobText = new Map();
+  {
+    const heads = [...ci.matchAll(/^  ([a-z][\w-]*):\n    runs-on:/gm)];
+    for (let i = 0; i < heads.length; i += 1) {
+      const from = heads[i].index;
+      const to = i + 1 < heads.length ? heads[i + 1].index : ci.length;
+      jobText.set(heads[i][1], ci.slice(from, to));
+    }
+  }
+  const jobFor = (gate) => jobs.find((j) => (jobText.get(j) ?? "").includes(gate)) ?? null;
 
   const rules = [];
   const dangling = [];

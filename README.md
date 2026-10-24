@@ -110,6 +110,7 @@ to drive the system's own feedback and navigation from their own code.
 | `map-chrome.maplibre.css` / `map-chrome.mapbox.css` | The vendor re-key profile, published under both engine names |
 | `map-chrome-contract.json` | The tokens a map control cluster is re-keyed onto, and the controls each engine ships |
 | `svg/contour-mark.svg` | The brand mark |
+| `agent-rules.json` | Machine-readable constraints for an agent generating UI with Contour: each rule names the gate that enforces it |
 **Package exports** — `package.json` exposes subpaths so a bundler can import exactly what it
 needs without guessing paths: `contour-ds/contour.css`, `contour-ds/contour.min.css`,
 `contour-ds/surfaces/*`, `contour-ds/fonts/*`, `contour-ds/tokens`, `contour-ds/themes`,

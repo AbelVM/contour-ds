@@ -42,6 +42,7 @@ import { buildComponentsDocument } from "./lib/components.mjs";
 import { buildDocs, guideProvenance, readGuide, stampTables } from "./lib/docs.mjs";
 import { buildRegistry, registryJson } from "./lib/registry.mjs";
 import { inventory } from "./lib/inventory.mjs";
+import { buildAgentRules, agentRulesJson } from "./lib/agent-rules.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
@@ -347,6 +348,13 @@ for (const engine of ["maplibre", "mapbox"]) {
     join(dist, `map-chrome.${engine}.css`),
   );
 }
+
+// -- The agent-rules artifact (C-47) ---------------------------------------
+// Machine-readable constraints for an agent generating UI with Contour. Each rule
+// names the gate that enforces it; the build throws if a cited gate is missing
+// or unwired, so the artifact cannot ship with a dangling enforcement.
+const agentRules = buildAgentRules(root);
+writeFileSync(join(dist, "agent-rules.json"), agentRulesJson(agentRules), "utf-8");
 
 // -- The assets -------------------------------------------------------------
 // The brand mark ships with the system (it is the favicon and the logo).
