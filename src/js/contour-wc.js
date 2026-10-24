@@ -2210,6 +2210,33 @@
 })();
 
 
+
+
+  // ---- Shadow DOM factory: reduces boilerplate for slot-based components ----
+  const shadowFactory = (name, templateHtml) => {
+    const tpl = document.createElement("template");
+    tpl.innerHTML = templateHtml;
+    class ShadowComp extends HTMLElement {
+      constructor() {
+        super();
+        const shadow = this.attachShadow({ mode: "open" });
+        const sheets = [];
+        for (const ss of document.styleSheets) {
+          try {
+            if (ss.href && new URL(ss.href).origin === location.origin) {
+              const sheet = new CSSStyleSheet();
+              sheet.replaceSync(Array.from(ss.cssRules).map((r) => r.cssText).join("\n"));
+              sheets.push(sheet);
+            }
+          } catch (e) { /* cross-origin or unreadable */ }
+        }
+        if (sheets.length) shadow.adoptedStyleSheets = sheets;
+        shadow.appendChild(tpl.content.cloneNode(true));
+      }
+    }
+    try { customElements.define(name, ShadowComp); } catch (e) {}
+  };
+
   // ---- Shadow DOM + slots + template (opt-in, read-only attributes) ----
   // A badge that uses Shadow DOM with a default slot. Styles are adopted
   // from the document's same-origin stylesheets so ds.css still applies.
@@ -2370,3 +2397,35 @@
     }
   }
   try { customElements.define("contour-shadow-alert", ContourShadowAlert); } catch (e) {}
+
+
+  // ---- Shadow DOM components (factory-based) ----
+  shadowFactory("contour-shadow-callout", `<div class="c-callout" part="callout"><div class="c-callout__title" part="title"><slot name="title"></slot></div><div class="c-callout__body" part="body"><slot></slot></div></div>`);
+  shadowFactory("contour-shadow-empty", `<div class="c-empty" part="empty"><div class="c-empty__title" part="title"><slot name="title"></slot></div><div class="c-empty__body" part="body"><slot></slot></div><div class="c-empty__action" part="action"><slot name="action"></slot></div></div>`);
+  shadowFactory("contour-shadow-feature", `<div class="c-feature" part="feature"><div class="c-feature__icon" part="icon"><slot name="icon"></slot></div><div class="c-feature__title" part="title"><slot name="title"></slot></div><div class="c-feature__body" part="body"><slot></slot></div></div>`);
+  shadowFactory("contour-shadow-kpi", `<div class="c-kpi" part="kpi"><div class="c-kpi__value" part="value"><slot name="value"></slot></div><div class="c-kpi__label" part="label"><slot name="label"></slot></div><div class="c-kpi__delta" part="delta"><slot name="delta"></slot></div></div>`);
+  shadowFactory("contour-shadow-stat", `<div class="c-stat" part="stat"><div class="c-stat__value" part="value"><slot name="value"></slot></div><div class="c-stat__label" part="label"><slot name="label"></slot></div><div class="c-stat__delta" part="delta"><slot name="delta"></slot></div></div>`);
+  shadowFactory("contour-shadow-tooltip", `<div class="c-tooltip" part="tooltip"><slot></slot></div>`);
+  shadowFactory("contour-shadow-toast", `<div class="c-toast" part="toast"><slot></slot></div>`);
+  shadowFactory("contour-shadow-progress", `<div class="c-progress" part="progress"><slot></slot></div>`);
+  shadowFactory("contour-shadow-meter", `<div class="c-meter" part="meter"><span class="c-meter__core" part="core"><span class="c-meter__value" part="value"><slot name="value"></slot></span><span class="c-meter__label" part="label"><slot name="label"></slot></span></span></div>`);
+  shadowFactory("contour-shadow-diff", `<div class="c-diff" part="diff"><div class="c-diff__before" part="before"><slot name="before"></slot></div><div class="c-diff__after" part="after"><slot name="after"></slot></div></div>`);
+  shadowFactory("contour-shadow-do-dont", `<div class="c-do-dont" part="do-dont"><div class="c-do-dont__do" part="do"><slot name="do"></slot></div><div class="c-do-dont__dont" part="dont"><slot name="dont"></slot></div></div>`);
+  shadowFactory("contour-shadow-threshold", `<div class="c-threshold" part="threshold"><span class="c-threshold__value" part="value"><slot name="value"></slot></span><span class="c-threshold__label" part="label"><slot name="label"></slot></span></div>`);
+  shadowFactory("contour-shadow-coordinate", `<div class="c-coordinate" part="coordinate"><span class="c-coordinate__value" part="value"><slot name="value"></slot></span></div>`);
+  shadowFactory("contour-shadow-install", `<div class="c-install" part="install"><span class="c-install__prompt" part="prompt"><slot name="prompt"></slot></span><span class="c-install__command" part="command"><slot name="command"></slot></span></div>`);
+  shadowFactory("contour-shadow-toc", `<div class="c-toc" part="toc"><div class="c-toc__title" part="title"><slot name="title"></slot></div><nav class="c-toc__list" part="list"><slot></slot></nav></div>`);
+  shadowFactory("contour-shadow-version-banner", `<div class="c-version-banner" part="banner"><slot></slot></div>`);
+  shadowFactory("contour-shadow-testimonial", `<div class="c-testimonial" part="testimonial"><blockquote class="c-testimonial__quote" part="quote"><slot name="quote"></slot></blockquote><div class="c-testimonial__byline" part="byline"><span class="c-testimonial__name" part="name"><slot name="name"></slot></span><span class="c-testimonial__role" part="role"><slot name="role"></slot></span></div></div>`);
+  shadowFactory("contour-shadow-pressable", `<button class="c-pressable" part="pressable"><slot></slot></button>`);
+  shadowFactory("contour-shadow-search-trigger", `<button class="c-search-trigger" part="trigger"><span><slot name="label"></slot></span><kbd class="c-kbd"><slot name="shortcut"></slot></kbd></button>`);
+  shadowFactory("contour-shadow-price", `<div class="c-price" part="price"><slot></slot></div>`);
+  shadowFactory("contour-shadow-prose", `<div class="c-prose" part="prose"><slot></slot></div>`);
+  shadowFactory("contour-shadow-elevation", `<div class="c-elevation" part="elevation"><slot></slot></div>`);
+  shadowFactory("contour-shadow-mark", `<span class="c-mark" part="mark"><slot></slot></span>`);
+  shadowFactory("contour-shadow-link", `<a class="c-link" part="link"><slot></slot></a>`);
+  shadowFactory("contour-shadow-flag", `<span class="c-flag" part="flag"><slot></slot></span>`);
+  shadowFactory("contour-shadow-brand", `<a class="c-brand" part="brand"><span class="c-mark" part="mark"><slot name="mark"></slot></span><span class="c-brand__name" part="name"><slot name="name"></slot></span></a>`);
+  shadowFactory("contour-shadow-section-head", `<div class="c-section-head" part="head"><h2 class="c-section-head__title" part="title"><slot name="title"></slot></h2><p class="c-section-head__desc" part="desc"><slot name="desc"></slot></p></div>`);
+  shadowFactory("contour-shadow-loading", `<div class="c-loading" part="loading"><span class="c-spinner" part="spinner"></span><slot></slot></div>`);
+
