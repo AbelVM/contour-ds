@@ -2209,27 +2209,3 @@
   });
 })();
 
-  // ---- Shadow DOM + slots + template demonstration ----
-  // A card that uses Shadow DOM with named slots and a <template>.
-  // Styles are adopted from the document's stylesheets so ds.css still applies.
-  const shadowTemplate = document.createElement("template");
-  shadowTemplate.innerHTML = `
-    <style>
-      :host { display: block; }
-      .shadow-card { border: 1px solid var(--color-border, #ccc); border-radius: var(--radius-md, 0.5rem); padding: var(--space-md, 1rem); background: var(--color-surface-1, #fff); }
-      .shadow-card__head { font-weight: 600; margin-block-end: 0.5rem; }
-    </style>
-    <div class="shadow-card">
-      <div class="shadow-card__head"><slot name="title">Untitled</slot></div>
-      <div class="shadow-card__body"><slot></slot></div>
-    </div>
-  `;
-
-  class ContourShadowCard extends HTMLElement {
-    constructor() {
-      super();
-      const shadow = this.attachShadow({ mode: "open" });
-      shadow.appendChild(shadowTemplate.content.cloneNode(true));
-    }
-  }
-  try { customElements.define("contour-shadow-card", ContourShadowCard); } catch (e) {}
