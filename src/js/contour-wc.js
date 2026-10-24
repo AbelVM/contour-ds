@@ -31,6 +31,15 @@
     "variant",
   ];
 
+  /**
+   * Base class for all Contour web components.
+   *
+   * Lifecycle: the first `connectedCallback` snapshots the author's nodes and
+   * class attribute, then calls `render()`. On attribute change, the snapshot
+   * is restored and `render()` runs again, so subclasses stay reactive.
+   *
+   * All components use light DOM so that `ds.css` styles apply directly.
+   */
   // Base class: the lifecycle belongs here, the markup belongs to the subclass.
   //
   // A render body is written to run more than once, and it is idempotent because
@@ -38,7 +47,7 @@
   // connectedCallback records the nodes and the class attribute the AUTHOR
   // wrote; every later render drops everything, re-appends exactly those nodes,
   // and runs again. So a body may keep the natural
-  // \`if (!this.querySelector(".c-card__title"))\` shape: after the reset the
+  // `if (!this.querySelector(".c-card__title"))` shape: after the reset the
   // generated node is gone, the guard passes, and the changed attribute reaches
   // the page. Without the reset the guard is permanent and reactivity is a lie.
   //
@@ -75,6 +84,10 @@
       } finally {
         this._contourRendering = false;
       }
+    }
+
+    disconnectedCallback() {
+      // Override in subclasses that attach event listeners or timers.
     }
 
     // Subclasses override this. It must be safe to call repeatedly.
@@ -2181,3 +2194,28 @@
     define(name, simple(classes));
   });
 })();
+
+  // ---- Shadow DOM + slots + template demonstration ----
+  // A card that uses Shadow DOM with named slots and a <template>.
+  // Styles are adopted from the document's stylesheets so ds.css still applies.
+  const shadowTemplate = document.createElement("template");
+  shadowTemplate.innerHTML = `
+    <style>
+      :host { display: block; }
+      .shadow-card { border: 1px solid var(--color-border, #ccc); border-radius: var(--radius-md, 0.5rem); padding: var(--space-md, 1rem); background: var(--color-surface-1, #fff); }
+      .shadow-card__head { font-weight: 600; margin-block-end: 0.5rem; }
+    </style>
+    <div class="shadow-card">
+      <div class="shadow-card__head"><slot name="title">Untitled</slot></div>
+      <div class="shadow-card__body"><slot></slot></div>
+    </div>
+  `;
+
+  class ContourShadowCard extends HTMLElement {
+    constructor() {
+      super();
+      const shadow = this.attachShadow({ mode: "open" });
+      shadow.appendChild(shadowTemplate.content.cloneNode(true));
+    }
+  }
+  try { customElements.define("contour-shadow-card", ContourShadowCard); } catch (e) {}
