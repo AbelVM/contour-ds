@@ -77,6 +77,28 @@
   this). `check-dist`'s naming contract now covers it, and README names it.
 
 ### Added
+- C-47: `dist/agent-rules.json` states the constraints an agent must obey when
+  generating UI with Contour, and every rule names the gate that enforces it. The
+  emitter (`tools/lib/agent-rules.mjs`) throws instead of writing the file if a cited
+  gate is missing or runs in no CI lane, so the artifact cannot ship a dangling
+  enforcement; `node tools/check-agent-rules.mjs` re-reads `ci.yml` independently and
+  compares the **set** of jobs per gate, because build and guard share one library and a
+  wrong job label survives byte-equality — only an independent recompute catches it. It
+  publishes no counts and no URL: totals belong to `contour.components.json` and
+  `contour.tokens.json`, and the project is private until v1.0, so a rulebook naming a
+  host it cannot reach would teach the reader to distrust the rulebook. Falsified 10/10:
+  two emitter refusals, six guard rejections, one isolation case proving the job rule is
+  not the byte rule restated, and one regression guard that `WCAG 2.2.2` and `404` stay
+  green because they are identifiers, not tallies.
+- `tools/audit/family-gate.mjs`, the only check that enforces "no raw colour literal,
+  read a token", now runs in CI. It had been hard-coded to one absolute path, so run
+  anywhere else it read that other repo and reported *its* verdict: a scratch copy
+  containing `color: #ff0000` exited 0 naming nothing, and exits 1 naming the file after
+  the fix. Its exemptions were one substring test that excused any finding containing
+  `#000` — including a raw paint colour — and are now named entries matched on the
+  enclosing declaration, each of which must excuse at least one real finding or the run
+  fails. Verdict on this tree is unchanged by design: 5 violations across 13 stylesheets,
+  all ledgered.
 - `node tools/build.mjs --single` produces `dist/contour.single.min.css`, the minified
   CSS with the self-hosted fonts inlined as data URIs, so a consumer can ship one file.
   Off by default: it is ~260 kB larger and defeats font caching.
@@ -652,5 +674,5 @@
 ### Corrections to this file's own claims
 Three entries above were overstated when first written, and are corrected here rather than quietly deleted:
 1. **"Nine unspecced components documented"** — six of nine, with 13 blocks still undocumented.
-2. **"`llms.txt` corrected (component count…)"** — was false when written here, and is now actually done. Both files published 83 components / 260 tokens while `src/` held **<!-- ds:components -->134<!-- /ds:components --> components, <!-- ds:tokens -->282<!-- /ds:tokens --> tokens, <!-- ds:tokens-read -->280<!-- /ds:tokens-read --> read, <!-- ds:tokens-unread -->2<!-- /ds:tokens-unread --> unread**. The root cause was in the gate, not the prose: `stamp` only visited files carrying markers, and neither file had any — `llms.txt` is machine-facing and `DESIGN.md`'s figures live in YAML front matter, where an HTML comment is not legal syntax — so `stamp --check` passed by never reading them. `stamp` now owns both (anchored rewrites for `llms.txt`, a key-path setter for front matter) and treats a declared pattern that matches nothing as an error, so a skipped file fails the build instead of greening it
+2. **"`llms.txt` corrected (component count…)"** — was false when written here, and is now actually done. Both files published 83 components / 260 tokens while `src/` held **<!-- ds:components -->134<!-- /ds:components --> components, <!-- ds:tokens -->290<!-- /ds:tokens --> tokens, <!-- ds:tokens-read -->280<!-- /ds:tokens-read --> read, <!-- ds:tokens-unread -->10<!-- /ds:tokens-unread --> unread**. The root cause was in the gate, not the prose: `stamp` only visited files carrying markers, and neither file had any — `llms.txt` is machine-facing and `DESIGN.md`'s figures live in YAML front matter, where an HTML comment is not legal syntax — so `stamp --check` passed by never reading them. `stamp` now owns both (anchored rewrites for `llms.txt`, a key-path setter for front matter) and treats a declared pattern that matches nothing as an error, so a skipped file fails the build instead of greening it
 3. **"focus ring (3.55:1)"** — that was the best-case surface. The binding measurement was 2.94:1, i.e. the contract did not hold until the change recorded above.

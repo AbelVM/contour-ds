@@ -280,6 +280,20 @@
       "sentence": "there is no `homepage` and no `url` field, because the project is private until v1.0",
       "owner": "node tools/check-registry.mjs",
       "threshold": "registry.json must carry neither key, and the only URLs permitted anywhere in the document are the two $schema identifiers; every item's registryDependencies must be empty, proven against the shipped CSS — the core bundle's selectors must appear in each surface bundle, so the shared layer really is inside it and a host installing two surfaces is not told to install the base twice"
+    },
+    {
+      "id": "C-47-a",
+      "doc": "README.md",
+      "sentence": "Machine-readable constraints for an agent generating UI with Contour: each rule names the gate that enforces it",
+      "owner": "node tools/check-agent-rules.mjs",
+      "threshold": "every cited gate must exist on disk AND be invoked by a CI job, and the job set the artifact publishes is recomputed from ci.yml and compared — never trusted from the emitter, because build and guard share the same library, so a wrong job label survives byte-equality and only an independent re-read catches it. Falsified 10/10: emitter refusing a phantom gate and a gate no job runs; guard catching a wrong job set with the byte rule silent by design, a hand-edit, a malformed file reported as invalid JSON rather than a stack trace, a URL, a restated owned count, and an empty rulebook; plus WCAG 2.2.2 and HTTP 404 staying green because they are identifiers, not tallies"
+    },
+    {
+      "id": "C-47-b",
+      "doc": "AGENTS.md",
+      "sentence": "the agent-rules artifact cites only gates that exist and run in CI",
+      "owner": "node tools/build.mjs",
+      "threshold": "the emitter throws at build time, so no artifact with a dangling or unwired enforcement can be written at all — the guard is the backstop for a hand-edited file, not the first line. This clause exists because the row's own premise was false: it called three gates the proof, and reading their assertion loops found one owned no colour literal at all and the other ran in no CI lane while scanning whichever repo it was hard-coded to, not the one it stood in"
     }
   ]
 }
