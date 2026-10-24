@@ -153,7 +153,7 @@
     "contour-expandable": ["c-expandable"],
     "contour-faq": ["c-faq"],
     "contour-feature": ["c-feature"],
-    "contour-c-field": ["c-field"],
+    "contour-field": ["c-field"],
     "contour-filter-bar": ["c-filter-bar"],
     "contour-filter-pill": ["c-filter-pill"],
     "contour-flag": ["c-flag"],
@@ -282,16 +282,6 @@
   }
   define("contour-card", ContourCard);
 
-  // Dialog: ensures proper structure.
-  class ContourDialog extends ContourBase {
-    render() {
-      this.classList.add("c-dialog");
-      if (!this.hasAttribute("role")) this.setAttribute("role", "dialog");
-      if (this.hasAttribute("open")) this.setAttribute("open", "");
-    }
-  }
-  define("contour-dialog", ContourDialog);
-
   // Tabs: generates tab list from data-tabs attribute.
   class ContourTabs extends ContourBase {
     render() {
@@ -317,39 +307,6 @@
     }
   }
   define("contour-tabs", ContourTabs);
-
-  // Breadcrumb: generates from data-items.
-  class ContourBreadcrumb extends ContourBase {
-    render() {
-      this.classList.add("c-breadcrumb");
-      const items = this.getAttribute("items");
-      if (items && !this.querySelector("a")) {
-        try {
-          const parsed = JSON.parse(items);
-          const nav = document.createElement("nav");
-          nav.setAttribute("aria-label", "Breadcrumb");
-          const ol = document.createElement("ol");
-          parsed.forEach((item, i) => {
-            const li = document.createElement("li");
-            if (i < parsed.length - 1) {
-              const a = document.createElement("a");
-              a.href = item.href || "#";
-              a.textContent = item.label || item;
-              li.appendChild(a);
-            } else {
-              li.textContent = item.label || item;
-              li.setAttribute("aria-current", "page");
-            }
-            ol.appendChild(li);
-          });
-          nav.appendChild(ol);
-          this.innerHTML = "";
-          this.appendChild(nav);
-        } catch (e) { /* keep existing */ }
-      }
-    }
-  }
-  define("contour-breadcrumb", ContourBreadcrumb);
 
   // Header: generates brand + nav + actions.
   class ContourHeader extends ContourBase {
@@ -478,7 +435,7 @@
   // ---- Additional complex components with scaffolding ----
 
   // Dialog: generates head + body + foot from attributes.
-  class ContourDialogFull extends ContourBase {
+  class ContourDialog extends ContourBase {
     render() {
       this.classList.add("c-dialog");
       if (!this.hasAttribute("role")) this.setAttribute("role", "dialog");
@@ -500,7 +457,7 @@
       }
     }
   }
-  define("contour-dialog", ContourDialogFull);
+  define("contour-dialog", ContourDialog);
 
   // Alert: generates icon + title + body.
   class ContourAlert extends ContourBase {
@@ -554,7 +511,7 @@
       }
     }
   }
-  define("contour-c-field", ContourField);
+  define("contour-field", ContourField);
 
   // Readout: generates rows from data-rows attribute.
   class ContourReadout extends ContourBase {
@@ -1105,7 +1062,7 @@
   define("contour-skeleton", ContourSkeleton);
 
   // Breadcrumb & pagination: generates nav from items.
-  class ContourBreadcrumbFull extends ContourBase {
+  class ContourBreadcrumb extends ContourBase {
     render() {
       this.classList.add("c-breadcrumb");
       const items = this.getAttribute("items");
@@ -1135,7 +1092,7 @@
       }
     }
   }
-  define("contour-breadcrumb", ContourBreadcrumbFull);
+  define("contour-breadcrumb", ContourBreadcrumb);
 
   // Pagination: generates page links.
   class ContourPagination extends ContourBase {
@@ -1219,18 +1176,6 @@
     }
   }
   define("contour-progress", ContourProgress);
-
-  // Meter: generates from value attribute.
-  class ContourMeter extends ContourBase {
-    render() {
-      this.classList.add("c-meter");
-      const value = this.getAttribute("value");
-      if (value) {
-        this.style.setProperty("--meter-value", value);
-      }
-    }
-  }
-  define("contour-meter", ContourMeter);
 
   // Range: generates from attributes.
   class ContourRange extends ContourBase {
@@ -1362,16 +1307,6 @@
   }
   define("contour-link", ContourLink);
 
-  // Flag: generates from variant.
-  class ContourFlag extends ContourBase {
-    render() {
-      this.classList.add("c-flag");
-      const variant = this.getAttribute("variant");
-      if (variant) this.classList.add("c-flag--" + variant);
-    }
-  }
-  define("contour-flag", ContourFlag);
-
   // Mark: generates from variant.
   class ContourMark extends ContourBase {
     render() {
@@ -1501,7 +1436,7 @@
   // ---- Additional complex components with scaffolding ----
 
   // Meter: generates core + value + label from attributes.
-  class ContourMeterFull extends ContourBase {
+  class ContourMeter extends ContourBase {
     render() {
       this.classList.add("c-meter");
       const value = this.getAttribute("value") || "0";
@@ -1530,7 +1465,7 @@
       if (!this.hasAttribute("aria-valuemax")) this.setAttribute("aria-valuemax", "1");
     }
   }
-  define("contour-meter", ContourMeterFull);
+  define("contour-meter", ContourMeter);
 
   // Delta: generates arrow + value from attributes.
   class ContourDelta extends ContourBase {
@@ -1633,29 +1568,6 @@
   }
   define("contour-bivariate", ContourBivariate);
 
-  // Threshold: generates from value.
-  class ContourThreshold extends ContourBase {
-    render() {
-      this.classList.add("c-threshold");
-      const value = this.getAttribute("value");
-      if (value && !this.querySelector(".c-threshold__value")) {
-        const v = document.createElement("span");
-        v.className = "c-threshold__value";
-        v.textContent = value;
-        this.appendChild(v);
-      }
-    }
-  }
-  define("contour-threshold", ContourThreshold);
-
-  // Survey: generates from data.
-  class ContourSurvey extends ContourBase {
-    render() {
-      this.classList.add("c-survey");
-    }
-  }
-  define("contour-survey", ContourSurvey);
-
   // Expandable: generates summary + content.
   class ContourExpandable extends ContourBase {
     render() {
@@ -1678,7 +1590,7 @@
   define("contour-expandable", ContourExpandable);
 
   // Flag: generates from variant.
-  class ContourFlagFull extends ContourBase {
+  class ContourFlag extends ContourBase {
     render() {
       this.classList.add("c-flag");
       const variant = this.getAttribute("variant");
@@ -1689,7 +1601,7 @@
       }
     }
   }
-  define("contour-flag", ContourFlagFull);
+  define("contour-flag", ContourFlag);
 
   // Link: already defined above.
 
@@ -1775,7 +1687,7 @@
   // ---- Additional complex components with scaffolding ----
 
   // Survey: generates from date and instrument attributes.
-  class ContourSurveyFull extends ContourBase {
+  class ContourSurvey extends ContourBase {
     render() {
       this.classList.add("c-survey");
       const date = this.getAttribute("date");
@@ -1788,10 +1700,10 @@
       }
     }
   }
-  define("contour-survey", ContourSurveyFull);
+  define("contour-survey", ContourSurvey);
 
   // Threshold: generates from value and label.
-  class ContourThresholdFull extends ContourBase {
+  class ContourThreshold extends ContourBase {
     render() {
       this.classList.add("c-threshold");
       const value = this.getAttribute("value");
@@ -1810,7 +1722,7 @@
       }
     }
   }
-  define("contour-threshold", ContourThresholdFull);
+  define("contour-threshold", ContourThreshold);
 
   // Expandable: already defined above.
 
