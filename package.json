@@ -33,5 +33,38 @@
     "spatial",
     "maps",
     "geospatial"
-  ]
+  ],
+  "exports": {
+    ".": {
+      "style": "./dist/contour.css",
+      "default": "./dist/contour.css"
+    },
+    "./contour.css": "./dist/contour.css",
+    "./contour.min.css": "./dist/contour.min.css",
+    "./contour.js": "./dist/contour.js",
+    "./contour.min.js": "./dist/contour.min.js",
+    "./surfaces/*": "./dist/surfaces/*",
+    "./fonts/*": "./dist/fonts/*",
+    "./tokens": "./dist/contour.tokens.json",
+    "./tokens.json": "./dist/contour.tokens.json",
+    "./themes": "./dist/contour.themes.json",
+    "./themes.json": "./dist/contour.themes.json",
+    "./components": "./dist/contour.components.json",
+    "./components.json": "./dist/contour.components.json",
+    "./map-chrome/*": "./dist/map-chrome.*.css",
+    "./svg/*": "./dist/svg/*"
+  },
+  "sideEffects": [
+    "*.css",
+    "*.js"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "ajv": "8.20.0",
+    "dembrandt": "0.39.2",
+    "playwright-core": "1.64.1",
+    "html-validate": "11.17.0"
+  }
 }

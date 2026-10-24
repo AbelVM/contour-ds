@@ -102,6 +102,12 @@ const BUDGETS = {
   // this line ever moves sharply, check whether someone inlined content before
   // reaching for a bigger budget.
   "registry/": 18 * 1024,
+  // Opt-in single-file bundle (build --single): the minified CSS with the
+  // self-hosted fonts inlined as data URIs. Budgeted loosely because it is
+  // ~260 kB larger than contour.min.css by construction; the gate exists to
+  // catch an accidental doubling, not to keep it small.
+  "contour.single.min.css": 500 * 1024,
+  "contour.single.html": 520 * 1024,
   "surfaces/contour-core.min.css": 106 * 1024,
   "surfaces/contour-docs.min.css": 119 * 1024,
   "surfaces/contour-data.min.css": 127 * 1024,
@@ -189,6 +195,8 @@ let over = 0;
 for (const [file, budget] of Object.entries(BUDGETS)) {
   const path = join(DIST, file);
   if (!existsSync(path)) {
+    // Opt-in artifacts (build --single) are not required in a default build.
+    if (file === "contour.single.min.css" || file === "contour.single.html") continue;
     rows.push({ file, bytes: null, files: null, budget, status: "MISSING" });
     over += 1;
     continue;

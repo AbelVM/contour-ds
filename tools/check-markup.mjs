@@ -5,11 +5,10 @@
  * Two gaps, both measured rather than assumed, and both invisible to every other
  * gate in this repository because neither is a declaration:
  *
- *   1. Every shipped page linked Google Fonts and none but the guide carried the
- *      matching `rel=preconnect` pair, so the shipped template was slower than
- *      the documentation that recommends it. A preconnect is a hint, and a hint
- *      that is missing changes no test result — it only costs the reader
- *      milliseconds on every load. Nothing checked it.
+ *   1. Fonts are now self-hosted (C-52), so no shipped page may reach out to
+ *      a Google Fonts origin — a leftover `fonts.googleapis.com` / `fonts.gstatic.com`
+ *      reference is the failure mode this check exists to catch. The preconnect
+ *      pair that used to guard that origin is gone with it.
  *   2. No page carried `og:` or `twitter:` metadata, so a landing surface whose
  *      entire pitch is a visual identity shared into Slack, X or GitHub with no
  *      card at all: no title, no description, no image.
@@ -35,11 +34,10 @@ const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
 const read = (...p) => (existsSync(join(ROOT, ...p)) ? readFileSync(join(ROOT, ...p), "utf8") : null);
 
 const PAGES = ["index.html", "templates/landing.html", "templates/dashboard.html", "templates/documentation.html"];
-const FONT_ORIGIN = "https://fonts.googleapis.com";
-const FONT_FILES = "https://fonts.gstatic.com";
 const errors = [];
 
 let linkedFonts = 0;
+let preloadedFonts = 0;
 let metadataPages = 0;
 
 for (const page of PAGES) {
@@ -49,18 +47,32 @@ for (const page of PAGES) {
     continue;
   }
 
-  // ---- 1. a cross-origin font sheet needs both hints -------------------
-  // googleapis serves the stylesheet, gstatic serves the font files. Skipping
-  // the second still pays a fresh handshake for every face, and `crossorigin` is
-  // required on it because the font fetch is CORS-mode — a preconnect without it
-  // opens a second, unused connection.
-  const linksFonts = new RegExp(`href=["']${FONT_ORIGIN.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`).test(html);
-  if (linksFonts) {
+  // ---- 1. fonts are self-hosted: no third-party font origin may remain ----
+  // C-52 moved IBM Plex into src/css/fonts/ and ds.css loads it through
+  // src/css/fonts.css, so a shipped page must not reach out to Google Fonts
+  // (no DNS/TCP/TLS chain, no IP transfer — LG Muenchen I, 3 O 17493/20).
+  // A leftover googleapis/gstatic reference is the failure mode this check
+  // exists to catch; the preconnect pair that used to guard it is gone with
+  // the origin it pointed at.
+  const referencesGoogleFonts = /fonts\.googleapis\.com|fonts\.gstatic\.com/.test(html);
+  if (referencesGoogleFonts) {
+    errors.push(`${page}: still references a Google Fonts origin — fonts are self-hosted via src/css/fonts.css`);
+  } else {
     linkedFonts++;
-    const toApi = /<link[^>]*rel=["']preconnect["'][^>]*href=["']https:\/\/fonts\.googleapis\.com["']/.test(html);
-    const toFiles = /<link[^>]*rel=["']preconnect["'][^>]*href=["']https:\/\/fonts\.gstatic\.com["'][^>]*crossorigin/.test(html);
-    if (!toApi) errors.push(`${page}: loads the Google Fonts sheet with no preconnect to ${FONT_ORIGIN}`);
-    if (!toFiles) errors.push(`${page}: preconnect to ${FONT_FILES} missing or without crossorigin (the font fetch is CORS-mode)`);
+  }
+
+  // ---- 1b. the critical face is preloaded so text is not invisible ----
+  // Self-hosting removes the third-party chain, but the browser still discovers
+  // the @font-face only after parsing the CSS. Preloading the body variable
+  // font keeps LCP from waiting on that discovery. `crossorigin` is required
+  // because font fetches are CORS-mode; a preload without it opens a second,
+  // unused connection.
+  const preloadsSans = /<link[^>]*rel=["']preload["'][^>]*as=["']font["'][^>]*href=["'][^"']*ibm-plex-sans-var\.woff2["'][^>]*crossorigin/.test(html)
+    || /<link[^>]*rel=["']preload["'][^>]*href=["'][^"']*ibm-plex-sans-var\.woff2["'][^>]*as=["']font["'][^>]*crossorigin/.test(html);
+  if (!preloadsSans) {
+    errors.push(`${page}: self-hosted fonts but no preload for ibm-plex-sans-var.woff2 (as="font", crossorigin)`);
+  } else {
+    preloadedFonts++;
   }
 
   // ---- 2. a page that can be shared should say what it is -------------
@@ -102,8 +114,8 @@ if (desc && ogDesc && desc[1] !== ogDesc[1]) {
 }
 
 // A run that looked at nothing is not a pass.
-if (!linkedFonts || !metadataPages) {
-  errors.push(`checked ${linkedFonts} font-linking page(s) and ${metadataPages} fully-described page(s) — nothing matched, so the gate proved nothing`);
+if (!linkedFonts || !preloadedFonts || !metadataPages) {
+  errors.push(`checked ${linkedFonts} self-hosted-font page(s), ${preloadedFonts} preloaded-font page(s) and ${metadataPages} fully-described page(s) — nothing matched, so the gate proved nothing`);
 }
 
 if (errors.length) {
@@ -112,6 +124,7 @@ if (errors.length) {
   process.exit(1);
 }
 console.log(
-  `check-markup: OK — ${PAGES.length} shipped page(s): ${linkedFonts} load webfonts and preconnect to both origins, ` +
-    `${metadataPages} carry title/description/og:type/twitter:card, and the guide's two description attributes agree.`,
+  `check-markup: OK — ${PAGES.length} shipped page(s): ${linkedFonts} use self-hosted fonts (no Google Fonts origin), ` +
+    `${preloadedFonts} preload the critical face, ${metadataPages} carry title/description/og:type/twitter:card, ` +
+    `and the guide's two description attributes agree.`,
 );

@@ -82,6 +82,18 @@ const source = join(ROOT, "src/css/map-chrome.css");
     }
   }
 }
+// Opt-in single-file bundle (only present after `build --single`): it must be
+// self-contained, i.e. no reference to the separate fonts/ directory.
+const singlePath = join(ROOT, "dist", "contour.single.min.css");
+if (existsSync(singlePath)) {
+  const single = readFileSync(singlePath, "utf8");
+  if (/fonts\//.test(single)) errors.push("contour.single.min.css still references fonts/ — inlining failed");
+}
+const singleHtmlPath = join(ROOT, "dist", "contour.single.html");
+if (existsSync(singleHtmlPath)) {
+  const html = readFileSync(singleHtmlPath, "utf8");
+  if (!/<style>/.test(html)) errors.push("contour.single.html is missing inlined CSS");
+}
 // JS syntax check via Function constructor (best-effort).
 try { new Function(js); } catch (e) { errors.push("JS syntax: " + e.message); }
 // Corruption patterns.

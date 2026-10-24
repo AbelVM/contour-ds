@@ -46,8 +46,9 @@ into it.
 - **The icon sprite.** Each template carries a small inline sprite with only
   the icons it uses. A real project would have a build step that emits one
   sprite for the whole product.
-- **The fonts.** The Google Fonts link is there so the templates look right;
-  self-host the files if you care about privacy or performance.
+- **The fonts.** They are self-hosted through `src/css/ds.css` (which pulls in
+  `src/css/fonts.css`), so the templates look right with no third-party request.
+  Copy `src/css/fonts/` along with the stylesheet if you relocate the build.
 - **Content.** Every number, name and quotation is a placeholder.
 
 ## Rules to keep

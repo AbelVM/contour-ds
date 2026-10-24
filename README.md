@@ -36,6 +36,7 @@ Or, if you are inlining layers with a bundler, import them in this order
 (`ds.css` declares the same order):
 
 ```css
+@import "src/css/fonts.css";
 @import "src/css/tokens.css" layer(tokens);
 @import "src/css/base.css" layer(base);
 @import "src/css/components.css" layer(components);
@@ -72,9 +73,13 @@ shell). `utilities.css` is the single-purpose helpers.
 <button class="c-btn c-btn--primary">Compute route</button>
 ```
 
-**Fonts** — IBM Plex Sans, IBM Plex Sans Condensed and IBM Plex Mono from Google Fonts
-(`display=swap`). The system degrades to system UI fonts without them. For a smaller payload,
-subset the request with `&text=` or switch to a variable font (T-42).
+**Fonts** — self-hosted variable IBM Plex (Sans, Mono) plus the Condensed weights used by
+the display scale, subsetted to Latin + Latin Extended and served under renamed family names
+(`Contour Plex Sans`, `Contour Plex Mono`, `Contour Plex Sans Condensed`). The files live in
+`src/css/fonts/` (and `dist/fonts/` after a build) with the OFL text beside them; `ds.css`
+loads them through `src/css/fonts.css`, so a consumer who links `ds.css` gets them with no
+third-party request. `display=swap` is retained on every `@font-face`. The system degrades to
+system UI fonts without them.
 
 **Icons** — Contour ships no icon set. Icons are the consumer's; the system's components use
 inline SVG with a 16 px grid and one stroke weight, so any icon set drawn on that grid will
@@ -94,6 +99,8 @@ to drive the system's own feedback and navigation from their own code.
 | File | Contents |
 |---|---|
 | `contour.css` / `contour.min.css` | Every layer, in cascade order |
+| `contour.single.min.css` | Opt-in (`--single`): the minified CSS with the self-hosted fonts inlined as data URIs, so a consumer can ship one file. ~260 kB larger; off by default |
+| `contour.single.html` | Opt-in (`--single`): a one-file drop with the CSS (fonts inlined) and JS inlined |
 | `contour.js` / `contour.min.js` | The optional enhancement |
 | `contour.tokens.json` | The token layer as a **DTCG 2025.10 Format** document — colours as `{ colorSpace, components }`, aliases kept as `{references}` so the lineage survives serialisation, and every declared value the Format Module cannot express named in a ledger with its reason instead of dropped |
 | `contour.themes.json` | The dark branch of every `light-dark()` pair, as a **DTCG 2025.10 Resolver** document. A Format token has exactly one value, so the theme axis cannot live in it: `contour.tokens.json` *is* the light theme, and applying this set over it gives the dark one |
@@ -103,9 +110,16 @@ to drive the system's own feedback and navigation from their own code.
 | `map-chrome.maplibre.css` / `map-chrome.mapbox.css` | The vendor re-key profile, published under both engine names |
 | `map-chrome-contract.json` | The tokens a map control cluster is re-keyed onto, and the controls each engine ships |
 | `svg/contour-mark.svg` | The brand mark |
+**Package exports** — `package.json` exposes subpaths so a bundler can import exactly what it
+needs without guessing paths: `contour-ds/contour.css`, `contour-ds/contour.min.css`,
+`contour-ds/surfaces/*`, `contour-ds/fonts/*`, `contour-ds/tokens`, `contour-ds/themes`,
+`contour-ds/components`, `contour-ds/contour.js` and `contour-ds/map-chrome/*`. The root
+export resolves to `dist/contour.css`. Fonts resolve relative to the stylesheet, so copying
+a single CSS file is not enough — copy `fonts/` with it (or use the surface bundles, which
+carry the `@font-face` rules and the same relative URLs).
 
-Only the system is bundled — the guide's own markup, the templates and the guide-only artwork
-stay out. `docs/` is the one guide-derived artifact that ships, and it ships prose and pointers
+Only the system is bundled — the guide's own markup and the guide-only artwork stay out.
+`docs/` is the one guide-derived artifact that ships, and it ships prose and pointers
 rather than the specimen layer: `node tools/check-docs.mjs` re-derives every byte of it from
 `index.html` and fails the build if a doc has been hand-edited, if a sentence is not the guide's
 own, if a block it names is not in the component contract, or if the package grew a URL, a tag
@@ -396,21 +410,32 @@ the two should not be quoted interchangeably. The system's score is measured on
 
 ### Fonts
 
-The guide and templates load IBM Plex from `fonts.googleapis.com`. That is a
-third-party request chain (DNS, TCP, TLS, then the font files) and it is the
-single largest contributor to the guide's `network-dependency-tree` and LCP
-scores. It is also a legal exposure: **LG München I, 3 O 17493/20** (2022)
-awarded €100 in damages for transferring a visitor's IP address to Google
-Fonts without consent, and the Austrian DSB (2023-10-26) confirmed that no
-transfer occurs when the fonts are served from the same origin. The system now ships the fonts: variable IBM Plex (Sans, Mono) and the
-Condensed weights used by the display scale, subsetted to Latin + Latin
-Extended and served under renamed family names (`Contour Plex Sans`,
-`Contour Plex Mono`, `Contour Plex Sans Condensed`) because the OFL treats
-subsetting as a modification and reserves the "Plex" name. The files live in
-`src/css/fonts/` (and `dist/fonts/` after a build) with the OFL text beside
-them. The templates and the guide no longer request Google Fonts, so there is
-no third-party request chain and no IP transfer. `display=swap` is retained
-on every `@font-face`.
+Before C-52 the guide and templates loaded IBM Plex from `fonts.googleapis.com`. That was a
+third-party request chain (DNS, TCP, TLS, then the font files) and the single largest
+contributor to the guide's `network-dependency-tree` and LCP scores, and a legal exposure:
+**LG München I, 3 O 17493/20** (2022) awarded €100 in damages for transferring a visitor's IP
+address to Google Fonts without consent, and the Austrian DSB (2023-10-26) confirmed that no
+transfer occurs when the fonts are served from the same origin. The system now ships the fonts:
+variable IBM Plex (Sans, Mono) and the Condensed weights used by the display scale, subsetted to
+Latin + Latin Extended and served under renamed family names (`Contour Plex Sans`,
+`Contour Plex Mono`, `Contour Plex Sans Condensed`) because the OFL treats subsetting as a
+modification and reserves the "Plex" name. The files live in `src/css/fonts/` (and `dist/fonts/`
+after a build) with the OFL text beside them, and `src/css/fonts.css` (imported first by
+`ds.css`) declares the `@font-face` rules with relative `fonts/…` paths that resolve identically
+from `src/css/` and `dist/`. The templates and the guide no longer request Google Fonts, so there
+is no third-party request chain and no IP transfer. `display=swap` is retained on every
+`@font-face`.
+
+**Delivering.** `ds.css` is the single entry point and it pulls `fonts.css` in first, so a
+consumer who links `ds.css` (or inlines the documented import list) gets the faces with no extra
+step. The font files are *not* inlined into the CSS: they ship beside it as `fonts/*.woff2`, and
+the relative `fonts/…` URLs resolve against the stylesheet's own location, so the same sheet works
+from `src/css/`, from `dist/`, and from any directory a consumer copies the package into. A
+consumer who inlines the CSS into a single file must also copy `fonts/` next to the resulting
+stylesheet (or rewrite the `src` URLs); the build does not base64-encode them, because inlining
+~260 kB of font data into every page's critical CSS would defeat the cacheability the separate
+files give. `font-display: swap` keeps text visible during load, and the family names are stable
+so a consumer's own `@font-face` overrides (if any) compose cleanly.
 
 ### Reduced motion and forced colours
 
@@ -504,6 +529,7 @@ never drawn.
 | Command | What it does |
 |---|---|
 | `node tools/build.mjs` | Bundle and minify the system into `dist/`, export the tokens |
+| `node tools/build.mjs --single` | Additionally emit `dist/contour.single.min.css` with the self-hosted fonts inlined as data URIs (one file; ~260 kB larger) |
 | `node tools/snippets.mjs` | Regenerate the snippets in `index.html` — run after editing a specimen |
 | `python3 tools/contour-gen.py` | Regenerate the contour artwork |
 | `npx html-validate index.html templates/*.html` | Validate the markup |
@@ -514,3 +540,16 @@ never drawn.
 ## Licence
 
 MIT.
+
+### Fonts
+
+The self-hosted fonts are IBM Plex (Sans, Mono, Sans Condensed), subsetted to
+Latin + Latin Extended and served under the renamed family names `Contour Plex
+Sans`, `Contour Plex Mono` and `Contour Plex Sans Condensed`. They are licensed
+under the **SIL Open Font License 1.1** (see `src/css/fonts/OFL.txt` and
+`dist/fonts/OFL.txt`). The OFL requires the licence text to ship beside the
+fonts, which is why `OFL.txt` is copied into `dist/fonts/` by the build. The
+OFL treats subsetting as a modification, so the renamed family names are
+retained and the original "Plex" reserved name is not claimed. Attribution:
+IBM Corp. / Mike Abbink. No other third-party code or assets are bundled; the
+system has zero runtime dependencies.

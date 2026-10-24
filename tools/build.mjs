@@ -169,6 +169,22 @@ writeFileSync(join(dist, "contour.css"), css, "utf-8");
 const minifiedCss = minifyCss(css);
 writeFileSync(join(dist, "contour.min.css"), `${minifiedCss}\n`, "utf-8");
 
+// -- Opt-in single-file bundle (--single) ---------------------------------
+// Inlines the self-hosted fonts as data URIs so a consumer can ship ONE file.
+// Off by default: it bloats the CSS by ~260 kB and defeats font caching.
+if (process.argv.includes("--single")) {
+  let singleCss = css;
+  const fontsDir = join(root, "src/css/fonts");
+  for (const f of readdirSync(fontsDir).filter((x) => x.endsWith(".woff2"))) {
+    const b64 = readFileSync(join(fontsDir, f)).toString("base64");
+    const dataUri = `data:font/woff2;base64,${b64}`;
+    singleCss = singleCss.replace(new RegExp(`fonts/${f.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`, "g"), dataUri);
+  }
+  const singleMin = minifyCss(singleCss);
+  writeFileSync(join(dist, "contour.single.min.css"), `${singleMin}\n`, "utf-8");
+  console.log(`  contour.single.min.css ${ (singleMin.length/1024).toFixed(1)} kB (fonts inlined)`);
+}
+
 // -- The per-surface bundles -------------------------------------------------
 // The component layer is split by audience, and the README has always said a
 // product that needs one surface can take one file. Until now `dist/` proved
@@ -248,6 +264,12 @@ for (const [name, files] of Object.entries(SURFACES)) {
 const js = readFileSync(join(root, "src/js/ds.js"), "utf-8");
 writeFileSync(join(dist, "contour.js"), js, "utf-8");
 writeFileSync(join(dist, "contour.min.js"), `${minifyJs(js)}\n`, "utf-8");
+if (process.argv.includes("--single") && existsSync(join(dist, "contour.single.min.css"))) {
+  const singleMinCss = readFileSync(join(dist, "contour.single.min.css"), "utf-8");
+  const singleHtml = `<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8" />\n<meta name="viewport" content="width=device-width, initial-scale=1" />\n<title>Contour — single file</title>\n<style>\n${singleMinCss.trim()}\n</style>\n</head>\n<body>\n<main class="container section"><h1>Contour</h1><p>Single-file build.</p></main>\n<script>\n${minifyJs(js)}\n</script>\n</body>\n</html>\n`;
+  writeFileSync(join(dist, "contour.single.html"), singleHtml, "utf-8");
+  console.log(`  contour.single.html written`);
+}
 
 // -- The tokens (C-41) ------------------------------------------------------
 // The census in tools/lib/inventory.mjs is the only source for WHICH tokens exist
@@ -357,6 +379,10 @@ const size = (path) => (existsSync(path) ? `${(readFileSync(path).length / 1024)
 // records what the sources were at the moment this output was produced.
 const manifestSources = [
   ...readdirSync(join(root, "src/css")).filter((f) => f.endsWith(".css")).map((f) => join(root, "src/css", f)),
+  // Self-hosted fonts (C-52) are build inputs too: the @font-face rules in
+  // src/css/fonts.css point at them, and dist/fonts/ is a copy. A font swap
+  // that nobody rebuilds must not certify as current.
+  ...readdirSync(join(root, "src/css/fonts")).map((f) => join(root, "src/css/fonts", f)),
   join(root, "src/js/ds.js"),
   join(root, "src/svg/contour-mark.svg"),
   // `index.html` is a build input now that `dist/docs/` is derived from it. This

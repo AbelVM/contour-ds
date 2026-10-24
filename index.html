@@ -33,9 +33,10 @@
     </script>
 
     <!-- Fonts are self-hosted (src/css/fonts.css); no third-party request. -->
+    <link rel="preload" href="src/css/fonts/ibm-plex-sans-var.woff2" as="font" type="font/woff2" crossorigin fetchpriority="high" />
 
     <link rel="icon" href="src/svg/contour-mark.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="src/css/ds.css" />
+    <link rel="stylesheet" href="src/css/ds.css" fetchpriority="high" />
     <!-- Map chrome: unlayered, so it must be last — the same order a consumer
          uses, with the engine's own stylesheet in between. See §21. -->
     <link rel="stylesheet" href="src/css/map-chrome.css" />
@@ -9867,9 +9868,10 @@
             <div class="ds-install__row">
               <span class="ds-install__key">Fonts</span>
               <span>
-                IBM Plex Sans, IBM Plex Sans Condensed and IBM Plex Mono, loaded from Google Fonts
-                with <code class="c-kbd">display=swap</code>. The system degrades to system UI fonts
-                without them.
+                Variable IBM Plex (Sans, Mono) plus the Condensed weights, self-hosted in
+                <code class="c-kbd">src/css/fonts/</code> and loaded through
+                <code class="c-kbd">src/css/fonts.css</code> with <code class="c-kbd">display=swap</code>.
+                The system degrades to system UI fonts without them.
               </span>
             </div>
             <div class="ds-install__row">

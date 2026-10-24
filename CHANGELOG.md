@@ -1,5 +1,19 @@
 ## [Unreleased]
 
+### Changed
+- Bundling and delivering strategy rethought now that fonts are self-hosted (C-52).
+  `src/css/fonts/*` (the seven woff2 faces plus `OFL.txt`) are now declared build
+  inputs in `tools/build.mjs`'s manifest, so a font swap that nobody rebuilds can no
+  longer certify `dist/` as current. `README.md`'s bundler `@import` list gains
+  `fonts.css` as its first entry, matching `src/css/ds.css`, and documents that the
+  faces ship beside the stylesheet (not base64-inlined) so they stay cacheable, with
+  the consumer responsible for copying `fonts/` when inlining. Every shipped page
+  (`index.html` and the three templates) now preloads the critical body variable
+  font (`ibm-plex-sans-var.woff2`, `as="font"`, `crossorigin`), and
+  `tools/check-markup.mjs` asserts that preload plus the absence of any Google Fonts
+  origin reference. `README.md`, `index.html` and `templates/README.md` no longer
+  describe IBM Plex as loaded from Google Fonts.
+
 ### Fixed
 - `check-size.mjs` measured every budget key with `statSync(path).size`, which for a
   directory returns the size of its *inode* -- 4 kB here. The docs package's new `docs/`
@@ -63,6 +77,9 @@
   this). `check-dist`'s naming contract now covers it, and README names it.
 
 ### Added
+- `node tools/build.mjs --single` produces `dist/contour.single.min.css`, the minified
+  CSS with the self-hosted fonts inlined as data URIs, so a consumer can ship one file.
+  Off by default: it is ~260 kB larger and defeats font caching.
 - C-46: `dist/registry/` ships a shadcn registry — `registry.json` plus one item per
   surface bundle, each pointing at its bundle and the shared contract files through
   `files[].path`. **Pointers, not copies**: the live schema also allows
@@ -347,6 +364,11 @@
   name as the policy requires, and scheduled for removal at v1.0 rather than v2
   — pre-release is the only moment a rename is free, which is the argument this
   row had never made before.
+
+- Package exports in `package.json`: subpaths for `contour.css`, `contour.min.css`,
+  `surfaces/*`, `fonts/*`, `tokens`, `themes`, `components`, `contour.js` and
+  `map-chrome/*`, so a bundler can import exactly what it needs without guessing
+  paths. `sideEffects` and `engines` (node >= 18) are declared for the same reason.
 
 ### Changed
 - Canonical names for composition layout are the `.c-*` set; `.container` and

@@ -42,6 +42,14 @@ jobs:
       - name: Check token census
         run: node tools/check-tokens.mjs
 
+      # The census says every declared token is read somewhere; this says the
+      # opposite half of the same rule — that a colour or duration in src/ is a
+      # token read rather than a hard-coded literal. It is the enforcement behind
+      # 'no raw hex in a component', so the rule cannot be published as prose
+      # before the gate that owns it actually runs in a lane.
+      - name: Check the token family gate (no raw literals)
+        run: node tools/audit/family-gate.mjs
+
       # WCAG 2.2.2 is Level A: every infinite animation must be pausable by a
       # control that ships on a page, not only by an operating-system setting.
       - name: Check the motion contract

@@ -12,8 +12,9 @@
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="Contour — dashboard template" />
     <!-- Fonts are self-hosted via src/css/ds.css (src/css/fonts/). -->
+    <link rel="preload" href="../src/css/fonts/ibm-plex-sans-var.woff2" as="font" type="font/woff2" crossorigin fetchpriority="high" />
     <link rel="icon" href="../src/svg/contour-mark.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="../src/css/ds.css" />
+    <link rel="stylesheet" href="../src/css/ds.css" fetchpriority="high" />
     <!-- Map chrome: re-keys a map engine's own control cluster onto Contour
          tokens. Unlayered on purpose, so it has to come last — after ds.css and
          after the engine's stylesheet when the page has one. Delete this link on
