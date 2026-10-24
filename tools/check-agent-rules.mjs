@@ -56,7 +56,15 @@ if (!existsSync(CI)) {
 }
 
 const shipped = readFileSync(ART, "utf8");
-const doc = JSON.parse(shipped);
+// A guard that exists to tell you the artifact is wrong must not answer a broken
+// artifact with an uncaught stack trace: the parse failure IS the finding.
+let doc;
+try {
+  doc = JSON.parse(shipped);
+} catch (e) {
+  console.error(`check-agent-rules: dist/agent-rules.json is not valid JSON — ${String(e.message).split("\n")[0]}`);
+  process.exit(1);
+}
 const ci = readFileSync(CI, "utf8");
 
 // -- which job actually invokes a gate, recomputed from ci.yml -----------------
