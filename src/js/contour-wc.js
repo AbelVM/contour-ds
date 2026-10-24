@@ -2311,3 +2311,62 @@
     }
   }
   try { customElements.define("contour-shadow-dialog", ContourShadowDialog); } catch (e) {}
+
+  // ---- Shadow DOM field with slots ----
+  const shadowFieldTemplate = document.createElement("template");
+  shadowFieldTemplate.innerHTML = `
+    <div class="c-field" part="field">
+      <label class="c-field__label" part="label"><slot name="label">Label</slot></label>
+      <slot name="input"></slot>
+      <span class="c-field__hint" part="hint"><slot name="hint"></slot></span>
+    </div>
+  `;
+
+  class ContourShadowField extends HTMLElement {
+    constructor() {
+      super();
+      const shadow = this.attachShadow({ mode: "open" });
+      const sheets = [];
+      for (const ss of document.styleSheets) {
+        try {
+          if (ss.href && new URL(ss.href).origin === location.origin) {
+            const sheet = new CSSStyleSheet();
+            sheet.replaceSync(Array.from(ss.cssRules).map((r) => r.cssText).join("\\n"));
+            sheets.push(sheet);
+          }
+        } catch (e) { /* cross-origin or unreadable */ }
+      }
+      if (sheets.length) shadow.adoptedStyleSheets = sheets;
+      shadow.appendChild(shadowFieldTemplate.content.cloneNode(true));
+    }
+  }
+  try { customElements.define("contour-shadow-field", ContourShadowField); } catch (e) {}
+
+  // ---- Shadow DOM alert with slots ----
+  const shadowAlertTemplate = document.createElement("template");
+  shadowAlertTemplate.innerHTML = `
+    <div class="c-alert" part="alert">
+      <div class="c-alert__title" part="title"><slot name="title"></slot></div>
+      <div class="c-alert__body" part="body"><slot></slot></div>
+    </div>
+  `;
+
+  class ContourShadowAlert extends HTMLElement {
+    constructor() {
+      super();
+      const shadow = this.attachShadow({ mode: "open" });
+      const sheets = [];
+      for (const ss of document.styleSheets) {
+        try {
+          if (ss.href && new URL(ss.href).origin === location.origin) {
+            const sheet = new CSSStyleSheet();
+            sheet.replaceSync(Array.from(ss.cssRules).map((r) => r.cssText).join("\\n"));
+            sheets.push(sheet);
+          }
+        } catch (e) { /* cross-origin or unreadable */ }
+      }
+      if (sheets.length) shadow.adoptedStyleSheets = sheets;
+      shadow.appendChild(shadowAlertTemplate.content.cloneNode(true));
+    }
+  }
+  try { customElements.define("contour-shadow-alert", ContourShadowAlert); } catch (e) {}
