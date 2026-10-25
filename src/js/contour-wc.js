@@ -162,15 +162,15 @@
   // registration loop skips a name an explicit component already claimed.
   const CLASS_ONLY = [
     "alert",
-    "avatar", "badge", "bivariate", "box", "brand", "breadcrumb", "btn",
+    "avatar", "badge", "bivariate", "box", "brand", "breadcrumb",
     "callout", "card", "chart", "check", "chip", "cluster",
-    "code-tabs", "combobox", "container", "contour-plot", "delta", "dialog", "diff",
+    "code-tabs", "combobox", "container", "delta", "dialog", "diff",
     "disclosure", "do-dont", "dot", "drawer",
     "empty", "expandable", "faq", "feature", "field",
     "flag", "header", "input",
     "instrument", "kbd", "kpi", "link",
     "mark", "menu", "meter", "pagination",
-    "pill", "progress", "radio", "radio-list", "range",
+    "pill", "progress", "radio", "range",
     "readout", "row", "scrim", "section-head",
     "select", "sheet", "skeleton", "spinner", "stack",
     "stat", "survey", "switch", "table", "tabs", "textarea", "threshold",
@@ -3310,6 +3310,50 @@
   // Virtual scroll: simple wrapper.
   class ContourVirtualScroll extends ContourBase { render() { this.classList.add("c-virtual-scroll"); } }
   define("contour-virtual-scroll", ContourVirtualScroll);
+
+  // Btn: generates label from attribute.
+  class ContourBtn extends ContourBase {
+    render() {
+      this.classList.add("c-btn");
+      for (const attr of ["variant", "size", "color"]) {
+        const val = this.getAttribute(attr);
+        if (val) this.classList.add("c-btn--" + val);
+      }
+      const label = this.getAttribute("label");
+      if (label && !this.textContent.trim()) this.textContent = label;
+    }
+  }
+  define("contour-btn", ContourBtn);
+
+  // Radio list: generates from items attribute.
+  class ContourRadioList extends ContourBase {
+    render() {
+      this.classList.add("c-radio-list");
+      const items = this.getAttribute("items");
+      if (items && !this.querySelector(".c-radio")) {
+        try {
+          const parsed = JSON.parse(items);
+          parsed.forEach((it) => {
+            const lbl = document.createElement("label");
+            lbl.className = "c-radio";
+            const input = document.createElement("input");
+            input.type = "radio";
+            input.name = this.getAttribute("name") || "radio-list";
+            if (typeof it === "string") { input.value = it; lbl.appendChild(input); lbl.appendChild(document.createTextNode(" " + it)); }
+            else { input.value = it.value || it.label; lbl.appendChild(input); const span = document.createElement("span"); span.className = "c-radio__label"; span.textContent = it.label || it.value; lbl.appendChild(span); }
+            this.appendChild(lbl);
+          });
+        } catch (e) { /* keep existing */ }
+      }
+    }
+  }
+  define("contour-radio-list", ContourRadioList);
+
+  // Contour plot: simple wrapper.
+  class ContourContourPlot extends ContourBase {
+    render() { this.classList.add("c-contour-plot"); }
+  }
+  define("contour-contour-plot", ContourContourPlot);
 
   // ---- Registration: the class-only wrappers run last ------------------
   //
