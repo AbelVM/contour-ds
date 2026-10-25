@@ -442,7 +442,7 @@ below. The CSS size is measured on every release; LCP/CLS/INP are targets, not y
 | Total CSS (gzipped) | < 25 kB |
 
 The guide itself (`index.html`) is a 583 kB document that loads every component
-and 3 external scripts (highlight.js from a CDN, `ds.js`, `guide.js`); its Lighthouse score is not the system's score, and
+and 4 external scripts (highlight.js from a CDN, `ds.js`, `contour-wc.js`, `guide.js`); its Lighthouse score is not the system's score, and
 the two should not be quoted interchangeably. The system's score is measured on
 `templates/landing.html`, which is the smallest shipped surface.
 

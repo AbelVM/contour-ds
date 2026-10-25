@@ -377,6 +377,7 @@ node tools/check-tokens.mjs    # the census: an unread token must be ledgered or
 node tools/check-motion.mjs    # WCAG 2.2.2: every infinite animation pausable by a control on a page
 node tools/check-defs.mjs      # every url(#id) in src/css reaches a def inside src/
 node tools/check-markup.mjs    # self-hosted fonts, no unnamed off-origin load, share metadata, and the guide's published script budget
+node tools/check-wc.mjs        # web components: base class, IIFE closure, registry, no duplicate define
 node tools/snippets.mjs        # if you touched a specimen; also the snippet spacing guard
 node tools/build.mjs           # if you touched src/
 node tools/check-size.mjs      # refuses a stale dist/, not only a big one
@@ -403,6 +404,7 @@ node tools/audit/component-inventory.mjs
 node tools/audit/theme-render-probe.mjs # does a theme set move a real control, and does --brand-hue hold the contract
 node tools/audit/chart-geometry.mjs     # is the gridline band derived from --chart-ticks
 node tools/audit/chart-names.mjs        # does every chart name what it plots, and does its data surface
+node tools/audit/wc-contract.mjs        # web components: load, define, scaffold, render, re-render, leak, shadow, table wrap
 node tools/audit/check-reflow.mjs       # the reflow contract at the widths it names, both themes, JS off
 ```
 

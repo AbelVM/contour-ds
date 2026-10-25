@@ -421,6 +421,7 @@
           <a href="#playground"><span class="ds-rail__num">20</span> Playground</a>
           <a href="#theming"><span class="ds-rail__num">21</span> Theming</a>
           <a href="#install"><span class="ds-rail__num">22</span> Install</a>
+          <a href="#webcomponents"><span class="ds-rail__num">23</span> Web components</a>
         </nav>
       </aside>
 
@@ -11307,7 +11308,15 @@ means obvious.
                 (<code class="c-kbd">contour-*</code>) use the cascade directly; shadow-DOM
                 elements (<code class="c-kbd">contour-shadow-*</code>) ship slots and adopted
                 stylesheets for encapsulation. Interactive blocks (tabs, combobox, tree, menu,
-                segmented) wire their own keyboard behaviour, so they work standalone.
+                segmented, dialog, tag, filter-pill, install, code, pagination) wire their own
+                keyboard behaviour and dispatch <code class="c-kbd">contour:*</code> CustomEvents
+                (<code class="c-kbd">contour:select</code>, <code class="c-kbd">contour:change</code>,
+                <code class="c-kbd">contour:remove</code>, <code class="c-kbd">contour:copy</code>,
+                <code class="c-kbd">contour:page</code>, <code class="c-kbd">contour:close</code>,
+                <code class="c-kbd">contour:theme-change</code>), so they work standalone.
+                Modifier attributes (<code class="c-kbd">variant</code>,
+                <code class="c-kbd">size</code>, <code class="c-kbd">color</code>) apply to both layers
+                from one list, and attribute changes re-render without losing authored content.
               </p>
               <span class="c-badge c-badge--primary">Web component</span>
               <contour-shadow-card style="margin-block-start: var(--space-cluster)">
@@ -11341,6 +11350,407 @@ means obvious.
 
 
 
+        <!-- ===================== 23 · WEB COMPONENTS ===================== -->
+        <section class="section" id="webcomponents">
+          <div class="c-section-head">
+            <div class="c-icon-badge">
+              <svg aria-hidden="true"><use href="#i-terminal" /></svg>
+            </div>
+            <div>
+              <span class="label">Components · 23</span>
+              <h2 class="c-section-head__title">Web components</h2>
+              <p class="c-section-head__desc">
+                Optional progressive enhancement. Load <code class="c-kbd">contour-wc.js</code> after
+                <code class="c-kbd">ds.css</code> to use <code class="c-kbd">contour-*</code> and
+                <code class="c-kbd">contour-shadow-*</code> custom elements that generate their
+                scaffolding from attributes. Light-DOM elements use the cascade directly; shadow-DOM
+                elements ship slots and adopted stylesheets for encapsulation.
+              </p>
+            </div>
+          </div>
+
+          <div class="ds-spec">
+            <div class="ds-spec__head">
+              <span class="ds-spec__name">Light DOM card</span>
+              <span class="ds-spec__token">contour-card</span>
+            </div>
+            <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
+              <contour-card title="Layer" variant="raised">
+                <p>Authored content survives re-renders.</p>
+              </contour-card>
+            </div><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-164" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-164">&lt;contour-card title="Layer" variant="raised"&gt;
+  &lt;p&gt;Authored content survives re-renders.&lt;/p&gt;
+&lt;/contour-card&gt;</code></pre>
+                      </div>
+                    </details></div>
+          </div>
+
+          <div class="ds-spec">
+            <div class="ds-spec__head">
+              <span class="ds-spec__name">Shadow card</span>
+              <span class="ds-spec__token">contour-shadow-card</span>
+            </div>
+            <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
+              <contour-shadow-card>
+                <span slot="title">Shadow card</span>
+                <p>Slotted content in the shadow root.</p>
+              </contour-shadow-card>
+            </div><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-165" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-165">&lt;contour-shadow-card&gt;
+  &lt;span slot="title"&gt;Shadow card&lt;/span&gt;
+  &lt;p&gt;Slotted content in the shadow root.&lt;/p&gt;
+&lt;/contour-shadow-card&gt;</code></pre>
+                      </div>
+                    </details></div>
+          </div>
+
+          <div class="ds-spec">
+            <div class="ds-spec__head">
+              <span class="ds-spec__name">Button</span>
+              <span class="ds-spec__token">contour-btn</span>
+            </div>
+            <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
+              <contour-btn variant="primary" size="sm">Compute route</contour-btn>
+              <contour-btn variant="ghost">Cancel</contour-btn>
+            </div><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-166" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-166">&lt;contour-btn variant="primary" size="sm"&gt;Compute route&lt;/contour-btn&gt;
+&lt;contour-btn variant="ghost"&gt;Cancel&lt;/contour-btn&gt;</code></pre>
+                      </div>
+                    </details></div>
+          </div>
+
+          <div class="ds-spec">
+            <div class="ds-spec__head">
+              <span class="ds-spec__name">Tabs</span>
+              <span class="ds-spec__token">contour-tabs</span>
+            </div>
+            <div class="ds-example" data-snippet>
+              <contour-tabs tabs="[&quot;One&quot;,&quot;Two&quot;,&quot;Three&quot;]"></contour-tabs>
+            </div>
+          </div>
+
+          <div class="ds-spec">
+            <div class="ds-spec__head">
+              <span class="ds-spec__name">Shadow tabs</span>
+              <span class="ds-spec__token">contour-shadow-tabs</span>
+            </div>
+            <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
+              <contour-shadow-tabs>
+                <button type="button" slot="tabs" role="tab" aria-selected="true">One</button>
+                <button type="button" slot="tabs" role="tab">Two</button>
+                <div>Panel one</div>
+                <div hidden>Panel two</div>
+              </contour-shadow-tabs>
+            </div><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-167" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-167">&lt;contour-shadow-tabs&gt;
+  &lt;button type="button" slot="tabs" role="tab" aria-selected="true"&gt;One&lt;/button&gt;
+  &lt;button type="button" slot="tabs" role="tab"&gt;Two&lt;/button&gt;
+  &lt;div&gt;Panel one&lt;/div&gt;
+  &lt;div hidden&gt;Panel two&lt;/div&gt;
+&lt;/contour-shadow-tabs&gt;</code></pre>
+                      </div>
+                    </details></div>
+          </div>
+
+          <div class="ds-spec">
+            <div class="ds-spec__head">
+              <span class="ds-spec__name">Dialog</span>
+              <span class="ds-spec__token">contour-dialog</span>
+            </div>
+            <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
+              <contour-dialog title="Move layer">
+                <p>Dialog body content.</p>
+              </contour-dialog>
+            </div><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-168" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-168">&lt;contour-dialog title="Move layer"&gt;
+  &lt;p&gt;Dialog body content.&lt;/p&gt;
+&lt;/contour-dialog&gt;</code></pre>
+                      </div>
+                    </details></div>
+          </div>
+
+          <div class="ds-spec">
+            <div class="ds-spec__head">
+              <span class="ds-spec__name">Shadow dialog</span>
+              <span class="ds-spec__token">contour-shadow-dialog</span>
+            </div>
+            <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
+              <contour-shadow-dialog>
+                <span slot="title">Move layer</span>
+                <p>Dialog body content.</p>
+              </contour-shadow-dialog>
+            </div><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-169" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-169">&lt;contour-shadow-dialog&gt;
+  &lt;span slot="title"&gt;Move layer&lt;/span&gt;
+  &lt;p&gt;Dialog body content.&lt;/p&gt;
+&lt;/contour-shadow-dialog&gt;</code></pre>
+                      </div>
+                    </details></div>
+          </div>
+
+          <div class="ds-spec">
+            <div class="ds-spec__head">
+              <span class="ds-spec__name">Table</span>
+              <span class="ds-spec__token">contour-table</span>
+            </div>
+            <div class="ds-example" data-snippet>
+              <contour-table columns="[&quot;Name&quot;,&quot;Value&quot;]" rows="[[&quot;Alpha&quot;,&quot;1&quot;],[&quot;Beta&quot;,&quot;2&quot;]]"></contour-table>
+            </div>
+          </div>
+
+          <div class="ds-spec">
+            <div class="ds-spec__head">
+              <span class="ds-spec__name">KPI</span>
+              <span class="ds-spec__token">contour-kpi</span>
+            </div>
+            <div class="ds-example" data-snippet>
+              <contour-kpi value="42" label="Rows" delta="3" direction="up"></contour-kpi>
+            </div>
+          </div>
+
+          <div class="ds-spec">
+            <div class="ds-spec__head">
+              <span class="ds-spec__name">Alert</span>
+              <span class="ds-spec__token">contour-alert</span>
+            </div>
+            <div class="ds-example" data-snippet>
+              <contour-alert title="Heads up" body="text" variant="warn"></contour-alert>
+            </div>
+          </div>
+
+          <div class="ds-spec">
+            <div class="ds-spec__head">
+              <span class="ds-spec__name">Field</span>
+              <span class="ds-spec__token">contour-field</span>
+            </div>
+            <div class="ds-example" data-snippet>
+              <contour-field label="Search" placeholder="q"></contour-field>
+            </div>
+          </div>
+
+          <div class="ds-spec">
+            <div class="ds-spec__head">
+              <span class="ds-spec__name">Pagination</span>
+              <span class="ds-spec__token">contour-pagination</span>
+            </div>
+            <div class="ds-example" data-snippet>
+              <contour-pagination pages="5" current="2"></contour-pagination>
+            </div>
+          </div>
+
+          <div class="ds-spec">
+            <div class="ds-spec__head">
+              <span class="ds-spec__name">Accordion</span>
+              <span class="ds-spec__token">contour-accordion</span>
+            </div>
+            <div class="ds-example" data-snippet>
+              <contour-accordion items="[{&quot;q&quot;:&quot;Question&quot;,&quot;a&quot;:&quot;Answer&quot;}]"></contour-accordion>
+            </div>
+          </div>
+
+          <div class="ds-spec">
+            <div class="ds-spec__head">
+              <span class="ds-spec__name">Readout</span>
+              <span class="ds-spec__token">contour-readout</span>
+            </div>
+            <div class="ds-example" data-snippet>
+              <contour-readout rows="[{&quot;key&quot;:&quot;K&quot;,&quot;value&quot;:&quot;V&quot;}]"></contour-readout>
+            </div>
+          </div>
+
+          <div class="ds-spec">
+            <div class="ds-spec__head">
+              <span class="ds-spec__name">Steps</span>
+              <span class="ds-spec__token">contour-steps</span>
+            </div>
+            <div class="ds-example" data-snippet>
+              <contour-steps steps="[&quot;One&quot;,&quot;Two&quot;]"></contour-steps>
+            </div>
+          </div>
+
+          <div class="ds-spec">
+            <div class="ds-spec__head">
+              <span class="ds-spec__name">Breadcrumb</span>
+              <span class="ds-spec__token">contour-breadcrumb</span>
+            </div>
+            <div class="ds-example" data-snippet>
+              <contour-breadcrumb items="[{&quot;label&quot;:&quot;Home&quot;,&quot;href&quot;:&quot;/&quot;},{&quot;label&quot;:&quot;Now&quot;}]"></contour-breadcrumb>
+            </div>
+          </div>
+
+          <div class="ds-spec">
+            <div class="ds-spec__head">
+              <span class="ds-spec__name">Meter</span>
+              <span class="ds-spec__token">contour-meter</span>
+            </div>
+            <div class="ds-example" data-snippet>
+              <contour-meter value="0.72" label="Confidence"></contour-meter>
+            </div>
+          </div>
+
+          <div class="ds-spec">
+            <div class="ds-spec__head">
+              <span class="ds-spec__name">Combobox</span>
+              <span class="ds-spec__token">contour-combobox</span>
+            </div>
+            <div class="ds-example" data-snippet>
+              <contour-combobox options="[&quot;Alpha&quot;,&quot;Beta&quot;,&quot;Gamma&quot;]" placeholder="Search"></contour-combobox>
+            </div>
+          </div>
+
+          <div class="ds-spec">
+            <div class="ds-spec__head">
+              <span class="ds-spec__name">Menu</span>
+              <span class="ds-spec__token">contour-menu</span>
+            </div>
+            <div class="ds-example" data-snippet>
+              <contour-menu items="[&quot;Cut&quot;,&quot;Copy&quot;,&quot;---&quot;,&quot;Paste&quot;]"></contour-menu>
+            </div>
+          </div>
+
+          <div class="ds-spec">
+            <div class="ds-spec__head">
+              <span class="ds-spec__name">Tag (removable)</span>
+              <span class="ds-spec__token">contour-tag</span>
+            </div>
+            <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
+              <contour-tag removable>Removable tag</contour-tag>
+            </div><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-170" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-170">&lt;contour-tag removable&gt;Removable tag&lt;/contour-tag&gt;</code></pre>
+                      </div>
+                    </details></div>
+          </div>
+
+          <div class="ds-spec">
+            <div class="ds-spec__head">
+              <span class="ds-spec__name">Filter pill</span>
+              <span class="ds-spec__token">contour-filter-pill</span>
+            </div>
+            <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
+              <contour-filter-pill active>Active filter</contour-filter-pill>
+            </div><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-171" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-171">&lt;contour-filter-pill active&gt;Active filter&lt;/contour-filter-pill&gt;</code></pre>
+                      </div>
+                    </details></div>
+          </div>
+
+          <div class="ds-spec">
+            <div class="ds-spec__head">
+              <span class="ds-spec__name">Shadow wrappers (sample)</span>
+              <span class="ds-spec__token">contour-shadow-*</span>
+            </div>
+            <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
+              <contour-shadow-btn variant="primary">Shadow button</contour-shadow-btn>
+              <contour-shadow-badge>Shadow badge</contour-shadow-badge>
+              <contour-shadow-chip>Shadow chip</contour-shadow-chip>
+            </div><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-172" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-172">&lt;contour-shadow-btn variant="primary"&gt;Shadow button&lt;/contour-shadow-btn&gt;
+&lt;contour-shadow-badge&gt;Shadow badge&lt;/contour-shadow-badge&gt;
+&lt;contour-shadow-chip&gt;Shadow chip&lt;/contour-shadow-chip&gt;</code></pre>
+                      </div>
+                    </details></div>
+          </div>
+        </section>
     <!-- ===================== FOOTER ===================== -->
     <footer class="c-footer">
       <div class="container c-footer__grid">
@@ -11390,6 +11800,7 @@ means obvious.
             <a href="#theming">Theming</a>
             <a href="#playground">Playground</a>
             <a href="#install">Install</a>
+            <a href="#webcomponents">Web components</a>
           </div>
         </div>
       </div>
@@ -11450,6 +11861,7 @@ means obvious.
 
     <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
     <script src="src/js/ds.js"></script>
+    <script src="src/js/contour-wc.js"></script>
     <script src="assets/js/guide.js"></script>
     <script>
       if (window.hljs) {

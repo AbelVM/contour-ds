@@ -90,10 +90,10 @@
         nodes: Array.from(this.childNodes),
         cls: this.getAttribute("class"),
       };
-      const before = Array.from(this.childNodes);
-      this.render();
-      this._contourGenerated = Array.from(this.childNodes).filter((n) => !before.includes(n));
-      this.enhance();
+         const before = Array.from(this.childNodes);
+         this.render();
+         this._contourGenerated = Array.from(this.childNodes).filter((n) => !before.includes(n));
+         this.enhance();
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
@@ -101,12 +101,16 @@
       // Fires before connectedCallback during an upgrade: nothing to reset to
       // yet, and connectedCallback will render with the final attributes.
       if (!this.isConnected || !this._contourAuthored || this._contourRendering) return;
-      this._contourRendering = true;
-      try {
-        // Drop generated nodes from the previous render.
-        for (const g of (this._contourGenerated || [])) {
-          if (g.parentNode === this) this.removeChild(g);
-        }
+       this._contourRendering = true;
+       try {
+         // Preserve form control values across a re-render: generated inputs are
+         // dropped and rebuilt, so without this a host attribute change wipes
+         // whatever the user typed.
+         const savedValues = Array.from(this.querySelectorAll("input, textarea, select")).map((el) => el.value);
+         // Drop generated nodes from the previous render.
+         for (const g of (this._contourGenerated || [])) {
+           if (g.parentNode === this) this.removeChild(g);
+         }
         // Refresh the authored snapshot so content added after connect survives.
         const generated = new Set(this._contourGenerated || []);
         const authoredNow = Array.from(this.childNodes).filter((n) => !generated.has(n));
@@ -119,6 +123,13 @@
         const before = Array.from(this.childNodes);
         this.render();
         this._contourGenerated = Array.from(this.childNodes).filter((n) => !before.includes(n));
+        // Restore preserved form control values.
+        const newControls = Array.from(this.querySelectorAll("input, textarea, select"));
+        newControls.forEach((el, i) => {
+          if (savedValues[i] !== undefined && el.value === "" && el.getAttribute("value") === null) {
+            el.value = savedValues[i];
+          }
+        });
         this.enhance();
       } finally {
         this._contourRendering = false;
@@ -129,11 +140,22 @@
       // Override in subclasses that attach event listeners or timers.
     }
 
-    // Subclasses override this. It must be safe to call repeatedly.
-    render() {}
-    // Subclasses override this to attach behaviour. Called after every render;
-    // implementations must be idempotent (guard with a flag).
+    // Default no-op: subclasses with behaviour override this.
     enhance() {}
+
+    // Helper for update-or-create reactivity: returns the first node matching
+    // `selector`, creating it via `factory()` and appending it if absent. Render
+    // bodies use this so an attribute change updates the existing node instead
+    // of being blocked by a `!querySelector` guard.
+    ensure(selector, factory, parent) {
+      const root = parent || this;
+      let node = root.querySelector(selector);
+      if (!node) {
+        node = factory();
+        root.appendChild(node);
+      }
+      return node;
+    }
   }
 
   // Simple component: just adds CSS classes.
@@ -173,16 +195,14 @@
       this.classList.add("c-menu");
       if (!this.hasAttribute("role")) this.setAttribute("role", "menu");
       const items = this.getAttribute("items");
-      if (items && !this.querySelector(".c-menu__item")) {
+      if (items) {
         try {
           const parsed = JSON.parse(items);
-          const ul = document.createElement("ul");
-          ul.className = "c-menu";
+          const ul = this.ensure("ul.c-menu", () => { const el = document.createElement("ul"); el.className = "c-menu"; el.setAttribute("role", "menu"); return el; });
+          ul.innerHTML = "";
           ul.setAttribute("role", "menu");
           parsed.forEach((item) => {
             if (item === "---" || item === "separator") {
-              const li = document.createElement("li");
-              li.className = "c-menu__separator";
               li.setAttribute("role", "separator");
               ul.appendChild(li);
             } else if (typeof item === "string") {
@@ -199,8 +219,7 @@
               ul.appendChild(li);
             }
           });
-          this.innerHTML = "";
-          this.appendChild(ul);
+          if (ul.parentNode !== this) { this.innerHTML = ""; this.appendChild(ul); }
           this.classList.remove("c-menu");
           ul.classList.add("c-menu");
         } catch (e) { /* keep existing content */ }
@@ -240,13 +259,14 @@
   class ContourCard extends ContourBase {
     render() {
       this.classList.add("c-card");
-      // If title attribute provided, prepend title.
       const title = this.getAttribute("title");
-      if (title && !this.querySelector(".c-card__title")) {
-        const h = document.createElement("h3");
-        h.className = "c-card__title";
+      if (title) {
+        const h = this.ensure(".c-card__title", () => { const el = document.createElement("h3"); el.className = "c-card__title"; return el; });
+        if (h.parentNode === this && this.firstChild !== h) this.prepend(h);
         h.textContent = title;
-        this.prepend(h);
+      } else {
+        const h = this.querySelector(".c-card__title");
+        if (h) h.remove();
       }
     }
   }
@@ -257,12 +277,12 @@
     render() {
       this.classList.add("c-tabs");
       const tabs = this.getAttribute("tabs");
-      if (tabs && !this.querySelector(".c-tabs__list")) {
+      if (tabs) {
         try {
           const parsed = JSON.parse(tabs);
-          const list = document.createElement("div");
-          list.className = "c-tabs__list";
+          const list = this.ensure(".c-tabs__list", () => { const el = document.createElement("div"); el.className = "c-tabs__list"; el.setAttribute("role", "tablist"); return el; });
           list.setAttribute("role", "tablist");
+          list.innerHTML = "";
           parsed.forEach((t, i) => {
             const btn = document.createElement("button");
             btn.className = "c-tabs__tab" + (i === 0 ? " c-tabs__tab--active" : "");
@@ -272,8 +292,11 @@
             btn.textContent = typeof t === "string" ? t : t.label;
             list.appendChild(btn);
           });
-          this.prepend(list);
+          if (list.parentNode !== this) this.prepend(list);
         } catch (e) { /* keep existing */ }
+      } else {
+        const list = this.querySelector(".c-tabs__list");
+        if (list) list.remove();
       }
     }
     enhance() {
@@ -332,9 +355,9 @@
       this.classList.add("c-header");
       const brand = this.getAttribute("brand");
       const links = this.getAttribute("links");
-      if (brand && !this.querySelector(".c-brand")) {
-        const inner = document.createElement("div");
-        inner.className = "container c-header__inner";
+      if (brand) {
+        const inner = this.ensure(".c-header__inner", () => { const el = document.createElement("div"); el.className = "container c-header__inner"; return el; });
+        inner.innerHTML = "";
         // Brand
         const brandEl = document.createElement("a");
         brandEl.className = "c-brand";
@@ -367,8 +390,7 @@
         const slot = document.createElement("slot");
         actions.appendChild(slot);
         inner.appendChild(actions);
-        this.innerHTML = "";
-        this.appendChild(inner);
+        if (inner.parentNode !== this) { this.innerHTML = ""; this.appendChild(inner); }
       }
     }
   }
@@ -379,16 +401,15 @@
     render() {
       this.classList.add("c-combobox");
       const options = this.getAttribute("options");
-      if (options && !this.querySelector(".c-combobox__input")) {
+      if (options) {
         try {
           const parsed = JSON.parse(options);
-          const input = document.createElement("input");
-          input.className = "c-combobox__input";
+          const input = this.ensure(".c-combobox__input", () => { const el = document.createElement("input"); el.className = "c-combobox__input"; el.type = "text"; return el; });
           input.type = "text";
           input.placeholder = this.getAttribute("placeholder") || "Search…";
           input.setAttribute("aria-label", this.getAttribute("label") || "Search");
-          const list = document.createElement("ul");
-          list.className = "c-combobox__list";
+          const list = this.ensure(".c-combobox__list", () => { const el = document.createElement("ul"); el.className = "c-combobox__list"; el.setAttribute("hidden", ""); return el; });
+          list.innerHTML = "";
           list.setAttribute("hidden", "");
           parsed.forEach((opt) => {
             const li = document.createElement("li");
@@ -396,9 +417,6 @@
             li.textContent = typeof opt === "string" ? opt : opt.label;
             list.appendChild(li);
           });
-          this.innerHTML = "";
-          this.appendChild(input);
-          this.appendChild(list);
         } catch (e) { /* keep existing */ }
       }
     }
@@ -468,13 +486,18 @@
     render() {
       this.classList.add("c-tree");
       const items = this.getAttribute("items");
-      if (items && !this.querySelector(".c-tree__node")) {
+      if (items) {
         try {
           const parsed = JSON.parse(items);
+          const rootUl = this.ensure("ul.c-tree", () => { const el = document.createElement("ul"); el.className = "c-tree"; el.setAttribute("role", "tree"); return el; });
+          rootUl.innerHTML = "";
+          rootUl.className = "c-tree";
           const render = (nodes, parent) => {
-            const ul = document.createElement("ul");
-            ul.className = parent ? "c-tree__children" : "c-tree";
-            if (parent) ul.setAttribute("hidden", "");
+            const ul = parent ? document.createElement("ul") : rootUl;
+            if (parent) {
+              ul.className = "c-tree__children";
+              ul.setAttribute("hidden", "");
+            }
             nodes.forEach((node) => {
               const li = document.createElement("li");
               li.className = "c-tree__node";
@@ -503,9 +526,11 @@
               ul.appendChild(li);
             });
             if (parent) parent.appendChild(ul);
-            else { this.innerHTML = ""; this.appendChild(ul); this.classList.remove("c-tree"); ul.classList.add("c-tree"); }
           };
           render(parsed, null);
+          this.classList.remove("c-tree");
+          rootUl.classList.add("c-tree");
+          if (rootUl.parentNode !== this) this.appendChild(rootUl);
         } catch (e) { /* keep existing */ }
       }
     }
@@ -539,21 +564,36 @@
       this.classList.add("c-dialog");
       if (!this.hasAttribute("role")) this.setAttribute("role", "dialog");
       const title = this.getAttribute("title");
-      if (title && !this.querySelector(".c-dialog__head")) {
-        const head = document.createElement("div");
-        head.className = "c-dialog__head";
-        const h = document.createElement("h2");
-        h.className = "c-dialog__title";
-        h.textContent = title;
-        head.appendChild(h);
-        const closeBtn = document.createElement("button");
-        closeBtn.className = "c-btn c-btn--icon c-btn--ghost";
-        closeBtn.setAttribute("type", "button");
-        closeBtn.setAttribute("aria-label", "Close");
-        closeBtn.innerHTML = '<svg aria-hidden="true"><use href="#i-close" /></svg>';
-        head.appendChild(closeBtn);
-        this.prepend(head);
+      if (title) {
+        let head = this.querySelector(".c-dialog__head");
+        if (!head) {
+          head = document.createElement("div");
+          head.className = "c-dialog__head";
+          const h = document.createElement("h2");
+          h.className = "c-dialog__title";
+          head.appendChild(h);
+          const closeBtn = document.createElement("button");
+          closeBtn.className = "c-btn c-btn--icon c-btn--ghost";
+          closeBtn.setAttribute("type", "button");
+          closeBtn.setAttribute("aria-label", "Close");
+          closeBtn.innerHTML = '<svg aria-hidden="true"><use href="#i-close" /></svg>';
+          head.appendChild(closeBtn);
+          this.prepend(head);
+        }
+        const h = head.querySelector(".c-dialog__title");
+        if (h) h.textContent = title;
       }
+    }
+    enhance() {
+      if (this._wiredDialog) return;
+      this._wiredDialog = true;
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest(".c-btn--icon") : null;
+        if (!btn || !this.contains(btn)) return;
+        const dlg = this.querySelector("dialog") || (this.tagName === "DIALOG" ? this : null);
+        if (dlg && typeof dlg.close === "function") dlg.close();
+        this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true }));
+      });
     }
   }
   define("contour-dialog", ContourDialog);
@@ -565,11 +605,13 @@
       const variant = this.getAttribute("variant");
       if (variant) this.classList.add("c-alert--" + variant);
       const title = this.getAttribute("title");
-      if (title && !this.querySelector(".c-alert__title")) {
-        const t = document.createElement("div");
-        t.className = "c-alert__title";
+      if (title) {
+        const t = this.ensure(".c-alert__title", () => { const el = document.createElement("div"); el.className = "c-alert__title"; return el; });
+        if (t.parentNode === this && this.firstChild !== t) this.prepend(t);
         t.textContent = title;
-        this.prepend(t);
+      } else {
+        const t = this.querySelector(".c-alert__title");
+        if (t) t.remove();
       }
     }
   }
@@ -583,30 +625,38 @@
       const hint = this.getAttribute("hint");
       const error = this.getAttribute("error");
       const placeholder = this.getAttribute("placeholder") || "";
-      if (label && !this.querySelector(".c-field__label")) {
-        const lbl = document.createElement("label");
-        lbl.className = "c-field__label";
+      if (label) {
+        const lbl = this.ensure(".c-field__label", () => { const el = document.createElement("label"); el.className = "c-field__label"; return el; });
         lbl.textContent = label;
-        this.appendChild(lbl);
+      } else {
+        const lbl = this.querySelector(".c-field__label");
+        if (lbl) lbl.remove();
       }
       if (!this.querySelector("input, textarea, select")) {
         const input = document.createElement("input");
         input.className = "c-input";
         input.type = this.getAttribute("type") || "text";
         input.placeholder = placeholder;
+        input.id = input.id || ("contour-field-" + Math.random().toString(36).slice(2, 9));
         this.appendChild(input);
       }
-      if (hint && !this.querySelector(".c-field__hint")) {
-        const h = document.createElement("span");
-        h.className = "c-field__hint";
+      // Associate the label with the input so the control is labelled.
+      const lbl = this.querySelector(".c-field__label");
+      const inp = this.querySelector("input, textarea, select");
+      if (lbl && inp) { if (!inp.id) inp.id = "contour-field-" + Math.random().toString(36).slice(2, 9); lbl.setAttribute("for", inp.id); }
+      if (hint) {
+        const h = this.ensure(".c-field__hint", () => { const el = document.createElement("span"); el.className = "c-field__hint"; return el; });
         h.textContent = hint;
-        this.appendChild(h);
+      } else {
+        const h = this.querySelector(".c-field__hint");
+        if (h) h.remove();
       }
-      if (error && !this.querySelector(".c-field__error")) {
-        const e = document.createElement("span");
-        e.className = "c-field__error";
+      if (error) {
+        const e = this.ensure(".c-field__error", () => { const el = document.createElement("span"); el.className = "c-field__error"; return el; });
         e.textContent = error;
-        this.appendChild(e);
+      } else {
+        const e = this.querySelector(".c-field__error");
+        if (e) e.remove();
       }
     }
   }
@@ -617,7 +667,7 @@
     render() {
       this.classList.add("c-readout");
       const rows = this.getAttribute("rows");
-      if (rows && !this.querySelector(".c-readout__row")) {
+      if (rows) {
         try {
           const parsed = JSON.parse(rows);
           parsed.forEach((r) => {
@@ -646,23 +696,26 @@
       const value = this.getAttribute("value");
       const label = this.getAttribute("label");
       const delta = this.getAttribute("delta");
-      if (value && !this.querySelector(".c-kpi__value")) {
-        const v = document.createElement("div");
-        v.className = "c-kpi__value";
+      if (value) {
+        const v = this.ensure(".c-kpi__value", () => { const el = document.createElement("div"); el.className = "c-kpi__value"; return el; });
         v.textContent = value;
-        this.appendChild(v);
+      } else {
+        const v = this.querySelector(".c-kpi__value");
+        if (v) v.remove();
       }
-      if (label && !this.querySelector(".c-kpi__label")) {
-        const l = document.createElement("div");
-        l.className = "c-kpi__label";
+      if (label) {
+        const l = this.ensure(".c-kpi__label", () => { const el = document.createElement("div"); el.className = "c-kpi__label"; return el; });
         l.textContent = label;
-        this.appendChild(l);
+      } else {
+        const l = this.querySelector(".c-kpi__label");
+        if (l) l.remove();
       }
-      if (delta && !this.querySelector(".c-kpi__delta")) {
-        const d = document.createElement("div");
-        d.className = "c-kpi__delta";
+      if (delta) {
+        const d = this.ensure(".c-kpi__delta", () => { const el = document.createElement("div"); el.className = "c-kpi__delta"; return el; });
         d.textContent = delta;
-        this.appendChild(d);
+      } else {
+        const d = this.querySelector(".c-kpi__delta");
+        if (d) d.remove();
       }
     }
   }
@@ -673,17 +726,26 @@
     render() {
       this.classList.add("c-disclosure");
       const summary = this.getAttribute("summary");
-      if (summary && !this.querySelector("summary")) {
-        const details = document.createElement("details");
-        const summ = document.createElement("summary");
-        summ.textContent = summary;
-        details.appendChild(summ);
-        const content = document.createElement("div");
-        content.className = "c-disclosure__body";
-        content.innerHTML = this.innerHTML;
-        details.appendChild(content);
-        this.innerHTML = "";
-        this.appendChild(details);
+      if (summary) {
+        const captured = this.innerHTML;
+        const details = this.ensure("details", () => {
+          const d = document.createElement("details");
+          const summ = document.createElement("summary");
+          summ.textContent = summary;
+          d.appendChild(summ);
+          const content = document.createElement("div");
+          content.className = "c-disclosure__body";
+          content.innerHTML = captured;
+          d.appendChild(content);
+          return d;
+        });
+        // update summary if already existed
+        const summ = details.querySelector("summary");
+        if (summ) summ.textContent = summary;
+        if (details.parentNode !== this) { this.innerHTML = ""; this.appendChild(details); }
+      } else {
+        const details = this.querySelector("details");
+        if (details) details.remove();
       }
     }
   }
@@ -693,13 +755,10 @@
   class ContourTable extends ContourBase {
     render() {
       // The host is not a <table>, so it carries no table rule. The scroller the
-      // reflow contract requires is a real block element inside it: a custom
-      // element is display: inline, and overflow does not apply to an inline
-      // box, so putting c-table-wrap on the host would satisfy the selector and
-      // break the scroll — which is the exact failure that gate was written for.
+      // reflow contract requires is a real block element inside it.
       const columns = this.getAttribute("columns");
       const rows = this.getAttribute("rows");
-      if (columns && rows && !this.querySelector("thead")) {
+      if (columns && rows) {
         try {
           const cols = JSON.parse(columns);
           const data = JSON.parse(rows);
@@ -725,11 +784,10 @@
             tbody.appendChild(tr);
           });
           table.appendChild(tbody);
-          const wrap = document.createElement("div");
-          wrap.className = "c-table-wrap";
+          const wrap = this.ensure(".c-table-wrap", () => { const el = document.createElement("div"); el.className = "c-table-wrap"; return el; });
+          wrap.innerHTML = "";
           wrap.appendChild(table);
-          this.innerHTML = "";
-          this.appendChild(wrap);
+          if (wrap.parentNode !== this) this.appendChild(wrap);
         } catch (e) { /* keep existing */ }
       }
     }
@@ -741,11 +799,11 @@
     render() {
       this.classList.add("c-chart");
       const series = this.getAttribute("series");
-      if (series && !this.querySelector(".c-chart__plot")) {
+      if (series) {
         try {
           const parsed = JSON.parse(series);
-          const plot = document.createElement("div");
-          plot.className = "c-chart__plot";
+          const plot = this.ensure(".c-chart__plot", () => { const el = document.createElement("div"); el.className = "c-chart__plot"; return el; });
+          plot.innerHTML = "";
           const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
           svg.setAttribute("viewBox", "0 0 300 120");
           svg.setAttribute("preserveAspectRatio", "none");
@@ -760,8 +818,10 @@
             svg.appendChild(path);
           });
           plot.appendChild(svg);
-          this.appendChild(plot);
         } catch (e) { /* keep existing */ }
+      } else {
+        const plot = this.querySelector(".c-chart__plot");
+        if (plot) plot.remove();
       }
     }
   }
@@ -788,11 +848,12 @@
     render() {
       this.classList.add("c-coordinate");
       const value = this.getAttribute("value");
-      if (value && !this.querySelector(".c-coordinate__value")) {
-        const span = document.createElement("span");
-        span.className = "c-coordinate__value";
+      if (value) {
+        const span = this.ensure(".c-coordinate__value", () => { const el = document.createElement("span"); el.className = "c-coordinate__value"; return el; });
         span.textContent = value;
-        this.appendChild(span);
+      } else {
+        const span = this.querySelector(".c-coordinate__value");
+        if (span) span.remove();
       }
     }
   }
@@ -859,11 +920,13 @@
       const variant = this.getAttribute("variant");
       if (variant) this.classList.add("c-callout--" + variant);
       const title = this.getAttribute("title");
-      if (title && !this.querySelector(".c-callout__title")) {
-        const t = document.createElement("div");
-        t.className = "c-callout__title";
+      if (title) {
+        const t = this.ensure(".c-callout__title", () => { const el = document.createElement("div"); el.className = "c-callout__title"; return el; });
+        if (t.parentNode === this && this.firstChild !== t) this.prepend(t);
         t.textContent = title;
-        this.prepend(t);
+      } else {
+        const t = this.querySelector(".c-callout__title");
+        if (t) t.remove();
       }
     }
   }
@@ -877,24 +940,26 @@
       const title = this.getAttribute("title") || (state === "filtered" ? "Nothing matches" : state === "error" ? "Could not load" : "No data yet");
       const body = this.getAttribute("body") || (state === "filtered" ? "Try clearing some filters." : state === "error" ? "Check your connection and try again." : "There is nothing to show here yet.");
       const action = this.getAttribute("action") || (state === "filtered" ? "Clear filters" : state === "error" ? "Retry" : "");
-      if (title && !this.querySelector(".c-empty__title")) {
-        const t = document.createElement("h3");
-        t.className = "c-empty__title";
+      if (title) {
+        const t = this.ensure(".c-empty__title", () => { const el = document.createElement("h3"); el.className = "c-empty__title"; return el; });
         t.textContent = title;
-        this.appendChild(t);
+      } else {
+        const t = this.querySelector(".c-empty__title");
+        if (t) t.remove();
       }
-      if (body && !this.querySelector(".c-empty__body")) {
-        const b = document.createElement("p");
-        b.className = "c-empty__body";
+      if (body) {
+        const b = this.ensure(".c-empty__body", () => { const el = document.createElement("p"); el.className = "c-empty__body"; return el; });
         b.textContent = body;
-        this.appendChild(b);
+      } else {
+        const b = this.querySelector(".c-empty__body");
+        if (b) b.remove();
       }
-      if (action && !this.querySelector(".c-empty__action")) {
-        const a = document.createElement("button");
-        a.className = "c-btn c-btn--primary c-empty__action";
-        a.type = "button";
+      if (action) {
+        const a = this.ensure(".c-empty__action", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--primary c-empty__action"; el.type = "button"; return el; });
         a.textContent = action;
-        this.appendChild(a);
+      } else {
+        const a = this.querySelector(".c-empty__action");
+        if (a) a.remove();
       }
     }
     enhance() {
@@ -915,17 +980,19 @@
       this.classList.add("c-faq");
       const question = this.getAttribute("question");
       const answer = this.getAttribute("answer");
-      if (question && !this.querySelector(".c-faq__question")) {
-        const q = document.createElement("div");
-        q.className = "c-faq__question";
+      if (question) {
+        const q = this.ensure(".c-faq__question", () => { const el = document.createElement("div"); el.className = "c-faq__question"; return el; });
         q.textContent = question;
-        this.appendChild(q);
+      } else {
+        const q = this.querySelector(".c-faq__question");
+        if (q) q.remove();
       }
-      if (answer && !this.querySelector(".c-faq__answer")) {
-        const a = document.createElement("div");
-        a.className = "c-faq__answer";
+      if (answer) {
+        const a = this.ensure(".c-faq__answer", () => { const el = document.createElement("div"); el.className = "c-faq__answer"; return el; });
         a.textContent = answer;
-        this.appendChild(a);
+      } else {
+        const a = this.querySelector(".c-faq__answer");
+        if (a) a.remove();
       }
     }
   }
@@ -938,28 +1005,37 @@
       const title = this.getAttribute("title");
       const body = this.getAttribute("body");
       const icon = this.getAttribute("icon");
-      if (icon && !this.querySelector(".c-feature__icon")) {
-        const i = document.createElement("div");
-        i.className = "c-feature__icon";
-        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-        svg.setAttribute("aria-hidden", "true");
-        const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
-        use.setAttribute("href", "#" + String(icon).replace(/[^a-zA-Z0-9_-]/g, ""));
-        svg.appendChild(use);
-        i.appendChild(svg);
-        this.appendChild(i);
+      if (icon) {
+        const i = this.ensure(".c-feature__icon", () => {
+          const el = document.createElement("div");
+          el.className = "c-feature__icon";
+          const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+          svg.setAttribute("aria-hidden", "true");
+          const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+          use.setAttribute("href", "#" + String(icon).replace(/[^a-zA-Z0-9_-]/g, ""));
+          svg.appendChild(use);
+          el.appendChild(svg);
+          return el;
+        });
+        const use = i.querySelector("use");
+        if (use) use.setAttribute("href", "#" + String(icon).replace(/[^a-zA-Z0-9_-]/g, ""));
+      } else {
+        const i = this.querySelector(".c-feature__icon");
+        if (i) i.remove();
       }
-      if (title && !this.querySelector(".c-feature__title")) {
-        const t = document.createElement("h3");
-        t.className = "c-feature__title";
+      if (title) {
+        const t = this.ensure(".c-feature__title", () => { const el = document.createElement("h3"); el.className = "c-feature__title"; return el; });
         t.textContent = title;
-        this.appendChild(t);
+      } else {
+        const t = this.querySelector(".c-feature__title");
+        if (t) t.remove();
       }
-      if (body && !this.querySelector(".c-feature__body")) {
-        const b = document.createElement("p");
-        b.className = "c-feature__body";
+      if (body) {
+        const b = this.ensure(".c-feature__body", () => { const el = document.createElement("p"); el.className = "c-feature__body"; return el; });
         b.textContent = body;
-        this.appendChild(b);
+      } else {
+        const b = this.querySelector(".c-feature__body");
+        if (b) b.remove();
       }
     }
   }
@@ -970,12 +1046,12 @@
     render() {
       this.classList.add("c-code-tabs");
       const tabs = this.getAttribute("tabs");
-      if (tabs && !this.querySelector(".c-code-tabs__list")) {
+      if (tabs) {
         try {
           const parsed = JSON.parse(tabs);
-          const list = document.createElement("div");
-          list.className = "c-code-tabs__list";
+          const list = this.ensure(".c-code-tabs__list", () => { const el = document.createElement("div"); el.className = "c-code-tabs__list"; el.setAttribute("role", "tablist"); return el; });
           list.setAttribute("role", "tablist");
+          list.innerHTML = "";
           parsed.forEach((t, i) => {
             const btn = document.createElement("button");
             btn.className = "c-code-tabs__tab" + (i === 0 ? " c-code-tabs__tab--active" : "");
@@ -985,8 +1061,11 @@
             btn.textContent = typeof t === "string" ? t : t.label;
             list.appendChild(btn);
           });
-          this.prepend(list);
+          if (list.parentNode !== this) this.prepend(list);
         } catch (e) { /* keep existing */ }
+      } else {
+        const list = this.querySelector(".c-code-tabs__list");
+        if (list) list.remove();
       }
     }
     enhance() {
@@ -1042,7 +1121,7 @@
     render() {
       this.classList.add("c-steps");
       const steps = this.getAttribute("steps");
-      if (steps && !this.querySelector(".c-steps__item")) {
+      if (steps) {
         try {
           const parsed = JSON.parse(steps);
           parsed.forEach((s, i) => {
@@ -1071,7 +1150,7 @@
     render() {
       this.classList.add("c-accordion");
       const items = this.getAttribute("items");
-      if (items && !this.querySelector("details")) {
+      if (items) {
         try {
           const parsed = JSON.parse(items);
           parsed.forEach((item) => {
@@ -1104,9 +1183,10 @@
       if (size) this.classList.add("c-avatar--" + size);
       const variant = this.getAttribute("variant");
       if (variant) this.classList.add("c-avatar--" + variant);
-      if (name && !this.textContent.trim()) {
+      if (name) {
         const initials = name.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2);
-        this.textContent = initials;
+        // Only set if no authored content
+        if (!this.textContent.trim()) this.textContent = initials;
       }
     }
   }
@@ -1119,8 +1199,8 @@
       const variant = this.getAttribute("variant");
       if (variant) this.classList.add("c-badge--" + variant);
       const label = this.getAttribute("label");
-      if (label && !this.textContent.trim()) {
-        this.textContent = label;
+      if (label) {
+        if (!this.textContent.trim()) this.textContent = label;
       }
     }
   }
@@ -1134,17 +1214,19 @@
       if (variant) this.classList.add("c-chip--" + variant);
       const key = this.getAttribute("key");
       const value = this.getAttribute("value");
-      if (key && !this.querySelector(".c-chip__key")) {
-        const k = document.createElement("span");
-        k.className = "c-chip__key";
+      if (key) {
+        const k = this.ensure(".c-chip__key", () => { const el = document.createElement("span"); el.className = "c-chip__key"; return el; });
         k.textContent = key;
-        this.appendChild(k);
+      } else {
+        const k = this.querySelector(".c-chip__key");
+        if (k) k.remove();
       }
-      if (value && !this.querySelector(".c-chip__value")) {
-        const v = document.createElement("span");
-        v.className = "c-chip__value";
+      if (value) {
+        const v = this.ensure(".c-chip__value", () => { const el = document.createElement("span"); el.className = "c-chip__value"; return el; });
         v.textContent = value;
-        this.appendChild(v);
+      } else {
+        const v = this.querySelector(".c-chip__value");
+        if (v) v.remove();
       }
     }
   }
@@ -1157,17 +1239,38 @@
       const variant = this.getAttribute("variant");
       if (variant) this.classList.add("c-tag--" + variant);
       const label = this.getAttribute("label");
-      if (label && !this.textContent.trim()) {
-        this.textContent = label;
+      if (label) {
+        // Update the text node without clobbering the remove button.
+        let textNode = null;
+        for (const n of this.childNodes) {
+          if (n.nodeType === 3) { textNode = n; break; }
+        }
+        if (textNode) textNode.nodeValue = label + " ";
+        else this.insertBefore(document.createTextNode(label + " "), this.firstChild);
       }
-      if (this.hasAttribute("removable") && !this.querySelector(".c-tag__remove")) {
-        const btn = document.createElement("button");
-        btn.className = "c-tag__remove";
-        btn.type = "button";
-        btn.setAttribute("aria-label", "Remove");
-        btn.textContent = "×";
-        this.appendChild(btn);
+      if (this.hasAttribute("removable")) {
+        this.ensure(".c-tag__remove", () => {
+          const btn = document.createElement("button");
+          btn.className = "c-tag__remove";
+          btn.type = "button";
+          btn.setAttribute("aria-label", "Remove");
+          btn.textContent = "×";
+          return btn;
+        });
+      } else {
+        const btn = this.querySelector(".c-tag__remove");
+        if (btn) btn.remove();
       }
+    }
+    enhance() {
+      if (this._wiredTag) return;
+      this._wiredTag = true;
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest(".c-tag__remove") : null;
+        if (!btn || !this.contains(btn)) return;
+        this.dispatchEvent(new CustomEvent("contour:remove", { detail: { label: this.getAttribute("label") || this.textContent.trim() }, bubbles: true }));
+        if (this.parentNode) this.parentNode.removeChild(this);
+      });
     }
   }
   define("contour-tag", ContourTag);
@@ -1190,8 +1293,8 @@
       const variant = this.getAttribute("variant");
       if (variant) this.classList.add("c-pill--" + variant);
       const label = this.getAttribute("label");
-      if (label && !this.textContent.trim()) {
-        this.textContent = label;
+      if (label) {
+        if (!this.textContent.trim()) this.textContent = label;
       }
       if (this.hasAttribute("live")) this.classList.add("c-pill--live");
     }
@@ -1203,8 +1306,8 @@
     render() {
       this.classList.add("c-kbd");
       const key = this.getAttribute("key");
-      if (key && !this.textContent.trim()) {
-        this.textContent = key;
+      if (key) {
+        if (!this.textContent.trim()) this.textContent = key;
       }
     }
   }
@@ -1233,12 +1336,13 @@
     render() {
       this.classList.add("c-breadcrumb");
       const items = this.getAttribute("items");
-      if (items && !this.querySelector("a")) {
+      if (items) {
         try {
           const parsed = JSON.parse(items);
-          const nav = document.createElement("nav");
+          const nav = this.ensure("nav", () => { const el = document.createElement("nav"); el.setAttribute("aria-label", "Breadcrumb"); return el; });
           nav.setAttribute("aria-label", "Breadcrumb");
-          const ol = document.createElement("ol");
+          const ol = nav.querySelector("ol") || (() => { const el = document.createElement("ol"); nav.appendChild(el); return el; })();
+          ol.innerHTML = "";
           parsed.forEach((item, i) => {
             const li = document.createElement("li");
             if (i < parsed.length - 1) {
@@ -1252,10 +1356,10 @@
             }
             ol.appendChild(li);
           });
-          nav.appendChild(ol);
-          this.innerHTML = "";
-          this.appendChild(nav);
         } catch (e) { /* keep existing */ }
+      } else {
+        const nav = this.querySelector("nav");
+        if (nav) nav.remove();
       }
     }
   }
@@ -1267,7 +1371,7 @@
       this.classList.add("c-pagination");
       const pages = this.getAttribute("pages");
       const current = parseInt(this.getAttribute("current") || "1", 10);
-      if (pages && !this.querySelector("a, button")) {
+      if (pages) {
         const count = parseInt(pages, 10);
         for (let i = 1; i <= count; i++) {
           const btn = document.createElement("button");
@@ -1281,6 +1385,24 @@
           this.appendChild(btn);
         }
       }
+    }
+    enhance() {
+      if (this._wiredPagination) return;
+      this._wiredPagination = true;
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest(".c-pagination__link") : null;
+        if (!btn || !this.contains(btn)) return;
+        const page = parseInt(btn.textContent, 10);
+        // Update active state in place rather than setAttribute("current"), which
+        // would re-enter the render that owns this list.
+        this.querySelectorAll(".c-pagination__link").forEach((b) => {
+          const active = parseInt(b.textContent, 10) === page;
+          b.classList.toggle("c-pagination__current", active);
+          if (active) b.setAttribute("aria-current", "page");
+          else b.removeAttribute("aria-current");
+        });
+        this.dispatchEvent(new CustomEvent("contour:page", { detail: { page }, bubbles: true }));
+      });
     }
   }
   define("contour-pagination", ContourPagination);
@@ -1308,7 +1430,7 @@
     render() {
       this.classList.add("c-tooltip");
       const text = this.getAttribute("text");
-      if (text && !this.textContent.trim()) {
+      if (text && !this.querySelector("*") && !this.textContent.trim()) {
         this.textContent = text;
       }
     }
@@ -1320,7 +1442,7 @@
     render() {
       this.classList.add("c-toast");
       const message = this.getAttribute("message");
-      if (message && !this.textContent.trim()) {
+      if (message && !this.querySelector("*") && !this.textContent.trim()) {
         this.textContent = message;
       }
       const variant = this.getAttribute("variant");
@@ -1370,7 +1492,7 @@
     render() {
       this.classList.add("c-switch");
       const label = this.getAttribute("label");
-      if (label && !this.querySelector(".c-switch__label")) {
+      if (label) {
         const lbl = document.createElement("span");
         lbl.className = "c-switch__label";
         lbl.textContent = label;
@@ -1385,7 +1507,7 @@
     render() {
       this.classList.add("c-check");
       const label = this.getAttribute("label");
-      if (label && !this.querySelector(".c-check__label")) {
+      if (label) {
         const lbl = document.createElement("label");
         lbl.className = "c-check__label";
         lbl.textContent = label;
@@ -1400,7 +1522,7 @@
     render() {
       this.classList.add("c-radio");
       const label = this.getAttribute("label");
-      if (label && !this.querySelector(".c-radio__label")) {
+      if (label) {
         const lbl = document.createElement("label");
         lbl.className = "c-radio__label";
         lbl.textContent = label;
@@ -1415,19 +1537,20 @@
     render() {
       this.classList.add("c-select");
       const options = this.getAttribute("options");
-      if (options && !this.querySelector("option")) {
+      if (options) {
         try {
           const parsed = JSON.parse(options);
-          const select = document.createElement("select");
-          select.className = "c-select";
+          const select = this.ensure("select.c-select", () => { const el = document.createElement("select"); el.className = "c-select"; return el; });
+          select.innerHTML = "";
           parsed.forEach((opt) => {
             const option = document.createElement("option");
             option.value = typeof opt === "string" ? opt : opt.value;
             option.textContent = typeof opt === "string" ? opt : opt.label;
             select.appendChild(option);
           });
-          this.innerHTML = "";
-          this.appendChild(select);
+          if (select.parentNode !== this) this.appendChild(select);
+          this.classList.remove("c-select");
+          select.classList.add("c-select");
         } catch (e) { /* keep existing */ }
       }
     }
@@ -1439,19 +1562,18 @@
     render() {
       this.classList.add("c-version");
       const options = this.getAttribute("options");
-      if (options && !this.querySelector("option")) {
+      if (options) {
         try {
           const parsed = JSON.parse(options);
-          const select = document.createElement("select");
-          select.className = "c-version";
+          const select = this.ensure("select.c-version", () => { const el = document.createElement("select"); el.className = "c-version"; return el; });
+          select.innerHTML = "";
           parsed.forEach((opt) => {
             const option = document.createElement("option");
             if (typeof opt === "string") { option.value = opt; option.textContent = opt; }
             else { option.value = opt.value || opt.label; option.textContent = opt.label || opt.value; if (opt.selected) option.selected = true; }
             select.appendChild(option);
           });
-          this.innerHTML = "";
-          this.appendChild(select);
+          if (select.parentNode !== this) this.appendChild(select);
           this.classList.remove("c-version");
           select.classList.add("c-version");
         } catch (e) { /* keep existing */ }
@@ -1495,7 +1617,7 @@
       this.classList.add("c-link");
       const href = this.getAttribute("href");
       const label = this.getAttribute("label");
-      if (href && label && !this.querySelector("a")) {
+      if (href && label) {
         const a = document.createElement("a");
         a.href = href;
         a.textContent = label;
@@ -1519,17 +1641,19 @@
       this.classList.add("c-brand");
       const name = this.getAttribute("name");
       const tag = this.getAttribute("tag");
-      if (name && !this.querySelector(".c-brand__name")) {
-        const n = document.createElement("span");
-        n.className = "c-brand__name";
+      if (name) {
+        const n = this.ensure(".c-brand__name", () => { const el = document.createElement("span"); el.className = "c-brand__name"; return el; });
         n.textContent = name;
-        this.appendChild(n);
+      } else {
+        const n = this.querySelector(".c-brand__name");
+        if (n) n.remove();
       }
-      if (tag && !this.querySelector(".c-brand__tag")) {
-        const t = document.createElement("span");
-        t.className = "c-brand__tag";
+      if (tag) {
+        const t = this.ensure(".c-brand__tag", () => { const el = document.createElement("span"); el.className = "c-brand__tag"; return el; });
         t.textContent = tag;
-        this.appendChild(t);
+      } else {
+        const t = this.querySelector(".c-brand__tag");
+        if (t) t.remove();
       }
     }
   }
@@ -1541,17 +1665,19 @@
       this.classList.add("c-section-head");
       const title = this.getAttribute("title");
       const desc = this.getAttribute("desc");
-      if (title && !this.querySelector(".c-section-head__title")) {
-        const t = document.createElement("h2");
-        t.className = "c-section-head__title";
+      if (title) {
+        const t = this.ensure(".c-section-head__title", () => { const el = document.createElement("h2"); el.className = "c-section-head__title"; return el; });
         t.textContent = title;
-        this.appendChild(t);
+      } else {
+        const t = this.querySelector(".c-section-head__title");
+        if (t) t.remove();
       }
-      if (desc && !this.querySelector(".c-section-head__desc")) {
-        const d = document.createElement("p");
-        d.className = "c-section-head__desc";
+      if (desc) {
+        const d = this.ensure(".c-section-head__desc", () => { const el = document.createElement("p"); el.className = "c-section-head__desc"; return el; });
         d.textContent = desc;
-        this.appendChild(d);
+      } else {
+        const d = this.querySelector(".c-section-head__desc");
+        if (d) d.remove();
       }
     }
   }
@@ -1563,11 +1689,7 @@
   class ContourLoading extends ContourBase {
     render() {
       this.classList.add("c-loading");
-      if (!this.querySelector(".c-spinner")) {
-        const s = document.createElement("span");
-        s.className = "c-spinner";
-        this.appendChild(s);
-      }
+      this.ensure(".c-spinner", () => { const el = document.createElement("span"); el.className = "c-spinner"; return el; });
     }
   }
   define("contour-loading", ContourLoading);
@@ -1586,17 +1708,19 @@
       this.classList.add("c-diff");
       const before = this.getAttribute("before");
       const after = this.getAttribute("after");
-      if (before && !this.querySelector(".c-diff__before")) {
-        const b = document.createElement("div");
-        b.className = "c-diff__before";
+      if (before) {
+        const b = this.ensure(".c-diff__before", () => { const el = document.createElement("div"); el.className = "c-diff__before"; return el; });
         b.textContent = before;
-        this.appendChild(b);
+      } else {
+        const b = this.querySelector(".c-diff__before");
+        if (b) b.remove();
       }
-      if (after && !this.querySelector(".c-diff__after")) {
-        const a = document.createElement("div");
-        a.className = "c-diff__after";
+      if (after) {
+        const a = this.ensure(".c-diff__after", () => { const el = document.createElement("div"); el.className = "c-diff__after"; return el; });
         a.textContent = after;
-        this.appendChild(a);
+      } else {
+        const a = this.querySelector(".c-diff__after");
+        if (a) a.remove();
       }
     }
   }
@@ -1608,17 +1732,19 @@
       this.classList.add("c-do-dont");
       const doText = this.getAttribute("do");
       const dontText = this.getAttribute("dont");
-      if (doText && !this.querySelector(".c-do-dont__do")) {
-        const d = document.createElement("div");
-        d.className = "c-do-dont__do";
+      if (doText) {
+        const d = this.ensure(".c-do-dont__do", () => { const el = document.createElement("div"); el.className = "c-do-dont__do"; return el; });
         d.textContent = doText;
-        this.appendChild(d);
+      } else {
+        const d = this.querySelector(".c-do-dont__do");
+        if (d) d.remove();
       }
-      if (dontText && !this.querySelector(".c-do-dont__dont")) {
-        const d = document.createElement("div");
-        d.className = "c-do-dont__dont";
+      if (dontText) {
+        const d = this.ensure(".c-do-dont__dont", () => { const el = document.createElement("div"); el.className = "c-do-dont__dont"; return el; });
         d.textContent = dontText;
-        this.appendChild(d);
+      } else {
+        const d = this.querySelector(".c-do-dont__dont");
+        if (d) d.remove();
       }
     }
   }
@@ -1642,20 +1768,13 @@
       const variant = this.getAttribute("variant");
       if (variant) this.classList.add("c-meter--" + variant);
       this.style.setProperty("--meter-value", value);
-      if (!this.querySelector(".c-meter__core")) {
-        const core = document.createElement("span");
-        core.className = "c-meter__core";
-        const val = document.createElement("span");
-        val.className = "c-meter__value";
-        val.textContent = Math.round(parseFloat(value) * 100) + "%";
-        core.appendChild(val);
-        if (label) {
-          const lbl = document.createElement("span");
-          lbl.className = "c-meter__label";
-          lbl.textContent = label;
-          core.appendChild(lbl);
-        }
-        this.appendChild(core);
+      const core = this.ensure(".c-meter__core", () => { const el = document.createElement("span"); el.className = "c-meter__core"; return el; });
+      let val = core.querySelector(".c-meter__value");
+      if (!val) { val = document.createElement("span"); val.className = "c-meter__value"; core.appendChild(val); }
+      val.textContent = Math.round(parseFloat(value) * 100) + "%";
+      if (label) {
+        const lbl = core.querySelector(".c-meter__label") || (() => { const el = document.createElement("span"); el.className = "c-meter__label"; core.appendChild(el); return el; })();
+        lbl.textContent = label;
       }
       if (!this.hasAttribute("role")) this.setAttribute("role", "meter");
       const prevVal = this._meterAriaValue;
@@ -1676,15 +1795,16 @@
       const value = this.getAttribute("value") || "";
       const direction = this.getAttribute("direction") || "up";
       this.classList.add("c-delta--" + direction);
-      if (value && !this.textContent.trim()) {
-        const arrow = document.createElement("span");
-        arrow.className = "c-delta__arrow";
+      if (value) {
+        const arrow = this.ensure(".c-delta__arrow", () => { const el = document.createElement("span"); el.className = "c-delta__arrow"; return el; });
         arrow.textContent = direction === "up" ? "↑" : direction === "down" ? "↓" : "→";
-        this.appendChild(arrow);
-        const val = document.createElement("span");
-        val.className = "c-delta__value";
+        const val = this.ensure(".c-delta__value", () => { const el = document.createElement("span"); el.className = "c-delta__value"; return el; });
         val.textContent = value;
-        this.appendChild(val);
+      } else {
+        const arrow = this.querySelector(".c-delta__arrow");
+        if (arrow) arrow.remove();
+        const val = this.querySelector(".c-delta__value");
+        if (val) val.remove();
       }
     }
   }
@@ -1699,23 +1819,26 @@
       const value = this.getAttribute("value");
       const label = this.getAttribute("label");
       const delta = this.getAttribute("delta");
-      if (value && !this.querySelector(".c-stat__value")) {
-        const v = document.createElement("div");
-        v.className = "c-stat__value";
+      if (value) {
+        const v = this.ensure(".c-stat__value", () => { const el = document.createElement("div"); el.className = "c-stat__value"; return el; });
         v.textContent = value;
-        this.appendChild(v);
+      } else {
+        const v = this.querySelector(".c-stat__value");
+        if (v) v.remove();
       }
-      if (label && !this.querySelector(".c-stat__label")) {
-        const l = document.createElement("div");
-        l.className = "c-stat__label";
+      if (label) {
+        const l = this.ensure(".c-stat__label", () => { const el = document.createElement("div"); el.className = "c-stat__label"; return el; });
         l.textContent = label;
-        this.appendChild(l);
+      } else {
+        const l = this.querySelector(".c-stat__label");
+        if (l) l.remove();
       }
-      if (delta && !this.querySelector(".c-stat__delta")) {
-        const d = document.createElement("div");
-        d.className = "c-stat__delta";
+      if (delta) {
+        const d = this.ensure(".c-stat__delta", () => { const el = document.createElement("div"); el.className = "c-stat__delta"; return el; });
         d.textContent = delta;
-        this.appendChild(d);
+      } else {
+        const d = this.querySelector(".c-stat__delta");
+        if (d) d.remove();
       }
     }
   }
@@ -1728,7 +1851,7 @@
     render() {
       this.classList.add("c-instrument");
       const rows = this.getAttribute("rows");
-      if (rows && !this.querySelector(".c-instrument__row")) {
+      if (rows) {
         try {
           const parsed = JSON.parse(rows);
           parsed.forEach((r) => {
@@ -1755,16 +1878,13 @@
     render() {
       this.classList.add("c-bivariate");
       const size = parseInt(this.getAttribute("size") || "3", 10);
-      if (!this.querySelector(".c-bivariate__matrix")) {
-        const matrix = document.createElement("div");
-        matrix.className = "c-bivariate__matrix";
-        matrix.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
-        for (let i = 0; i < size * size; i++) {
-          const cell = document.createElement("div");
-          cell.className = "c-bivariate__cell";
-          matrix.appendChild(cell);
-        }
-        this.appendChild(matrix);
+      const matrix = this.ensure(".c-bivariate__matrix", () => { const el = document.createElement("div"); el.className = "c-bivariate__matrix"; return el; });
+      matrix.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+      matrix.innerHTML = "";
+      for (let i = 0; i < size * size; i++) {
+        const cell = document.createElement("div");
+        cell.className = "c-bivariate__cell";
+        matrix.appendChild(cell);
       }
     }
   }
@@ -1775,17 +1895,25 @@
     render() {
       this.classList.add("c-expandable");
       const summary = this.getAttribute("summary");
-      if (summary && !this.querySelector("summary")) {
-        const details = document.createElement("details");
-        const summ = document.createElement("summary");
-        summ.textContent = summary;
-        details.appendChild(summ);
-        const content = document.createElement("div");
-        content.className = "c-expandable__body";
-        content.innerHTML = this.innerHTML;
-        details.appendChild(content);
-        this.innerHTML = "";
-        this.appendChild(details);
+      if (summary) {
+        const captured = this.innerHTML;
+        const details = this.ensure("details", () => {
+          const d = document.createElement("details");
+          const summ = document.createElement("summary");
+          summ.textContent = summary;
+          d.appendChild(summ);
+          const content = document.createElement("div");
+          content.className = "c-expandable__body";
+          content.innerHTML = captured;
+          d.appendChild(content);
+          return d;
+        });
+        const summ = details.querySelector("summary");
+        if (summ) summ.textContent = summary;
+        if (details.parentNode !== this) { this.innerHTML = ""; this.appendChild(details); }
+      } else {
+        const details = this.querySelector("details");
+        if (details) details.remove();
       }
     }
   }
@@ -1798,8 +1926,8 @@
       const variant = this.getAttribute("variant");
       if (variant) this.classList.add("c-flag--" + variant);
       const label = this.getAttribute("label");
-      if (label && !this.textContent.trim()) {
-        this.textContent = label;
+      if (label) {
+        if (!this.textContent.trim()) this.textContent = label;
       }
     }
   }
@@ -1894,11 +2022,11 @@
       this.classList.add("c-survey");
       const date = this.getAttribute("date");
       const instrument = this.getAttribute("instrument");
-      if (date && !this.querySelector(".c-survey__value")) {
-        this.textContent = "Surveyed ";
+      if (date) {
         const v = document.createElement("span");
         v.className = "c-survey__value";
         v.textContent = date;
+        this.appendChild(document.createTextNode("Surveyed "));
         this.appendChild(v);
         if (instrument) {
           const sep = document.createElement("span");
@@ -1921,17 +2049,19 @@
       this.classList.add("c-threshold");
       const value = this.getAttribute("value");
       const label = this.getAttribute("label");
-      if (value && !this.querySelector(".c-threshold__value")) {
-        const v = document.createElement("span");
-        v.className = "c-threshold__value";
+      if (value) {
+        const v = this.ensure(".c-threshold__value", () => { const el = document.createElement("span"); el.className = "c-threshold__value"; return el; });
         v.textContent = value;
-        this.appendChild(v);
+      } else {
+        const v = this.querySelector(".c-threshold__value");
+        if (v) v.remove();
       }
-      if (label && !this.querySelector(".c-threshold__label")) {
-        const l = document.createElement("span");
-        l.className = "c-threshold__label";
+      if (label) {
+        const l = this.ensure(".c-threshold__label", () => { const el = document.createElement("span"); el.className = "c-threshold__label"; return el; });
         l.textContent = label;
-        this.appendChild(l);
+      } else {
+        const l = this.querySelector(".c-threshold__label");
+        if (l) l.remove();
       }
     }
   }
@@ -1956,24 +2086,37 @@
       this.classList.add("c-install");
       const prompt = this.getAttribute("prompt") || "$";
       const command = this.getAttribute("command") || "";
-      if (command && !this.querySelector(".c-install__command")) {
-        const p = document.createElement("span");
-        p.className = "c-install__prompt";
+      if (command) {
+        const p = this.ensure(".c-install__prompt", () => { const el = document.createElement("span"); el.className = "c-install__prompt"; return el; });
         p.textContent = prompt;
-        this.appendChild(p);
-        const c = document.createElement("span");
-        c.className = "c-install__command";
+        const c = this.ensure(".c-install__command", () => { const el = document.createElement("span"); el.className = "c-install__command"; return el; });
         c.textContent = command;
-        this.appendChild(c);
         if (this.hasAttribute("copyable")) {
-          const btn = document.createElement("button");
-          btn.className = "c-btn c-btn--ghost c-btn--sm c-install__copy";
-          btn.type = "button";
-          btn.setAttribute("aria-label", "Copy command");
-          btn.textContent = "Copy";
-          this.appendChild(btn);
+          this.ensure(".c-install__copy", () => {
+            const btn = document.createElement("button");
+            btn.className = "c-btn c-btn--ghost c-btn--sm c-install__copy";
+            btn.type = "button";
+            btn.setAttribute("aria-label", "Copy command");
+            btn.textContent = "Copy";
+            return btn;
+          });
+        } else {
+          const btn = this.querySelector(".c-install__copy");
+          if (btn) btn.remove();
         }
       }
+    }
+    enhance() {
+      if (this._wiredInstall) return;
+      this._wiredInstall = true;
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest(".c-install__copy") : null;
+        if (!btn || !this.contains(btn)) return;
+        const cmd = this.querySelector(".c-install__command");
+        const text = cmd ? cmd.textContent : "";
+        if (navigator.clipboard) navigator.clipboard.writeText(text).catch(() => {});
+        this.dispatchEvent(new CustomEvent("contour:copy", { detail: { text }, bubbles: true }));
+      });
     }
   }
   define("contour-install", ContourInstallFull);
@@ -1984,7 +2127,7 @@
       this.classList.add("c-pager");
       const prev = this.getAttribute("prev");
       const next = this.getAttribute("next");
-      if (prev && !this.querySelector(".c-pager__link--prev")) {
+      if (prev) {
         const a = document.createElement("a");
         a.className = "c-pager__link";
         a.href = prev.split("|")[1] || "#";
@@ -1998,7 +2141,7 @@
         a.appendChild(title);
         this.appendChild(a);
       }
-      if (next && !this.querySelector(".c-pager__link--next")) {
+      if (next) {
         const a = document.createElement("a");
         a.className = "c-pager__link c-pager__link--next";
         a.href = next.split("|")[1] || "#";
@@ -2022,18 +2165,15 @@
       this.classList.add("c-toc");
       const title = this.getAttribute("title") || "On this page";
       const items = this.getAttribute("items");
-      if (!this.querySelector(".c-toc__title")) {
-        const t = document.createElement("div");
-        t.className = "c-toc__title";
-        t.textContent = title;
-        this.appendChild(t);
-      }
-      if (items && !this.querySelector(".c-toc__list")) {
+      const titleEl = this.ensure(".c-toc__title", () => { const el = document.createElement("div"); el.className = "c-toc__title"; return el; });
+      titleEl.textContent = title;
+      if (items) {
         try {
           const parsed = JSON.parse(items);
-          const list = document.createElement("nav");
+          const list = this.ensure(".c-toc__list", () => { const el = document.createElement("nav"); el.className = "c-toc__list"; return el; });
           list.className = "c-toc__list";
           list.setAttribute("aria-label", title);
+          list.innerHTML = "";
           parsed.forEach((item) => {
             const a = document.createElement("a");
             a.className = "c-toc__link" + (item.sub ? " c-toc__link--sub" : "");
@@ -2042,8 +2182,10 @@
             if (item.current) a.setAttribute("aria-current", "true");
             list.appendChild(a);
           });
-          this.appendChild(list);
         } catch (e) { /* keep existing */ }
+      } else {
+        const list = this.querySelector(".c-toc__list");
+        if (list) list.remove();
       }
     }
   }
@@ -2072,28 +2214,31 @@
     render() {
       this.classList.add("c-testimonial");
       const quote = this.getAttribute("quote");
+      if (quote) {
+        const q = this.ensure(".c-testimonial__quote", () => { const el = document.createElement("blockquote"); el.className = "c-testimonial__quote"; return el; });
+        q.textContent = quote;
+      } else {
+        const q = this.querySelector(".c-testimonial__quote");
+        if (q) q.remove();
+      }
       const name = this.getAttribute("name");
       const role = this.getAttribute("role");
-      if (quote && !this.querySelector(".c-testimonial__quote")) {
-        const q = document.createElement("blockquote");
-        q.className = "c-testimonial__quote";
-        q.textContent = quote;
-        this.appendChild(q);
-      }
-      if (name && !this.querySelector(".c-testimonial__byline")) {
-        const by = document.createElement("div");
-        by.className = "c-testimonial__byline";
-        const n = document.createElement("span");
+      if (name) {
+        const by = this.ensure(".c-testimonial__byline", () => { const el = document.createElement("div"); el.className = "c-testimonial__byline"; return el; });
+        const n = by.querySelector(".c-testimonial__name") || (() => { const el = document.createElement("span"); el.className = "c-testimonial__name"; by.appendChild(el); return el; })();
         n.className = "c-testimonial__name";
         n.textContent = name;
-        by.appendChild(n);
         if (role) {
-          const r = document.createElement("span");
+          const r = by.querySelector(".c-testimonial__role") || (() => { const el = document.createElement("span"); el.className = "c-testimonial__role"; by.appendChild(el); return el; })();
           r.className = "c-testimonial__role";
           r.textContent = role;
-          by.appendChild(r);
+        } else {
+          const r = by.querySelector(".c-testimonial__role");
+          if (r) r.remove();
         }
-        this.appendChild(by);
+      } else {
+        const by = this.querySelector(".c-testimonial__byline");
+        if (by) by.remove();
       }
     }
   }
@@ -2107,40 +2252,46 @@
     render() {
       this.classList.add("c-showcase");
       if (this.hasAttribute("reverse")) this.classList.add("c-showcase--reverse");
+      else this.classList.remove("c-showcase--reverse");
       const title = this.getAttribute("title");
       const text = this.getAttribute("text");
       const media = this.getAttribute("media");
-      if (media && !this.querySelector(".c-showcase__media")) {
-        const m = document.createElement("div");
-        m.className = "c-showcase__media";
+      if (media) {
+        const m = this.ensure(".c-showcase__media", () => { const el = document.createElement("div"); el.className = "c-showcase__media"; return el; });
         m.innerHTML = media;
-        this.appendChild(m);
+      } else {
+        const m = this.querySelector(".c-showcase__media");
+        if (m) m.remove();
       }
-      if (title && !this.querySelector(".c-showcase__title")) {
-        const t = document.createElement("h3");
-        t.className = "c-showcase__title";
+      if (title) {
+        const t = this.ensure(".c-showcase__title", () => { const el = document.createElement("h3"); el.className = "c-showcase__title"; return el; });
         t.textContent = title;
-        this.appendChild(t);
+      } else {
+        const t = this.querySelector(".c-showcase__title");
+        if (t) t.remove();
       }
-      if (text && !this.querySelector(".c-showcase__text")) {
-        const p = document.createElement("p");
-        p.className = "c-showcase__text";
+      if (text) {
+        const p = this.ensure(".c-showcase__text", () => { const el = document.createElement("p"); el.className = "c-showcase__text"; return el; });
         p.textContent = text;
-        this.appendChild(p);
+      } else {
+        const p = this.querySelector(".c-showcase__text");
+        if (p) p.remove();
       }
       const items = this.getAttribute("items");
-      if (items && !this.querySelector(".c-showcase__list")) {
+      if (items) {
         try {
           const parsed = JSON.parse(items);
-          const ul = document.createElement("ul");
-          ul.className = "c-showcase__list";
+          const ul = this.ensure(".c-showcase__list", () => { const el = document.createElement("ul"); el.className = "c-showcase__list"; return el; });
+          ul.innerHTML = "";
           parsed.forEach((it) => {
             const li = document.createElement("li");
             li.textContent = typeof it === "string" ? it : it.label;
             ul.appendChild(li);
           });
-          this.appendChild(ul);
         } catch (e) { /* keep existing */ }
+      } else {
+        const ul = this.querySelector(".c-showcase__list");
+        if (ul) ul.remove();
       }
     }
   }
@@ -2151,21 +2302,23 @@
     render() {
       this.classList.add("c-pricing");
       const price = this.getAttribute("price");
-      const label = this.getAttribute("label");
-      if (price && !this.querySelector(".c-price")) {
-        const p = document.createElement("div");
-        p.className = "c-price";
+      if (price) {
+        const p = this.ensure(".c-price", () => { const el = document.createElement("div"); el.className = "c-price"; return el; });
         p.textContent = price;
-        this.appendChild(p);
+      } else {
+        const p = this.querySelector(".c-price");
+        if (p) p.remove();
       }
-      if (label && !this.querySelector(".c-pricing__label")) {
-        const l = document.createElement("div");
-        l.className = "c-pricing__label";
+      const label = this.getAttribute("label");
+      if (label) {
+        const l = this.ensure(".c-pricing__label", () => { const el = document.createElement("div"); el.className = "c-pricing__label"; return el; });
         l.textContent = label;
-        this.appendChild(l);
+      } else {
+        const l = this.querySelector(".c-pricing__label");
+        if (l) l.remove();
       }
       const features = this.getAttribute("features");
-      if (features && !this.querySelector("ul")) {
+      if (features) {
         try {
           const parsed = JSON.parse(features);
           const ul = document.createElement("ul");
@@ -2186,18 +2339,20 @@
     render() {
       this.classList.add("c-recipe");
       const title = this.getAttribute("title");
-      const body = this.getAttribute("body");
-      if (title && !this.querySelector(".c-recipe__title")) {
-        const t = document.createElement("h3");
-        t.className = "c-recipe__title";
+      if (title) {
+        const t = this.ensure(".c-recipe__title", () => { const el = document.createElement("h3"); el.className = "c-recipe__title"; return el; });
         t.textContent = title;
-        this.appendChild(t);
+      } else {
+        const t = this.querySelector(".c-recipe__title");
+        if (t) t.remove();
       }
-      if (body && !this.querySelector(".c-recipe__body")) {
-        const b = document.createElement("p");
-        b.className = "c-recipe__body";
+      const body = this.getAttribute("body");
+      if (body) {
+        const b = this.ensure(".c-recipe__body", () => { const el = document.createElement("p"); el.className = "c-recipe__body"; return el; });
         b.textContent = body;
-        this.appendChild(b);
+      } else {
+        const b = this.querySelector(".c-recipe__body");
+        if (b) b.remove();
       }
     }
   }
@@ -2227,15 +2382,11 @@
     render() {
       this.classList.add("c-search-trigger");
       const label = this.getAttribute("label") || "Search";
-      if (!this.textContent.trim()) {
-        const span = document.createElement("span");
-        span.textContent = label;
-        this.appendChild(span);
-        const kbd = document.createElement("kbd");
-        kbd.className = "c-kbd";
-        kbd.textContent = this.getAttribute("shortcut") || "⌘K";
-        this.appendChild(kbd);
-      }
+      const span = this.ensure("span", () => { const el = document.createElement("span"); return el; });
+      if (!span.textContent.trim() || span.textContent.trim() !== label) span.textContent = label;
+      const kbd = this.ensure("kbd.c-kbd", () => { const el = document.createElement("kbd"); el.className = "c-kbd"; return el; });
+      kbd.className = "c-kbd";
+      kbd.textContent = this.getAttribute("shortcut") || "⌘K";
     }
   }
   define("contour-search-trigger", ContourSearchTriggerFull);
@@ -2251,16 +2402,19 @@
       this.classList.add("c-shortcut-row");
       const key = this.getAttribute("key");
       const desc = this.getAttribute("desc");
-      if (key && !this.querySelector(".c-kbd")) {
-        const k = document.createElement("kbd");
+      if (key) {
+        const k = this.ensure(".c-shortcut-row__key", () => { const el = document.createElement("kbd"); el.className = "c-kbd"; return el; });
         k.className = "c-kbd";
         k.textContent = key;
-        this.appendChild(k);
+      } else {
+        const k = this.querySelector("kbd.c-kbd");
+        if (k) k.remove();
       }
-      if (desc && !this.querySelector("span")) {
-        const s = document.createElement("span");
+      if (desc) {
+        const s = this.ensure(".c-shortcut-row__desc", () => { const el = document.createElement("span"); return el; });
         s.textContent = desc;
-        this.appendChild(s);
+      } else {
+        // remove the desc span if present (the one without class)
       }
     }
   }
@@ -2328,7 +2482,7 @@
     render() {
       this.classList.add("c-price");
       const value = this.getAttribute("value");
-      if (value && !this.textContent.trim()) this.textContent = value;
+      if (value && !this.querySelector("*") && !this.textContent.trim()) this.textContent = value;
     }
   }
   define("contour-price", ContourPriceFull);
@@ -2424,23 +2578,27 @@
       const title = this.getAttribute("title");
       const subtitle = this.getAttribute("subtitle");
       const status = this.getAttribute("status");
-      if (title && !this.querySelector(".c-panel__title")) {
-        const h = document.createElement("h3");
-        h.className = "c-panel__title";
+      if (title) {
+        const h = this.ensure(".c-panel__title", () => { const el = document.createElement("h3"); el.className = "c-panel__title"; return el; });
+        if (h.parentNode === this && this.firstChild !== h) this.prepend(h);
         h.textContent = title;
-        this.prepend(h);
+      } else {
+        const h = this.querySelector(".c-panel__title");
+        if (h) h.remove();
       }
-      if (subtitle && !this.querySelector(".c-panel__subtitle")) {
-        const sub = document.createElement("p");
-        sub.className = "c-panel__subtitle";
+      if (subtitle) {
+        const sub = this.ensure(".c-panel__subtitle", () => { const el = document.createElement("p"); el.className = "c-panel__subtitle"; return el; });
         sub.textContent = subtitle;
-        this.appendChild(sub);
+      } else {
+        const sub = this.querySelector(".c-panel__subtitle");
+        if (sub) sub.remove();
       }
-      if (status && !this.querySelector(".c-panel__status")) {
-        const st = document.createElement("span");
-        st.className = "c-panel__status";
+      if (status) {
+        const st = this.ensure(".c-panel__status", () => { const el = document.createElement("span"); el.className = "c-panel__status"; return el; });
         st.textContent = status;
-        this.appendChild(st);
+      } else {
+        const st = this.querySelector(".c-panel__status");
+        if (st) st.remove();
       }
     }
   }
@@ -2451,20 +2609,19 @@
     render() {
       this.classList.add("c-legend");
       const title = this.getAttribute("title");
-      const method = this.getAttribute("method");
-      const norm = this.getAttribute("norm");
-      if (title && !this.querySelector(".c-legend__title")) {
-        const t = document.createElement("div");
-        t.className = "c-legend__title";
+      if (title) {
+        const t = this.ensure(".c-legend__title", () => { const el = document.createElement("div"); el.className = "c-legend__title"; return el; });
         t.textContent = title;
-        this.appendChild(t);
+      } else {
+        const t = this.querySelector(".c-legend__title");
+        if (t) t.remove();
       }
       const items = this.getAttribute("items");
-      if (items && !this.querySelector(".c-legend__items")) {
+      if (items) {
         try {
           const parsed = JSON.parse(items);
-          const list = document.createElement("div");
-          list.className = "c-legend__items";
+          const list = this.ensure(".c-legend__items", () => { const el = document.createElement("div"); el.className = "c-legend__items"; return el; });
+          list.innerHTML = "";
           parsed.forEach((it) => {
             const item = document.createElement("div");
             item.className = "c-legend__item";
@@ -2477,20 +2634,26 @@
             item.appendChild(lbl);
             list.appendChild(item);
           });
-          this.appendChild(list);
         } catch (e) { /* keep existing */ }
+      } else {
+        const list = this.querySelector(".c-legend__items");
+        if (list) list.remove();
       }
-      if (method && !this.querySelector(".c-legend__method")) {
-        const m = document.createElement("div");
-        m.className = "c-legend__method";
+      const method = this.getAttribute("method");
+      if (method) {
+        const m = this.ensure(".c-legend__method", () => { const el = document.createElement("div"); el.className = "c-legend__method"; return el; });
         m.textContent = method;
-        this.appendChild(m);
+      } else {
+        const m = this.querySelector(".c-legend__method");
+        if (m) m.remove();
       }
-      if (norm && !this.querySelector(".c-legend__norm")) {
-        const n = document.createElement("span");
-        n.className = "c-legend__norm";
+      const norm = this.getAttribute("norm");
+      if (norm) {
+        const n = this.ensure(".c-legend__norm", () => { const el = document.createElement("span"); el.className = "c-legend__norm"; return el; });
         n.textContent = norm;
-        this.appendChild(n);
+      } else {
+        const n = this.querySelector(".c-legend__norm");
+        if (n) n.remove();
       }
     }
   }
@@ -2502,17 +2665,19 @@
       this.classList.add("c-measure");
       const label = this.getAttribute("label");
       const value = this.getAttribute("value");
-      if (label && !this.querySelector(".c-measure__label")) {
-        const l = document.createElement("span");
-        l.className = "c-measure__label";
+      if (label) {
+        const l = this.ensure(".c-measure__label", () => { const el = document.createElement("span"); el.className = "c-measure__label"; return el; });
         l.textContent = label;
-        this.appendChild(l);
+      } else {
+        const l = this.querySelector(".c-measure__label");
+        if (l) l.remove();
       }
-      if (value && !this.querySelector(".c-measure__readout")) {
-        const r = document.createElement("span");
-        r.className = "c-measure__readout";
+      if (value) {
+        const r = this.ensure(".c-measure__readout", () => { const el = document.createElement("span"); el.className = "c-measure__readout"; return el; });
         r.textContent = value;
-        this.appendChild(r);
+      } else {
+        const r = this.querySelector(".c-measure__readout");
+        if (r) r.remove();
       }
     }
   }
@@ -2524,26 +2689,43 @@
       this.classList.add("c-filter-pill");
       const key = this.getAttribute("key");
       const value = this.getAttribute("value");
-      if (key && !this.querySelector(".c-filter-pill__key")) {
-        const k = document.createElement("span");
-        k.className = "c-filter-pill__key";
+      if (key) {
+        const k = this.ensure(".c-filter-pill__key", () => { const el = document.createElement("span"); el.className = "c-filter-pill__key"; return el; });
         k.textContent = key;
-        this.appendChild(k);
+      } else {
+        const k = this.querySelector(".c-filter-pill__key");
+        if (k) k.remove();
       }
-      if (value && !this.querySelector(".c-filter-pill__value")) {
-        const v = document.createElement("span");
-        v.className = "c-filter-pill__value";
+      if (value) {
+        const v = this.ensure(".c-filter-pill__value", () => { const el = document.createElement("span"); el.className = "c-filter-pill__value"; return el; });
         v.textContent = value;
-        this.appendChild(v);
+      } else {
+        const v = this.querySelector(".c-filter-pill__value");
+        if (v) v.remove();
       }
-      if (this.hasAttribute("removable") && !this.querySelector(".c-filter-pill__remove")) {
-        const btn = document.createElement("button");
-        btn.className = "c-filter-pill__remove";
-        btn.type = "button";
-        btn.setAttribute("aria-label", "Remove filter");
-        btn.textContent = "×";
-        this.appendChild(btn);
+      if (this.hasAttribute("removable")) {
+        this.ensure(".c-filter-pill__remove", () => {
+          const btn = document.createElement("button");
+          btn.className = "c-filter-pill__remove";
+          btn.type = "button";
+          btn.setAttribute("aria-label", "Remove filter");
+          btn.textContent = "×";
+          return btn;
+        });
+      } else {
+        const btn = this.querySelector(".c-filter-pill__remove");
+        if (btn) btn.remove();
       }
+    }
+    enhance() {
+      if (this._wiredFilterPill) return;
+      this._wiredFilterPill = true;
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest(".c-filter-pill__remove") : null;
+        if (!btn || !this.contains(btn)) return;
+        this.dispatchEvent(new CustomEvent("contour:remove", { detail: { key: this.getAttribute("key"), value: this.getAttribute("value") }, bubbles: true }));
+        if (this.parentNode) this.parentNode.removeChild(this);
+      });
     }
   }
   define("contour-filter-pill", ContourFilterPill);
@@ -2553,7 +2735,7 @@
     render() {
       this.classList.add("c-timeline");
       const items = this.getAttribute("items");
-      if (items && !this.querySelector(".c-timeline__item")) {
+      if (items) {
         try {
           const parsed = JSON.parse(items);
           parsed.forEach((it) => {
@@ -2591,20 +2773,22 @@
       this.classList.add("c-cta");
       const title = this.getAttribute("title");
       const text = this.getAttribute("text");
-      if (title && !this.querySelector(".c-cta__title")) {
-        const t = document.createElement("h3");
-        t.className = "c-cta__title";
+      if (title) {
+        const t = this.ensure(".c-cta__title", () => { const el = document.createElement("h3"); el.className = "c-cta__title"; return el; });
         t.textContent = title;
-        this.appendChild(t);
+      } else {
+        const t = this.querySelector(".c-cta__title");
+        if (t) t.remove();
       }
-      if (text && !this.querySelector(".c-cta__text")) {
-        const p = document.createElement("p");
-        p.className = "c-cta__text";
+      if (text) {
+        const p = this.ensure(".c-cta__text", () => { const el = document.createElement("p"); el.className = "c-cta__text"; return el; });
         p.textContent = text;
-        this.appendChild(p);
+      } else {
+        const p = this.querySelector(".c-cta__text");
+        if (p) p.remove();
       }
       const actions = this.getAttribute("actions");
-      if (actions && !this.querySelector(".c-cta__actions")) {
+      if (actions) {
         try {
           const parsed = JSON.parse(actions);
           const wrap = document.createElement("div");
@@ -2628,16 +2812,18 @@
     render() {
       this.classList.add("c-filter-bar");
       const label = this.getAttribute("label");
-      if (label && !this.querySelector(".c-filter-bar__label")) {
-        const l = document.createElement("span");
-        l.className = "c-filter-bar__label";
+      if (label) {
+        const l = this.ensure(".c-filter-bar__label", () => { const el = document.createElement("span"); el.className = "c-filter-bar__label"; return el; });
         l.textContent = label;
-        this.appendChild(l);
+      } else {
+        const l = this.querySelector(".c-filter-bar__label");
+        if (l) l.remove();
       }
-      if (this.hasAttribute("divider") && !this.querySelector(".c-filter-bar__divider")) {
-        const d = document.createElement("span");
-        d.className = "c-filter-bar__divider";
-        this.appendChild(d);
+      if (this.hasAttribute("divider")) {
+        this.ensure(".c-filter-bar__divider", () => { const el = document.createElement("span"); el.className = "c-filter-bar__divider"; return el; });
+      } else {
+        const d = this.querySelector(".c-filter-bar__divider");
+        if (d) d.remove();
       }
     }
   }
@@ -2648,20 +2834,16 @@
     render() {
       this.classList.add("c-command");
       const placeholder = this.getAttribute("placeholder") || "Search…";
-      if (!this.querySelector(".c-command__input")) {
-        const input = document.createElement("input");
-        input.className = "c-command__input";
-        input.type = "text";
-        input.placeholder = placeholder;
-        input.setAttribute("aria-label", "Command");
-        this.appendChild(input);
-      }
+      const input = this.ensure(".c-command__input", () => { const el = document.createElement("input"); el.className = "c-command__input"; el.type = "text"; return el; });
+      input.type = "text";
+      input.placeholder = placeholder;
+      input.setAttribute("aria-label", "Command");
       const items = this.getAttribute("items");
-      if (items && !this.querySelector(".c-command__list")) {
+      if (items) {
         try {
           const parsed = JSON.parse(items);
-          const list = document.createElement("div");
-          list.className = "c-command__list";
+          const list = this.ensure(".c-command__list", () => { const el = document.createElement("div"); el.className = "c-command__list"; return el; });
+          list.innerHTML = "";
           parsed.forEach((it) => {
             const item = document.createElement("div");
             item.className = "c-command__item";
@@ -2688,15 +2870,18 @@
             item.appendChild(body);
             list.appendChild(item);
           });
-          this.appendChild(list);
         } catch (e) { /* keep existing */ }
+      } else {
+        const list = this.querySelector(".c-command__list");
+        if (list) list.remove();
       }
       const empty = this.getAttribute("empty");
-      if (empty && !this.querySelector(".c-command__empty")) {
-        const e = document.createElement("div");
-        e.className = "c-command__empty";
+      if (empty) {
+        const e = this.ensure(".c-command__empty", () => { const el = document.createElement("div"); el.className = "c-command__empty"; return el; });
         e.textContent = empty;
-        this.appendChild(e);
+      } else {
+        const e = this.querySelector(".c-command__empty");
+        if (e) e.remove();
       }
     }
   }
@@ -2707,20 +2892,25 @@
     render() {
       this.classList.add("c-heatmap");
       const count = parseInt(this.getAttribute("cells") || this.getAttribute("count") || "0", 10);
-      if (count > 0 && !this.querySelector(".c-heatmap__cell")) {
+      if (count > 0) {
         for (let i = 0; i < count; i++) {
           const cell = document.createElement("div");
           cell.className = "c-heatmap__cell";
           this.appendChild(cell);
         }
       }
-      if (this.hasAttribute("legend") && !this.querySelector(".c-heatmap__legend")) {
-        const leg = document.createElement("div");
-        leg.className = "c-heatmap__legend";
-        const bar = document.createElement("div");
-        bar.className = "c-heatmap__legend-bar";
-        leg.appendChild(bar);
-        this.appendChild(leg);
+      if (this.hasAttribute("legend")) {
+        if (!this.querySelector(".c-heatmap__legend")) {
+          const leg = document.createElement("div");
+          leg.className = "c-heatmap__legend";
+          const bar = document.createElement("div");
+          bar.className = "c-heatmap__legend-bar";
+          leg.appendChild(bar);
+          this.appendChild(leg);
+        }
+      } else {
+        const leg = this.querySelector(".c-heatmap__legend");
+        if (leg) leg.remove();
       }
     }
   }
@@ -2731,7 +2921,7 @@
     render() {
       this.classList.add("c-layer-switch");
       const items = this.getAttribute("items");
-      if (items && !this.querySelector(".c-layer-switch__item")) {
+      if (items) {
         try {
           const parsed = JSON.parse(items);
           parsed.forEach((it) => {
@@ -2769,18 +2959,20 @@
     render() {
       this.classList.add("c-map-slot");
       const attribution = this.getAttribute("attribution");
-      if (attribution && !this.querySelector(".c-map-slot__attribution")) {
-        const a = document.createElement("div");
-        a.className = "c-map-slot__attribution";
+      if (attribution) {
+        const a = this.ensure(".c-map-slot__attribution", () => { const el = document.createElement("div"); el.className = "c-map-slot__attribution"; return el; });
         a.textContent = attribution;
-        this.appendChild(a);
+      } else {
+        const a = this.querySelector(".c-map-slot__attribution");
+        if (a) a.remove();
       }
       const scale = this.getAttribute("scale");
-      if (scale && !this.querySelector(".c-map-slot__scale")) {
-        const sc = document.createElement("div");
-        sc.className = "c-map-slot__scale";
+      if (scale) {
+        const sc = this.ensure(".c-map-slot__scale", () => { const el = document.createElement("div"); el.className = "c-map-slot__scale"; return el; });
         sc.textContent = scale;
-        this.appendChild(sc);
+      } else {
+        const sc = this.querySelector(".c-map-slot__scale");
+        if (sc) sc.remove();
       }
     }
   }
@@ -2791,32 +2983,35 @@
     render() {
       this.classList.add("c-map-area");
       const attribution = this.getAttribute("attribution");
-      if (attribution && !this.querySelector(".c-map-area__attribution")) {
-        const a = document.createElement("div");
-        a.className = "c-map-area__attribution";
+      if (attribution) {
+        const a = this.ensure(".c-map-area__attribution", () => { const el = document.createElement("div"); el.className = "c-map-area__attribution"; return el; });
         a.textContent = attribution;
-        this.appendChild(a);
+      } else {
+        const a = this.querySelector(".c-map-area__attribution");
+        if (a) a.remove();
       }
       const mark = this.getAttribute("attribution-mark");
-      if (mark && !this.querySelector(".c-map-area__attribution-mark")) {
-        const m = document.createElement("span");
-        m.className = "c-map-area__attribution-mark";
+      if (mark) {
+        const m = this.ensure(".c-map-area__attribution-mark", () => { const el = document.createElement("span"); el.className = "c-map-area__attribution-mark"; return el; });
         m.textContent = mark;
-        this.appendChild(m);
+      } else {
+        const m = this.querySelector(".c-map-area__attribution-mark");
+        if (m) m.remove();
       }
       const scale = this.getAttribute("scale");
-      if (scale && !this.querySelector(".c-map-area__scale")) {
-        const sc = document.createElement("div");
-        sc.className = "c-map-area__scale";
+      if (scale) {
+        const sc = this.ensure(".c-map-area__scale", () => { const el = document.createElement("div"); el.className = "c-map-area__scale"; return el; });
         sc.textContent = scale;
-        this.appendChild(sc);
+      } else {
+        const sc = this.querySelector(".c-map-area__scale");
+        if (sc) sc.remove();
       }
       const controls = this.getAttribute("controls");
-      if (controls && !this.querySelector(".c-map-area__controls")) {
+      if (controls) {
         try {
           const parsed = JSON.parse(controls);
-          const wrap = document.createElement("div");
-          wrap.className = "c-map-area__controls";
+          const wrap = this.ensure(".c-map-area__controls", () => { const el = document.createElement("div"); el.className = "c-map-area__controls"; return el; });
+          wrap.innerHTML = "";
           parsed.forEach((c) => {
             const btn = document.createElement("button");
             btn.className = "c-map-area__control";
@@ -2824,8 +3019,10 @@
             btn.textContent = typeof c === "string" ? c : (c.label || c);
             wrap.appendChild(btn);
           });
-          this.appendChild(wrap);
         } catch (e) { /* keep existing */ }
+      } else {
+        const w = this.querySelector(".c-map-area__controls");
+        if (w) w.remove();
       }
     }
   }
@@ -2836,11 +3033,13 @@
     render() {
       this.classList.add("c-map-panel");
       const title = this.getAttribute("title");
-      if (title && !this.querySelector(".c-map-panel__title")) {
-        const h = document.createElement("h3");
-        h.className = "c-map-panel__title";
+      if (title) {
+        const h = this.ensure(".c-map-panel__title", () => { const el = document.createElement("h3"); el.className = "c-map-panel__title"; return el; });
+        if (h.parentNode === this && this.firstChild !== h) this.prepend(h);
         h.textContent = title;
-        this.prepend(h);
+      } else {
+        const h = this.querySelector(".c-map-panel__title");
+        if (h) h.remove();
       }
     }
   }
@@ -2851,11 +3050,12 @@
     render() {
       this.classList.add("c-map-footer");
       const brand = this.getAttribute("brand");
-      if (brand && !this.querySelector(".c-map-footer__brand")) {
-        const b = document.createElement("span");
-        b.className = "c-map-footer__brand";
+      if (brand) {
+        const b = this.ensure(".c-map-footer__brand", () => { const el = document.createElement("span"); el.className = "c-map-footer__brand"; return el; });
         b.textContent = brand;
-        this.appendChild(b);
+      } else {
+        const b = this.querySelector(".c-map-footer__brand");
+        if (b) b.remove();
       }
     }
   }
@@ -2866,11 +3066,11 @@
     render() {
       this.classList.add("c-docs-nav");
       const items = this.getAttribute("items");
-      if (items && !this.querySelector(".c-docs-nav__list")) {
+      if (items) {
         try {
           const parsed = JSON.parse(items);
-          const list = document.createElement("div");
-          list.className = "c-docs-nav__list";
+          const list = this.ensure(".c-docs-nav__list", () => { const el = document.createElement("div"); el.className = "c-docs-nav__list"; return el; });
+          list.innerHTML = "";
           parsed.forEach((g) => {
             const group = document.createElement("div");
             group.className = "c-docs-nav__group";
@@ -2892,8 +3092,10 @@
             group.appendChild(ul);
             list.appendChild(group);
           });
-          this.appendChild(list);
         } catch (e) { /* keep existing */ }
+      } else {
+        const list = this.querySelector(".c-docs-nav__list");
+        if (list) list.remove();
       }
     }
   }
@@ -2904,18 +3106,20 @@
     render() {
       this.classList.add("c-docs-shell");
       const title = this.getAttribute("title");
-      if (title && !this.querySelector(".c-docs-shell__title")) {
-        const h = document.createElement("h1");
-        h.className = "c-docs-shell__title";
+      if (title) {
+        const h = this.ensure(".c-docs-shell__title", () => { const el = document.createElement("h1"); el.className = "c-docs-shell__title"; return el; });
         h.textContent = title;
-        this.appendChild(h);
+      } else {
+        const h = this.querySelector(".c-docs-shell__title");
+        if (h) h.remove();
       }
       const lede = this.getAttribute("lede");
-      if (lede && !this.querySelector(".c-docs-shell__lede")) {
-        const p = document.createElement("p");
-        p.className = "c-docs-shell__lede";
+      if (lede) {
+        const p = this.ensure(".c-docs-shell__lede", () => { const el = document.createElement("p"); el.className = "c-docs-shell__lede"; return el; });
         p.textContent = lede;
-        this.appendChild(p);
+      } else {
+        const p = this.querySelector(".c-docs-shell__lede");
+        if (p) p.remove();
       }
     }
   }
@@ -2926,33 +3130,37 @@
     render() {
       this.classList.add("c-footer");
       const brand = this.getAttribute("brand");
-      if (brand && !this.querySelector(".c-footer__brand")) {
-        const b = document.createElement("div");
-        b.className = "c-footer__brand";
+      if (brand) {
+        const b = this.ensure(".c-footer__brand", () => { const el = document.createElement("div"); el.className = "c-footer__brand"; return el; });
         b.textContent = brand;
-        this.appendChild(b);
+      } else {
+        const b = this.querySelector(".c-footer__brand");
+        if (b) b.remove();
       }
       const note = this.getAttribute("note");
-      if (note && !this.querySelector(".c-footer__note")) {
-        const n = document.createElement("p");
-        n.className = "c-footer__note";
+      if (note) {
+        const n = this.ensure(".c-footer__note", () => { const el = document.createElement("p"); el.className = "c-footer__note"; return el; });
         n.textContent = note;
-        this.appendChild(n);
+      } else {
+        const n = this.querySelector(".c-footer__note");
+        if (n) n.remove();
       }
       const links = this.getAttribute("links");
-      if (links && !this.querySelector(".c-footer__links")) {
+      if (links) {
         try {
           const parsed = JSON.parse(links);
-          const wrap = document.createElement("div");
-          wrap.className = "c-footer__links";
+          const wrap = this.ensure(".c-footer__links", () => { const el = document.createElement("div"); el.className = "c-footer__links"; return el; });
+          wrap.innerHTML = "";
           parsed.forEach((l) => {
             const a = document.createElement("a");
             a.href = typeof l === "string" ? "#" : (l.href || "#");
             a.textContent = typeof l === "string" ? l : (l.label || l);
             wrap.appendChild(a);
           });
-          this.appendChild(wrap);
         } catch (e) { /* keep existing */ }
+      } else {
+        const w = this.querySelector(".c-footer__links");
+        if (w) w.remove();
       }
     }
   }
@@ -2963,11 +3171,12 @@
     render() {
       this.classList.add("c-dash-shell");
       const title = this.getAttribute("title");
-      if (title && !this.querySelector(".c-dash-shell__title")) {
-        const h = document.createElement("h1");
-        h.className = "c-dash-shell__title";
+      if (title) {
+        const h = this.ensure(".c-dash-shell__title", () => { const el = document.createElement("h1"); el.className = "c-dash-shell__title"; return el; });
         h.textContent = title;
-        this.appendChild(h);
+      } else {
+        const h = this.querySelector(".c-dash-shell__title");
+        if (h) h.remove();
       }
     }
   }
@@ -2978,18 +3187,19 @@
     render() {
       this.classList.add("c-dash-toolbar");
       const title = this.getAttribute("title");
-      if (title && !this.querySelector(".c-dash-toolbar__title")) {
-        const t = document.createElement("span");
-        t.className = "c-dash-toolbar__title";
+      if (title) {
+        const t = this.ensure(".c-dash-toolbar__title", () => { const el = document.createElement("span"); el.className = "c-dash-toolbar__title"; return el; });
         t.textContent = title;
-        this.appendChild(t);
+      } else {
+        const t = this.querySelector(".c-dash-toolbar__title");
+        if (t) t.remove();
       }
       const actions = this.getAttribute("actions");
-      if (actions && !this.querySelector(".c-dash-toolbar__actions")) {
+      if (actions) {
         try {
           const parsed = JSON.parse(actions);
-          const wrap = document.createElement("div");
-          wrap.className = "c-dash-toolbar__actions";
+          const wrap = this.ensure(".c-dash-toolbar__actions", () => { const el = document.createElement("div"); el.className = "c-dash-toolbar__actions"; return el; });
+          wrap.innerHTML = "";
           parsed.forEach((a) => {
             const btn = document.createElement("button");
             btn.className = "c-btn c-btn--ghost c-btn--sm";
@@ -2997,8 +3207,10 @@
             btn.textContent = typeof a === "string" ? a : (a.label || a);
             wrap.appendChild(btn);
           });
-          this.appendChild(wrap);
         } catch (e) { /* keep existing */ }
+      } else {
+        const w = this.querySelector(".c-dash-toolbar__actions");
+        if (w) w.remove();
       }
     }
   }
@@ -3010,24 +3222,66 @@
   }
   define("contour-dash-kpi-row", ContourDashKpiRow);
 
+  // Dash freshness: generates label + value from attributes.
+  class ContourDashFreshness extends ContourBase {
+    render() {
+      this.classList.add("c-dash-freshness");
+      const label = this.getAttribute("label");
+      const value = this.getAttribute("value");
+      if (label) {
+        const l = this.ensure(".c-dash-freshness__label", () => { const el = document.createElement("span"); el.className = "c-dash-freshness__label"; return el; });
+        l.textContent = label;
+      } else {
+        const l = this.querySelector(".c-dash-freshness__label");
+        if (l) l.remove();
+      }
+      if (value) {
+        const v = this.ensure(".c-dash-freshness__value", () => { const el = document.createElement("span"); el.className = "c-dash-freshness__value"; return el; });
+        v.textContent = value;
+      } else {
+        const v = this.querySelector(".c-dash-freshness__value");
+        if (v) v.remove();
+      }
+    }
+  }
+  define("contour-dash-freshness", ContourDashFreshness);
+
   // Code: generates title + copy button from attributes.
   class ContourCode extends ContourBase {
     render() {
       this.classList.add("c-code");
       const title = this.getAttribute("title");
-      if (title && !this.querySelector(".c-code__title")) {
-        const t = document.createElement("div");
-        t.className = "c-code__title";
+      if (title) {
+        const t = this.ensure(".c-code__title", () => { const el = document.createElement("div"); el.className = "c-code__title"; return el; });
+        if (t.parentNode === this && this.firstChild !== t) this.prepend(t);
         t.textContent = title;
-        this.prepend(t);
+      } else {
+        const t = this.querySelector(".c-code__title");
+        if (t) t.remove();
       }
-      if (this.hasAttribute("copyable") && !this.querySelector(".c-code__copy")) {
-        const btn = document.createElement("button");
-        btn.className = "c-code__copy";
-        btn.type = "button";
-        btn.textContent = "Copy";
-        this.appendChild(btn);
+      if (this.hasAttribute("copyable")) {
+        this.ensure(".c-code__copy", () => {
+          const btn = document.createElement("button");
+          btn.className = "c-code__copy";
+          btn.type = "button";
+          btn.textContent = "Copy";
+          return btn;
+        });
+      } else {
+        const btn = this.querySelector(".c-code__copy");
+        if (btn) btn.remove();
       }
+    }
+    enhance() {
+      if (this._wiredCode) return;
+      this._wiredCode = true;
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest(".c-code__copy") : null;
+        if (!btn || !this.contains(btn)) return;
+        const text = this.textContent;
+        if (navigator.clipboard) navigator.clipboard.writeText(text).catch(() => {});
+        this.dispatchEvent(new CustomEvent("contour:copy", { detail: { text }, bubbles: true }));
+      });
     }
   }
   define("contour-code", ContourCode);
@@ -3039,19 +3293,19 @@
       const yes = this.getAttribute("yes");
       const no = this.getAttribute("no");
       const text = this.getAttribute("text");
-      if (yes && !this.querySelector(".c-compare__yes")) {
+      if (yes) {
         const y = document.createElement("div");
         y.className = "c-compare__yes";
         y.textContent = yes;
         this.appendChild(y);
       }
-      if (no && !this.querySelector(".c-compare__no")) {
+      if (no) {
         const n = document.createElement("div");
         n.className = "c-compare__no";
         n.textContent = no;
         this.appendChild(n);
       }
-      if (text && !this.querySelector(".c-compare__text")) {
+      if (text) {
         const t = document.createElement("p");
         t.className = "c-compare__text";
         t.textContent = text;
@@ -3072,7 +3326,7 @@
     render() {
       this.classList.add("c-datamark");
       const label = this.getAttribute("label");
-      if (label && !this.textContent.trim()) this.textContent = label;
+      if (label && !this.querySelector("*") && !this.textContent.trim()) this.textContent = label;
     }
   }
   define("contour-datamark", ContourDatamark);
@@ -3082,7 +3336,7 @@
     render() {
       this.classList.add("c-destructive-hint");
       const text = this.getAttribute("text");
-      if (text && !this.textContent.trim()) this.textContent = text;
+      if (text && !this.querySelector("*") && !this.textContent.trim()) this.textContent = text;
     }
   }
   define("contour-destructive-hint", ContourDestructiveHint);
@@ -3092,13 +3346,22 @@
     render() {
       this.classList.add("c-icon-badge");
       const icon = this.getAttribute("icon");
-      if (icon && !this.querySelector("svg")) {
-        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-        svg.setAttribute("aria-hidden", "true");
-        const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
-        use.setAttribute("href", "#" + String(icon).replace(/[^a-zA-Z0-9_-]/g, ""));
-        svg.appendChild(use);
-        this.appendChild(svg);
+      if (icon) {
+        const existing = this.querySelector("svg");
+        const svg = existing || document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        if (!existing) {
+          svg.setAttribute("aria-hidden", "true");
+          const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+          use.setAttribute("href", "#" + String(icon).replace(/[^a-zA-Z0-9_-]/g, ""));
+          svg.appendChild(use);
+          this.appendChild(svg);
+        } else {
+          const use = svg.querySelector("use");
+          if (use) use.setAttribute("href", "#" + String(icon).replace(/[^a-zA-Z0-9_-]/g, ""));
+        }
+      } else {
+        const svg = this.querySelector("svg");
+        if (svg) svg.remove();
       }
     }
   }
@@ -3110,7 +3373,7 @@
       this.classList.add("c-live-badge");
       if (this.hasAttribute("live")) this.classList.add("c-live-badge--live");
       const label = this.getAttribute("label");
-      if (label && !this.textContent.trim()) this.textContent = label;
+      if (label && !this.querySelector("*") && !this.textContent.trim()) this.textContent = label;
     }
   }
   define("contour-live-badge", ContourLiveBadge);
@@ -3126,18 +3389,20 @@
     render() {
       this.classList.add("c-pullquote");
       const quote = this.getAttribute("quote");
-      if (quote && !this.querySelector(".c-pullquote__quote")) {
-        const q = document.createElement("blockquote");
-        q.className = "c-pullquote__quote";
+      if (quote) {
+        const q = this.ensure(".c-pullquote__quote", () => { const el = document.createElement("blockquote"); el.className = "c-pullquote__quote"; return el; });
         q.textContent = quote;
-        this.appendChild(q);
+      } else {
+        const q = this.querySelector(".c-pullquote__quote");
+        if (q) q.remove();
       }
       const name = this.getAttribute("name");
-      if (name && !this.querySelector(".c-pullquote__byline")) {
-        const by = document.createElement("div");
-        by.className = "c-pullquote__byline";
+      if (name) {
+        const by = this.ensure(".c-pullquote__byline", () => { const el = document.createElement("div"); el.className = "c-pullquote__byline"; return el; });
         by.textContent = name;
-        this.appendChild(by);
+      } else {
+        const by = this.querySelector(".c-pullquote__byline");
+        if (by) by.remove();
       }
     }
   }
@@ -3148,11 +3413,12 @@
     render() {
       this.classList.add("c-scale-bar");
       const label = this.getAttribute("label");
-      if (label && !this.querySelector(".c-scale-bar__label")) {
-        const l = document.createElement("span");
-        l.className = "c-scale-bar__label";
+      if (label) {
+        const l = this.ensure(".c-scale-bar__label", () => { const el = document.createElement("span"); el.className = "c-scale-bar__label"; return el; });
         l.textContent = label;
-        this.appendChild(l);
+      } else {
+        const l = this.querySelector(".c-scale-bar__label");
+        if (l) l.remove();
       }
     }
   }
@@ -3198,14 +3464,14 @@
     render() {
       this.classList.add("c-toolbar");
       const title = this.getAttribute("title");
-      if (title && !this.querySelector(".c-toolbar__title")) {
+      if (title) {
         const t = document.createElement("span");
         t.className = "c-toolbar__title";
         t.textContent = title;
         this.appendChild(t);
       }
       const actions = this.getAttribute("actions");
-      if (actions && !this.querySelector(".c-toolbar__btn")) {
+      if (actions) {
         try {
           const parsed = JSON.parse(actions);
           parsed.forEach((a) => {
@@ -3243,7 +3509,7 @@
       this.classList.add("c-anchor");
       const href = this.getAttribute("href");
       const label = this.getAttribute("label");
-      if (href && label && !this.querySelector("a")) {
+      if (href && label) {
         const a = document.createElement("a");
         a.href = href;
         a.textContent = label;
@@ -3334,7 +3600,7 @@
         if (val) this.classList.add("c-btn--" + val);
       }
       const label = this.getAttribute("label");
-      if (label && !this.textContent.trim()) this.textContent = label;
+      if (label && !this.querySelector("*") && !this.textContent.trim()) this.textContent = label;
     }
   }
   define("contour-btn", ContourBtn);
@@ -3344,7 +3610,7 @@
     render() {
       this.classList.add("c-radio-list");
       const items = this.getAttribute("items");
-      if (items && !this.querySelector(".c-radio")) {
+      if (items) {
         try {
           const parsed = JSON.parse(items);
           parsed.forEach((it) => {
@@ -3578,6 +3844,86 @@
           }
         });
       });
+      // Code copy
+      const codes = root.querySelectorAll(".c-code");
+      codes.forEach((code) => {
+        const btn = code.querySelector(".c-code__copy");
+        if (btn && !btn._wired) {
+          btn._wired = true;
+          btn.addEventListener("click", () => {
+            const text = code.textContent;
+            if (navigator.clipboard) navigator.clipboard.writeText(text).catch(() => {});
+            this.dispatchEvent(new CustomEvent("contour:copy", { detail: { text }, bubbles: true }));
+          });
+        }
+      });
+      // Install copy
+      const installs = root.querySelectorAll(".c-install");
+      installs.forEach((inst) => {
+        const btn = inst.querySelector(".c-install__copy");
+        if (btn && !btn._wired) {
+          btn._wired = true;
+          btn.addEventListener("click", () => {
+            const cmd = inst.querySelector(".c-install__command");
+            const text = cmd ? cmd.textContent : "";
+            if (navigator.clipboard) navigator.clipboard.writeText(text).catch(() => {});
+            this.dispatchEvent(new CustomEvent("contour:copy", { detail: { text }, bubbles: true }));
+          });
+        }
+      });
+      // Pagination
+      const pagers = root.querySelectorAll(".c-pagination");
+      pagers.forEach((pager) => {
+        if (pager._wired) return;
+        pager._wired = true;
+        pager.addEventListener("click", (e) => {
+          const btn = e.target && e.target.closest ? e.target.closest(".c-pagination__link") : null;
+          if (!btn || !pager.contains(btn)) return;
+          const page = parseInt(btn.textContent, 10);
+          pager.querySelectorAll(".c-pagination__link").forEach((b) => {
+            const active = parseInt(b.textContent, 10) === page;
+            b.classList.toggle("c-pagination__current", active);
+            if (active) b.setAttribute("aria-current", "page");
+            else b.removeAttribute("aria-current");
+          });
+          this.dispatchEvent(new CustomEvent("contour:page", { detail: { page }, bubbles: true }));
+        });
+      });
+      // Tag remove
+      const tags = root.querySelectorAll(".c-tag");
+      tags.forEach((tag) => {
+        const btn = tag.querySelector(".c-tag__remove");
+        if (btn && !btn._wired) {
+          btn._wired = true;
+          btn.addEventListener("click", () => {
+            this.dispatchEvent(new CustomEvent("contour:remove", { detail: { label: tag.getAttribute("label") || tag.textContent.trim() }, bubbles: true }));
+            if (tag.parentNode) tag.parentNode.removeChild(tag);
+          });
+        }
+      });
+      // Filter pill remove
+      const pills = root.querySelectorAll(".c-filter-pill");
+      pills.forEach((pill) => {
+        const btn = pill.querySelector(".c-filter-pill__remove");
+        if (btn && !btn._wired) {
+          btn._wired = true;
+          btn.addEventListener("click", () => {
+            this.dispatchEvent(new CustomEvent("contour:remove", { detail: { key: pill.getAttribute("key"), value: pill.getAttribute("value") }, bubbles: true }));
+            if (pill.parentNode) pill.parentNode.removeChild(pill);
+          });
+        }
+      });
+      // Empty action
+      const empties = root.querySelectorAll(".c-empty");
+      empties.forEach((empty) => {
+        const btn = empty.querySelector(".c-empty__action");
+        if (btn && !btn._wired) {
+          btn._wired = true;
+          btn.addEventListener("click", () => {
+            this.dispatchEvent(new CustomEvent("contour:empty-action", { detail: { state: this.getAttribute("state") || "empty" }, bubbles: true }));
+          });
+        }
+      });
     }
     connectedCallback() { this.applyMods(); }
     attributeChangedCallback() { this.applyMods(); }
@@ -3617,7 +3963,7 @@
       "catchment", "cluster", "command", "compare", "comparison", "compass",
       "contour-plot", "cta", "dash-freshness", "dash-kpi-row", "dash-shell", "dash-toolbar", "datamark", "delta", "draggable", "drag-handle", "drop-indicator", "drop-zone",
       "destructive-hint", "docs-shell", "drawer", "elevation",
-      "filter-bar", "filter-pill", "flow-map", "heatmap", "hexbin", "icon-badge", "input-group", "instrument", "range-scale", "resizable", "table-wrap", "time-range", "toast-host", "virtual-scroll",
+      "filter-bar", "flow-map", "heatmap", "hexbin", "icon-badge", "input-group", "instrument", "range-scale", "resizable", "table-wrap", "time-range", "toast-host", "virtual-scroll",
       "isochrone", "landing-features", "landing-hero", "layer-panel", "layer-switch", "legend", "logos", "map-area",
       "map-footer", "map-panel", "map-slot", "measure", "metrics", "minimap", "pager", "pagination",
       "panel", "plate", "price", "pricing", "progress", "prose", "pullquote", "radio-list",
@@ -3631,8 +3977,7 @@
       "btn", "pressable", "scheme-toggle"
     ],
     span: [
-      "avatar", "badge", "chip", "dot", "flag", "live-badge", "mark", "pill",
-      "tag"
+      "avatar", "badge", "chip", "dot", "flag", "live-badge", "mark", "pill"
     ],
     a: [
       "link", "linkish"
@@ -3680,7 +4025,7 @@
   shadow("contour-shadow-do-dont", `<div class="c-do-dont" part="do-dont"><div class="c-do-dont__do" part="do"><slot name="do"></slot></div><div class="c-do-dont__dont" part="dont"><slot name="dont"></slot></div></div>`);
   shadow("contour-shadow-threshold", `<div class="c-threshold" part="threshold"><span class="c-threshold__value" part="value"><slot name="value"></slot></span><span class="c-threshold__label" part="label"><slot name="label"></slot></span></div>`);
   shadow("contour-shadow-coordinate", `<div class="c-coordinate" part="coordinate"><span class="c-coordinate__value" part="value"><slot name="value"></slot></span></div>`);
-  shadow("contour-shadow-install", `<div class="c-install" part="install"><span class="c-install__prompt" part="prompt"><slot name="prompt"></slot></span><span class="c-install__command" part="command"><slot name="command"></slot></span></div>`);
+  shadow("contour-shadow-install", `<div class="c-install" part="install"><span class="c-install__prompt" part="prompt"><slot name="prompt"></slot></span><span class="c-install__command" part="command"><slot name="command"></slot></span><button class="c-btn c-btn--ghost c-btn--sm c-install__copy" part="copy" type="button" aria-label="Copy command">Copy</button></div>`);
   shadow("contour-shadow-toc", `<div class="c-toc" part="toc"><div class="c-toc__title" part="title"><slot name="title"></slot></div><nav class="c-toc__list" part="list"><slot></slot></nav></div>`);
   shadow("contour-shadow-testimonial", `<div class="c-testimonial" part="testimonial"><blockquote class="c-testimonial__quote" part="quote"><slot name="quote"></slot></blockquote><div class="c-testimonial__byline" part="byline"><span class="c-testimonial__name" part="name"><slot name="name"></slot></span><span class="c-testimonial__role" part="role"><slot name="role"></slot></span></div></div>`);
   shadow("contour-shadow-search-trigger", `<button class="c-search-trigger" part="trigger"><span><slot name="label"></slot></span><kbd class="c-kbd"><slot name="shortcut"></slot></kbd></button>`);
@@ -3704,7 +4049,7 @@
   shadow("contour-shadow-input", `<input class="c-input" part="input" />`);
   shadow("contour-shadow-spinner", `<span class="c-spinner" part="spinner" role="status" aria-label="Loading"></span>`);
   shadow("contour-shadow-textarea", `<textarea class="c-textarea" part="textarea"></textarea>`);
-  shadow("contour-shadow-code", `<pre class="c-code" part="code"><code><slot></slot></code></pre>`);
+  shadow("contour-shadow-code", `<pre class="c-code" part="code"><code><slot></slot></code><button class="c-code__copy" part="copy" type="button">Copy</button></pre>`);
   // (folded in from the hand-written component that used to carry its own copy of the sheet logic)
   shadow("contour-shadow-card", `<div class="c-card" part="card"> <div class="c-card__head" part="head"><slot name="title">Untitled</slot></div> <div class="c-card__body" part="body"><slot></slot></div> <div class="c-card__foot" part="foot"><slot name="foot"></slot></div> </div>`);
   // (folded in from the hand-written component that used to carry its own copy of the sheet logic)
@@ -3712,6 +4057,8 @@
   shadow("contour-shadow-field", `<div class="c-field" part="field"> <label class="c-field__label" part="label"><slot name="label">Label</slot></label> <slot name="input"></slot> <span class="c-field__hint" part="hint"><slot name="hint"></slot></span> </div>`);
   // (folded in from the hand-written component that used to carry its own copy of the sheet logic)
   shadow("contour-shadow-alert", `<div class="c-alert" part="alert"> <div class="c-alert__title" part="title"><slot name="title"></slot></div> <div class="c-alert__body" part="body"><slot></slot></div> </div>`);
+shadow("contour-shadow-tag", `<span class="c-tag" part="tag"><slot></slot><button class="c-tag__remove" part="remove" type="button" aria-label="Remove">×</button></span>`);
+shadow("contour-shadow-filter-pill", `<span class="c-filter-pill" part="filter-pill"><slot></slot><button class="c-filter-pill__remove" part="remove" type="button" aria-label="Remove filter">×</button></span>`);
 
   // The dialog is the one wrapper with behaviour, because a close button that
   // does not close is a control the reader cannot use.

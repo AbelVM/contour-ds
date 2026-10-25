@@ -31,7 +31,9 @@ const gates = [
   ["check-size", "node", ["tools/check-size.mjs"]],
   ["check-dist", "node", ["tools/check-dist.mjs"]],
   ["check-agent-rules", "node", ["tools/check-agent-rules.mjs"]],
+  ["check-wc", "node", ["tools/check-wc.mjs"]],
   ["family-gate", "node", ["tools/audit/family-gate.mjs"]],
+  ["wc-contract", "node", ["tools/audit/wc-contract.mjs"]],
 ];
 
 // A gate that is not in this artifact cannot pass, fail, or mean anything.
