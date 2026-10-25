@@ -164,15 +164,15 @@
     "activity", "advanced", "affordance", "affordances", "alert", "anchor", "app", "app-body",
     "avatar", "badge", "bivariate", "box", "brand", "breadcrumb", "btn", "btn-group",
     "callout", "card", "chart", "chart-grid", "check", "chip", "cluster",
-    "code-tabs", "combobox", "container", "contour-plot", "datamark", "delta", "destructive-hint", "dialog", "diff",
+    "code-tabs", "combobox", "container", "contour-plot", "delta", "dialog", "diff",
     "disclosure", "do-dont", "dot", "drag-handle", "draggable", "drawer",
     "drop-indicator", "drop-zone", "empty", "expandable", "faq", "feature", "field",
-    "flag", "header", "icon-badge", "input",
-    "instrument", "kbd", "kpi", "link", "live-badge",
+    "flag", "header", "input",
+    "instrument", "kbd", "kpi", "link",
     "mark", "menu", "meter", "pagination",
-    "pill", "plate", "progress", "pullquote", "radio", "radio-list", "range",
-    "range-scale", "readout", "resizable", "row", "scale-bar", "scheme-toggle", "scrim", "section-head",
-    "select", "sheet", "sidebar", "skeleton", "sparkline", "spinner", "stack",
+    "pill", "progress", "radio", "radio-list", "range",
+    "range-scale", "readout", "resizable", "row", "scrim", "section-head",
+    "select", "sheet", "skeleton", "spinner", "stack",
     "stat", "survey", "switch", "table", "table-wrap", "tabs", "textarea", "threshold",
     "time-range", "toast", "toast-host", "toolbar", "tooltip", "tree", "virtual-scroll"
   ];
@@ -3069,6 +3069,143 @@
     render() { this.classList.add("c-input-group"); }
   }
   define("contour-input-group", ContourInputGroup);
+
+  // Datamark: generates label from attribute.
+  class ContourDatamark extends ContourBase {
+    render() {
+      this.classList.add("c-datamark");
+      const label = this.getAttribute("label");
+      if (label && !this.textContent.trim()) this.textContent = label;
+    }
+  }
+  define("contour-datamark", ContourDatamark);
+
+  // Destructive hint: generates text from attribute.
+  class ContourDestructiveHint extends ContourBase {
+    render() {
+      this.classList.add("c-destructive-hint");
+      const text = this.getAttribute("text");
+      if (text && !this.textContent.trim()) this.textContent = text;
+    }
+  }
+  define("contour-destructive-hint", ContourDestructiveHint);
+
+  // Icon badge: generates icon from attribute.
+  class ContourIconBadge extends ContourBase {
+    render() {
+      this.classList.add("c-icon-badge");
+      const icon = this.getAttribute("icon");
+      if (icon && !this.querySelector("svg")) {
+        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("aria-hidden", "true");
+        const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+        use.setAttribute("href", "#" + String(icon).replace(/[^a-zA-Z0-9_-]/g, ""));
+        svg.appendChild(use);
+        this.appendChild(svg);
+      }
+    }
+  }
+  define("contour-icon-badge", ContourIconBadge);
+
+  // Live badge: generates label + live dot.
+  class ContourLiveBadge extends ContourBase {
+    render() {
+      this.classList.add("c-live-badge");
+      if (this.hasAttribute("live")) this.classList.add("c-live-badge--live");
+      const label = this.getAttribute("label");
+      if (label && !this.textContent.trim()) this.textContent = label;
+    }
+  }
+  define("contour-live-badge", ContourLiveBadge);
+
+  // Plate: simple wrapper.
+  class ContourPlate extends ContourBase {
+    render() { this.classList.add("c-plate"); }
+  }
+  define("contour-plate", ContourPlate);
+
+  // Pullquote: generates quote + byline from attributes.
+  class ContourPullquote extends ContourBase {
+    render() {
+      this.classList.add("c-pullquote");
+      const quote = this.getAttribute("quote");
+      if (quote && !this.querySelector(".c-pullquote__quote")) {
+        const q = document.createElement("blockquote");
+        q.className = "c-pullquote__quote";
+        q.textContent = quote;
+        this.appendChild(q);
+      }
+      const name = this.getAttribute("name");
+      if (name && !this.querySelector(".c-pullquote__byline")) {
+        const by = document.createElement("div");
+        by.className = "c-pullquote__byline";
+        by.textContent = name;
+        this.appendChild(by);
+      }
+    }
+  }
+  define("contour-pullquote", ContourPullquote);
+
+  // Scale bar: generates label from attribute.
+  class ContourScaleBar extends ContourBase {
+    render() {
+      this.classList.add("c-scale-bar");
+      const label = this.getAttribute("label");
+      if (label && !this.querySelector(".c-scale-bar__label")) {
+        const l = document.createElement("span");
+        l.className = "c-scale-bar__label";
+        l.textContent = label;
+        this.appendChild(l);
+      }
+    }
+  }
+  define("contour-scale-bar", ContourScaleBar);
+
+  // Scheme toggle: simple wrapper.
+  class ContourSchemeToggle extends ContourBase {
+    render() { this.classList.add("c-scheme-toggle"); }
+  }
+  define("contour-scheme-toggle", ContourSchemeToggle);
+
+  // Sidebar: simple wrapper.
+  class ContourSidebar extends ContourBase {
+    render() { this.classList.add("c-sidebar"); }
+  }
+  define("contour-sidebar", ContourSidebar);
+
+  // Sparkline: simple wrapper.
+  class ContourSparkline extends ContourBase {
+    render() { this.classList.add("c-sparkline"); }
+  }
+  define("contour-sparkline", ContourSparkline);
+
+  // Toolbar: generates title + actions from attributes.
+  class ContourToolbar extends ContourBase {
+    render() {
+      this.classList.add("c-toolbar");
+      const title = this.getAttribute("title");
+      if (title && !this.querySelector(".c-toolbar__title")) {
+        const t = document.createElement("span");
+        t.className = "c-toolbar__title";
+        t.textContent = title;
+        this.appendChild(t);
+      }
+      const actions = this.getAttribute("actions");
+      if (actions && !this.querySelector(".c-toolbar__btn")) {
+        try {
+          const parsed = JSON.parse(actions);
+          parsed.forEach((a) => {
+            const btn = document.createElement("button");
+            btn.className = "c-toolbar__btn";
+            btn.type = "button";
+            btn.textContent = typeof a === "string" ? a : (a.label || a);
+            this.appendChild(btn);
+          });
+        } catch (e) { /* keep existing */ }
+      }
+    }
+  }
+  define("contour-toolbar", ContourToolbar);
 
   // ---- Registration: the class-only wrappers run last ------------------
   //
