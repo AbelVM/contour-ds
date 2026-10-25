@@ -48,11 +48,11 @@
     "action", "actions", "after", "answer", "attribution", "attribution-mark", "before", "body", "brand", "columns", "color", "command",
     "cells", "controls", "copyable", "count", "current", "date", "delta", "desc", "direction", "divider", "do", "dont",
     "empty", "error", "features", "hint", "href", "icon", "instrument", "items", "key",
-    "label", "lede", "legend", "links", "live", "max", "media", "message", "method", "min", "name", "next", "norm",
+    "label", "lede", "legend", "links", "live", "max", "media", "message", "method", "min", "name", "next", "no", "note", "norm",
     "options", "pages", "placeholder", "prev", "price", "prompt", "question",
     "quote", "removable", "reverse", "rows", "scale", "series", "shortcut", "size", "status",
     "steps", "subtitle", "summary", "tabs", "tag", "text", "title", "type", "value",
-    "variant",
+    "variant", "yes",
   ];
 
   /**
@@ -163,12 +163,11 @@
   const CLASS_ONLY = [
     "activity", "advanced", "affordance", "affordances", "alert", "anchor", "app", "app-body",
     "avatar", "badge", "bivariate", "box", "brand", "breadcrumb", "btn", "btn-group",
-    "callout", "card", "chart", "chart-grid", "check", "chip", "cluster", "code",
-    "code-tabs", "combobox", "compare", "container", "contour-plot", "dash-freshness",
-    "dash-kpi-row", "dash-shell", "dash-toolbar", "datamark", "delta", "destructive-hint", "dialog", "diff",
+    "callout", "card", "chart", "chart-grid", "check", "chip", "cluster",
+    "code-tabs", "combobox", "container", "contour-plot", "datamark", "delta", "destructive-hint", "dialog", "diff",
     "disclosure", "do-dont", "dot", "drag-handle", "draggable", "drawer",
     "drop-indicator", "drop-zone", "empty", "expandable", "faq", "feature", "field",
-    "flag", "footer", "header", "icon-badge", "input", "input-group",
+    "flag", "header", "icon-badge", "input",
     "instrument", "kbd", "kpi", "link", "live-badge",
     "mark", "menu", "meter", "pagination",
     "pill", "plate", "progress", "pullquote", "radio", "radio-list", "range",
@@ -2924,6 +2923,152 @@
     }
   }
   define("contour-docs-shell", ContourDocsShell);
+
+  // Footer: generates brand + note + links from attributes.
+  class ContourFooter extends ContourBase {
+    render() {
+      this.classList.add("c-footer");
+      const brand = this.getAttribute("brand");
+      if (brand && !this.querySelector(".c-footer__brand")) {
+        const b = document.createElement("div");
+        b.className = "c-footer__brand";
+        b.textContent = brand;
+        this.appendChild(b);
+      }
+      const note = this.getAttribute("note");
+      if (note && !this.querySelector(".c-footer__note")) {
+        const n = document.createElement("p");
+        n.className = "c-footer__note";
+        n.textContent = note;
+        this.appendChild(n);
+      }
+      const links = this.getAttribute("links");
+      if (links && !this.querySelector(".c-footer__links")) {
+        try {
+          const parsed = JSON.parse(links);
+          const wrap = document.createElement("div");
+          wrap.className = "c-footer__links";
+          parsed.forEach((l) => {
+            const a = document.createElement("a");
+            a.href = typeof l === "string" ? "#" : (l.href || "#");
+            a.textContent = typeof l === "string" ? l : (l.label || l);
+            wrap.appendChild(a);
+          });
+          this.appendChild(wrap);
+        } catch (e) { /* keep existing */ }
+      }
+    }
+  }
+  define("contour-footer", ContourFooter);
+
+  // Dash shell: generates title from attribute.
+  class ContourDashShell extends ContourBase {
+    render() {
+      this.classList.add("c-dash-shell");
+      const title = this.getAttribute("title");
+      if (title && !this.querySelector(".c-dash-shell__title")) {
+        const h = document.createElement("h1");
+        h.className = "c-dash-shell__title";
+        h.textContent = title;
+        this.appendChild(h);
+      }
+    }
+  }
+  define("contour-dash-shell", ContourDashShell);
+
+  // Dash toolbar: generates title + actions from attributes.
+  class ContourDashToolbar extends ContourBase {
+    render() {
+      this.classList.add("c-dash-toolbar");
+      const title = this.getAttribute("title");
+      if (title && !this.querySelector(".c-dash-toolbar__title")) {
+        const t = document.createElement("span");
+        t.className = "c-dash-toolbar__title";
+        t.textContent = title;
+        this.appendChild(t);
+      }
+      const actions = this.getAttribute("actions");
+      if (actions && !this.querySelector(".c-dash-toolbar__actions")) {
+        try {
+          const parsed = JSON.parse(actions);
+          const wrap = document.createElement("div");
+          wrap.className = "c-dash-toolbar__actions";
+          parsed.forEach((a) => {
+            const btn = document.createElement("button");
+            btn.className = "c-btn c-btn--ghost c-btn--sm";
+            btn.type = "button";
+            btn.textContent = typeof a === "string" ? a : (a.label || a);
+            wrap.appendChild(btn);
+          });
+          this.appendChild(wrap);
+        } catch (e) { /* keep existing */ }
+      }
+    }
+  }
+  define("contour-dash-toolbar", ContourDashToolbar);
+
+  // Dash KPI row: simple wrapper.
+  class ContourDashKpiRow extends ContourBase {
+    render() { this.classList.add("c-dash-kpi-row"); }
+  }
+  define("contour-dash-kpi-row", ContourDashKpiRow);
+
+  // Code: generates title + copy button from attributes.
+  class ContourCode extends ContourBase {
+    render() {
+      this.classList.add("c-code");
+      const title = this.getAttribute("title");
+      if (title && !this.querySelector(".c-code__title")) {
+        const t = document.createElement("div");
+        t.className = "c-code__title";
+        t.textContent = title;
+        this.prepend(t);
+      }
+      if (this.hasAttribute("copyable") && !this.querySelector(".c-code__copy")) {
+        const btn = document.createElement("button");
+        btn.className = "c-code__copy";
+        btn.type = "button";
+        btn.textContent = "Copy";
+        this.appendChild(btn);
+      }
+    }
+  }
+  define("contour-code", ContourCode);
+
+  // Compare: generates yes/no/text from attributes.
+  class ContourCompare extends ContourBase {
+    render() {
+      this.classList.add("c-compare");
+      const yes = this.getAttribute("yes");
+      const no = this.getAttribute("no");
+      const text = this.getAttribute("text");
+      if (yes && !this.querySelector(".c-compare__yes")) {
+        const y = document.createElement("div");
+        y.className = "c-compare__yes";
+        y.textContent = yes;
+        this.appendChild(y);
+      }
+      if (no && !this.querySelector(".c-compare__no")) {
+        const n = document.createElement("div");
+        n.className = "c-compare__no";
+        n.textContent = no;
+        this.appendChild(n);
+      }
+      if (text && !this.querySelector(".c-compare__text")) {
+        const t = document.createElement("p");
+        t.className = "c-compare__text";
+        t.textContent = text;
+        this.appendChild(t);
+      }
+    }
+  }
+  define("contour-compare", ContourCompare);
+
+  // Input group: simple wrapper.
+  class ContourInputGroup extends ContourBase {
+    render() { this.classList.add("c-input-group"); }
+  }
+  define("contour-input-group", ContourInputGroup);
 
   // ---- Registration: the class-only wrappers run last ------------------
   //
