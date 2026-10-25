@@ -161,20 +161,20 @@
   // a fallback that only runs when the real component is broken, so the
   // registration loop skips a name an explicit component already claimed.
   const CLASS_ONLY = [
-    "activity", "advanced", "affordance", "affordances", "alert", "anchor", "app", "app-body",
-    "avatar", "badge", "bivariate", "box", "brand", "breadcrumb", "btn", "btn-group",
-    "callout", "card", "chart", "chart-grid", "check", "chip", "cluster",
+    "alert",
+    "avatar", "badge", "bivariate", "box", "brand", "breadcrumb", "btn",
+    "callout", "card", "chart", "check", "chip", "cluster",
     "code-tabs", "combobox", "container", "contour-plot", "delta", "dialog", "diff",
-    "disclosure", "do-dont", "dot", "drag-handle", "draggable", "drawer",
-    "drop-indicator", "drop-zone", "empty", "expandable", "faq", "feature", "field",
+    "disclosure", "do-dont", "dot", "drawer",
+    "empty", "expandable", "faq", "feature", "field",
     "flag", "header", "input",
     "instrument", "kbd", "kpi", "link",
     "mark", "menu", "meter", "pagination",
     "pill", "progress", "radio", "radio-list", "range",
-    "range-scale", "readout", "resizable", "row", "scrim", "section-head",
+    "readout", "row", "scrim", "section-head",
     "select", "sheet", "skeleton", "spinner", "stack",
-    "stat", "survey", "switch", "table", "table-wrap", "tabs", "textarea", "threshold",
-    "time-range", "toast", "toast-host", "toolbar", "tooltip", "tree", "virtual-scroll"
+    "stat", "survey", "switch", "table", "tabs", "textarea", "threshold",
+    "toast", "toolbar", "tooltip", "tree"
   ];
 
 
@@ -3207,6 +3207,110 @@
   }
   define("contour-toolbar", ContourToolbar);
 
+  // Activity: simple wrapper.
+  class ContourActivity extends ContourBase { render() { this.classList.add("c-activity"); } }
+  define("contour-activity", ContourActivity);
+
+  // Advanced: simple wrapper.
+  class ContourAdvanced extends ContourBase { render() { this.classList.add("c-advanced"); } }
+  define("contour-advanced", ContourAdvanced);
+
+  // Affordance: simple wrapper.
+  class ContourAffordance extends ContourBase { render() { this.classList.add("c-affordance"); } }
+  define("contour-affordance", ContourAffordance);
+
+  // Affordances: simple wrapper.
+  class ContourAffordances extends ContourBase { render() { this.classList.add("c-affordances"); } }
+  define("contour-affordances", ContourAffordances);
+
+  // Anchor: generates href + label.
+  class ContourAnchor extends ContourBase {
+    render() {
+      this.classList.add("c-anchor");
+      const href = this.getAttribute("href");
+      const label = this.getAttribute("label");
+      if (href && label && !this.querySelector("a")) {
+        const a = document.createElement("a");
+        a.href = href;
+        a.textContent = label;
+        this.appendChild(a);
+      }
+    }
+  }
+  define("contour-anchor", ContourAnchor);
+
+  // App: simple wrapper.
+  class ContourApp extends ContourBase { render() { this.classList.add("c-app"); } }
+  define("contour-app", ContourApp);
+
+  // App body: simple wrapper.
+  class ContourAppBody extends ContourBase { render() { this.classList.add("c-app-body"); } }
+  define("contour-app-body", ContourAppBody);
+
+  // Btn group: simple wrapper.
+  class ContourBtnGroup extends ContourBase { render() { this.classList.add("c-btn-group"); } }
+  define("contour-btn-group", ContourBtnGroup);
+
+  // Chart grid: simple wrapper.
+  class ContourChartGrid extends ContourBase { render() { this.classList.add("c-chart-grid"); } }
+  define("contour-chart-grid", ContourChartGrid);
+
+  // Draggable: ensures role + tabindex.
+  class ContourDraggable extends ContourBase {
+    render() {
+      this.classList.add("c-draggable");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "button");
+      if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
+    }
+  }
+  define("contour-draggable", ContourDraggable);
+
+  // Drag handle: ensures role.
+  class ContourDragHandle extends ContourBase {
+    render() {
+      this.classList.add("c-drag-handle");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "separator");
+    }
+  }
+  define("contour-drag-handle", ContourDragHandle);
+
+  // Drop indicator: simple wrapper.
+  class ContourDropIndicator extends ContourBase { render() { this.classList.add("c-drop-indicator"); } }
+  define("contour-drop-indicator", ContourDropIndicator);
+
+  // Drop zone: simple wrapper.
+  class ContourDropZone extends ContourBase { render() { this.classList.add("c-drop-zone"); } }
+  define("contour-drop-zone", ContourDropZone);
+
+  // Range scale: simple wrapper.
+  class ContourRangeScale extends ContourBase { render() { this.classList.add("c-range-scale"); } }
+  define("contour-range-scale", ContourRangeScale);
+
+  // Resizable: simple wrapper.
+  class ContourResizable extends ContourBase { render() { this.classList.add("c-resizable"); } }
+  define("contour-resizable", ContourResizable);
+
+  // Table wrap: simple wrapper.
+  class ContourTableWrap extends ContourBase { render() { this.classList.add("c-table-wrap"); } }
+  define("contour-table-wrap", ContourTableWrap);
+
+  // Time range: simple wrapper.
+  class ContourTimeRange extends ContourBase { render() { this.classList.add("c-time-range"); } }
+  define("contour-time-range", ContourTimeRange);
+
+  // Toast host: ensures role.
+  class ContourToastHost extends ContourBase {
+    render() {
+      this.classList.add("c-toast-host");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "status");
+    }
+  }
+  define("contour-toast-host", ContourToastHost);
+
+  // Virtual scroll: simple wrapper.
+  class ContourVirtualScroll extends ContourBase { render() { this.classList.add("c-virtual-scroll"); } }
+  define("contour-virtual-scroll", ContourVirtualScroll);
+
   // ---- Registration: the class-only wrappers run last ------------------
   //
   // Order is the contract. Every complex component above claims its own name and
@@ -3451,19 +3555,19 @@
     "<" + tag + ' class="c-' + block + '" part="' + (part || block) + '"><slot></slot></' + tag + ">";
   const SHADOW_SLOTS = {
     div: [
-      "accordion", "activity", "advanced", "affordance", "affordances", "app", "app-body", "box",
-      "btn-group", "catchment", "chart-grid", "cluster", "command", "compare", "comparison", "compass",
-      "contour-plot", "cta", "dash-freshness", "dash-kpi-row", "dash-shell", "dash-toolbar", "datamark", "delta",
-      "destructive-hint", "docs-shell", "drag-handle", "draggable", "drawer", "drop-indicator", "drop-zone", "elevation",
-      "filter-bar", "filter-pill", "flow-map", "heatmap", "hexbin", "icon-badge", "input-group", "instrument",
+      "accordion", "activity", "advanced", "affordance", "affordances", "anchor", "app", "app-body", "box", "btn-group", "chart-grid",
+      "catchment", "cluster", "command", "compare", "comparison", "compass",
+      "contour-plot", "cta", "dash-freshness", "dash-kpi-row", "dash-shell", "dash-toolbar", "datamark", "delta", "draggable", "drag-handle", "drop-indicator", "drop-zone",
+      "destructive-hint", "docs-shell", "drawer", "elevation",
+      "filter-bar", "filter-pill", "flow-map", "heatmap", "hexbin", "icon-badge", "input-group", "instrument", "range-scale", "resizable", "table-wrap", "time-range", "toast-host", "virtual-scroll",
       "isochrone", "landing-features", "landing-hero", "layer-panel", "layer-switch", "legend", "logos", "map-area",
       "map-footer", "map-panel", "map-slot", "measure", "metrics", "minimap", "pager", "pagination",
       "panel", "plate", "price", "pricing", "progress", "prose", "pullquote", "radio-list",
-      "range", "range-scale", "readout", "recipe", "reserved", "resizable", "resize-handle", "row",
+      "range", "readout", "recipe", "reserved", "resize-handle", "row",
       "row-action", "scale-bar", "scrim", "segmented", "sheet", "shortcut-list", "shortcut-overlay", "shortcut-panel",
       "shortcut-row", "showcase", "sidebar", "skeleton", "sparkline", "stack", "steps", "streaming-chart",
-      "survey", "table-wrap", "theme-scope", "time-range", "time-slider", "timeline", "toast", "toast-host",
-      "toolbar", "tooltip", "tree", "version", "version-banner", "virtual-scroll"
+      "survey", "theme-scope", "time-slider", "timeline", "toast",
+      "toolbar", "tooltip", "tree", "version", "version-banner"
     ],
     button: [
       "btn", "pressable", "scheme-toggle"
@@ -3473,7 +3577,7 @@
       "tag"
     ],
     a: [
-      "anchor", "link", "linkish"
+      "link", "linkish"
     ],
     kbd: [
       "kbd"
