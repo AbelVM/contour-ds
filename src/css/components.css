@@ -89,6 +89,7 @@
   }
 
   .c-header__inner {
+    container-type: inline-size;
     display: flex;
     align-items: center;
     gap: var(--space-md);
@@ -2856,6 +2857,7 @@
      24. TOOLBAR (map-style floating control bar)
      ======================================================================= */
   .c-toolbar {
+    container-type: inline-size;
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
@@ -2865,6 +2867,11 @@
     background: color-mix(in oklab, var(--color-surface-1) 88%, transparent);
     backdrop-filter: blur(12px);
     box-shadow: var(--shadow-md);
+  }
+
+  @container (inline-size < 16rem) {
+    .c-toolbar { gap: 0.2rem; padding: 0.25rem; }
+    .c-toolbar__btn { inline-size: 2rem; block-size: 2rem; }
   }
 
   .c-toolbar__btn {

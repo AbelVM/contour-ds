@@ -41,21 +41,55 @@ class ContourTimeSlider extends ContourBase {
   }
   define("contour-time-slider", ContourTimeSlider);
 class ContourHexbin extends ContourBase {
+    static get observed() { return ["label"]; }
+    static get properties() { return { label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-hexbin");
+      const label = this.getAttribute("label");
+      if (label) {
+        const l = this.ensure(".c-hexbin__label", () => { const el = document.createElement("span"); el.className = "c-hexbin__label"; return el; });
+        l.textContent = label;
+      }
     }
   }
   define("contour-hexbin", ContourHexbin);
 class ContourFlowMap extends ContourBase {
-    render() { this.classList.add("c-flow-map"); }
+    static get observed() { return ["label"]; }
+    static get properties() { return { label: { attribute: "label" } }; }
+    render() {
+      this.classList.add("c-flow-map");
+      const label = this.getAttribute("label");
+      if (label) {
+        const l = this.ensure(".c-flow-map__label", () => { const el = document.createElement("span"); el.className = "c-flow-map__label"; return el; });
+        l.textContent = label;
+      }
+    }
   }
   define("contour-flow-map", ContourFlowMap);
 class ContourIsochrone extends ContourBase {
-    render() { this.classList.add("c-isochrone"); }
+    static get observed() { return ["label"]; }
+    static get properties() { return { label: { attribute: "label" } }; }
+    render() {
+      this.classList.add("c-isochrone");
+      const label = this.getAttribute("label");
+      if (label) {
+        const l = this.ensure(".c-isochrone__label", () => { const el = document.createElement("span"); el.className = "c-isochrone__label"; return el; });
+        l.textContent = label;
+      }
+    }
   }
   define("contour-isochrone", ContourIsochrone);
 class ContourCatchment extends ContourBase {
-    render() { this.classList.add("c-catchment"); }
+    static get observed() { return ["label"]; }
+    static get properties() { return { label: { attribute: "label" } }; }
+    render() {
+      this.classList.add("c-catchment");
+      const label = this.getAttribute("label");
+      if (label) {
+        const l = this.ensure(".c-catchment__label", () => { const el = document.createElement("span"); el.className = "c-catchment__label"; return el; });
+        l.textContent = label;
+      }
+    }
   }
   define("contour-catchment", ContourCatchment);
 class ContourCompassFull extends ContourBase {
