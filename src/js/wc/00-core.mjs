@@ -17,15 +17,14 @@
    them, and call the difference a pass. No number is written down here for that
    reason — the array is the count, and the contract gate reads it.
    ========================================================================= */
-(function () {
-  "use strict";
+"use strict";
 
   // Every name this file actually registers, in registration order. define() is
   // the only door to the registry, so the list cannot drift from what the
   // browser was handed.
-  const REGISTERED = [];
+  export const REGISTERED = [];
 
-  const define = (name, cls) => {
+  export const define = (name, cls) => {
     if (customElements.get(name)) return;
     customElements.define(name, cls);
     REGISTERED.push(name);
@@ -34,7 +33,7 @@
   // The attributes a consumer may set to ask for a modifier class. Both layers
   // read this one list: a wrapper that added a modifier from a different list is
   // how the light and shadow halves drifted apart over "color".
-  const MODS = ["variant", "size", "color"];
+  export const MODS = ["variant", "size", "color"];
 
   // The attributes a component may READ from its host. This list is the render
   // contract: an attribute that is not here cannot ask an element to re-render,
@@ -44,7 +43,7 @@
   // Excluded because the render bodies below set them on the host:
   //   role, open, aria-label, aria-valuenow, aria-valuemin, aria-valuemax, tabindex
   // Adding one of those back to this list makes that component recurse.
-  const OBSERVED = [
+  export const OBSERVED = [
     "action", "actions", "after", "answer", "attribution", "attribution-mark", "before", "body", "brand", "columns", "color", "command",
     "cells", "controls", "copyable", "count", "current", "date", "delta", "desc", "direction", "divider", "do", "dont",
     "empty", "error", "features", "hint", "href", "icon", "instrument", "items", "key",
@@ -79,7 +78,7 @@
   // consumer put on authored children survive a re-render. The cost is honest:
   // nodes a component generated are rebuilt, so state inside them (a typed
   // value, a focus ring) is lost when a host attribute changes.
-  class ContourBase extends HTMLElement {
+  export class ContourBase extends HTMLElement {
     static get observedAttributes() {
       return OBSERVED;
     }
@@ -159,7 +158,7 @@
   }
 
   // Simple component: just adds CSS classes.
-  const simple = (classes) => class extends ContourBase {
+  export const simple = (classes) => class extends ContourBase {
     render() {
       classes.forEach((c) => this.classList.add(c));
       MODS.forEach((attr) => {
@@ -182,7 +181,7 @@
   // here — they declare a class above, and their presence in this list would be
   // a fallback that only runs when the real component is broken, so the
   // registration loop skips a name an explicit component already claimed.
-  const CLASS_ONLY = [
+  export const CLASS_ONLY = [
     "box", "cluster", "container", "row", "scrim", "stack"
   ];
 

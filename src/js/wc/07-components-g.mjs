@@ -1,3 +1,4 @@
+import { ContourBase, define } from './00-core.mjs';
   // ---- Additional complex components with scaffolding ----
 
   // Meter: generates core + value + label from attributes.

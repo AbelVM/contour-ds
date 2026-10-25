@@ -1,3 +1,5 @@
+(function () {
+  "use strict";
 /* ============================================================================
    CONTOUR — Web Components (progressive enhancement)
    ----------------------------------------------------------------------------
@@ -17,15 +19,13 @@
    them, and call the difference a pass. No number is written down here for that
    reason — the array is the count, and the contract gate reads it.
    ========================================================================= */
-(function () {
-  "use strict";
+"use strict";
 
   // Every name this file actually registers, in registration order. define() is
   // the only door to the registry, so the list cannot drift from what the
   // browser was handed.
-  const REGISTERED = [];
-
-  const define = (name, cls) => {
+const REGISTERED = [];
+const define = (name, cls) => {
     if (customElements.get(name)) return;
     customElements.define(name, cls);
     REGISTERED.push(name);
@@ -34,7 +34,7 @@
   // The attributes a consumer may set to ask for a modifier class. Both layers
   // read this one list: a wrapper that added a modifier from a different list is
   // how the light and shadow halves drifted apart over "color".
-  const MODS = ["variant", "size", "color"];
+const MODS = ["variant", "size", "color"];
 
   // The attributes a component may READ from its host. This list is the render
   // contract: an attribute that is not here cannot ask an element to re-render,
@@ -44,7 +44,7 @@
   // Excluded because the render bodies below set them on the host:
   //   role, open, aria-label, aria-valuenow, aria-valuemin, aria-valuemax, tabindex
   // Adding one of those back to this list makes that component recurse.
-  const OBSERVED = [
+const OBSERVED = [
     "action", "actions", "after", "answer", "attribution", "attribution-mark", "before", "body", "brand", "columns", "color", "command",
     "cells", "controls", "copyable", "count", "current", "date", "delta", "desc", "direction", "divider", "do", "dont",
     "empty", "error", "features", "hint", "href", "icon", "instrument", "items", "key",
@@ -79,7 +79,7 @@
   // consumer put on authored children survive a re-render. The cost is honest:
   // nodes a component generated are rebuilt, so state inside them (a typed
   // value, a focus ring) is lost when a host attribute changes.
-  class ContourBase extends HTMLElement {
+class ContourBase extends HTMLElement {
     static get observedAttributes() {
       return OBSERVED;
     }
@@ -159,7 +159,7 @@
   }
 
   // Simple component: just adds CSS classes.
-  const simple = (classes) => class extends ContourBase {
+const simple = (classes) => class extends ContourBase {
     render() {
       classes.forEach((c) => this.classList.add(c));
       MODS.forEach((attr) => {
@@ -182,9 +182,11 @@
   // here — they declare a class above, and their presence in this list would be
   // a fallback that only runs when the real component is broken, so the
   // registration loop skips a name an explicit component already claimed.
-  const CLASS_ONLY = [
+const CLASS_ONLY = [
     "box", "cluster", "container", "row", "scrim", "stack"
   ];
+
+
 
 
   // ---- Complex components with scaffolding ----
@@ -556,6 +558,8 @@
   }
   define("contour-tree", ContourTree);
 
+
+
   // ---- Additional complex components with scaffolding ----
 
   // Dialog: generates head + body + foot from attributes.
@@ -835,6 +839,8 @@
   // Header: already defined above.
 
 
+
+
   // ---- Additional map-native and chart components ----
 
   class ContourMinimap extends ContourBase {
@@ -888,6 +894,8 @@
   define("contour-hexbin", ContourHexbin);
 
 
+
+
   // ---- Additional advanced chart and map components ----
 
   class ContourFlowMap extends ContourBase {
@@ -909,6 +917,8 @@
     render() { this.classList.add("c-streaming-chart"); }
   }
   define("contour-streaming-chart", ContourStreamingChart);
+
+
 
 
   // ---- Additional complex components with scaffolding ----
@@ -1170,6 +1180,8 @@
     }
   }
   define("contour-accordion", ContourAccordion);
+
+
 
 
   // ---- Additional simple components with attribute scaffolding ----
@@ -1757,6 +1769,8 @@
   // Callout: already defined above.
 
 
+
+
   // ---- Additional complex components with scaffolding ----
 
   // Meter: generates core + value + label from attributes.
@@ -2014,6 +2028,8 @@
   // Do/Don't: already defined above.
 
 
+
+
   // ---- Additional complex components with scaffolding ----
 
   // Survey: generates from date and instrument attributes.
@@ -2076,6 +2092,8 @@
   // Instrument: already defined above.
 
   // Bivariate: already defined above.
+
+
 
 
   // ---- Expanded scaffolding for remaining components ----
@@ -2830,6 +2848,8 @@
   define("contour-filter-bar", ContourFilterBar);
 
   // Command: generates input + list from items attribute.
+
+
   class ContourCommand extends ContourBase {
     render() {
       this.classList.add("c-command");
@@ -3635,6 +3655,8 @@
   }
   define("contour-contour-plot", ContourContourPlot);
 
+
+
   // ---- Registration: the class-only wrappers run last ------------------
   //
   // Order is the contract. Every complex component above claims its own name and
@@ -3645,6 +3667,8 @@
   for (const block of CLASS_ONLY) {
     define("contour-" + block, simple(["c-" + block]));
   }
+
+
 
   // ---- Shadow DOM wrappers (opt-in) ------------------------------------
   //
@@ -4082,4 +4106,20 @@ shadow("contour-shadow-filter-pill", `<span class="c-filter-pill" part="filter-p
   // reshapes it would make the next reader's count wrong, which is the failure
   // this array exists to prevent.
   window.ContourElements = Object.freeze(REGISTERED.slice());
+
+// Entry point for the web-component modules. Importing this module registers
+// every Contour custom element as a side effect.
+
+
+
+
+
+
+
+
+
+
+
+
+
 })();

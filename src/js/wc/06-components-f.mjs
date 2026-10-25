@@ -1,3 +1,4 @@
+import { ContourBase, define } from './00-core.mjs';
   // ---- Additional simple components with attribute scaffolding ----
 
   // Avatar: generates initials from name attribute.

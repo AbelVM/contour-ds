@@ -1,3 +1,4 @@
+import { ContourBase, define } from './00-core.mjs';
   // ---- Expanded scaffolding for remaining components ----
 
   // Install: generates prompt + command + copy button.

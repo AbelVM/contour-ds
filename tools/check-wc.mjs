@@ -21,7 +21,7 @@ if (!existsSync(FRAG_DIR)) {
   console.error("check-wc: src/js/wc/ is missing");
   process.exit(1);
 }
-const frags = readdirSync(FRAG_DIR).filter((f) => f.endsWith(".js")).sort();
+const frags = readdirSync(FRAG_DIR).filter((f) => f.endsWith(".mjs")).sort();
 if (!frags.length) {
   console.error("check-wc: no fragments found");
   process.exit(1);
@@ -41,7 +41,9 @@ if (!/class\s+ContourBase\s+extends\s+HTMLElement\b/.test(src))
   fail("ContourBase does not extend HTMLElement — a self-referential base class throws at load");
 
 // 3. exactly one top-level IIFE closer (a line that is exactly `})();`)
-const topLevelClosers = src.split("\n").filter((l) => l === "})();").length;
+//    Checked against the committed bundle, which is the wrapped artifact.
+const bundleText = readFileSync(BUNDLE, "utf-8");
+const topLevelClosers = bundleText.split("\n").filter((l) => l === "})();").length;
 if (topLevelClosers !== 1)
   fail(`expected exactly one top-level IIFE closer, found ${topLevelClosers}`);
 

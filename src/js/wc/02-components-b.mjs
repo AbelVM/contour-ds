@@ -1,3 +1,4 @@
+import { ContourBase, define } from './00-core.mjs';
   // ---- Additional complex components with scaffolding ----
 
   // Dialog: generates head + body + foot from attributes.

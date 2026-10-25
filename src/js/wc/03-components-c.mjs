@@ -1,3 +1,4 @@
+import { ContourBase, define } from './00-core.mjs';
   // ---- Additional map-native and chart components ----
 
   class ContourMinimap extends ContourBase {

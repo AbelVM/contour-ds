@@ -1,3 +1,4 @@
+import { ContourBase, define } from './00-core.mjs';
   class ContourCommand extends ContourBase {
     render() {
       this.classList.add("c-command");

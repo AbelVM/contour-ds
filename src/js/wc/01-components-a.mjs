@@ -1,3 +1,4 @@
+import { ContourBase, define } from './00-core.mjs';
   // ---- Complex components with scaffolding ----
 
   // Menu: generates <ul> with items from data-items attribute.

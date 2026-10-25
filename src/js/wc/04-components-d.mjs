@@ -1,3 +1,4 @@
+import { ContourBase, define } from './00-core.mjs';
   // ---- Additional advanced chart and map components ----
 
   class ContourFlowMap extends ContourBase {

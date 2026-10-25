@@ -1,3 +1,4 @@
+import { define, MODS, REGISTERED } from './00-core.mjs';
   // ---- Shadow DOM wrappers (opt-in) ------------------------------------
   //
   // Every block below already ships a light-DOM element; a shadow wrapper is not
@@ -434,4 +435,3 @@ shadow("contour-shadow-filter-pill", `<span class="c-filter-pill" part="filter-p
   // reshapes it would make the next reader's count wrong, which is the failure
   // this array exists to prevent.
   window.ContourElements = Object.freeze(REGISTERED.slice());
-})();
