@@ -1045,7 +1045,7 @@
   .c-drawer__body {
     flex: 1;
     overflow-y: auto;
-    padding: var(--space-md);
+    padding: calc(var(--space-md) * var(--density, 1));
     display: grid;
     gap: var(--space-md);
     align-content: start;
@@ -1055,7 +1055,7 @@
   }
 
   .c-drawer__foot {
-    padding: var(--space-md);
+    padding: calc(var(--space-md) * var(--density, 1));
     border-block-start: 1px solid var(--color-border-subtle);
     background: var(--color-surface-2);
   }
@@ -1757,7 +1757,7 @@
      BOX — padded container used inside panels (Airship-inspired)
      ======================================================================= */
   .c-box {
-    padding: var(--space-md);
+    padding: calc(var(--space-md) * var(--density, 1));
     border-radius: var(--radius-md);
     background: var(--color-surface-1);
   }
