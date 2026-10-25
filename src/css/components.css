@@ -941,8 +941,8 @@
     }
   }
 
-  /* Virtual scroll container: CSS-only scroll optimization. */
-  .c-virtual-scroll {
+  /* Scroll area: CSS-only scroll optimization (content-visibility). */
+  .c-scroll-area {
     overflow-y: auto;
     contain: strict;
     content-visibility: auto;
@@ -1080,6 +1080,10 @@
   /* =======================================================================
      5. CARD & PLATE
      ======================================================================= */
+  .c-elevation {
+    box-shadow: var(--shadow-md);
+  }
+
   .c-card {
     container-type: inline-size;
     position: relative;
@@ -1574,6 +1578,11 @@
   /* =======================================================================
      10. DISCLOSURE / ACCORDION
      ======================================================================= */
+  .c-accordion {
+    display: grid;
+    gap: var(--space-sm);
+  }
+
   .c-disclosure {
     border-block-end: 1px solid var(--color-border-subtle);
   }
@@ -2567,6 +2576,12 @@
     inline-size: 40%;
   }
 
+  .c-loading {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+  }
+
   .c-spinner {
     inline-size: var(--ring-2);
     block-size: var(--ring-2);
@@ -3087,4 +3102,5 @@
   @media (width < 48rem) {
     .c-sidebar { grid-template-columns: 1fr; }
   }
+
 }

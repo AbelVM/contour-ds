@@ -1,5 +1,7 @@
 import { ContourBase, define } from './core.mjs';
 class ContourReadout extends ContourBase {
+    static get observed() { return ["rows"]; }
+    static get properties() { return { rows: { attribute: "rows" } }; }
     render() {
       this.classList.add("c-readout");
       // Drop previously generated rows so a re-render cannot stack a second set.
@@ -82,6 +84,8 @@ class ContourKpi extends ContourBase {
   }
   define("contour-kpi", ContourKpi);
 class ContourTable extends ContourBase {
+    static get observed() { return ["columns", "rows"]; }
+    static get properties() { return { columns: { attribute: "columns" }, rows: { attribute: "rows" } }; }
     render() {
       // The host is not a <table>, so it carries no table rule. The scroller the
       // reflow contract requires is a real block element inside it.
@@ -91,18 +95,30 @@ class ContourTable extends ContourBase {
         try {
           const cols = JSON.parse(columns);
           const data = JSON.parse(rows);
-          const table = document.createElement("table");
-          table.className = "c-table";
-          const thead = document.createElement("thead");
-          const tr = document.createElement("tr");
-          cols.forEach((c) => {
-            const th = document.createElement("th");
-            th.textContent = c;
-            tr.appendChild(th);
-          });
-          thead.appendChild(tr);
-          table.appendChild(thead);
-          const tbody = document.createElement("tbody");
+          const wrap = this.ensure(".c-table-wrap", () => { const el = document.createElement("div"); el.className = "c-table-wrap"; return el; });
+          // Reuse the existing table when columns are unchanged, rebuilding
+          // only the body. This avoids O(n) DOM churn on row-only updates.
+          const colsKey = JSON.stringify(cols);
+          const table = (wrap.querySelector("table.c-table") && this._tableCols === colsKey)
+            ? wrap.querySelector("table.c-table")
+            : (() => {
+                const t = document.createElement("table");
+                t.className = "c-table";
+                const thead = document.createElement("thead");
+                const tr = document.createElement("tr");
+                cols.forEach((c) => {
+                  const th = document.createElement("th");
+                  th.textContent = c;
+                  tr.appendChild(th);
+                });
+                thead.appendChild(tr);
+                t.appendChild(thead);
+                t.appendChild(document.createElement("tbody"));
+                return t;
+              })();
+          this._tableCols = colsKey;
+          const tbody = table.querySelector("tbody");
+          tbody.innerHTML = "";
           data.forEach((row) => {
             const tr = document.createElement("tr");
             row.forEach((cell) => {
@@ -112,10 +128,10 @@ class ContourTable extends ContourBase {
             });
             tbody.appendChild(tr);
           });
-          table.appendChild(tbody);
-          const wrap = this.ensure(".c-table-wrap", () => { const el = document.createElement("div"); el.className = "c-table-wrap"; return el; });
-          wrap.innerHTML = "";
-          wrap.appendChild(table);
+          if (table.parentNode !== wrap) {
+            wrap.innerHTML = "";
+            wrap.appendChild(table);
+          }
           if (wrap.parentNode !== this) this.appendChild(wrap);
         } catch (e) { /* keep existing */ }
       }
@@ -123,6 +139,8 @@ class ContourTable extends ContourBase {
   }
   define("contour-table", ContourTable);
 class ContourChart extends ContourBase {
+    static get observed() { return ["series"]; }
+    static get properties() { return { series: { attribute: "series" } }; }
     render() {
       this.classList.add("c-chart");
       const series = this.getAttribute("series");
@@ -252,6 +270,8 @@ class ContourStat extends ContourBase {
   }
   define("contour-stat", ContourStat);
 class ContourInstrument extends ContourBase {
+    static get observed() { return ["rows"]; }
+    static get properties() { return { rows: { attribute: "rows" } }; }
     render() {
       this.classList.add("c-instrument");
       // The block's two parts are `__item` and `__value`: the label is the text
@@ -278,6 +298,8 @@ class ContourInstrument extends ContourBase {
   }
   define("contour-instrument", ContourInstrument);
 class ContourBivariate extends ContourBase {
+    static get observed() { return ["size"]; }
+    static get properties() { return { size: { attribute: "size" } }; }
     render() {
       this.classList.add("c-bivariate");
       const size = Math.min(12, Math.max(1, parseInt(this.getAttribute("size") || "3", 10) || 3));
@@ -293,6 +315,8 @@ class ContourBivariate extends ContourBase {
   }
   define("contour-bivariate", ContourBivariate);
 class ContourSurvey extends ContourBase {
+    static get observed() { return ["date", "instrument"]; }
+    static get properties() { return { date: { attribute: "date" }, instrument: { attribute: "instrument" } }; }
     render() {
       this.classList.add("c-survey");
       const date = this.getAttribute("date");
@@ -318,6 +342,8 @@ class ContourSurvey extends ContourBase {
   }
   define("contour-survey", ContourSurvey);
 class ContourThreshold extends ContourBase {
+    static get observed() { return ["label", "norm", "state", "value"]; }
+    static get properties() { return { label: { attribute: "label" }, norm: { attribute: "norm" }, state: { attribute: "state" }, value: { attribute: "value" } }; }
     render() {
       this.classList.add("c-threshold");
       // The sheet reads this block through custom properties and a state
@@ -358,6 +384,8 @@ class ContourMetricsFull extends ContourBase {
   }
   define("contour-metrics", ContourMetricsFull);
 class ContourLegend extends ContourBase {
+    static get observed() { return ["title"]; }
+    static get properties() { return { title: { attribute: "title" } }; }
     render() {
       this.classList.add("c-legend");
       const title = this.getAttribute("title");
@@ -435,6 +463,8 @@ class ContourMeasure extends ContourBase {
   }
   define("contour-measure", ContourMeasure);
 class ContourTimeline extends ContourBase {
+    static get observed() { return ["items"]; }
+    static get properties() { return { items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-timeline");
       // Drop previously generated items so a re-render cannot stack a second set.
@@ -472,6 +502,8 @@ class ContourTimeline extends ContourBase {
   }
   define("contour-timeline", ContourTimeline);
 class ContourHeatmap extends ContourBase {
+    static get observed() { return ["cells", "count"]; }
+    static get properties() { return { cells: { attribute: "cells" }, count: { attribute: "count" } }; }
     render() {
       this.classList.add("c-heatmap");
       // Drop previously generated cells so a re-render cannot stack a second set.
@@ -485,14 +517,14 @@ class ContourHeatmap extends ContourBase {
         }
       }
       if (this.hasAttribute("legend")) {
-        if (!this.querySelector(".c-heatmap__legend")) {
-          const leg = document.createElement("div");
-          leg.className = "c-heatmap__legend";
+        const leg = this.ensure(".c-heatmap__legend", () => {
+          const el = document.createElement("div");
+          el.className = "c-heatmap__legend";
           const bar = document.createElement("div");
           bar.className = "c-heatmap__legend-bar";
-          leg.appendChild(bar);
-          this.appendChild(leg);
-        }
+          el.appendChild(bar);
+          return el;
+        });
       } else {
         const leg = this.querySelector(".c-heatmap__legend");
         if (leg) leg.remove();
@@ -501,6 +533,8 @@ class ContourHeatmap extends ContourBase {
   }
   define("contour-heatmap", ContourHeatmap);
 class ContourCompare extends ContourBase {
+    static get observed() { return ["no", "text", "yes"]; }
+    static get properties() { return { no: { attribute: "no" }, text: { attribute: "text" }, yes: { attribute: "yes" } }; }
     render() {
       this.classList.add("c-compare");
       // Drop previously generated children so a re-render cannot stack a second set.

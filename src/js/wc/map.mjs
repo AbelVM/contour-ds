@@ -29,18 +29,53 @@ class ContourCoordinate extends ContourBase {
   }
   define("contour-coordinate", ContourCoordinate);
 class ContourLayerPanel extends ContourBase {
-    static get observed() { return ["label"]; }
-    static get properties() { return { label: { attribute: "label" } }; }
+    static get observed() { return ["label", "items"]; }
+    static get properties() { return { label: { attribute: "label" }, items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-layer-panel");
+      const items = this.getAttribute("items");
+      if (items) {
+        try {
+          const parsed = JSON.parse(items);
+          // Clear previously generated items.
+          Array.from(this.querySelectorAll(".c-layer-panel__item")).forEach((el) => el.remove());
+          parsed.forEach((it) => {
+            const name = typeof it === "string" ? it : (it.name || it.label || "");
+            const item = document.createElement("div");
+            item.className = "c-layer-panel__item";
+            const toggle = document.createElement("input");
+            toggle.type = "checkbox";
+            toggle.className = "c-layer-panel__toggle";
+            if (typeof it === "object" && it.visible !== false) toggle.checked = true;
+            item.appendChild(toggle);
+            const nm = document.createElement("span");
+            nm.className = "c-layer-panel__name";
+            nm.textContent = name;
+            item.appendChild(nm);
+            const opacity = document.createElement("input");
+            opacity.type = "range";
+            opacity.className = "c-layer-panel__opacity";
+            opacity.min = "0";
+            opacity.max = "100";
+            opacity.value = (typeof it === "object" && it.opacity != null) ? it.opacity : "100";
+            item.appendChild(opacity);
+            this.appendChild(item);
+          });
+        } catch (e) { /* keep existing */ }
+      }
     }
   }
   define("contour-layer-panel", ContourLayerPanel);
 class ContourTimeSlider extends ContourBase {
-    static get observed() { return ["label"]; }
-    static get properties() { return { label: { attribute: "label" } }; }
+    static get observed() { return ["label", "value"]; }
+    static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" } }; }
     render() {
       this.classList.add("c-time-slider");
+      const play = this.ensure(".c-time-slider__play", () => { const el = document.createElement("button"); el.className = "c-time-slider__play"; el.type = "button"; el.setAttribute("aria-label", "Play"); el.textContent = "▶"; return el; });
+      const track = this.ensure(".c-time-slider__track", () => { const el = document.createElement("input"); el.className = "c-time-slider__track"; el.type = "range"; el.min = "0"; el.max = "100"; return el; });
+      track.value = this.getAttribute("value") || "0";
+      const time = this.ensure(".c-time-slider__time", () => { const el = document.createElement("span"); el.className = "c-time-slider__time"; return el; });
+      time.textContent = this.getAttribute("label") || "";
     }
   }
   define("contour-time-slider", ContourTimeSlider);
@@ -235,6 +270,8 @@ class ContourMapPanel extends ContourBase {
   }
   define("contour-map-panel", ContourMapPanel);
 class ContourMapFooter extends ContourBase {
+    static get observed() { return ["brand"]; }
+    static get properties() { return { brand: { attribute: "brand" } }; }
     render() {
       this.classList.add("c-map-footer");
       const brand = this.getAttribute("brand");

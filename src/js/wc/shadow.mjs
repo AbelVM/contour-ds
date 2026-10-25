@@ -177,7 +177,7 @@ import { define, MODS, REGISTERED } from './core.mjs';
       "catchment", "cluster", "command", "compare", "comparison", "compass",
       "contour-plot", "cta", "dash-freshness", "dash-kpi-row", "dash-shell", "dash-toolbar", "datamark", "delta", "draggable", "drag-handle", "drop-indicator", "drop-zone",
       "destructive-hint", "docs-shell", "drawer", "elevation",
-      "filter-bar", "flow-map", "heatmap", "hexbin", "icon-badge", "input-group", "instrument", "range-scale", "resizable", "table-wrap", "time-range", "toast-host", "virtual-scroll",
+      "filter-bar", "flow-map", "heatmap", "hexbin", "icon-badge", "input-group", "instrument", "range-scale", "resizable", "table-wrap", "time-range", "toast-host", "scroll-area",
       "isochrone", "landing-features", "landing-hero", "layer-panel", "layer-switch", "legend", "logos", "map-area",
       "map-footer", "map-panel", "map-slot", "measure", "metrics", "minimap", "pager", "pagination",
       "panel", "plate", "price", "pricing", "progress", "prose", "pullquote", "radio-list",

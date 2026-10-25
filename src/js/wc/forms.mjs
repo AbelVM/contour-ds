@@ -49,18 +49,17 @@ class ContourField extends ContourBase {
         const lbl = this.querySelector(".c-field__label");
         if (lbl) lbl.remove();
       }
-      if (!this.querySelector("input, textarea, select")) {
-        const input = document.createElement("input");
-        input.className = "c-input";
-        input.type = this.getAttribute("type") || "text";
-        input.placeholder = placeholder;
-        input.id = input.id || ("contour-field-" + Math.random().toString(36).slice(2, 9));
-        this.appendChild(input);
-      }
+      const input = this.ensure("input.c-input, textarea, select", () => {
+        const el = document.createElement("input");
+        el.className = "c-input";
+        return el;
+      });
+      input.type = this.getAttribute("type") || "text";
+      input.placeholder = placeholder;
+      if (!input.id) input.id = "contour-field-" + Math.random().toString(36).slice(2, 9);
       // Associate the label with the input so the control is labelled.
       const lbl = this.querySelector(".c-field__label");
-      const inp = this.querySelector("input, textarea, select");
-      if (lbl && inp) { if (!inp.id) inp.id = "contour-field-" + Math.random().toString(36).slice(2, 9); lbl.setAttribute("for", inp.id); }
+      if (lbl) { if (!input.id) input.id = "contour-field-" + Math.random().toString(36).slice(2, 9); lbl.setAttribute("for", input.id); }
       if (hint) {
         const h = this.ensure(".c-field__hint", () => { const el = document.createElement("span"); el.className = "c-field__hint"; return el; });
         h.textContent = hint;
@@ -83,20 +82,17 @@ class ContourRange extends ContourBase {
     static get properties() { return { min: { attribute: "min" }, max: { attribute: "max" }, value: { attribute: "value" } }; }
     render() {
       this.classList.add("c-range");
-      if (!this.querySelector("input")) {
-        const input = document.createElement("input");
-        input.type = "range";
-        input.min = this.getAttribute("min") || "0";
-        input.max = this.getAttribute("max") || "100";
-        input.value = this.getAttribute("value") || "50";
-        this.appendChild(input);
-      }
+      const input = this.ensure("input", () => { const el = document.createElement("input"); el.type = "range"; return el; });
+      input.type = "range";
+      input.min = this.getAttribute("min") || "0";
+      input.max = this.getAttribute("max") || "100";
+      input.value = this.getAttribute("value") || "50";
     }
   }
   define("contour-range", ContourRange);
 class ContourSwitch extends ContourBase {
-    static get observed() { return ["label"]; }
-    static get properties() { return { label: { attribute: "label" } }; }
+    static get observed() { return ["label", "required"]; }
+    static get properties() { return { label: { attribute: "label" }, required: { attribute: "required", type: Boolean } }; }
     static get formAssociated() { return true; }
     constructor() { super(); this._internals = (typeof this.attachInternals === "function") ? this.attachInternals() : null; }
     render() {
@@ -116,15 +112,23 @@ class ContourSwitch extends ContourBase {
       this._wiredSwitch = true;
       const input = this.querySelector("input");
       if (!input) return;
-      const sync = () => { if (this._internals) this._internals.setFormValue(input.checked ? (input.value || "on") : null); };
+      const sync = () => {
+        if (!this._internals) return;
+        this._internals.setFormValue(input.checked ? (input.value || "on") : null);
+        if (this.hasAttribute("required") && !input.checked) {
+          this._internals.setValidity({ valueMissing: true }, "This field is required.");
+        } else {
+          this._internals.setValidity({});
+        }
+      };
       input.addEventListener("change", sync);
       sync();
     }
   }
   define("contour-switch", ContourSwitch);
 class ContourCheck extends ContourBase {
-    static get observed() { return ["label", "name", "value"]; }
-    static get properties() { return { label: { attribute: "label" }, name: { attribute: "name" }, value: { attribute: "value" } }; }
+    static get observed() { return ["label", "name", "value", "required", "type"]; }
+    static get properties() { return { label: { attribute: "label" }, name: { attribute: "name" }, value: { attribute: "value" }, required: { attribute: "required", type: Boolean }, type: { attribute: "type" } }; }
     static get formAssociated() { return true; }
     constructor() { super(); this._internals = (typeof this.attachInternals === "function") ? this.attachInternals() : null; }
     render() {
@@ -142,15 +146,23 @@ class ContourCheck extends ContourBase {
       this._wiredCheck = true;
       const input = this.querySelector("input");
       if (!input) return;
-      const sync = () => { if (this._internals) this._internals.setFormValue(input.checked ? (input.value || "on") : null); };
+      const sync = () => {
+        if (!this._internals) return;
+        this._internals.setFormValue(input.checked ? (input.value || "on") : null);
+        if (this.hasAttribute("required") && !input.checked) {
+          this._internals.setValidity({ valueMissing: true }, "This field is required.");
+        } else {
+          this._internals.setValidity({});
+        }
+      };
       input.addEventListener("change", sync);
       sync();
     }
   }
   define("contour-check", ContourCheck);
 class ContourRadio extends ContourBase {
-    static get observed() { return ["label", "name", "value"]; }
-    static get properties() { return { label: { attribute: "label" }, name: { attribute: "name" }, value: { attribute: "value" } }; }
+    static get observed() { return ["label", "name", "value", "required"]; }
+    static get properties() { return { label: { attribute: "label" }, name: { attribute: "name" }, value: { attribute: "value" }, required: { attribute: "required", type: Boolean } }; }
     static get formAssociated() { return true; }
     constructor() { super(); this._internals = (typeof this.attachInternals === "function") ? this.attachInternals() : null; }
     render() {
@@ -170,15 +182,23 @@ class ContourRadio extends ContourBase {
       this._wiredRadio = true;
       const input = this.querySelector("input");
       if (!input) return;
-      const sync = () => { if (this._internals && input.checked) this._internals.setFormValue(input.value || "on"); };
+      const sync = () => {
+        if (!this._internals) return;
+        if (input.checked) this._internals.setFormValue(input.value || "on");
+        if (this.hasAttribute("required") && !input.checked) {
+          this._internals.setValidity({ valueMissing: true }, "This field is required.");
+        } else if (input.checked) {
+          this._internals.setValidity({});
+        }
+      };
       input.addEventListener("change", sync);
       if (input.checked) sync();
     }
   }
   define("contour-radio", ContourRadio);
 class ContourSelect extends ContourBase {
-    static get observed() { return ["options"]; }
-    static get properties() { return { options: { attribute: "options" } }; }
+    static get observed() { return ["options", "required"]; }
+    static get properties() { return { options: { attribute: "options" }, required: { attribute: "required", type: Boolean } }; }
     static get formAssociated() { return true; }
     constructor() { super(); this._internals = (typeof this.attachInternals === "function") ? this.attachInternals() : null; }
     render() {
@@ -206,13 +226,23 @@ class ContourSelect extends ContourBase {
       this._wiredSelect = true;
       const select = this.querySelector("select");
       if (!select) return;
-      const sync = () => { if (this._internals) this._internals.setFormValue(select.value); };
+      const sync = () => {
+        if (!this._internals) return;
+        this._internals.setFormValue(select.value);
+        if (this.hasAttribute("required") && !select.value) {
+          this._internals.setValidity({ valueMissing: true }, "This field is required.");
+        } else {
+          this._internals.setValidity({});
+        }
+      };
       select.addEventListener("change", sync);
       sync();
     }
   }
   define("contour-select", ContourSelect);
 class ContourVersion extends ContourBase {
+    static get observed() { return ["options"]; }
+    static get properties() { return { options: { attribute: "options" } }; }
     render() {
       this.classList.add("c-version");
       const options = this.getAttribute("options");
@@ -236,25 +266,32 @@ class ContourVersion extends ContourBase {
   }
   define("contour-version", ContourVersion);
 class ContourTextarea extends ContourBase {
-    static get observed() { return ["placeholder"]; }
-    static get properties() { return { placeholder: { attribute: "placeholder" } }; }
+    static get observed() { return ["placeholder", "required"]; }
+    static get properties() { return { placeholder: { attribute: "placeholder" }, required: { attribute: "required", type: Boolean } }; }
     static get formAssociated() { return true; }
     constructor() { super(); this._internals = (typeof this.attachInternals === "function") ? this.attachInternals() : null; }
     render() {
       this.classList.add("c-textarea");
-      if (!this.querySelector("textarea")) {
-        const ta = document.createElement("textarea");
-        ta.className = "c-textarea";
-        ta.placeholder = this.getAttribute("placeholder") || "";
-        this.appendChild(ta);
-      }
+      const ta = this.ensure("textarea", () => { const el = document.createElement("textarea"); el.className = "c-textarea"; return el; });
+      ta.className = "c-textarea";
+      ta.placeholder = this.getAttribute("placeholder") || "";
+      if (this.hasAttribute("required")) ta.setAttribute("required", "");
+      else ta.removeAttribute("required");
     }
     enhance() {
       if (this._wiredTextarea) return;
       this._wiredTextarea = true;
       const ta = this.querySelector("textarea");
       if (!ta) return;
-      const sync = () => { if (this._internals) this._internals.setFormValue(ta.value); };
+      const sync = () => {
+        if (!this._internals) return;
+        this._internals.setFormValue(ta.value);
+        if (this.hasAttribute("required") && !ta.value.trim()) {
+          this._internals.setValidity({ valueMissing: true }, "This field is required.");
+        } else {
+          this._internals.setValidity({});
+        }
+      };
       ta.addEventListener("input", sync);
       ta.addEventListener("change", sync);
       sync();
@@ -262,26 +299,33 @@ class ContourTextarea extends ContourBase {
   }
   define("contour-textarea", ContourTextarea);
 class ContourInputFull extends ContourBase {
-    static get observed() { return ["type", "placeholder"]; }
-    static get properties() { return { type: { attribute: "type" }, placeholder: { attribute: "placeholder" } }; }
+    static get observed() { return ["type", "placeholder", "required"]; }
+    static get properties() { return { type: { attribute: "type" }, placeholder: { attribute: "placeholder" }, required: { attribute: "required", type: Boolean } }; }
     static get formAssociated() { return true; }
     constructor() { super(); this._internals = (typeof this.attachInternals === "function") ? this.attachInternals() : null; }
     render() {
       this.classList.add("c-input");
-      if (!this.querySelector("input")) {
-        const input = document.createElement("input");
-        input.className = "c-input";
-        input.type = this.getAttribute("type") || "text";
-        input.placeholder = this.getAttribute("placeholder") || "";
-        this.appendChild(input);
-      }
+      const input = this.ensure("input", () => { const el = document.createElement("input"); el.className = "c-input"; return el; });
+      input.className = "c-input";
+      input.type = this.getAttribute("type") || "text";
+      input.placeholder = this.getAttribute("placeholder") || "";
+      if (this.hasAttribute("required")) input.setAttribute("required", "");
+      else input.removeAttribute("required");
     }
     enhance() {
       if (this._wiredInput) return;
       this._wiredInput = true;
       const input = this.querySelector("input");
       if (!input) return;
-      const sync = () => { if (this._internals) this._internals.setFormValue(input.value); };
+      const sync = () => {
+        if (!this._internals) return;
+        this._internals.setFormValue(input.value);
+        if (this.hasAttribute("required") && !input.value.trim()) {
+          this._internals.setValidity({ valueMissing: true }, "This field is required.");
+        } else {
+          this._internals.setValidity({});
+        }
+      };
       input.addEventListener("input", sync);
       input.addEventListener("change", sync);
       sync();

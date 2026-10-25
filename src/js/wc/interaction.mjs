@@ -34,6 +34,8 @@ class ContourShortcutListFull extends ContourBase {
   }
   define("contour-shortcut-list", ContourShortcutListFull);
 class ContourShortcutRowFull extends ContourBase {
+    static get observed() { return ["desc", "key"]; }
+    static get properties() { return { desc: { attribute: "desc" }, key: { attribute: "key" } }; }
     render() {
       this.classList.add("c-shortcut-row");
       const key = this.getAttribute("key");
@@ -100,8 +102,8 @@ class ContourResizable extends ContourBase { render() { this.classList.add("c-re
   define("contour-resizable", ContourResizable);
 class ContourTableWrap extends ContourBase { render() { this.classList.add("c-table-wrap"); } }
   define("contour-table-wrap", ContourTableWrap);
-class ContourVirtualScroll extends ContourBase { render() { this.classList.add("c-virtual-scroll"); } }
-  define("contour-virtual-scroll", ContourVirtualScroll);
+class ContourScrollArea extends ContourBase { render() { this.classList.add("c-scroll-area"); } }
+  define("contour-scroll-area", ContourScrollArea);
 class ContourBtn extends ContourBase {
     static get observed() { return ["variant", "size", "color"]; }
     static get properties() { return { variant: { attribute: "variant" }, size: { attribute: "size" }, color: { attribute: "color" } }; }

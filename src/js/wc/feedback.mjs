@@ -227,9 +227,9 @@ class ContourAccordion extends ContourBase {
     static get observed() { return ["items"]; }
     static get properties() { return { items: { attribute: "items" } }; }
     render() {
-      this.classList.add("c-accordion");
-      // Drop any previously generated disclosures before rebuilding, so a
-      // re-render cannot stack a second set on top of the first.
+      // The host is a plain container; the children carry .c-disclosure, which
+      // is the block that owns the styling. No .c-accordion rule exists, so the
+      // host class is dropped rather than invented.
       Array.from(this.querySelectorAll("details.c-disclosure")).forEach((d) => d.remove());
       const items = this.getAttribute("items");
       if (items) {

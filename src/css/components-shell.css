@@ -172,6 +172,11 @@
     cursor: pointer;
   }
 
+  .c-command__item--active {
+    background: var(--color-primary-soft);
+    color: var(--color-primary-text);
+  }
+
   .c-command__item[aria-selected="true"] {
     background: var(--color-primary-soft);
     color: var(--color-text-strong);
@@ -525,6 +530,10 @@
      dragged shows a handle. Both are visible, never implied. */
   .c-expandable {
     cursor: pointer;
+  }
+
+  .c-expandable__body {
+    padding-block: var(--space-sm);
   }
 
   /* Pressable surfaces get a real press, not just a hover. */

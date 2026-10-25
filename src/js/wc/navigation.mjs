@@ -386,6 +386,8 @@ class ContourFilterBar extends ContourBase {
   }
   define("contour-filter-bar", ContourFilterBar);
   class ContourCommand extends ContourBase {
+    static get observed() { return ["placeholder", "items", "empty"]; }
+    static get properties() { return { placeholder: { attribute: "placeholder" }, items: { attribute: "items" }, empty: { attribute: "empty" } }; }
     render() {
       this.classList.add("c-command");
       if (!this.hasAttribute("popover")) this.setAttribute("popover", "auto");

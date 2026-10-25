@@ -52,7 +52,7 @@
     display: grid;
     gap: 0.35rem;
     align-content: start;
-    padding: var(--space-md);
+    padding: calc(var(--space-md) * var(--density, 1));
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     background: var(--color-surface-1);
@@ -1195,6 +1195,15 @@
     z-index: var(--z-raised, 10);
   }
 
+  .c-minimap__label {
+    position: absolute;
+    inset-block-start: var(--space-2xs);
+    inset-inline-start: var(--space-2xs);
+    font-size: var(--type-micro);
+    color: var(--color-text-subtle);
+    z-index: var(--z-raised, 10);
+  }
+
   .c-minimap__viewport {
     position: absolute;
     border: 2px solid var(--color-primary);
@@ -1421,6 +1430,12 @@
     opacity: 0.8;
   }
 
+  .c-hexbin__label {
+    font-size: var(--type-xs);
+    color: var(--color-text-subtle);
+    margin-block-start: var(--space-xs);
+  }
+
   /* =======================================================================
      8i. FLOW MAP — origin-destination flows
      ======================================================================= */
@@ -1438,6 +1453,14 @@
     inline-size: 100%;
     block-size: 100%;
     display: block;
+  }
+
+  .c-flow-map__label {
+    position: absolute;
+    inset-block-end: var(--space-xs);
+    inset-inline-start: var(--space-xs);
+    font-size: var(--type-xs);
+    color: var(--color-text-subtle);
   }
 
   .c-flow-map__flow {
@@ -1480,6 +1503,14 @@
     inline-size: 100%;
     block-size: 100%;
     display: block;
+  }
+
+  .c-isochrone__label {
+    position: absolute;
+    inset-block-end: var(--space-xs);
+    inset-inline-start: var(--space-xs);
+    font-size: var(--type-xs);
+    color: var(--color-text-subtle);
   }
 
   .c-isochrone__ring {

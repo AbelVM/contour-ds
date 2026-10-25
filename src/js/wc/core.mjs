@@ -48,7 +48,7 @@
     "cells", "controls", "copyable", "count", "current", "date", "delta", "desc", "direction", "divider", "do", "dont",
     "empty", "error", "hint", "href", "icon", "index", "instrument", "items", "key",
     "label", "lede", "legend", "links", "live", "max", "media", "message", "method", "min", "name", "next", "no", "note", "norm",
-    "options", "pages", "placeholder", "prev", "prompt", "question",
+    "options", "pages", "placeholder", "prev", "prompt", "question", "required",
     "quote", "removable", "reverse", "rows", "scale", "series", "shortcut", "size", "status",
     "state", "steps", "subtitle", "summary", "tabs", "tag", "text", "title", "type", "unit", "value",
     "variant", "yes",
@@ -128,12 +128,13 @@
     connectedCallback() {
       if (this._contourAuthored) return; // reconnected, not re-specified
       this._installProperties();
-      this._contourAuthored = {
-        nodes: Array.from(this.childNodes),
-        cls: this.getAttribute("class"),
-      };
-         const before = Array.from(this.childNodes);
-         this.render();
+       this._contourAuthored = {
+         nodes: Array.from(this.childNodes),
+         cls: this.getAttribute("class"),
+       };
+          const before = Array.from(this.childNodes);
+          this._ensureCache = new Map();
+          this.render();
          this._contourGenerated = Array.from(this.childNodes).filter((n) => !before.includes(n));
          this._applyParts(this);
          this.enhance();
@@ -143,7 +144,31 @@
       if (oldValue === newValue) return;
       // Fires before connectedCallback during an upgrade: nothing to reset to
       // yet, and connectedCallback will render with the final attributes.
-      if (!this.isConnected || !this._contourAuthored || this._contourRendering) return;
+      if (!this.isConnected || !this._contourAuthored) return;
+      // Opt-in batching: when inside batch(), attribute changes are coalesced
+      // into a single render that fires when the batch ends. This lets a
+      // dashboard update value + delta + direction without three rebuilds,
+      // without changing the default synchronous contract the gate enforces.
+      if (this._batchDepth > 0) {
+        this._batchDirty = true;
+        return;
+      }
+      // Re-entrant change (an attribute set while a render is in flight): do
+      // not drop it, defer a single re-render to the next microtask so the
+      // in-flight render can finish first. Coalesces several such changes.
+      if (this._contourRendering) {
+        if (!this._pendingRerender) {
+          this._pendingRerender = true;
+          queueMicrotask(() => {
+            this._pendingRerender = false;
+            if (!this.isConnected || !this._contourAuthored) return;
+            // Re-run with a sentinel old value so the equality guard does not
+            // short-circuit; the render reads current attribute values.
+            this.attributeChangedCallback("__rerender__", null, "");
+          });
+        }
+        return;
+      }
        this._contourRendering = true;
        try {
          // Preserve form control values across a re-render: generated inputs are
@@ -167,10 +192,11 @@
         // Clear and restore authored nodes.
         while (this.firstChild) this.removeChild(this.firstChild);
         for (const node of this._contourAuthored.nodes) this.appendChild(node);
-        if (this._contourAuthored.cls === null) this.removeAttribute("class");
-        else this.setAttribute("class", this._contourAuthored.cls);
-        const before = Array.from(this.childNodes);
-        this.render();
+         if (this._contourAuthored.cls === null) this.removeAttribute("class");
+         else this.setAttribute("class", this._contourAuthored.cls);
+         const before = Array.from(this.childNodes);
+         this._ensureCache = new Map();
+         this.render();
         this._contourGenerated = Array.from(this.childNodes).filter((n) => !before.includes(n));
         this._applyParts(this);
         // Restore preserved form control values.
@@ -207,11 +233,37 @@
     }
 
     disconnectedCallback() {
+      this._pendingRerender = false;
+      this._ensureCache = null;
+      this._batchDepth = 0;
+      this._batchDirty = false;
       // Override in subclasses that attach event listeners or timers.
     }
 
     // Default no-op: subclasses with behaviour override this.
     enhance() {}
+
+    // Opt-in batching: coalesce multiple attribute changes into a single
+    // render. Usage: el.batch(() => { el.value = 42; el.delta = "+3"; });
+    // The render fires once when the callback returns, reading all final
+    // attribute values. Nested calls are supported.
+    batch(fn) {
+      if (typeof fn !== "function") return;
+      this._batchDepth = (this._batchDepth || 0) + 1;
+      this._batchDirty = this._batchDirty || false;
+      try {
+        fn();
+      } finally {
+        this._batchDepth -= 1;
+        if (this._batchDepth === 0 && this._batchDirty) {
+          this._batchDirty = false;
+          // Trigger a single re-render with current attribute values.
+          if (this.isConnected && this._contourAuthored) {
+            this.attributeChangedCallback("__rerender__", null, "");
+          }
+        }
+      }
+    }
 
     // Expose ::part() hooks on every generated node whose class follows the
     // `c-<block>__<element>` convention, so a consumer can theme internals
@@ -233,9 +285,18 @@
     // `selector`, creating it via `factory()` and appending it if absent. Render
     // bodies use this so an attribute change updates the existing node instead
     // of being blocked by a `!querySelector` guard.
+    //
+    // A per-render cache avoids re-querying the subtree for every ensure() call
+    // in the same render pass (O(k*n) -> O(n+k)).
     ensure(selector, factory, parent) {
       const root = parent || this;
-      let node = root.querySelector(selector);
+      if (!root._ensureCache) root._ensureCache = new Map();
+      const cache = root._ensureCache;
+      let node = cache.get(selector);
+      if (node === undefined) {
+        node = root.querySelector(selector);
+        cache.set(selector, node);
+      }
       if (!node) {
         node = factory();
         // Expose a ::part() hook for every generated element, so a consumer
@@ -246,6 +307,7 @@
           if (m) node.setAttribute("part", m[1]);
         }
         root.appendChild(node);
+        cache.set(selector, node);
       }
       return node;
     }

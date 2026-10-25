@@ -90,6 +90,8 @@ class ContourSteps extends ContourBase {
   }
   define("contour-steps", ContourSteps);
 class ContourLink extends ContourBase {
+    static get observed() { return ["href", "label"]; }
+    static get properties() { return { href: { attribute: "href" }, label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-link");
       const href = this.getAttribute("href");
@@ -104,6 +106,8 @@ class ContourLink extends ContourBase {
   }
   define("contour-link", ContourLink);
 class ContourBrand extends ContourBase {
+    static get observed() { return ["name", "tag"]; }
+    static get properties() { return { name: { attribute: "name" }, tag: { attribute: "tag" } }; }
     render() {
       this.classList.add("c-brand");
       const name = this.getAttribute("name");
@@ -353,6 +357,8 @@ class ContourPricingFull extends ContourBase {
   }
   define("contour-pricing", ContourPricingFull);
 class ContourRecipeFull extends ContourBase {
+    static get observed() { return ["title"]; }
+    static get properties() { return { title: { attribute: "title" } }; }
     render() {
       this.classList.add("c-recipe");
       const title = this.getAttribute("title");
@@ -391,6 +397,8 @@ class ContourLinkishFull extends ContourBase {
   }
   define("contour-linkish", ContourLinkishFull);
 class ContourPriceFull extends ContourBase {
+    static get observed() { return ["value"]; }
+    static get properties() { return { value: { attribute: "value" } }; }
     render() {
       this.classList.add("c-price");
       const value = this.getAttribute("value");

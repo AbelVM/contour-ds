@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Contour WC smoke test</title>
+  <link rel="stylesheet" href="../src/css/ds.css">
+</head>
+<body>
+  <main style="padding: 2rem; display: grid; gap: 1rem; max-width: 40rem">
+    <h1>Web component smoke test</h1>
+    <contour-card title="Card from tag">
+      <p>Body content slotted into the card.</p>
+    </contour-card>
+    <contour-btn variant="primary">Primary button</contour-btn>
+    <contour-badge variant="accent" label="Accent badge"></contour-badge>
+    <contour-input placeholder="Type here"></contour-input>
+    <contour-alert variant="info" title="Info">An alert message.</contour-alert>
+  </main>
+  <script type="module" src="../src/js/wc/index.mjs"></script>
+  <script>
+    window.addEventListener("contour:ready", (e) => {
+      console.log("contour:ready", e.detail);
+    });
+  </script>
+</body>
+</html>

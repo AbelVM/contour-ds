@@ -327,17 +327,9 @@ const LEAK_PROBE = (candidates) => {
 // being orphaned has to be struck off, and a new one has to be entered with a
 // reason. An exception that is not recomputed is an exception that expired.
 const ORPHAN_LEDGER = {
-  // Three host classes and one element class stay ledgered because each is a
-  // decision this gate must not make: dropping a published element name is an API
-  // removal, and inventing a rule is a design change. Every entry here carries a
-  // reason that says which of the two it is. A reason that only restates the
-  // failure ("styled via the parent") is not a reason — it is the defect wearing
-  // a sentence, and the widened sweep found seventeen of those added in one pass
-  // to silence it. They are struck; the components now emit the real names.
-  "c-accordion": "contour-accordion renders .c-disclosure children; its own host class has no rule, and the block is a naming alias for disclosure rather than a component",
-  "c-loading": "contour-loading renders .c-spinner; the host class is a label with no rule, and spinner is the block that carries the visual",
-  "c-elevation": "contour-elevation is the element form of the elevation specimen, which is carried by --shadow-* tokens and no .c-elevation rule",
-  "c-expandable__body": "the guide's own specimen, the light component and the shadow template all use this name and no rule defines it; details hides its body without help, so this is a CSS gap the specimen shares, not scaffolding the element invented",
+  // All previously ledgered orphans have been resolved: c-accordion and
+  // c-elevation dropped their host class (no rule existed and none was needed),
+  // c-loading and c-expandable__body gained minimal CSS rules.
 };
 
 const browser = await chromium.launch({ args: ["--no-sandbox"] });

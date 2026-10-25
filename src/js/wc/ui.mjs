@@ -150,6 +150,8 @@ class ContourSkeleton extends ContourBase {
   }
   define("contour-skeleton", ContourSkeleton);
 class ContourTooltip extends ContourBase {
+    static get observed() { return ["text", "anchor"]; }
+    static get properties() { return { text: { attribute: "text" }, anchor: { attribute: "anchor" } }; }
     render() {
       this.classList.add("c-tooltip");
       if (!this.hasAttribute("popover")) this.setAttribute("popover", "hint");
@@ -220,11 +222,15 @@ class ContourLoading extends ContourBase {
   define("contour-loading", ContourLoading);
 class ContourElevation extends ContourBase {
     render() {
-      this.classList.add("c-elevation");
+      // Elevation is carried by --shadow-* tokens, not a class. The host is a
+      // plain element; no .c-elevation rule exists, so the class is dropped
+      // rather than invented.
     }
   }
   define("contour-elevation", ContourElevation);
 class ContourVersionBannerFull extends ContourBase {
+    static get observed() { return ["message"]; }
+    static get properties() { return { message: { attribute: "message" } }; }
     render() {
       this.classList.add("c-version-banner");
       const message = this.getAttribute("message");
@@ -241,6 +247,8 @@ class ContourVersionBannerFull extends ContourBase {
   }
   define("contour-version-banner", ContourVersionBannerFull);
 class ContourFilterPill extends ContourBase {
+    static get observed() { return ["key", "value"]; }
+    static get properties() { return { key: { attribute: "key" }, value: { attribute: "value" } }; }
     render() {
       this.classList.add("c-filter-pill");
       const key = this.getAttribute("key");
