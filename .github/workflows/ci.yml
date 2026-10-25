@@ -29,14 +29,11 @@ jobs:
 
       # node --check takes ONE file: `node --check a b` checks a and silently
       # ignores b, so every script needs its own invocation. Verified with a
-      # probe: a broken second argument exits 0. contour-wc.js is absent from
-      # this list even though it is the only script in src/js/ with a runtime
-      # contract of its own -- and a file that loads with a ReferenceError still
-      # passes every --check, which is how it shipped defining nothing at all.
+      # probe: a broken second argument exits 0.
       - name: Check script syntax
         run: |
           node --check src/js/ds.js
-          node --check src/js/contour-wc.js
+          for f in src/js/wc/*.mjs; do node --check "$f"; done
           node --check assets/js/guide.js
           find tools -name '*.mjs' -print0 | xargs -0 -n1 node --check
 

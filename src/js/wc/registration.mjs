@@ -1,4 +1,4 @@
-import { CLASS_ONLY, define, simple } from './00-core.mjs';
+import { CLASS_ONLY, define, simple } from './core.mjs';
   // ---- Registration: the class-only wrappers run last ------------------
   //
   // Order is the contract. Every complex component above claims its own name and

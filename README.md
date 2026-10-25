@@ -338,8 +338,8 @@ shell are not counted.
 
 ## Web components
 
-Contour ships an optional progressive-enhancement layer in `src/js/contour-wc.js` (also
-`dist/contour-wc.js` / `dist/contour-wc.min.js`). It defines 320+ custom elements
+Contour ships an optional progressive-enhancement layer as ES modules under `src/js/wc/`
+(entry point `src/js/wc/index.mjs`; also `dist/contour-wc.js` / `dist/contour-wc.min.js`). It defines 320+ custom elements
 (`<contour-btn>`, `<contour-card>`, `<contour-shadow-card>`, …) that generate their
 scaffolding from attributes and slotted content.
 
@@ -355,7 +355,7 @@ scaffolding from attributes and slotted content.
 - No runtime dependencies; the file is optional and the page works without it.
 
 ```html
-<script src="src/js/contour-wc.js"></script>
+<script type="module" src="src/js/wc/index.mjs"></script>
 <contour-card title="Hello">
   <p>Slotted content</p>
 </contour-card>
@@ -442,7 +442,7 @@ below. The CSS size is measured on every release; LCP/CLS/INP are targets, not y
 | Total CSS (gzipped) | < 25 kB |
 
 The guide itself (`index.html`) is a 583 kB document that loads every component
-and 4 external scripts (highlight.js from a CDN, `ds.js`, `contour-wc.js`, `guide.js`); its Lighthouse score is not the system's score, and
+and 4 external scripts (highlight.js from a CDN, `ds.js`, `wc/index.mjs`, `guide.js`); its Lighthouse score is not the system's score, and
 the two should not be quoted interchangeably. The system's score is measured on
 `templates/landing.html`, which is the smallest shipped surface.
 

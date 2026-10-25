@@ -378,7 +378,6 @@ node tools/check-motion.mjs    # WCAG 2.2.2: every infinite animation pausable b
 node tools/check-defs.mjs      # every url(#id) in src/css reaches a def inside src/
 node tools/check-markup.mjs    # self-hosted fonts, no unnamed off-origin load, share metadata, and the guide's published script budget
 node tools/check-wc.mjs        # web components: base class, IIFE closure, registry, no duplicate define
-node tools/concat-wc.mjs --check  # the wc bundle matches src/js/wc/*.mjs
 node tools/snippets.mjs        # if you touched a specimen; also the snippet spacing guard
 node tools/build.mjs           # if you touched src/
 node tools/check-size.mjs      # refuses a stale dist/, not only a big one

@@ -1459,7 +1459,7 @@ A map engine paints its own control cluster over its canvas — zoom, compass, f
 
 Contour ships no syntax highlighter (zero runtime dependencies); highlighting is the consumer's. src/css/hljs.css maps highlight.js token classes onto Contour tokens, so a consumer who runs that highlighter gets code that matches the system's palette in both themes. It sets colour only — never layout, never font-family. Load it after the library's own stylesheet.
 
-Optional progressive enhancement. Load contour-wc.js after ds.css to use <contour-btn>, <contour-card>, and 150+ other custom elements that generate their scaffolding from attributes. All use light DOM so the cascade applies.
+Optional progressive enhancement. Load src/js/wc/index.mjs after ds.css to use <contour-btn>, <contour-card>, and 150+ other custom elements that generate their scaffolding from attributes. All use light DOM so the cascade applies.
 
 ## Blocks documented here
 

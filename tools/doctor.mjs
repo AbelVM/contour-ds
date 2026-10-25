@@ -32,7 +32,6 @@ const gates = [
   ["check-dist", "node", ["tools/check-dist.mjs"]],
   ["check-agent-rules", "node", ["tools/check-agent-rules.mjs"]],
   ["check-wc", "node", ["tools/check-wc.mjs"]],
-  ["concat-wc", "node", ["tools/concat-wc.mjs", "--check"]],
   ["family-gate", "node", ["tools/audit/family-gate.mjs"]],
   ["wc-contract", "node", ["tools/audit/wc-contract.mjs"]],
 ];

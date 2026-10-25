@@ -1,4 +1,4 @@
-import { define, MODS, REGISTERED } from './00-core.mjs';
+import { define, MODS, REGISTERED } from './core.mjs';
   // ---- Shadow DOM wrappers (opt-in) ------------------------------------
   //
   // Every block below already ships a light-DOM element; a shadow wrapper is not

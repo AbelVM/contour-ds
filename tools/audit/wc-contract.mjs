@@ -476,6 +476,21 @@ try {
         host.setAttribute("title", "THIRD");
         const keptAuthored = !!host.querySelector(".authored-probe");
 
+        // Disclosure/expandable must preserve authored content across a re-render.
+        const disc = document.createElement("contour-disclosure");
+        disc.setAttribute("summary", "First");
+        disc.innerHTML = "<p class=\"disc-authored\">hello</p>";
+        document.body.appendChild(disc);
+        disc.setAttribute("summary", "Second");
+        const discKept = !!disc.querySelector(".disc-authored") && disc.querySelector(".disc-authored").textContent === "hello";
+        const discSummary = disc.querySelector("summary") ? disc.querySelector("summary").textContent : "";
+        const exp = document.createElement("contour-expandable");
+        exp.setAttribute("summary", "E1");
+        exp.innerHTML = "<p class=\"exp-authored\">world</p>";
+        document.body.appendChild(exp);
+        exp.setAttribute("summary", "E2");
+        const expKept = !!exp.querySelector(".exp-authored") && exp.querySelector(".exp-authored").textContent === "world";
+
         // the modifier contract, measured through the browser rather than read
         // off the source: both layers must answer to the same attributes
         const mod = {};
@@ -519,13 +534,13 @@ try {
           missing, anonymous, mounted, registry: registry.length,
           bad: rendered.filter((r) => !r.ok), renderedCount: rendered.length,
           thin, unshared, parity, wrappers: wrappers.length, docRules,
-          bareTable, reactivity: { changed: before !== after, duplicated: titles > 1, keptAuthored },
+          bareTable, reactivity: { changed: before !== after, duplicated: titles > 1, keptAuthored, discKept, discSummary, expKept },
           mod, orphan: [...new Set(orphan)],
         };
       },
       { registry: load.registry, overlapped, RENDER_CONTRACT }
     );
-    compared += out.renderedCount + out.wrappers + out.orphan.length + 5;
+    compared += out.renderedCount + out.wrappers + out.orphan.length + 7;
 
     if (out.missing.length)
       fail(`${out.missing.length} of ${out.registry} names the registry claims are not defined in the browser: ${out.missing.slice(0, 8).join(", ")}`);
@@ -539,6 +554,12 @@ try {
       fail("a re-render appended a second .c-card__title — generated scaffolding is not cleared between renders");
     if (!out.reactivity.keptAuthored)
       fail("a re-render discarded content the author wrote into the element — the snapshot must restore it");
+    if (!out.reactivity.discKept)
+      fail("contour-disclosure lost its authored content across a re-render — the generated container must not take the author's nodes with it when it is rebuilt");
+    if (out.reactivity.discSummary !== "Second")
+      fail(`contour-disclosure did not update its summary on re-render: got "${out.reactivity.discSummary}"`);
+    if (!out.reactivity.expKept)
+      fail("contour-expandable lost its authored content across a re-render — the generated container must not take the author's nodes with it when it is rebuilt");
     if (out.thin.length)
       fail(`${out.thin.length} of ${out.wrappers} shadow wrappers adopted fewer rules than the document has: ${out.thin.slice(0, 5).join("; ")} — a stylesheet joined on a literal backslash-n parses as one rule and drops the rest, so the component renders unstyled`);
     if (out.parity.length)
