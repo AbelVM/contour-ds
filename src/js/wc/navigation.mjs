@@ -1,5 +1,8 @@
 import { ContourBase, define } from './core.mjs';
+import { wireMenu, wirePagination, wireTabs, wireTree } from './behaviours.mjs';
 class ContourMenu extends ContourBase {
+    static get observed() { return ["items"]; }
+    static get properties() { return { items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-menu");
       if (!this.hasAttribute("role")) this.setAttribute("role", "menu");
@@ -37,45 +40,16 @@ class ContourMenu extends ContourBase {
       }
     }
     enhance() {
-      if (this._wiredMenu) return;
-      this._wiredMenu = true;
-      const items = () => Array.from(this.querySelectorAll("[role='menuitem']"));
-      this.addEventListener("keydown", (e) => {
-        const its = items();
-        if (!its.length) return;
-        const current = document.activeElement;
-        const idx = its.indexOf(current);
-        let next = -1;
-        if (e.key === "ArrowDown") next = idx < 0 ? 0 : Math.min(idx + 1, its.length - 1);
-        else if (e.key === "ArrowUp") next = idx < 0 ? its.length - 1 : Math.max(idx - 1, 0);
-        else if (e.key === "Home") next = 0;
-        else if (e.key === "End") next = its.length - 1;
-        if (next >= 0) {
-          e.preventDefault();
-          its[next].focus();
-          return;
-        }
-        if ((e.key === "Enter" || e.key === " ") && idx >= 0) {
-          e.preventDefault();
-          this.dispatchEvent(new CustomEvent("contour:select", { detail: { index: idx, label: its[idx].textContent }, bubbles: true }));
-        }
-      });
-      // make items focusable
-      items().forEach((it) => { if (!it.hasAttribute("tabindex")) it.setAttribute("tabindex", "-1"); });
-      // Click to select
-      this.addEventListener("click", (e) => {
-        const item = e.target && e.target.closest ? e.target.closest("[role='menuitem']") : null;
-        if (!item || !this.contains(item)) return;
-        const its = items();
-        const idx = its.indexOf(item);
-        if (idx >= 0) {
-          this.dispatchEvent(new CustomEvent("contour:select", { detail: { index: idx, label: item.textContent }, bubbles: true }));
-        }
-      });
+      // Interaction lives in behaviours.mjs, which the shadow wrappers call too.
+      // One implementation, so the two layers cannot drift apart again: the shadow
+      // copy queried its root for slotted nodes, found none, and wired nothing.
+      wireMenu(this);
     }
   }
   define("contour-menu", ContourMenu);
 class ContourTabs extends ContourBase {
+    static get observed() { return ["tabs"]; }
+    static get properties() { return { tabs: { attribute: "tabs" } }; }
     render() {
       this.classList.add("c-tabs");
       const tabs = this.getAttribute("tabs");
@@ -87,7 +61,7 @@ class ContourTabs extends ContourBase {
           list.innerHTML = "";
           parsed.forEach((t, i) => {
             const btn = document.createElement("button");
-            btn.className = "c-tabs__tab" + (i === 0 ? " c-tabs__tab--active" : "");
+            btn.className = "c-tabs__tab";
             btn.setAttribute("role", "tab");
             btn.setAttribute("aria-selected", String(i === 0));
             btn.tabIndex = i === 0 ? 0 : -1;
@@ -102,55 +76,16 @@ class ContourTabs extends ContourBase {
       }
     }
     enhance() {
-      if (this._wiredTabs) return;
-      this._wiredTabs = true;
-      const activate = (tab, focus) => {
-        const list = this.querySelector(".c-tabs__list");
-        if (!list) return;
-        const tabs = Array.from(list.querySelectorAll("[role='tab']"));
-        tabs.forEach((t) => {
-          const selected = t === tab;
-          t.setAttribute("aria-selected", String(selected));
-          t.tabIndex = selected ? 0 : -1;
-          t.classList.toggle("c-tabs__tab--active", selected);
-          const ctrl = t.getAttribute("aria-controls");
-          if (ctrl) {
-            const panel = document.getElementById(ctrl) || this.querySelector("#" + CSS.escape(ctrl));
-            if (panel) panel.hidden = !selected;
-          }
-        });
-        // index-based panels fallback
-        const panels = Array.from(this.querySelectorAll(".c-tabs__panel"));
-        if (panels.length) {
-          const idx = tabs.indexOf(tab);
-          panels.forEach((p, i) => { p.hidden = i !== idx; });
-        }
-        if (focus) try { tab.focus(); } catch (e) {}
-      };
-      this.addEventListener("click", (e) => {
-        const tab = e.target && e.target.closest ? e.target.closest("[role='tab']") : null;
-        if (tab && this.contains(tab)) activate(tab, false);
-      });
-      this.addEventListener("keydown", (e) => {
-        const tab = e.target && e.target.closest ? e.target.closest("[role='tab']") : null;
-        if (!tab) return;
-        const list = this.querySelector(".c-tabs__list");
-        if (!list) return;
-        const tabs = Array.from(list.querySelectorAll("[role='tab']"));
-        const index = tabs.indexOf(tab);
-        const map = { ArrowRight: index + 1, ArrowLeft: index - 1, Home: 0, End: tabs.length - 1 };
-        if (!(e.key in map)) return;
-        e.preventDefault();
-        const next = tabs[(map[e.key] + tabs.length) % tabs.length];
-        if (next) activate(next, true);
-      });
-      // initialise
-      const first = this.querySelector(".c-tabs__list [role='tab']");
-      if (first) activate(first, false);
+      // Interaction lives in behaviours.mjs, which the shadow wrappers call too.
+      // One implementation, so the two layers cannot drift apart again: the shadow
+      // copy queried its root for slotted nodes, found none, and wired nothing.
+      wireTabs(this);
     }
   }
   define("contour-tabs", ContourTabs);
 class ContourHeader extends ContourBase {
+    static get observed() { return ["brand", "links"]; }
+    static get properties() { return { brand: { attribute: "brand" }, links: { attribute: "links" } }; }
     render() {
       this.classList.add("c-header");
       const brand = this.getAttribute("brand");
@@ -196,6 +131,8 @@ class ContourHeader extends ContourBase {
   }
   define("contour-header", ContourHeader);
 class ContourTree extends ContourBase {
+    static get observed() { return ["items"]; }
+    static get properties() { return { items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-tree");
       const items = this.getAttribute("items");
@@ -248,111 +185,16 @@ class ContourTree extends ContourBase {
       }
     }
     enhance() {
-      if (this._wiredTree) return;
-      this._wiredTree = true;
-      const toggleNode = (toggle) => {
-        const expanded = toggle.getAttribute("aria-expanded") === "true";
-        toggle.setAttribute("aria-expanded", String(!expanded));
-        const row = toggle.closest(".c-tree__row");
-        if (row) row.setAttribute("aria-expanded", String(!expanded));
-        const node = toggle.closest(".c-tree__node");
-        const children = node ? node.querySelector(":scope > .c-tree__children") : null;
-        if (children) {
-          if (expanded) children.setAttribute("hidden", "");
-          else children.removeAttribute("hidden");
-        }
-        this.dispatchEvent(new CustomEvent("contour:toggle", { detail: { open: !expanded, label: (row ? row.textContent.trim() : "") }, bubbles: true }));
-      };
-      this.addEventListener("click", (e) => {
-        const toggle = e.target && e.target.closest ? e.target.closest(".c-tree__toggle") : null;
-        if (!toggle || !this.contains(toggle)) return;
-        e.stopPropagation();
-        toggleNode(toggle);
-      });
-      // Keyboard navigation
-      const visibleNodes = () => {
-        const result = [];
-        const walk = (ul) => {
-          if (!ul) return;
-          Array.from(ul.children).forEach((li) => {
-            if (!li.classList.contains("c-tree__node")) return;
-            result.push(li);
-            const children = li.querySelector(":scope > .c-tree__children");
-            if (children && !children.hasAttribute("hidden")) walk(children);
-          });
-        };
-        const root = this.querySelector("ul.c-tree, ul[role='tree']") || this.querySelector("ul");
-        walk(root);
-        return result;
-      };
-      const focusNode = (li) => {
-        const toggle = li.querySelector(":scope > .c-tree__row .c-tree__toggle");
-        const leaf = li.querySelector(":scope > .c-tree__leaf");
-        const target = toggle || leaf;
-        if (target) { try { target.focus(); } catch (e) {} }
-        // make focusable
-        if (target && !target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
-      };
-      this.addEventListener("keydown", (e) => {
-        const target = e.target && e.target.closest ? e.target.closest(".c-tree__toggle, .c-tree__leaf") : null;
-        if (!target || !this.contains(target)) return;
-        const nodes = visibleNodes();
-        const currentLi = target.closest(".c-tree__node");
-        const idx = nodes.indexOf(currentLi);
-        let next = -1;
-        if (e.key === "ArrowDown") next = idx < 0 ? 0 : Math.min(idx + 1, nodes.length - 1);
-        else if (e.key === "ArrowUp") next = idx < 0 ? nodes.length - 1 : Math.max(idx - 1, 0);
-        else if (e.key === "Home") next = 0;
-        else if (e.key === "End") next = nodes.length - 1;
-        if (next >= 0 && next !== idx) {
-          e.preventDefault();
-          focusNode(nodes[next]);
-          return;
-        }
-        if (e.key === "ArrowRight") {
-          const toggle = currentLi ? currentLi.querySelector(":scope > .c-tree__row .c-tree__toggle") : null;
-          if (toggle) {
-            const expanded = toggle.getAttribute("aria-expanded") === "true";
-            if (!expanded) { e.preventDefault(); toggleNode(toggle); }
-            else {
-              const children = currentLi.querySelector(":scope > .c-tree__children");
-              if (children) {
-                const firstChild = children.querySelector(":scope > .c-tree__node");
-                if (firstChild) { e.preventDefault(); focusNode(firstChild); }
-              }
-            }
-          }
-          return;
-        }
-        if (e.key === "ArrowLeft") {
-          const toggle = currentLi ? currentLi.querySelector(":scope > .c-tree__row .c-tree__toggle") : null;
-          if (toggle) {
-            const expanded = toggle.getAttribute("aria-expanded") === "true";
-            if (expanded) { e.preventDefault(); toggleNode(toggle); }
-            else {
-              const parent = currentLi.parentElement && currentLi.parentElement.closest ? currentLi.parentElement.closest(".c-tree__node") : null;
-              if (parent) { e.preventDefault(); focusNode(parent); }
-            }
-          } else {
-            const parent = currentLi && currentLi.parentElement ? currentLi.parentElement.closest(".c-tree__node") : null;
-            if (parent) { e.preventDefault(); focusNode(parent); }
-          }
-          return;
-        }
-        if (e.key === "Enter" || e.key === " ") {
-          const toggle = currentLi ? currentLi.querySelector(":scope > .c-tree__row .c-tree__toggle") : null;
-          if (toggle) { e.preventDefault(); toggleNode(toggle); }
-          return;
-        }
-      });
-      // Make toggles and leaves focusable
-      this.querySelectorAll(".c-tree__toggle, .c-tree__leaf").forEach((el) => {
-        if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "-1");
-      });
+      // Interaction lives in behaviours.mjs, which the shadow wrappers call too.
+      // One implementation, so the two layers cannot drift apart again: the shadow
+      // copy queried its root for slotted nodes, found none, and wired nothing.
+      wireTree(this);
     }
   }
   define("contour-tree", ContourTree);
 class ContourCodeTabs extends ContourBase {
+    static get observed() { return ["tabs"]; }
+    static get properties() { return { tabs: { attribute: "tabs" } }; }
     render() {
       this.classList.add("c-code-tabs");
       const tabs = this.getAttribute("tabs");
@@ -364,7 +206,7 @@ class ContourCodeTabs extends ContourBase {
           list.innerHTML = "";
           parsed.forEach((t, i) => {
             const btn = document.createElement("button");
-            btn.className = "c-code-tabs__tab" + (i === 0 ? " c-code-tabs__tab--active" : "");
+            btn.className = "c-code-tabs__tab";
             btn.setAttribute("role", "tab");
             btn.setAttribute("aria-selected", String(i === 0));
             btn.tabIndex = i === 0 ? 0 : -1;
@@ -379,53 +221,16 @@ class ContourCodeTabs extends ContourBase {
       }
     }
     enhance() {
-      if (this._wiredCodeTabs) return;
-      this._wiredCodeTabs = true;
-      const activate = (tab, focus) => {
-        const list = this.querySelector(".c-code-tabs__list");
-        if (!list) return;
-        const tabs = Array.from(list.querySelectorAll("[role='tab']"));
-        tabs.forEach((t) => {
-          const selected = t === tab;
-          t.setAttribute("aria-selected", String(selected));
-          t.tabIndex = selected ? 0 : -1;
-          t.classList.toggle("c-code-tabs__tab--active", selected);
-          const ctrl = t.getAttribute("aria-controls");
-          if (ctrl) {
-            const panel = document.getElementById(ctrl) || this.querySelector("#" + CSS.escape(ctrl));
-            if (panel) panel.hidden = !selected;
-          }
-        });
-        const panels = Array.from(this.querySelectorAll(".c-code-tabs__panel"));
-        if (panels.length) {
-          const idx = tabs.indexOf(tab);
-          panels.forEach((p, i) => { p.hidden = i !== idx; });
-        }
-        if (focus) try { tab.focus(); } catch (e) {}
-      };
-      this.addEventListener("click", (e) => {
-        const tab = e.target && e.target.closest ? e.target.closest("[role='tab']") : null;
-        if (tab && this.contains(tab)) activate(tab, false);
-      });
-      this.addEventListener("keydown", (e) => {
-        const tab = e.target && e.target.closest ? e.target.closest("[role='tab']") : null;
-        if (!tab) return;
-        const list = this.querySelector(".c-code-tabs__list");
-        if (!list) return;
-        const tabs = Array.from(list.querySelectorAll("[role='tab']"));
-        const index = tabs.indexOf(tab);
-        const map = { ArrowRight: index + 1, ArrowLeft: index - 1, Home: 0, End: tabs.length - 1 };
-        if (!(e.key in map)) return;
-        e.preventDefault();
-        const next = tabs[(map[e.key] + tabs.length) % tabs.length];
-        if (next) activate(next, true);
-      });
-      const first = this.querySelector(".c-code-tabs__list [role='tab']");
-      if (first) activate(first, false);
+      // Interaction lives in behaviours.mjs, which the shadow wrappers call too.
+      // One implementation, so the two layers cannot drift apart again: the shadow
+      // copy queried its root for slotted nodes, found none, and wired nothing.
+      wireTabs(this);
     }
   }
   define("contour-code-tabs", ContourCodeTabs);
 class ContourBreadcrumb extends ContourBase {
+    static get observed() { return ["items"]; }
+    static get properties() { return { items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-breadcrumb");
       const items = this.getAttribute("items");
@@ -458,8 +263,12 @@ class ContourBreadcrumb extends ContourBase {
   }
   define("contour-breadcrumb", ContourBreadcrumb);
 class ContourPagination extends ContourBase {
+    static get observed() { return ["pages", "current"]; }
+    static get properties() { return { pages: { attribute: "pages" }, current: { attribute: "current" } }; }
     render() {
       this.classList.add("c-pagination");
+      // Drop previously generated links so a re-render cannot stack a second set.
+      Array.from(this.querySelectorAll(".c-pagination__link")).forEach((n) => n.remove());
       const pages = this.getAttribute("pages");
       const current = parseInt(this.getAttribute("current") || "1", 10);
       if (pages) {
@@ -471,33 +280,22 @@ class ContourPagination extends ContourBase {
           btn.textContent = String(i);
           if (i === current) {
             btn.setAttribute("aria-current", "page");
-            btn.classList.add("c-pagination__current");
           }
           this.appendChild(btn);
         }
       }
     }
     enhance() {
-      if (this._wiredPagination) return;
-      this._wiredPagination = true;
-      this.addEventListener("click", (e) => {
-        const btn = e.target && e.target.closest ? e.target.closest(".c-pagination__link") : null;
-        if (!btn || !this.contains(btn)) return;
-        const page = parseInt(btn.textContent, 10);
-        // Update active state in place rather than setAttribute("current"), which
-        // would re-enter the render that owns this list.
-        this.querySelectorAll(".c-pagination__link").forEach((b) => {
-          const active = parseInt(b.textContent, 10) === page;
-          b.classList.toggle("c-pagination__current", active);
-          if (active) b.setAttribute("aria-current", "page");
-          else b.removeAttribute("aria-current");
-        });
-        this.dispatchEvent(new CustomEvent("contour:page", { detail: { page }, bubbles: true }));
-      });
+      // Interaction lives in behaviours.mjs, which the shadow wrappers call too.
+      // One implementation, so the two layers cannot drift apart again: the shadow
+      // copy queried its root for slotted nodes, found none, and wired nothing.
+      wirePagination(this);
     }
   }
   define("contour-pagination", ContourPagination);
 class ContourPagerFull extends ContourBase {
+    static get observed() { return ["prev", "next"]; }
+    static get properties() { return { prev: { attribute: "prev" }, next: { attribute: "next" } }; }
     render() {
       this.classList.add("c-pager");
       const prev = this.getAttribute("prev");
@@ -534,6 +332,8 @@ class ContourPagerFull extends ContourBase {
   }
   define("contour-pager", ContourPagerFull);
 class ContourTocFull extends ContourBase {
+    static get observed() { return ["title", "items"]; }
+    static get properties() { return { title: { attribute: "title" }, items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-toc");
       const title = this.getAttribute("title") || "On this page";
@@ -564,6 +364,8 @@ class ContourTocFull extends ContourBase {
   }
   define("contour-toc", ContourTocFull);
 class ContourFilterBar extends ContourBase {
+    static get observed() { return ["label"]; }
+    static get properties() { return { label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-filter-bar");
       const label = this.getAttribute("label");
@@ -583,9 +385,10 @@ class ContourFilterBar extends ContourBase {
     }
   }
   define("contour-filter-bar", ContourFilterBar);
-class ContourCommand extends ContourBase {
+  class ContourCommand extends ContourBase {
     render() {
       this.classList.add("c-command");
+      if (!this.hasAttribute("popover")) this.setAttribute("popover", "auto");
       const placeholder = this.getAttribute("placeholder") || "Search…";
       const input = this.ensure(".c-command__input", () => { const el = document.createElement("input"); el.className = "c-command__input"; el.type = "text"; return el; });
       input.type = "text";
@@ -637,9 +440,43 @@ class ContourCommand extends ContourBase {
         if (e) e.remove();
       }
     }
+    enhance() {
+      if (this._wiredCommand) return;
+      this._wiredCommand = true;
+      const input = () => this.querySelector(".c-command__input");
+      const items = () => Array.from(this.querySelectorAll(".c-command__item"));
+      let cursor = -1;
+      const mark = () => items().forEach((it, i) => it.classList.toggle("c-command__item--active", i === cursor));
+      const inp = input();
+      if (!inp) return;
+      inp.addEventListener("keydown", (e) => {
+        const its = items();
+        if (!its.length) return;
+        if (e.key === "ArrowDown") { e.preventDefault(); cursor = Math.min(cursor + 1, its.length - 1); mark(); }
+        else if (e.key === "ArrowUp") { e.preventDefault(); cursor = Math.max(cursor - 1, 0); mark(); }
+        else if (e.key === "Enter") {
+          e.preventDefault();
+          if (cursor >= 0 && its[cursor]) {
+            its[cursor].click();
+            this.dispatchEvent(new CustomEvent("contour:select", { detail: { index: cursor, label: its[cursor].textContent.trim() }, bubbles: true, composed: true }));
+          }
+        } else if (e.key === "Escape") {
+          if (typeof this.hidePopover === "function") this.hidePopover();
+        }
+      });
+      this.addEventListener("click", (e) => {
+        const item = e.target && e.target.closest ? e.target.closest(".c-command__item") : null;
+        if (item) {
+          const idx = items().indexOf(item);
+          this.dispatchEvent(new CustomEvent("contour:select", { detail: { index: idx, label: item.textContent.trim() }, bubbles: true, composed: true }));
+        }
+      });
+    }
   }
   define("contour-command", ContourCommand);
 class ContourFooter extends ContourBase {
+    static get observed() { return ["brand", "note", "links"]; }
+    static get properties() { return { brand: { attribute: "brand" }, note: { attribute: "note" }, links: { attribute: "links" } }; }
     render() {
       this.classList.add("c-footer");
       const brand = this.getAttribute("brand");
@@ -689,7 +526,7 @@ class ContourSchemeToggle extends ContourBase {
         const next = current === "dark" ? "light" : "dark";
         root.setAttribute("data-theme", next);
         try { localStorage.setItem("contour-theme", next); } catch (e) {}
-        this.dispatchEvent(new CustomEvent("contour:theme-change", { detail: { theme: next }, bubbles: true }));
+        this.dispatchEvent(new CustomEvent("contour:theme-change", { detail: { theme: next }, bubbles: true, composed: true }));
       });
       // restore persisted theme on connect
       try {
@@ -704,15 +541,15 @@ class ContourSidebar extends ContourBase {
   }
   define("contour-sidebar", ContourSidebar);
 class ContourToolbar extends ContourBase {
+    static get observed() { return ["title", "actions"]; }
+    static get properties() { return { title: { attribute: "title" }, actions: { attribute: "actions" } }; }
     render() {
       this.classList.add("c-toolbar");
       const title = this.getAttribute("title");
-      if (title) {
-        const t = document.createElement("span");
-        t.className = "c-toolbar__title";
-        t.textContent = title;
-        this.appendChild(t);
-      }
+      // `.c-toolbar` defines exactly one part, `__btn`, and the guide names the
+      // container through ARIA. A title node carried a class the sheet never had.
+      this.setAttribute("role", "toolbar");
+      if (title) this.setAttribute("aria-label", title);
       const actions = this.getAttribute("actions");
       if (actions) {
         try {

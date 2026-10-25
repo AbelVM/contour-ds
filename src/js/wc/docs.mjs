@@ -1,5 +1,7 @@
 import { ContourBase, define } from './core.mjs';
 class ContourDocsNav extends ContourBase {
+    static get observed() { return ["items"]; }
+    static get properties() { return { items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-docs-nav");
       const items = this.getAttribute("items");
@@ -38,6 +40,8 @@ class ContourDocsNav extends ContourBase {
   }
   define("contour-docs-nav", ContourDocsNav);
 class ContourDocsShell extends ContourBase {
+    static get observed() { return ["title", "lede"]; }
+    static get properties() { return { title: { attribute: "title" }, lede: { attribute: "lede" } }; }
     render() {
       this.classList.add("c-docs-shell");
       const title = this.getAttribute("title");

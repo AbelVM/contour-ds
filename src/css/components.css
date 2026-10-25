@@ -539,7 +539,7 @@
     background: var(--color-surface-1);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
-    padding: var(--space-lg);
+    padding: calc(var(--space-lg) * var(--density, 1));
     max-inline-size: 32rem;
     inline-size: 90vw;
     max-block-size: 80vh;
@@ -1441,6 +1441,11 @@
     scroll-padding-inline: 0.5rem;
     min-inline-size: 0;
     scrollbar-width: none;
+  }
+
+  @container (inline-size < 24rem) {
+    .c-tabs__list { gap: 0.05rem; }
+    .c-tabs__tab { padding-inline: var(--space-xs); font-size: var(--type-xs); }
   }
 
   .c-tabs__list::-webkit-scrollbar {

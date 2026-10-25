@@ -264,7 +264,7 @@
 
   .c-panel__body {
     flex: 1;
-    padding: var(--space-md);
+    padding: calc(var(--space-md) * var(--density, 1));
     min-block-size: 0;
   }
 

@@ -1,5 +1,8 @@
 import { ContourBase, define } from './core.mjs';
+import { wireCombobox } from './behaviours.mjs';
 class ContourCombobox extends ContourBase {
+    static get observed() { return ["options", "placeholder", "label"]; }
+    static get properties() { return { options: { attribute: "options" }, placeholder: { attribute: "placeholder" }, label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-combobox");
       const options = this.getAttribute("options");
@@ -23,66 +26,16 @@ class ContourCombobox extends ContourBase {
       }
     }
     enhance() {
-      if (this._wiredCombobox) return;
-      this._wiredCombobox = true;
-      const input = () => this.querySelector(".c-combobox__input");
-      const list = () => this.querySelector(".c-combobox__list");
-      const options = () => Array.from(this.querySelectorAll(".c-combobox__option"));
-      let activeIndex = -1;
-      const filter = (query) => {
-        const q = (query || "").toLowerCase();
-        options().forEach((opt) => {
-          const text = opt.textContent.toLowerCase();
-          opt.hidden = !!(q && !text.includes(q));
-        });
-        activeIndex = -1;
-      };
-      const open = () => { const l = list(); if (l) l.removeAttribute("hidden"); };
-      const close = () => { const l = list(); if (l) l.setAttribute("hidden", ""); };
-      const inp = input();
-      if (!inp) return;
-      const lst = list();
-      inp.addEventListener("input", () => { filter(inp.value); open(); });
-      inp.addEventListener("focus", () => { filter(inp.value); open(); });
-      inp.addEventListener("keydown", (e) => {
-        const visible = options().filter((o) => !o.hidden);
-        if (e.key === "ArrowDown") {
-          e.preventDefault();
-          activeIndex = Math.min(activeIndex + 1, visible.length - 1);
-          visible.forEach((o, i) => o.classList.toggle("c-combobox__option--active", i === activeIndex));
-        } else if (e.key === "ArrowUp") {
-          e.preventDefault();
-          activeIndex = Math.max(activeIndex - 1, 0);
-          visible.forEach((o, i) => o.classList.toggle("c-combobox__option--active", i === activeIndex));
-        } else if (e.key === "Enter") {
-          e.preventDefault();
-          if (activeIndex >= 0 && visible[activeIndex]) {
-            inp.value = visible[activeIndex].textContent;
-            close();
-          }
-        } else if (e.key === "Escape") {
-          close();
-        }
-      });
-      if (lst) {
-        lst.addEventListener("click", (e) => {
-          const opt = e.target && e.target.closest ? e.target.closest(".c-combobox__option") : null;
-          if (opt) {
-            inp.value = opt.textContent;
-            close();
-            inp.focus();
-          }
-        });
-      }
-      const docClick = (e) => {
-        if (!this.isConnected) { document.removeEventListener("click", docClick); return; }
-        if (!this.contains(e.target)) close();
-      };
-      document.addEventListener("click", docClick);
+      // Interaction lives in behaviours.mjs, which the shadow wrappers call too.
+      // One implementation, so the two layers cannot drift apart again: the shadow
+      // copy queried its root for slotted nodes, found none, and wired nothing.
+      wireCombobox(this);
     }
   }
   define("contour-combobox", ContourCombobox);
 class ContourField extends ContourBase {
+    static get observed() { return ["label", "hint", "error", "placeholder", "type"]; }
+    static get properties() { return { label: { attribute: "label" }, hint: { attribute: "hint" }, error: { attribute: "error" }, placeholder: { attribute: "placeholder" }, type: { attribute: "type" } }; }
     render() {
       this.classList.add("c-field");
       const label = this.getAttribute("label");
@@ -126,6 +79,8 @@ class ContourField extends ContourBase {
   }
   define("contour-field", ContourField);
 class ContourRange extends ContourBase {
+    static get observed() { return ["min", "max", "value"]; }
+    static get properties() { return { min: { attribute: "min" }, max: { attribute: "max" }, value: { attribute: "value" } }; }
     render() {
       this.classList.add("c-range");
       if (!this.querySelector("input")) {
@@ -140,45 +95,92 @@ class ContourRange extends ContourBase {
   }
   define("contour-range", ContourRange);
 class ContourSwitch extends ContourBase {
+    static get observed() { return ["label"]; }
+    static get properties() { return { label: { attribute: "label" } }; }
+    static get formAssociated() { return true; }
+    constructor() { super(); this._internals = (typeof this.attachInternals === "function") ? this.attachInternals() : null; }
     render() {
       this.classList.add("c-switch");
       const label = this.getAttribute("label");
+      // The guide's control is `label.c-switch` wrapping `input.c-switch__input`
+      // and a bare span of text; the sheet paints the track on the input itself.
+      const input = this.ensure("input.c-switch__input", () => { const el = document.createElement("input"); el.className = "c-switch__input"; el.type = "checkbox"; return el; });
       if (label) {
-        const lbl = document.createElement("span");
-        lbl.className = "c-switch__label";
-        lbl.textContent = label;
-        this.appendChild(lbl);
+        input.setAttribute("aria-label", label);
+        const txt = this.querySelector(":scope > span:not([class])") || (() => { const el = document.createElement("span"); this.appendChild(el); return el; })();
+        txt.textContent = label;
       }
+    }
+    enhance() {
+      if (this._wiredSwitch) return;
+      this._wiredSwitch = true;
+      const input = this.querySelector("input");
+      if (!input) return;
+      const sync = () => { if (this._internals) this._internals.setFormValue(input.checked ? (input.value || "on") : null); };
+      input.addEventListener("change", sync);
+      sync();
     }
   }
   define("contour-switch", ContourSwitch);
 class ContourCheck extends ContourBase {
+    static get observed() { return ["label", "name", "value"]; }
+    static get properties() { return { label: { attribute: "label" }, name: { attribute: "name" }, value: { attribute: "value" } }; }
+    static get formAssociated() { return true; }
+    constructor() { super(); this._internals = (typeof this.attachInternals === "function") ? this.attachInternals() : null; }
     render() {
       this.classList.add("c-check");
       const label = this.getAttribute("label");
+      const input = this.ensure("input.c-check__input", () => { const el = document.createElement("input"); el.className = "c-check__input"; el.type = this.getAttribute("type") === "radio" ? "radio" : "checkbox"; return el; });
       if (label) {
-        const lbl = document.createElement("label");
-        lbl.className = "c-check__label";
-        lbl.textContent = label;
-        this.appendChild(lbl);
+        input.setAttribute("aria-label", label);
+        const txt = this.querySelector(":scope > span:not([class])") || (() => { const el = document.createElement("span"); this.appendChild(el); return el; })();
+        txt.textContent = label;
       }
+    }
+    enhance() {
+      if (this._wiredCheck) return;
+      this._wiredCheck = true;
+      const input = this.querySelector("input");
+      if (!input) return;
+      const sync = () => { if (this._internals) this._internals.setFormValue(input.checked ? (input.value || "on") : null); };
+      input.addEventListener("change", sync);
+      sync();
     }
   }
   define("contour-check", ContourCheck);
 class ContourRadio extends ContourBase {
+    static get observed() { return ["label", "name", "value"]; }
+    static get properties() { return { label: { attribute: "label" }, name: { attribute: "name" }, value: { attribute: "value" } }; }
+    static get formAssociated() { return true; }
+    constructor() { super(); this._internals = (typeof this.attachInternals === "function") ? this.attachInternals() : null; }
     render() {
       this.classList.add("c-radio");
       const label = this.getAttribute("label");
+      const input = this.ensure("input.c-radio__input", () => { const el = document.createElement("input"); el.className = "c-radio__input"; el.type = "radio"; return el; });
+      if (this.hasAttribute("name")) input.name = this.getAttribute("name");
+      if (this.hasAttribute("value")) input.value = this.getAttribute("value");
       if (label) {
-        const lbl = document.createElement("label");
-        lbl.className = "c-radio__label";
-        lbl.textContent = label;
-        this.appendChild(lbl);
+        input.setAttribute("aria-label", label);
+        const txt = this.querySelector(":scope > span:not([class])") || (() => { const el = document.createElement("span"); this.appendChild(el); return el; })();
+        txt.textContent = label;
       }
+    }
+    enhance() {
+      if (this._wiredRadio) return;
+      this._wiredRadio = true;
+      const input = this.querySelector("input");
+      if (!input) return;
+      const sync = () => { if (this._internals && input.checked) this._internals.setFormValue(input.value || "on"); };
+      input.addEventListener("change", sync);
+      if (input.checked) sync();
     }
   }
   define("contour-radio", ContourRadio);
 class ContourSelect extends ContourBase {
+    static get observed() { return ["options"]; }
+    static get properties() { return { options: { attribute: "options" } }; }
+    static get formAssociated() { return true; }
+    constructor() { super(); this._internals = (typeof this.attachInternals === "function") ? this.attachInternals() : null; }
     render() {
       this.classList.add("c-select");
       const options = this.getAttribute("options");
@@ -198,6 +200,15 @@ class ContourSelect extends ContourBase {
           select.classList.add("c-select");
         } catch (e) { /* keep existing */ }
       }
+    }
+    enhance() {
+      if (this._wiredSelect) return;
+      this._wiredSelect = true;
+      const select = this.querySelector("select");
+      if (!select) return;
+      const sync = () => { if (this._internals) this._internals.setFormValue(select.value); };
+      select.addEventListener("change", sync);
+      sync();
     }
   }
   define("contour-select", ContourSelect);
@@ -225,6 +236,10 @@ class ContourVersion extends ContourBase {
   }
   define("contour-version", ContourVersion);
 class ContourTextarea extends ContourBase {
+    static get observed() { return ["placeholder"]; }
+    static get properties() { return { placeholder: { attribute: "placeholder" } }; }
+    static get formAssociated() { return true; }
+    constructor() { super(); this._internals = (typeof this.attachInternals === "function") ? this.attachInternals() : null; }
     render() {
       this.classList.add("c-textarea");
       if (!this.querySelector("textarea")) {
@@ -234,9 +249,23 @@ class ContourTextarea extends ContourBase {
         this.appendChild(ta);
       }
     }
+    enhance() {
+      if (this._wiredTextarea) return;
+      this._wiredTextarea = true;
+      const ta = this.querySelector("textarea");
+      if (!ta) return;
+      const sync = () => { if (this._internals) this._internals.setFormValue(ta.value); };
+      ta.addEventListener("input", sync);
+      ta.addEventListener("change", sync);
+      sync();
+    }
   }
   define("contour-textarea", ContourTextarea);
 class ContourInputFull extends ContourBase {
+    static get observed() { return ["type", "placeholder"]; }
+    static get properties() { return { type: { attribute: "type" }, placeholder: { attribute: "placeholder" } }; }
+    static get formAssociated() { return true; }
+    constructor() { super(); this._internals = (typeof this.attachInternals === "function") ? this.attachInternals() : null; }
     render() {
       this.classList.add("c-input");
       if (!this.querySelector("input")) {
@@ -247,6 +276,16 @@ class ContourInputFull extends ContourBase {
         this.appendChild(input);
       }
     }
+    enhance() {
+      if (this._wiredInput) return;
+      this._wiredInput = true;
+      const input = this.querySelector("input");
+      if (!input) return;
+      const sync = () => { if (this._internals) this._internals.setFormValue(input.value); };
+      input.addEventListener("input", sync);
+      input.addEventListener("change", sync);
+      sync();
+    }
   }
   define("contour-input", ContourInputFull);
 class ContourInputGroup extends ContourBase {
@@ -254,6 +293,8 @@ class ContourInputGroup extends ContourBase {
   }
   define("contour-input-group", ContourInputGroup);
 class ContourRadioList extends ContourBase {
+    static get observed() { return ["items", "name"]; }
+    static get properties() { return { items: { attribute: "items" }, name: { attribute: "name" } }; }
     render() {
       this.classList.add("c-radio-list");
       // Clear previously generated radios before rebuilding.
@@ -269,7 +310,9 @@ class ContourRadioList extends ContourBase {
             input.type = "radio";
             input.name = this.getAttribute("name") || "radio-list";
             if (typeof it === "string") { input.value = it; lbl.appendChild(input); lbl.appendChild(document.createTextNode(" " + it)); }
-            else { input.value = it.value || it.label; lbl.appendChild(input); const span = document.createElement("span"); span.className = "c-radio__label"; span.textContent = it.label || it.value; lbl.appendChild(span); }
+            // The guide's own radio carries its text in a bare span; the sheet has
+            // no `__label` part on this block.
+            else { input.value = it.value || it.label; lbl.appendChild(input); const span = document.createElement("span"); span.textContent = it.label || it.value; lbl.appendChild(span); }
             this.appendChild(lbl);
           });
         } catch (e) { /* keep existing */ }

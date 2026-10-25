@@ -16,7 +16,7 @@ import { define, MODS, REGISTERED } from './core.mjs';
   let ADOPTED = null;
   let ADOPTED_KEY = "";
   const adoptedSheets = () => {
-    const key = Array.from(document.styleSheets, (s) => s.href || "").join("|");
+    const key = document.styleSheets.length + ":" + Array.from(document.styleSheets, (s) => s.href || "").join("|");
     if (ADOPTED && key === ADOPTED_KEY) return ADOPTED;
     ADOPTED_KEY = key;
     ADOPTED = [];
@@ -131,7 +131,15 @@ import { define, MODS, REGISTERED } from './core.mjs';
       wireCopy(this);
       wireRemovable(this);
     }
-    connectedCallback() { this.applyMods(); }
+    connectedCallback() {
+      this.applyMods();
+      // Re-wire behaviour when slotted content changes.
+      if (this.shadowRoot) {
+        this.shadowRoot.addEventListener("slotchange", () => {
+          try { this.enhance(this.shadowRoot); } catch (e) { /* ignore */ }
+        });
+      }
+    }
     attributeChangedCallback() { this.applyMods(); }
     applyMods() {
       const el = this.shadowRoot.firstElementChild;

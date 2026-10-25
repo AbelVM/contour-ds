@@ -352,6 +352,36 @@ scaffolding from attributes and slotted content.
   `size` and `color` attributes onto their root element and re-render on change, and
   mirror the same interactive wiring (tabs, code-tabs, segmented) inside the shadow root.
 - All components are attribute-reactive: changing an attribute re-renders the component.
+
+### Reactivity
+
+Every component extends `ContourBase`. On first connect it snapshots the author's nodes
+and `class` attribute; on an attribute change it restores that snapshot, re-runs
+`render()`, and re-wires behaviour via `enhance()`. Authored content and listeners
+survive re-renders; generated nodes are rebuilt. Form control values are preserved
+across a re-render. Render bodies use `ensure(selector, factory)` for update-or-create
+reactivity instead of `if (!querySelector(...))` guards, which would otherwise freeze
+after the first render. `observedAttributes` is derived from the attributes a component
+reads; attributes a component writes to itself (`role`, `open`, `aria-*`, `tabindex`)
+are deliberately excluded to prevent re-entrant renders.
+
+### Behaviour composition
+
+Components do not reach into one another. Composition happens through the DOM and
+through events:
+
+- A host composes a component by nesting/slotted content; authored children are
+  preserved across re-renders.
+- Interactive components emit `contour:*` CustomEvents (`contour:change`,
+  `contour:select`, `contour:copy`, `contour:remove`, `contour:page`,
+  `contour:open`/`contour:close`, `contour:empty-action`) that bubble, so a parent
+  can react without coupling to the component's internals.
+- Shadow wrappers adopt the document's same-origin stylesheets once and share a
+  single parsed `CSSStyleSheet` across instances; modifier classes (`variant`,
+  `size`, `color`) are reflected onto the shadow root's first element.
+- `window.ContourElements` (frozen array) lists every registered name in
+  registration order; `customElements.get(name)` is the runtime check.
+
 - No runtime dependencies; the file is optional and the page works without it.
 
 ```html

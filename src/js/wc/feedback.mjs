@@ -1,5 +1,8 @@
 import { ContourBase, define } from './core.mjs';
+import { wireRemovable } from './behaviours.mjs';
 class ContourDialog extends ContourBase {
+    static get observed() { return ["title"]; }
+    static get properties() { return { title: { attribute: "title" } }; }
     render() {
       this.classList.add("c-dialog");
       if (!this.hasAttribute("role")) this.setAttribute("role", "dialog");
@@ -32,20 +35,24 @@ class ContourDialog extends ContourBase {
         if (!btn || !this.contains(btn)) return;
         const dlg = this.querySelector("dialog") || (this.tagName === "DIALOG" ? this : null);
         if (dlg && typeof dlg.close === "function") dlg.close();
-        this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true }));
+        this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true }));
       });
       // Close on Escape
       this.addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
           const dlg = this.querySelector("dialog") || (this.tagName === "DIALOG" ? this : null);
           if (dlg && typeof dlg.close === "function") dlg.close();
-          this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true }));
+          this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true }));
         }
       });
     }
   }
   define("contour-dialog", ContourDialog);
 class ContourAlert extends ContourBase {
+    static get observed() { return ["title", "body", "variant"]; }
+    static get properties() {
+      return { title: { attribute: "title" }, body: { attribute: "body" }, variant: { attribute: "variant" } };
+    }
     render() {
       this.classList.add("c-alert");
       const variant = this.getAttribute("variant");
@@ -63,6 +70,9 @@ class ContourAlert extends ContourBase {
   }
   define("contour-alert", ContourAlert);
 class ContourDisclosure extends ContourBase {
+    static get observed() { return ["summary"]; }
+    static get properties() { return { summary: { attribute: "summary" } }; }
+    disconnectedCallback() { this._disclosureContent = null; super.disconnectedCallback(); }
     connectedCallback() {
       if (this.innerHTML.trim() && !this._disclosureContent) {
         this._disclosureContent = this.innerHTML;
@@ -115,13 +125,15 @@ class ContourDisclosure extends ContourBase {
       this.addEventListener("toggle", (e) => {
         const t = e.target;
         if (t && t.tagName === "DETAILS") {
-          this.dispatchEvent(new CustomEvent("contour:toggle", { detail: { open: t.open }, bubbles: true }));
+          this.dispatchEvent(new CustomEvent("contour:toggle", { detail: { open: t.open }, bubbles: true, composed: true }));
         }
       }, true);
     }
   }
   define("contour-disclosure", ContourDisclosure);
 class ContourCallout extends ContourBase {
+    static get observed() { return ["variant", "title"]; }
+    static get properties() { return { variant: { attribute: "variant" }, title: { attribute: "title" } }; }
     render() {
       this.classList.add("c-callout");
       const variant = this.getAttribute("variant");
@@ -139,6 +151,8 @@ class ContourCallout extends ContourBase {
   }
   define("contour-callout", ContourCallout);
 class ContourEmpty extends ContourBase {
+    static get observed() { return ["state", "title", "body", "action"]; }
+    static get properties() { return { state: { attribute: "state" }, title: { attribute: "title" }, body: { attribute: "body" }, action: { attribute: "action" } }; }
     render() {
       this.classList.add("c-empty");
       const state = this.getAttribute("state") || "empty";
@@ -153,32 +167,41 @@ class ContourEmpty extends ContourBase {
         if (t) t.remove();
       }
       if (body) {
-        const b = this.ensure(".c-empty__body", () => { const el = document.createElement("p"); el.className = "c-empty__body"; return el; });
+        const b = this.ensure(".c-empty__text", () => { const el = document.createElement("p"); el.className = "c-empty__text"; return el; });
         b.textContent = body;
       } else {
-        const b = this.querySelector(".c-empty__body");
+        const b = this.querySelector(".c-empty__text");
         if (b) b.remove();
       }
       if (action) {
-        const a = this.ensure(".c-empty__action", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--primary c-empty__action"; el.type = "button"; return el; });
+        // `.c-empty` defines `__icon`, `__title` and `__text`, and no action
+        // element: the action is a real `.c-btn`. The invented action class
+        // matched no rule, so it styled nothing yet was the click hook in both
+        // layers — `data-empty-action` is the same hook without the invented name.
+        const a = this.ensure("button.c-btn[data-empty-action]", () => {
+          const el = document.createElement("button");
+          el.className = "c-btn c-btn--primary";
+          el.type = "button";
+          el.setAttribute("data-empty-action", "");
+          return el;
+        });
         a.textContent = action;
       } else {
-        const a = this.querySelector(".c-empty__action");
+        const a = this.querySelector("[data-empty-action]");
         if (a) a.remove();
       }
     }
     enhance() {
-      if (this._wiredEmpty) return;
-      this._wiredEmpty = true;
-      this.addEventListener("click", (e) => {
-        const btn = e.target && e.target.closest ? e.target.closest(".c-empty__action") : null;
-        if (!btn || !this.contains(btn)) return;
-        this.dispatchEvent(new CustomEvent("contour:empty-action", { detail: { state: this.getAttribute("state") || "empty" }, bubbles: true }));
-      });
+      // Interaction lives in behaviours.mjs, which the shadow wrappers call too.
+      // One implementation, so the two layers cannot drift apart again: the shadow
+      // copy queried its root for slotted nodes, found none, and wired nothing.
+      wireRemovable(this);
     }
   }
   define("contour-empty", ContourEmpty);
 class ContourFaq extends ContourBase {
+    static get observed() { return ["question", "answer"]; }
+    static get properties() { return { question: { attribute: "question" }, answer: { attribute: "answer" } }; }
     render() {
       this.classList.add("c-faq");
       const question = this.getAttribute("question");
@@ -201,6 +224,8 @@ class ContourFaq extends ContourBase {
   }
   define("contour-faq", ContourFaq);
 class ContourAccordion extends ContourBase {
+    static get observed() { return ["items"]; }
+    static get properties() { return { items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-accordion");
       // Drop any previously generated disclosures before rebuilding, so a
@@ -231,7 +256,7 @@ class ContourAccordion extends ContourBase {
       this.addEventListener("toggle", (e) => {
         const t = e.target;
         if (t && t.tagName === "DETAILS") {
-          this.dispatchEvent(new CustomEvent("contour:toggle", { detail: { open: t.open }, bubbles: true }));
+          this.dispatchEvent(new CustomEvent("contour:toggle", { detail: { open: t.open }, bubbles: true, composed: true }));
         }
       }, true);
     }
@@ -252,13 +277,15 @@ class ContourSheet extends ContourBase {
   }
   define("contour-sheet", ContourSheet);
 class ContourToast extends ContourBase {
+    static get observed() { return ["message", "variant"]; }
+    static get properties() { return { message: { attribute: "message" }, variant: { attribute: "variant" } }; }
     render() {
       this.classList.add("c-toast");
       if (!this.hasAttribute("role")) this.setAttribute("role", "status");
       if (!this.hasAttribute("aria-live")) this.setAttribute("aria-live", "polite");
       if (!this.hasAttribute("aria-atomic")) this.setAttribute("aria-atomic", "true");
       const message = this.getAttribute("message");
-      if (message && !this.querySelector("*") && !this.textContent.trim()) {
+      if (message && !this.textContent.trim()) {
         this.textContent = message;
       }
       const variant = this.getAttribute("variant");
@@ -267,6 +294,9 @@ class ContourToast extends ContourBase {
   }
   define("contour-toast", ContourToast);
 class ContourExpandable extends ContourBase {
+    static get observed() { return ["summary"]; }
+    static get properties() { return { summary: { attribute: "summary" } }; }
+    disconnectedCallback() { this._expandableContent = null; super.disconnectedCallback(); }
     connectedCallback() {
       if (this.innerHTML.trim() && !this._expandableContent) {
         this._expandableContent = this.innerHTML;
@@ -316,7 +346,7 @@ class ContourExpandable extends ContourBase {
       this.addEventListener("toggle", (e) => {
         const t = e.target;
         if (t && t.tagName === "DETAILS") {
-          this.dispatchEvent(new CustomEvent("contour:toggle", { detail: { open: t.open }, bubbles: true }));
+          this.dispatchEvent(new CustomEvent("contour:toggle", { detail: { open: t.open }, bubbles: true, composed: true }));
         }
       }, true);
     }

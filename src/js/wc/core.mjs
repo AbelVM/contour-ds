@@ -46,11 +46,11 @@
   export const OBSERVED = [
     "action", "actions", "after", "anchor", "answer", "attribution", "attribution-mark", "before", "body", "brand", "columns", "color", "command",
     "cells", "controls", "copyable", "count", "current", "date", "delta", "desc", "direction", "divider", "do", "dont",
-    "empty", "error", "features", "hint", "href", "icon", "instrument", "items", "key",
+    "empty", "error", "hint", "href", "icon", "index", "instrument", "items", "key",
     "label", "lede", "legend", "links", "live", "max", "media", "message", "method", "min", "name", "next", "no", "note", "norm",
-    "options", "pages", "placeholder", "prev", "price", "prompt", "question",
+    "options", "pages", "placeholder", "prev", "prompt", "question",
     "quote", "removable", "reverse", "rows", "scale", "series", "shortcut", "size", "status",
-    "state", "steps", "subtitle", "summary", "tabs", "tag", "text", "title", "type", "value",
+    "state", "steps", "subtitle", "summary", "tabs", "tag", "text", "title", "type", "unit", "value",
     "variant", "yes",
   ];
 
@@ -79,12 +79,55 @@
   // nodes a component generated are rebuilt, so state inside them (a typed
   // value, a focus ring) is lost when a host attribute changes.
   export class ContourBase extends HTMLElement {
-    static get observedAttributes() {
+    // Per-component observed attributes. Subclasses override `static get observed()`
+    // with only the attributes they read; the default is the full shared list so
+    // a component that does not opt in keeps working.
+    static get observed() {
       return OBSERVED;
+    }
+    static get observedAttributes() {
+      return this.observed;
+    }
+
+    // Subclasses override to declare reflected properties:
+    //   static get properties() { return { value: { attribute: "value", type: String } }; }
+    // A property with no entry is not reflected. Types: String (default), Number, Boolean.
+    static get properties() {
+      return {};
+    }
+
+    // Install accessors once per class, so `el.value = 42` writes the attribute
+    // and triggers the normal re-render path instead of being a silent no-op.
+    static _propsInstalled = false;
+    _installProperties() {
+      const ctor = this.constructor;
+      if (ctor._propsInstalled) return;
+      ctor._propsInstalled = true;
+      const props = ctor.properties || {};
+      for (const [name, spec] of Object.entries(props)) {
+        const attr = (spec && spec.attribute) || name;
+        const type = (spec && spec.type) || String;
+        Object.defineProperty(ctor.prototype, name, {
+          get() {
+            const raw = this.getAttribute(attr);
+            if (raw === null) return spec && spec.default !== undefined ? spec.default : null;
+            if (type === Boolean) return true;
+            if (type === Number) { const n = Number(raw); return Number.isNaN(n) ? null : n; }
+            return raw;
+          },
+          set(v) {
+            if (v === null || v === undefined || v === false) this.removeAttribute(attr);
+            else if (type === Boolean) { if (v) this.setAttribute(attr, ""); else this.removeAttribute(attr); }
+            else this.setAttribute(attr, String(v));
+          },
+          configurable: true,
+        });
+      }
     }
 
     connectedCallback() {
       if (this._contourAuthored) return; // reconnected, not re-specified
+      this._installProperties();
       this._contourAuthored = {
         nodes: Array.from(this.childNodes),
         cls: this.getAttribute("class"),
@@ -92,6 +135,7 @@
          const before = Array.from(this.childNodes);
          this.render();
          this._contourGenerated = Array.from(this.childNodes).filter((n) => !before.includes(n));
+         this._applyParts(this);
          this.enhance();
     }
 
@@ -106,6 +150,12 @@
          // dropped and rebuilt, so without this a host attribute change wipes
          // whatever the user typed.
          const savedValues = Array.from(this.querySelectorAll("input, textarea, select")).map((el) => el.value);
+         // Preserve focus, scroll position and <details> open state across the
+         // rebuild, so a host attribute change does not yank focus to <body>
+         // or collapse an open disclosure.
+         const hadFocus = this.contains(document.activeElement) ? document.activeElement : null;
+         const savedScrolls = Array.from(this.querySelectorAll("*")).filter((el) => el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth).map((el) => ({ el, top: el.scrollTop, left: el.scrollLeft }));
+         const savedDetails = Array.from(this.querySelectorAll("details")).map((d) => d.open);
          // Drop generated nodes from the previous render.
          for (const g of (this._contourGenerated || [])) {
            if (g.parentNode === this) this.removeChild(g);
@@ -122,6 +172,7 @@
         const before = Array.from(this.childNodes);
         this.render();
         this._contourGenerated = Array.from(this.childNodes).filter((n) => !before.includes(n));
+        this._applyParts(this);
         // Restore preserved form control values.
         const newControls = Array.from(this.querySelectorAll("input, textarea, select"));
         newControls.forEach((el, i) => {
@@ -129,6 +180,26 @@
             el.value = savedValues[i];
           }
         });
+        // Restore <details> open state by index.
+        const newDetails = Array.from(this.querySelectorAll("details"));
+        newDetails.forEach((d, i) => {
+          if (savedDetails[i] !== undefined) d.open = savedDetails[i];
+        });
+        // Restore scroll positions by index among scrollable descendants.
+        const newScrolls = Array.from(this.querySelectorAll("*")).filter((el) => el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth);
+        newScrolls.forEach((el, i) => {
+          if (savedScrolls[i]) { el.scrollTop = savedScrolls[i].top; el.scrollLeft = savedScrolls[i].left; }
+        });
+        // Restore focus if it was inside the host.
+        if (hadFocus) {
+          if (document.contains(hadFocus)) {
+            try { hadFocus.focus(); } catch (e) {}
+          } else {
+            const first = this.querySelector("button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])");
+            if (first) try { first.focus(); } catch (e) {}
+            else try { this.focus(); } catch (e) {}
+          }
+        }
         this.enhance();
       } finally {
         this._contourRendering = false;
@@ -142,6 +213,22 @@
     // Default no-op: subclasses with behaviour override this.
     enhance() {}
 
+    // Expose ::part() hooks on every generated node whose class follows the
+    // `c-<block>__<element>` convention, so a consumer can theme internals
+    // without shadow DOM. Runs after render() in both connect and re-render.
+    _applyParts(root) {
+      const scope = root || this;
+      const nodes = scope.querySelectorAll ? Array.from(scope.querySelectorAll("[class]")) : [];
+      for (const node of nodes) {
+        if (node.hasAttribute("part")) continue;
+        if (typeof node.className !== "string") continue;
+        for (const c of node.className.split(/\s+/)) {
+          const m = c.match(/^c-[a-z0-9-]+__([a-z0-9-]+)$/);
+          if (m) { node.setAttribute("part", m[1]); break; }
+        }
+      }
+    }
+
     // Helper for update-or-create reactivity: returns the first node matching
     // `selector`, creating it via `factory()` and appending it if absent. Render
     // bodies use this so an attribute change updates the existing node instead
@@ -151,6 +238,13 @@
       let node = root.querySelector(selector);
       if (!node) {
         node = factory();
+        // Expose a ::part() hook for every generated element, so a consumer
+        // can theme internals without shadow DOM. The part name is the element
+        // name after the block's `__` separator (e.g. .c-card__title -> "title").
+        if (node && node.setAttribute && !node.hasAttribute("part")) {
+          const m = String(selector).match(/\.c-[a-z0-9-]+__([a-z0-9-]+)/);
+          if (m) node.setAttribute("part", m[1]);
+        }
         root.appendChild(node);
       }
       return node;

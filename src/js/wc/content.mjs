@@ -1,5 +1,8 @@
 import { ContourBase, define } from './core.mjs';
+import { wireCopy } from './behaviours.mjs';
 class ContourCard extends ContourBase {
+    static get observed() { return ["title", "variant"]; }
+    static get properties() { return { title: { attribute: "title" }, variant: { attribute: "variant" } }; }
     render() {
       this.classList.add("c-card");
       const title = this.getAttribute("title");
@@ -15,28 +18,21 @@ class ContourCard extends ContourBase {
   }
   define("contour-card", ContourCard);
 class ContourFeature extends ContourBase {
+    static get observed() { return ["index", "title"]; }
+    static get properties() { return { index: { attribute: "index" }, title: { attribute: "title" } }; }
     render() {
       this.classList.add("c-feature");
+      // `.c-feature` defines three parts: `__index`, `__title`, `__body`. It has
+      // no icon slot, so the index line is the label this block actually carries.
+      const index = this.getAttribute("index");
       const title = this.getAttribute("title");
       const body = this.getAttribute("body");
-      const icon = this.getAttribute("icon");
-      if (icon) {
-        const i = this.ensure(".c-feature__icon", () => {
-          const el = document.createElement("div");
-          el.className = "c-feature__icon";
-          const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-          svg.setAttribute("aria-hidden", "true");
-          const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
-          use.setAttribute("href", "#" + String(icon).replace(/[^a-zA-Z0-9_-]/g, ""));
-          svg.appendChild(use);
-          el.appendChild(svg);
-          return el;
-        });
-        const use = i.querySelector("use");
-        if (use) use.setAttribute("href", "#" + String(icon).replace(/[^a-zA-Z0-9_-]/g, ""));
+      if (index) {
+        const x = this.ensure(".c-feature__index", () => { const el = document.createElement("span"); el.className = "c-feature__index"; return el; });
+        x.textContent = index;
       } else {
-        const i = this.querySelector(".c-feature__icon");
-        if (i) i.remove();
+        const x = this.querySelector(".c-feature__index");
+        if (x) x.remove();
       }
       if (title) {
         const t = this.ensure(".c-feature__title", () => { const el = document.createElement("h3"); el.className = "c-feature__title"; return el; });
@@ -56,23 +52,36 @@ class ContourFeature extends ContourBase {
   }
   define("contour-feature", ContourFeature);
 class ContourSteps extends ContourBase {
+    static get observed() { return ["steps"]; }
+    static get properties() { return { steps: { attribute: "steps" } }; }
     render() {
       this.classList.add("c-steps");
+      // Drop previously generated items so a re-render cannot stack a second set.
+      Array.from(this.querySelectorAll(".c-steps__item")).forEach((n) => n.remove());
       const steps = this.getAttribute("steps");
       if (steps) {
         try {
           const parsed = JSON.parse(steps);
-          parsed.forEach((s, i) => {
+          // The step number is a CSS counter (`.c-steps__item::before` reads
+          // `counter(c-step)`), so it is never a node. The item carries a title
+          // and a body, which are the two elements the block defines.
+          parsed.forEach((s) => {
             const item = document.createElement("div");
             item.className = "c-steps__item";
-            const num = document.createElement("span");
-            num.className = "c-steps__num";
-            num.textContent = String(i + 1);
-            item.appendChild(num);
-            const text = document.createElement("span");
-            text.className = "c-steps__text";
-            text.textContent = typeof s === "string" ? s : s.text;
-            item.appendChild(text);
+            const title = typeof s === "string" ? s : s.title;
+            const body = typeof s === "string" ? "" : s.body;
+            if (title) {
+              const h = document.createElement("h3");
+              h.className = "c-steps__title";
+              h.textContent = title;
+              item.appendChild(h);
+            }
+            if (body) {
+              const p = document.createElement("p");
+              p.className = "c-steps__body";
+              p.textContent = body;
+              item.appendChild(p);
+            }
             this.appendChild(item);
           });
         } catch (e) { /* keep existing */ }
@@ -117,6 +126,8 @@ class ContourBrand extends ContourBase {
   }
   define("contour-brand", ContourBrand);
 class ContourSectionHead extends ContourBase {
+    static get observed() { return ["title", "desc"]; }
+    static get properties() { return { title: { attribute: "title" }, desc: { attribute: "desc" } }; }
     render() {
       this.classList.add("c-section-head");
       const title = this.getAttribute("title");
@@ -139,50 +150,66 @@ class ContourSectionHead extends ContourBase {
   }
   define("contour-section-head", ContourSectionHead);
 class ContourDiff extends ContourBase {
+    static get observed() { return ["before", "after"]; }
+    static get properties() { return { before: { attribute: "before" }, after: { attribute: "after" } }; }
     render() {
       this.classList.add("c-diff");
+      // The block is a list of lines, not two panes: `.c-diff__line` carries the
+      // +/- sign, the line number, and the text, and `--add`/`--del` are the only
+      // two states it defines. A removed line and an added line are what a
+      // before/after pair actually becomes in a diff.
+      Array.from(this.querySelectorAll(".c-diff__line")).forEach((n) => n.remove());
+      const line = (kind, sign, text) => {
+        const el = document.createElement("div");
+        el.className = kind ? `c-diff__line c-diff__line--${kind}` : "c-diff__line";
+        const s = document.createElement("span");
+        s.className = "c-diff__sign";
+        s.textContent = sign;
+        const n = document.createElement("span");
+        n.className = "c-diff__sign";
+        const code = document.createElement("span");
+        code.textContent = text;
+        el.append(s, n, code);
+        return el;
+      };
       const before = this.getAttribute("before");
       const after = this.getAttribute("after");
-      if (before) {
-        const b = this.ensure(".c-diff__before", () => { const el = document.createElement("div"); el.className = "c-diff__before"; return el; });
-        b.textContent = before;
-      } else {
-        const b = this.querySelector(".c-diff__before");
-        if (b) b.remove();
-      }
-      if (after) {
-        const a = this.ensure(".c-diff__after", () => { const el = document.createElement("div"); el.className = "c-diff__after"; return el; });
-        a.textContent = after;
-      } else {
-        const a = this.querySelector(".c-diff__after");
-        if (a) a.remove();
-      }
+      if (before) this.appendChild(line("del", "−", before));
+      if (after) this.appendChild(line("add", "+", after));
     }
   }
   define("contour-diff", ContourDiff);
 class ContourDoDont extends ContourBase {
+    static get observed() { return ["do", "dont"]; }
+    static get properties() { return { do: { attribute: "do" }, dont: { attribute: "dont" } }; }
     render() {
       this.classList.add("c-do-dont");
+      // An item is one element with one state modifier — `__item--do`,
+      // `__item--dont` — and the word on top of it is `__label`. There is no
+      // `__do` or `__dont` element in the system.
+      Array.from(this.querySelectorAll(".c-do-dont__item")).forEach((n) => n.remove());
+      const item = (kind, word, icon, text) => {
+        const el = document.createElement("div");
+        el.className = `c-do-dont__item c-do-dont__item--${kind}`;
+        const label = document.createElement("p");
+        label.className = "c-do-dont__label";
+        label.textContent = word;
+        const body = document.createElement("p");
+        body.className = "u-muted";
+        body.textContent = text;
+        el.append(label, body);
+        return el;
+      };
       const doText = this.getAttribute("do");
       const dontText = this.getAttribute("dont");
-      if (doText) {
-        const d = this.ensure(".c-do-dont__do", () => { const el = document.createElement("div"); el.className = "c-do-dont__do"; return el; });
-        d.textContent = doText;
-      } else {
-        const d = this.querySelector(".c-do-dont__do");
-        if (d) d.remove();
-      }
-      if (dontText) {
-        const d = this.ensure(".c-do-dont__dont", () => { const el = document.createElement("div"); el.className = "c-do-dont__dont"; return el; });
-        d.textContent = dontText;
-      } else {
-        const d = this.querySelector(".c-do-dont__dont");
-        if (d) d.remove();
-      }
+      if (doText) this.appendChild(item("do", "Do", "i-check", doText));
+      if (dontText) this.appendChild(item("dont", "Don't", "i-x", dontText));
     }
   }
   define("contour-do-dont", ContourDoDont);
 class ContourFlag extends ContourBase {
+    static get observed() { return ["variant"]; }
+    static get properties() { return { variant: { attribute: "variant" } }; }
     render() {
       this.classList.add("c-flag");
       const variant = this.getAttribute("variant");
@@ -195,6 +222,8 @@ class ContourFlag extends ContourBase {
   }
   define("contour-flag", ContourFlag);
 class ContourInstallFull extends ContourBase {
+    static get observed() { return ["command"]; }
+    static get properties() { return { command: { attribute: "command" } }; }
     render() {
       this.classList.add("c-install");
       const prompt = this.getAttribute("prompt") || "$";
@@ -220,20 +249,16 @@ class ContourInstallFull extends ContourBase {
       }
     }
     enhance() {
-      if (this._wiredInstall) return;
-      this._wiredInstall = true;
-      this.addEventListener("click", (e) => {
-        const btn = e.target && e.target.closest ? e.target.closest(".c-install__copy") : null;
-        if (!btn || !this.contains(btn)) return;
-        const cmd = this.querySelector(".c-install__command");
-        const text = cmd ? cmd.textContent : "";
-        if (navigator.clipboard) navigator.clipboard.writeText(text).catch(() => {});
-        this.dispatchEvent(new CustomEvent("contour:copy", { detail: { text }, bubbles: true }));
-      });
+      // Interaction lives in behaviours.mjs, which the shadow wrappers call too.
+      // One implementation, so the two layers cannot drift apart again: the shadow
+      // copy queried its root for slotted nodes, found none, and wired nothing.
+      wireCopy(this);
     }
   }
   define("contour-install", ContourInstallFull);
 class ContourTestimonialFull extends ContourBase {
+    static get observed() { return ["quote", "name", "role"]; }
+    static get properties() { return { quote: { attribute: "quote" }, name: { attribute: "name" }, role: { attribute: "role" } }; }
     render() {
       this.classList.add("c-testimonial");
       const quote = this.getAttribute("quote");
@@ -267,6 +292,8 @@ class ContourTestimonialFull extends ContourBase {
   }
   define("contour-testimonial", ContourTestimonialFull);
 class ContourShowcaseFull extends ContourBase {
+    static get observed() { return ["title", "text", "media"]; }
+    static get properties() { return { title: { attribute: "title" }, text: { attribute: "text" }, media: { attribute: "media" } }; }
     render() {
       this.classList.add("c-showcase");
       if (this.hasAttribute("reverse")) this.classList.add("c-showcase--reverse");
@@ -276,7 +303,9 @@ class ContourShowcaseFull extends ContourBase {
       const media = this.getAttribute("media");
       if (media) {
         const m = this.ensure(".c-showcase__media", () => { const el = document.createElement("div"); el.className = "c-showcase__media"; return el; });
-        m.innerHTML = media;
+        // `media` is author-controlled markup (images, svg, etc.). Strip any
+        // <script> tags so a hostile attribute cannot execute code.
+        m.innerHTML = String(media).replace(/<script[\s\S]*?<\/script>/gi, "");
       } else {
         const m = this.querySelector(".c-showcase__media");
         if (m) m.remove();
@@ -316,36 +345,10 @@ class ContourShowcaseFull extends ContourBase {
   define("contour-showcase", ContourShowcaseFull);
 class ContourPricingFull extends ContourBase {
     render() {
+      // `.c-pricing` is the grid; every part the guide shows lives on `.c-price`.
+      // A pricing element that scaffolded its own label invented a name no rule
+      // defines, so the grid holds its children and stays a container.
       this.classList.add("c-pricing");
-      const price = this.getAttribute("price");
-      if (price) {
-        const p = this.ensure(".c-price", () => { const el = document.createElement("div"); el.className = "c-price"; return el; });
-        p.textContent = price;
-      } else {
-        const p = this.querySelector(".c-price");
-        if (p) p.remove();
-      }
-      const label = this.getAttribute("label");
-      if (label) {
-        const l = this.ensure(".c-pricing__label", () => { const el = document.createElement("div"); el.className = "c-pricing__label"; return el; });
-        l.textContent = label;
-      } else {
-        const l = this.querySelector(".c-pricing__label");
-        if (l) l.remove();
-      }
-      const features = this.getAttribute("features");
-      if (features) {
-        try {
-          const parsed = JSON.parse(features);
-          const ul = document.createElement("ul");
-          parsed.forEach((f) => {
-            const li = document.createElement("li");
-            li.textContent = typeof f === "string" ? f : f.label;
-            ul.appendChild(li);
-          });
-          this.appendChild(ul);
-        } catch (e) { /* keep existing */ }
-      }
     }
   }
   define("contour-pricing", ContourPricingFull);
@@ -362,10 +365,10 @@ class ContourRecipeFull extends ContourBase {
       }
       const body = this.getAttribute("body");
       if (body) {
-        const b = this.ensure(".c-recipe__body", () => { const el = document.createElement("p"); el.className = "c-recipe__body"; return el; });
+        const b = this.ensure(".c-recipe__desc", () => { const el = document.createElement("p"); el.className = "c-recipe__desc"; return el; });
         b.textContent = body;
       } else {
-        const b = this.querySelector(".c-recipe__body");
+        const b = this.querySelector(".c-recipe__desc");
         if (b) b.remove();
       }
     }
@@ -400,6 +403,8 @@ class ContourProseFull extends ContourBase {
   }
   define("contour-prose", ContourProseFull);
 class ContourPanel extends ContourBase {
+    static get observed() { return ["title"]; }
+    static get properties() { return { title: { attribute: "title" } }; }
     render() {
       this.classList.add("c-panel");
       const title = this.getAttribute("title");
@@ -431,6 +436,8 @@ class ContourPanel extends ContourBase {
   }
   define("contour-panel", ContourPanel);
 class ContourCta extends ContourBase {
+    static get observed() { return ["title", "text"]; }
+    static get properties() { return { title: { attribute: "title" }, text: { attribute: "text" } }; }
     render() {
       this.classList.add("c-cta");
       const title = this.getAttribute("title");
@@ -469,6 +476,8 @@ class ContourCta extends ContourBase {
   }
   define("contour-cta", ContourCta);
 class ContourCode extends ContourBase {
+    static get observed() { return ["title", "copyable"]; }
+    static get properties() { return { title: { attribute: "title" }, copyable: { attribute: "copyable", type: Boolean } }; }
     render() {
       this.classList.add("c-code");
       const title = this.getAttribute("title");
@@ -494,15 +503,10 @@ class ContourCode extends ContourBase {
       }
     }
     enhance() {
-      if (this._wiredCode) return;
-      this._wiredCode = true;
-      this.addEventListener("click", (e) => {
-        const btn = e.target && e.target.closest ? e.target.closest(".c-code__copy") : null;
-        if (!btn || !this.contains(btn)) return;
-        const text = this.textContent;
-        if (navigator.clipboard) navigator.clipboard.writeText(text).catch(() => {});
-        this.dispatchEvent(new CustomEvent("contour:copy", { detail: { text }, bubbles: true }));
-      });
+      // Interaction lives in behaviours.mjs, which the shadow wrappers call too.
+      // One implementation, so the two layers cannot drift apart again: the shadow
+      // copy queried its root for slotted nodes, found none, and wired nothing.
+      wireCopy(this);
     }
   }
   define("contour-code", ContourCode);
@@ -511,28 +515,31 @@ class ContourPlate extends ContourBase {
   }
   define("contour-plate", ContourPlate);
 class ContourPullquote extends ContourBase {
+    static get observed() { return ["quote", "by"]; }
+    static get properties() { return { quote: { attribute: "quote" }, by: { attribute: "by" } }; }
     render() {
       this.classList.add("c-pullquote");
       const quote = this.getAttribute("quote");
-      if (quote) {
-        const q = this.ensure(".c-pullquote__quote", () => { const el = document.createElement("blockquote"); el.className = "c-pullquote__quote"; return el; });
-        q.textContent = quote;
-      } else {
-        const q = this.querySelector(".c-pullquote__quote");
-        if (q) q.remove();
+      // `.c-pullquote` defines no `__quote` or `__byline`: the guide's specimen is
+      // the paragraph itself, and the one element the sheet styles inside it is
+      // `cite`, which is what an attribution is.
+      if (quote && !this.querySelector("cite") && !this.textContent.trim()) {
+        this.textContent = quote;
       }
       const name = this.getAttribute("name");
       if (name) {
-        const by = this.ensure(".c-pullquote__byline", () => { const el = document.createElement("div"); el.className = "c-pullquote__byline"; return el; });
+        const by = this.ensure("cite", () => { const el = document.createElement("cite"); this.appendChild(el); return el; });
         by.textContent = name;
       } else {
-        const by = this.querySelector(".c-pullquote__byline");
+        const by = this.querySelector("cite");
         if (by) by.remove();
       }
     }
   }
   define("contour-pullquote", ContourPullquote);
 class ContourAnchor extends ContourBase {
+    static get observed() { return ["href", "label"]; }
+    static get properties() { return { href: { attribute: "href" }, label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-anchor");
       const href = this.getAttribute("href");

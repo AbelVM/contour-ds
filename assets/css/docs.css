@@ -755,6 +755,10 @@
     box-shadow: inset 0 -1px 0 var(--color-border-subtle);
   }
 
+  .ds-code:not([open]) > .ds-code__body {
+    display: none;
+  }
+
   .ds-code__body {
     /* Floats out of the flow and over the content below. */
     position: absolute;

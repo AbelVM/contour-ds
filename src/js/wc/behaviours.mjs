@@ -285,11 +285,20 @@ export function wireTree(host) {
     toggleNode(toggle);
   });
   wcListen(host, "keydown", (e) => {
-    if (e.key !== "Enter" && e.key !== " ") return;
-    const toggle = wcClosest(host, e.target, ".c-tree__toggle");
+    const toggle = wcClosest(host, e.target, ".c-tree__toggle, .c-tree__leaf");
     if (!toggle) return;
-    e.preventDefault();
-    toggleNode(toggle);
+    const items = wcAll(host, ".c-tree__toggle, .c-tree__leaf");
+    const idx = items.indexOf(toggle);
+    if (e.key === "Enter" || e.key === " ") {
+      if (toggle.classList.contains("c-tree__toggle")) { e.preventDefault(); toggleNode(toggle); }
+      return;
+    }
+    let next = -1;
+    if (e.key === "ArrowDown") next = Math.min(idx + 1, items.length - 1);
+    else if (e.key === "ArrowUp") next = Math.max(idx - 1, 0);
+    else if (e.key === "Home") next = 0;
+    else if (e.key === "End") next = items.length - 1;
+    if (next >= 0 && next !== idx) { e.preventDefault(); items[next].focus(); }
   });
   // A toggle that cannot be reached by key is a control the keyboard cannot use.
   wcAll(host, ".c-tree__toggle, .c-tree__leaf").forEach((el) => {

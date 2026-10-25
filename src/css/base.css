@@ -59,19 +59,9 @@
   *,
   *::before,
   *::after {
-    transition-duration: 0.01ms !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    *,
-    *::before,
-    *::after {
-      transition-duration: revert !important;
-      animation-duration: revert !important;
-      animation-iteration-count: revert !important;
-    }
+    transition-duration: 0.01ms;
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
   }
 
   img,

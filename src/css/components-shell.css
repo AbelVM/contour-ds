@@ -553,6 +553,7 @@
   /* A row that opens something says so. */
   .c-row-action {
     cursor: pointer;
+    position: relative;
   }
 
   .c-row-action::after {

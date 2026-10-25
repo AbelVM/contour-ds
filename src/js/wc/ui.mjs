@@ -1,5 +1,8 @@
 import { ContourBase, define } from './core.mjs';
+import { wireRemovable } from './behaviours.mjs';
 class ContourAvatar extends ContourBase {
+    static get observed() { return ["name", "size", "variant"]; }
+    static get properties() { return { name: { attribute: "name" }, size: { attribute: "size" }, variant: { attribute: "variant" } }; }
     render() {
       this.classList.add("c-avatar");
       const name = this.getAttribute("name");
@@ -16,6 +19,8 @@ class ContourAvatar extends ContourBase {
   }
   define("contour-avatar", ContourAvatar);
 class ContourBadgeFull extends ContourBase {
+    static get observed() { return ["variant", "label"]; }
+    static get properties() { return { variant: { attribute: "variant" }, label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-badge");
       const variant = this.getAttribute("variant");
@@ -28,6 +33,8 @@ class ContourBadgeFull extends ContourBase {
   }
   define("contour-badge", ContourBadgeFull);
 class ContourChipFull extends ContourBase {
+    static get observed() { return ["variant", "key", "value"]; }
+    static get properties() { return { variant: { attribute: "variant" }, key: { attribute: "key" }, value: { attribute: "value" } }; }
     render() {
       this.classList.add("c-chip");
       const variant = this.getAttribute("variant");
@@ -52,6 +59,8 @@ class ContourChipFull extends ContourBase {
   }
   define("contour-chip", ContourChipFull);
 class ContourTag extends ContourBase {
+    static get observed() { return ["label", "removable"]; }
+    static get properties() { return { label: { attribute: "label" }, removable: { attribute: "removable", type: Boolean } }; }
     render() {
       this.classList.add("c-tag");
       const variant = this.getAttribute("variant");
@@ -81,18 +90,16 @@ class ContourTag extends ContourBase {
       }
     }
     enhance() {
-      if (this._wiredTag) return;
-      this._wiredTag = true;
-      this.addEventListener("click", (e) => {
-        const btn = e.target && e.target.closest ? e.target.closest(".c-tag__remove") : null;
-        if (!btn || !this.contains(btn)) return;
-        this.dispatchEvent(new CustomEvent("contour:remove", { detail: { label: this.getAttribute("label") || this.textContent.trim() }, bubbles: true }));
-        if (this.parentNode) this.parentNode.removeChild(this);
-      });
+      // Interaction lives in behaviours.mjs, which the shadow wrappers call too.
+      // One implementation, so the two layers cannot drift apart again: the shadow
+      // copy queried its root for slotted nodes, found none, and wired nothing.
+      wireRemovable(this);
     }
   }
   define("contour-tag", ContourTag);
 class ContourDot extends ContourBase {
+    static get observed() { return ["variant", "live"]; }
+    static get properties() { return { variant: { attribute: "variant" }, live: { attribute: "live", type: Boolean } }; }
     render() {
       this.classList.add("c-dot");
       const variant = this.getAttribute("variant");
@@ -102,6 +109,8 @@ class ContourDot extends ContourBase {
   }
   define("contour-dot", ContourDot);
 class ContourPill extends ContourBase {
+    static get observed() { return ["label", "live"]; }
+    static get properties() { return { label: { attribute: "label" }, live: { attribute: "live", type: Boolean } }; }
     render() {
       this.classList.add("c-pill");
       const variant = this.getAttribute("variant");
@@ -115,6 +124,8 @@ class ContourPill extends ContourBase {
   }
   define("contour-pill", ContourPill);
 class ContourKbd extends ContourBase {
+    static get observed() { return ["key"]; }
+    static get properties() { return { key: { attribute: "key" } }; }
     render() {
       this.classList.add("c-kbd");
       const key = this.getAttribute("key");
@@ -162,16 +173,18 @@ class ContourTooltip extends ContourBase {
       this.addEventListener("toggle", (e) => {
         const t = e.target;
         if (t && t === this) {
-          this.dispatchEvent(new CustomEvent("contour:toggle", { detail: { open: this.matches(":popover-open") }, bubbles: true }));
+          this.dispatchEvent(new CustomEvent("contour:toggle", { detail: { open: this.matches(":popover-open") }, bubbles: true, composed: true }));
         }
       });
       this.addEventListener("beforetoggle", (e) => {
-        this.dispatchEvent(new CustomEvent(e.newState === "open" ? "contour:show" : "contour:hide", { bubbles: true }));
+        this.dispatchEvent(new CustomEvent(e.newState === "open" ? "contour:show" : "contour:hide", { bubbles: true, composed: true }));
       });
     }
   }
   define("contour-tooltip", ContourTooltip);
 class ContourProgress extends ContourBase {
+    static get observed() { return ["value", "label"]; }
+    static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-progress");
       const value = this.getAttribute("value") || "0";
@@ -261,26 +274,40 @@ class ContourFilterPill extends ContourBase {
       }
     }
     enhance() {
-      if (this._wiredFilterPill) return;
-      this._wiredFilterPill = true;
-      this.addEventListener("click", (e) => {
-        const btn = e.target && e.target.closest ? e.target.closest(".c-filter-pill__remove") : null;
-        if (!btn || !this.contains(btn)) return;
-        this.dispatchEvent(new CustomEvent("contour:remove", { detail: { key: this.getAttribute("key"), value: this.getAttribute("value") }, bubbles: true }));
-        if (this.parentNode) this.parentNode.removeChild(this);
-      });
+      // Interaction lives in behaviours.mjs, which the shadow wrappers call too.
+      // One implementation, so the two layers cannot drift apart again: the shadow
+      // copy queried its root for slotted nodes, found none, and wired nothing.
+      wireRemovable(this);
     }
   }
   define("contour-filter-pill", ContourFilterPill);
 class ContourDatamark extends ContourBase {
+    static get observed() { return ["value", "text"]; }
+    static get properties() { return { value: { attribute: "value" }, text: { attribute: "text" } }; }
     render() {
       this.classList.add("c-datamark");
+      // The guide sets `value` on this element (`<contour-datamark value="42">`),
+      // and the block's own specimen is the number with an optional unit — reading
+      // only `label` meant the published specimen rendered an empty box.
+      const value = this.getAttribute("value");
+      const unit = this.getAttribute("unit");
       const label = this.getAttribute("label");
-      if (label && !this.querySelector("*") && !this.textContent.trim()) this.textContent = label;
+      const text = value || label;
+      if (text && !this.querySelector("*") && !this.textContent.trim()) {
+        this.textContent = text;
+        if (unit) {
+          const u = document.createElement("span");
+          u.className = "u-subtle";
+          u.textContent = " " + unit;
+          this.appendChild(u);
+        }
+      }
     }
   }
   define("contour-datamark", ContourDatamark);
 class ContourDestructiveHint extends ContourBase {
+    static get observed() { return ["text"]; }
+    static get properties() { return { text: { attribute: "text" } }; }
     render() {
       this.classList.add("c-destructive-hint");
       const text = this.getAttribute("text");
@@ -289,6 +316,8 @@ class ContourDestructiveHint extends ContourBase {
   }
   define("contour-destructive-hint", ContourDestructiveHint);
 class ContourIconBadge extends ContourBase {
+    static get observed() { return ["icon"]; }
+    static get properties() { return { icon: { attribute: "icon" } }; }
     render() {
       this.classList.add("c-icon-badge");
       const icon = this.getAttribute("icon");
@@ -313,9 +342,16 @@ class ContourIconBadge extends ContourBase {
   }
   define("contour-icon-badge", ContourIconBadge);
 class ContourLiveBadge extends ContourBase {
+    static get observed() { return ["label"]; }
+    static get properties() { return { label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-live-badge");
-      if (this.hasAttribute("live")) this.classList.add("c-live-badge--live");
+      // The block's states are connected / disconnected / stale; there is no
+      // --live modifier, and the base class is already the live badge — its
+      // ::before is the ping — so `live` resolves to the connected state.
+      if (this.hasAttribute("live")) this.classList.add("c-live-badge--connected");
+      const state = this.getAttribute("state");
+      if (state) this.classList.add("c-live-badge--" + state);
       const label = this.getAttribute("label");
       if (label && !this.querySelector("*") && !this.textContent.trim()) this.textContent = label;
     }

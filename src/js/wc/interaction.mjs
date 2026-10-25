@@ -1,4 +1,5 @@
 import { ContourBase, define } from './core.mjs';
+import { wireSegmented } from './behaviours.mjs';
 class ContourPressableFull extends ContourBase {
     render() {
       this.classList.add("c-pressable");
@@ -15,6 +16,8 @@ class ContourResizeHandleFull extends ContourBase {
   }
   define("contour-resize-handle", ContourResizeHandleFull);
 class ContourSearchTriggerFull extends ContourBase {
+    static get observed() { return ["label", "shortcut"]; }
+    static get properties() { return { label: { attribute: "label" }, shortcut: { attribute: "shortcut" } }; }
     render() {
       this.classList.add("c-search-trigger");
       const label = this.getAttribute("label") || "Search";
@@ -36,7 +39,7 @@ class ContourShortcutRowFull extends ContourBase {
       const key = this.getAttribute("key");
       const desc = this.getAttribute("desc");
       if (key) {
-        const k = this.ensure(".c-shortcut-row__key", () => { const el = document.createElement("kbd"); el.className = "c-kbd"; return el; });
+        const k = this.ensure(".c-shortcut-row__keys", () => { const el = document.createElement("kbd"); el.className = "c-kbd"; return el; });
         k.className = "c-kbd";
         k.textContent = key;
       } else {
@@ -44,7 +47,7 @@ class ContourShortcutRowFull extends ContourBase {
         if (k) k.remove();
       }
       if (desc) {
-        const s = this.ensure(".c-shortcut-row__desc", () => { const el = document.createElement("span"); return el; });
+        const s = this.ensure(".c-shortcut-row__label", () => { const el = document.createElement("span"); return el; });
         s.textContent = desc;
       } else {
         // remove the desc span if present (the one without class)
@@ -56,8 +59,8 @@ class ContourShortcutPanelFull extends ContourBase {
     render() { this.classList.add("c-shortcut-panel"); }
   }
   define("contour-shortcut-panel", ContourShortcutPanelFull);
-class ContourShortcutOverlayFull extends ContourBase {
-    render() { this.classList.add("c-shortcut-overlay"); }
+  class ContourShortcutOverlayFull extends ContourBase {
+    render() { this.classList.add("c-shortcut-overlay"); if (!this.hasAttribute("hidden")) this.setAttribute("hidden", ""); }
   }
   define("contour-shortcut-overlay", ContourShortcutOverlayFull);
 class ContourRowActionFull extends ContourBase {
@@ -67,38 +70,10 @@ class ContourRowActionFull extends ContourBase {
 class ContourSegmented extends ContourBase {
     render() { this.classList.add("c-segmented"); }
     enhance() {
-      if (this._wiredSegmented) return;
-      this._wiredSegmented = true;
-      const activate = (btn) => {
-        const options = Array.from(this.querySelectorAll("button"));
-        options.forEach((o) => o.setAttribute("aria-pressed", String(o === btn)));
-        this.dispatchEvent(new CustomEvent("contour:change", { detail: { value: btn.dataset.value || btn.textContent }, bubbles: true }));
-      };
-      this.addEventListener("click", (e) => {
-        const btn = e.target && e.target.closest ? e.target.closest("button") : null;
-        if (!btn || !this.contains(btn)) return;
-        activate(btn);
-      });
-      this.addEventListener("keydown", (e) => {
-        const btn = e.target && e.target.closest ? e.target.closest("button") : null;
-        if (!btn || !this.contains(btn)) return;
-        const options = Array.from(this.querySelectorAll("button"));
-        const idx = options.indexOf(btn);
-        let next = -1;
-        if (e.key === "ArrowRight" || e.key === "ArrowDown") next = Math.min(idx + 1, options.length - 1);
-        else if (e.key === "ArrowLeft" || e.key === "ArrowUp") next = Math.max(idx - 1, 0);
-        else if (e.key === "Home") next = 0;
-        else if (e.key === "End") next = options.length - 1;
-        if (next >= 0 && next !== idx) {
-          e.preventDefault();
-          options[next].focus();
-          activate(options[next]);
-        }
-      });
-      // Make buttons focusable
-      this.querySelectorAll("button").forEach((b) => {
-        if (!b.hasAttribute("tabindex")) b.setAttribute("tabindex", "0");
-      });
+      // Interaction lives in behaviours.mjs, which the shadow wrappers call too.
+      // One implementation, so the two layers cannot drift apart again: the shadow
+      // copy queried its root for slotted nodes, found none, and wired nothing.
+      wireSegmented(this);
     }
   }
   define("contour-segmented", ContourSegmented);
@@ -128,6 +103,8 @@ class ContourTableWrap extends ContourBase { render() { this.classList.add("c-ta
 class ContourVirtualScroll extends ContourBase { render() { this.classList.add("c-virtual-scroll"); } }
   define("contour-virtual-scroll", ContourVirtualScroll);
 class ContourBtn extends ContourBase {
+    static get observed() { return ["variant", "size", "color"]; }
+    static get properties() { return { variant: { attribute: "variant" }, size: { attribute: "size" }, color: { attribute: "color" } }; }
     render() {
       this.classList.add("c-btn");
       for (const attr of ["variant", "size", "color"]) {

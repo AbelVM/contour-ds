@@ -9,7 +9,7 @@ Generated from dist/docs/. See llms.txt for the index.
 
 # overview
 
-Section `overview` — marker `00`, position 1 of 23 in the guide.
+Section `overview` — marker `00`, position 1 of 24 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -27,7 +27,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -36,7 +36,7 @@ Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+0
 
 # Six rules that break every tie.
 
-Section `principles` — marker `01`, position 2 of 23 in the guide.
+Section `principles` — marker `01`, position 2 of 24 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -78,7 +78,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -87,7 +87,7 @@ Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+0
 
 # Colour, in five families and a neutral ramp.
 
-Section `colour` — marker `02`, position 3 of 23 in the guide.
+Section `colour` — marker `02`, position 3 of 24 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -128,7 +128,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -137,7 +137,7 @@ Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+0
 
 # Two families, one superfamily.
 
-Section `type` — marker `03`, position 4 of 23 in the guide.
+Section `type` — marker `03`, position 4 of 24 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -165,7 +165,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -174,7 +174,7 @@ Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+0
 
 # A 4px base, and shapes that stay soft.
 
-Section `space` — marker `04`, position 5 of 23 in the guide.
+Section `space` — marker `04`, position 5 of 24 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -205,7 +205,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -214,7 +214,7 @@ Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+0
 
 # Motion that decelerates, never bounces.
 
-Section `motion` — marker `05`, position 6 of 23 in the guide.
+Section `motion` — marker `05`, position 6 of 24 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -258,7 +258,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -267,7 +267,7 @@ Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+0
 
 # Actions
 
-Section `actions` — marker `06`, position 7 of 23 in the guide.
+Section `actions` — marker `06`, position 7 of 24 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -291,7 +291,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -300,7 +300,7 @@ Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+0
 
 # Forms
 
-Section `forms` — marker `07`, position 8 of 23 in the guide.
+Section `forms` — marker `07`, position 8 of 24 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -337,7 +337,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -346,7 +346,7 @@ Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+0
 
 # Status & labels
 
-Section `status` — marker `08`, position 9 of 23 in the guide.
+Section `status` — marker `08`, position 9 of 24 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -373,7 +373,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -382,7 +382,7 @@ Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+0
 
 # Surfaces
 
-Section `surfaces` — marker `09`, position 10 of 23 in the guide.
+Section `surfaces` — marker `09`, position 10 of 24 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -447,7 +447,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -456,7 +456,7 @@ Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+0
 
 # Navigation
 
-Section `navigation` — marker `09`, position 11 of 23 in the guide.
+Section `navigation` — marker `09`, position 11 of 24 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -505,7 +505,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -514,7 +514,7 @@ Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+0
 
 # Feedback
 
-Section `feedback` — marker `11`, position 12 of 23 in the guide.
+Section `feedback` — marker `11`, position 12 of 24 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -575,7 +575,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -584,7 +584,7 @@ Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+0
 
 # Overlays
 
-Section `overlays` — marker `12`, position 13 of 23 in the guide.
+Section `overlays` — marker `12`, position 13 of 24 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -641,7 +641,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -650,7 +650,7 @@ Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+0
 
 # Data display
 
-Section `data` — marker `13`, position 14 of 23 in the guide.
+Section `data` — marker `13`, position 14 of 24 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -753,7 +753,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -762,7 +762,7 @@ Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+0
 
 # Field
 
-Section `field` — marker `14`, position 15 of 23 in the guide.
+Section `field` — marker `14`, position 15 of 24 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -778,7 +778,7 @@ Shown — same markup, wider profile.
 
 ## Blocks documented here
 
-28 block(s). Their facts live in `../contour.components.json`;
+29 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
@@ -787,6 +787,7 @@ starts disagreeing with itself.
 - `.c-btn`
 - `.c-comparison`
 - `.c-compass`
+- `.c-drag-handle`
 - `.c-flag`
 - `.c-hexbin`
 - `.c-icon-badge`
@@ -813,7 +814,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -822,7 +823,7 @@ Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+0
 
 # Documentation
 
-Section `docs` — marker `14`, position 16 of 23 in the guide.
+Section `docs` — marker `14`, position 16 of 24 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -882,6 +883,8 @@ A version picker in the header, and a banner when the reader is on an old one.
 
 A project tree in a code panel, with the file under the cursor marked.
 
+Contour ships no syntax highlighter (zero runtime dependencies); highlighting is the consumer's. src/css/hljs.css maps highlight.js token classes onto Contour tokens, so a consumer who runs that highlighter gets code that matches the system's palette in both themes. It sets colour only — never layout, never font-family. Load it after the library's own stylesheet.
+
 The way out of a long page, at the foot of it. Both links are real links, so they survive a right-click and a middle click.
 
 ## Subsections
@@ -898,7 +901,7 @@ The way out of a long page, at the foot of it. Both links are real links, so the
 
 ## Blocks documented here
 
-13 block(s). Their facts live in `../contour.components.json`;
+14 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
@@ -909,6 +912,7 @@ starts disagreeing with itself.
 - `.c-do-dont`
 - `.c-icon-badge`
 - `.c-install`
+- `.c-kbd`
 - `.c-pager`
 - `.c-section-head`
 - `.c-steps`
@@ -918,7 +922,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -927,7 +931,7 @@ Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+0
 
 # Landing
 
-Section `landing` — marker `16`, position 17 of 23 in the guide.
+Section `landing` — marker `16`, position 17 of 24 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -990,7 +994,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -999,7 +1003,7 @@ Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+0
 
 # Patterns
 
-Section `patterns` — marker `17`, position 18 of 23 in the guide.
+Section `patterns` — marker `17`, position 18 of 24 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -1031,7 +1035,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1040,7 +1044,7 @@ Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+0
 
 # Affordances, made visible.
 
-Section `affordances` — marker `18`, position 19 of 23 in the guide.
+Section `affordances` — marker `18`, position 19 of 24 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -1208,7 +1212,7 @@ part of the component contract and nothing in an installed package defines them:
 
 ---
 
-Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1217,7 +1221,7 @@ Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+0
 
 # Three shells, one system.
 
-Section `recipes` — marker `19`, position 20 of 23 in the guide.
+Section `recipes` — marker `19`, position 20 of 24 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -1320,7 +1324,7 @@ part of the component contract and nothing in an installed package defines them:
 
 ---
 
-Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1329,7 +1333,7 @@ Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+0
 
 # Playground
 
-Section `playground` — marker `20`, position 21 of 23 in the guide.
+Section `playground` — marker `20`, position 21 of 24 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -1364,7 +1368,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1373,7 +1377,7 @@ Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+0
 
 # Two themes, one cascade.
 
-Section `theming` — marker `21`, position 22 of 23 in the guide.
+Section `theming` — marker `21`, position 22 of 24 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -1438,7 +1442,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1447,7 +1451,7 @@ Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+0
 
 # Install
 
-Section `install` — marker `22`, position 23 of 23 in the guide.
+Section `install` — marker `22`, position 23 of 24 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -1455,11 +1459,9 @@ private until v1.0). See `index.json` for the whole set and the shared statement
 
 Plain CSS in src/, one entry point, no build step and no runtime. Link it and start using the class names.
 
-A map engine paints its own control cluster over its canvas — zoom, compass, fullscreen — and that markup belongs to the engine, so .c-map-slot cannot reach it. src/css/map-chrome.css re-keys the cluster onto the tokens the system already uses for its own controls: surface, edge, radius, glyph colour. Nothing else. The engine keeps the geometry, and the Mapbox logo keeps its own paint — it is a.mapboxgl-ctrl-logo, carries no .mapboxgl-ctrl class, and must not be styled. This is the one sheet in src/css/ that sits outside the cascade layers: the vendor's stylesheet is unlayered too, and a layered rule would lose to it whatever the link order. Load it after the engine's own file. The guide ships no engine, so the cluster's size and glyphs here are the guide's stand-in.
+Optional progressive enhancement. Load contour-wc.js after ds.css to use contour-btn, contour-card, and 320+ other custom elements that generate their scaffolding from attributes. Light-DOM elements (contour-*) use the cascade directly; shadow-DOM elements (contour-shadow-*) ship slots and adopted stylesheets for encapsulation. Interactive blocks (tabs, combobox, tree, menu, segmented, dialog, tag, filter-pill, install, code, pagination) wire their own keyboard behaviour and dispatch contour:* CustomEvents (contour:select, contour:change, contour:remove, contour:copy, contour:page, contour:close, contour:theme-change), so they work standalone. Modifier attributes (variant, size, color) apply to both layers from one list, and attribute changes re-render without losing authored content.
 
-Contour ships no syntax highlighter (zero runtime dependencies); highlighting is the consumer's. src/css/hljs.css maps highlight.js token classes onto Contour tokens, so a consumer who runs that highlighter gets code that matches the system's palette in both themes. It sets colour only — never layout, never font-family. Load it after the library's own stylesheet.
-
-Optional progressive enhancement. Load src/js/wc/index.mjs after ds.css to use <contour-btn>, <contour-card>, and 150+ other custom elements that generate their scaffolding from attributes. All use light DOM so the cascade applies.
+Slotted content in the shadow root.
 
 ## Blocks documented here
 
@@ -1476,5 +1478,47 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `306b0006920e28a4` · last committed 2026-10-25T00:31:56+02:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
+
+
+---
+
+# Web components
+
+# Web components
+
+Section `webcomponents` — marker `23`, position 24 of 24 in the guide.
+Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
+private until v1.0). See `index.json` for the whole set and the shared statement.
+
+## What the guide says
+
+Optional progressive enhancement. Load contour-wc.js after ds.css to use contour-* and contour-shadow-* custom elements that generate their scaffolding from attributes. Light-DOM elements use the cascade directly; shadow-DOM elements ship slots and adopted stylesheets for encapsulation.
+
+Reactivity: every component extends ContourBase, which snapshots the author's nodes and class on first connect. An attribute change restores that snapshot, re-runs render(), and re-wires behaviour via enhance(), so authored content and listeners survive while generated nodes are rebuilt. Form values are preserved across a re-render; render bodies use ensure() for update-or-create reactivity.
+
+Composition: components never reach into one another. A host composes by nesting or slotted content, and interactive components emit bubbling contour:* CustomEvents (contour:change, contour:select, contour:copy, contour:remove, contour:page, contour:open/ contour:close) that a parent handles without coupling to internals. Shadow wrappers adopt the document's same-origin sheets once and share one parsed stylesheet across instances.
+
+Authored content survives re-renders.
+
+Slotted content in the shadow root.
+
+Dialog body content.
+
+Dialog body content.
+
+## Blocks documented here
+
+4 block(s). Their facts live in `../contour.components.json`;
+only the names are here, because the same figure in two files is how a document
+starts disagreeing with itself.
+
+- `.c-btn`
+- `.c-icon-badge`
+- `.c-kbd`
+- `.c-section-head`
+
+---
+
+Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
 

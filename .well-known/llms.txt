@@ -30,6 +30,16 @@ Data: table (container query drops optional columns), legend, readout, timeline,
 Documentation: nav tree, callout, do/don't, steps, code tabs, install block, diff, pager, version picker, file tree, prose.
 Landing: logo wall, feature showcase, metrics band, testimonial, pricing, comparison matrix, FAQ, CTA band.
 
+## Web components
+
+Optional progressive-enhancement layer: `src/js/wc/index.mjs` (also `dist/contour-wc.js` / `dist/contour-wc.min.js`). Defines 320+ custom elements (`<contour-btn>`, `<contour-card>`, `<contour-shadow-card>`, …) that generate scaffolding from attributes and slotted content.
+
+- Light DOM (`<contour-*>`): add CSS classes and generate structure from attributes; use the cascade directly. Interactive blocks (tabs, code-tabs, combobox, tree, segmented) wire their own keyboard and activation, so they work standalone without `ds.js`.
+- Shadow DOM (`<contour-shadow-*>`): named slots and adopted stylesheets for encapsulation; reflect `variant`, `size`, `color` onto the root and re-render on change; mirror the same interactive wiring inside the shadow root.
+- Reactivity: every component extends `ContourBase`, which snapshots authored nodes and class on first connect; an attribute change restores the snapshot, re-runs `render()`, and re-wires via `enhance()`. Authored content and listeners survive; generated nodes are rebuilt; form values are preserved; render bodies use `ensure()` for update-or-create reactivity.
+- Composition: components never reach into one another. A host composes by nesting or slotted content; interactive components emit bubbling `contour:*` CustomEvents (`contour:change`, `contour:select`, `contour:copy`, `contour:remove`, `contour:page`, `contour:open`/`contour:close`) a parent handles without coupling to internals. Shadow wrappers adopt the document's same-origin sheets once and share one parsed stylesheet across instances.
+- `window.ContourElements` (frozen array) lists every registered name in registration order.
+
 ## Machine-readable index
 
 - [llms-full.txt](./llms-full.txt): the full concatenated guide (all sections, all specimens) for agents that want the complete text in one fetch.

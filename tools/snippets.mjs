@@ -96,7 +96,7 @@ function exampleOf(container) {
   removeWhere(clone, isProse);
 
   return clone.children
-    .filter((child) => child.type === "element" && hasContent(child))
+    .filter((child) => child.type === "element")
     .map((child) => format(child, 0))
     .filter(Boolean);
 }

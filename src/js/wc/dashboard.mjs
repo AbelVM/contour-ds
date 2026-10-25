@@ -1,19 +1,27 @@
 import { ContourBase, define } from './core.mjs';
 class ContourDashShell extends ContourBase {
+    static get observed() { return ["title"]; }
+    static get properties() { return { title: { attribute: "title" } }; }
     render() {
       this.classList.add("c-dash-shell");
       const title = this.getAttribute("title");
       if (title) {
-        const h = this.ensure(".c-dash-shell__title", () => { const el = document.createElement("h1"); el.className = "c-dash-shell__title"; return el; });
+        // `.c-dash-shell` is the grid and owns no title; the guide's title lives
+        // on the toolbar as `.c-dash-toolbar__title`, so the shell composes that
+        // block instead of inventing a part of its own.
+        const bar = this.ensure(".c-dash-toolbar", () => { const el = document.createElement("div"); el.className = "c-dash-toolbar"; return el; });
+        const h = bar.querySelector(".c-dash-toolbar__title") || (() => { const el = document.createElement("span"); el.className = "c-dash-toolbar__title"; bar.appendChild(el); return el; })();
         h.textContent = title;
       } else {
-        const h = this.querySelector(".c-dash-shell__title");
+        const h = this.querySelector(".c-dash-toolbar__title");
         if (h) h.remove();
       }
     }
   }
   define("contour-dash-shell", ContourDashShell);
 class ContourDashToolbar extends ContourBase {
+    static get observed() { return ["title", "actions"]; }
+    static get properties() { return { title: { attribute: "title" }, actions: { attribute: "actions" } }; }
     render() {
       this.classList.add("c-dash-toolbar");
       const title = this.getAttribute("title");
@@ -50,24 +58,22 @@ class ContourDashKpiRow extends ContourBase {
   }
   define("contour-dash-kpi-row", ContourDashKpiRow);
 class ContourDashFreshness extends ContourBase {
+    static get observed() { return ["label", "value"]; }
+    static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" } }; }
     render() {
       this.classList.add("c-dash-freshness");
       const label = this.getAttribute("label");
       const value = this.getAttribute("value");
-      if (label) {
-        const l = this.ensure(".c-dash-freshness__label", () => { const el = document.createElement("span"); el.className = "c-dash-freshness__label"; return el; });
-        l.textContent = label;
-      } else {
-        const l = this.querySelector(".c-dash-freshness__label");
-        if (l) l.remove();
+      // The block defines no elements of its own: the guide's chip is a live dot
+      // followed by its text, so the dot is the real `.c-dot` and the words are a
+      // text node rather than two invented parts.
+      const dot = this.ensure(".c-dot", () => { const el = document.createElement("span"); el.className = "c-dot c-dot--live c-dot--accent"; el.setAttribute("aria-hidden", "true"); return el; });
+      if (dot.parentNode !== this) this.appendChild(dot);
+      if (!this._freshnessText) {
+        this._freshnessText = document.createTextNode("");
+        this.appendChild(this._freshnessText);
       }
-      if (value) {
-        const v = this.ensure(".c-dash-freshness__value", () => { const el = document.createElement("span"); el.className = "c-dash-freshness__value"; return el; });
-        v.textContent = value;
-      } else {
-        const v = this.querySelector(".c-dash-freshness__value");
-        if (v) v.remove();
-      }
+      this._freshnessText.nodeValue = [label, value].filter(Boolean).join(" ");
     }
   }
   define("contour-dash-freshness", ContourDashFreshness);

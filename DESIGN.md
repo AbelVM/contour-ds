@@ -58,7 +58,7 @@ install:
   development: "src/css/ds.css (a chained @import per sheet — a request waterfall)"
   mandatory: ["src/css/tokens.css", "src/css/base.css"]
   optional_components: ["components-docs.css", "components-data.css", "components-landing.css", "patterns.css", "utilities.css"]
-  behaviour: "src/js/ds.js (optional, exposes window.Contour)"
+  behaviour: "src/js/ds.js (optional, exposes window.Contour); src/js/wc/index.mjs (optional, 320+ custom elements: light DOM <contour-*> and shadow DOM <contour-shadow-*>)"
 ---
 
 # Contour — Design System
@@ -185,6 +185,46 @@ about a rule, so the gate requires the marker and the ledger to agree in both
 directions, which is what the policy in `AGENTS.md` always said and nothing ever
 checked.
 
+## Web components
+
+Optional progressive-enhancement layer under `src/js/wc/` (entry `src/js/wc/index.mjs`;
+also `dist/contour-wc.js` / `dist/contour-wc.min.js`). Defines 320+ custom elements
+(`<contour-btn>`, `<contour-card>`, `<contour-shadow-card>`, …) that generate their
+scaffolding from attributes and slotted content. No runtime dependencies; the page works
+without it.
+
+- **Light DOM** (`<contour-*>`) adds CSS classes and generates structure from attributes,
+  so `ds.css` styles apply directly. Interactive blocks (tabs, code-tabs, combobox, tree,
+  segmented) wire their own keyboard and activation behaviour and work standalone.
+- **Shadow DOM** (`<contour-shadow-*>`) uses Shadow DOM with named slots and adopted
+  stylesheets, for encapsulation where desired. Reflects `variant`, `size` and `color`
+  attributes onto its root and re-renders on change.
+- All components are attribute-reactive: changing an attribute re-renders the component.
+
+### Reactivity
+
+Every component extends `ContourBase`. On first connect it snapshots the author's nodes
+and `class` attribute; on an attribute change it restores that snapshot, re-runs
+`render()`, and re-wires behaviour via `enhance()`. Authored content and listeners
+survive re-renders; generated nodes are rebuilt. Form control values are preserved.
+Render bodies use `ensure(selector, factory)` for update-or-create reactivity.
+`observedAttributes` is derived from the attributes a component reads; attributes it
+writes to itself (`role`, `open`, `aria-*`, `tabindex`) are excluded to prevent
+re-entrant renders.
+
+### Behaviour composition
+
+Composition happens through the DOM and through events, not through component internals:
+
+- A host composes by nesting/slotted content; authored children survive re-renders.
+- Interactive components emit bubbling `contour:*` CustomEvents (`contour:change`,
+  `contour:select`, `contour:copy`, `contour:remove`, `contour:page`,
+  `contour:open`/`contour:close`, `contour:empty-action`).
+- Shadow wrappers adopt the document's same-origin stylesheets once and share a single
+  parsed `CSSStyleSheet` across instances.
+- `window.ContourElements` (frozen array) lists every registered name in registration
+  order; `customElements.get(name)` is the runtime check.
+
 ## Rules
 
 1. Colour is a signal. ~85% of the interface is neutral.
@@ -214,4 +254,6 @@ checked.
 - The style guide (`index.html`) is the specification and the test suite.
 - `node tools/snippets.mjs` regenerates code snippets after editing a specimen.
 - `node tools/build.mjs` bundles and minifies into `dist/`.
+- `node tools/check-wc.mjs` validates the web component base class, IIFE closure, registry and duplicate defines.
+- `node tools/audit/wc-contract.mjs` validates load, define, scaffold, render, re-render, leak, shadow and table wrap in a browser.
 - `node tools/check-tokens.mjs` fails unless every declared token is read, or is named in its ledger with the task that will resolve it. The ledger can only shrink.

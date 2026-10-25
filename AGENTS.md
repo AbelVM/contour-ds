@@ -338,6 +338,10 @@ draws the list in the page's theme. That is the most the platform gives.
 
 - The guide is the specification. A component that is not shown is not
   documented.
+- §23 (Web components) documents the two layers, their reactivity (snapshot →
+  restore → re-render → enhance) and behaviour composition (bubbling
+  `contour:*` events, slotted content, shared adopted stylesheets). Keep that
+  prose in lockstep with `src/js/wc/core.mjs` and `src/js/wc/shadow.mjs`.
 - Every rendered example is followed by a `<details>` disclosure with the
   markup behind it. **The snippet is extracted from the example**, so after
   editing a specimen run `node tools/snippets.mjs` — never hand-edit a
