@@ -69,12 +69,35 @@ class ContourSegmented extends ContourBase {
     enhance() {
       if (this._wiredSegmented) return;
       this._wiredSegmented = true;
-      this.addEventListener("click", (e) => {
-        const btn = e.target && e.target.closest ? e.target.closest("button") : null;
-        if (!btn || !this.contains(btn)) return;
+      const activate = (btn) => {
         const options = Array.from(this.querySelectorAll("button"));
         options.forEach((o) => o.setAttribute("aria-pressed", String(o === btn)));
         this.dispatchEvent(new CustomEvent("contour:change", { detail: { value: btn.dataset.value || btn.textContent }, bubbles: true }));
+      };
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest("button") : null;
+        if (!btn || !this.contains(btn)) return;
+        activate(btn);
+      });
+      this.addEventListener("keydown", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest("button") : null;
+        if (!btn || !this.contains(btn)) return;
+        const options = Array.from(this.querySelectorAll("button"));
+        const idx = options.indexOf(btn);
+        let next = -1;
+        if (e.key === "ArrowRight" || e.key === "ArrowDown") next = Math.min(idx + 1, options.length - 1);
+        else if (e.key === "ArrowLeft" || e.key === "ArrowUp") next = Math.max(idx - 1, 0);
+        else if (e.key === "Home") next = 0;
+        else if (e.key === "End") next = options.length - 1;
+        if (next >= 0 && next !== idx) {
+          e.preventDefault();
+          options[next].focus();
+          activate(options[next]);
+        }
+      });
+      // Make buttons focusable
+      this.querySelectorAll("button").forEach((b) => {
+        if (!b.hasAttribute("tabindex")) b.setAttribute("tabindex", "0");
       });
     }
   }

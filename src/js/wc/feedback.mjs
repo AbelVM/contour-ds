@@ -34,6 +34,14 @@ class ContourDialog extends ContourBase {
         if (dlg && typeof dlg.close === "function") dlg.close();
         this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true }));
       });
+      // Close on Escape
+      this.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          const dlg = this.querySelector("dialog") || (this.tagName === "DIALOG" ? this : null);
+          if (dlg && typeof dlg.close === "function") dlg.close();
+          this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true }));
+        }
+      });
     }
   }
   define("contour-dialog", ContourDialog);
@@ -100,6 +108,16 @@ class ContourDisclosure extends ContourBase {
         const details = this.querySelector("details");
         if (details) details.remove();
       }
+    }
+    enhance() {
+      if (this._wiredDisclosure) return;
+      this._wiredDisclosure = true;
+      this.addEventListener("toggle", (e) => {
+        const t = e.target;
+        if (t && t.tagName === "DETAILS") {
+          this.dispatchEvent(new CustomEvent("contour:toggle", { detail: { open: t.open }, bubbles: true }));
+        }
+      }, true);
     }
   }
   define("contour-disclosure", ContourDisclosure);
@@ -185,6 +203,9 @@ class ContourFaq extends ContourBase {
 class ContourAccordion extends ContourBase {
     render() {
       this.classList.add("c-accordion");
+      // Drop any previously generated disclosures before rebuilding, so a
+      // re-render cannot stack a second set on top of the first.
+      Array.from(this.querySelectorAll("details.c-disclosure")).forEach((d) => d.remove());
       const items = this.getAttribute("items");
       if (items) {
         try {
@@ -203,6 +224,16 @@ class ContourAccordion extends ContourBase {
           });
         } catch (e) { /* keep existing */ }
       }
+    }
+    enhance() {
+      if (this._wiredAccordion) return;
+      this._wiredAccordion = true;
+      this.addEventListener("toggle", (e) => {
+        const t = e.target;
+        if (t && t.tagName === "DETAILS") {
+          this.dispatchEvent(new CustomEvent("contour:toggle", { detail: { open: t.open }, bubbles: true }));
+        }
+      }, true);
     }
   }
   define("contour-accordion", ContourAccordion);
@@ -223,6 +254,9 @@ class ContourSheet extends ContourBase {
 class ContourToast extends ContourBase {
     render() {
       this.classList.add("c-toast");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "status");
+      if (!this.hasAttribute("aria-live")) this.setAttribute("aria-live", "polite");
+      if (!this.hasAttribute("aria-atomic")) this.setAttribute("aria-atomic", "true");
       const message = this.getAttribute("message");
       if (message && !this.querySelector("*") && !this.textContent.trim()) {
         this.textContent = message;
@@ -276,12 +310,24 @@ class ContourExpandable extends ContourBase {
         if (details) details.remove();
       }
     }
+    enhance() {
+      if (this._wiredExpandable) return;
+      this._wiredExpandable = true;
+      this.addEventListener("toggle", (e) => {
+        const t = e.target;
+        if (t && t.tagName === "DETAILS") {
+          this.dispatchEvent(new CustomEvent("contour:toggle", { detail: { open: t.open }, bubbles: true }));
+        }
+      }, true);
+    }
   }
   define("contour-expandable", ContourExpandable);
 class ContourToastHost extends ContourBase {
     render() {
       this.classList.add("c-toast-host");
       if (!this.hasAttribute("role")) this.setAttribute("role", "status");
+      if (!this.hasAttribute("aria-live")) this.setAttribute("aria-live", "polite");
+      if (!this.hasAttribute("aria-atomic")) this.setAttribute("aria-atomic", "true");
     }
   }
   define("contour-toast-host", ContourToastHost);

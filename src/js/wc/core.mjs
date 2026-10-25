@@ -44,7 +44,7 @@
   //   role, open, aria-label, aria-valuenow, aria-valuemin, aria-valuemax, tabindex
   // Adding one of those back to this list makes that component recurse.
   export const OBSERVED = [
-    "action", "actions", "after", "answer", "attribution", "attribution-mark", "before", "body", "brand", "columns", "color", "command",
+    "action", "actions", "after", "anchor", "answer", "attribution", "attribution-mark", "before", "body", "brand", "columns", "color", "command",
     "cells", "controls", "copyable", "count", "current", "date", "delta", "desc", "direction", "divider", "do", "dont",
     "empty", "error", "features", "hint", "href", "icon", "instrument", "items", "key",
     "label", "lede", "legend", "links", "live", "max", "media", "message", "method", "min", "name", "next", "no", "note", "norm",

@@ -51,6 +51,69 @@ import { define, MODS, REGISTERED } from './core.mjs';
       if (!root) root = this.shadowRoot;
       if (!root || this._wiredShadow) return;
       this._wiredShadow = true;
+      // ARIA: ensure interactive elements have proper roles
+      root.querySelectorAll("button:not([role])").forEach((btn) => {
+        if (!btn.hasAttribute("role")) btn.setAttribute("role", "button");
+      });
+      // ARIA: sync aria-expanded on disclosure/expandable details
+      root.querySelectorAll("details").forEach((d) => {
+        const summary = d.querySelector("summary");
+        if (summary && !summary.hasAttribute("aria-expanded")) {
+          summary.setAttribute("aria-expanded", String(d.open));
+          d.addEventListener("toggle", () => {
+            summary.setAttribute("aria-expanded", String(d.open));
+          });
+        }
+      });
+      // ARIA: ensure live regions have proper roles
+      root.querySelectorAll("[data-live]").forEach((el) => {
+        if (!el.hasAttribute("role")) el.setAttribute("role", "status");
+        if (!el.hasAttribute("aria-live")) el.setAttribute("aria-live", "polite");
+      });
+      // ARIA: toast elements get live region roles
+      root.querySelectorAll(".c-toast, .c-toast-host").forEach((el) => {
+        if (!el.hasAttribute("role")) el.setAttribute("role", "status");
+        if (!el.hasAttribute("aria-live")) el.setAttribute("aria-live", "polite");
+        if (!el.hasAttribute("aria-atomic")) el.setAttribute("aria-atomic", "true");
+      });
+      // ARIA: link tabs to panels via aria-controls
+      root.querySelectorAll("[role='tab']").forEach((tab) => {
+        const ctrl = tab.getAttribute("aria-controls");
+        if (ctrl) {
+          const panel = root.querySelector("#" + CSS.escape(ctrl)) || document.getElementById(ctrl);
+          if (panel && !panel.hasAttribute("aria-labelledby")) {
+            if (!tab.id) tab.id = "tab-" + Math.random().toString(36).slice(2, 8);
+            panel.setAttribute("aria-labelledby", tab.id);
+          }
+        }
+      });
+      // ARIA: link inputs to their labels/hints via aria-describedby
+      root.querySelectorAll("input, textarea, select").forEach((input) => {
+        if (input.hasAttribute("aria-describedby")) return;
+        const field = input.closest(".c-field");
+        if (field) {
+          const hint = field.querySelector(".c-field__hint");
+          if (hint) {
+            if (!hint.id) hint.id = "hint-" + Math.random().toString(36).slice(2, 8);
+            input.setAttribute("aria-describedby", hint.id);
+          }
+          const err = field.querySelector(".c-field__error");
+          if (err) {
+            if (!err.id) err.id = "err-" + Math.random().toString(36).slice(2, 8);
+            const existing = input.getAttribute("aria-describedby") || "";
+            input.setAttribute("aria-describedby", (existing + " " + err.id).trim());
+          }
+        }
+      });
+      // ARIA: alert elements get live region roles
+      root.querySelectorAll(".c-alert").forEach((el) => {
+        if (!el.hasAttribute("role")) el.setAttribute("role", "alert");
+        if (!el.hasAttribute("aria-live")) el.setAttribute("aria-live", "assertive");
+      });
+      // ARIA: required form fields
+      root.querySelectorAll("input[required], textarea[required], select[required]").forEach((el) => {
+        if (!el.hasAttribute("aria-required")) el.setAttribute("aria-required", "true");
+      });
       // Tabs / code-tabs panel switching
       const tabLists = root.querySelectorAll(".c-tabs__list, .c-code-tabs__list");
       tabLists.forEach((list) => {
@@ -423,10 +486,44 @@ shadow("contour-shadow-filter-pill", `<span class="c-filter-pill" part="filter-p
     })();
     enhance(root) {
       super.enhance(root);
+      const dlg = root.querySelector("dialog");
       const close = root.querySelector('[part="close"]');
-      if (close) close.addEventListener("click", () => root.querySelector("dialog")?.close());
+      if (close) close.addEventListener("click", () => dlg?.close());
+      if (dlg) {
+        let lastFocus = null;
+        dlg.addEventListener("show", () => {
+          lastFocus = document.activeElement;
+          this.dispatchEvent(new CustomEvent("contour:open", { bubbles: true }));
+          // Focus the close button or first focusable element
+          const focusable = dlg.querySelector("button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])");
+          if (focusable) try { focusable.focus(); } catch (e) {}
+        });
+        dlg.addEventListener("close", () => {
+          this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true }));
+          // Restore focus
+          if (lastFocus && typeof lastFocus.focus === "function") {
+            try { lastFocus.focus(); } catch (e) {}
+          }
+        });
+        // Focus trap: keep Tab within the dialog
+        dlg.addEventListener("keydown", (e) => {
+          if (e.key !== "Tab") return;
+          const focusables = Array.from(dlg.querySelectorAll("button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])"));
+          if (!focusables.length) return;
+          const first = focusables[0];
+          const last = focusables[focusables.length - 1];
+          if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        });
+      }
     }
     show() { this.shadowRoot?.querySelector("dialog")?.showModal(); }
+    close() { this.shadowRoot?.querySelector("dialog")?.close(); }
   }
   define("contour-shadow-dialog", ContourShadowDialog);
 

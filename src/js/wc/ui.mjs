@@ -141,25 +141,51 @@ class ContourSkeleton extends ContourBase {
 class ContourTooltip extends ContourBase {
     render() {
       this.classList.add("c-tooltip");
+      if (!this.hasAttribute("popover")) this.setAttribute("popover", "hint");
       const text = this.getAttribute("text");
       if (text && !this.querySelector("*") && !this.textContent.trim()) {
         this.textContent = text;
       }
+    }
+    enhance() {
+      if (this._wiredTooltip) return;
+      this._wiredTooltip = true;
+      // Anchor association: link a trigger element to this tooltip.
+      const anchorSel = this.getAttribute("anchor");
+      if (anchorSel) {
+        const trigger = document.querySelector(anchorSel.startsWith("#") ? anchorSel : "#" + anchorSel);
+        if (trigger) {
+          trigger.setAttribute("popovertarget", this.id || (this.id = "tip-" + Math.random().toString(36).slice(2, 8)));
+          trigger.setAttribute("aria-describedby", this.id);
+        }
+      }
+      this.addEventListener("toggle", (e) => {
+        const t = e.target;
+        if (t && t === this) {
+          this.dispatchEvent(new CustomEvent("contour:toggle", { detail: { open: this.matches(":popover-open") }, bubbles: true }));
+        }
+      });
+      this.addEventListener("beforetoggle", (e) => {
+        this.dispatchEvent(new CustomEvent(e.newState === "open" ? "contour:show" : "contour:hide", { bubbles: true }));
+      });
     }
   }
   define("contour-tooltip", ContourTooltip);
 class ContourProgress extends ContourBase {
     render() {
       this.classList.add("c-progress");
-      const value = this.getAttribute("value");
-      if (value) {
-        this.style.setProperty("--progress", value + "%");
-      }
+      const value = this.getAttribute("value") || "0";
+      // Normalise 0..1 to a percentage when a fractional value is given.
+      const num = Number(value);
+      const pct = Number.isFinite(num) && num <= 1 && value.includes(".") ? (num * 100) : num;
+      const pctStr = Math.max(0, Math.min(100, pct)) + "%";
+      this.style.setProperty("--progress", pctStr);
+      this.ensure(".c-progress__bar", () => { const el = document.createElement("span"); el.className = "c-progress__bar"; return el; });
       if (!this.hasAttribute("role")) this.setAttribute("role", "progressbar");
       const prevVal = this._progressAriaValue;
       if (!this.hasAttribute("aria-valuenow") || this.getAttribute("aria-valuenow") === prevVal) {
-        this.setAttribute("aria-valuenow", value || "0");
-        this._progressAriaValue = value || "0";
+        this.setAttribute("aria-valuenow", String(pct));
+        this._progressAriaValue = String(pct);
       }
       if (!this.hasAttribute("aria-valuemin")) this.setAttribute("aria-valuemin", "0");
       if (!this.hasAttribute("aria-valuemax")) this.setAttribute("aria-valuemax", "100");

@@ -256,6 +256,8 @@ class ContourInputGroup extends ContourBase {
 class ContourRadioList extends ContourBase {
     render() {
       this.classList.add("c-radio-list");
+      // Clear previously generated radios before rebuilding.
+      Array.from(this.querySelectorAll("label.c-radio")).forEach((l) => l.remove());
       const items = this.getAttribute("items");
       if (items) {
         try {

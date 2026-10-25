@@ -62,6 +62,16 @@ class ContourMenu extends ContourBase {
       });
       // make items focusable
       items().forEach((it) => { if (!it.hasAttribute("tabindex")) it.setAttribute("tabindex", "-1"); });
+      // Click to select
+      this.addEventListener("click", (e) => {
+        const item = e.target && e.target.closest ? e.target.closest("[role='menuitem']") : null;
+        if (!item || !this.contains(item)) return;
+        const its = items();
+        const idx = its.indexOf(item);
+        if (idx >= 0) {
+          this.dispatchEvent(new CustomEvent("contour:select", { detail: { index: idx, label: item.textContent }, bubbles: true }));
+        }
+      });
     }
   }
   define("contour-menu", ContourMenu);
@@ -240,10 +250,7 @@ class ContourTree extends ContourBase {
     enhance() {
       if (this._wiredTree) return;
       this._wiredTree = true;
-      this.addEventListener("click", (e) => {
-        const toggle = e.target && e.target.closest ? e.target.closest(".c-tree__toggle") : null;
-        if (!toggle || !this.contains(toggle)) return;
-        e.stopPropagation();
+      const toggleNode = (toggle) => {
         const expanded = toggle.getAttribute("aria-expanded") === "true";
         toggle.setAttribute("aria-expanded", String(!expanded));
         const row = toggle.closest(".c-tree__row");
@@ -254,6 +261,93 @@ class ContourTree extends ContourBase {
           if (expanded) children.setAttribute("hidden", "");
           else children.removeAttribute("hidden");
         }
+        this.dispatchEvent(new CustomEvent("contour:toggle", { detail: { open: !expanded, label: (row ? row.textContent.trim() : "") }, bubbles: true }));
+      };
+      this.addEventListener("click", (e) => {
+        const toggle = e.target && e.target.closest ? e.target.closest(".c-tree__toggle") : null;
+        if (!toggle || !this.contains(toggle)) return;
+        e.stopPropagation();
+        toggleNode(toggle);
+      });
+      // Keyboard navigation
+      const visibleNodes = () => {
+        const result = [];
+        const walk = (ul) => {
+          if (!ul) return;
+          Array.from(ul.children).forEach((li) => {
+            if (!li.classList.contains("c-tree__node")) return;
+            result.push(li);
+            const children = li.querySelector(":scope > .c-tree__children");
+            if (children && !children.hasAttribute("hidden")) walk(children);
+          });
+        };
+        const root = this.querySelector("ul.c-tree, ul[role='tree']") || this.querySelector("ul");
+        walk(root);
+        return result;
+      };
+      const focusNode = (li) => {
+        const toggle = li.querySelector(":scope > .c-tree__row .c-tree__toggle");
+        const leaf = li.querySelector(":scope > .c-tree__leaf");
+        const target = toggle || leaf;
+        if (target) { try { target.focus(); } catch (e) {} }
+        // make focusable
+        if (target && !target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
+      };
+      this.addEventListener("keydown", (e) => {
+        const target = e.target && e.target.closest ? e.target.closest(".c-tree__toggle, .c-tree__leaf") : null;
+        if (!target || !this.contains(target)) return;
+        const nodes = visibleNodes();
+        const currentLi = target.closest(".c-tree__node");
+        const idx = nodes.indexOf(currentLi);
+        let next = -1;
+        if (e.key === "ArrowDown") next = idx < 0 ? 0 : Math.min(idx + 1, nodes.length - 1);
+        else if (e.key === "ArrowUp") next = idx < 0 ? nodes.length - 1 : Math.max(idx - 1, 0);
+        else if (e.key === "Home") next = 0;
+        else if (e.key === "End") next = nodes.length - 1;
+        if (next >= 0 && next !== idx) {
+          e.preventDefault();
+          focusNode(nodes[next]);
+          return;
+        }
+        if (e.key === "ArrowRight") {
+          const toggle = currentLi ? currentLi.querySelector(":scope > .c-tree__row .c-tree__toggle") : null;
+          if (toggle) {
+            const expanded = toggle.getAttribute("aria-expanded") === "true";
+            if (!expanded) { e.preventDefault(); toggleNode(toggle); }
+            else {
+              const children = currentLi.querySelector(":scope > .c-tree__children");
+              if (children) {
+                const firstChild = children.querySelector(":scope > .c-tree__node");
+                if (firstChild) { e.preventDefault(); focusNode(firstChild); }
+              }
+            }
+          }
+          return;
+        }
+        if (e.key === "ArrowLeft") {
+          const toggle = currentLi ? currentLi.querySelector(":scope > .c-tree__row .c-tree__toggle") : null;
+          if (toggle) {
+            const expanded = toggle.getAttribute("aria-expanded") === "true";
+            if (expanded) { e.preventDefault(); toggleNode(toggle); }
+            else {
+              const parent = currentLi.parentElement && currentLi.parentElement.closest ? currentLi.parentElement.closest(".c-tree__node") : null;
+              if (parent) { e.preventDefault(); focusNode(parent); }
+            }
+          } else {
+            const parent = currentLi && currentLi.parentElement ? currentLi.parentElement.closest(".c-tree__node") : null;
+            if (parent) { e.preventDefault(); focusNode(parent); }
+          }
+          return;
+        }
+        if (e.key === "Enter" || e.key === " ") {
+          const toggle = currentLi ? currentLi.querySelector(":scope > .c-tree__row .c-tree__toggle") : null;
+          if (toggle) { e.preventDefault(); toggleNode(toggle); }
+          return;
+        }
+      });
+      // Make toggles and leaves focusable
+      this.querySelectorAll(".c-tree__toggle, .c-tree__leaf").forEach((el) => {
+        if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "-1");
       });
     }
   }
