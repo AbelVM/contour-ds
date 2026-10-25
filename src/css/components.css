@@ -772,7 +772,7 @@
   .c-drop-zone {
     border: 2px dashed var(--color-border);
     border-radius: var(--radius-md);
-    padding: var(--space-md);
+    padding: calc(var(--space-md) * var(--density, 1));
     overflow: hidden;
     transition: border-color var(--dur-fast) var(--ease-standard),
       background-color var(--dur-fast) var(--ease-standard);
