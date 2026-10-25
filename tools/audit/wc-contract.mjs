@@ -94,6 +94,51 @@ const declaredNames = (src) =>
   [...new Set([...src.matchAll(/(?:const|let|var|class|function)\s+([A-Za-z0-9_$]+)/g)].map((m) => m[1]))];
 const CANDIDATES = [...new Set([...declaredNames(bytes.unminified), ...declaredNames(bytes.minified)])];
 
+// A name asked of define() twice is a name registered once: the guard in define()
+// means the second request is skipped, not thrown, so the duplicate leaves no
+// runtime trace at all -- no error, no missing element, just a table entry that
+// does nothing. It can only be read off the tables.
+//
+// The namespaces are checked apart, because a block legitimately appears in both
+// (`contour-chip` in the light DOM and `contour-shadow-chip` is the same block
+// twice on purpose), and a CLASS_ONLY name that also has an explicit component is
+// the documented fallback, not a duplicate. What IS a duplicate: the same element
+// name twice inside one namespace, or one element claimed by both shadow sources
+// -- which is exactly the defect that made 32 registrations dead on arrival.
+const duplicateRegistrations = (src) => {
+  const groups = {};
+  const add = (group, name) => (groups[group] || (groups[group] = [])).push(name);
+  for (const m of src.matchAll(/define\("(contour-[a-z0-9-]+)"/g)) add("explicit", m[1]);
+  const classOnly = /const CLASS_ONLY = \[([\s\S]*?)\n {2}\];/.exec(src);
+  if (classOnly)
+    for (const m of classOnly[1].matchAll(/"([a-z0-9-]+)"/g)) add("class-only", "contour-" + m[1]);
+  const slots = /const SHADOW_SLOTS = \{([\s\S]*?)\n {2}\};/.exec(src);
+  if (slots)
+    for (const m of slots[1].matchAll(/"([a-z0-9-]+)"/g)) add("shadow-slots", "contour-shadow-" + m[1]);
+  for (const m of src.matchAll(/\bshadow\("(contour-shadow-[a-z0-9-]+)"/g)) add("shadow-markup", m[1]);
+  const dupes = [];
+  for (const [group, names] of Object.entries(groups)) {
+    const seen = new Set();
+    for (const n of names) { if (seen.has(n)) dupes.push(`${group}: ${n}`); seen.add(n); }
+  }
+  const acrossShadow = new Set();
+  for (const n of [...(groups["shadow-slots"] || []), ...(groups["shadow-markup"] || [])]) {
+    if (acrossShadow.has(n)) dupes.push(`shadow (slots and markup): ${n}`);
+    acrossShadow.add(n);
+  }
+  return { dupes: [...new Set(dupes)], counts: Object.fromEntries(Object.entries(groups).map(([k, v]) => [k, v.length])) };
+};
+const shapeReports = {};
+for (const [label, rel] of Object.entries(ARTIFACTS)) {
+  const r = duplicateRegistrations(bytes[label]);
+  shapeReports[label] = r.counts;
+  if (r.dupes.length)
+    fail(`${rel} asks for the same element twice: ${r.dupes.slice(0, 8).join(", ")}${r.dupes.length > 8 ? ` (of ${r.dupes.length})` : ""} — define() skips the second request silently, so a duplicate here is a table entry that has never done anything`);
+}
+if (!shapeReports.unminified || !(shapeReports.unminified["class-only"] > 0) || !(shapeReports.unminified["shadow-slots"] > 0))
+  fail(`the registration tables were not read from the unminified artifact: ${JSON.stringify(shapeReports.unminified)} — a duplicate check that matched nothing is a pass over an empty sweep, so update this gate when the tables move`);
+console.log(`wc-contract: registration tables read: ${JSON.stringify(shapeReports.unminified)} (unminified) / ${JSON.stringify(shapeReports.minified)} (minified, one line, so only the call sites survive)`);
+
 // A name is "scaffolded" when some `define("<name>", X)` in the artifact points at
 // a class the file also declares by name. These are the ones that must NOT be the
 // class-only factory.

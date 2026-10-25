@@ -29,10 +29,14 @@ jobs:
 
       # node --check takes ONE file: `node --check a b` checks a and silently
       # ignores b, so every script needs its own invocation. Verified with a
-      # probe: a broken second argument exits 0.
+      # probe: a broken second argument exits 0. contour-wc.js is absent from
+      # this list even though it is the only script in src/js/ with a runtime
+      # contract of its own -- and a file that loads with a ReferenceError still
+      # passes every --check, which is how it shipped defining nothing at all.
       - name: Check script syntax
         run: |
           node --check src/js/ds.js
+          node --check src/js/contour-wc.js
           node --check assets/js/guide.js
           find tools -name '*.mjs' -print0 | xargs -0 -n1 node --check
 
@@ -213,3 +217,12 @@ jobs:
       # and sweeps --brand-hue across both themes.
       - name: Theme render probe
         run: node tools/audit/theme-render-probe.mjs
+      # contour-wc.js is loaded by nothing in this repository, so every other lane
+      # can be green while the bundle defines no elements at all, leaks its own
+      # internal names into the page, or silently loses half the registry to a
+      # duplicate define(). This is the only step that mounts it. It reads
+      # dist/contour-wc.js and dist/contour-wc.min.js -- the two files a consumer
+      # can install -- which is why it belongs in the lane that has just built
+      # them and installed a driver.
+      - name: Web components contract (registry, scope leak, shadow styling)
+        run: node tools/audit/wc-contract.mjs

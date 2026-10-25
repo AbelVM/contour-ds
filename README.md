@@ -344,10 +344,13 @@ Contour ships an optional progressive-enhancement layer in `src/js/contour-wc.js
 scaffolding from attributes and slotted content.
 
 - **Light DOM components** (`<contour-*>`) add CSS classes and generate structure from
-  attributes. They use light DOM so `ds.css` styles apply directly.
+  attributes. They use light DOM so `ds.css` styles apply directly. Interactive blocks
+  (tabs, code-tabs, combobox, tree, segmented) wire their own keyboard and activation
+  behaviour, so they work standalone without `ds.js`.
 - **Shadow DOM components** (`<contour-shadow-*>`) use Shadow DOM with named slots and
   adopted stylesheets, for encapsulation where desired. They reflect `variant`,
-  `size` and `color` attributes onto their root element and re-render on change.
+  `size` and `color` attributes onto their root element and re-render on change, and
+  mirror the same interactive wiring (tabs, code-tabs, segmented) inside the shadow root.
 - All components are attribute-reactive: changing an attribute re-renders the component.
 - No runtime dependencies; the file is optional and the page works without it.
 

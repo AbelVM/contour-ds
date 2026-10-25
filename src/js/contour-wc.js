@@ -45,13 +45,13 @@
   //   role, open, aria-label, aria-valuenow, aria-valuemin, aria-valuemax, tabindex
   // Adding one of those back to this list makes that component recurse.
   const OBSERVED = [
-    "action", "after", "answer", "before", "body", "brand", "columns", "color", "command",
-    "copyable", "current", "date", "delta", "desc", "direction", "do", "dont",
-    "error", "features", "hint", "href", "icon", "instrument", "items", "key",
-    "label", "links", "live", "max", "media", "message", "min", "name", "next",
+    "action", "actions", "after", "answer", "attribution", "attribution-mark", "before", "body", "brand", "columns", "color", "command",
+    "cells", "controls", "copyable", "count", "current", "date", "delta", "desc", "direction", "divider", "do", "dont",
+    "empty", "error", "features", "hint", "href", "icon", "instrument", "items", "key",
+    "label", "lede", "legend", "links", "live", "max", "media", "message", "method", "min", "name", "next", "norm",
     "options", "pages", "placeholder", "prev", "price", "prompt", "question",
-    "quote", "removable", "reverse", "rows", "series", "shortcut", "size",
-    "steps", "summary", "tabs", "tag", "text", "title", "type", "value",
+    "quote", "removable", "reverse", "rows", "scale", "series", "shortcut", "size", "status",
+    "steps", "subtitle", "summary", "tabs", "tag", "text", "title", "type", "value",
     "variant",
   ];
 
@@ -93,6 +93,7 @@
       const before = Array.from(this.childNodes);
       this.render();
       this._contourGenerated = Array.from(this.childNodes).filter((n) => !before.includes(n));
+      this.enhance();
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
@@ -118,6 +119,7 @@
         const before = Array.from(this.childNodes);
         this.render();
         this._contourGenerated = Array.from(this.childNodes).filter((n) => !before.includes(n));
+        this.enhance();
       } finally {
         this._contourRendering = false;
       }
@@ -129,6 +131,9 @@
 
     // Subclasses override this. It must be safe to call repeatedly.
     render() {}
+    // Subclasses override this to attach behaviour. Called after every render;
+    // implementations must be idempotent (guard with a flag).
+    enhance() {}
   }
 
   // Simple component: just adds CSS classes.
@@ -159,18 +164,18 @@
     "activity", "advanced", "affordance", "affordances", "alert", "anchor", "app", "app-body",
     "avatar", "badge", "bivariate", "box", "brand", "breadcrumb", "btn", "btn-group",
     "callout", "card", "chart", "chart-grid", "check", "chip", "cluster", "code",
-    "code-tabs", "combobox", "command", "compare", "container", "contour-plot", "cta", "dash-freshness",
+    "code-tabs", "combobox", "compare", "container", "contour-plot", "dash-freshness",
     "dash-kpi-row", "dash-shell", "dash-toolbar", "datamark", "delta", "destructive-hint", "dialog", "diff",
-    "disclosure", "do-dont", "docs-nav", "docs-shell", "dot", "drag-handle", "draggable", "drawer",
-    "drop-indicator", "drop-zone", "empty", "expandable", "faq", "feature", "field", "filter-bar",
-    "filter-pill", "flag", "footer", "header", "heatmap", "icon-badge", "input", "input-group",
-    "instrument", "kbd", "kpi", "layer-switch", "legend", "link", "live-badge", "map-area",
-    "map-footer", "map-panel", "map-slot", "mark", "measure", "menu", "meter", "pagination",
-    "panel", "pill", "plate", "progress", "pullquote", "radio", "radio-list", "range",
+    "disclosure", "do-dont", "dot", "drag-handle", "draggable", "drawer",
+    "drop-indicator", "drop-zone", "empty", "expandable", "faq", "feature", "field",
+    "flag", "footer", "header", "icon-badge", "input", "input-group",
+    "instrument", "kbd", "kpi", "link", "live-badge",
+    "mark", "menu", "meter", "pagination",
+    "pill", "plate", "progress", "pullquote", "radio", "radio-list", "range",
     "range-scale", "readout", "resizable", "row", "scale-bar", "scheme-toggle", "scrim", "section-head",
-    "segmented", "select", "sheet", "sidebar", "skeleton", "sparkline", "spinner", "stack",
+    "select", "sheet", "sidebar", "skeleton", "sparkline", "spinner", "stack",
     "stat", "survey", "switch", "table", "table-wrap", "tabs", "textarea", "threshold",
-    "time-range", "timeline", "toast", "toast-host", "toolbar", "tooltip", "tree", "virtual-scroll"
+    "time-range", "toast", "toast-host", "toolbar", "tooltip", "tree", "virtual-scroll"
   ];
 
 
@@ -215,6 +220,33 @@
         } catch (e) { /* keep existing content */ }
       }
     }
+    enhance() {
+      if (this._wiredMenu) return;
+      this._wiredMenu = true;
+      const items = () => Array.from(this.querySelectorAll("[role='menuitem']"));
+      this.addEventListener("keydown", (e) => {
+        const its = items();
+        if (!its.length) return;
+        const current = document.activeElement;
+        const idx = its.indexOf(current);
+        let next = -1;
+        if (e.key === "ArrowDown") next = idx < 0 ? 0 : Math.min(idx + 1, its.length - 1);
+        else if (e.key === "ArrowUp") next = idx < 0 ? its.length - 1 : Math.max(idx - 1, 0);
+        else if (e.key === "Home") next = 0;
+        else if (e.key === "End") next = its.length - 1;
+        if (next >= 0) {
+          e.preventDefault();
+          its[next].focus();
+          return;
+        }
+        if ((e.key === "Enter" || e.key === " ") && idx >= 0) {
+          e.preventDefault();
+          this.dispatchEvent(new CustomEvent("contour:select", { detail: { index: idx, label: its[idx].textContent }, bubbles: true }));
+        }
+      });
+      // make items focusable
+      items().forEach((it) => { if (!it.hasAttribute("tabindex")) it.setAttribute("tabindex", "-1"); });
+    }
   }
   define("contour-menu", ContourMenu);
 
@@ -250,12 +282,60 @@
             btn.className = "c-tabs__tab" + (i === 0 ? " c-tabs__tab--active" : "");
             btn.setAttribute("role", "tab");
             btn.setAttribute("aria-selected", String(i === 0));
+            btn.tabIndex = i === 0 ? 0 : -1;
             btn.textContent = typeof t === "string" ? t : t.label;
             list.appendChild(btn);
           });
           this.prepend(list);
         } catch (e) { /* keep existing */ }
       }
+    }
+    enhance() {
+      if (this._wiredTabs) return;
+      this._wiredTabs = true;
+      const activate = (tab, focus) => {
+        const list = this.querySelector(".c-tabs__list");
+        if (!list) return;
+        const tabs = Array.from(list.querySelectorAll("[role='tab']"));
+        tabs.forEach((t) => {
+          const selected = t === tab;
+          t.setAttribute("aria-selected", String(selected));
+          t.tabIndex = selected ? 0 : -1;
+          t.classList.toggle("c-tabs__tab--active", selected);
+          const ctrl = t.getAttribute("aria-controls");
+          if (ctrl) {
+            const panel = document.getElementById(ctrl) || this.querySelector("#" + CSS.escape(ctrl));
+            if (panel) panel.hidden = !selected;
+          }
+        });
+        // index-based panels fallback
+        const panels = Array.from(this.querySelectorAll(".c-tabs__panel"));
+        if (panels.length) {
+          const idx = tabs.indexOf(tab);
+          panels.forEach((p, i) => { p.hidden = i !== idx; });
+        }
+        if (focus) try { tab.focus(); } catch (e) {}
+      };
+      this.addEventListener("click", (e) => {
+        const tab = e.target && e.target.closest ? e.target.closest("[role='tab']") : null;
+        if (tab && this.contains(tab)) activate(tab, false);
+      });
+      this.addEventListener("keydown", (e) => {
+        const tab = e.target && e.target.closest ? e.target.closest("[role='tab']") : null;
+        if (!tab) return;
+        const list = this.querySelector(".c-tabs__list");
+        if (!list) return;
+        const tabs = Array.from(list.querySelectorAll("[role='tab']"));
+        const index = tabs.indexOf(tab);
+        const map = { ArrowRight: index + 1, ArrowLeft: index - 1, Home: 0, End: tabs.length - 1 };
+        if (!(e.key in map)) return;
+        e.preventDefault();
+        const next = tabs[(map[e.key] + tabs.length) % tabs.length];
+        if (next) activate(next, true);
+      });
+      // initialise
+      const first = this.querySelector(".c-tabs__list [role='tab']");
+      if (first) activate(first, false);
     }
   }
   define("contour-tabs", ContourTabs);
@@ -336,6 +416,64 @@
         } catch (e) { /* keep existing */ }
       }
     }
+    enhance() {
+      if (this._wiredCombobox) return;
+      this._wiredCombobox = true;
+      const input = () => this.querySelector(".c-combobox__input");
+      const list = () => this.querySelector(".c-combobox__list");
+      const options = () => Array.from(this.querySelectorAll(".c-combobox__option"));
+      let activeIndex = -1;
+      const filter = (query) => {
+        const q = (query || "").toLowerCase();
+        options().forEach((opt) => {
+          const text = opt.textContent.toLowerCase();
+          opt.hidden = !!(q && !text.includes(q));
+        });
+        activeIndex = -1;
+      };
+      const open = () => { const l = list(); if (l) l.removeAttribute("hidden"); };
+      const close = () => { const l = list(); if (l) l.setAttribute("hidden", ""); };
+      const inp = input();
+      if (!inp) return;
+      const lst = list();
+      inp.addEventListener("input", () => { filter(inp.value); open(); });
+      inp.addEventListener("focus", () => { filter(inp.value); open(); });
+      inp.addEventListener("keydown", (e) => {
+        const visible = options().filter((o) => !o.hidden);
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          activeIndex = Math.min(activeIndex + 1, visible.length - 1);
+          visible.forEach((o, i) => o.classList.toggle("c-combobox__option--active", i === activeIndex));
+        } else if (e.key === "ArrowUp") {
+          e.preventDefault();
+          activeIndex = Math.max(activeIndex - 1, 0);
+          visible.forEach((o, i) => o.classList.toggle("c-combobox__option--active", i === activeIndex));
+        } else if (e.key === "Enter") {
+          e.preventDefault();
+          if (activeIndex >= 0 && visible[activeIndex]) {
+            inp.value = visible[activeIndex].textContent;
+            close();
+          }
+        } else if (e.key === "Escape") {
+          close();
+        }
+      });
+      if (lst) {
+        lst.addEventListener("click", (e) => {
+          const opt = e.target && e.target.closest ? e.target.closest(".c-combobox__option") : null;
+          if (opt) {
+            inp.value = opt.textContent;
+            close();
+            inp.focus();
+          }
+        });
+      }
+      const docClick = (e) => {
+        if (!this.isConnected) { document.removeEventListener("click", docClick); return; }
+        if (!this.contains(e.target)) close();
+      };
+      document.addEventListener("click", docClick);
+    }
   }
   define("contour-combobox", ContourCombobox);
 
@@ -384,6 +522,25 @@
           render(parsed, null);
         } catch (e) { /* keep existing */ }
       }
+    }
+    enhance() {
+      if (this._wiredTree) return;
+      this._wiredTree = true;
+      this.addEventListener("click", (e) => {
+        const toggle = e.target && e.target.closest ? e.target.closest(".c-tree__toggle") : null;
+        if (!toggle || !this.contains(toggle)) return;
+        e.stopPropagation();
+        const expanded = toggle.getAttribute("aria-expanded") === "true";
+        toggle.setAttribute("aria-expanded", String(!expanded));
+        const row = toggle.closest(".c-tree__row");
+        if (row) row.setAttribute("aria-expanded", String(!expanded));
+        const node = toggle.closest(".c-tree__node");
+        const children = node ? node.querySelector(":scope > .c-tree__children") : null;
+        if (children) {
+          if (expanded) children.setAttribute("hidden", "");
+          else children.removeAttribute("hidden");
+        }
+      });
     }
   }
   define("contour-tree", ContourTree);
@@ -828,12 +985,58 @@
             btn.className = "c-code-tabs__tab" + (i === 0 ? " c-code-tabs__tab--active" : "");
             btn.setAttribute("role", "tab");
             btn.setAttribute("aria-selected", String(i === 0));
+            btn.tabIndex = i === 0 ? 0 : -1;
             btn.textContent = typeof t === "string" ? t : t.label;
             list.appendChild(btn);
           });
           this.prepend(list);
         } catch (e) { /* keep existing */ }
       }
+    }
+    enhance() {
+      if (this._wiredCodeTabs) return;
+      this._wiredCodeTabs = true;
+      const activate = (tab, focus) => {
+        const list = this.querySelector(".c-code-tabs__list");
+        if (!list) return;
+        const tabs = Array.from(list.querySelectorAll("[role='tab']"));
+        tabs.forEach((t) => {
+          const selected = t === tab;
+          t.setAttribute("aria-selected", String(selected));
+          t.tabIndex = selected ? 0 : -1;
+          t.classList.toggle("c-code-tabs__tab--active", selected);
+          const ctrl = t.getAttribute("aria-controls");
+          if (ctrl) {
+            const panel = document.getElementById(ctrl) || this.querySelector("#" + CSS.escape(ctrl));
+            if (panel) panel.hidden = !selected;
+          }
+        });
+        const panels = Array.from(this.querySelectorAll(".c-code-tabs__panel"));
+        if (panels.length) {
+          const idx = tabs.indexOf(tab);
+          panels.forEach((p, i) => { p.hidden = i !== idx; });
+        }
+        if (focus) try { tab.focus(); } catch (e) {}
+      };
+      this.addEventListener("click", (e) => {
+        const tab = e.target && e.target.closest ? e.target.closest("[role='tab']") : null;
+        if (tab && this.contains(tab)) activate(tab, false);
+      });
+      this.addEventListener("keydown", (e) => {
+        const tab = e.target && e.target.closest ? e.target.closest("[role='tab']") : null;
+        if (!tab) return;
+        const list = this.querySelector(".c-code-tabs__list");
+        if (!list) return;
+        const tabs = Array.from(list.querySelectorAll("[role='tab']"));
+        const index = tabs.indexOf(tab);
+        const map = { ArrowRight: index + 1, ArrowLeft: index - 1, Home: 0, End: tabs.length - 1 };
+        if (!(e.key in map)) return;
+        e.preventDefault();
+        const next = tabs[(map[e.key] + tabs.length) % tabs.length];
+        if (next) activate(next, true);
+      });
+      const first = this.querySelector(".c-code-tabs__list [role='tab']");
+      if (first) activate(first, false);
     }
   }
   define("contour-code-tabs", ContourCodeTabs);
@@ -2146,6 +2349,23 @@
   }
   define("contour-theme-scope", ContourThemeScopeFull);
 
+  // Segmented: class wrapper with aria-pressed wiring.
+  class ContourSegmented extends ContourBase {
+    render() { this.classList.add("c-segmented"); }
+    enhance() {
+      if (this._wiredSegmented) return;
+      this._wiredSegmented = true;
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest("button") : null;
+        if (!btn || !this.contains(btn)) return;
+        const options = Array.from(this.querySelectorAll("button"));
+        options.forEach((o) => o.setAttribute("aria-pressed", String(o === btn)));
+        this.dispatchEvent(new CustomEvent("contour:change", { detail: { value: btn.dataset.value || btn.textContent }, bubbles: true }));
+      });
+    }
+  }
+  define("contour-segmented", ContourSegmented);
+
 
   // Install: already defined above.
 
@@ -2200,6 +2420,510 @@
   // Theme scope: already defined above.
 
   // Field: already defined above.
+
+  // Panel: generates head + body + foot from attributes.
+  class ContourPanel extends ContourBase {
+    render() {
+      this.classList.add("c-panel");
+      const title = this.getAttribute("title");
+      const subtitle = this.getAttribute("subtitle");
+      const status = this.getAttribute("status");
+      if (title && !this.querySelector(".c-panel__title")) {
+        const h = document.createElement("h3");
+        h.className = "c-panel__title";
+        h.textContent = title;
+        this.prepend(h);
+      }
+      if (subtitle && !this.querySelector(".c-panel__subtitle")) {
+        const sub = document.createElement("p");
+        sub.className = "c-panel__subtitle";
+        sub.textContent = subtitle;
+        this.appendChild(sub);
+      }
+      if (status && !this.querySelector(".c-panel__status")) {
+        const st = document.createElement("span");
+        st.className = "c-panel__status";
+        st.textContent = status;
+        this.appendChild(st);
+      }
+    }
+  }
+  define("contour-panel", ContourPanel);
+
+  // Legend: generates title + items from attributes.
+  class ContourLegend extends ContourBase {
+    render() {
+      this.classList.add("c-legend");
+      const title = this.getAttribute("title");
+      const method = this.getAttribute("method");
+      const norm = this.getAttribute("norm");
+      if (title && !this.querySelector(".c-legend__title")) {
+        const t = document.createElement("div");
+        t.className = "c-legend__title";
+        t.textContent = title;
+        this.appendChild(t);
+      }
+      const items = this.getAttribute("items");
+      if (items && !this.querySelector(".c-legend__items")) {
+        try {
+          const parsed = JSON.parse(items);
+          const list = document.createElement("div");
+          list.className = "c-legend__items";
+          parsed.forEach((it) => {
+            const item = document.createElement("div");
+            item.className = "c-legend__item";
+            const sw = document.createElement("span");
+            sw.className = "c-legend__swatch";
+            if (it.color) sw.style.background = it.color;
+            item.appendChild(sw);
+            const lbl = document.createElement("span");
+            lbl.textContent = typeof it === "string" ? it : (it.label || it);
+            item.appendChild(lbl);
+            list.appendChild(item);
+          });
+          this.appendChild(list);
+        } catch (e) { /* keep existing */ }
+      }
+      if (method && !this.querySelector(".c-legend__method")) {
+        const m = document.createElement("div");
+        m.className = "c-legend__method";
+        m.textContent = method;
+        this.appendChild(m);
+      }
+      if (norm && !this.querySelector(".c-legend__norm")) {
+        const n = document.createElement("span");
+        n.className = "c-legend__norm";
+        n.textContent = norm;
+        this.appendChild(n);
+      }
+    }
+  }
+  define("contour-legend", ContourLegend);
+
+  // Measure: generates label + value from attributes.
+  class ContourMeasure extends ContourBase {
+    render() {
+      this.classList.add("c-measure");
+      const label = this.getAttribute("label");
+      const value = this.getAttribute("value");
+      if (label && !this.querySelector(".c-measure__label")) {
+        const l = document.createElement("span");
+        l.className = "c-measure__label";
+        l.textContent = label;
+        this.appendChild(l);
+      }
+      if (value && !this.querySelector(".c-measure__readout")) {
+        const r = document.createElement("span");
+        r.className = "c-measure__readout";
+        r.textContent = value;
+        this.appendChild(r);
+      }
+    }
+  }
+  define("contour-measure", ContourMeasure);
+
+  // Filter pill: generates key + value + remove from attributes.
+  class ContourFilterPill extends ContourBase {
+    render() {
+      this.classList.add("c-filter-pill");
+      const key = this.getAttribute("key");
+      const value = this.getAttribute("value");
+      if (key && !this.querySelector(".c-filter-pill__key")) {
+        const k = document.createElement("span");
+        k.className = "c-filter-pill__key";
+        k.textContent = key;
+        this.appendChild(k);
+      }
+      if (value && !this.querySelector(".c-filter-pill__value")) {
+        const v = document.createElement("span");
+        v.className = "c-filter-pill__value";
+        v.textContent = value;
+        this.appendChild(v);
+      }
+      if (this.hasAttribute("removable") && !this.querySelector(".c-filter-pill__remove")) {
+        const btn = document.createElement("button");
+        btn.className = "c-filter-pill__remove";
+        btn.type = "button";
+        btn.setAttribute("aria-label", "Remove filter");
+        btn.textContent = "×";
+        this.appendChild(btn);
+      }
+    }
+  }
+  define("contour-filter-pill", ContourFilterPill);
+
+  // Timeline: generates items from attribute.
+  class ContourTimeline extends ContourBase {
+    render() {
+      this.classList.add("c-timeline");
+      const items = this.getAttribute("items");
+      if (items && !this.querySelector(".c-timeline__item")) {
+        try {
+          const parsed = JSON.parse(items);
+          parsed.forEach((it) => {
+            const item = document.createElement("div");
+            item.className = "c-timeline__item";
+            if (it.time) {
+              const t = document.createElement("time");
+              t.className = "c-timeline__time";
+              t.textContent = it.time;
+              item.appendChild(t);
+            }
+            if (it.title) {
+              const ti = document.createElement("div");
+              ti.className = "c-timeline__title";
+              ti.textContent = it.title;
+              item.appendChild(ti);
+            }
+            if (it.text) {
+              const tx = document.createElement("div");
+              tx.className = "c-timeline__text";
+              tx.textContent = it.text;
+              item.appendChild(tx);
+            }
+            this.appendChild(item);
+          });
+        } catch (e) { /* keep existing */ }
+      }
+    }
+  }
+  define("contour-timeline", ContourTimeline);
+
+  // CTA: generates title + text + actions from attributes.
+  class ContourCta extends ContourBase {
+    render() {
+      this.classList.add("c-cta");
+      const title = this.getAttribute("title");
+      const text = this.getAttribute("text");
+      if (title && !this.querySelector(".c-cta__title")) {
+        const t = document.createElement("h3");
+        t.className = "c-cta__title";
+        t.textContent = title;
+        this.appendChild(t);
+      }
+      if (text && !this.querySelector(".c-cta__text")) {
+        const p = document.createElement("p");
+        p.className = "c-cta__text";
+        p.textContent = text;
+        this.appendChild(p);
+      }
+      const actions = this.getAttribute("actions");
+      if (actions && !this.querySelector(".c-cta__actions")) {
+        try {
+          const parsed = JSON.parse(actions);
+          const wrap = document.createElement("div");
+          wrap.className = "c-cta__actions";
+          parsed.forEach((a) => {
+            const btn = document.createElement("button");
+            btn.className = "c-btn c-btn--primary";
+            btn.type = "button";
+            btn.textContent = typeof a === "string" ? a : (a.label || a);
+            wrap.appendChild(btn);
+          });
+          this.appendChild(wrap);
+        } catch (e) { /* keep existing */ }
+      }
+    }
+  }
+  define("contour-cta", ContourCta);
+
+  // Filter bar: generates label + divider from attributes.
+  class ContourFilterBar extends ContourBase {
+    render() {
+      this.classList.add("c-filter-bar");
+      const label = this.getAttribute("label");
+      if (label && !this.querySelector(".c-filter-bar__label")) {
+        const l = document.createElement("span");
+        l.className = "c-filter-bar__label";
+        l.textContent = label;
+        this.appendChild(l);
+      }
+      if (this.hasAttribute("divider") && !this.querySelector(".c-filter-bar__divider")) {
+        const d = document.createElement("span");
+        d.className = "c-filter-bar__divider";
+        this.appendChild(d);
+      }
+    }
+  }
+  define("contour-filter-bar", ContourFilterBar);
+
+  // Command: generates input + list from items attribute.
+  class ContourCommand extends ContourBase {
+    render() {
+      this.classList.add("c-command");
+      const placeholder = this.getAttribute("placeholder") || "Search…";
+      if (!this.querySelector(".c-command__input")) {
+        const input = document.createElement("input");
+        input.className = "c-command__input";
+        input.type = "text";
+        input.placeholder = placeholder;
+        input.setAttribute("aria-label", "Command");
+        this.appendChild(input);
+      }
+      const items = this.getAttribute("items");
+      if (items && !this.querySelector(".c-command__list")) {
+        try {
+          const parsed = JSON.parse(items);
+          const list = document.createElement("div");
+          list.className = "c-command__list";
+          parsed.forEach((it) => {
+            const item = document.createElement("div");
+            item.className = "c-command__item";
+            if (it.icon) {
+              const ic = document.createElement("span");
+              ic.className = "c-command__item-icon";
+              ic.textContent = it.icon;
+              item.appendChild(ic);
+            }
+            const body = document.createElement("div");
+            body.className = "c-command__item-body";
+            if (it.title) {
+              const t = document.createElement("div");
+              t.className = "c-command__item-title";
+              t.textContent = it.title;
+              body.appendChild(t);
+            }
+            if (it.hint) {
+              const h = document.createElement("span");
+              h.className = "c-command__item-hint";
+              h.textContent = it.hint;
+              body.appendChild(h);
+            }
+            item.appendChild(body);
+            list.appendChild(item);
+          });
+          this.appendChild(list);
+        } catch (e) { /* keep existing */ }
+      }
+      const empty = this.getAttribute("empty");
+      if (empty && !this.querySelector(".c-command__empty")) {
+        const e = document.createElement("div");
+        e.className = "c-command__empty";
+        e.textContent = empty;
+        this.appendChild(e);
+      }
+    }
+  }
+  define("contour-command", ContourCommand);
+
+  // Heatmap: generates cells from count attribute.
+  class ContourHeatmap extends ContourBase {
+    render() {
+      this.classList.add("c-heatmap");
+      const count = parseInt(this.getAttribute("cells") || this.getAttribute("count") || "0", 10);
+      if (count > 0 && !this.querySelector(".c-heatmap__cell")) {
+        for (let i = 0; i < count; i++) {
+          const cell = document.createElement("div");
+          cell.className = "c-heatmap__cell";
+          this.appendChild(cell);
+        }
+      }
+      if (this.hasAttribute("legend") && !this.querySelector(".c-heatmap__legend")) {
+        const leg = document.createElement("div");
+        leg.className = "c-heatmap__legend";
+        const bar = document.createElement("div");
+        bar.className = "c-heatmap__legend-bar";
+        leg.appendChild(bar);
+        this.appendChild(leg);
+      }
+    }
+  }
+  define("contour-heatmap", ContourHeatmap);
+
+  // Layer switch: generates items from attribute.
+  class ContourLayerSwitch extends ContourBase {
+    render() {
+      this.classList.add("c-layer-switch");
+      const items = this.getAttribute("items");
+      if (items && !this.querySelector(".c-layer-switch__item")) {
+        try {
+          const parsed = JSON.parse(items);
+          parsed.forEach((it) => {
+            const item = document.createElement("div");
+            item.className = "c-layer-switch__item";
+            const sw = document.createElement("span");
+            sw.className = "c-layer-switch__swatch";
+            if (it.color) sw.style.background = it.color;
+            item.appendChild(sw);
+            const name = document.createElement("span");
+            name.className = "c-layer-switch__name";
+            name.textContent = typeof it === "string" ? it : (it.name || it.label || "");
+            item.appendChild(name);
+            if (it.count != null) {
+              const c = document.createElement("span");
+              c.className = "c-layer-switch__count";
+              c.textContent = it.count;
+              item.appendChild(c);
+            }
+            const toggle = document.createElement("button");
+            toggle.className = "c-layer-switch__toggle";
+            toggle.type = "button";
+            toggle.textContent = "Toggle";
+            item.appendChild(toggle);
+            this.appendChild(item);
+          });
+        } catch (e) { /* keep existing */ }
+      }
+    }
+  }
+  define("contour-layer-switch", ContourLayerSwitch);
+
+  // Map slot: generates attribution + scale from attributes.
+  class ContourMapSlot extends ContourBase {
+    render() {
+      this.classList.add("c-map-slot");
+      const attribution = this.getAttribute("attribution");
+      if (attribution && !this.querySelector(".c-map-slot__attribution")) {
+        const a = document.createElement("div");
+        a.className = "c-map-slot__attribution";
+        a.textContent = attribution;
+        this.appendChild(a);
+      }
+      const scale = this.getAttribute("scale");
+      if (scale && !this.querySelector(".c-map-slot__scale")) {
+        const sc = document.createElement("div");
+        sc.className = "c-map-slot__scale";
+        sc.textContent = scale;
+        this.appendChild(sc);
+      }
+    }
+  }
+  define("contour-map-slot", ContourMapSlot);
+
+  // Map area: generates attribution + scale + controls from attributes.
+  class ContourMapArea extends ContourBase {
+    render() {
+      this.classList.add("c-map-area");
+      const attribution = this.getAttribute("attribution");
+      if (attribution && !this.querySelector(".c-map-area__attribution")) {
+        const a = document.createElement("div");
+        a.className = "c-map-area__attribution";
+        a.textContent = attribution;
+        this.appendChild(a);
+      }
+      const mark = this.getAttribute("attribution-mark");
+      if (mark && !this.querySelector(".c-map-area__attribution-mark")) {
+        const m = document.createElement("span");
+        m.className = "c-map-area__attribution-mark";
+        m.textContent = mark;
+        this.appendChild(m);
+      }
+      const scale = this.getAttribute("scale");
+      if (scale && !this.querySelector(".c-map-area__scale")) {
+        const sc = document.createElement("div");
+        sc.className = "c-map-area__scale";
+        sc.textContent = scale;
+        this.appendChild(sc);
+      }
+      const controls = this.getAttribute("controls");
+      if (controls && !this.querySelector(".c-map-area__controls")) {
+        try {
+          const parsed = JSON.parse(controls);
+          const wrap = document.createElement("div");
+          wrap.className = "c-map-area__controls";
+          parsed.forEach((c) => {
+            const btn = document.createElement("button");
+            btn.className = "c-map-area__control";
+            btn.type = "button";
+            btn.textContent = typeof c === "string" ? c : (c.label || c);
+            wrap.appendChild(btn);
+          });
+          this.appendChild(wrap);
+        } catch (e) { /* keep existing */ }
+      }
+    }
+  }
+  define("contour-map-area", ContourMapArea);
+
+  // Map panel: generates head + body + foot from attributes.
+  class ContourMapPanel extends ContourBase {
+    render() {
+      this.classList.add("c-map-panel");
+      const title = this.getAttribute("title");
+      if (title && !this.querySelector(".c-map-panel__title")) {
+        const h = document.createElement("h3");
+        h.className = "c-map-panel__title";
+        h.textContent = title;
+        this.prepend(h);
+      }
+    }
+  }
+  define("contour-map-panel", ContourMapPanel);
+
+  // Map footer: generates brand + links from attributes.
+  class ContourMapFooter extends ContourBase {
+    render() {
+      this.classList.add("c-map-footer");
+      const brand = this.getAttribute("brand");
+      if (brand && !this.querySelector(".c-map-footer__brand")) {
+        const b = document.createElement("span");
+        b.className = "c-map-footer__brand";
+        b.textContent = brand;
+        this.appendChild(b);
+      }
+    }
+  }
+  define("contour-map-footer", ContourMapFooter);
+
+  // Docs nav: generates groups/links from items attribute.
+  class ContourDocsNav extends ContourBase {
+    render() {
+      this.classList.add("c-docs-nav");
+      const items = this.getAttribute("items");
+      if (items && !this.querySelector(".c-docs-nav__list")) {
+        try {
+          const parsed = JSON.parse(items);
+          const list = document.createElement("div");
+          list.className = "c-docs-nav__list";
+          parsed.forEach((g) => {
+            const group = document.createElement("div");
+            group.className = "c-docs-nav__group";
+            if (g.title) {
+              const gt = document.createElement("div");
+              gt.className = "c-docs-nav__group-title";
+              gt.textContent = g.title;
+              group.appendChild(gt);
+            }
+            const ul = document.createElement("div");
+            ul.className = "c-docs-nav__list";
+            (g.links || g.items || []).forEach((l) => {
+              const a = document.createElement("a");
+              a.className = "c-docs-nav__link";
+              a.href = (typeof l === "string" ? "#" : (l.href || "#"));
+              a.textContent = typeof l === "string" ? l : (l.label || l);
+              ul.appendChild(a);
+            });
+            group.appendChild(ul);
+            list.appendChild(group);
+          });
+          this.appendChild(list);
+        } catch (e) { /* keep existing */ }
+      }
+    }
+  }
+  define("contour-docs-nav", ContourDocsNav);
+
+  // Docs shell: generates title + lede from attributes.
+  class ContourDocsShell extends ContourBase {
+    render() {
+      this.classList.add("c-docs-shell");
+      const title = this.getAttribute("title");
+      if (title && !this.querySelector(".c-docs-shell__title")) {
+        const h = document.createElement("h1");
+        h.className = "c-docs-shell__title";
+        h.textContent = title;
+        this.appendChild(h);
+      }
+      const lede = this.getAttribute("lede");
+      if (lede && !this.querySelector(".c-docs-shell__lede")) {
+        const p = document.createElement("p");
+        p.className = "c-docs-shell__lede";
+        p.textContent = lede;
+        this.appendChild(p);
+      }
+    }
+  }
+  define("contour-docs-shell", ContourDocsShell);
 
   // ---- Registration: the class-only wrappers run last ------------------
   //
@@ -2260,7 +2984,157 @@
       this.enhance(root);
     }
     // Subclasses with behaviour beyond the template override this.
-    enhance() {}
+    enhance(root) {
+      if (!root) root = this.shadowRoot;
+      if (!root || this._wiredShadow) return;
+      this._wiredShadow = true;
+      // Tabs / code-tabs panel switching
+      const tabLists = root.querySelectorAll(".c-tabs__list, .c-code-tabs__list");
+      tabLists.forEach((list) => {
+        const isCode = list.classList.contains("c-code-tabs__list");
+        const tabSel = isCode ? ".c-code-tabs__tab" : ".c-tabs__tab";
+        const activeCls = isCode ? "c-code-tabs__tab--active" : "c-tabs__tab--active";
+        const activate = (tab, focus) => {
+          const tabs = Array.from(list.querySelectorAll("[role='tab']"));
+          tabs.forEach((t) => {
+            const selected = t === tab;
+            t.setAttribute("aria-selected", String(selected));
+            t.tabIndex = selected ? 0 : -1;
+            t.classList.toggle(activeCls, selected);
+            const ctrl = t.getAttribute("aria-controls");
+            if (ctrl) {
+              const panel = root.querySelector("#" + CSS.escape(ctrl)) || document.getElementById(ctrl);
+              if (panel) panel.hidden = !selected;
+            }
+          });
+          const panels = Array.from(root.querySelectorAll(isCode ? ".c-code-tabs__panel" : ".c-tabs__panel"));
+          if (panels.length) {
+            const idx = tabs.indexOf(tab);
+            panels.forEach((p, i) => { p.hidden = i !== idx; });
+          }
+          if (focus) try { tab.focus(); } catch (e) {}
+        };
+        root.addEventListener("click", (e) => {
+          const tab = e.target && e.target.closest ? e.target.closest("[role='tab']") : null;
+          if (tab && list.contains(tab)) activate(tab, false);
+        });
+        root.addEventListener("keydown", (e) => {
+          const tab = e.target && e.target.closest ? e.target.closest("[role='tab']") : null;
+          if (!tab || !list.contains(tab)) return;
+          const tabs = Array.from(list.querySelectorAll("[role='tab']"));
+          const index = tabs.indexOf(tab);
+          const map = { ArrowRight: index + 1, ArrowLeft: index - 1, Home: 0, End: tabs.length - 1 };
+          if (!(e.key in map)) return;
+          e.preventDefault();
+          const next = tabs[(map[e.key] + tabs.length) % tabs.length];
+          if (next) activate(next, true);
+        });
+        const first = list.querySelector("[role='tab']");
+        if (first) activate(first, false);
+      });
+      // Segmented
+      const segs = root.querySelectorAll(".c-segmented");
+      segs.forEach((seg) => {
+        seg.addEventListener("click", (e) => {
+          const btn = e.target && e.target.closest ? e.target.closest("button") : null;
+          if (!btn || !seg.contains(btn)) return;
+          const options = Array.from(seg.querySelectorAll("button"));
+          options.forEach((o) => o.setAttribute("aria-pressed", String(o === btn)));
+          seg.dispatchEvent(new CustomEvent("contour:change", { detail: { value: btn.dataset.value || btn.textContent }, bubbles: true }));
+        });
+      });
+      // Combobox
+      const combos = root.querySelectorAll(".c-combobox");
+      combos.forEach((combo) => {
+        const input = combo.querySelector(".c-combobox__input");
+        const list = combo.querySelector(".c-combobox__list");
+        if (!input || !list) return;
+        const opts = () => Array.from(combo.querySelectorAll(".c-combobox__option"));
+        let activeIndex = -1;
+        const filter = (q) => {
+          const query = (q || "").toLowerCase();
+          opts().forEach((o) => {
+            const text = o.textContent.toLowerCase();
+            o.hidden = !!(query && !text.includes(query));
+          });
+          activeIndex = -1;
+        };
+        const open = () => list.removeAttribute("hidden");
+        const close = () => list.setAttribute("hidden", "");
+        input.addEventListener("input", () => { filter(input.value); open(); });
+        input.addEventListener("focus", () => { filter(input.value); open(); });
+        input.addEventListener("keydown", (e) => {
+          const visible = opts().filter((o) => !o.hidden);
+          if (e.key === "ArrowDown") {
+            e.preventDefault();
+            activeIndex = Math.min(activeIndex + 1, visible.length - 1);
+            visible.forEach((o, i) => o.classList.toggle("c-combobox__option--active", i === activeIndex));
+          } else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            activeIndex = Math.max(activeIndex - 1, 0);
+            visible.forEach((o, i) => o.classList.toggle("c-combobox__option--active", i === activeIndex));
+          } else if (e.key === "Enter") {
+            e.preventDefault();
+            if (activeIndex >= 0 && visible[activeIndex]) {
+              input.value = visible[activeIndex].textContent;
+              close();
+            }
+          } else if (e.key === "Escape") {
+            close();
+          }
+        });
+        list.addEventListener("click", (e) => {
+          const opt = e.target && e.target.closest ? e.target.closest(".c-combobox__option") : null;
+          if (opt) {
+            input.value = opt.textContent;
+            close();
+            input.focus();
+          }
+        });
+        root.addEventListener("click", (e) => {
+          if (!combo.contains(e.target)) close();
+        });
+      });
+      // Tree
+      const toggles = root.querySelectorAll(".c-tree__toggle");
+      toggles.forEach((toggle) => {
+        toggle.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const expanded = toggle.getAttribute("aria-expanded") === "true";
+          toggle.setAttribute("aria-expanded", String(!expanded));
+          const row = toggle.closest(".c-tree__row");
+          if (row) row.setAttribute("aria-expanded", String(!expanded));
+          const node = toggle.closest(".c-tree__node");
+          const children = node ? node.querySelector(":scope > .c-tree__children") : null;
+          if (children) {
+            if (expanded) children.setAttribute("hidden", "");
+            else children.removeAttribute("hidden");
+          }
+        });
+      });
+      // Menu
+      const menus = root.querySelectorAll(".c-menu");
+      menus.forEach((menu) => {
+        const items = () => Array.from(menu.querySelectorAll("[role='menuitem']"));
+        items().forEach((it) => { if (!it.hasAttribute("tabindex")) it.setAttribute("tabindex", "-1"); });
+        menu.addEventListener("keydown", (e) => {
+          const its = items();
+          if (!its.length) return;
+          const current = (typeof document !== "undefined") ? document.activeElement : null;
+          const idx = its.indexOf(current);
+          let next = -1;
+          if (e.key === "ArrowDown") next = idx < 0 ? 0 : Math.min(idx + 1, its.length - 1);
+          else if (e.key === "ArrowUp") next = idx < 0 ? its.length - 1 : Math.max(idx - 1, 0);
+          else if (e.key === "Home") next = 0;
+          else if (e.key === "End") next = its.length - 1;
+          if (next >= 0) { e.preventDefault(); its[next].focus(); return; }
+          if ((e.key === "Enter" || e.key === " ") && idx >= 0) {
+            e.preventDefault();
+            menu.dispatchEvent(new CustomEvent("contour:select", { detail: { index: idx, label: its[idx].textContent }, bubbles: true }));
+          }
+        });
+      });
+    }
     connectedCallback() { this.applyMods(); }
     attributeChangedCallback() { this.applyMods(); }
     applyMods() {
@@ -2404,6 +3278,7 @@
       return tpl;
     })();
     enhance(root) {
+      super.enhance(root);
       const close = root.querySelector('[part="close"]');
       if (close) close.addEventListener("click", () => root.querySelector("dialog")?.close());
     }

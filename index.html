@@ -3163,6 +3163,7 @@ means obvious.
 &lt;/ul&gt;</code></pre>
                       </div>
                     </details></div>
+          </div>
 
           <div class="ds-spec">
             <div class="ds-spec__head">
@@ -3628,7 +3629,7 @@ means obvious.
                     </details></div>
             </div>
           </div>
-        </div></section>
+        </section>
 
         <!-- ===================== 11 · FEEDBACK ===================== -->
         <section class="section section--sunken" id="feedback">
@@ -6694,6 +6695,7 @@ means obvious.
 &lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
+          </div>
           <!-- Layer panel -->
           <div class="ds-spec" style="margin-block-start: var(--space-cluster)">
             <div class="ds-spec__head">
@@ -6906,7 +6908,7 @@ means obvious.
           </div>
 
 
-        </div></section>
+        </section>
         <section class="section" id="docs">
           <div class="c-section-head">
             <div class="c-icon-badge">
@@ -11024,6 +11026,7 @@ means obvious.
 &lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
+          </div>
           <!-- View transitions morphing -->
           <div class="ds-spec" style="margin-block-start: var(--space-cluster)">
             <div class="ds-spec__head">
@@ -11175,7 +11178,7 @@ means obvious.
                     </details></div>
           </div>
 
-        </div></section>
+        </section>
 
         <!-- ===================== 22 · INSTALL ===================== -->
         <section class="section section--sunken" id="install">
@@ -11299,8 +11302,12 @@ means obvious.
               <p class="muted" style="font-size: var(--type-sm); margin-block: 0 1rem">
                 Optional progressive enhancement. Load <code class="c-kbd">contour-wc.js</code> after
                 <code class="c-kbd">ds.css</code> to use <code class="c-kbd">contour-btn</code>,
-                <code class="c-kbd">contour-card</code>, and 150+ other custom elements that
-                generate their scaffolding from attributes. All use light DOM so the cascade applies.
+                <code class="c-kbd">contour-card</code>, and 320+ other custom elements that
+                generate their scaffolding from attributes. Light-DOM elements
+                (<code class="c-kbd">contour-*</code>) use the cascade directly; shadow-DOM
+                elements (<code class="c-kbd">contour-shadow-*</code>) ship slots and adopted
+                stylesheets for encapsulation. Interactive blocks (tabs, combobox, tree, menu,
+                segmented) wire their own keyboard behaviour, so they work standalone.
               </p>
               <span class="c-badge c-badge--primary">Web component</span>
             </div><details class="ds-code" data-generated="code">
