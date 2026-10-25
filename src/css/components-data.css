@@ -236,7 +236,7 @@
     display: flex;
     align-items: flex-start;
     gap: var(--space-sm);
-    padding: var(--space-sm) var(--space-md);
+    padding: calc(var(--space-sm) * var(--density, 1)) calc(var(--space-md) * var(--density, 1));
     border-block-end: 1px solid var(--color-border-subtle);
   }
 
@@ -273,7 +273,7 @@
   }
 
   .c-panel__foot {
-    padding: 0.65rem var(--space-md);
+    padding: calc(0.65rem * var(--density, 1)) calc(var(--space-md) * var(--density, 1));
     border-block-start: 1px solid var(--color-border-subtle);
     background: var(--color-surface-2);
     font-family: var(--font-mono);

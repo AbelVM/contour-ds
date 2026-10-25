@@ -148,6 +148,8 @@ class ContourLayerSwitch extends ContourBase {
   }
   define("contour-layer-switch", ContourLayerSwitch);
 class ContourMapSlot extends ContourBase {
+    static get observed() { return ["attribution", "scale"]; }
+    static get properties() { return { attribution: { attribute: "attribution" }, scale: { attribute: "scale" } }; }
     render() {
       this.classList.add("c-map-slot");
       const attribution = this.getAttribute("attribution");
@@ -170,6 +172,8 @@ class ContourMapSlot extends ContourBase {
   }
   define("contour-map-slot", ContourMapSlot);
 class ContourMapArea extends ContourBase {
+    static get observed() { return ["attribution", "attribution-mark", "scale", "controls"]; }
+    static get properties() { return { attribution: { attribute: "attribution" }, "attribution-mark": { attribute: "attribution-mark" }, scale: { attribute: "scale" }, controls: { attribute: "controls" } }; }
     render() {
       this.classList.add("c-map-area");
       const attribution = this.getAttribute("attribution");
@@ -218,6 +222,8 @@ class ContourMapArea extends ContourBase {
   }
   define("contour-map-area", ContourMapArea);
 class ContourMapPanel extends ContourBase {
+    static get observed() { return ["title"]; }
+    static get properties() { return { title: { attribute: "title" } }; }
     render() {
       this.classList.add("c-map-panel");
       const title = this.getAttribute("title");
