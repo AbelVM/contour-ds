@@ -29,12 +29,16 @@ class ContourCoordinate extends ContourBase {
   }
   define("contour-coordinate", ContourCoordinate);
 class ContourLayerPanel extends ContourBase {
+    static get observed() { return ["label"]; }
+    static get properties() { return { label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-layer-panel");
     }
   }
   define("contour-layer-panel", ContourLayerPanel);
 class ContourTimeSlider extends ContourBase {
+    static get observed() { return ["label"]; }
+    static get properties() { return { label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-time-slider");
     }
@@ -106,6 +110,8 @@ class ContourCompassFull extends ContourBase {
   }
   define("contour-compass", ContourCompassFull);
 class ContourLayerSwitch extends ContourBase {
+    static get observed() { return ["items"]; }
+    static get properties() { return { items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-layer-switch");
       const items = this.getAttribute("items");
