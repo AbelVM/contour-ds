@@ -267,7 +267,9 @@ writeFileSync(join(dist, "contour.js"), js, "utf-8");
 writeFileSync(join(dist, "contour.min.js"), `${minifyJs(js)}\n`, "utf-8");
 
 // -- Web components (optional progressive enhancement) ---------------------
-const wc = readFileSync(join(root, "src/js/contour-wc.js"), "utf-8");
+// Source lives in fragments under src/js/wc/; concatenate in filename order.
+const wcFrags = readdirSync(join(root, "src/js/wc")).filter((f) => f.endsWith(".js")).sort();
+const wc = wcFrags.map((f) => readFileSync(join(root, "src/js/wc", f), "utf-8")).join("");
 writeFileSync(join(dist, "contour-wc.js"), wc, "utf-8");
 writeFileSync(join(dist, "contour-wc.min.js"), `${minifyJs(wc)}\n`, "utf-8");
 

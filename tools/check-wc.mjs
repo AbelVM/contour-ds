@@ -7,25 +7,31 @@
  * (a self-referential base class, an IIFE that closes early, a missing registry)
  * without needing a browser driver.
  */
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const SRC = join(ROOT, "src/js/contour-wc.js");
+const FRAG_DIR = join(ROOT, "src/js/wc");
 const errors = [];
 const fail = (m) => errors.push(m);
 
-if (!existsSync(SRC)) {
-  console.error("check-wc: src/js/contour-wc.js is missing");
+if (!existsSync(FRAG_DIR)) {
+  console.error("check-wc: src/js/wc/ is missing");
   process.exit(1);
 }
-const src = readFileSync(SRC, "utf-8");
+const frags = readdirSync(FRAG_DIR).filter((f) => f.endsWith(".js")).sort();
+if (!frags.length) {
+  console.error("check-wc: no fragments found");
+  process.exit(1);
+}
+const src = frags.map((f) => readFileSync(join(FRAG_DIR, f), "utf-8")).join("");
 
-// 1. syntax
+// 1. syntax (checked against the committed bundle, which must stay in sync)
+const BUNDLE = join(ROOT, "src/js/contour-wc.js");
 try {
-  execFileSync(process.execPath, ["--check", SRC], { stdio: "pipe" });
+  execFileSync(process.execPath, ["--check", BUNDLE], { stdio: "pipe" });
 } catch (e) {
   fail("src/js/contour-wc.js fails `node --check`: " + (e.stderr || e.message));
 }
