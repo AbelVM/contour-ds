@@ -51,7 +51,7 @@
     "label", "lede", "legend", "links", "live", "max", "media", "message", "method", "min", "name", "next", "no", "note", "norm",
     "options", "pages", "placeholder", "prev", "price", "prompt", "question",
     "quote", "removable", "reverse", "rows", "scale", "series", "shortcut", "size", "status",
-    "steps", "subtitle", "summary", "tabs", "tag", "text", "title", "type", "value",
+    "state", "steps", "subtitle", "summary", "tabs", "tag", "text", "title", "type", "value",
     "variant", "yes",
   ];
 
@@ -161,20 +161,7 @@
   // a fallback that only runs when the real component is broken, so the
   // registration loop skips a name an explicit component already claimed.
   const CLASS_ONLY = [
-    "alert",
-    "avatar", "badge", "bivariate", "box", "brand", "breadcrumb",
-    "callout", "card", "chart", "check", "chip", "cluster",
-    "code-tabs", "combobox", "container", "delta", "dialog", "diff",
-    "disclosure", "do-dont", "dot", "drawer",
-    "empty", "expandable", "faq", "feature", "field",
-    "flag", "header", "input",
-    "instrument", "kbd", "kpi", "link",
-    "mark", "menu", "meter", "pagination",
-    "pill", "progress", "radio", "range",
-    "readout", "row", "scrim", "section-head",
-    "select", "sheet", "skeleton", "spinner", "stack",
-    "stat", "survey", "switch", "table", "tabs", "textarea", "threshold",
-    "toast", "toolbar", "tooltip", "tree"
+    "box", "cluster", "container", "row", "scrim", "stack"
   ];
 
 
@@ -886,9 +873,10 @@
   class ContourEmpty extends ContourBase {
     render() {
       this.classList.add("c-empty");
-      const title = this.getAttribute("title");
-      const body = this.getAttribute("body");
-      const action = this.getAttribute("action");
+      const state = this.getAttribute("state") || "empty";
+      const title = this.getAttribute("title") || (state === "filtered" ? "Nothing matches" : state === "error" ? "Could not load" : "No data yet");
+      const body = this.getAttribute("body") || (state === "filtered" ? "Try clearing some filters." : state === "error" ? "Check your connection and try again." : "There is nothing to show here yet.");
+      const action = this.getAttribute("action") || (state === "filtered" ? "Clear filters" : state === "error" ? "Retry" : "");
       if (title && !this.querySelector(".c-empty__title")) {
         const t = document.createElement("h3");
         t.className = "c-empty__title";
@@ -908,6 +896,15 @@
         a.textContent = action;
         this.appendChild(a);
       }
+    }
+    enhance() {
+      if (this._wiredEmpty) return;
+      this._wiredEmpty = true;
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest(".c-empty__action") : null;
+        if (!btn || !this.contains(btn)) return;
+        this.dispatchEvent(new CustomEvent("contour:empty-action", { detail: { state: this.getAttribute("state") || "empty" }, bubbles: true }));
+      });
     }
   }
   define("contour-empty", ContourEmpty);
@@ -3164,6 +3161,23 @@
   // Scheme toggle: simple wrapper.
   class ContourSchemeToggle extends ContourBase {
     render() { this.classList.add("c-scheme-toggle"); }
+    enhance() {
+      if (this._wiredScheme) return;
+      this._wiredScheme = true;
+      this.addEventListener("click", () => {
+        const root = document.documentElement;
+        const current = root.getAttribute("data-theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        const next = current === "dark" ? "light" : "dark";
+        root.setAttribute("data-theme", next);
+        try { localStorage.setItem("contour-theme", next); } catch (e) {}
+        this.dispatchEvent(new CustomEvent("contour:theme-change", { detail: { theme: next }, bubbles: true }));
+      });
+      // restore persisted theme on connect
+      try {
+        const stored = localStorage.getItem("contour-theme");
+        if (stored) document.documentElement.setAttribute("data-theme", stored);
+      } catch (e) {}
+    }
   }
   define("contour-scheme-toggle", ContourSchemeToggle);
 

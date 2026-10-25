@@ -1420,9 +1420,66 @@
     });
   });
 
-  /* ---------------------------------------------------------------------
-   24. Drag and drop — native HTML5 DnD with reorder + keyboard + touch
-     --------------------------------------------------------------------- */
+   /* ---------------------------------------------------------------------
+    23b. Comparison slider — drag the divider to reveal before/after
+      --------------------------------------------------------------------- */
+   $$(".c-comparison").forEach((comp) => {
+     const divider = comp.querySelector(".c-comparison__divider");
+     const before = comp.querySelector(".c-comparison__pane--before");
+     if (!divider || !before) return;
+
+     const setPct = (pct) => {
+       const clamped = Math.max(2, Math.min(98, pct));
+       divider.style.insetInlineStart = clamped + "%";
+       before.style.clipPath = "inset(0 " + (100 - clamped) + "% 0 0)";
+       divider.setAttribute("aria-valuenow", String(Math.round(clamped)));
+     };
+
+     divider.setAttribute("tabindex", "0");
+     divider.setAttribute("role", "separator");
+     divider.setAttribute("aria-orientation", "vertical");
+     divider.setAttribute("aria-valuemin", "0");
+     divider.setAttribute("aria-valuemax", "100");
+     if (!divider.getAttribute("aria-label")) {
+       divider.setAttribute("aria-label", "Comparison divider");
+     }
+     // Seed from any inline position, else centre.
+     const seed = parseFloat(divider.style.insetInlineStart);
+     setPct(Number.isFinite(seed) ? seed : 50);
+
+     divider.addEventListener("pointerdown", (e) => {
+       e.preventDefault();
+       divider.setPointerCapture(e.pointerId);
+       const onMove = (ev) => {
+         const rect = comp.getBoundingClientRect();
+         if (!rect.width) return;
+         setPct(((ev.clientX - rect.left) / rect.width) * 100);
+       };
+       const onUp = () => {
+         try { divider.releasePointerCapture(e.pointerId); } catch (_) {}
+         document.removeEventListener("pointermove", onMove);
+         document.removeEventListener("pointerup", onUp);
+       };
+       document.addEventListener("pointermove", onMove);
+       document.addEventListener("pointerup", onUp);
+     });
+
+     divider.addEventListener("keydown", (e) => {
+       const current = parseFloat(divider.style.insetInlineStart);
+       const base = Number.isFinite(current) ? current : 50;
+       let delta = 0;
+       if (e.key === "ArrowLeft") delta = -2;
+       else if (e.key === "ArrowRight") delta = 2;
+       if (delta !== 0) {
+         e.preventDefault();
+         setPct(base + delta);
+       }
+     });
+   });
+
+   /* ---------------------------------------------------------------------
+    24. Drag and drop — native HTML5 DnD with reorder + keyboard + touch
+      --------------------------------------------------------------------- */
   let draggedEl = null;
   $$(".c-draggable").forEach((el) => {
     el.setAttribute("draggable", "true");

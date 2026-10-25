@@ -1359,15 +1359,16 @@
     clip-path: inset(0 50% 0 0);
   }
 
-  .c-comparison__divider {
-    position: absolute;
-    inset-block: 0;
-    inset-inline-start: 50%;
-    inline-size: 2px;
-    background: var(--color-primary);
-    cursor: col-resize;
-    z-index: 1;
-  }
+   .c-comparison__divider {
+     position: absolute;
+     inset-block: 0;
+     inset-inline-start: 50%;
+     inline-size: 2px;
+     background: var(--color-primary);
+     cursor: col-resize;
+     touch-action: none;
+     z-index: 1;
+   }
 
   .c-comparison__divider::before {
     content: "";

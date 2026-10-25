@@ -56,7 +56,7 @@ const DIST = join(ROOT, "dist");
  *  a token's meaning is published once, in the Format document. */
 const BUDGETS = {
   "contour.min.css": 168 * 1024,
-  "contour.min.js": 35 * 1024,
+  "contour.min.js": 38 * 1024,  // raised 2026-10-25: comparison slider drag (1.6 kB) added to ds.js
   "contour.d.ts": 12 * 1024,
   "contour.tokens.json": 50 * 1024,
   "contour.themes.json": 22 * 1024,
