@@ -5,6 +5,9 @@ class ContourCard extends ContourBase {
     static get properties() { return { title: { attribute: "title" }, variant: { attribute: "variant" } }; }
     render() {
       this.classList.add("c-card");
+      const variant = this.getAttribute("variant");
+      Array.from(this.classList).forEach((c) => { if (c.startsWith("c-card--")) this.classList.remove(c); });
+      if (variant) this.classList.add("c-card--" + variant);
       const title = this.getAttribute("title");
       if (title) {
         const h = this.ensure(".c-card__title", () => { const el = document.createElement("h3"); el.className = "c-card__title"; return el; });
@@ -309,7 +312,7 @@ class ContourShowcaseFull extends ContourBase {
         const m = this.ensure(".c-showcase__media", () => { const el = document.createElement("div"); el.className = "c-showcase__media"; return el; });
         // `media` is author-controlled markup (images, svg, etc.). Strip any
         // <script> tags so a hostile attribute cannot execute code.
-        m.innerHTML = String(media).replace(/<script[\s\S]*?<\/script>/gi, "");
+        m.innerHTML = String(media).replace(/<(script|iframe|object|embed)[\s\S]*?(<\/\1>|\/>)/gi, "");
       } else {
         const m = this.querySelector(".c-showcase__media");
         if (m) m.remove();

@@ -149,11 +149,14 @@ class ContourLayerSwitch extends ContourBase {
     static get properties() { return { items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-layer-switch");
+      // Drop previously generated items so a re-render cannot stack a second set.
+      Array.from(this.querySelectorAll(".c-layer-switch__item")).forEach((n) => n.remove());
       const items = this.getAttribute("items");
       if (items) {
         try {
           const parsed = JSON.parse(items);
-          parsed.forEach((it) => {
+          const capped = Array.isArray(parsed) ? parsed.slice(0, 50) : parsed;
+          capped.forEach((it) => {
             const item = document.createElement("div");
             item.className = "c-layer-switch__item";
             const sw = document.createElement("span");
@@ -278,10 +281,10 @@ class ContourMapFooter extends ContourBase {
       // The footer's own rule is `.c-map-footer > *`, which reaches any direct
       // child, so the brand is a plain span: visible, and inventing no name.
       if (brand) {
-        const b = this.ensure("span:not([class])", () => { const el = document.createElement("span"); this.appendChild(el); return el; });
+        const b = this.ensure("[data-map-footer-brand]", () => { const el = document.createElement("span"); el.setAttribute("data-map-footer-brand", ""); return el; });
         b.textContent = brand;
       } else {
-        const b = this.querySelector("span:not([class])");
+        const b = this.querySelector("[data-map-footer-brand]");
         if (b) b.remove();
       }
     }

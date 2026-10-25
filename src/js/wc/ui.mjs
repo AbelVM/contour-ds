@@ -1,4 +1,4 @@
-import { ContourBase, define } from './core.mjs';
+import { ContourBase, define, contourId } from './core.mjs';
 import { wireRemovable } from './behaviours.mjs';
 class ContourAvatar extends ContourBase {
     static get observed() { return ["name", "size", "variant"]; }
@@ -37,6 +37,7 @@ class ContourChipFull extends ContourBase {
     static get properties() { return { variant: { attribute: "variant" }, key: { attribute: "key" }, value: { attribute: "value" } }; }
     render() {
       this.classList.add("c-chip");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "status");
       const variant = this.getAttribute("variant");
       if (variant) this.classList.add("c-chip--" + variant);
       const key = this.getAttribute("key");
@@ -63,6 +64,7 @@ class ContourTag extends ContourBase {
     static get properties() { return { label: { attribute: "label" }, removable: { attribute: "removable", type: Boolean } }; }
     render() {
       this.classList.add("c-tag");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "status");
       const variant = this.getAttribute("variant");
       if (variant) this.classList.add("c-tag--" + variant);
       const label = this.getAttribute("label");
@@ -102,6 +104,8 @@ class ContourDot extends ContourBase {
     static get properties() { return { variant: { attribute: "variant" }, live: { attribute: "live", type: Boolean } }; }
     render() {
       this.classList.add("c-dot");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "img");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "status indicator");
       const variant = this.getAttribute("variant");
       if (variant) this.classList.add("c-dot--" + variant);
       if (this.hasAttribute("live")) this.classList.add("c-dot--live");
@@ -113,6 +117,7 @@ class ContourPill extends ContourBase {
     static get properties() { return { label: { attribute: "label" }, live: { attribute: "live", type: Boolean } }; }
     render() {
       this.classList.add("c-pill");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "status");
       const variant = this.getAttribute("variant");
       if (variant) this.classList.add("c-pill--" + variant);
       const label = this.getAttribute("label");
@@ -156,7 +161,7 @@ class ContourTooltip extends ContourBase {
       this.classList.add("c-tooltip");
       if (!this.hasAttribute("popover")) this.setAttribute("popover", "hint");
       const text = this.getAttribute("text");
-      if (text && !this.querySelector("*") && !this.textContent.trim()) {
+      if (text !== null) {
         this.textContent = text;
       }
     }
@@ -166,9 +171,14 @@ class ContourTooltip extends ContourBase {
       // Anchor association: link a trigger element to this tooltip.
       const anchorSel = this.getAttribute("anchor");
       if (anchorSel) {
-        const trigger = document.querySelector(anchorSel.startsWith("#") ? anchorSel : "#" + anchorSel);
+        let trigger = null;
+        if (anchorSel.startsWith("#")) {
+          trigger = document.getElementById(anchorSel.slice(1));
+        } else {
+          trigger = document.querySelector(anchorSel);
+        }
         if (trigger) {
-          trigger.setAttribute("popovertarget", this.id || (this.id = "tip-" + Math.random().toString(36).slice(2, 8)));
+          trigger.setAttribute("popovertarget", this.id || (this.id = contourId("tip")));
           trigger.setAttribute("aria-describedby", this.id);
         }
       }
@@ -354,12 +364,14 @@ class ContourLiveBadge extends ContourBase {
     static get properties() { return { label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-live-badge");
-      // The block's states are connected / disconnected / stale; there is no
-      // --live modifier, and the base class is already the live badge — its
-      // ::before is the ping — so `live` resolves to the connected state.
-      if (this.hasAttribute("live")) this.classList.add("c-live-badge--connected");
+      // Remove previous state modifiers.
+      Array.from(this.classList).forEach((c) => { if (c.startsWith("c-live-badge--")) this.classList.remove(c); });
       const state = this.getAttribute("state");
-      if (state) this.classList.add("c-live-badge--" + state);
+      if (state) {
+        this.classList.add("c-live-badge--" + state);
+      } else if (this.hasAttribute("live")) {
+        this.classList.add("c-live-badge--connected");
+      }
       const label = this.getAttribute("label");
       if (label && !this.querySelector("*") && !this.textContent.trim()) this.textContent = label;
     }

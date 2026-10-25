@@ -24,6 +24,10 @@
   // browser was handed.
   export const REGISTERED = [];
 
+  // Monotonic counter for unique IDs (avoids Math.random() collision risk).
+  let _contourIdCounter = 0;
+  export const contourId = (prefix) => prefix + "-" + (++_contourIdCounter).toString(36);
+
   export const define = (name, cls) => {
     if (customElements.get(name)) return;
     customElements.define(name, cls);
@@ -79,6 +83,13 @@
   // nodes a component generated are rebuilt, so state inside them (a typed
   // value, a focus ring) is lost when a host attribute changes.
   export class ContourBase extends HTMLElement {
+    static formAssociated = false;
+    constructor() {
+      super();
+      if (this.constructor.formAssociated && typeof this.attachInternals === "function") {
+        this._internals = this.attachInternals();
+      }
+    }
     // Per-component observed attributes. Subclasses override `static get observed()`
     // with only the attributes they read; the default is the full shared list so
     // a component that does not opt in keeps working.
@@ -240,6 +251,11 @@
       // Override in subclasses that attach event listeners or timers.
     }
 
+    adoptedCallback() {
+      // Re-apply parts when the node is moved to a new document.
+      if (this._contourAuthored) this._applyParts(this);
+    }
+
     // Default no-op: subclasses with behaviour override this.
     enhance() {}
 
@@ -317,6 +333,10 @@
   export const simple = (classes) => class extends ContourBase {
     render() {
       classes.forEach((c) => this.classList.add(c));
+      // Remove stale modifier classes first so attribute removal is reflected.
+      for (const c of Array.from(this.classList)) {
+        if (classes.some((base) => c.startsWith(base + "--"))) this.classList.remove(c);
+      }
       MODS.forEach((attr) => {
         if (this.hasAttribute(attr)) {
           const val = this.getAttribute(attr);

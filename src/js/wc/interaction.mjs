@@ -21,7 +21,8 @@ class ContourSearchTriggerFull extends ContourBase {
     render() {
       this.classList.add("c-search-trigger");
       const label = this.getAttribute("label") || "Search";
-      const span = this.ensure("span", () => { const el = document.createElement("span"); return el; });
+      const span = this.ensure(".c-search-trigger__text", () => { const el = document.createElement("span"); el.className = "c-search-trigger__text"; return el; });
+      span.className = "c-search-trigger__text";
       if (!span.textContent.trim() || span.textContent.trim() !== label) span.textContent = label;
       const kbd = this.ensure("kbd.c-kbd", () => { const el = document.createElement("kbd"); el.className = "c-kbd"; return el; });
       kbd.className = "c-kbd";
@@ -49,10 +50,12 @@ class ContourShortcutRowFull extends ContourBase {
         if (k) k.remove();
       }
       if (desc) {
-        const s = this.ensure(".c-shortcut-row__label", () => { const el = document.createElement("span"); return el; });
+        const s = this.ensure(".c-shortcut-row__label", () => { const el = document.createElement("span"); el.className = "c-shortcut-row__label"; return el; });
+        s.className = "c-shortcut-row__label";
         s.textContent = desc;
       } else {
-        // remove the desc span if present (the one without class)
+        const s = this.querySelector(".c-shortcut-row__label");
+        if (s) s.remove();
       }
     }
   }
@@ -113,8 +116,11 @@ class ContourBtn extends ContourBase {
         const val = this.getAttribute(attr);
         if (val) this.classList.add("c-btn--" + val);
       }
+      if (!this.hasAttribute("role")) this.setAttribute("role", "button");
+      if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
       const label = this.getAttribute("label");
       if (label && !this.querySelector("*") && !this.textContent.trim()) this.textContent = label;
+      if (label && !this.hasAttribute("aria-label")) this.setAttribute("aria-label", label);
     }
   }
   define("contour-btn", ContourBtn);

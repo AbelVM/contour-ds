@@ -56,6 +56,7 @@ class ContourAlert extends ContourBase {
     render() {
       this.classList.add("c-alert");
       const variant = this.getAttribute("variant");
+      Array.from(this.classList).forEach((c) => { if (c.startsWith("c-alert--")) this.classList.remove(c); });
       if (variant) this.classList.add("c-alert--" + variant);
       const title = this.getAttribute("title");
       if (title) {
@@ -65,6 +66,14 @@ class ContourAlert extends ContourBase {
       } else {
         const t = this.querySelector(".c-alert__title");
         if (t) t.remove();
+      }
+      const body = this.getAttribute("body");
+      if (body) {
+        const b = this.ensure(".c-alert__body", () => { const el = document.createElement("div"); el.className = "c-alert__body"; return el; });
+        b.textContent = body;
+      } else {
+        const b = this.querySelector(".c-alert__body");
+        if (b) b.remove();
       }
     }
   }

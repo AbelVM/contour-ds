@@ -1,4 +1,4 @@
-import { ContourBase, define } from './core.mjs';
+import { ContourBase, define, contourId } from './core.mjs';
 import { wireCombobox } from './behaviours.mjs';
 class ContourCombobox extends ContourBase {
     static get observed() { return ["options", "placeholder", "label"]; }
@@ -56,10 +56,10 @@ class ContourField extends ContourBase {
       });
       input.type = this.getAttribute("type") || "text";
       input.placeholder = placeholder;
-      if (!input.id) input.id = "contour-field-" + Math.random().toString(36).slice(2, 9);
+      if (!input.id) input.id = contourId("contour-field");
       // Associate the label with the input so the control is labelled.
       const lbl = this.querySelector(".c-field__label");
-      if (lbl) { if (!input.id) input.id = "contour-field-" + Math.random().toString(36).slice(2, 9); lbl.setAttribute("for", input.id); }
+      if (lbl) { if (!input.id) input.id = contourId("contour-field"); lbl.setAttribute("for", input.id); }
       if (hint) {
         const h = this.ensure(".c-field__hint", () => { const el = document.createElement("span"); el.className = "c-field__hint"; return el; });
         h.textContent = hint;
@@ -94,7 +94,6 @@ class ContourSwitch extends ContourBase {
     static get observed() { return ["label", "required"]; }
     static get properties() { return { label: { attribute: "label" }, required: { attribute: "required", type: Boolean } }; }
     static get formAssociated() { return true; }
-    constructor() { super(); this._internals = (typeof this.attachInternals === "function") ? this.attachInternals() : null; }
     render() {
       this.classList.add("c-switch");
       const label = this.getAttribute("label");
@@ -130,7 +129,6 @@ class ContourCheck extends ContourBase {
     static get observed() { return ["label", "name", "value", "required", "type"]; }
     static get properties() { return { label: { attribute: "label" }, name: { attribute: "name" }, value: { attribute: "value" }, required: { attribute: "required", type: Boolean }, type: { attribute: "type" } }; }
     static get formAssociated() { return true; }
-    constructor() { super(); this._internals = (typeof this.attachInternals === "function") ? this.attachInternals() : null; }
     render() {
       this.classList.add("c-check");
       const label = this.getAttribute("label");
@@ -164,7 +162,6 @@ class ContourRadio extends ContourBase {
     static get observed() { return ["label", "name", "value", "required"]; }
     static get properties() { return { label: { attribute: "label" }, name: { attribute: "name" }, value: { attribute: "value" }, required: { attribute: "required", type: Boolean } }; }
     static get formAssociated() { return true; }
-    constructor() { super(); this._internals = (typeof this.attachInternals === "function") ? this.attachInternals() : null; }
     render() {
       this.classList.add("c-radio");
       const label = this.getAttribute("label");
@@ -200,7 +197,6 @@ class ContourSelect extends ContourBase {
     static get observed() { return ["options", "required"]; }
     static get properties() { return { options: { attribute: "options" }, required: { attribute: "required", type: Boolean } }; }
     static get formAssociated() { return true; }
-    constructor() { super(); this._internals = (typeof this.attachInternals === "function") ? this.attachInternals() : null; }
     render() {
       this.classList.add("c-select");
       const options = this.getAttribute("options");
@@ -269,7 +265,6 @@ class ContourTextarea extends ContourBase {
     static get observed() { return ["placeholder", "required"]; }
     static get properties() { return { placeholder: { attribute: "placeholder" }, required: { attribute: "required", type: Boolean } }; }
     static get formAssociated() { return true; }
-    constructor() { super(); this._internals = (typeof this.attachInternals === "function") ? this.attachInternals() : null; }
     render() {
       this.classList.add("c-textarea");
       const ta = this.ensure("textarea", () => { const el = document.createElement("textarea"); el.className = "c-textarea"; return el; });
@@ -302,7 +297,6 @@ class ContourInputFull extends ContourBase {
     static get observed() { return ["type", "placeholder", "required"]; }
     static get properties() { return { type: { attribute: "type" }, placeholder: { attribute: "placeholder" }, required: { attribute: "required", type: Boolean } }; }
     static get formAssociated() { return true; }
-    constructor() { super(); this._internals = (typeof this.attachInternals === "function") ? this.attachInternals() : null; }
     render() {
       this.classList.add("c-input");
       const input = this.ensure("input", () => { const el = document.createElement("input"); el.className = "c-input"; return el; });

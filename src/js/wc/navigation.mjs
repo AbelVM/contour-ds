@@ -33,7 +33,7 @@ class ContourMenu extends ContourBase {
               ul.appendChild(li);
             }
           });
-          if (ul.parentNode !== this) { this.innerHTML = ""; this.appendChild(ul); }
+          if (ul.parentNode !== this) this.appendChild(ul);
           this.classList.remove("c-menu");
           ul.classList.add("c-menu");
         } catch (e) { /* keep existing content */ }
@@ -90,43 +90,57 @@ class ContourHeader extends ContourBase {
       this.classList.add("c-header");
       const brand = this.getAttribute("brand");
       const links = this.getAttribute("links");
+      const inner = this.ensure(".c-header__inner", () => { const el = document.createElement("div"); el.className = "container c-header__inner"; return el; });
+      inner.className = "container c-header__inner";
+      // Brand
+      let brandEl = inner.querySelector(".c-brand");
       if (brand) {
-        const inner = this.ensure(".c-header__inner", () => { const el = document.createElement("div"); el.className = "container c-header__inner"; return el; });
-        inner.innerHTML = "";
-        // Brand
-        const brandEl = document.createElement("a");
-        brandEl.className = "c-brand";
-        brandEl.href = "#";
-        brandEl.innerHTML = `<span class="c-mark"><svg aria-hidden="true"><use href="#i-mark" /></svg></span>`;
-        const brandName = document.createElement("span");
-        brandName.className = "c-brand__name";
-        brandName.textContent = brand;
-        brandEl.appendChild(brandName);
-        inner.appendChild(brandEl);
-        // Nav
-        if (links) {
-          try {
-            const parsed = JSON.parse(links);
-            const nav = document.createElement("nav");
+        if (!brandEl) {
+          brandEl = document.createElement("a");
+          brandEl.className = "c-brand";
+          brandEl.href = "#";
+          brandEl.innerHTML = `<span class="c-mark"><svg aria-hidden="true"><use href="#i-mark" /></svg></span>`;
+          const brandName = document.createElement("span");
+          brandName.className = "c-brand__name";
+          brandEl.appendChild(brandName);
+          inner.insertBefore(brandEl, inner.firstChild);
+        }
+        const brandName = brandEl.querySelector(".c-brand__name");
+        if (brandName) brandName.textContent = brand;
+      } else if (brandEl) {
+        brandEl.remove();
+      }
+      // Nav
+      let nav = inner.querySelector(".c-header__nav");
+      if (links) {
+        try {
+          const parsed = JSON.parse(links);
+          if (!nav) {
+            nav = document.createElement("nav");
             nav.className = "c-header__nav";
             nav.setAttribute("aria-label", "Main");
-            parsed.forEach((l) => {
-              const a = document.createElement("a");
-              a.href = l.href || "#";
-              a.textContent = l.label || l;
-              nav.appendChild(a);
-            });
             inner.appendChild(nav);
-          } catch (e) { /* skip */ }
-        }
-        // Actions slot
+          }
+          nav.innerHTML = "";
+          parsed.forEach((l) => {
+            const a = document.createElement("a");
+            a.href = l.href || "#";
+            a.textContent = l.label || l;
+            nav.appendChild(a);
+          });
+        } catch (e) { /* skip */ }
+      } else if (nav) {
+        nav.remove();
+      }
+      // Actions slot
+      if (!inner.querySelector(".c-header__actions")) {
         const actions = document.createElement("div");
         actions.className = "c-header__actions";
         const slot = document.createElement("slot");
         actions.appendChild(slot);
         inner.appendChild(actions);
-        if (inner.parentNode !== this) { this.innerHTML = ""; this.appendChild(inner); }
       }
+      if (inner.parentNode !== this) this.appendChild(inner);
     }
   }
   define("contour-header", ContourHeader);
@@ -298,6 +312,8 @@ class ContourPagerFull extends ContourBase {
     static get properties() { return { prev: { attribute: "prev" }, next: { attribute: "next" } }; }
     render() {
       this.classList.add("c-pager");
+      // Drop previously generated links so a re-render cannot stack a second set.
+      Array.from(this.querySelectorAll(".c-pager__link")).forEach((n) => n.remove());
       const prev = this.getAttribute("prev");
       const next = this.getAttribute("next");
       if (prev) {

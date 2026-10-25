@@ -41,6 +41,11 @@ class ContourKpi extends ContourBase {
     }
     render() {
       this.classList.add("c-kpi");
+      // Apply variant modifier if declared.
+      const variant = this.getAttribute("variant");
+      // Remove any previous variant modifier.
+      Array.from(this.classList).forEach((c) => { if (c.startsWith("c-kpi--")) this.classList.remove(c); });
+      if (variant) this.classList.add("c-kpi--" + variant);
       const value = this.getAttribute("value");
       const label = this.getAttribute("label");
       const delta = this.getAttribute("delta");
@@ -319,6 +324,11 @@ class ContourSurvey extends ContourBase {
     static get properties() { return { date: { attribute: "date" }, instrument: { attribute: "instrument" } }; }
     render() {
       this.classList.add("c-survey");
+      // Drop previously generated nodes so a re-render cannot stack a second set.
+      Array.from(this.childNodes).forEach((n) => {
+        if (n.nodeType === Node.TEXT_NODE) { if (n.textContent.trim() === "Surveyed" || n.textContent.trim() === "·") n.remove(); }
+        else if (n.classList && (n.classList.contains("c-survey__value") || n.classList.contains("c-survey__sep"))) n.remove();
+      });
       const date = this.getAttribute("date");
       const instrument = this.getAttribute("instrument");
       if (date) {

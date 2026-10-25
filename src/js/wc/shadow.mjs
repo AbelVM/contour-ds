@@ -1,4 +1,4 @@
-import { define, MODS, REGISTERED } from './core.mjs';
+import { define, MODS, REGISTERED, contourId } from './core.mjs';
   import { wireTabs, wireSegmented, wireCombobox, wireTree, wireMenu, wirePagination, wireCopy, wireRemovable } from './behaviours.mjs';
   // ---- Shadow DOM wrappers (opt-in) ------------------------------------
   //
@@ -83,7 +83,7 @@ import { define, MODS, REGISTERED } from './core.mjs';
         if (ctrl) {
           const panel = root.querySelector("#" + CSS.escape(ctrl)) || document.getElementById(ctrl);
           if (panel && !panel.hasAttribute("aria-labelledby")) {
-            if (!tab.id) tab.id = "tab-" + Math.random().toString(36).slice(2, 8);
+            if (!tab.id) tab.id = contourId("tab");
             panel.setAttribute("aria-labelledby", tab.id);
           }
         }
@@ -95,12 +95,12 @@ import { define, MODS, REGISTERED } from './core.mjs';
         if (field) {
           const hint = field.querySelector(".c-field__hint");
           if (hint) {
-            if (!hint.id) hint.id = "hint-" + Math.random().toString(36).slice(2, 8);
+            if (!hint.id) hint.id = contourId("hint");
             input.setAttribute("aria-describedby", hint.id);
           }
           const err = field.querySelector(".c-field__error");
           if (err) {
-            if (!err.id) err.id = "err-" + Math.random().toString(36).slice(2, 8);
+            if (!err.id) err.id = contourId("err");
             const existing = input.getAttribute("aria-describedby") || "";
             input.setAttribute("aria-describedby", (existing + " " + err.id).trim());
           }
