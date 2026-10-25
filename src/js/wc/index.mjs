@@ -2,6 +2,7 @@
 // every Contour custom element as a side effect.
 
 import "./core.mjs";
+import "./behaviours.mjs";
 import "./content.mjs";
 import "./dashboard.mjs";
 import "./data.mjs";

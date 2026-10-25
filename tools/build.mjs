@@ -269,7 +269,7 @@ writeFileSync(join(dist, "contour.min.js"), `${minifyJs(js)}\n`, "utf-8");
 // -- Web components (optional progressive enhancement) ---------------------
 // Source lives as ES modules under src/js/wc/; bundle into a classic script.
 const wcFragNames = [
-  "core.mjs", "content.mjs", "dashboard.mjs", "data.mjs", "docs.mjs",
+  "core.mjs", "behaviours.mjs", "content.mjs", "dashboard.mjs", "data.mjs", "docs.mjs",
   "feedback.mjs", "forms.mjs", "interaction.mjs", "layout.mjs", "map.mjs",
   "misc.mjs", "navigation.mjs", "ui.mjs", "registration.mjs", "shadow.mjs",
 ];
@@ -290,6 +290,15 @@ const { inventory: invFn } = await import("./lib/inventory.mjs");
 const inv = invFn();
 const compNames = inv.components.names;
 const tokenNames = Object.keys(inv.tokens.census);
+
+// The element tags come from the bundle built two lines above, not from a list
+// kept here: a hand-maintained tag list is a second count, and the registry the
+// bundle hands `customElements` is the one that decides what exists. The contract
+// gate compares the two in a real browser, so if this derivation ever goes short
+// the build stops being trusted rather than quietly typing a smaller API.
+const { elementNames: wcElementNames, typeDeclarations: wcTypeDeclarations } = await import("./lib/wc-names.mjs");
+const wcTags = wcElementNames(wc);
+const wcTypes = wcTypeDeclarations(wcTags.names);
 const tsLines = [
   "/** Contour Design System — TypeScript definitions. Generated. */",
   "",
@@ -314,8 +323,14 @@ const tsLines = [
   "",
   "declare global { interface Window { Contour: ContourAPI; } }",
   "",
+  // The element tag map, generated from the bundle above. Without it a TypeScript
+  // consumer sees all 300-odd names as unknown elements: `contour.d.ts` existed
+  // and published nothing about the layer, and nothing in any lane read it.
+  ...wcTypes,
+  "",
 ];
 writeFileSync(join(dist, "contour.d.ts"), tsLines.join("\n"), "utf-8");
+console.log(`  contour.d.ts    ${wcTags.names.length} element tags typed (${Object.entries(wcTags.counts).map(([k, v]) => `${k} ${v}`).join(", ")})`);
 if (process.argv.includes("--single") && existsSync(join(dist, "contour.single.min.css"))) {
   const singleMinCss = readFileSync(join(dist, "contour.single.min.css"), "utf-8");
   const singleHtml = `<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8" />\n<meta name="viewport" content="width=device-width, initial-scale=1" />\n<title>Contour — single file</title>\n<style>\n${singleMinCss.trim()}\n</style>\n</head>\n<body>\n<main class="container section"><h1>Contour</h1><p>Single-file build.</p></main>\n<script>\n${minifyJs(js)}\n</script>\n</body>\n</html>\n`;

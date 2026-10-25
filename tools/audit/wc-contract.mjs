@@ -87,6 +87,11 @@ if (Object.keys(bytes).length !== 2) {
   process.exit(1);
 }
 
+// The consumer's resolution map, read as an artifact: a `.d.ts` that no `exports`
+// condition points at is typed for nobody, and the claim below would otherwise
+// pass while the package stayed untyped.
+const pkg = JSON.parse(readFileSync(join(ROOT, "package.json"), "utf8"));
+
 // Candidate names for the leak test: every identifier the artifact declares. The
 // browser decides which of them are actually reachable afterwards; the point of
 // listing them from the artifact is that a minified rename still names itself.
@@ -210,11 +215,40 @@ const RENDER_CONTRACT = [
   ["contour-dialog", { title: "Move layer" }, ".c-dialog__title"],
   ["contour-meter", { value: "0.72", label: "Confidence" }, ".c-meter__core"],
   ["contour-field", { label: "Search", placeholder: "q" }, "label"],
-  ["contour-alert", { title: "Heads up", body: "text", variant: "warn" }, ".c-alert__title"],
+  ["contour-alert", { title: "Heads up", body: "text", variant: "warning" }, ".c-alert__title"],
   ["contour-pagination", { pages: "5", current: "2" }, ".c-pagination__link"],
   ["contour-accordion", { items: '[{"q":"A","a":"B"}]' }, ".c-disclosure"],
   ["contour-readout", { rows: '[{"key":"K","value":"V"}]' }, ".c-readout__row"],
   ["contour-steps", { steps: '["One","Two"]' }, ".c-steps__item"],
+  ["contour-diff", { before: "Before", after: "After" }, ".c-diff__line"],
+  ["contour-do-dont", { do: "Do it", dont: "Don't" }, ".c-do-dont__item"],
+  ["contour-callout", { title: "Heads up", variant: "note" }, ".c-callout__title"],
+  ["contour-empty", { title: "No data", body: "Nothing", action: "Retry" }, ".c-empty__title"],
+  ["contour-faq", { question: "What?", answer: "A DS." }, ".c-faq__question"],
+  ["contour-toast", { message: "Saved", variant: "success" }, ".c-toast"],
+  ["contour-code", { title: "Code", copyable: "" }, ".c-code__title"],
+  ["contour-progress", { value: "0.6", label: "Loading" }, ".c-progress__bar"],
+  ["contour-combobox", { options: '["Alpha","Beta"]', placeholder: "Search" }, ".c-combobox__input"],
+  ["contour-tree", { items: '[{"label":"Root","children":[{"label":"Child"}]}]' }, ".c-tree__toggle"],
+  ["contour-segmented", {}, ".c-segmented"],
+  ["contour-heatmap", { cells: "6", legend: "" }, ".c-heatmap__cell"],
+  ["contour-compare", { yes: "Yes", no: "No", text: "Compare" }, ".c-compare__yes"],
+  ["contour-timeline", { items: '[{"time":"1","title":"T","text":"x"}]' }, ".c-timeline__item"],
+  ["contour-kpi", { value: "42", label: "Rows" }, ".c-kpi__value"],
+  ["contour-meter", { value: "0.72", label: "Confidence" }, ".c-meter__core"],
+  ["contour-threshold", { value: "0.5", norm: "0.8", label: "Threshold" }, ".c-threshold__fill"],
+  ["contour-coordinate", { value: "12,34" }, ".c-coordinate"],
+  ["contour-delta", { value: "+12%", direction: "up" }, ".c-delta"],
+  ["contour-stat", { value: "42", label: "Rows" }, ".c-stat__value"],
+  ["contour-badge", { variant: "primary" }, ".c-badge"],
+  ["contour-chip", {}, ".c-chip"],
+  ["contour-avatar", { name: "Ada Lovelace" }, ".c-avatar"],
+  ["contour-dot", { variant: "success", live: "" }, ".c-dot"],
+  ["contour-pill", { label: "New", live: "" }, ".c-pill"],
+  ["contour-kbd", { key: "⌘K" }, ".c-kbd"],
+  ["contour-spinner", {}, ".c-spinner"],
+  ["contour-tag", { label: "Tag", removable: "" }, ".c-tag"],
+  ["contour-filter-pill", { key: "Status", value: "Active", removable: "" }, ".c-filter-pill"],
 ];
 
 // The page mounts nothing: the harness creates elements after load, because the
@@ -293,9 +327,17 @@ const LEAK_PROBE = (candidates) => {
 // being orphaned has to be struck off, and a new one has to be entered with a
 // reason. An exception that is not recomputed is an exception that expired.
 const ORPHAN_LEDGER = {
+  // Three host classes and one element class stay ledgered because each is a
+  // decision this gate must not make: dropping a published element name is an API
+  // removal, and inventing a rule is a design change. Every entry here carries a
+  // reason that says which of the two it is. A reason that only restates the
+  // failure ("styled via the parent") is not a reason — it is the defect wearing
+  // a sentence, and the widened sweep found seventeen of those added in one pass
+  // to silence it. They are struck; the components now emit the real names.
   "c-accordion": "contour-accordion renders .c-disclosure children; its own host class has no rule, and the block is a naming alias for disclosure rather than a component",
   "c-loading": "contour-loading renders .c-spinner; the host class is a label with no rule, and spinner is the block that carries the visual",
   "c-elevation": "contour-elevation is the element form of the elevation specimen, which is carried by --shadow-* tokens and no .c-elevation rule",
+  "c-expandable__body": "the guide's own specimen, the light component and the shadow template all use this name and no rule defines it; details hides its body without help, so this is a CSS gap the specimen shares, not scaffolding the element invented",
 };
 
 const browser = await chromium.launch({ args: ["--no-sandbox"] });
@@ -372,6 +414,92 @@ try {
     if (load.registry.length !== attemptedUnique)
       fail(`the registry holds ${load.registry.length} names but ${attemptedUnique} were registered — the list does not describe what the browser was handed`);
 
+    // ---- 10. the type declarations must name exactly what registers ---------
+    // The .d.ts is the only place a consumer's editor learns a tag exists, and a
+    // hand-kept list there is a second count that drifts from the first. So the
+    // registry the bundle actually handed `customElements` decides, in both
+    // directions: untyped names are an invisible API, typed ones are a promise the
+    // runtime never makes. The exports condition is checked for a file on disk,
+    // not just for a pattern that looks like it would resolve.
+    const typesRel = pkg.exports && pkg.exports["."] && pkg.exports["."].types;
+    if (!typesRel) {
+      fail('package.json exports["."].types is missing — contour.d.ts is built but a consumer cannot resolve it');
+    } else if (!existsSync(join(ROOT, typesRel))) {
+      fail(`exports["."].types names ${typesRel}, which is not on disk`);
+    } else {
+      const dts = readFileSync(join(ROOT, typesRel), "utf8");
+      // Parse the interface, not one spelling of its right-hand side. Matching
+      // only `": ContourElement;` would silently stop seeing a tag the moment the
+      // declarations gained a more specific type for it, and the phantom direction
+      // of this check would quietly go blind — which is exactly how this claim
+      // first failed to bite during falsification.
+      const mapBlock = /interface HTMLElementTagNameMap \{([\s\S]*?)\n {2}\}/.exec(dts);
+      if (!mapBlock)
+        fail(`${typesRel} declares no HTMLElementTagNameMap — the element tags are untyped for a consumer`);
+      const typed = new Set(mapBlock ? [...mapBlock[1].matchAll(/"([a-z0-9-]+)"\s*:/g)].map((m) => m[1]) : []);
+      if (mapBlock && !typed.size)
+        fail(`${typesRel}'s HTMLElementTagNameMap is empty — an absent list and a short one must not both pass`);
+      const registered = new Set(load.registry);
+      const untyped = load.registry.filter((n) => !typed.has(n));
+      const imaginary = [...typed].filter((n) => !registered.has(n));
+      if (untyped.length)
+        fail(`${untyped.length} registered elements are untyped: ${untyped.slice(0, 6).join(", ")}${untyped.length > 6 ? ` (of ${untyped.length})` : ""} — a TypeScript consumer cannot name them`);
+      if (imaginary.length)
+        fail(`${imaginary.length} typed tags were never registered: ${imaginary.slice(0, 6).join(", ")} — the declarations promise elements the bundle does not define`);
+      console.log(
+        `wc-contract: type declarations compared ${typed.size} tags against ${load.registry.length} registered names, both directions`
+      );
+      compared += typed.size;
+    }
+
+    // ---- 11. a shadow wrapper's interaction must work on slotted content ----
+    // The layers were composed into behaviours.mjs because the shadow copy wired
+    // against its own root, which cannot see the nodes an author slots in: the
+    // wiring was present, plausible, and dead. A source-level gate cannot see
+    // that, so this acts on real DOM — click a slotted option, press a key on a
+    // slotted tab, and require the result, not the intent.
+    const behaved = await page_.evaluate(() => {
+      const heard = [];
+      document.addEventListener("contour:change", () => heard.push("change"));
+      document.addEventListener("contour:select", () => heard.push("select"));
+      const box = document.createElement("div");
+      box.innerHTML =
+        '<contour-shadow-segmented><button class="c-segmented__option" data-value="y">Y</button></contour-shadow-segmented>' +
+        '<contour-shadow-tabs><button slot="tabs" role="tab">A</button><button slot="tabs" role="tab">B</button></contour-shadow-tabs>' +
+        '<contour-shadow-menu><ul class="c-menu"><li role="menuitem">One</li></ul></contour-shadow-menu>';
+      document.body.appendChild(box);
+      const seg = box.querySelector("contour-shadow-segmented button");
+      if (seg) seg.click();
+      const tabs = Array.from(box.querySelectorAll("contour-shadow-tabs [role='tab']"));
+      if (tabs[0]) tabs[0].dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true, composed: true }));
+      const item = box.querySelector("contour-shadow-menu [role='menuitem']");
+      if (item) {
+        item.focus();
+        item.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, composed: true }));
+      }
+      return {
+        segPressed: seg ? seg.getAttribute("aria-pressed") : "no button",
+        changeEvents: heard.filter((h) => h === "change").length,
+        selectEvents: heard.filter((h) => h === "select").length,
+        tabSelected: tabs[1] ? tabs[1].getAttribute("aria-selected") : "no tab",
+        slottedTabs: tabs.length,
+      };
+    });
+    if (behaved.slottedTabs !== 2)
+      fail(`contour-shadow-tabs saw ${behaved.slottedTabs} authored tabs, expected 2 — the author's nodes are not reaching the wrapper`);
+    if (behaved.tabSelected !== "true")
+      fail(`ArrowRight on a slotted tab left aria-selected at "${behaved.tabSelected}" — keyboard roving does not reach slotted content`);
+    if (behaved.segPressed !== "true")
+      fail(`clicking a slotted option left aria-pressed at "${behaved.segPressed}" — the segmented control is inert inside its wrapper`);
+    if (behaved.changeEvents !== 1)
+      fail(`a slotted segmented click produced ${behaved.changeEvents} contour:change events at the document, expected 1 — 0 means the handler never reached the slotted node, 2 means both scopes dispatched for one click`);
+    if (behaved.selectEvents !== 1)
+      fail(`Enter on a slotted menu item produced ${behaved.selectEvents} contour:select events, expected 1`);
+    compared += 5;
+    console.log(
+      `wc-contract: slotted interaction reached the document — tabs roved, option pressed, ${behaved.changeEvents} change + ${behaved.selectEvents} select event(s)`
+    );
+
     // ---- 6. nothing it declares leaks -------------------------------------
     if (leaked.length)
       fail(`leaks ${leaked.length} global names (${leaked.slice(0, 8).join(", ")}${leaked.length > 8 ? ", …" : ""}) — a page that loads this bundle and declares any of them in its own script dies on "Identifier has already been declared"; keep every declaration inside the file's closure`);
@@ -388,12 +516,17 @@ try {
         for (const n of registry) document.body.appendChild(document.createElement(n));
         const mounted = registry.filter((n) => customElements.get(n) && document.querySelector(n)).length;
 
+        // The promise is a node that carries `sel`, and for most blocks that node
+        // IS the host: `.c-toast` is not a child of `<contour-toast>`, it is what
+        // the element becomes. A descendant-only test is structurally unable to
+        // see that, and reported thirteen blocks as broken while they rendered
+        // correctly, which trains a reader to ignore a red gate.
         const rendered = RENDER_CONTRACT.map(([name, attrs, sel]) => {
           const host = document.createElement(name);
           for (const [k, v] of Object.entries(attrs)) host.setAttribute(k, v);
           document.body.appendChild(host);
           host.dataset.case = name;
-          return { name, sel, ok: !!host.querySelector(sel) };
+          return { name, sel, ok: !!(host.matches(sel) || host.querySelector(sel)) };
         });
 
         // ---- 8. a Shadow wrapper is styled --------------------------------
@@ -514,9 +647,9 @@ try {
           } catch { }
         }
         const orphan = [];
-        for (const n of registry) {
-          const el = document.querySelector(n);
-          if (!el) continue;
+        let orphanChecked = 0;
+        const scanOrphans = (label, el) => {
+          if (!el) return;
           // the host carries a class too, and a class the system never defines is
           // orphaned wherever it lands
           const nodes = [el];
@@ -525,17 +658,35 @@ try {
           const where = el.shadowRoot ? "shadow" : "host";
           for (const node of nodes) {
             if (typeof node.className !== "string") continue;
-            for (const c of node.className.split(/\s+/))
-              if (/^c-[a-z0-9-]+$/.test(c) && !definedClasses.has(c)) orphan.push(`${n} ${where} > .${c}`);
+            for (const c of node.className.split(/\s+/)) {
+              // The underscore belongs in this class. Written without it, the
+              // filter matched `c-alert` and `c-btn--ghost` but skipped every
+              // `__element` name, so a generated `c-steps__num` — a node no rule
+              // in the system defines, and so one that styles nothing — was
+              // invisible to the one claim meant to catch it. A planted phantom
+              // proved the gap: with 630 defined classes loaded the old filter
+              // reported the `--variant` name and nothing else.
+              if (!/^c-[a-z0-9_-]+$/.test(c)) continue;
+              // Counted whether or not it resolved: a sweep that inspected almost
+              // nothing cannot certify "0 orphans", so the total is asserted below.
+              orphanChecked++;
+              if (!definedClasses.has(c)) orphan.push(`${label} ${where} > .${c}`);
+            }
           }
-        }
+        };
+        for (const n of registry) scanOrphans(n, document.querySelector(n));
+        // A component that scaffolds only when an attribute is present never
+        // showed its scaffolding to the sweep above, which mounted bare elements.
+        // The generated nodes are exactly where an invented name lands, so the
+        // attribute-mounted cases are scanned too.
+        for (const h of Array.from(document.querySelectorAll("[data-case]"))) scanOrphans(h.dataset.case, h);
 
         return {
           missing, anonymous, mounted, registry: registry.length,
           bad: rendered.filter((r) => !r.ok), renderedCount: rendered.length,
           thin, unshared, parity, wrappers: wrappers.length, docRules,
           bareTable, reactivity: { changed: before !== after, duplicated: titles > 1, keptAuthored, discKept, discSummary, expKept },
-          mod, orphan: [...new Set(orphan)],
+          mod, orphan: [...new Set(orphan)], orphanChecked,
         };
       },
       { registry: load.registry, overlapped, RENDER_CONTRACT }
@@ -581,10 +732,16 @@ try {
       fail(`${expired.length} ledger entries are no longer orphaned: ${expired.join(", ")} — an exception that stopped being true must be struck off, or the ledger is describing a file that no longer exists`);
     if (!unledgered.length && !expired.length && orphanClasses.length)
       console.log(`wc-contract: ${orphanClasses.length} orphaned host classes all ledgered with a reason: ${orphanClasses.join(", ")}`);
+    // A clean sweep is only evidence if the sweep looked at something. This claim
+    // was silent for the whole life of this layer because its filter could not see
+    // element names at all, so "all ledgered" described three names out of dozens.
+    if (out.orphanChecked < 250)
+      fail(`the orphan sweep compared only ${out.orphanChecked} generated class names — a near-empty sweep cannot certify "no orphans", so this gate would be passing on its own blind spot`);
 
     console.log(
       `wc-contract: ${out.registry} names registered, ${out.mounted} mounted and upgraded, ${out.wrappers} shadow wrappers each adopting ${out.docRules} rules, ` +
-        `${out.anonymous.length} shadowed by the factory, ${out.renderedCount - out.bad.length}/${out.renderedCount} render cases produced their node`
+        `${out.anonymous.length} shadowed by the factory, ${out.renderedCount - out.bad.length}/${out.renderedCount} render cases produced their node, ` +
+        `and the orphan sweep compared ${out.orphanChecked} generated class names`
     );
   }
 

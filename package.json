@@ -39,6 +39,7 @@
   ],
   "exports": {
     ".": {
+      "types": "./dist/contour.d.ts",
       "style": "./dist/contour.css",
       "default": "./dist/contour.css"
     },
