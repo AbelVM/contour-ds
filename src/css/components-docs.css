@@ -483,13 +483,13 @@
     white-space: pre;
   }
 
-  .c-diff__line--add {
-    background: color-mix(in oklab, var(--color-success) 14%, transparent);
-  }
+   .c-diff__line--add {
+     background: color-mix(in oklab, var(--color-success) 4%, transparent);
+   }
 
-  .c-diff__line--del {
-    background: color-mix(in oklab, var(--color-danger) 14%, transparent);
-  }
+   .c-diff__line--del {
+     background: color-mix(in oklab, var(--color-danger) 4%, transparent);
+   }
 
   .c-diff__sign {
     color: var(--color-text-subtle);

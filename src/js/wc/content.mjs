@@ -421,12 +421,12 @@ class ContourLandingFeaturesFull extends ContourBase {
               ic.innerHTML = '<svg aria-hidden="true"><use href="#' + String(it.icon).replace(/[^a-zA-Z0-9_-]/g, "") + '" /></svg>';
               item.appendChild(ic);
             }
-            if (it.title) {
-              const t = document.createElement("h3");
-              t.className = "c-landing-features__title";
-              t.textContent = it.title;
-              item.appendChild(t);
-            }
+             if (it.title) {
+               const t = document.createElement("span");
+               t.className = "c-landing-features__title";
+               t.textContent = it.title;
+               item.appendChild(t);
+             }
             if (it.text) {
               const tx = document.createElement("p");
               tx.className = "c-landing-features__text";

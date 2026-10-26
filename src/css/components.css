@@ -475,11 +475,10 @@
     color: var(--color-text-subtle);
   }
 
-  .c-chip--primary .c-chip__key,
-  .c-chip--accent .c-chip__key {
-    color: currentColor;
-    opacity: 0.7;
-  }
+   .c-chip--primary .c-chip__key,
+   .c-chip--accent .c-chip__key {
+     color: currentColor;
+   }
 
   /* Status pill — uppercase mono, used for state readouts */
   .c-pill {
@@ -993,15 +992,16 @@
   }
 
   /* Live badge: pulsing indicator for real-time data streams. */
-  .c-live-badge {
-    --live-color: var(--color-accent);
-    display: inline-flex;
+   .c-live-badge {
+     --live-color: var(--color-accent);
+     --live-text: var(--color-accent-text);
+     display: inline-flex;
     align-items: center;
     gap: var(--space-2xs);
     padding: var(--space-2xs) var(--space-xs);
     border-radius: var(--radius-pill);
-    background: color-mix(in oklab, var(--live-color) 12%, transparent);
-    color: var(--live-color);
+     background: color-mix(in oklab, var(--live-color) 12%, transparent);
+     color: var(--live-text);
     font-size: var(--type-xs);
     font-weight: var(--weight-semibold);
     letter-spacing: var(--tracking-wide);
@@ -1018,9 +1018,9 @@
     animation: c-ping var(--dur-ping) var(--ease-out-expo) infinite;
   }
 
-  .c-live-badge--connected { --live-color: var(--color-success); }
-  .c-live-badge--disconnected { --live-color: var(--color-danger); }
-  .c-live-badge--stale { --live-color: var(--color-warning); }
+   .c-live-badge--connected { --live-color: var(--color-success); --live-text: var(--color-success-text); }
+   .c-live-badge--disconnected { --live-color: var(--color-danger); --live-text: var(--color-danger-text); }
+   .c-live-badge--stale { --live-color: var(--color-warning); --live-text: var(--color-warning-text); }
 
   @keyframes c-ping {
     0% {
@@ -2858,7 +2858,8 @@
     flex-wrap: wrap;
   }
 
-  .c-footer__col h3 {
+   .c-footer__col h3,
+   .c-footer__col-title {
     font-family: var(--font-mono);
     font-size: var(--type-micro);
     font-weight: var(--weight-medium);

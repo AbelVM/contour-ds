@@ -187,22 +187,24 @@ render() {
        if (items && !authored.length) {
          try {
            const parsed = JSON.parse(items);
-           const rootUl = this.ensure("ul.c-tree", () => { const el = document.createElement("ul"); el.className = "c-tree"; el.setAttribute("role", "tree"); return el; });
+            const rootUl = this.ensure("div.c-tree", () => { const el = document.createElement("div"); el.className = "c-tree"; el.setAttribute("role", "tree"); return el; });
            rootUl.innerHTML = "";
            rootUl.className = "c-tree";
            const render = (nodes, parent) => {
-             const ul = parent ? document.createElement("ul") : rootUl;
-             if (parent) {
-               ul.className = "c-tree__children";
-               ul.setAttribute("hidden", "");
-             }
+              const ul = parent ? document.createElement("div") : rootUl;
+              if (parent) {
+                ul.className = "c-tree__children";
+                ul.setAttribute("role", "group");
+                ul.setAttribute("hidden", "");
+              }
              nodes.forEach((node) => {
-               const li = document.createElement("li");
-               li.className = "c-tree__node";
+              const li = document.createElement("div");
+              li.className = "c-tree__node";
+              li.setAttribute("role", "treeitem");
                if (node.children) {
-                 const row = document.createElement("div");
-                 row.className = "c-tree__row" + (node.active ? " c-tree__row--active" : "") + (node.dir ? " c-tree__row--dir" : "");
-                 row.setAttribute("aria-expanded", "false");
+                  li.setAttribute("aria-expanded", "false");
+                  const row = document.createElement("div");
+                  row.className = "c-tree__row" + (node.active ? " c-tree__row--active" : "") + (node.dir ? " c-tree__row--dir" : "");
                  if (node.indent) {
                    const ind = document.createElement("span");
                    ind.className = "c-tree__indent";

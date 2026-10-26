@@ -377,7 +377,8 @@ class ContourMeter extends ContourBase {
         const lbl = core.querySelector(".c-meter__label") || (() => { const el = document.createElement("span"); el.className = "c-meter__label"; core.appendChild(el); return el; })();
         lbl.textContent = label;
       }
-      if (!this.hasAttribute("role")) this.setAttribute("role", "meter");
+       if (!this.hasAttribute("role")) this.setAttribute("role", "meter");
+       if (label && !this.hasAttribute("aria-label")) this.setAttribute("aria-label", label);
       const ariaValue = value === null ? "0" : value;
       const prevVal = this._meterAriaValue;
       if (!this.hasAttribute("aria-valuenow") || this.getAttribute("aria-valuenow") === prevVal) {

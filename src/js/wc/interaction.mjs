@@ -21,6 +21,7 @@ class ContourSearchTriggerFull extends ContourBase {
     render() {
       this.classList.add("c-search-trigger");
       const label = this.getAttribute("label") || "Search";
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", label);
       const span = this.ensure(".c-search-trigger__text", () => { const el = document.createElement("span"); el.className = "c-search-trigger__text"; return el; });
       span.className = "c-search-trigger__text";
       if (!span.textContent.trim() || span.textContent.trim() !== label) span.textContent = label;

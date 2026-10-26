@@ -111,10 +111,10 @@ class ContourField extends ContourBase {
     sync();
   };
   define("contour-field", ContourField);
-class ContourRange extends ContourBase {
-    static get observed() { return ["min", "max", "value"]; }
+  class ContourRange extends ContourBase {
+    static get observed() { return ["min", "max", "value", "label"]; }
     static get formAssociated() { return true; }
-    static get properties() { return { min: { attribute: "min" }, max: { attribute: "max" }, value: { attribute: "value" } }; }
+    static get properties() { return { min: { attribute: "min" }, max: { attribute: "max" }, value: { attribute: "value" }, label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-range");
       const input = this.ensure("input", () => { const el = document.createElement("input"); el.type = "range"; return el; });
@@ -123,6 +123,9 @@ class ContourRange extends ContourBase {
       input.min = this.getAttribute("min") || "0";
       input.max = this.getAttribute("max") || "100";
       input.value = this.getAttribute("value") || "50";
+      const label = this.getAttribute("label");
+      if (label) input.setAttribute("aria-label", label);
+      else if (!input.hasAttribute("aria-label")) input.setAttribute("aria-label", "Range");
     }
   }
   // patch enhance onto ContourRange
@@ -285,9 +288,9 @@ class ContourRadio extends ContourBase {
     }
   }
   define("contour-radio", ContourRadio);
-class ContourSelect extends ContourBase {
-    static get observed() { return ["options", "required"]; }
-    static get properties() { return { options: { attribute: "options" }, required: { attribute: "required", type: Boolean } }; }
+  class ContourSelect extends ContourBase {
+    static get observed() { return ["options", "required", "label"]; }
+    static get properties() { return { options: { attribute: "options" }, required: { attribute: "required", type: Boolean }, label: { attribute: "label" } }; }
     static get formAssociated() { return true; }
     render() {
       this.classList.add("c-select");
@@ -298,8 +301,11 @@ class ContourSelect extends ContourBase {
       if (options && !authored.length) {
         try {
           const parsed = JSON.parse(options);
-          const select = this.ensure("select.c-select", () => { const el = document.createElement("select"); el.className = "c-select"; return el; });
-          select.innerHTML = "";
+           const select = this.ensure("select.c-select", () => { const el = document.createElement("select"); el.className = "c-select"; return el; });
+           select.innerHTML = "";
+           const label = this.getAttribute("label");
+           if (label) select.setAttribute("aria-label", label);
+           else if (!select.hasAttribute("aria-label")) select.setAttribute("aria-label", "Select");
           parsed.forEach((opt) => {
             const option = document.createElement("option");
             option.value = typeof opt === "string" ? opt : opt.value;
@@ -349,8 +355,9 @@ class ContourVersion extends ContourBase {
       if (options && !authored.length) {
         try {
           const parsed = JSON.parse(options);
-          const select = this.ensure("select.c-version", () => { const el = document.createElement("select"); el.className = "c-version"; return el; });
-          select.innerHTML = "";
+           const select = this.ensure("select.c-version", () => { const el = document.createElement("select"); el.className = "c-version"; return el; });
+           select.innerHTML = "";
+           if (!select.hasAttribute("aria-label")) select.setAttribute("aria-label", "Version");
           parsed.forEach((opt) => {
             const option = document.createElement("option");
             if (typeof opt === "string") { option.value = opt; option.textContent = opt; }

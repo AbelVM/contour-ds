@@ -55,21 +55,23 @@ class ContourLayerPanel extends ContourBase {
             const name = typeof it === "string" ? it : (it.name || it.label || "");
             const item = document.createElement("div");
             item.className = "c-layer-panel__item" + (it.dragging ? " c-layer-panel__item--dragging" : "");
-            const toggle = document.createElement("input");
-            toggle.type = "checkbox";
-            toggle.className = "c-layer-panel__toggle";
-            if (typeof it === "object" && it.visible !== false) toggle.checked = true;
+             const toggle = document.createElement("input");
+             toggle.type = "checkbox";
+             toggle.className = "c-layer-panel__toggle";
+             toggle.setAttribute("aria-label", "Toggle layer");
+             if (typeof it === "object" && it.visible !== false) toggle.checked = true;
             item.appendChild(toggle);
             const nm = document.createElement("span");
             nm.className = "c-layer-panel__name";
             nm.textContent = name;
             item.appendChild(nm);
-            const opacity = document.createElement("input");
-            opacity.type = "range";
-            opacity.className = "c-layer-panel__opacity";
-            opacity.min = "0";
-            opacity.max = "100";
-            opacity.value = (typeof it === "object" && it.opacity != null) ? it.opacity : "100";
+             const opacity = document.createElement("input");
+             opacity.type = "range";
+             opacity.className = "c-layer-panel__opacity";
+             opacity.min = "0";
+             opacity.max = "100";
+             opacity.setAttribute("aria-label", "Opacity");
+             opacity.value = (typeof it === "object" && it.opacity != null) ? it.opacity : "100";
             item.appendChild(opacity);
             this.appendChild(item);
           });
@@ -86,8 +88,9 @@ class ContourTimeSlider extends ContourBase {
     render() {
       this.classList.add("c-time-slider");
       const play = this.ensure(".c-time-slider__play", () => { const el = document.createElement("button"); el.className = "c-time-slider__play"; el.type = "button"; el.setAttribute("aria-label", "Play"); el.textContent = "▶"; return el; });
-      const track = this.ensure(".c-time-slider__track", () => { const el = document.createElement("input"); el.className = "c-time-slider__track"; el.type = "range"; el.min = "0"; el.max = "100"; return el; });
-      track.value = this.getAttribute("value") || "0";
+       const track = this.ensure(".c-time-slider__track", () => { const el = document.createElement("input"); el.className = "c-time-slider__track"; el.type = "range"; el.min = "0"; el.max = "100"; el.setAttribute("aria-label", "Time"); return el; });
+       track.value = this.getAttribute("value") || "0";
+       track.setAttribute("aria-label", this.getAttribute("label") || "Time");
       const time = this.ensure(".c-time-slider__time", () => { const el = document.createElement("span"); el.className = "c-time-slider__time"; return el; });
       time.textContent = this.getAttribute("label") || "";
     }

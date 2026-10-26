@@ -1355,9 +1355,13 @@
   /* ---------------------------------------------------------------------
    23. Resizable panels — pointer + keyboard
      --------------------------------------------------------------------- */
-  $$(".c-resize-handle").forEach((handle) => {
-    handle.setAttribute("tabindex", "0");
-    handle.setAttribute("role", "separator");
+   $$(".c-resize-handle").forEach((handle) => {
+     handle.setAttribute("tabindex", "0");
+     handle.setAttribute("role", "separator");
+     if (!handle.hasAttribute("aria-valuenow")) handle.setAttribute("aria-valuenow", "50");
+     if (!handle.hasAttribute("aria-valuemin")) handle.setAttribute("aria-valuemin", "0");
+     if (!handle.hasAttribute("aria-valuemax")) handle.setAttribute("aria-valuemax", "100");
+     if (!handle.hasAttribute("aria-orientation")) handle.setAttribute("aria-orientation", "vertical");
     handle.addEventListener("pointerdown", (e) => {
       e.preventDefault();
       handle.setPointerCapture(e.pointerId);
@@ -1573,7 +1577,8 @@
   });
 
   /* 25. Layer panel — drag to reorder layers */
-  $$(".c-layer-panel").forEach((panel) => {
+   $$(".c-layer-panel").forEach((panel) => {
+     if (!panel.hasAttribute("role")) panel.setAttribute("role", "list");
     const items = () => [...panel.querySelectorAll(".c-layer-panel__item")];
     const reorder = (el, dir) => {
       const s = items(), i = s.indexOf(el);

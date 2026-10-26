@@ -233,7 +233,9 @@ class ContourProgress extends ContourBase {
         }
       }
       this.ensure(".c-progress__bar", () => { const el = document.createElement("span"); el.className = "c-progress__bar"; return el; });
-      if (!this.hasAttribute("role")) this.setAttribute("role", "progressbar");
+       if (!this.hasAttribute("role")) this.setAttribute("role", "progressbar");
+       const label = this.getAttribute("label");
+       if (label && !this.hasAttribute("aria-label")) this.setAttribute("aria-label", label);
       if (!this.hasAttribute("aria-valuemin")) this.setAttribute("aria-valuemin", "0");
       if (!this.hasAttribute("aria-valuemax")) this.setAttribute("aria-valuemax", "100");
     }

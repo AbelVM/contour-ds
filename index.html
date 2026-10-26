@@ -374,7 +374,7 @@
         </nav>
 
         <div class="c-header__actions">
-          <button class="c-search-trigger c-search-trigger--header" type="button" data-command-open popovertarget="command-palette" aria-label="Search the design system">
+          <button class="c-search-trigger c-search-trigger--header" type="button" data-command-open popovertarget="command-palette" aria-label="Search">
             <svg aria-hidden="true"><use href="#i-search" /></svg>
             <span class="c-search-trigger__text">Search</span>
             <span class="c-search-trigger__kbd" aria-hidden="true">
@@ -3056,7 +3056,7 @@ means obvious.
                     <a href="#data">Data</a>
                   </nav>
                   <div class="c-header__actions">
-                    <button class="c-search-trigger c-search-trigger--header" type="button" data-command-open popovertarget="command-palette" aria-label="Search the design system">
+                    <button class="c-search-trigger c-search-trigger--header" type="button" data-command-open popovertarget="command-palette" aria-label="Search">
                       <svg aria-hidden="true"><use href="#i-search" /></svg>
                       <span class="c-search-trigger__text">Search</span>
                     </button>
@@ -3097,7 +3097,7 @@ means obvious.
       &lt;a href="#data"&gt;Data&lt;/a&gt;
     &lt;/nav&gt;
     &lt;div class="c-header__actions"&gt;
-      &lt;button class="c-search-trigger c-search-trigger--header" type="button" data-command-open popovertarget="command-palette" aria-label="Search the design system"&gt;
+      &lt;button class="c-search-trigger c-search-trigger--header" type="button" data-command-open popovertarget="command-palette" aria-label="Search"&gt;
         &lt;svg aria-hidden="true"&gt;
           &lt;use href="#i-search" /&gt;
         &lt;/svg&gt;
@@ -3127,33 +3127,33 @@ means obvious.
               <span class="ds-spec__token">.c-tree</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-panel">
-              <ul class="c-tree">
-                <li class="c-tree__node">
-                  <div class="c-tree__row" aria-expanded="true">
+              <div class="c-tree" role="tree">
+                <div class="c-tree__node" role="treeitem" aria-expanded="true">
+                   <div class="c-tree__row">
                     <button class="c-tree__toggle" type="button" aria-expanded="true" aria-label="Toggle">
                       <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                     </button>
                     <span>Layers</span>
                   </div>
-                  <ul class="c-tree__children">
-                    <li class="c-tree__node">
-                      <div class="c-tree__row" aria-expanded="false">
+                  <div class="c-tree__children" role="group">
+                    <div class="c-tree__node" role="treeitem" aria-expanded="false">
+                       <div class="c-tree__row">
                         <button class="c-tree__toggle" type="button" aria-expanded="false" aria-label="Toggle">
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </button>
                         <span>Roads</span>
                       </div>
-                      <ul class="c-tree__children" hidden>
-                        <li class="c-tree__leaf">Motorways</li>
-                        <li class="c-tree__leaf">Primary</li>
-                        <li class="c-tree__leaf">Residential</li>
-                      </ul>
-                    </li>
-                    <li class="c-tree__leaf">Buildings</li>
-                    <li class="c-tree__leaf">Water</li>
-                  </ul>
-                </li>
-              </ul>
+                      <div class="c-tree__children" role="group" hidden>
+                        <div class="c-tree__leaf" role="treeitem">Motorways</div>
+                        <div class="c-tree__leaf" role="treeitem">Primary</div>
+                        <div class="c-tree__leaf" role="treeitem">Residential</div>
+                      </div>
+                    </div>
+                    <div class="c-tree__leaf" role="treeitem">Buildings</div>
+                    <div class="c-tree__leaf" role="treeitem">Water</div>
+                  </div>
+                </div>
+              </div>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -3166,9 +3166,9 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-47">&lt;ul class="c-tree"&gt;
-  &lt;li class="c-tree__node"&gt;
-    &lt;div class="c-tree__row" aria-expanded="true"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-47">&lt;div class="c-tree" role="tree"&gt;
+  &lt;div class="c-tree__node" role="treeitem" aria-expanded="true"&gt;
+    &lt;div class="c-tree__row"&gt;
       &lt;button class="c-tree__toggle" type="button" aria-expanded="true" aria-label="Toggle"&gt;
         &lt;svg aria-hidden="true"&gt;
           &lt;use href="#i-chevron-right" /&gt;
@@ -3176,9 +3176,9 @@ means obvious.
       &lt;/button&gt;
       &lt;span&gt;Layers&lt;/span&gt;
     &lt;/div&gt;
-    &lt;ul class="c-tree__children"&gt;
-      &lt;li class="c-tree__node"&gt;
-        &lt;div class="c-tree__row" aria-expanded="false"&gt;
+    &lt;div class="c-tree__children" role="group"&gt;
+      &lt;div class="c-tree__node" role="treeitem" aria-expanded="false"&gt;
+        &lt;div class="c-tree__row"&gt;
           &lt;button class="c-tree__toggle" type="button" aria-expanded="false" aria-label="Toggle"&gt;
             &lt;svg aria-hidden="true"&gt;
               &lt;use href="#i-chevron-right" /&gt;
@@ -3186,17 +3186,17 @@ means obvious.
           &lt;/button&gt;
           &lt;span&gt;Roads&lt;/span&gt;
         &lt;/div&gt;
-        &lt;ul class="c-tree__children" hidden&gt;
-          &lt;li class="c-tree__leaf"&gt;Motorways&lt;/li&gt;
-          &lt;li class="c-tree__leaf"&gt;Primary&lt;/li&gt;
-          &lt;li class="c-tree__leaf"&gt;Residential&lt;/li&gt;
-        &lt;/ul&gt;
-      &lt;/li&gt;
-      &lt;li class="c-tree__leaf"&gt;Buildings&lt;/li&gt;
-      &lt;li class="c-tree__leaf"&gt;Water&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;</code></pre>
+        &lt;div class="c-tree__children" role="group" hidden&gt;
+          &lt;div class="c-tree__leaf" role="treeitem"&gt;Motorways&lt;/div&gt;
+          &lt;div class="c-tree__leaf" role="treeitem"&gt;Primary&lt;/div&gt;
+          &lt;div class="c-tree__leaf" role="treeitem"&gt;Residential&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div class="c-tree__leaf" role="treeitem"&gt;Buildings&lt;/div&gt;
+      &lt;div class="c-tree__leaf" role="treeitem"&gt;Water&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -16175,14 +16175,14 @@ means obvious.
 
         <div class="c-footer__links">
           <div class="c-footer__col">
-            <h3>Foundations</h3>
+            <p class="c-footer__col-title">Foundations</p>
             <a href="#colour">Colour</a>
             <a href="#type">Typography</a>
             <a href="#space">Space &amp; shape</a>
             <a href="#motion">Motion</a>
           </div>
           <div class="c-footer__col">
-            <h3>Components</h3>
+            <p class="c-footer__col-title">Components</p>
             <a href="#actions">Actions</a>
             <a href="#forms">Forms</a>
             <a href="#status">Status</a>
@@ -16194,7 +16194,7 @@ means obvious.
             <a href="#field">Field</a>
           </div>
           <div class="c-footer__col">
-            <h3>Surfaces</h3>
+            <p class="c-footer__col-title">Surfaces</p>
             <a href="#docs">Documentation</a>
             <a href="#landing">Landing</a>
             <a href="#patterns">Patterns</a>
@@ -16202,7 +16202,7 @@ means obvious.
             <a href="#recipes">Recipes</a>
           </div>
           <div class="c-footer__col">
-            <h3>Resources</h3>
+            <p class="c-footer__col-title">Resources</p>
             <a href="#principles">Principles</a>
             <a href="#theming">Theming</a>
             <a href="#playground">Playground</a>
@@ -16249,7 +16249,7 @@ means obvious.
     <div class="c-command" id="command-palette" popover="auto" data-command-palette>
       <div class="c-command__input">
         <svg aria-hidden="true"><use href="#i-search" /></svg>
-        <input class="c-command__field" type="text" role="combobox" aria-expanded="true" aria-controls="command-list" aria-autocomplete="list" aria-label="Search the design system" placeholder="Search components, sections and actions…" autocomplete="off" spellcheck="false" data-command-field />
+        <input class="c-command__field" type="text" role="combobox" aria-expanded="true" aria-controls="command-list" aria-autocomplete="list" aria-label="Search components, sections and actions" placeholder="Search components, sections and actions…" autocomplete="off" spellcheck="false" data-command-field />
         <kbd class="c-kbd">Esc</kbd>
       </div>
       <div class="c-command__list" id="command-list" role="listbox" aria-label="Results" data-command-list></div>
