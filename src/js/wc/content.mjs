@@ -493,10 +493,13 @@ class ContourCode extends ContourBase {
       this.classList.add("c-code");
       const title = this.getAttribute("title");
       if (title) {
-        const t = this.ensure(".c-code__title", () => { const el = document.createElement("div"); el.className = "c-code__title"; return el; });
-        if (t.parentNode === this && this.firstChild !== t) this.prepend(t);
+        const head = this.ensure(".c-code__head", () => { const el = document.createElement("div"); el.className = "c-code__head"; return el; });
+        if (head.parentNode === this && this.firstChild !== head) this.prepend(head);
+        const t = head.querySelector(".c-code__title") || (() => { const el = document.createElement("div"); el.className = "c-code__title"; head.appendChild(el); return el; })();
         t.textContent = title;
       } else {
+        const head = this.querySelector(".c-code__head");
+        if (head) head.remove();
         const t = this.querySelector(".c-code__title");
         if (t) t.remove();
       }

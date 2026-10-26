@@ -15,6 +15,106 @@
   describe IBM Plex as loaded from Google Fonts.
 
 ### Fixed
+- Several web components answered to their own class and not to their block's contract, and one
+  died on its first attribute change. All were found by measuring the shipped guide page rather
+  than reading the source, which is how they survived a line-by-line review.
+  `contour-combobox` bound its `input`, `focus` and `keydown` listeners to the **generated**
+  field while its claim guard was keyed on the host, so changing any attribute rebuilt the field,
+  spent the claim, and left a dead control: measured opening on focus and cursorring an option
+  when fresh, doing neither after a placeholder change. Every listener is now delegated on the
+  host and looks its nodes up again per event, and the listbox, option, `aria-expanded`,
+  `aria-controls` and `aria-activedescendant` attributes are re-applied on each pass because a
+  claim cannot guard an attribute. `contour-tree` generated `role="tree"` with no `role="treeitem"`
+  anywhere and stamped every toggle and leaf `tabindex="-1"` while setting none to `0` — a tree
+  with no tab stop, so the keyboard could not reach it at all; items now carry `role="treeitem"`
+  with `aria-level`, children lists carry `role="group"`, and exactly one tab stop roves with
+  focus, held among the *visible* items only, since a stop on a `hidden` node is a stop nobody
+  can reach. Arrow keys open and close a branch. `contour-segmented` added its block class to the
+  host and left the author's buttons bare: no `c-segmented__option`, so the sheet's
+  `[aria-pressed="true"]` rule never matched and the options rendered as unstyled browser
+  buttons, and no pressed state at rest meant a screen reader heard three plain buttons instead
+  of a group with one choice. It now normalises the class, an explicit `aria-pressed`, the group
+  role and label, and a single roving tab stop — the author's `value` wins when it changes, the
+  reader's click wins in between, so a re-render cannot move a pressed option back.
+  And `wireSegmented` was the one pass that read *authored* children at wire time, which exist
+  only once the parser has left the host: the same bundle loaded with `defer` styled the options,
+  the same bytes in a `<head>` tag did not, so the guide (which loads the deferred ESM entry)
+  could not see it. A classic artifact and a module are not the same moment.
+  `node tools/audit/wc-contract.mjs` now refuses any divergence between the two (placement
+  parity), it was falsified by removing the retry and rebuilding, and `.github/workflows/ci.yml`
+  invokes that gate, so the arm runs.
+- `contour-progress` built its bar, set its role, and then threw before saying what it held.
+  `const pct` was declared inside the `else` branch of the value test while the ARIA block that
+  reads it runs after that branch, so every determinate bar raised `ReferenceError: pct is not
+  defined` on each render and reached a screen reader with `aria-valuenow` unset while the fill
+  painted on screen. The indeterminate case was wrong in the other direction: with no `value` it
+  left a stale `--progress` fill and announced a number the element never had. Both are fixed —
+  `pct` is normalised at function scope, and a valueless bar removes `--progress` **and**
+  `aria-valuenow` rather than inventing either, keeping an author's own `aria-valuenow` that the
+  element did not set. `node tools/audit/wc-contract.mjs` now refuses either half regressing: it
+  mounts a bar with a value and requires the announced number beside `role=progressbar`, min, max
+  and a fill, then mounts one with no `value` and requires `aria-valuenow` absent and `--progress`
+  empty. The second arm was added because a rewrite that kept the hoist and moved the ARIA block
+  back outside the branch passed every assertion the gate already held — a green gate that cannot
+  see the indeterminate case is the case that ships.
+- `contour-elevation` rendered an empty box that raised nothing. Its `render()` body was a comment
+  stating that no `.c-elevation` rule exists and that the class was therefore dropped rather than
+  invented. That was false: the rule shipped in `00e0494` and is still in the sheet, so it had no
+  emitter in the light-DOM layer while the shadow wrapper already applied the same class to its
+  host. The §23 specimen compounded it by publishing `level="2"` — an attribute no rule and no
+  script reads, absent from `observed` — so markup the guide told authors to copy could not do
+  anything. The element now adds the block class, and the specimen says what the element actually
+  contracts: it raises the surface it is given, so the surface arrives as a `c-card` beside it.
+  The §05 card's duplicate inline `box-shadow: var(--shadow-md)` was deleted only after the two
+  computed the same shadow in both themes with the inline gone and neither computed one with the
+  class removed too, so the class is what carries the elevation rather than the declaration beside
+  it.
+- A toolbar crushed its own buttons below the WCAG 2.5.8 target floor. `.c-toolbar` declared
+  `container-type: inline-size` on a shrink-to-fit `inline-flex` box, and inline-size
+  containment sizes that axis *as if the element had no children*: the toolbar collapsed to its
+  own padding and border, measured at 13px against 174px with the declaration removed. Its four
+  buttons ask for `2.25rem`; as flex items with the default `flex-shrink: 1` inside a 13px box
+  they were squeezed to 12px wide — under the 24px floor the build refuses, and visible only as
+  an asymmetric box where the height kept its 36px and the width did not. The containment was
+  doing nothing: a `@container` rule reads an element's ancestor container and never the element
+  itself, so the toolbar could not query the containment it set on itself. It is gone, which
+  restores the size the rule already asked for rather than growing any target. Proven causally,
+  not inferred — `width: max-content` left the box at 13px, so no explanation short of
+  containment fits, and `node tools/audit/component-inventory.mjs` (CI-wired) now prints
+  `every visible pointer target meets the 24px AA floor`.
+- `ensure()` reached through a nested host and handed the outer render the inner host's own node.
+  Its scope was `root.querySelector(selector)`, which descends into a custom element mounted
+  inside this one, so two blocks of the same kind sharing a part name collided. Measured with an
+  outer `contour-panel` that had no title of its own, asking for one while an inner panel already
+  owned `.c-panel__title`: before the fix the outer render wrote its own title text **into the
+  inner host's element** — one title in the page, reading "Outer", and the outer panel left with
+  no title at all, so the author's own text inside the child was silently replaced. After it,
+  each host owns its own title and both read correctly. `ensure()` now takes the first match
+  whose path to the scope crosses no other host, and its per-render cache is keyed by the scope it
+  was read from as well as the selector, because a `parent` that is not the host survives the next
+  render's node reset while its cached match does not. The cache-key framing this fix replaces was
+  itself a wrong diagnosis: no call site passes a `parent`, so the key could not have collided —
+  the bug was scope, not naming.
+- A shadow wrapper could adopt a stylesheet that no longer exists. `adoptedSheets()` cached on
+  sheet count plus hrefs, which cannot see an edit to a sheet already on the page, so a second
+  element adopted the first element's stale parse; the key now counts each sheet's rules too.
+  Measured across two arms on different served bytes: a rule inserted into the shipped sheet after
+  the first element reached the second one only with the new key.
+- `node tools/execute-docs.mjs` mounted a published snippet as markup no browser would read.
+  Two functions turn a parsed tree back into text: `serialize()` escapes attribute values with
+  `escapeAttr`, and `format()` — the one that builds the snippets the guide publishes —
+  interpolated them raw. A specimen authored `tabs="[&quot;One&quot;]"` therefore decoded on
+  parse and re-emitted with bare quotes inside a double-quoted attribute, so every JSON
+  attribute in the element layer reached the reader as markup that cannot be pasted, and the
+  gate counted those failures against the specimens. `format()` escapes like `serialize()` now.
+  The same chained-replace bug lived twice on the reading side, in `tools/execute-docs.mjs` and
+  in `tools/snippets.mjs`'s spacing guard: unescaping `&amp;` before `&quot;` decodes once too
+  often and would have undone the fix by re-breaking the mount, so both read through the
+  parser's single-pass `decodeEntities` (AGENTS.md rule 8's inverse) instead. Proven as a pair:
+  `node tools/execute-docs.mjs` reports zero snippet failures — the only two it does not call
+  valid are the unclosed fragments it has always excused as markup that is not a syntax error —
+  `node tools/snippets.mjs` twice leaves `index.html` byte-identical, so the round trip is still
+  a fixed point, and `npx html-validate` is clean on the shipped pages.
 - `family-gate.mjs` could not see a **named colour at all**, and it is the only check that
   enforces "read a token", so the rule the agent-rules artifact publishes as
   machine-checkable was unenforced for the commonest way to write a raw colour. Every branch
@@ -693,7 +793,7 @@
 - The token export published 151 of the 273 declared tokens. `tools/build.mjs` matched a single `:root` block, and `tokens.css` declares in three, so the entire semantic layer — the half a consumer overrides — was missing from `dist/contour.tokens.json`. It now exports 277/277, 92 of them as light/dark pairs
 - Multi-line `light-dark()` declarations were never split into two themes: the exporter tested the value with `.+`, and `.` does not match a newline, so `--color-focus-halo`, `--color-primary-soft` and `--color-on-primary-solid` shipped as one opaque string. Splitting now goes through `tools/lib/lightdark.mjs`, which counts parentheses instead of pattern-matching them
 - `tools/check-size.mjs` failed on a 113.1 kB bundle against a 110 kB budget and was not wired into CI at all. Budgets are now measured per bundle with ~3% headroom, the gate also refuses a stale `dist/`, and CI runs it after the build
-- Specimens added for `c-menu`, `c-tag`, `c-expandable`, `c-pressable`, `c-scrim` and `c-resize-handle`. An earlier entry here claimed nine undocumented components had been documented; measured with `node tools/audit/component-inventory.mjs`, six of those nine now have a specimen and **<!-- ds:noSpecimen -->3<!-- /ds:noSpecimen --> of <!-- ds:components -->162<!-- /ds:components -->** blocks still have none
+- Specimens added for `c-menu`, `c-tag`, `c-expandable`, `c-pressable`, `c-scrim` and `c-resize-handle`. An earlier entry here claimed nine undocumented components had been documented; measured with `node tools/audit/component-inventory.mjs`, six of those nine now have a specimen and **<!-- ds:noSpecimen -->0<!-- /ds:noSpecimen --> of <!-- ds:components -->162<!-- /ds:components -->** blocks still have none
 - The accessibility contract in `README.md`, `AGENTS.md` and `llms.txt` claimed the ratios were "verified across 210 text and icon pairs per theme". Nothing computes 210: `tools/audit/contrast-and-aria.mjs` measures 52 named colour pairs (76 numeric comparisons with series and ramp steps). The three lines now name the enforcing command and its exit condition instead of a count no tool recomputes, and `AGENTS.md` warns against putting a pair count back there. Its criterion was also corrected to 1.4.11 for adjacent contrast, with 2.4.13 governing focus appearance
 - `tools/contour-gen.py` wrote its verification JSON into a machine-local temp directory outside the repository — a path that existed on one developer's machine and on no clean clone or CI runner. Nothing in the repository reads those files (checked by search), so they now land under the project's own gitignored `tmp/audit/`
 

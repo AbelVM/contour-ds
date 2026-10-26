@@ -13,10 +13,20 @@ import { define, MODS, REGISTERED, contourId } from './core.mjs';
   // them per instance re-parsed the whole 190 kB sheet for every element a page
   // mounted. The cache is keyed on the sheet list, so a stylesheet linked after
   // load is still picked up by the next element.
+  //
+  // The key counts what each sheet holds, not just how many sheets there are and
+  // what they are called: an inline <style> replaced by another inline <style>
+  // leaves both unchanged, and a cache keyed on identity alone would hand the
+  // next instance a parse of the sheet that is no longer on the page.
   let ADOPTED = null;
   let ADOPTED_KEY = "";
   const adoptedSheets = () => {
-    const key = document.styleSheets.length + ":" + Array.from(document.styleSheets, (s) => s.href || "").join("|");
+    let key = document.styleSheets.length + ":";
+    for (const sheet of document.styleSheets) {
+      let rules = -1;
+      try { rules = sheet.cssRules.length; } catch (e) { /* cross-origin: unreadable */ }
+      key += (sheet.href || "") + "~" + rules + "|";
+    }
     if (ADOPTED && key === ADOPTED_KEY) return ADOPTED;
     ADOPTED_KEY = key;
     ADOPTED = [];
@@ -50,8 +60,10 @@ import { define, MODS, REGISTERED, contourId } from './core.mjs';
     // Subclasses with behaviour beyond the template override this.
     enhance(root) {
       if (!root) root = this.shadowRoot;
-      if (!root || this._wiredShadow) return;
-      this._wiredShadow = true;
+      if (!root) return;
+      // ARIA setup is idempotent (guards on hasAttribute), so it re-runs on
+      // slotchange to cover slotted content. Behaviour wiring is guarded by
+      // wcClaim inside each wire* function, so it stays one-shot.
       // ARIA: ensure interactive elements have proper roles
       root.querySelectorAll("button:not([role])").forEach((btn) => {
         if (!btn.hasAttribute("role")) btn.setAttribute("role", "button");

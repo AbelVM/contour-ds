@@ -48,14 +48,14 @@
   //   role, open, aria-label, aria-valuenow, aria-valuemin, aria-valuemax, tabindex
   // Adding one of those back to this list makes that component recurse.
   export const OBSERVED = [
-    "action", "actions", "after", "anchor", "answer", "attribution", "attribution-mark", "before", "body", "brand", "columns", "color", "command",
-    "cells", "controls", "copyable", "count", "current", "date", "delta", "desc", "direction", "divider", "do", "dont",
+    "action", "actions", "after", "anchor", "answer", "area", "attribution", "attribution-mark", "axis-x", "axis-y", "before", "body", "brand", "center", "columns", "color", "command",
+    "cells", "chrome", "closable", "controls", "copyable", "count", "current", "date", "delta", "demo", "desc", "direction", "divider", "do", "dont",
     "empty", "error", "hint", "href", "icon", "index", "instrument", "items", "key",
-    "label", "lede", "legend", "links", "live", "max", "media", "message", "method", "min", "name", "next", "no", "note", "norm",
-    "options", "pages", "placeholder", "prev", "prompt", "question", "required",
-    "quote", "removable", "reverse", "rows", "scale", "series", "shortcut", "size", "status",
+    "label", "lede", "legend", "line", "links", "live", "max", "media", "message", "method", "min", "name", "needle", "next", "no", "nodes", "note", "norm",
+    "options", "pages", "placeholder", "point", "points", "prev", "prompt", "question", "required",
+    "quote", "ramp", "removable", "reverse", "rings", "rows", "scale", "separator", "series", "shortcut", "size", "status",
     "state", "steps", "subtitle", "summary", "tabs", "tag", "text", "title", "type", "unit", "value",
-    "variant", "yes",
+    "variant", "viewport", "yes",
   ];
 
   /**
@@ -107,6 +107,19 @@
       return {};
     }
 
+    // How many times this host has run `render()`, counting the first connect.
+    // Read-only and diagnostic: it exists so a page can show that `batch()` did
+    // what it claims instead of asking the reader to believe it, and so a test can
+    // assert a re-render happened without watching for a specific node. A consumer
+    // that never calls `batch()` never needs it, and nothing here reads it.
+    get renderCount() {
+      return this._contourRenderCount || 0;
+    }
+
+    _countRender() {
+      this._contourRenderCount = (this._contourRenderCount || 0) + 1;
+    }
+
     // Install accessors once per class, so `el.value = 42` writes the attribute
     // and triggers the normal re-render path instead of being a silent no-op.
     static _propsInstalled = false;
@@ -145,6 +158,7 @@
        };
           const before = Array.from(this.childNodes);
           this._ensureCache = new Map();
+          this._countRender();
           this.render();
          this._contourGenerated = Array.from(this.childNodes).filter((n) => !before.includes(n));
          this._applyParts(this);
@@ -207,26 +221,39 @@
          else this.setAttribute("class", this._contourAuthored.cls);
          const before = Array.from(this.childNodes);
          this._ensureCache = new Map();
+         this._countRender();
          this.render();
         this._contourGenerated = Array.from(this.childNodes).filter((n) => !before.includes(n));
         this._applyParts(this);
-        // Restore preserved form control values.
+        // Restore preserved form control values. Only restore when the count
+        // matches, so a re-render that added or removed a control cannot
+        // misalign values onto the wrong field.
         const newControls = Array.from(this.querySelectorAll("input, textarea, select"));
-        newControls.forEach((el, i) => {
-          if (savedValues[i] !== undefined && el.value === "" && el.getAttribute("value") === null) {
-            el.value = savedValues[i];
-          }
-        });
-        // Restore <details> open state by index.
+        if (newControls.length === savedValues.length) {
+          newControls.forEach((el, i) => {
+            if (savedValues[i] !== undefined && el.value === "" && el.getAttribute("value") === null) {
+              el.value = savedValues[i];
+            }
+          });
+        }
+        // Restore <details> open state by index. Only restore when the count
+        // matches, so a re-render that added or removed a disclosure cannot
+        // misalign open state onto the wrong one.
         const newDetails = Array.from(this.querySelectorAll("details"));
-        newDetails.forEach((d, i) => {
-          if (savedDetails[i] !== undefined) d.open = savedDetails[i];
-        });
+        if (newDetails.length === savedDetails.length) {
+          newDetails.forEach((d, i) => {
+            if (savedDetails[i] !== undefined) d.open = savedDetails[i];
+          });
+        }
         // Restore scroll positions by index among scrollable descendants.
+        // Only restore when the count matches, so a re-render that added or
+        // removed a scroller cannot misalign positions onto the wrong one.
         const newScrolls = Array.from(this.querySelectorAll("*")).filter((el) => el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth);
-        newScrolls.forEach((el, i) => {
-          if (savedScrolls[i]) { el.scrollTop = savedScrolls[i].top; el.scrollLeft = savedScrolls[i].left; }
-        });
+        if (newScrolls.length === savedScrolls.length) {
+          newScrolls.forEach((el, i) => {
+            if (savedScrolls[i]) { el.scrollTop = savedScrolls[i].top; el.scrollLeft = savedScrolls[i].left; }
+          });
+        }
         // Restore focus if it was inside the host.
         if (hadFocus) {
           if (document.contains(hadFocus)) {
@@ -297,21 +324,41 @@
       }
     }
 
+    // The closest host above `node` on the way up to `root`, or null when the
+    // path never crosses another host. `ensure()` may only reuse a node its own
+    // host owns: querySelector reaches straight through a nested host's
+    // boundary, so two blocks that both carry a `__title` would share one
+    // element and the outer render would write the inner one's text.
+    _ownerBetween(node, root) {
+      for (let p = node.parentElement; p && p !== root; p = p.parentElement) {
+        if (p instanceof ContourBase) return p;
+      }
+      return null;
+    }
+
     // Helper for update-or-create reactivity: returns the first node matching
     // `selector`, creating it via `factory()` and appending it if absent. Render
     // bodies use this so an attribute change updates the existing node instead
     // of being blocked by a `!querySelector` guard.
     //
     // A per-render cache avoids re-querying the subtree for every ensure() call
-    // in the same render pass (O(k*n) -> O(n+k)).
+    // in the same render pass (O(k*n) -> O(n+k)). The cache is keyed by the
+    // scope it was read from as well as the selector, because a `parent` that is
+    // not the host survives the next render's node reset while its cached match
+    // does not — a detached element handed back instead of a fresh one appended.
     ensure(selector, factory, parent) {
       const root = parent || this;
       if (!root._ensureCache) root._ensureCache = new Map();
       const cache = root._ensureCache;
-      let node = cache.get(selector);
+      const key = root === this ? selector : "\u0000" + root + "\u0000" + selector;
+      let node = cache.get(key);
       if (node === undefined) {
-        node = root.querySelector(selector);
-        cache.set(selector, node);
+        // First match this host owns, skipping anything inside a nested host.
+        node = null;
+        for (const candidate of root.querySelectorAll(selector)) {
+          if (!this._ownerBetween(candidate, root)) { node = candidate; break; }
+        }
+        cache.set(key, node);
       }
       if (!node) {
         node = factory();
@@ -323,7 +370,7 @@
           if (m) node.setAttribute("part", m[1]);
         }
         root.appendChild(node);
-        cache.set(selector, node);
+        cache.set(key, node);
       }
       return node;
     }

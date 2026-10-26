@@ -1,13 +1,24 @@
 import { ContourBase, define } from './core.mjs';
 class ContourMinimap extends ContourBase {
-    static get observed() { return ["label"]; }
-    static get properties() { return { label: { attribute: "label" } }; }
+    static get observed() { return ["label", "viewport"]; }
+    static get properties() { return { label: { attribute: "label" }, viewport: { attribute: "viewport" } }; }
     render() {
       this.classList.add("c-minimap");
       const label = this.getAttribute("label");
       if (label) {
         const l = this.ensure(".c-minimap__label", () => { const el = document.createElement("span"); el.className = "c-minimap__label"; return el; });
         l.textContent = label;
+      } else {
+        const l = this.querySelector(".c-minimap__label");
+        if (l) l.remove();
+      }
+      const viewport = this.getAttribute("viewport");
+      if (viewport) {
+        const v = this.ensure(".c-minimap__viewport", () => { const el = document.createElement("div"); el.className = "c-minimap__viewport"; return el; });
+        v.textContent = viewport;
+      } else {
+        const v = this.querySelector(".c-minimap__viewport");
+        if (v) v.remove();
       }
     }
   }
@@ -42,7 +53,7 @@ class ContourLayerPanel extends ContourBase {
           parsed.forEach((it) => {
             const name = typeof it === "string" ? it : (it.name || it.label || "");
             const item = document.createElement("div");
-            item.className = "c-layer-panel__item";
+            item.className = "c-layer-panel__item" + (it.dragging ? " c-layer-panel__item--dragging" : "");
             const toggle = document.createElement("input");
             toggle.type = "checkbox";
             toggle.className = "c-layer-panel__toggle";
@@ -80,66 +91,151 @@ class ContourTimeSlider extends ContourBase {
   }
   define("contour-time-slider", ContourTimeSlider);
 class ContourHexbin extends ContourBase {
-    static get observed() { return ["label"]; }
-    static get properties() { return { label: { attribute: "label" } }; }
+    static get observed() { return ["label", "cells"]; }
+    static get properties() { return { label: { attribute: "label" }, cells: { attribute: "cells" } }; }
     render() {
       this.classList.add("c-hexbin");
       const label = this.getAttribute("label");
       if (label) {
         const l = this.ensure(".c-hexbin__label", () => { const el = document.createElement("span"); el.className = "c-hexbin__label"; return el; });
         l.textContent = label;
+      } else {
+        const l = this.querySelector(".c-hexbin__label");
+        if (l) l.remove();
+      }
+      const cells = this.getAttribute("cells");
+      if (cells) {
+        try {
+          const parsed = JSON.parse(cells);
+          Array.from(this.querySelectorAll(".c-hexbin__cell")).forEach((n) => n.remove());
+          parsed.forEach((c) => {
+            const cell = document.createElement("div");
+            cell.className = "c-hexbin__cell";
+            if (typeof c === "object" && c.value != null) cell.textContent = c.value;
+            this.appendChild(cell);
+          });
+        } catch (e) { /* keep existing */ }
       }
     }
   }
   define("contour-hexbin", ContourHexbin);
 class ContourFlowMap extends ContourBase {
-    static get observed() { return ["label"]; }
-    static get properties() { return { label: { attribute: "label" } }; }
+    static get observed() { return ["label", "nodes"]; }
+    static get properties() { return { label: { attribute: "label" }, nodes: { attribute: "nodes" } }; }
     render() {
       this.classList.add("c-flow-map");
       const label = this.getAttribute("label");
       if (label) {
         const l = this.ensure(".c-flow-map__label", () => { const el = document.createElement("span"); el.className = "c-flow-map__label"; return el; });
         l.textContent = label;
+      } else {
+        const l = this.querySelector(".c-flow-map__label");
+        if (l) l.remove();
+      }
+      const nodes = this.getAttribute("nodes");
+      if (nodes) {
+        try {
+          const parsed = JSON.parse(nodes);
+          Array.from(this.querySelectorAll(".c-flow-map__node, .c-flow-map__flow")).forEach((n) => n.remove());
+          parsed.forEach((n) => {
+            const node = document.createElement("span");
+            node.className = "c-flow-map__node" + (n.source ? " c-flow-map__node--source" : "") + (n.target ? " c-flow-map__node--target" : "");
+            node.textContent = typeof n === "string" ? n : (n.label || n.name || "");
+            this.appendChild(node);
+          });
+        } catch (e) { /* keep existing */ }
       }
     }
   }
   define("contour-flow-map", ContourFlowMap);
 class ContourIsochrone extends ContourBase {
-    static get observed() { return ["label"]; }
-    static get properties() { return { label: { attribute: "label" } }; }
+    static get observed() { return ["label", "center", "rings"]; }
+    static get properties() { return { label: { attribute: "label" }, center: { attribute: "center" }, rings: { attribute: "rings" } }; }
     render() {
       this.classList.add("c-isochrone");
       const label = this.getAttribute("label");
       if (label) {
         const l = this.ensure(".c-isochrone__label", () => { const el = document.createElement("span"); el.className = "c-isochrone__label"; return el; });
         l.textContent = label;
+      } else {
+        const l = this.querySelector(".c-isochrone__label");
+        if (l) l.remove();
+      }
+      const center = this.getAttribute("center");
+      if (center) {
+        const c = this.ensure(".c-isochrone__center", () => { const el = document.createElement("span"); el.className = "c-isochrone__center"; return el; });
+        c.textContent = center;
+      } else {
+        const c = this.querySelector(".c-isochrone__center");
+        if (c) c.remove();
+      }
+      const rings = this.getAttribute("rings");
+      if (rings) {
+        try {
+          const parsed = JSON.parse(rings);
+          Array.from(this.querySelectorAll(".c-isochrone__ring")).forEach((n) => n.remove());
+          parsed.forEach((r) => {
+            const ring = document.createElement("span");
+            ring.className = "c-isochrone__ring c-isochrone__ring--" + (r.label || r);
+            this.appendChild(ring);
+          });
+        } catch (e) { /* keep existing */ }
       }
     }
   }
   define("contour-isochrone", ContourIsochrone);
 class ContourCatchment extends ContourBase {
-    static get observed() { return ["label"]; }
-    static get properties() { return { label: { attribute: "label" } }; }
+    static get observed() { return ["label", "area", "center"]; }
+    static get properties() { return { label: { attribute: "label" }, area: { attribute: "area" }, center: { attribute: "center" } }; }
     render() {
       this.classList.add("c-catchment");
       const label = this.getAttribute("label");
       if (label) {
         const l = this.ensure(".c-catchment__label", () => { const el = document.createElement("span"); el.className = "c-catchment__label"; return el; });
         l.textContent = label;
+      } else {
+        const l = this.querySelector(".c-catchment__label");
+        if (l) l.remove();
+      }
+      const area = this.getAttribute("area");
+      if (area) {
+        const a = this.ensure(".c-catchment__area", () => { const el = document.createElement("span"); el.className = "c-catchment__area"; return el; });
+        a.textContent = area;
+      } else {
+        const a = this.querySelector(".c-catchment__area");
+        if (a) a.remove();
+      }
+      const center = this.getAttribute("center");
+      if (center) {
+        const c = this.ensure(".c-catchment__center", () => { const el = document.createElement("span"); el.className = "c-catchment__center"; return el; });
+        c.textContent = center;
+      } else {
+        const c = this.querySelector(".c-catchment__center");
+        if (c) c.remove();
       }
     }
   }
   define("contour-catchment", ContourCatchment);
 class ContourCompassFull extends ContourBase {
-    static get observed() { return ["label"]; }
-    static get properties() { return { label: { attribute: "label" } }; }
+    static get observed() { return ["label", "needle"]; }
+    static get properties() { return { label: { attribute: "label" }, needle: { attribute: "needle" } }; }
     render() {
       this.classList.add("c-compass");
       const label = this.getAttribute("label");
       if (label) {
         const l = this.ensure(".c-compass__label", () => { const el = document.createElement("span"); el.className = "c-compass__label"; return el; });
         l.textContent = label;
+      } else {
+        const l = this.querySelector(".c-compass__label");
+        if (l) l.remove();
+      }
+      const needle = this.getAttribute("needle");
+      if (needle) {
+        const n = this.ensure(".c-compass__needle", () => { const el = document.createElement("span"); el.className = "c-compass__needle"; return el; });
+        n.style.transform = "rotate(" + needle + "deg)";
+      } else {
+        const n = this.querySelector(".c-compass__needle");
+        if (n) n.remove();
       }
     }
   }
@@ -186,10 +282,18 @@ class ContourLayerSwitch extends ContourBase {
   }
   define("contour-layer-switch", ContourLayerSwitch);
 class ContourMapSlot extends ContourBase {
-    static get observed() { return ["attribution", "scale"]; }
-    static get properties() { return { attribution: { attribute: "attribution" }, scale: { attribute: "scale" } }; }
+    static get observed() { return ["attribution", "scale", "chrome"]; }
+    static get properties() { return { attribution: { attribute: "attribution" }, scale: { attribute: "scale" }, chrome: { attribute: "chrome" } }; }
     render() {
       this.classList.add("c-map-slot");
+      const chrome = this.getAttribute("chrome");
+      if (chrome) {
+        const c = this.ensure(".c-map-slot__chrome", () => { const el = document.createElement("div"); el.className = "c-map-slot__chrome"; return el; });
+        c.textContent = chrome;
+      } else {
+        const c = this.querySelector(".c-map-slot__chrome");
+        if (c) c.remove();
+      }
       const attribution = this.getAttribute("attribution");
       if (attribution) {
         const a = this.ensure(".c-map-slot__attribution", () => { const el = document.createElement("div"); el.className = "c-map-slot__attribution"; return el; });
@@ -291,8 +395,8 @@ class ContourMapFooter extends ContourBase {
   }
   define("contour-map-footer", ContourMapFooter);
 class ContourScaleBar extends ContourBase {
-    static get observed() { return ["label"]; }
-    static get properties() { return { label: { attribute: "label" } }; }
+    static get observed() { return ["label", "value"]; }
+    static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" } }; }
     render() {
       this.classList.add("c-scale-bar");
       const label = this.getAttribute("label");
@@ -302,6 +406,14 @@ class ContourScaleBar extends ContourBase {
       } else {
         const l = this.querySelector(".c-scale-bar__label");
         if (l) l.remove();
+      }
+      const value = this.getAttribute("value");
+      if (value) {
+        const line = this.ensure(".c-scale-bar__line", () => { const el = document.createElement("span"); el.className = "c-scale-bar__line"; return el; });
+        line.style.inlineSize = value;
+      } else {
+        const line = this.querySelector(".c-scale-bar__line");
+        if (line) line.remove();
       }
     }
   }

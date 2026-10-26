@@ -270,7 +270,13 @@ export function format(node, depth = 0) {
   }
 
   const attrs = Object.entries(node.attrs)
-    .map(([key, value]) => (value === "" ? ` ${key}` : ` ${key}="${value}"`))
+    // Escape the value exactly as `serialize()` does. This function is the only
+    // other door from a parsed tree back to markup, and when it interpolated raw
+    // the guide's snippet emitter used it: an authored
+    // `tabs="[&quot;One&quot;]"` decoded on parse and came back out as
+    // `tabs="["One"]"`, which is markup a browser mis-parses and a reader cannot
+    // paste. Two serializers, one contract.
+    .map(([key, value]) => (value === "" ? ` ${key}` : ` ${key}="${escapeAttr(value)}"`))
     .join("");
 
   const meaningful = node.children.filter(

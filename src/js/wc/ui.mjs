@@ -5,6 +5,7 @@ class ContourAvatar extends ContourBase {
     static get properties() { return { name: { attribute: "name" }, size: { attribute: "size" }, variant: { attribute: "variant" } }; }
     render() {
       this.classList.add("c-avatar");
+      Array.from(this.classList).forEach((c) => { if (c.startsWith("c-avatar--")) this.classList.remove(c); });
       const name = this.getAttribute("name");
       const size = this.getAttribute("size");
       if (size) this.classList.add("c-avatar--" + size);
@@ -23,6 +24,7 @@ class ContourBadgeFull extends ContourBase {
     static get properties() { return { variant: { attribute: "variant" }, label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-badge");
+      Array.from(this.classList).forEach((c) => { if (c.startsWith("c-badge--")) this.classList.remove(c); });
       const variant = this.getAttribute("variant");
       if (variant) this.classList.add("c-badge--" + variant);
       const label = this.getAttribute("label");
@@ -38,6 +40,7 @@ class ContourChipFull extends ContourBase {
     render() {
       this.classList.add("c-chip");
       if (!this.hasAttribute("role")) this.setAttribute("role", "status");
+      Array.from(this.classList).forEach((c) => { if (c.startsWith("c-chip--")) this.classList.remove(c); });
       const variant = this.getAttribute("variant");
       if (variant) this.classList.add("c-chip--" + variant);
       const key = this.getAttribute("key");
@@ -65,6 +68,7 @@ class ContourTag extends ContourBase {
     render() {
       this.classList.add("c-tag");
       if (!this.hasAttribute("role")) this.setAttribute("role", "status");
+      Array.from(this.classList).forEach((c) => { if (c.startsWith("c-tag--")) this.classList.remove(c); });
       const variant = this.getAttribute("variant");
       if (variant) this.classList.add("c-tag--" + variant);
       const label = this.getAttribute("label");
@@ -106,6 +110,7 @@ class ContourDot extends ContourBase {
       this.classList.add("c-dot");
       if (!this.hasAttribute("role")) this.setAttribute("role", "img");
       if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "status indicator");
+      Array.from(this.classList).forEach((c) => { if (c.startsWith("c-dot--")) this.classList.remove(c); });
       const variant = this.getAttribute("variant");
       if (variant) this.classList.add("c-dot--" + variant);
       if (this.hasAttribute("live")) this.classList.add("c-dot--live");
@@ -118,6 +123,7 @@ class ContourPill extends ContourBase {
     render() {
       this.classList.add("c-pill");
       if (!this.hasAttribute("role")) this.setAttribute("role", "status");
+      Array.from(this.classList).forEach((c) => { if (c.startsWith("c-pill--")) this.classList.remove(c); });
       const variant = this.getAttribute("variant");
       if (variant) this.classList.add("c-pill--" + variant);
       const label = this.getAttribute("label");
@@ -161,7 +167,9 @@ class ContourTooltip extends ContourBase {
       this.classList.add("c-tooltip");
       if (!this.hasAttribute("popover")) this.setAttribute("popover", "hint");
       const text = this.getAttribute("text");
-      if (text !== null) {
+      if (text !== null && !this.querySelector("*") && !this.textContent.trim()) {
+        this.textContent = text;
+      } else if (text !== null && !this.querySelector("*")) {
         this.textContent = text;
       }
     }
@@ -199,19 +207,32 @@ class ContourProgress extends ContourBase {
     static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-progress");
-      const value = this.getAttribute("value") || "0";
-      // Normalise 0..1 to a percentage when a fractional value is given.
-      const num = Number(value);
-      const pct = Number.isFinite(num) && num <= 1 && value.includes(".") ? (num * 100) : num;
-      const pctStr = Math.max(0, Math.min(100, pct)) + "%";
-      this.style.setProperty("--progress", pctStr);
+      const value = this.getAttribute("value");
+      // The normalised percentage is read by the ARIA block below, which runs
+      // after this branch. Declaring it inside the `else` made `String(pct)` a
+      // ReferenceError: the bar built its node, set its role, and then died
+      // before announcing anything, so a determinate progressbar reached a
+      // screen reader with no value at all.
+      if (value === null) {
+        // Indeterminate bar: no fill, no value announced.
+        this.style.removeProperty("--progress");
+        if (this.getAttribute("aria-valuenow") === this._progressAriaValue) {
+          this.removeAttribute("aria-valuenow");
+        }
+        this._progressAriaValue = null;
+      } else {
+        const num = Number(value);
+        const pct = Number.isFinite(num) ? (num <= 1 && value.includes(".") ? num * 100 : num) : 0;
+        const pctStr = Math.max(0, Math.min(100, pct)) + "%";
+        this.style.setProperty("--progress", pctStr);
+        const prevVal = this._progressAriaValue;
+        if (!this.hasAttribute("aria-valuenow") || this.getAttribute("aria-valuenow") === prevVal) {
+          this.setAttribute("aria-valuenow", String(pct));
+          this._progressAriaValue = String(pct);
+        }
+      }
       this.ensure(".c-progress__bar", () => { const el = document.createElement("span"); el.className = "c-progress__bar"; return el; });
       if (!this.hasAttribute("role")) this.setAttribute("role", "progressbar");
-      const prevVal = this._progressAriaValue;
-      if (!this.hasAttribute("aria-valuenow") || this.getAttribute("aria-valuenow") === prevVal) {
-        this.setAttribute("aria-valuenow", String(pct));
-        this._progressAriaValue = String(pct);
-      }
       if (!this.hasAttribute("aria-valuemin")) this.setAttribute("aria-valuemin", "0");
       if (!this.hasAttribute("aria-valuemax")) this.setAttribute("aria-valuemax", "100");
     }
@@ -232,9 +253,12 @@ class ContourLoading extends ContourBase {
   define("contour-loading", ContourLoading);
 class ContourElevation extends ContourBase {
     render() {
-      // Elevation is carried by --shadow-* tokens, not a class. The host is a
-      // plain element; no .c-elevation rule exists, so the class is dropped
-      // rather than invented.
+      // The block is one step of the ramp, not the ramp: .c-elevation carries
+      // --shadow-md and nothing else, so this element raises the surface it is
+      // given and stops there. The rule has existed since 00e0494 — an earlier
+      // note here claimed it did not and dropped the class rather than invent
+      // one, which left a shipped rule with no emitter in either layer.
+      this.classList.add("c-elevation");
     }
   }
   define("contour-elevation", ContourElevation);
@@ -340,17 +364,24 @@ class ContourIconBadge extends ContourBase {
       this.classList.add("c-icon-badge");
       const icon = this.getAttribute("icon");
       if (icon) {
+        const sanitized = String(icon).replace(/[^a-zA-Z0-9_-]/g, "");
+        if (sanitized && !sanitized.startsWith("i-")) {
+          // Warn if icon name doesn't follow the i-* convention.
+          if (typeof console !== "undefined" && console.warn) {
+            console.warn("ContourIconBadge: icon '" + icon + "' may not exist in the sprite (expected i-* name).");
+          }
+        }
         const existing = this.querySelector("svg");
         const svg = existing || document.createElementNS("http://www.w3.org/2000/svg", "svg");
         if (!existing) {
           svg.setAttribute("aria-hidden", "true");
           const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
-          use.setAttribute("href", "#" + String(icon).replace(/[^a-zA-Z0-9_-]/g, ""));
+          use.setAttribute("href", "#" + sanitized);
           svg.appendChild(use);
           this.appendChild(svg);
         } else {
           const use = svg.querySelector("use");
-          if (use) use.setAttribute("href", "#" + String(icon).replace(/[^a-zA-Z0-9_-]/g, ""));
+          if (use) use.setAttribute("href", "#" + sanitized);
         }
       } else {
         const svg = this.querySelector("svg");
@@ -360,13 +391,14 @@ class ContourIconBadge extends ContourBase {
   }
   define("contour-icon-badge", ContourIconBadge);
 class ContourLiveBadge extends ContourBase {
-    static get observed() { return ["label"]; }
-    static get properties() { return { label: { attribute: "label" } }; }
+    static get observed() { return ["label", "state", "live"]; }
+    static get properties() { return { label: { attribute: "label" }, state: { attribute: "state" }, live: { attribute: "live", type: Boolean } }; }
     render() {
       this.classList.add("c-live-badge");
       // Remove previous state modifiers.
       Array.from(this.classList).forEach((c) => { if (c.startsWith("c-live-badge--")) this.classList.remove(c); });
       const state = this.getAttribute("state");
+      Array.from(this.classList).forEach((c) => { if (c.startsWith("c-live-badge--")) this.classList.remove(c); });
       if (state) {
         this.classList.add("c-live-badge--" + state);
       } else if (this.hasAttribute("live")) {

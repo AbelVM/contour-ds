@@ -16,6 +16,41 @@
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
+  /* §23 reactivity demo. It sits before the disclosure guard below because the
+     guard returns when a page has no snippets, and the demo is not a snippet.
+
+     The render count is read off the element — `renderCount` is the base class's
+     own tally — so this page never publishes a number the layer did not produce.
+     And it waits for `contour:ready`: `guide.js` is a classic script that runs
+     while the document is still being parsed, whereas the component layer is a
+     module that upgrades afterwards, so wiring on load would find a
+     `<contour-kpi>` that is still an unknown element with no `batch` to call. */
+  const wcDemo = () => {
+    const panel = $("[data-wc-demo]");
+    if (!panel) return;
+    const kpi = $("[data-wc-demo-kpi]", panel);
+    const out = $("[data-wc-demo-count]", panel);
+    const single = $("[data-wc-demo-single]", panel);
+    const grouped = $("[data-wc-demo-batch]", panel);
+    if (!kpi || !out || typeof kpi.batch !== "function") return;
+
+    let step = 0;
+    const write = () => {
+      step += 1;
+      kpi.setAttribute("value", String(128 + step));
+      kpi.setAttribute("delta", `+${step}`);
+      kpi.setAttribute("direction", step % 2 ? "down" : "up");
+    };
+    const show = () => { out.textContent = `render() has run ${kpi.renderCount} times`; };
+
+    single?.addEventListener("click", () => { write(); show(); });
+    grouped?.addEventListener("click", () => { kpi.batch(write); show(); });
+    show();
+  };
+
+  if (window.customElements?.get("contour-kpi")) wcDemo();
+  else window.addEventListener("contour:ready", wcDemo, { once: true });
+
   const disclosures = $$("details.ds-code");
   if (!disclosures.length) return;
 

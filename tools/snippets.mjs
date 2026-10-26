@@ -22,7 +22,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
-import { parse, serialize, format, findAll, removeWhere, classes, hasClass, text } from "./lib/html.mjs";
+import { parse, serialize, format, findAll, removeWhere, classes, hasClass, text, decodeEntities } from "./lib/html.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
@@ -245,11 +245,11 @@ const written = readFileSync(guidePath, "utf-8");
 const emitted = [...written.matchAll(/<code id="ds-code-\d+">([\s\S]*?)<\/code>/g)];
 const leaks = [];
 for (const [, body] of emitted) {
-  const un = body
-    .replaceAll("&lt;", "<")
-    .replaceAll("&gt;", ">")
-    .replaceAll("&quot;", '"')
-    .replaceAll("&amp;", "&");
+  // The parser's single-pass decoder, the same one `execute-docs` reads with.
+  // This guard used to chain four replaces, which decodes `&amp;quot;` to a bare
+  // quote and so reads a different string than the browser shows the reader --
+  // a guard measuring its own substitution, not the artifact.
+  const un = decodeEntities(body);
   const first = un.match(/<([a-z]+)((?:[^>"]|"[^"]*")*)>/);
   if (!first) continue;
   const decl = first[2].match(/margin-block-start:\s*([^;"]+)/);

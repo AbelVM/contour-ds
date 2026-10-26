@@ -69,7 +69,8 @@ class ContourDashFreshness extends ContourBase {
       // text node rather than two invented parts.
       const dot = this.ensure(".c-dot", () => { const el = document.createElement("span"); el.className = "c-dot c-dot--live c-dot--accent"; el.setAttribute("aria-hidden", "true"); return el; });
       if (dot.parentNode !== this) this.appendChild(dot);
-      if (!this._freshnessText) {
+      // Reset stale text node reference after base-class cleanup.
+      if (!this._freshnessText || !this._freshnessText.parentNode) {
         this._freshnessText = document.createTextNode("");
         this.appendChild(this._freshnessText);
       }

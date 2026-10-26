@@ -24,8 +24,8 @@ class ContourSearchTriggerFull extends ContourBase {
       const span = this.ensure(".c-search-trigger__text", () => { const el = document.createElement("span"); el.className = "c-search-trigger__text"; return el; });
       span.className = "c-search-trigger__text";
       if (!span.textContent.trim() || span.textContent.trim() !== label) span.textContent = label;
-      const kbd = this.ensure("kbd.c-kbd", () => { const el = document.createElement("kbd"); el.className = "c-kbd"; return el; });
-      kbd.className = "c-kbd";
+      const kbd = this.ensure("kbd.c-search-trigger__kbd", () => { const el = document.createElement("kbd"); el.className = "c-search-trigger__kbd"; return el; });
+      kbd.className = "c-search-trigger__kbd";
       kbd.textContent = this.getAttribute("shortcut") || "⌘K";
     }
   }
@@ -42,11 +42,11 @@ class ContourShortcutRowFull extends ContourBase {
       const key = this.getAttribute("key");
       const desc = this.getAttribute("desc");
       if (key) {
-        const k = this.ensure(".c-shortcut-row__keys", () => { const el = document.createElement("kbd"); el.className = "c-kbd"; return el; });
-        k.className = "c-kbd";
+        const k = this.ensure(".c-shortcut-row__keys", () => { const el = document.createElement("kbd"); el.className = "c-shortcut-row__keys"; return el; });
+        k.className = "c-shortcut-row__keys";
         k.textContent = key;
       } else {
-        const k = this.querySelector("kbd.c-kbd");
+        const k = this.querySelector(".c-shortcut-row__keys");
         if (k) k.remove();
       }
       if (desc) {
@@ -61,7 +61,19 @@ class ContourShortcutRowFull extends ContourBase {
   }
   define("contour-shortcut-row", ContourShortcutRowFull);
 class ContourShortcutPanelFull extends ContourBase {
-    render() { this.classList.add("c-shortcut-panel"); }
+    static get observed() { return ["title"]; }
+    static get properties() { return { title: { attribute: "title" } }; }
+    render() {
+      this.classList.add("c-shortcut-panel");
+      const title = this.getAttribute("title");
+      if (title) {
+        const t = this.ensure(".c-shortcut-panel__title", () => { const el = document.createElement("div"); el.className = "c-shortcut-panel__title"; return el; });
+        t.textContent = title;
+      } else {
+        const t = this.querySelector(".c-shortcut-panel__title");
+        if (t) t.remove();
+      }
+    }
   }
   define("contour-shortcut-panel", ContourShortcutPanelFull);
   class ContourShortcutOverlayFull extends ContourBase {
@@ -112,6 +124,7 @@ class ContourBtn extends ContourBase {
     static get properties() { return { variant: { attribute: "variant" }, size: { attribute: "size" }, color: { attribute: "color" } }; }
     render() {
       this.classList.add("c-btn");
+      Array.from(this.classList).forEach((c) => { if (c.startsWith("c-btn--")) this.classList.remove(c); });
       for (const attr of ["variant", "size", "color"]) {
         const val = this.getAttribute(attr);
         if (val) this.classList.add("c-btn--" + val);

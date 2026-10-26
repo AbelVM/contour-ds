@@ -2872,7 +2872,13 @@
      24. TOOLBAR (map-style floating control bar)
      ======================================================================= */
   .c-toolbar {
-    container-type: inline-size;
+    /* No container-type here. Inline-size containment sizes this box as if it had
+       no children, and on a shrink-to-fit `inline-flex` that leaves only padding and
+       border — 13px measured against 174px without it — which then crushes each
+       `.c-toolbar__btn` from its declared 2.25rem to 12px wide and breaks the WCAG
+       2.5.8 floor. The rule below cannot compact the toolbar from inside it either: a
+       `@container` query reads an element's *ancestor* container, never the element
+       itself, so to compact this block the container has to be its wrapper. */
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
@@ -2884,6 +2890,15 @@
     box-shadow: var(--shadow-md);
   }
 
+  /* One half of this block is inert and the other was never reachable while
+     `.c-toolbar` carried its own `container-type`: a `@container` rule queries an
+     element's ANCESTOR container, so the block could not read the containment the
+     element set on itself. With that gone, the `.c-toolbar` half now works against a
+     container the author supplies around the toolbar. The `.c-toolbar__btn` half is
+     still inert, because the base `.c-toolbar__btn` below follows this block at equal
+     specificity and wins, so its 2.25rem always beats this 2rem. Reordering the block after
+     the base rules would make that half real, and 36px becoming 32px inside a narrow
+     container is a design change, not a repair, so it is not made here. */
   @container (inline-size < 16rem) {
     .c-toolbar { gap: 0.2rem; padding: 0.25rem; }
     .c-toolbar__btn { inline-size: 2rem; block-size: 2rem; }

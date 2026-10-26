@@ -278,6 +278,54 @@ const shell = (script) => `<!doctype html><html lang="en"><head><meta charset="u
 ${script ? `<script src="${script}"></script>` : ""}
 </body></html>`;
 
+// ---- placement parity -------------------------------------------------------
+//
+// Every arm above loads the bundle at the end of body, so every measurement this
+// gate makes is taken at the DEFERRED moment: the parser has finished, the
+// author's children exist. A consumer who puts the classic bundle in `<head>`
+// gets the other moment: the parser upgrades the custom element while it is still
+// inside it, so a wire-time pass over authored children sees an empty host. A
+// component that behaves differently between the two works in this gate and in
+// the guide, and does not work in the page. Measured once by hand (tmp/r5/place.mjs):
+// the segmented group came up with 0 option classes, no pressed state and 2 tab
+// stops in `head` where the same bytes gave 2, 2 and 1 deferred.
+//
+// The fixture mixes both shapes on purpose: authored children (the hazard) and
+// attribute-generated children (the safe path that must stay identical).
+const PLACEMENT_MARKUP = `
+<contour-segmented><button type="button" data-value="a">A</button><button type="button" data-value="b">B</button></contour-segmented>
+<contour-tabs tabs='["One","Two"]'></contour-tabs>
+<contour-menu items='["Cut","Copy","Paste"]'></contour-menu>
+<contour-tree items='[{"label":"Root","children":[{"label":"Child"}]}]'></contour-tree>
+<contour-combobox options='["Alpha","Beta"]' label="Pick a city"></contour-combobox>`;
+// How many hosts the fixture writes. Only `contour-segmented` takes the author's
+// children — tabs, menu, tree and combobox all generate theirs from an attribute —
+// so this fixture holds exactly one element of the hazard class and four of the
+// safe class, which must not move either.
+const PLACEMENT_HOSTS = 5;
+const placementShell = (where) => `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>placement</title>
+<link rel="stylesheet" href="/contour.css">
+${where === "head" ? '<script src="/unmin.js"></script>' : '<script defer src="/unmin.js"></script>'}
+</head>
+<body>${PLACEMENT_MARKUP}</body></html>`;
+// What a host ended up as, independent of when the script ran: the shape the
+// reader gets, not the order that produced it.
+const PLACEMENT_READ = () =>
+  [...document.body.children].filter((n) => n.tagName.startsWith("CONTOUR-")).map((host) => {
+    const nodes = [...host.querySelectorAll("*")];
+    return {
+      tag: host.tagName.toLowerCase(),
+      hostRole: host.getAttribute("role") || "",
+      descendants: nodes.length,
+      classes: [...new Set(nodes.flatMap((n) => [...n.classList]))].sort().join(","),
+      pressed: nodes.filter((n) => n.hasAttribute("aria-pressed")).map((n) => n.getAttribute("aria-pressed")).join(","),
+      selected: nodes.filter((n) => n.hasAttribute("aria-selected")).length,
+      treeitems: nodes.filter((n) => n.getAttribute("role") === "treeitem").length,
+      stops: nodes.filter((n) => n.getAttribute("tabindex") === "0").length,
+      negative: nodes.filter((n) => n.getAttribute("tabindex") === "-1").length,
+    };
+  });
+
 // The self-test page for the leak probe. A global lexical binding is created by
 // a classic script, not by `eval` -- a declaration inside an eval is scoped to
 // that call -- so the canary is two script files that declare the same name. If
@@ -292,6 +340,8 @@ const server = createServer((req, res) => {
   else if (req.url === "/unmin.html") res.writeHead(200, { "content-type": "text/html" }).end(shell("/unmin.js"));
   else if (req.url === "/min.html") res.writeHead(200, { "content-type": "text/html" }).end(shell("/min.js"));
   else if (req.url === "/control.html") res.writeHead(200, { "content-type": "text/html" }).end(shell(""));
+  else if (req.url === "/placement-head.html") res.writeHead(200, { "content-type": "text/html" }).end(placementShell("head"));
+  else if (req.url === "/placement-defer.html") res.writeHead(200, { "content-type": "text/html" }).end(placementShell("defer"));
   else if (req.url === "/canary1.js") res.writeHead(200, { "content-type": "text/javascript" }).end(`let ${CANARY} = 1;`);
   else if (req.url === "/canary2.js") res.writeHead(200, { "content-type": "text/javascript" }).end(`let ${CANARY} = 2; window.__dupRan = true;`);
   else if (req.url === "/canary.html") res.writeHead(200, { "content-type": "text/html" }).end(`<!doctype html><html lang="en"><head><meta charset="utf-8"><title>canary</title></head><body>
@@ -759,6 +809,104 @@ try {
     const disagree = unminRegistry.filter((n) => !mi.has(n)).concat(min.registry.filter((n) => !new Set(unminRegistry).has(n)));
     if (disagree.length)
       fail(`the two artifacts register different elements; the difference starts ${disagree.slice(0, 6).join(", ")} — the minifier corrupted the registry`);
+  }
+
+  // ---- a render that throws must not pass as a rendered component ---------
+  //
+  // The render-contract arm above asks one question: did the expected node
+  // appear? A render that throws AFTER creating that node answers yes and ships
+  // broken. `contour-progress` is the live shape of that: it creates
+  // `.c-progress__bar`, sets `role`, then dies on an out-of-scope `pct`, so the
+  // bar paints while assistive tech is told nothing at all — no `aria-valuenow`,
+  // no min, no max. Node presence cannot see that; the announced value can.
+  {
+    const p = await browser.newPage();
+    const thrown = [];
+    p.on("pageerror", (e) => thrown.push(String(e.message || e)));
+    await p.goto(`${origin}/unmin.html`, { waitUntil: "load" });
+    await p.waitForFunction(() => !!window.ContourElements, null, { timeout: 20000 });
+    const out = await p.evaluate(async () => {
+      const host = document.createElement("contour-progress");
+      host.setAttribute("value", "0.6");
+      host.setAttribute("label", "Uploading tiles");
+      document.body.appendChild(host);
+      await new Promise((r) => setTimeout(r, 40));
+      const cs = getComputedStyle(host);
+      return {
+        bar: !!host.querySelector(".c-progress__bar"),
+        role: host.getAttribute("role"),
+        now: host.getAttribute("aria-valuenow"),
+        min: host.getAttribute("aria-valuemin"),
+        max: host.getAttribute("aria-valuemax"),
+        fill: cs.getPropertyValue("--progress").trim(),
+      };
+    });
+    // The indeterminate half, which the determinate assertions above cannot see:
+    // a bar with no `value` must claim no number. A rewrite that hoists `pct` to
+    // function scope (keeping the crash fix) but leaves the ARIA block outside the
+    // `else` passes every determinate assertion and sets `aria-valuenow="0"` on a
+    // bar that has no value. Measured, not guessed: this gate printed PASS at 1201
+    // measurements on the 09:08 build, and the same probe read `now:"0"` on the
+    // 09:12 rebuild of the same class.
+    const ind = await p.evaluate(async () => {
+      const host = document.createElement("contour-progress");
+      host.setAttribute("label", "Connecting");
+      document.body.appendChild(host);
+      await new Promise((r) => setTimeout(r, 40));
+      const cs = getComputedStyle(host);
+      return {
+        role: host.getAttribute("role"),
+        now: host.getAttribute("aria-valuenow"),
+        fill: cs.getPropertyValue("--progress").trim(),
+      };
+    });
+    compared += 4;
+    const lost = [];
+    if (!out.bar) lost.push("no .c-progress__bar");
+    if (out.role !== "progressbar") lost.push(`role ${JSON.stringify(out.role)}`);
+    if (!out.now) lost.push(`aria-valuenow ${JSON.stringify(out.now)}`);
+    if (!out.min) lost.push("no aria-valuemin");
+    if (!out.max) lost.push("no aria-valuemax");
+    if (!out.fill) lost.push("--progress unset");
+    if (lost.length || thrown.length)
+      fail(`contour-progress built its node but did not finish announcing it: ${lost.join(", ") || "attributes intact"}` +
+        `${thrown.length ? `; render threw: ${[...new Set(thrown)].slice(0, 2).join(" | ")}` : ""} ` +
+        `— the node is on screen and assistive tech hears a progressbar with no value, which is the failure a node-presence check cannot see`);
+    else
+      console.log(`wc-contract: contour-progress announced its value (role=${out.role}, now=${out.now}, min=${out.min}, max=${out.max}, --progress=${out.fill})`);
+    if (ind.now !== null || ind.fill !== "")
+      fail(`contour-progress announced a value it does not have: with no \`value\` attribute the bar reported ` +
+        `aria-valuenow=${JSON.stringify(ind.now)} and --progress=${JSON.stringify(ind.fill)} while role=${JSON.stringify(ind.role)} ` +
+        `tells assistive tech this is a progressbar — a number there is read as progress made, so an indeterminate bar must omit both`);
+    else
+      console.log(`wc-contract: contour-progress claimed no value when it has none (aria-valuenow=${JSON.stringify(ind.now)}, --progress=${JSON.stringify(ind.fill)})`);
+  }
+
+  // ---- placement parity: the same bytes at the two upgrade moments --------
+  {
+    const readPlacement = async (url) => {
+      const p = await browser.newPage();
+      const errs = [];
+      p.on("pageerror", (e) => errs.push(String(e.message || e)));
+      await p.goto(`${origin}/${url}`, { waitUntil: "load" });
+      await p.waitForFunction(() => !!window.ContourElements, null, { timeout: 20000 });
+      const out = { hosts: await p.evaluate(PLACEMENT_READ), errs };
+      await p.close();
+      return out;
+    };
+    const inHead = await readPlacement("placement-head.html");
+    const deferred = await readPlacement("placement-defer.html");
+    if (inHead.errs.length) fail(`the bundle throws when placed in <head>: ${inHead.errs.slice(0, 2).join(" | ")}`);
+    if (deferred.errs.length) fail(`the bundle throws when placed at the end of body: ${deferred.errs.slice(0, 2).join(" | ")}`);
+    // A comparison of two empty reads is a pass over nothing, so the fixture's
+    // own size is asserted first.
+    if (inHead.hosts.length !== PLACEMENT_HOSTS || deferred.hosts.length !== PLACEMENT_HOSTS)
+      fail(`the placement fixture mounted ${inHead.hosts.length} hosts in head and ${deferred.hosts.length} deferred, expected ${PLACEMENT_HOSTS} — a fixture that mounts nothing cannot compare the two moments, so this arm would be certifying its own blind spot`);
+    const differ = inHead.hosts.filter((h, i) => JSON.stringify(h) !== JSON.stringify(deferred.hosts[i]));
+    if (differ.length)
+      fail(`${differ.length} of ${inHead.hosts.length} elements are built differently depending on where the script tag sits: ${differ.map((h) => `${h.tag} head[${h.descendants} nodes, ${h.classes || "no classes"}] vs deferred[${deferred.hosts[inHead.hosts.indexOf(h)].descendants} nodes, ${deferred.hosts[inHead.hosts.indexOf(h)].classes || "no classes"}]`).join(" | ")} — a wire-time pass over the author's children sees an empty host while the parser is still inside it, so the element works in the guide and not in the page`);
+    compared += inHead.hosts.length + deferred.hosts.length;
+    console.log(`wc-contract: placement parity compared ${inHead.hosts.length} hosts at both moments (classic in <head>, deferred at end of body) on the same bytes`);
   }
 } finally {
   await browser.close();

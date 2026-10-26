@@ -2,6 +2,7 @@ import { ContourBase, define, contourId } from './core.mjs';
 import { wireCombobox } from './behaviours.mjs';
 class ContourCombobox extends ContourBase {
     static get observed() { return ["options", "placeholder", "label"]; }
+    static get formAssociated() { return true; }
     static get properties() { return { options: { attribute: "options" }, placeholder: { attribute: "placeholder" }, label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-combobox");
@@ -30,11 +31,22 @@ class ContourCombobox extends ContourBase {
       // One implementation, so the two layers cannot drift apart again: the shadow
       // copy queried its root for slotted nodes, found none, and wired nothing.
       wireCombobox(this);
+      if (this._wiredComboboxForm) return;
+      this._wiredComboboxForm = true;
+      const sync = () => {
+        const input = this.querySelector("input, .c-combobox__input");
+        if (!input || !this._internals) return;
+        this._internals.setFormValue(input.value);
+      };
+      this.addEventListener("input", sync);
+      this.addEventListener("change", sync);
+      sync();
     }
   }
   define("contour-combobox", ContourCombobox);
 class ContourField extends ContourBase {
     static get observed() { return ["label", "hint", "error", "placeholder", "type"]; }
+    static get formAssociated() { return true; }
     static get properties() { return { label: { attribute: "label" }, hint: { attribute: "hint" }, error: { attribute: "error" }, placeholder: { attribute: "placeholder" }, type: { attribute: "type" } }; }
     render() {
       this.classList.add("c-field");
@@ -76,9 +88,20 @@ class ContourField extends ContourBase {
       }
     }
   }
+  ContourField.prototype.enhance = function() {
+    if (this._wiredField) return;
+    this._wiredField = true;
+    const input = this.querySelector("input, textarea, select");
+    if (!input || !this._internals) return;
+    const sync = () => { this._internals.setFormValue(input.value); };
+    input.addEventListener("input", sync);
+    input.addEventListener("change", sync);
+    sync();
+  };
   define("contour-field", ContourField);
 class ContourRange extends ContourBase {
     static get observed() { return ["min", "max", "value"]; }
+    static get formAssociated() { return true; }
     static get properties() { return { min: { attribute: "min" }, max: { attribute: "max" }, value: { attribute: "value" } }; }
     render() {
       this.classList.add("c-range");
@@ -89,6 +112,18 @@ class ContourRange extends ContourBase {
       input.value = this.getAttribute("value") || "50";
     }
   }
+  // patch enhance onto ContourRange
+  const _origRangeRender = ContourRange.prototype.render;
+  ContourRange.prototype.enhance = function() {
+    if (this._wiredRange) return;
+    this._wiredRange = true;
+    const input = this.querySelector("input");
+    if (!input || !this._internals) return;
+    const sync = () => { this._internals.setFormValue(input.value); };
+    input.addEventListener("input", sync);
+    input.addEventListener("change", sync);
+    sync();
+  };
   define("contour-range", ContourRange);
 class ContourSwitch extends ContourBase {
     static get observed() { return ["label", "required"]; }
@@ -100,28 +135,42 @@ class ContourSwitch extends ContourBase {
       // The guide's control is `label.c-switch` wrapping `input.c-switch__input`
       // and a bare span of text; the sheet paints the track on the input itself.
       const input = this.ensure("input.c-switch__input", () => { const el = document.createElement("input"); el.className = "c-switch__input"; el.type = "checkbox"; return el; });
+      // Ensure track element follows the input (CSS: input + track).
+      if (!input.nextElementSibling || !input.nextElementSibling.classList.contains("c-switch__track")) {
+        const track = document.createElement("span");
+        track.className = "c-switch__track";
+        track.setAttribute("aria-hidden", "true");
+        if (input.nextSibling) this.insertBefore(track, input.nextSibling);
+        else this.appendChild(track);
+      }
       if (label) {
         input.setAttribute("aria-label", label);
-        const txt = this.querySelector(":scope > span:not([class])") || (() => { const el = document.createElement("span"); this.appendChild(el); return el; })();
+        const txt = this.querySelector(":scope > span:not([class]):not(.c-switch__track)") || (() => { const el = document.createElement("span"); this.appendChild(el); return el; })();
         txt.textContent = label;
       }
     }
     enhance() {
-      if (this._wiredSwitch) return;
-      this._wiredSwitch = true;
       const input = this.querySelector("input");
-      if (!input) return;
-      const sync = () => {
-        if (!this._internals) return;
+      if (input && this._internals) {
         this._internals.setFormValue(input.checked ? (input.value || "on") : null);
         if (this.hasAttribute("required") && !input.checked) {
           this._internals.setValidity({ valueMissing: true }, "This field is required.");
         } else {
           this._internals.setValidity({});
         }
-      };
-      input.addEventListener("change", sync);
-      sync();
+      }
+      if (this._wiredSwitch) return;
+      this._wiredSwitch = true;
+      this.addEventListener("change", (e) => {
+        const inp = this.querySelector("input");
+        if (!inp || e.target !== inp || !this._internals) return;
+        this._internals.setFormValue(inp.checked ? (inp.value || "on") : null);
+        if (this.hasAttribute("required") && !inp.checked) {
+          this._internals.setValidity({ valueMissing: true }, "This field is required.");
+        } else {
+          this._internals.setValidity({});
+        }
+      });
     }
   }
   define("contour-switch", ContourSwitch);
@@ -133,28 +182,42 @@ class ContourCheck extends ContourBase {
       this.classList.add("c-check");
       const label = this.getAttribute("label");
       const input = this.ensure("input.c-check__input", () => { const el = document.createElement("input"); el.className = "c-check__input"; el.type = this.getAttribute("type") === "radio" ? "radio" : "checkbox"; return el; });
+      // Ensure box element follows the input (CSS: input + box).
+      if (!input.nextElementSibling || !input.nextElementSibling.classList.contains("c-check__box")) {
+        const box = document.createElement("span");
+        box.className = "c-check__box";
+        box.setAttribute("aria-hidden", "true");
+        if (input.nextSibling) this.insertBefore(box, input.nextSibling);
+        else this.appendChild(box);
+      }
       if (label) {
         input.setAttribute("aria-label", label);
-        const txt = this.querySelector(":scope > span:not([class])") || (() => { const el = document.createElement("span"); this.appendChild(el); return el; })();
+        const txt = this.querySelector(":scope > span:not([class]):not(.c-check__box)") || (() => { const el = document.createElement("span"); this.appendChild(el); return el; })();
         txt.textContent = label;
       }
     }
     enhance() {
-      if (this._wiredCheck) return;
-      this._wiredCheck = true;
       const input = this.querySelector("input");
-      if (!input) return;
-      const sync = () => {
-        if (!this._internals) return;
+      if (input && this._internals) {
         this._internals.setFormValue(input.checked ? (input.value || "on") : null);
         if (this.hasAttribute("required") && !input.checked) {
           this._internals.setValidity({ valueMissing: true }, "This field is required.");
         } else {
           this._internals.setValidity({});
         }
-      };
-      input.addEventListener("change", sync);
-      sync();
+      }
+      if (this._wiredCheck) return;
+      this._wiredCheck = true;
+      this.addEventListener("change", (e) => {
+        const inp = this.querySelector("input");
+        if (!inp || e.target !== inp || !this._internals) return;
+        this._internals.setFormValue(inp.checked ? (inp.value || "on") : null);
+        if (this.hasAttribute("required") && !inp.checked) {
+          this._internals.setValidity({ valueMissing: true }, "This field is required.");
+        } else {
+          this._internals.setValidity({});
+        }
+      });
     }
   }
   define("contour-check", ContourCheck);
@@ -175,21 +238,27 @@ class ContourRadio extends ContourBase {
       }
     }
     enhance() {
-      if (this._wiredRadio) return;
-      this._wiredRadio = true;
       const input = this.querySelector("input");
-      if (!input) return;
-      const sync = () => {
-        if (!this._internals) return;
+      if (input && this._internals) {
         if (input.checked) this._internals.setFormValue(input.value || "on");
         if (this.hasAttribute("required") && !input.checked) {
           this._internals.setValidity({ valueMissing: true }, "This field is required.");
         } else if (input.checked) {
           this._internals.setValidity({});
         }
-      };
-      input.addEventListener("change", sync);
-      if (input.checked) sync();
+      }
+      if (this._wiredRadio) return;
+      this._wiredRadio = true;
+      this.addEventListener("change", (e) => {
+        const inp = this.querySelector("input");
+        if (!inp || e.target !== inp || !this._internals) return;
+        if (inp.checked) this._internals.setFormValue(inp.value || "on");
+        if (this.hasAttribute("required") && !inp.checked) {
+          this._internals.setValidity({ valueMissing: true }, "This field is required.");
+        } else if (inp.checked) {
+          this._internals.setValidity({});
+        }
+      });
     }
   }
   define("contour-radio", ContourRadio);
@@ -218,26 +287,33 @@ class ContourSelect extends ContourBase {
       }
     }
     enhance() {
-      if (this._wiredSelect) return;
-      this._wiredSelect = true;
       const select = this.querySelector("select");
-      if (!select) return;
-      const sync = () => {
-        if (!this._internals) return;
+      if (select && this._internals) {
         this._internals.setFormValue(select.value);
         if (this.hasAttribute("required") && !select.value) {
           this._internals.setValidity({ valueMissing: true }, "This field is required.");
         } else {
           this._internals.setValidity({});
         }
-      };
-      select.addEventListener("change", sync);
-      sync();
+      }
+      if (this._wiredSelect) return;
+      this._wiredSelect = true;
+      this.addEventListener("change", (e) => {
+        const sel = this.querySelector("select");
+        if (!sel || e.target !== sel || !this._internals) return;
+        this._internals.setFormValue(sel.value);
+        if (this.hasAttribute("required") && !sel.value) {
+          this._internals.setValidity({ valueMissing: true }, "This field is required.");
+        } else {
+          this._internals.setValidity({});
+        }
+      });
     }
   }
   define("contour-select", ContourSelect);
 class ContourVersion extends ContourBase {
     static get observed() { return ["options"]; }
+    static get formAssociated() { return true; }
     static get properties() { return { options: { attribute: "options" } }; }
     render() {
       this.classList.add("c-version");
@@ -259,6 +335,15 @@ class ContourVersion extends ContourBase {
         } catch (e) { /* keep existing */ }
       }
     }
+    enhance() {
+      if (this._wiredVersion) return;
+      this._wiredVersion = true;
+      const select = this.querySelector("select");
+      if (!select || !this._internals) return;
+      const sync = () => { this._internals.setFormValue(select.value); };
+      select.addEventListener("change", sync);
+      sync();
+    }
   }
   define("contour-version", ContourVersion);
 class ContourTextarea extends ContourBase {
@@ -274,22 +359,37 @@ class ContourTextarea extends ContourBase {
       else ta.removeAttribute("required");
     }
     enhance() {
-      if (this._wiredTextarea) return;
-      this._wiredTextarea = true;
       const ta = this.querySelector("textarea");
-      if (!ta) return;
-      const sync = () => {
-        if (!this._internals) return;
+      if (ta && this._internals) {
         this._internals.setFormValue(ta.value);
         if (this.hasAttribute("required") && !ta.value.trim()) {
           this._internals.setValidity({ valueMissing: true }, "This field is required.");
         } else {
           this._internals.setValidity({});
         }
-      };
-      ta.addEventListener("input", sync);
-      ta.addEventListener("change", sync);
-      sync();
+      }
+      if (this._wiredTextarea) return;
+      this._wiredTextarea = true;
+      this.addEventListener("input", (e) => {
+        const t = this.querySelector("textarea");
+        if (!t || e.target !== t || !this._internals) return;
+        this._internals.setFormValue(t.value);
+        if (this.hasAttribute("required") && !t.value.trim()) {
+          this._internals.setValidity({ valueMissing: true }, "This field is required.");
+        } else {
+          this._internals.setValidity({});
+        }
+      });
+      this.addEventListener("change", (e) => {
+        const t = this.querySelector("textarea");
+        if (!t || e.target !== t || !this._internals) return;
+        this._internals.setFormValue(t.value);
+        if (this.hasAttribute("required") && !t.value.trim()) {
+          this._internals.setValidity({ valueMissing: true }, "This field is required.");
+        } else {
+          this._internals.setValidity({});
+        }
+      });
     }
   }
   define("contour-textarea", ContourTextarea);
@@ -307,22 +407,37 @@ class ContourInputFull extends ContourBase {
       else input.removeAttribute("required");
     }
     enhance() {
-      if (this._wiredInput) return;
-      this._wiredInput = true;
       const input = this.querySelector("input");
-      if (!input) return;
-      const sync = () => {
-        if (!this._internals) return;
+      if (input && this._internals) {
         this._internals.setFormValue(input.value);
         if (this.hasAttribute("required") && !input.value.trim()) {
           this._internals.setValidity({ valueMissing: true }, "This field is required.");
         } else {
           this._internals.setValidity({});
         }
-      };
-      input.addEventListener("input", sync);
-      input.addEventListener("change", sync);
-      sync();
+      }
+      if (this._wiredInput) return;
+      this._wiredInput = true;
+      this.addEventListener("input", (e) => {
+        const inp = this.querySelector("input");
+        if (!inp || e.target !== inp || !this._internals) return;
+        this._internals.setFormValue(inp.value);
+        if (this.hasAttribute("required") && !inp.value.trim()) {
+          this._internals.setValidity({ valueMissing: true }, "This field is required.");
+        } else {
+          this._internals.setValidity({});
+        }
+      });
+      this.addEventListener("change", (e) => {
+        const inp = this.querySelector("input");
+        if (!inp || e.target !== inp || !this._internals) return;
+        this._internals.setFormValue(inp.value);
+        if (this.hasAttribute("required") && !inp.value.trim()) {
+          this._internals.setValidity({ valueMissing: true }, "This field is required.");
+        } else {
+          this._internals.setValidity({});
+        }
+      });
     }
   }
   define("contour-input", ContourInputFull);

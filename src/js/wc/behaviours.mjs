@@ -30,6 +30,12 @@
    the reader acts on it.
    ========================================================================= */
 
+// `contourId` is the shared counter: a generated node that needs an id (a
+// listbox's options, an aria-controls target) takes it from here rather than
+// calling Math.random(), which can hand two instances the same id and then point
+// one control at another's list.
+import { contourId } from './core.mjs';
+
 // A host is wired once per behaviour. Re-entering is normal — the base class
 // calls enhance() after every render — so the guard lives in a WeakMap keyed on
 // the node, where a re-render cannot drop it.
@@ -172,12 +178,65 @@ export function wireTabs(host) {
  * the hook it can see and falls back to the label the reader sees.
  */
 export function wireSegmented(host) {
-  if (!wcClaim(host, "segmented")) return;
   const groups = wcSelfOrAll(host, ".c-segmented");
+  // The block's contract is the option class, a group role and an explicit
+  // pressed state — that is what the sheet styles (`.c-segmented__option
+  // [aria-pressed="true"]`) and what the guide's raw specimens write by hand. A
+  // wrapper that only classes the host leaves the author's buttons unstyled:
+  // measured in §23, three buttons with no class and no `aria-pressed` at all.
+  // Normalised here, on every pass, so both layers and slotted markup agree.
+  const normalize = () => {
+    // Who owns the pressed state. The author's `value` wins when it CHANGES — an
+    // attribute the author writes again is a new instruction — and the reader's own
+    // click wins in between, because the pressed attribute on the option is that
+    // choice and these buttons are the author's nodes, which survive a re-render.
+    // The one remembered value is what makes both halves hold: without it a click
+    // would move the state and the next re-render would move it back to `value`;
+    // with a bare "reader has picked" flag, an author writing `value` later would
+    // be ignored forever.
+    const authored = host.getAttribute("value");
+    const chosen = authored !== host._segAuthorValue ? authored : null;
+    if (chosen !== null) host._segAuthorValue = authored;
+    let seen = 0;
+    for (const g of groups) {
+      if (!g.hasAttribute("role")) g.setAttribute("role", "group");
+      const label = host.getAttribute("label");
+      if (label && !g.hasAttribute("aria-label")) g.setAttribute("aria-label", label);
+      const opts = wcGroup(host, g, "button");
+      seen += opts.length;
+      opts.forEach((b) => {
+        b.classList.add("c-segmented__option");
+        b.setAttribute("aria-pressed", chosen !== null && chosen !== undefined ? String(b.dataset.value === chosen) : (b.getAttribute("aria-pressed") === "true" ? "true" : "false"));
+      });
+      // One tab stop for the group, on the pressed option — or the first when the
+      // author chose none. Arrow keys then move it along with focus.
+      const chosenOpt = opts.find((b) => b.getAttribute("aria-pressed") === "true") || opts[0];
+      opts.forEach((b) => { b.tabIndex = b === chosenOpt ? 0 : -1; });
+    }
+    return seen;
+  };
+  // A classic `<script src="dist/contour-wc.js">` in `<head>` upgrades the host
+  // while the parser is still inside it, so the author's buttons do not exist yet
+  // and this pass normalises nothing — measured across three arms: head gave 0
+  // option classes, 0 pressed states and 2 tab stops, where the same bundle with
+  // `defer` and the ESM entry (deferred by spec) both gave 2, 2, 1. The listeners
+  // below are unaffected because they delegate on the host, which outlives the
+  // parse. One retry on a later task is all the missing children need; a group
+  // that is genuinely empty just re-runs an idempotent pass once.
+  if (!normalize()) setTimeout(normalize, 0);
+  if (!wcClaim(host, "segmented")) return;
   const activate = (btn) => {
     const seg = groups.find((g) => wcGroup(host, g, "button").includes(btn));
     if (!seg) return;
-    wcGroup(host, seg, "button").forEach((o) => o.setAttribute("aria-pressed", String(o === btn)));
+    // `value` is deliberately not written back to the host here: it sits in the
+    // shared OBSERVED list, so writing it would spend a full re-render on every
+    // click. The pressed attribute on the option is the state, and it survives a
+    // re-render because these buttons are the author's nodes, not generated ones.
+    wcGroup(host, seg, "button").forEach((o) => {
+      const on = o === btn;
+      o.setAttribute("aria-pressed", String(on));
+      o.tabIndex = on ? 0 : -1;
+    });
     wcEmit(host, "contour:change", { value: btn.dataset.value || btn.textContent.trim() });
   };
   wcListen(host, "click", (e) => {
@@ -209,30 +268,108 @@ export function wireSegmented(host) {
  */
 export function wireCombobox(host) {
   wireComboboxDocDismiss();
-  if (!wcClaim(host, "combobox")) return;
   const input = wcOne(host, ".c-combobox__input");
   const list = wcOne(host, ".c-combobox__list");
   if (!input || !list) return;
-  const options = () => wcAll(host, ".c-combobox__option");
+  const optionList = () => wcAll(host, ".c-combobox__option");
+
+  // Roles are re-applied on every pass, not claimed once. A re-render drops the
+  // generated input and list and rebuilds them, so an attribute set on the first
+  // pass is simply gone; the roles also belong to the markup, which the shared
+  // implementation is what both layers have in common. Idempotent, so re-running
+  // it cannot stack anything.
+  if (!list.id) list.id = contourId("c-combobox-list");
+  list.setAttribute("role", "listbox");
+  input.setAttribute("role", "combobox");
+  input.setAttribute("aria-haspopup", "listbox");
+  input.setAttribute("aria-controls", list.id);
+  input.setAttribute("aria-expanded", list.hasAttribute("hidden") ? "false" : "true");
+  if (!input.hasAttribute("aria-autocomplete")) input.setAttribute("aria-autocomplete", "list");
+  optionList().forEach((opt, i) => {
+    if (!opt.id) opt.id = contourId("c-combobox-option");
+    opt.setAttribute("role", "option");
+    if (!opt.hasAttribute("aria-selected")) opt.setAttribute("aria-selected", "false");
+  });
+
+  // Listeners are claimed once, and they are delegated on the HOST for the same
+  // reason the other behaviours are: a listener bound to the generated input died
+  // with it on the next render while the per-host claim was already spent, so a
+  // combobox that changed any attribute stopped opening and stopped answering the
+  // arrow keys. Measured: fresh -> openedOnFocus true, activeOptionCount 1; after
+  // a placeholder change -> false and 0. The host outlives every rebuild, so the
+  // nodes are looked up again per event instead of captured.
+  if (!wcClaim(host, "combobox")) return;
+  const liveInput = () => wcOne(host, ".c-combobox__input");
+  const liveList = () => wcOne(host, ".c-combobox__list");
   let cursor = -1;
-  const mark = (visible) => visible.forEach((o, i) => o.classList.toggle("c-combobox__option--active", i === cursor));
+  const mark = (visible) => {
+    const field = liveInput();
+    visible.forEach((o, i) => {
+      const on = i === cursor;
+      o.classList.toggle("c-combobox__option--active", on);
+      o.setAttribute("aria-selected", String(on));
+    });
+    if (field) {
+      const active = cursor >= 0 ? visible[cursor] : null;
+      if (active) field.setAttribute("aria-activedescendant", active.id);
+      else field.removeAttribute("aria-activedescendant");
+    }
+  };
   const filter = (query) => {
     const q = (query || "").toLowerCase();
-    options().forEach((o) => { o.hidden = !!(q && !o.textContent.toLowerCase().includes(q)); });
+    optionList().forEach((o) => { o.hidden = !!(q && !o.textContent.toLowerCase().includes(q)); });
     cursor = -1;
   };
-  const open = () => list.removeAttribute("hidden");
-  const close = () => { list.setAttribute("hidden", ""); cursor = -1; mark([]); };
-  const commit = (opt) => {
-    input.value = opt.textContent;
-    wcEmit(host, "contour:select", { value: input.value });
-    close();
-    input.focus();
+  const open = () => {
+    const l = liveList();
+    if (!l) return;
+    l.removeAttribute("hidden");
+    const field = liveInput();
+    if (field) field.setAttribute("aria-expanded", "true");
   };
-  input.addEventListener("input", () => { filter(input.value); open(); });
-  input.addEventListener("focus", () => { filter(input.value); open(); });
-  input.addEventListener("keydown", (e) => {
-    const visible = options().filter((o) => !o.hidden);
+  const close = () => {
+    const l = liveList();
+    if (l) l.setAttribute("hidden", "");
+    const field = liveInput();
+    if (field) {
+      field.setAttribute("aria-expanded", "false");
+      field.removeAttribute("aria-activedescendant");
+    }
+    cursor = -1;
+    // Cleared across every option, not the visible subset: an option that was
+    // cursorred and then filtered out would otherwise keep `aria-selected="true"`
+    // into the next open, and a listbox may report only one selected option.
+    optionList().forEach((o) => {
+      o.classList.remove("c-combobox__option--active");
+      o.setAttribute("aria-selected", "false");
+    });
+  };
+  const commit = (opt) => {
+    const field = liveInput();
+    if (!field) return;
+    field.value = opt.textContent;
+    wcEmit(host, "contour:select", { value: field.value });
+    close();
+    field.focus();
+  };
+
+  // `input` and `focus` do not both bubble out of a shadow root in the same way,
+  // so `focusin` is what the focus-driven open listens to, and every handler
+  // checks the event actually came from this host's field.
+  const isField = (target) => wcClosest(host, target, ".c-combobox__input") !== null;
+  wcListen(host, "input", (e) => {
+    if (!isField(e.target)) return;
+    filter(e.target.value);
+    open();
+  });
+  wcListen(host, "focusin", (e) => {
+    if (!isField(e.target)) return;
+    filter(e.target.value);
+    open();
+  });
+  wcListen(host, "keydown", (e) => {
+    if (!isField(e.target)) return;
+    const visible = optionList().filter((o) => !o.hidden);
     if (e.key === "ArrowDown") { e.preventDefault(); cursor = Math.min(cursor + 1, visible.length - 1); mark(visible); }
     else if (e.key === "ArrowUp") { e.preventDefault(); cursor = Math.max(cursor - 1, 0); mark(visible); }
     else if (e.key === "Enter") { e.preventDefault(); if (cursor >= 0 && visible[cursor]) commit(visible[cursor]); }
@@ -264,8 +401,58 @@ function wireComboboxDocDismiss() {
   });
 }
 
+/**
+ * The tree items a keyboard reader can actually reach. A collapsed branch carries
+ * `hidden`, and a hidden element is not focusable, so a tab stop placed on one is
+ * a stop the reader never arrives at — measured when this was missed: ArrowDown
+ * left focus where it was and moved the only stop onto a hidden child.
+ */
+const visibleStops = (host) => wcAll(host, ".c-tree__toggle, .c-tree__leaf").filter((el) => !el.closest(".c-tree__children[hidden]"));
+
 /** Tree: one toggle per branch, and `contour:toggle` so a page can persist it. */
 export function wireTree(host) {
+  // The ARIA shape and the tab stop are re-applied on every pass, before the
+  // claim. Two reasons, both measured on the shipped guide: the generated items
+  // carried `role="tree"` on the list and NO `role="treeitem"` anywhere, so the
+  // structure announced nothing to a screen reader; and every toggle and leaf was
+  // stamped `tabindex="-1"` with nothing ever set to 0, so the tree had no tab
+  // stop and a keyboard reader could not reach it at all. Roles cannot be guarded
+  // by a one-shot claim, because a re-render rebuilds the nodes that carry them.
+  const nodes = () => wcAll(host, ".c-tree__node");
+  const rootList = wcSelfOrAll(host, "ul.c-tree")[0];
+  if (rootList && !rootList.hasAttribute("role")) rootList.setAttribute("role", "tree");
+  wcAll(host, ".c-tree__children").forEach((ul) => {
+    if (!ul.hasAttribute("role")) ul.setAttribute("role", "group");
+  });
+  const levelOf = (node) => {
+    let level = 1;
+    for (let p = node.parentElement; p; p = p.parentElement) if (p.classList && p.classList.contains("c-tree__children")) level++;
+    return level;
+  };
+  nodes().forEach((node) => {
+    if (node.getAttribute("role") !== "treeitem") node.setAttribute("role", "treeitem");
+    node.setAttribute("aria-level", String(levelOf(node)));
+    const row = node.querySelector(":scope > .c-tree__row");
+    if (row) node.setAttribute("aria-expanded", row.getAttribute("aria-expanded") || "false");
+    else if (node.hasAttribute("aria-expanded")) node.removeAttribute("aria-expanded");
+  });
+  // Exactly one tab stop. The author's own `tabindex="0"` is the choice, then the
+  // element that already holds focus, then the first item — in that order, so the
+  // invariant (one stop, never none, never N) holds without overriding intent.
+  // Only the VISIBLE items count: a collapsed branch is `hidden`, and a stop on a
+  // node the browser will not focus is a stop the reader never reaches. Measured
+  // when this was missed — ArrowDown left focus on item 0 and moved the stop onto
+  // a hidden child, so the tree reported one tab stop that nothing could hold.
+  const stops = visibleStops(host);
+  const authored = stops.find((el) => el.getAttribute("tabindex") === "0");
+  const active = authored || stops.find((el) => el === document.activeElement) || stops[0];
+  stops.forEach((el) => el.setAttribute("tabindex", el === active ? "0" : "-1"));
+  // Hidden items are taken out of the sequence entirely, not left at whatever
+  // value a previous pass gave them.
+  wcAll(host, ".c-tree__toggle, .c-tree__leaf").forEach((el) => {
+    if (!stops.includes(el)) el.setAttribute("tabindex", "-1");
+  });
+
   if (!wcClaim(host, "tree")) return;
   const toggleNode = (toggle) => {
     const wasOpen = toggle.getAttribute("aria-expanded") === "true";
@@ -275,7 +462,15 @@ export function wireTree(host) {
     const node = toggle.closest(".c-tree__node");
     const children = node ? node.querySelector(":scope > .c-tree__children") : null;
     if (children) children.hidden = wasOpen;
+    if (node) node.setAttribute("aria-expanded", String(!wasOpen));
     wcEmit(host, "contour:toggle", { open: !wasOpen, label: (row ? row.textContent : "").trim().slice(0, 120) });
+  };
+  const branchOf = (el) => (el.classList && el.classList.contains("c-tree__toggle") ? el : null);
+  const stopsOf = () => visibleStops(host);
+  // The kept element takes the single stop; every other item — visible or hidden —
+  // is dropped to -1, so opening a branch cannot leave two stops behind.
+  const rove = (keep) => {
+    wcAll(host, ".c-tree__toggle, .c-tree__leaf").forEach((el) => el.setAttribute("tabindex", el === keep ? "0" : "-1"));
   };
   wcListen(host, "click", (e) => {
     const toggle = wcClosest(host, e.target, ".c-tree__toggle");
@@ -284,13 +479,42 @@ export function wireTree(host) {
     e.stopPropagation();
     toggleNode(toggle);
   });
+  wcListen(host, "focusin", (e) => {
+    // Roving the tab stop with focus, so the tree is one Tab and not N.
+    if (!wcClosest(host, e.target, ".c-tree__toggle, .c-tree__leaf")) return;
+    rove(e.target);
+  });
   wcListen(host, "keydown", (e) => {
     const toggle = wcClosest(host, e.target, ".c-tree__toggle, .c-tree__leaf");
     if (!toggle) return;
-    const items = wcAll(host, ".c-tree__toggle, .c-tree__leaf");
+    const items = stopsOf();
     const idx = items.indexOf(toggle);
     if (e.key === "Enter" || e.key === " ") {
-      if (toggle.classList.contains("c-tree__toggle")) { e.preventDefault(); toggleNode(toggle); }
+      if (branchOf(toggle)) { e.preventDefault(); toggleNode(toggle); }
+      return;
+    }
+    // Right opens a branch, Left closes it — the pair a tree reader expects, and
+    // the only way to reach a collapsed branch's children without a mouse.
+    if (e.key === "ArrowRight") {
+      const branch = branchOf(toggle);
+      const closed = branch && branch.getAttribute("aria-expanded") === "false";
+      e.preventDefault();
+      if (closed) { toggleNode(branch); rove(toggle); }
+      else { const next = items[idx + 1]; if (next) { next.focus(); rove(next); } }
+      return;
+    }
+    if (e.key === "ArrowLeft") {
+      const branch = branchOf(toggle);
+      if (branch && branch.getAttribute("aria-expanded") === "true") {
+        e.preventDefault();
+        toggleNode(branch);
+        rove(toggle);
+      } else {
+        const parent = toggle.closest(".c-tree__children");
+        const owner = parent ? parent.closest(".c-tree__node") : null;
+        const up = owner ? owner.querySelector(":scope > .c-tree__row > .c-tree__toggle") : null;
+        if (up) { e.preventDefault(); up.focus(); rove(up); }
+      }
       return;
     }
     let next = -1;
@@ -298,11 +522,11 @@ export function wireTree(host) {
     else if (e.key === "ArrowUp") next = Math.max(idx - 1, 0);
     else if (e.key === "Home") next = 0;
     else if (e.key === "End") next = items.length - 1;
-    if (next >= 0 && next !== idx) { e.preventDefault(); items[next].focus(); }
-  });
-  // A toggle that cannot be reached by key is a control the keyboard cannot use.
-  wcAll(host, ".c-tree__toggle, .c-tree__leaf").forEach((el) => {
-    if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "-1");
+    if (next >= 0 && next !== idx) {
+      e.preventDefault();
+      items[next].focus();
+      rove(items[next]);
+    }
   });
 }
 

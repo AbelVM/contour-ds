@@ -29,6 +29,7 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync, rmSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { execFileSync } from "node:child_process";
+import { decodeEntities } from "./lib/html.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
 const read = (...p) => readFileSync(join(ROOT, ...p), "utf8");
@@ -42,12 +43,13 @@ const snippets = [];
 let m;
 while ((m = re.exec(html))) {
   const id = m[1];
-  // Decode HTML entities
-  const code = m[2]
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&amp;/g, "&")
-    .replace(/&quot;/g, '"');
+  // Decode with the parser's own single-pass decoder, the inverse of the
+  // serialiser that wrote the snippet. A chain of replaces decodes twice: an
+  // attribute the author wrote as `[&quot;One&quot;]` is published as
+  // `&amp;quot;`, which `&amp;`-then-`&quot;` collapses to raw quotes — so the gate
+  // mounted markup no browser would read, and reported the emitter's escape as
+  // the specimen's fault. AGENTS.md rule 8 is about exactly this pair.
+  const code = decodeEntities(m[2]);
   snippets.push({ id, code });
 }
 
@@ -81,12 +83,6 @@ for (const block of inventory.blocks) {
 // no shipped rule resolves them. Listed with what they cost a reader, so the
 // gate can be read as a to-do list rather than a wall of failures.
 const LEDGER = [
-  {
-    name: "c-expandable__body",
-    where: "snippet 21",
-    why: "the `.c-expandable` specimen wraps its content in a `__body` element that components-shell.css never styles — a reader copies a class that does nothing",
-    owner: "define the element in the `.c-expandable` block, or drop the phantom class from the specimen",
-  },
   {
     name: "c-search-trigger--header",
     where: "snippet 39",

@@ -29,7 +29,18 @@ class ContourMenu extends ContourBase {
               const li = document.createElement("li");
               li.className = "c-menu__item" + (item.danger ? " c-menu__item--danger" : "");
               li.setAttribute("role", "menuitem");
-              li.textContent = item.label || item.title || "";
+              if (item.label || item.title) {
+                const lbl = document.createElement("span");
+                lbl.className = "c-menu__label";
+                lbl.textContent = item.label || item.title || "";
+                li.appendChild(lbl);
+              }
+              if (item.shortcut) {
+                const sc = document.createElement("span");
+                sc.className = "c-menu__shortcut";
+                sc.textContent = item.shortcut;
+                li.appendChild(sc);
+              }
               ul.appendChild(li);
             }
           });
@@ -243,8 +254,8 @@ class ContourCodeTabs extends ContourBase {
   }
   define("contour-code-tabs", ContourCodeTabs);
 class ContourBreadcrumb extends ContourBase {
-    static get observed() { return ["items"]; }
-    static get properties() { return { items: { attribute: "items" } }; }
+    static get observed() { return ["items", "separator"]; }
+    static get properties() { return { items: { attribute: "items" }, separator: { attribute: "separator" } }; }
     render() {
       this.classList.add("c-breadcrumb");
       const items = this.getAttribute("items");
@@ -255,6 +266,7 @@ class ContourBreadcrumb extends ContourBase {
           nav.setAttribute("aria-label", "Breadcrumb");
           const ol = nav.querySelector("ol") || (() => { const el = document.createElement("ol"); nav.appendChild(el); return el; })();
           ol.innerHTML = "";
+          const sep = this.getAttribute("separator") || "/";
           parsed.forEach((item, i) => {
             const li = document.createElement("li");
             if (i < parsed.length - 1) {
@@ -262,6 +274,11 @@ class ContourBreadcrumb extends ContourBase {
               a.href = item.href || "#";
               a.textContent = item.label || item;
               li.appendChild(a);
+              const s = document.createElement("span");
+              s.className = "c-breadcrumb__sep";
+              s.setAttribute("aria-hidden", "true");
+              s.textContent = sep;
+              li.appendChild(s);
             } else {
               li.textContent = item.label || item;
               li.setAttribute("aria-current", "page");
@@ -419,30 +436,64 @@ class ContourFilterBar extends ContourBase {
           const list = this.ensure(".c-command__list", () => { const el = document.createElement("div"); el.className = "c-command__list"; return el; });
           list.innerHTML = "";
           parsed.forEach((it) => {
-            const item = document.createElement("div");
-            item.className = "c-command__item";
-            if (it.icon) {
-              const ic = document.createElement("span");
-              ic.className = "c-command__item-icon";
-              ic.textContent = it.icon;
-              item.appendChild(ic);
+            if (it.group) {
+              const group = document.createElement("div");
+              group.className = "c-command__group";
+              const gt = document.createElement("div");
+              gt.className = "c-command__group-title";
+              gt.textContent = it.group;
+              group.appendChild(gt);
+              const item = document.createElement("div");
+              item.className = "c-command__item";
+              if (it.icon) {
+                const ic = document.createElement("span");
+                ic.className = "c-command__item-icon";
+                ic.textContent = it.icon;
+                item.appendChild(ic);
+              }
+              const body = document.createElement("div");
+              body.className = "c-command__item-body";
+              if (it.title) {
+                const t = document.createElement("div");
+                t.className = "c-command__item-title";
+                t.textContent = it.title;
+                body.appendChild(t);
+              }
+              if (it.hint) {
+                const h = document.createElement("span");
+                h.className = "c-command__item-hint";
+                h.textContent = it.hint;
+                body.appendChild(h);
+              }
+              item.appendChild(body);
+              group.appendChild(item);
+              list.appendChild(group);
+            } else {
+              const item = document.createElement("div");
+              item.className = "c-command__item";
+              if (it.icon) {
+                const ic = document.createElement("span");
+                ic.className = "c-command__item-icon";
+                ic.textContent = it.icon;
+                item.appendChild(ic);
+              }
+              const body = document.createElement("div");
+              body.className = "c-command__item-body";
+              if (it.title) {
+                const t = document.createElement("div");
+                t.className = "c-command__item-title";
+                t.textContent = it.title;
+                body.appendChild(t);
+              }
+              if (it.hint) {
+                const h = document.createElement("span");
+                h.className = "c-command__item-hint";
+                h.textContent = it.hint;
+                body.appendChild(h);
+              }
+              item.appendChild(body);
+              list.appendChild(item);
             }
-            const body = document.createElement("div");
-            body.className = "c-command__item-body";
-            if (it.title) {
-              const t = document.createElement("div");
-              t.className = "c-command__item-title";
-              t.textContent = it.title;
-              body.appendChild(t);
-            }
-            if (it.hint) {
-              const h = document.createElement("span");
-              h.className = "c-command__item-hint";
-              h.textContent = it.hint;
-              body.appendChild(h);
-            }
-            item.appendChild(body);
-            list.appendChild(item);
           });
         } catch (e) { /* keep existing */ }
       } else {
@@ -465,9 +516,9 @@ class ContourFilterBar extends ContourBase {
       const items = () => Array.from(this.querySelectorAll(".c-command__item"));
       let cursor = -1;
       const mark = () => items().forEach((it, i) => it.classList.toggle("c-command__item--active", i === cursor));
-      const inp = input();
-      if (!inp) return;
-      inp.addEventListener("keydown", (e) => {
+      this.addEventListener("keydown", (e) => {
+        const inp = input();
+        if (!inp || e.target !== inp) return;
         const its = items();
         if (!its.length) return;
         if (e.key === "ArrowDown") { e.preventDefault(); cursor = Math.min(cursor + 1, its.length - 1); mark(); }
@@ -484,7 +535,7 @@ class ContourFilterBar extends ContourBase {
       });
       this.addEventListener("click", (e) => {
         const item = e.target && e.target.closest ? e.target.closest(".c-command__item") : null;
-        if (item) {
+        if (item && this.contains(item)) {
           const idx = items().indexOf(item);
           this.dispatchEvent(new CustomEvent("contour:select", { detail: { index: idx, label: item.textContent.trim() }, bubbles: true, composed: true }));
         }
