@@ -64,7 +64,7 @@ const HOOK_LEDGER = new Set([
   "--meter-size", "--meter-value",
   "--kbd-padding", "--kbd-font-size",
   "--flow-space",
-  "--dot-color", "--live-color", "--view-transition-name",
+  "--dot-color", "--live-color", "--live-text", "--view-transition-name",
 ]);
 
 const escapeRe = (s) => s.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");

@@ -1,6 +1,17 @@
 ## [Unreleased]
 
 ### Fixed (M-WC-08)
+- `check-reflow` (R4-02/R4-03) was failing on `index.html` at the published 390 px
+  contract width, in both themes and with JavaScript off. The page's `scrollWidth`
+  measured 506 px against a 390 px viewport. The cause was not the wrapped tables
+  the gate named — both `.c-table` specimens sit inside a `.c-table-wrap` that
+  scrolls internally and stays inside the viewport — but the colour-vision toggle
+  in §04: five bare `<button>s` in a `display: inline-flex` group, whose
+  min-content width is set by the longest word ("Achromatopsia", 121 px). Added
+  `min-inline-size: 0` to `.c-segmented` and `min-width: 0; overflow-wrap: anywhere;`
+  to its direct `button`/`label` children (the element rule reaches the bare
+  buttons the `.c-segmented__option` class misses). `scrollWidth` is now exactly
+  390 px at the contract width; the 320 px WCAG floor is reported, not asserted.
 - `ContourAlert` close button was non-functional: the component scaffolded `.c-alert__close`
   via `ensure()` but never wired a click handler. Added `enhance()` with host-delegated
   click listener that dispatches `contour:close` and removes the alert.
@@ -22,6 +33,14 @@
 - `ContourProps` TypeScript interface expanded from 8 to 99 observed attributes.
 - `wc-contract` gate extended with close-button probe (1,205 measurements, up from 1,204).
 - `contour.d.ts` budget raised from 26 kB to 27 kB for expanded ContourProps.
+- `contour.min.css` size budget raised from 169 kB to 170 kB: measured 173,081 B after the
+  §04 segmented shrink fix added `.c-segmented > button, > label { min-width: 0; overflow-wrap: anywhere }`.
+- `contour.components.json` size budget raised from 152 kB to 153 kB: measured 151.4 kB
+  (155,662 B), so the line was set below its own measured size.
+- `surfaces/contour-docs.min.css` size budget raised from 128 kB to 129 kB: measured
+  128.1 kB (131,133 B) after the M-WC-08 accessibility pass added `.c-diff__line--add/--del`
+  tints and `--live-text` to `.c-live-badge`. The previous line's own comment claimed a
+  "0.0 kB overrun, pre-existing" raise in 2026-10-25, which was already false.
 
 ### Added (M-WC-08)
 - Close-button demo added to reactivity playground in §23 (ContourAlert closable + reset button).

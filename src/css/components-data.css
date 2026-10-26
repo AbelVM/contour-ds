@@ -1622,6 +1622,12 @@
   .c-streaming-chart__live-dot {
     fill: var(--color-accent);
     animation: c-ping var(--dur-ping) var(--ease-out-expo) infinite;
+    /* The ping scales about the SVG origin by default, which for a dot at
+       cx=300 in a 300-wide viewBox flings it off the right edge of its own
+       chart and out of the page at narrow widths. Scaling about the dot's
+       own fill keeps the pulse inside the chart. */
+    transform-box: fill-box;
+    transform-origin: center;
   }
 
   /* =======================================================================

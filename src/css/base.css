@@ -25,6 +25,15 @@
     color-scheme: light dark;
   }
 
+  /* Theme switches must be instant: the colour/background transitions that
+     make hover states feel alive would otherwise animate every element on
+     the page one after another. The class is toggled around the switch in
+     ds.js / the WC scheme toggle and removed on the next frame. */
+  html.is-theme-switching,
+  html.is-theme-switching * {
+    transition: none !important;
+  }
+
   /* Manual theme override. The meta element reflects the stored choice; CSS
      maps it onto `color-scheme` so the cascade stays the source of truth and
      the page still follows the OS when no override is set. */

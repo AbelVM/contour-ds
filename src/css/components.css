@@ -1511,6 +1511,7 @@
   /* Segmented control — a pill-shaped radio group */
   .c-segmented {
     display: inline-flex;
+    min-inline-size: 0;
     padding: 3px;
     gap: 2px;
     border-radius: var(--radius-pill);
@@ -1518,11 +1519,23 @@
     background: var(--color-surface-1);
   }
 
+  /* Direct children are the options. The class above is the authored path,
+     but the colour-vision toggle in §04 ships bare <button>s, and a bare
+     button keeps its min-content width the same way the class does — so the
+     shrink rule reaches them by element, not by class. Without it the group
+     runs to the widest word ("Achromatopsia") and out of its own section. */
+  .c-segmented > button,
+  .c-segmented > label {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
   .c-segmented__option {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
     padding: 0.55rem 0.8rem;
+    min-width: 0;
     border: none;
     border-radius: var(--radius-pill);
     background: transparent;
@@ -1531,6 +1544,7 @@
     font-weight: var(--weight-semibold);
     letter-spacing: 0.03em;
     cursor: pointer;
+    overflow-wrap: anywhere;
     transition:
       background-color var(--dur-fast) var(--ease-standard),
       color var(--dur-fast) var(--ease-standard);

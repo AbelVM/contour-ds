@@ -103,7 +103,7 @@ def terrain_field(width, height, seed=7):
     v = ys / height
 
     # A low-frequency tilt. Integer wave numbers keep the field periodic.
-    tilt = 0.35 * np.sin(2 * np.pi * (1 * u + 0.6 * v))
+    tilt = 0.35 * np.sin(2 * np.pi * (1 * u + 1 * v))
     tilt += 0.18 * np.sin(2 * np.pi * (2 * u - 1 * v) + 1.3)
     ridge = 0.22 * np.abs(np.sin(2 * np.pi * (u + 2 * v)))
 

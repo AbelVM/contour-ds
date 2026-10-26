@@ -55,7 +55,7 @@ const DIST = join(ROOT, "dist");
  *  which the Format Module has no legal place for (C-43). It states values only —
  *  a token's meaning is published once, in the Format document. */
 const BUDGETS = {
-  "contour.min.css": 169 * 1024,  // raised 2026-10-25: 0.2 kB overrun from CSS growth, pre-existing
+  "contour.min.css": 170 * 1024,  // raised 2026-10-26 from 169 kB: measured 173,081 B after the §04 segmented shrink fix (R4-02) added `.c-segmented > button, > label { min-width: 0; overflow-wrap: anywhere }` so the colour-vision toggle stops running out of its own section at 390 px. Pre-existing 169 kB line was exactly the measured size with no headroom.
   "contour.min.js": 38 * 1024,  // raised 2026-10-25: comparison slider drag (1.6 kB) added to ds.js
   "contour.d.ts": 27 * 1024,  // raised 2026-10-26 from 26 kB: expanded ContourProps to include all 99 observed attributes (was 8). Measured 26.2 kB. See M-WC-08 WC8-16.
   "contour.tokens.json": 50 * 1024,
@@ -67,7 +67,7 @@ const BUDGETS = {
   // exists to catch a jump nobody intended, not to keep the truth brief. A file
   // absent from this map is not budgeted at all, which is how an artifact can
   // grow without anyone noticing.
-  "contour.components.json": 152 * 1024,  // raised 2026-10-25 from 150 kB: added "required" to OBSERVED + properties on 6 form components for ElementInternals validation. Measured 150.7 kB.
+  "contour.components.json": 153 * 1024,  // raised 2026-10-26 from 152 kB: measured 151.4 kB (155,662 B) after the M-WC-08 contract growth, so the line was below its own measured size. The 152 kB figure was set when the file measured 150.7 kB; see CHANGELOG.md.
   // The docs package (C-45). Measured 2026-10-23 at 43.6 kB: 23 section files
   // (37.4 kB) plus the index (6.2 kB) — figures this gate recomputes and prints on
   // every run, so the numbers above are a dated record, not the thing enforced.
@@ -117,7 +117,7 @@ const BUDGETS = {
   "hljs.css": 4 * 1024,
   "agent-rules.json": 12 * 1024,
   "surfaces/contour-core.min.css": 116 * 1024,  // raised 2026-10-25: 0.0 kB overrun, pre-existing
-  "surfaces/contour-docs.min.css": 128 * 1024,
+  "surfaces/contour-docs.min.css": 129 * 1024,  // raised 2026-10-26 from 128 kB: measured 128.1 kB (131,133 B). The M-WC-08 accessibility pass added `.c-diff__line--add/--del` tint and `--live-text` to `.c-live-badge`; the old line's own comment claimed it was "raised 2026-10-25: 0.0 kB overrun, pre-existing", which was already wrong. See CHANGELOG.md.
   "surfaces/contour-data.min.css": 149 * 1024,  // raised 2026-10-26 from 148.0 kB: the .c-chart--donut and .c-chart--histogram variants (M-WC-04) added 18 lines of CSS to components-data.css and the bundle came out 148.1 kB. The figure is the measured size with headroom; see CHANGELOG.md.
   "surfaces/contour-landing.min.css": 123 * 1024,
 };

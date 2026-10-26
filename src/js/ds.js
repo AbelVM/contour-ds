@@ -54,8 +54,14 @@
   };
 
   const applyScheme = (value) => {
+    document.documentElement.classList.add("is-theme-switching");
     const meta = schemeMeta();
     if (meta) meta.setAttribute("content", value);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        document.documentElement.classList.remove("is-theme-switching");
+      });
+    });
     try {
       if (value === "light dark") localStorage.removeItem("contour-scheme");
       else localStorage.setItem("contour-scheme", value);

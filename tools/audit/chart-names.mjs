@@ -46,11 +46,19 @@ for (const rel of PAGES) {
   await page.waitForTimeout(650);
   await cdp.send("Accessibility.enable");
 
+  // The DOM read is page-wide and cheap; the AX read is per-chart. A chart
+  // 65,000 px down the page sits behind a `content-visibility: auto` panel, and
+  // Chromium prunes offscreen cv subtrees from the accessibility tree — so a
+  // single tree read at load time reports the authored aria-label as a
+  // different name, or reports nothing at all, for a chart a reader reaches by
+  // navigating to it. Scrolling the chart into view first is what a reader
+  // does, and it is what makes the measurement true.
   const dom = await page.evaluate(() =>
-    [...document.querySelectorAll(".c-chart")].map((c) => {
+    [...document.querySelectorAll(".c-chart")].map((c, i) => {
       const db = c.getAttribute("aria-describedby");
       const target = db ? document.getElementById(db) : null;
       return {
+        i,
         role: c.getAttribute("role"),
         label: (c.getAttribute("aria-label") || "").trim(),
         byId: (c.getAttribute("aria-labelledby") || "").trim(),
@@ -62,13 +70,9 @@ for (const rel of PAGES) {
       };
     }),
   );
-  const { nodes } = await cdp.send("Accessibility.getFullAXTree");
-  const images = nodes.filter((n) => n.role?.value === "image");
-  await page.close();
-
   charts += dom.length;
-  for (const [i, d] of dom.entries()) {
-    const at = `${rel} chart ${i + 1}`;
+  for (const d of dom) {
+    const at = `${rel} chart ${d.i + 1}`;
     const problems = [];
     if (d.role !== "img") problems.push(`role is ${d.role ?? "absent"}, not img`);
     const named = !GENERIC.has(d.label.toLowerCase()) || (!!d.byId && !GENERIC.has(d.byId.toLowerCase()));
@@ -79,6 +83,18 @@ for (const rel of PAGES) {
     if (d.db && !d.exists) problems.push(`aria-describedby points at #${d.db}, which is not in the document`);
     if (d.nested) problems.push("data description is a DESCENDANT of the named image — a leaf role may prune it");
     if (d.exists && d.text.length < 20) problems.push(`description is ${d.text.length} char(s); too short to carry the data`);
+
+    // Scroll this chart into view, then read the accessibility tree: a chart
+    // behind content-visibility is not in the tree at all, and a chart whose
+    // node is present but offscreen can carry a stale name. Both are real
+    // states a reader can reach, so measure the one the reader reaches.
+    await page.evaluate((i) => {
+      const c = document.querySelectorAll(".c-chart")[i];
+      if (c) { c.scrollIntoView({ block: "center" }); c.getBoundingClientRect(); }
+    }, d.i);
+    await page.waitForTimeout(50);
+    const { nodes } = await cdp.send("Accessibility.getFullAXTree");
+    const images = nodes.filter((n) => n.role?.value === "image");
 
     // The decisive check: not that the attributes are set, but that the node an
     // assistive technology reads actually carries both halves.

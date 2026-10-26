@@ -660,10 +660,12 @@ class ContourSchemeToggle extends ContourBase {
       this._wiredScheme = true;
       this.addEventListener("click", () => {
         const root = document.documentElement;
+        root.classList.add("is-theme-switching");
         const current = root.getAttribute("data-theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
         const next = current === "dark" ? "light" : "dark";
         root.setAttribute("data-theme", next);
         try { localStorage.setItem("contour-theme", next); } catch (e) {}
+        requestAnimationFrame(() => requestAnimationFrame(() => root.classList.remove("is-theme-switching")));
         this.dispatchEvent(new CustomEvent("contour:theme-change", { detail: { theme: next }, bubbles: true, composed: true }));
       });
       // restore persisted theme on connect
