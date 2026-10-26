@@ -88,6 +88,11 @@ jobs:
       - name: Check cross-sheet CSS selector collisions
         run: node tools/check-css.mjs
 
+      # Layout primitives are a ratchet: a fourth vocabulary cannot appear
+      # silently, and a @deprecated note must match the gate's ledger.
+      - name: Check the layout ratchet
+        run: node tools/check-layout.mjs
+
       # A url(#id) in src/css is a promise some document defines that id. This
       # checks the promise is kept inside src/, not only inside the style guide.
       - name: Check every url(#id) reference reaches a def in src/
