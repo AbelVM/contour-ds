@@ -2748,8 +2748,8 @@
   }
 
   .c-kbd {
-    contain: layout;
     display: inline-block;
+    vertical-align: baseline;
     padding: var(--kbd-padding, 0.1rem 0.4rem);
     border: 1px solid var(--color-border);
     border-block-end-width: var(--border-width-thick);
@@ -2757,6 +2757,7 @@
     background: var(--color-surface-2);
     font-family: var(--font-mono);
     font-size: var(--kbd-font-size, 0.75em);
+    line-height: 1;
     color: var(--color-text-muted);
   }
 
