@@ -7,8 +7,7 @@
   "main": "dist/contour.css",
   "style": "dist/contour.css",
   "files": [
-    "dist/",
-    "src/"
+    "dist/"
   ],
   "scripts": {
     "build": "node tools/build.mjs",
@@ -68,7 +67,8 @@
     "./contour.esm.min.js": "./dist/contour.esm.min.js",
     "./contour-wc.esm.js": "./dist/contour-wc.esm.js",
     "./contour-wc.esm.min.js": "./dist/contour-wc.esm.min.js",
-    "./wc/*": "./dist/wc/*"
+    "./wc/*": "./dist/wc/*",
+    "./package.json": "./package.json"
   },
   "sideEffects": [
     "*.css",
