@@ -118,7 +118,7 @@ const BUDGETS = {
   "agent-rules.json": 12 * 1024,
   "surfaces/contour-core.min.css": 116 * 1024,  // raised 2026-10-25: 0.0 kB overrun, pre-existing
   "surfaces/contour-docs.min.css": 128 * 1024,
-  "surfaces/contour-data.min.css": 148 * 1024,
+  "surfaces/contour-data.min.css": 149 * 1024,  // raised 2026-10-26 from 148.0 kB: the .c-chart--donut and .c-chart--histogram variants (M-WC-04) added 18 lines of CSS to components-data.css and the bundle came out 148.1 kB. The figure is the measured size with headroom; see CHANGELOG.md.
   "surfaces/contour-landing.min.css": 123 * 1024,
 };
 

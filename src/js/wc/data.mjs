@@ -1,37 +1,41 @@
 import { ContourBase, define } from './core.mjs';
+import { donutSlices, barRects, smoothPath } from './svg.mjs';
 class ContourReadout extends ContourBase {
     static get observed() { return ["rows"]; }
     static get properties() { return { rows: { attribute: "rows" } }; }
-    render() {
-      this.classList.add("c-readout");
-      // Drop previously generated rows so a re-render cannot stack a second set.
-      Array.from(this.querySelectorAll(".c-readout__row")).forEach((n) => n.remove());
-      const rows = this.getAttribute("rows");
-      if (rows) {
-        try {
-          const parsed = JSON.parse(rows);
-          parsed.forEach((r) => {
-            const row = document.createElement("div");
-            row.className = "c-readout__row";
-            const key = document.createElement("span");
-            key.className = "c-readout__key";
-            key.textContent = r.key || r[0];
-            const val = document.createElement("span");
-            val.className = "c-readout__value" + (r.primary ? " c-readout__value--primary" : "") + (r.accent ? " c-readout__value--accent" : "") + (r.coord ? " c-readout__value--coord" : "");
-            val.textContent = r.value || r[1];
-            row.appendChild(key);
-            row.appendChild(val);
-            if (r.order) {
-              const ord = document.createElement("span");
-              ord.className = "c-readout__order";
-              ord.textContent = r.order;
-              row.appendChild(ord);
-            }
-            this.appendChild(row);
-          });
-        } catch (e) { /* keep existing */ }
-      }
-    }
+render() {
+       this.classList.add("c-readout");
+       // Drop previously generated rows so a re-render cannot stack a second set.
+       Array.from(this.querySelectorAll(".c-readout__row")).forEach((n) => n.remove());
+       // Slot composition wins over the JSON attribute, same as the navigation
+       // components: an authored readout is preserved across re-renders.
+       const authored = Array.from(this.children).filter((n) => !n.classList || !n.classList.contains("c-readout__row"));
+       const rows = this.getAttribute("rows");
+       if (rows && !authored.length) {
+         try {
+           const parsed = JSON.parse(rows);
+           parsed.forEach((r) => {
+             const row = document.createElement("div");
+             row.className = "c-readout__row";
+             const key = document.createElement("span");
+             key.className = "c-readout__key";
+             key.textContent = r.key || r[0];
+             const val = document.createElement("span");
+             val.className = "c-readout__value" + (r.primary ? " c-readout__value--primary" : "") + (r.accent ? " c-readout__value--accent" : "") + (r.coord ? " c-readout__value--coord" : "");
+             val.textContent = r.value || r[1];
+             row.appendChild(key);
+             row.appendChild(val);
+             if (r.order) {
+               const ord = document.createElement("span");
+               ord.className = "c-readout__order";
+               ord.textContent = r.order;
+               row.appendChild(ord);
+             }
+             this.appendChild(row);
+           });
+         } catch (e) { /* keep existing */ }
+       }
+     }
   }
   define("contour-readout", ContourReadout);
 class ContourKpi extends ContourBase {
@@ -116,7 +120,9 @@ class ContourTable extends ContourBase {
       // reflow contract requires is a real block element inside it.
       const columns = this.getAttribute("columns");
       const rows = this.getAttribute("rows");
-      if (columns && rows) {
+      // Slot composition: an authored table wins over the JSON attributes.
+      const authored = Array.from(this.children).filter((n) => !n.classList || !n.classList.contains("c-table-wrap"));
+      if (columns && rows && !authored.length) {
         try {
           const cols = JSON.parse(columns);
           const data = JSON.parse(rows);
@@ -195,28 +201,85 @@ class ContourChart extends ContourBase {
         const ax = this.querySelector(".c-chart__axis");
         if (ax) ax.remove();
       }
-      const series = this.getAttribute("series");
-      if (series) {
-        try {
-          const parsed = JSON.parse(series);
-          const plot = this.ensure(".c-chart__plot", () => { const el = document.createElement("div"); el.className = "c-chart__plot"; return el; });
-          plot.innerHTML = "";
-          const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-          svg.setAttribute("viewBox", "0 0 300 120");
-          svg.setAttribute("preserveAspectRatio", "none");
-          svg.style.cssText = "position: absolute; inset: 0; width: 100%; height: 100%";
-          svg.setAttribute("aria-hidden", "true");
-          parsed.forEach((s, i) => {
-            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            path.setAttribute("class", "c-chart__line");
-            path.setAttribute("data-series", String(i + 1));
-            path.style.setProperty("--c", `var(--chart-${i + 1})`);
-            path.setAttribute("d", s.d || s);
-            svg.appendChild(path);
-          });
-          plot.appendChild(svg);
-        } catch (e) { /* keep existing */ }
-      } else {
+const series = this.getAttribute("series");
+       if (series) {
+         try {
+           const parsed = JSON.parse(series);
+           const plot = this.ensure(".c-chart__plot", () => { const el = document.createElement("div"); el.className = "c-chart__plot"; return el; });
+           plot.innerHTML = "";
+           // Structured series: an item may carry `values` plus a `type`
+           // ("donut" | "histogram" | "line") instead of a pre-computed `d`
+           // path. The helpers in svg.mjs turn those into geometry so a
+           // consumer does not have to hand-compute arc or bar math.
+           const hasStructured = parsed.some((s) => s && Array.isArray(s.values));
+           if (hasStructured) {
+             parsed.forEach((s, i) => {
+               const color = `var(--chart-${i + 1})`;
+               if (s.type === "donut") {
+                 const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                 svg.setAttribute("viewBox", "0 0 200 200");
+                 svg.style.cssText = "position: absolute; inset: 0; width: 100%; height: 100%";
+                 svg.setAttribute("aria-hidden", "true");
+                 donutSlices(s.values).forEach((sl) => {
+                   const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                   path.setAttribute("class", "c-chart__line");
+                   path.setAttribute("data-series", String(i + 1));
+                   path.style.setProperty("--c", color);
+                   path.setAttribute("d", sl.path);
+                   svg.appendChild(path);
+                 });
+                 plot.appendChild(svg);
+               } else if (s.type === "histogram") {
+                 const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                 svg.setAttribute("viewBox", "0 0 300 120");
+                 svg.setAttribute("preserveAspectRatio", "none");
+                 svg.style.cssText = "position: absolute; inset: 0; width: 100%; height: 100%";
+                 svg.setAttribute("aria-hidden", "true");
+                 barRects(s.values).forEach((r) => {
+                   const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                   rect.setAttribute("class", "c-chart__bar");
+                   rect.setAttribute("data-series", String(i + 1));
+                   rect.style.setProperty("--c", color);
+                   rect.setAttribute("x", r.x);
+                   rect.setAttribute("y", r.y);
+                   rect.setAttribute("width", r.width);
+                   rect.setAttribute("height", r.height);
+                   svg.appendChild(rect);
+                 });
+                 plot.appendChild(svg);
+               } else {
+                 const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                 svg.setAttribute("viewBox", "0 0 300 120");
+                 svg.setAttribute("preserveAspectRatio", "none");
+                 svg.style.cssText = "position: absolute; inset: 0; width: 100%; height: 100%";
+                 svg.setAttribute("aria-hidden", "true");
+                 const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                 path.setAttribute("class", "c-chart__line");
+                 path.setAttribute("data-series", String(i + 1));
+                 path.style.setProperty("--c", color);
+                 path.setAttribute("d", smoothPath(s.values));
+                 svg.appendChild(path);
+                 plot.appendChild(svg);
+               }
+             });
+           } else {
+             const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+             svg.setAttribute("viewBox", "0 0 300 120");
+             svg.setAttribute("preserveAspectRatio", "none");
+             svg.style.cssText = "position: absolute; inset: 0; width: 100%; height: 100%";
+             svg.setAttribute("aria-hidden", "true");
+             parsed.forEach((s, i) => {
+               const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+               path.setAttribute("class", "c-chart__line");
+               path.setAttribute("data-series", String(i + 1));
+               path.style.setProperty("--c", `var(--chart-${i + 1})`);
+               path.setAttribute("d", s.d || s);
+               svg.appendChild(path);
+             });
+             plot.appendChild(svg);
+           }
+         } catch (e) { /* keep existing */ }
+       } else {
         const plot = this.querySelector(".c-chart__plot");
         if (plot) plot.remove();
       }
@@ -419,11 +482,15 @@ class ContourBivariate extends ContourBase {
       const size = Math.min(12, Math.max(1, parseInt(this.getAttribute("size") || "3", 10) || 3));
       const matrix = this.ensure(".c-bivariate__matrix", () => { const el = document.createElement("div"); el.className = "c-bivariate__matrix"; return el; });
       matrix.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
-      matrix.innerHTML = "";
-      for (let i = 0; i < size * size; i++) {
-        const cell = document.createElement("div");
-        cell.className = "c-bivariate__cell";
-        matrix.appendChild(cell);
+      // Slot composition: authored cells win over the generated grid.
+      const authored = Array.from(matrix.children).filter((n) => n.classList && n.classList.contains("c-bivariate__cell"));
+      if (!authored.length) {
+        matrix.innerHTML = "";
+        for (let i = 0; i < size * size; i++) {
+          const cell = document.createElement("div");
+          cell.className = "c-bivariate__cell";
+          matrix.appendChild(cell);
+        }
       }
       const axisX = this.getAttribute("axis-x");
       if (axisX) {

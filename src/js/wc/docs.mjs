@@ -5,7 +5,9 @@ class ContourDocsNav extends ContourBase {
     render() {
       this.classList.add("c-docs-nav");
       const items = this.getAttribute("items");
-      if (items) {
+      const list = this.querySelector(".c-docs-nav__list");
+      const authored = list ? Array.from(list.children).filter((n) => n.classList && n.classList.contains("c-docs-nav__group")) : [];
+      if (items && !authored.length) {
         try {
           const parsed = JSON.parse(items);
           const list = this.ensure(".c-docs-nav__list", () => { const el = document.createElement("div"); el.className = "c-docs-nav__list"; return el; });
@@ -60,9 +62,8 @@ class ContourDocsNav extends ContourBase {
             list.appendChild(group);
           });
         } catch (e) { /* keep existing */ }
-      } else {
-        const list = this.querySelector(".c-docs-nav__list");
-        if (list) list.remove();
+      } else if (!items && list) {
+        list.remove();
       }
     }
   }

@@ -7,7 +7,9 @@ class ContourCombobox extends ContourBase {
     render() {
       this.classList.add("c-combobox");
       const options = this.getAttribute("options");
-      if (options) {
+      // Slot composition: authored <li> options win over the JSON attribute.
+      const authored = Array.from(this.children).filter((n) => !n.classList || (!n.classList.contains("c-combobox__input") && !n.classList.contains("c-combobox__list")));
+      if (options && !authored.length) {
         try {
           const parsed = JSON.parse(options);
           const input = this.ensure(".c-combobox__input", () => { const el = document.createElement("input"); el.className = "c-combobox__input"; el.type = "text"; return el; });
@@ -289,7 +291,9 @@ class ContourSelect extends ContourBase {
     render() {
       this.classList.add("c-select");
       const options = this.getAttribute("options");
-      if (options) {
+      // Slot composition: an authored <select> wins over the JSON attribute.
+      const authored = Array.from(this.children).filter((n) => n.tagName !== "SELECT" || !n.classList || !n.classList.contains("c-select"));
+      if (options && !authored.length) {
         try {
           const parsed = JSON.parse(options);
           const select = this.ensure("select.c-select", () => { const el = document.createElement("select"); el.className = "c-select"; return el; });
@@ -338,7 +342,8 @@ class ContourVersion extends ContourBase {
     render() {
       this.classList.add("c-version");
       const options = this.getAttribute("options");
-      if (options) {
+      const authored = Array.from(this.children).filter((n) => n.tagName !== "SELECT");
+      if (options && !authored.length) {
         try {
           const parsed = JSON.parse(options);
           const select = this.ensure("select.c-version", () => { const el = document.createElement("select"); el.className = "c-version"; return el; });

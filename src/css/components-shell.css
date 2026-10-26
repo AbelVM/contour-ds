@@ -436,54 +436,40 @@
     }
   }
 
-  /* Sortable column — the arrow appears on hover so a static table does
-     not look like a sortable one. */
-  .c-table th[aria-sort] {
-    position: relative;
-  }
+/* Resizable panel — a grip on the edge that invites the drag. */
+   .c-drag-handle--dots {
+     display: inline-grid;
+     grid-template-columns: repeat(2, 3px);
+     gap: 2px;
+     padding: 0.5rem;
+     cursor: grab;
+     color: var(--color-text-subtle);
+     border-radius: var(--radius-xs);
+     background: none;
+     border: none;
+     min-inline-size: 1.5rem;
+     min-block-size: 1.5rem;
+   }
 
-  .c-table th[aria-sort]:hover {
-    color: var(--color-text);
-  }
+   .c-drag-handle--dots:focus-visible {
+     outline: var(--focus-width) solid var(--color-focus-ring);
+     outline-offset: 2px;
+   }
 
-  .c-table th[aria-sort]:hover .c-table__sort svg {
-    opacity: 0.7;
-  }
+   .c-drag-handle--dots:active {
+     cursor: grabbing;
+   }
 
-  /* Draggable handle — six dots, the near-universal signifier. */
-  .c-drag-handle {
-    display: inline-grid;
-    grid-template-columns: repeat(2, 3px);
-    gap: 2px;
-    padding: 0.5rem;
-    cursor: grab;
-    color: var(--color-text-subtle);
-    border-radius: var(--radius-xs);
-    background: none;
-    border: none;
-    min-inline-size: 1.5rem;
-    min-block-size: 1.5rem;
-  }
+   .c-drag-handle--dots span {
+     inline-size: 3px;
+     block-size: 3px;
+     border-radius: 50%;
+     background: currentColor;
+   }
 
-  .c-drag-handle:focus-visible {
-    outline: var(--focus-width) solid var(--color-focus-ring);
-    outline-offset: 2px;
-  }
-
-  .c-drag-handle:active {
-    cursor: grabbing;
-  }
-
-  .c-drag-handle span {
-    inline-size: 3px;
-    block-size: 3px;
-    border-radius: 50%;
-    background: currentColor;
-  }
-
-  .c-drag-handle:hover {
-    color: var(--color-text);
-  }
+   .c-drag-handle--dots:hover {
+     color: var(--color-text);
+   }
 
   /* Resizable panel — a grip on the edge that invites the drag. */
   .c-panel .c-resize-handle {

@@ -206,7 +206,7 @@
          // or collapse an open disclosure.
          const hadFocus = this.contains(document.activeElement) ? document.activeElement : null;
          const savedScrolls = Array.from(this.querySelectorAll("*")).filter((el) => el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth).map((el) => ({ el, top: el.scrollTop, left: el.scrollLeft }));
-         const savedDetails = Array.from(this.querySelectorAll("details")).map((d) => d.open);
+         const savedDetails = Array.from(this.querySelectorAll("details")).map((d) => ({ id: d.id || null, open: d.open }));
          // Drop generated nodes from the previous render.
          for (const g of (this._contourGenerated || [])) {
            if (g.parentNode === this) this.removeChild(g);
@@ -226,37 +226,88 @@
          this.render();
         this._contourGenerated = Array.from(this.childNodes).filter((n) => !before.includes(n));
         this._applyParts(this);
-        // Restore preserved form control values. Only restore when the count
-        // matches, so a re-render that added or removed a control cannot
-        // misalign values onto the wrong field.
+        // Restore preserved form control values. A re-render that adds or
+        // removes a control must not wipe the rest: keyed controls (those with
+        // a `name` or `id`) are matched by key first, so a new field inserted
+        // between two existing ones leaves both neighbours' values intact.
+        // Unkeyed controls fall back to index matching up to the shorter of
+        // the two lists, so a field removed at the end does not shift values
+        // onto the wrong input.
         const newControls = Array.from(this.querySelectorAll("input, textarea, select"));
-        if (newControls.length === savedValues.length) {
-          newControls.forEach((el, i) => {
-            const saved = savedValues[i];
-            const match = saved && saved.key ? savedValues.find((sv) => sv.key && sv.key === (el.name || el.id)) : null;
-            const val = match ? match.value : (saved ? saved.value : undefined);
-            if (val !== undefined && el.value === "" && el.getAttribute("value") === null) {
-              el.value = val;
-            }
-          });
+        const keyed = savedValues.filter((sv) => sv.key);
+        const unkeyed = savedValues.filter((sv) => !sv.key);
+        const used = new Set();
+        for (const el of newControls) {
+          const key = el.name || el.id || null;
+          if (!key) continue;
+          const match = keyed.find((sv) => sv.key === key && !used.has(sv));
+          if (!match) continue;
+          used.add(match);
+          if (el.value === "" && el.getAttribute("value") === null) {
+            el.value = match.value;
+          }
         }
-        // Restore <details> open state by index. Only restore when the count
-        // matches, so a re-render that added or removed a disclosure cannot
-        // misalign open state onto the wrong one.
+        let u = 0;
+        for (const el of newControls) {
+          if (el.name || el.id) continue;
+          const saved = unkeyed[u];
+          u += 1;
+          if (!saved) continue;
+          if (el.value === "" && el.getAttribute("value") === null) {
+            el.value = saved.value;
+          }
+        }
+        // Restore <details> open state. A disclosure carries an `id` when it is
+        // stable across renders (a faq item, a doc section); match those by id
+        // so inserting a new disclosure above them does not collapse the ones
+        // below. Disclosures without an id fall back to index matching up to
+        // the shorter list, which is the behaviour the length guard existed
+        // to protect and still protects for the tail of either list.
         const newDetails = Array.from(this.querySelectorAll("details"));
-        if (newDetails.length === savedDetails.length) {
-          newDetails.forEach((d, i) => {
-            if (savedDetails[i] !== undefined) d.open = savedDetails[i];
-          });
+        const keyedDetails = savedDetails.filter((sd) => sd.id);
+        const usedIds = new Set();
+        for (const d of newDetails) {
+          const id = d.id || null;
+          if (!id) continue;
+          const match = keyedDetails.find((sd) => sd.id === id && !usedIds.has(sd.id));
+          if (!match) continue;
+          usedIds.add(match.id);
+          d.open = match.open;
         }
-        // Restore scroll positions by index among scrollable descendants.
-        // Only restore when the count matches, so a re-render that added or
-        // removed a scroller cannot misalign positions onto the wrong one.
+        let di = 0;
+        const plainSaved = savedDetails.filter((sd) => !sd.id);
+        for (const d of newDetails) {
+          if (d.id) continue;
+          const sd = plainSaved[di];
+          di += 1;
+          if (!sd) break;
+          d.open = sd.open;
+        }
+        // Restore scroll positions. A scroller that carries an `id` is matched by
+        // id so inserting another scroller above it does not hand its offset to
+        // the wrong container; the rest fall back to index matching up to the
+        // shorter list, which is what the old length guard protected.
         const newScrolls = Array.from(this.querySelectorAll("*")).filter((el) => el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth);
-        if (newScrolls.length === savedScrolls.length) {
-          newScrolls.forEach((el, i) => {
-            if (savedScrolls[i]) { el.scrollTop = savedScrolls[i].top; el.scrollLeft = savedScrolls[i].left; }
-          });
+        const keyedScrolls = savedScrolls.filter((s) => s.el.id);
+        const usedScrolls = new Set();
+        for (const el of newScrolls) {
+          const id = el.id || null;
+          if (!id) continue;
+          const match = keyedScrolls.find((s) => s.el.id === id && !usedScrolls.has(s.el));
+          if (!match) continue;
+          usedScrolls.add(match.el);
+          el.scrollTop = match.top;
+          el.scrollLeft = match.left;
+        }
+        let si = 0;
+        const plainScrolls = savedScrolls.filter((s) => !s.el.id);
+        for (const el of newScrolls) {
+          if (el.id) continue;
+          const s = plainScrolls[si];
+          si += 1;
+          if (!s) break;
+          el.scrollTop = s.top;
+          el.scrollLeft = s.left;
         }
         // Restore focus if it was inside the host.
         if (hadFocus) {

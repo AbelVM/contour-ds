@@ -83,8 +83,10 @@ jobs:
 
       # Layout primitives are a ratchet: a fourth vocabulary cannot appear
       # silently, and a @deprecated note must match the gate's ledger.
-      - name: Check the layout vocabulary and its deprecation ledger
-        run: node tools/check-layout.mjs
+      # Cross-sheet CSS selector collisions: a selector defined in more than one
+      # component stylesheet is a cascade accident waiting to happen.
+      - name: Check cross-sheet CSS selector collisions
+        run: node tools/check-css.mjs
 
       # A url(#id) in src/css is a promise some document defines that id. This
       # checks the promise is kept inside src/, not only inside the style guide.

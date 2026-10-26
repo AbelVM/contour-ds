@@ -24,6 +24,43 @@
 - `tools/check-wc.mjs` now verifies per-component observed-attribute honesty and
   property-reflection completeness.
 
+### Fixed (M-WC-05)
+- Form control value restoration in `ContourBase.attributeChangedCallback` was gated on
+  `newControls.length === savedValues.length`, so any attribute change that added or removed an
+  input — an optional coordinate field, an advanced filter in `contour-filter-bar`, a date-range
+  mode switch — wiped every value the user had typed. The keyed match existed precisely so that
+  length mismatch could be tolerated; the guard defeated it. Keyed controls (those with a `name`
+  or `id`) are now matched by key first with a `used` set preventing double-matching, and unkeyed
+  controls fall back to index matching up to the shorter list.
+- The same length guard blocked `<details>` open-state and scroll-position restoration, so a
+  re-render that inserted a disclosure or a scroller above an open one collapsed it and reset the
+  offset. Both now key on `id` when the element carries one, falling back to index matching for
+  the unkeyed tail.
+- `.c-tree` was defined in both `components.css` (interactive treeview, `cursor: pointer`,
+  sans-serif) and `components-docs.css` (static file tree, `cursor: default`, monospace). The
+  documentation block is renamed to `.c-file-tree` (and its `__row`, `--dir`, `--active`,
+  `__indent` elements), so `.c-tree` belongs to the interactive treeview alone and the cascade no
+  longer decides which cursor and typography win.
+- `.c-drag-handle` carried two incompatible layout expectations: `components.css` styled it as an
+  `inline-flex` centre for an SVG icon, `components-shell.css` styled it as an `inline-grid` of six
+  CSS-drawn dots. The grid rule is now the scoped variant `.c-drag-handle--dots`, so the base
+  carries the SVG form and the dots carry their own name; markup that wants the six-dot grid
+  classes it explicitly.
+- Table sort rules for `.c-table th[aria-sort]` (the `position: relative` base, the `:hover`
+  colour, and the `:hover .c-table__sort svg` opacity) lived in `components-shell.css`, where a
+  shell surface has no business holding data-table behaviour. They move to `components-data.css`
+  beside the rules that define `.c-table__sort`, and the shell sheet drops them.
+- `ContourShadow.connectedCallback` attached a `slotchange` listener on every call, so moving a
+  shadow component in the DOM (reordering it inside a tab panel or list) accumulated one listener
+  per move and re-wired on events it had already handled. The listener is now attached once,
+  guarded by `this._wiredSlotchange`.
+
+### Changed (M-WC-05)
+- `surfaces/contour-data.min.css` budget raised from 148.0 kB to 149.0 kB: the `.c-chart--donut`
+  and `.c-chart--histogram` variants added 18 lines of CSS in M-WC-04, and the figure is now the
+  measured size with headroom rather than the size it was before the variants landed. The budget
+  moves only with a line in this file saying why, which this is.
+
 ### Added (M-WC-04)
 - Chart variant CSS classes `.c-chart--donut` and `.c-chart--histogram`.
 - Reactivity playground specimen in §23 (variant select + value slider driving
@@ -823,7 +860,7 @@
 - The token export published 151 of the 273 declared tokens. `tools/build.mjs` matched a single `:root` block, and `tokens.css` declares in three, so the entire semantic layer — the half a consumer overrides — was missing from `dist/contour.tokens.json`. It now exports 277/277, 92 of them as light/dark pairs
 - Multi-line `light-dark()` declarations were never split into two themes: the exporter tested the value with `.+`, and `.` does not match a newline, so `--color-focus-halo`, `--color-primary-soft` and `--color-on-primary-solid` shipped as one opaque string. Splitting now goes through `tools/lib/lightdark.mjs`, which counts parentheses instead of pattern-matching them
 - `tools/check-size.mjs` failed on a 113.1 kB bundle against a 110 kB budget and was not wired into CI at all. Budgets are now measured per bundle with ~3% headroom, the gate also refuses a stale `dist/`, and CI runs it after the build
-- Specimens added for `c-menu`, `c-tag`, `c-expandable`, `c-pressable`, `c-scrim` and `c-resize-handle`. An earlier entry here claimed nine undocumented components had been documented; measured with `node tools/audit/component-inventory.mjs`, six of those nine now have a specimen and **<!-- ds:noSpecimen -->0<!-- /ds:noSpecimen --> of <!-- ds:components -->162<!-- /ds:components -->** blocks still have none
+- Specimens added for `c-menu`, `c-tag`, `c-expandable`, `c-pressable`, `c-scrim` and `c-resize-handle`. An earlier entry here claimed nine undocumented components had been documented; measured with `node tools/audit/component-inventory.mjs`, six of those nine now have a specimen and **<!-- ds:noSpecimen -->0<!-- /ds:noSpecimen --> of <!-- ds:components -->163<!-- /ds:components -->** blocks still have none
 - The accessibility contract in `README.md`, `AGENTS.md` and `llms.txt` claimed the ratios were "verified across 210 text and icon pairs per theme". Nothing computes 210: `tools/audit/contrast-and-aria.mjs` measures 52 named colour pairs (76 numeric comparisons with series and ramp steps). The three lines now name the enforcing command and its exit condition instead of a count no tool recomputes, and `AGENTS.md` warns against putting a pair count back there. Its criterion was also corrected to 1.4.11 for adjacent contrast, with 2.4.13 governing focus appearance
 - `tools/contour-gen.py` wrote its verification JSON into a machine-local temp directory outside the repository — a path that existed on one developer's machine and on no clean clone or CI runner. Nothing in the repository reads those files (checked by search), so they now land under the project's own gitignored `tmp/audit/`
 
@@ -833,5 +870,5 @@
 ### Corrections to this file's own claims
 Three entries above were overstated when first written, and are corrected here rather than quietly deleted:
 1. **"Nine unspecced components documented"** — six of nine, with 13 blocks still undocumented.
-2. **"`llms.txt` corrected (component count…)"** — was false when written here, and is now actually done. Both files published 83 components / 260 tokens while `src/` held **<!-- ds:components -->162<!-- /ds:components --> components, <!-- ds:tokens -->290<!-- /ds:tokens --> tokens, <!-- ds:tokens-read -->290<!-- /ds:tokens-read --> read, <!-- ds:tokens-unread -->0<!-- /ds:tokens-unread --> unread**. The root cause was in the gate, not the prose: `stamp` only visited files carrying markers, and neither file had any — `llms.txt` is machine-facing and `DESIGN.md`'s figures live in YAML front matter, where an HTML comment is not legal syntax — so `stamp --check` passed by never reading them. `stamp` now owns both (anchored rewrites for `llms.txt`, a key-path setter for front matter) and treats a declared pattern that matches nothing as an error, so a skipped file fails the build instead of greening it
+2. **"`llms.txt` corrected (component count…)"** — was false when written here, and is now actually done. Both files published 83 components / 260 tokens while `src/` held **<!-- ds:components -->163<!-- /ds:components --> components, <!-- ds:tokens -->290<!-- /ds:tokens --> tokens, <!-- ds:tokens-read -->290<!-- /ds:tokens-read --> read, <!-- ds:tokens-unread -->0<!-- /ds:tokens-unread --> unread**. The root cause was in the gate, not the prose: `stamp` only visited files carrying markers, and neither file had any — `llms.txt` is machine-facing and `DESIGN.md`'s figures live in YAML front matter, where an HTML comment is not legal syntax — so `stamp --check` passed by never reading them. `stamp` now owns both (anchored rewrites for `llms.txt`, a key-path setter for front matter) and treats a declared pattern that matches nothing as an error, so a skipped file fails the build instead of greening it
 3. **"focus ring (3.55:1)"** — that was the best-case surface. The binding measurement was 2.94:1, i.e. the contract did not hold until the change recorded above.

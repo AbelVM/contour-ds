@@ -706,46 +706,49 @@
     opacity: 1;
   }
 
-  /* =======================================================================
+/* =======================================================================
      11. FILE TREE
-     A project tree in a code panel.
+     A project tree in a code panel. This is a static display tree, so it
+     lives under its own block name and never borrows `.c-tree`, which the
+     interactive treeview in components.css owns. The two used to share a
+     name and the cascade decided which cursor and typography won.
      ======================================================================= */
-  .c-tree {
-    font-family: var(--font-mono);
-    font-size: 0.8125rem;
-    line-height: 1.85;
-    color: var(--color-text-muted);
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-  }
+   .c-file-tree {
+     font-family: var(--font-mono);
+     font-size: 0.8125rem;
+     line-height: 1.85;
+     color: var(--color-text-muted);
+     overflow-x: auto;
+     overscroll-behavior-x: contain;
+   }
 
-  .c-tree__row {
-    display: flex;
-    align-items: center;
-    gap: 0.45rem;
-    white-space: nowrap;
-  }
+   .c-file-tree__row {
+     display: flex;
+     align-items: center;
+     gap: 0.45rem;
+     white-space: nowrap;
+   }
 
-  .c-tree__row svg {
-    inline-size: 0.9rem;
-    block-size: 0.9rem;
-    flex: none;
-    opacity: 0.6;
-  }
+   .c-file-tree__row svg {
+     inline-size: 0.9rem;
+     block-size: 0.9rem;
+     flex: none;
+     opacity: 0.6;
+   }
 
-  .c-tree__row--dir {
-    color: var(--color-text-strong);
-  }
+   .c-file-tree__row--dir {
+     color: var(--color-text-strong);
+   }
 
-  .c-tree__row--active {
-    color: var(--color-primary-text);
-  }
+   .c-file-tree__row--active {
+     color: var(--color-primary-text);
+   }
 
-  .c-tree__indent {
-    display: inline-block;
-    inline-size: 1rem;
-    flex: none;
-  }
+   .c-file-tree__indent {
+     display: inline-block;
+     inline-size: 1rem;
+     flex: none;
+   }
 
 
   /* RTL: flip the diff marker to the inline-start side */

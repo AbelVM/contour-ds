@@ -277,10 +277,10 @@ class ContourFaq extends ContourBase {
       const question = this.getAttribute("question");
       const answer = this.getAttribute("answer");
       const items = this.getAttribute("items");
-      if (items) {
+      const authored = Array.from(this.children).filter((n) => n.classList && n.classList.contains("c-faq__item"));
+      if (items && !authored.length) {
         try {
           const parsed = JSON.parse(items);
-          // Clear previous items
           Array.from(this.querySelectorAll(".c-faq__item")).forEach((n) => n.remove());
           parsed.forEach((it) => {
             const item = document.createElement("div");
@@ -300,7 +300,7 @@ class ContourFaq extends ContourBase {
             this.appendChild(item);
           });
         } catch (e) { /* keep existing */ }
-      } else {
+      } else if (!items) {
         if (question) {
           const q = this.ensure(".c-faq__question", () => { const el = document.createElement("div"); el.className = "c-faq__question"; return el; });
           q.textContent = question;
@@ -326,9 +326,10 @@ class ContourAccordion extends ContourBase {
       // The host is a plain container; the children carry .c-disclosure, which
       // is the block that owns the styling. No .c-accordion rule exists, so the
       // host class is dropped rather than invented.
-      Array.from(this.querySelectorAll("details.c-disclosure")).forEach((d) => d.remove());
+      const authored = Array.from(this.children).filter((n) => n.tagName === "DETAILS");
       const items = this.getAttribute("items");
-      if (items) {
+      if (items && !authored.length) {
+        Array.from(this.querySelectorAll("details.c-disclosure")).forEach((d) => d.remove());
         try {
           const parsed = JSON.parse(items);
           parsed.forEach((item) => {
@@ -366,12 +367,13 @@ class ContourDrawer extends ContourBase {
       this.classList.add("c-drawer");
       if (!this.hasAttribute("role")) this.setAttribute("role", "dialog");
       const body = this.getAttribute("body");
-      if (body) {
-        const b = this.ensure(".c-drawer__body", () => { const el = document.createElement("div"); el.className = "c-drawer__body"; return el; });
-        b.innerHTML = body;
-      } else {
-        const b = this.querySelector(".c-drawer__body");
-        if (b) b.remove();
+      const b = this.querySelector(".c-drawer__body");
+      const authored = b ? Array.from(b.children) : [];
+      if (body && !authored.length) {
+        const el = this.ensure(".c-drawer__body", () => { const e = document.createElement("div"); e.className = "c-drawer__body"; return e; });
+        el.innerHTML = body;
+      } else if (!body && b && !authored.length) {
+        b.remove();
       }
     }
   }
@@ -383,12 +385,13 @@ class ContourSheet extends ContourBase {
       this.classList.add("c-sheet");
       if (!this.hasAttribute("role")) this.setAttribute("role", "dialog");
       const body = this.getAttribute("body");
-      if (body) {
-        const b = this.ensure(".c-sheet__body", () => { const el = document.createElement("div"); el.className = "c-sheet__body"; return el; });
-        b.innerHTML = body;
-      } else {
-        const b = this.querySelector(".c-sheet__body");
-        if (b) b.remove();
+      const b = this.querySelector(".c-sheet__body");
+      const authored = b ? Array.from(b.children) : [];
+      if (body && !authored.length) {
+        const el = this.ensure(".c-sheet__body", () => { const e = document.createElement("div"); e.className = "c-sheet__body"; return e; });
+        el.innerHTML = body;
+      } else if (!body && b && !authored.length) {
+        b.remove();
       }
     }
   }

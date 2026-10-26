@@ -331,21 +331,22 @@ class ContourShowcaseFull extends ContourBase {
         const p = this.querySelector(".c-showcase__text");
         if (p) p.remove();
       }
-      const items = this.getAttribute("items");
-      if (items) {
+const items = this.getAttribute("items");
+      const ul = this.querySelector(".c-showcase__list");
+      const authored = ul ? Array.from(ul.children).filter((n) => n.tagName === "LI") : [];
+      if (items && !authored.length) {
         try {
           const parsed = JSON.parse(items);
-          const ul = this.ensure(".c-showcase__list", () => { const el = document.createElement("ul"); el.className = "c-showcase__list"; return el; });
-          ul.innerHTML = "";
+          const l = this.ensure(".c-showcase__list", () => { const el = document.createElement("ul"); el.className = "c-showcase__list"; return el; });
+          l.innerHTML = "";
           parsed.forEach((it) => {
             const li = document.createElement("li");
             li.textContent = typeof it === "string" ? it : it.label;
-            ul.appendChild(li);
+            l.appendChild(li);
           });
         } catch (e) { /* keep existing */ }
-      } else {
-        const ul = this.querySelector(".c-showcase__list");
-        if (ul) ul.remove();
+      } else if (!items && ul) {
+        ul.remove();
       }
     }
   }
@@ -401,7 +402,8 @@ class ContourLandingFeaturesFull extends ContourBase {
     render() {
       this.classList.add("c-landing-features");
       const items = this.getAttribute("items");
-      if (items) {
+      const authored = Array.from(this.children).filter((n) => n.classList && n.classList.contains("c-landing-features__item"));
+      if (items && !authored.length) {
         try {
           const parsed = JSON.parse(items);
           this.querySelectorAll(".c-landing-features__item").forEach((el) => el.remove());
@@ -439,12 +441,13 @@ class ContourLandingHeroFull extends ContourBase {
     render() {
       this.classList.add("c-landing-hero");
       const actions = this.getAttribute("actions");
-      if (actions) {
-        const a = this.ensure(".c-landing-hero__actions", () => { const el = document.createElement("div"); el.className = "c-landing-hero__actions"; return el; });
-        a.innerHTML = actions;
-      } else {
-        const a = this.querySelector(".c-landing-hero__actions");
-        if (a) a.remove();
+      const a = this.querySelector(".c-landing-hero__actions");
+      const authored = a ? Array.from(a.children) : [];
+      if (actions && !authored.length) {
+        const el = this.ensure(".c-landing-hero__actions", () => { const e = document.createElement("div"); e.className = "c-landing-hero__actions"; return e; });
+        el.innerHTML = actions;
+      } else if (!actions && a && !authored.length) {
+        a.remove();
       }
     }
   }

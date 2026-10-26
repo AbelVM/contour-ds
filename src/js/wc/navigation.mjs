@@ -3,53 +3,67 @@ import { wireMenu, wirePagination, wireTabs, wireTree } from './behaviours.mjs';
 class ContourMenu extends ContourBase {
     static get observed() { return ["items"]; }
     static get properties() { return { items: { attribute: "items" } }; }
-    render() {
-      this.classList.add("c-menu");
-      if (!this.hasAttribute("role")) this.setAttribute("role", "menu");
-      const items = this.getAttribute("items");
-      if (items) {
-        try {
-          const parsed = JSON.parse(items);
-          const ul = this.ensure("ul.c-menu", () => { const el = document.createElement("ul"); el.className = "c-menu"; el.setAttribute("role", "menu"); return el; });
-          ul.innerHTML = "";
-          ul.setAttribute("role", "menu");
-          parsed.forEach((item) => {
-            if (item === "---" || item === "separator") {
-              const li = document.createElement("li");
-              li.className = "c-menu__separator";
-              li.setAttribute("role", "separator");
-              ul.appendChild(li);
-            } else if (typeof item === "string") {
-              const li = document.createElement("li");
-              li.className = "c-menu__item";
-              li.setAttribute("role", "menuitem");
-              li.textContent = item;
-              ul.appendChild(li);
-            } else {
-              const li = document.createElement("li");
-              li.className = "c-menu__item" + (item.danger ? " c-menu__item--danger" : "");
-              li.setAttribute("role", "menuitem");
-              if (item.label || item.title) {
-                const lbl = document.createElement("span");
-                lbl.className = "c-menu__label";
-                lbl.textContent = item.label || item.title || "";
-                li.appendChild(lbl);
-              }
-              if (item.shortcut) {
-                const sc = document.createElement("span");
-                sc.className = "c-menu__shortcut";
-                sc.textContent = item.shortcut;
-                li.appendChild(sc);
-              }
-              ul.appendChild(li);
-            }
-          });
-          if (ul.parentNode !== this) this.appendChild(ul);
-          this.classList.remove("c-menu");
-          ul.classList.add("c-menu");
-        } catch (e) { /* keep existing content */ }
-      }
-    }
+render() {
+       this.classList.add("c-menu");
+       if (!this.hasAttribute("role")) this.setAttribute("role", "menu");
+       // Slot composition wins over the JSON attribute. A consumer who has
+       // authored `<li>` children is composing the menu directly; rebuilding
+       // it from `items` would throw those away on every attribute change.
+       // The base class restores authored nodes before this runs, so the
+       // check is simply "are we holding authored content right now".
+       const authored = Array.from(this.children).filter((n) => !n.classList || !n.classList.contains("c-menu"));
+       if (authored.length) {
+         if (this.querySelector("ul.c-menu")) return;
+         const ul = document.createElement("ul");
+         ul.className = "c-menu";
+         ul.setAttribute("role", "menu");
+         this.appendChild(ul);
+         return;
+       }
+       const items = this.getAttribute("items");
+       if (items) {
+         try {
+           const parsed = JSON.parse(items);
+           const ul = this.ensure("ul.c-menu", () => { const el = document.createElement("ul"); el.className = "c-menu"; el.setAttribute("role", "menu"); return el; });
+           ul.innerHTML = "";
+           ul.setAttribute("role", "menu");
+           parsed.forEach((item) => {
+             if (item === "---" || item === "separator") {
+               const li = document.createElement("li");
+               li.className = "c-menu__separator";
+               li.setAttribute("role", "separator");
+               ul.appendChild(li);
+             } else if (typeof item === "string") {
+               const li = document.createElement("li");
+               li.className = "c-menu__item";
+               li.setAttribute("role", "menuitem");
+               li.textContent = item;
+               ul.appendChild(li);
+             } else {
+               const li = document.createElement("li");
+               li.className = "c-menu__item" + (item.danger ? " c-menu__item--danger" : "");
+               li.setAttribute("role", "menuitem");
+               if (item.label || item.title) {
+                 const lbl = document.createElement("span");
+                 lbl.className = "c-menu__label";
+                 lbl.textContent = item.label || item.title || "";
+                 li.appendChild(lbl);
+               }
+               if (item.shortcut) {
+                 const sc = document.createElement("span");
+                 sc.className = "c-menu__shortcut";
+                 sc.textContent = item.shortcut;
+                 li.appendChild(sc);
+               }
+               ul.appendChild(li);
+             }
+           });
+           if (ul.parentNode !== this) this.appendChild(ul);
+           this.classList.remove("c-menu");
+           ul.classList.add("c-menu");
+         } catch (e) { /* keep existing content */ }
+       }
+     }
     enhance() {
       // Interaction lives in behaviours.mjs, which the shadow wrappers call too.
       // One implementation, so the two layers cannot drift apart again: the shadow
@@ -61,31 +75,35 @@ class ContourMenu extends ContourBase {
 class ContourTabs extends ContourBase {
     static get observed() { return ["tabs"]; }
     static get properties() { return { tabs: { attribute: "tabs" } }; }
-    render() {
-      this.classList.add("c-tabs");
-      const tabs = this.getAttribute("tabs");
-      if (tabs) {
-        try {
-          const parsed = JSON.parse(tabs);
-          const list = this.ensure(".c-tabs__list", () => { const el = document.createElement("div"); el.className = "c-tabs__list"; el.setAttribute("role", "tablist"); return el; });
-          list.setAttribute("role", "tablist");
-          list.innerHTML = "";
-          parsed.forEach((t, i) => {
-            const btn = document.createElement("button");
-            btn.className = "c-tabs__tab";
-            btn.setAttribute("role", "tab");
-            btn.setAttribute("aria-selected", String(i === 0));
-            btn.tabIndex = i === 0 ? 0 : -1;
-            btn.textContent = typeof t === "string" ? t : t.label;
-            list.appendChild(btn);
-          });
-          if (list.parentNode !== this) this.prepend(list);
-        } catch (e) { /* keep existing */ }
-      } else {
-        const list = this.querySelector(".c-tabs__list");
-        if (list) list.remove();
-      }
-    }
+render() {
+       this.classList.add("c-tabs");
+       // Slot composition wins over the JSON attribute, same as ContourMenu:
+       // authored tab buttons and panels stay across re-renders and the
+       // JSON scaffolding only fills in when the host is empty.
+       const authored = Array.from(this.children).filter((n) => !n.classList || !n.classList.contains("c-tabs__list"));
+       const tabs = this.getAttribute("tabs");
+       if (tabs && !authored.length) {
+         try {
+           const parsed = JSON.parse(tabs);
+           const list = this.ensure(".c-tabs__list", () => { const el = document.createElement("div"); el.className = "c-tabs__list"; el.setAttribute("role", "tablist"); return el; });
+           list.setAttribute("role", "tablist");
+           list.innerHTML = "";
+           parsed.forEach((t, i) => {
+             const btn = document.createElement("button");
+             btn.className = "c-tabs__tab";
+             btn.setAttribute("role", "tab");
+             btn.setAttribute("aria-selected", String(i === 0));
+             btn.tabIndex = i === 0 ? 0 : -1;
+             btn.textContent = typeof t === "string" ? t : t.label;
+             list.appendChild(btn);
+           });
+           if (list.parentNode !== this) this.prepend(list);
+         } catch (e) { /* keep existing */ }
+       } else if (!tabs && !authored.length) {
+         const list = this.querySelector(".c-tabs__list");
+         if (list) list.remove();
+       }
+     }
     enhance() {
       // Interaction lives in behaviours.mjs, which the shadow wrappers call too.
       // One implementation, so the two layers cannot drift apart again: the shadow
@@ -123,7 +141,8 @@ class ContourHeader extends ContourBase {
       }
       // Nav
       let nav = inner.querySelector(".c-header__nav");
-      if (links) {
+      const authoredNav = nav ? Array.from(nav.children).filter((n) => n.tagName === "A") : [];
+      if (links && !authoredNav.length) {
         try {
           const parsed = JSON.parse(links);
           if (!nav) {
@@ -140,7 +159,9 @@ class ContourHeader extends ContourBase {
             nav.appendChild(a);
           });
         } catch (e) { /* skip */ }
-      } else if (nav) {
+      } else if (links && authoredNav.length) {
+        // authored nav wins; keep it
+      } else if (nav && !links) {
         nav.remove();
       }
       // Actions slot
@@ -158,38 +179,42 @@ class ContourHeader extends ContourBase {
 class ContourTree extends ContourBase {
     static get observed() { return ["items"]; }
     static get properties() { return { items: { attribute: "items" } }; }
-    render() {
-      this.classList.add("c-tree");
-      const items = this.getAttribute("items");
-      if (items) {
-        try {
-          const parsed = JSON.parse(items);
-          const rootUl = this.ensure("ul.c-tree", () => { const el = document.createElement("ul"); el.className = "c-tree"; el.setAttribute("role", "tree"); return el; });
-          rootUl.innerHTML = "";
-          rootUl.className = "c-tree";
-          const render = (nodes, parent) => {
-            const ul = parent ? document.createElement("ul") : rootUl;
-            if (parent) {
-              ul.className = "c-tree__children";
-              ul.setAttribute("hidden", "");
-            }
-            nodes.forEach((node) => {
-              const li = document.createElement("li");
-              li.className = "c-tree__node";
-              if (node.children) {
-                const row = document.createElement("div");
-                row.className = "c-tree__row" + (node.active ? " c-tree__row--active" : "") + (node.dir ? " c-tree__row--dir" : "");
-                row.setAttribute("aria-expanded", "false");
-                if (node.indent) {
-                  const ind = document.createElement("span");
-                  ind.className = "c-tree__indent";
-                  ind.style.inlineSize = (node.indent * 1) + "rem";
-                  row.appendChild(ind);
-                }
-                const toggle = document.createElement("button");
-                toggle.className = "c-tree__toggle";
-                toggle.setAttribute("type", "button");
-                toggle.setAttribute("aria-expanded", "false");
+render() {
+       this.classList.add("c-tree");
+       // Slot composition wins over the JSON attribute, same as ContourMenu:
+       // an authored tree is preserved across re-renders instead of being
+       // rebuilt from `items` and losing whatever the reader put in it.
+       const authored = Array.from(this.children).filter((n) => !n.classList || !n.classList.contains("c-tree"));
+       const items = this.getAttribute("items");
+       if (items && !authored.length) {
+         try {
+           const parsed = JSON.parse(items);
+           const rootUl = this.ensure("ul.c-tree", () => { const el = document.createElement("ul"); el.className = "c-tree"; el.setAttribute("role", "tree"); return el; });
+           rootUl.innerHTML = "";
+           rootUl.className = "c-tree";
+           const render = (nodes, parent) => {
+             const ul = parent ? document.createElement("ul") : rootUl;
+             if (parent) {
+               ul.className = "c-tree__children";
+               ul.setAttribute("hidden", "");
+             }
+             nodes.forEach((node) => {
+               const li = document.createElement("li");
+               li.className = "c-tree__node";
+               if (node.children) {
+                 const row = document.createElement("div");
+                 row.className = "c-tree__row" + (node.active ? " c-tree__row--active" : "") + (node.dir ? " c-tree__row--dir" : "");
+                 row.setAttribute("aria-expanded", "false");
+                 if (node.indent) {
+                   const ind = document.createElement("span");
+                   ind.className = "c-tree__indent";
+                   ind.style.inlineSize = (node.indent * 1) + "rem";
+                   row.appendChild(ind);
+                 }
+                 const toggle = document.createElement("button");
+                 toggle.className = "c-tree__toggle";
+                 toggle.setAttribute("type", "button");
+                 toggle.setAttribute("aria-expanded", "false");
                 toggle.setAttribute("aria-label", "Toggle");
                 toggle.innerHTML = '<svg aria-hidden="true"><use href="#i-chevron-right" /></svg>';
                 row.appendChild(toggle);
@@ -235,12 +260,14 @@ class ContourCodeTabs extends ContourBase {
     render() {
       this.classList.add("c-code-tabs");
       const tabs = this.getAttribute("tabs");
-      if (tabs) {
+      const list = this.querySelector(".c-code-tabs__list");
+      const authored = list ? Array.from(list.children).filter((n) => n.getAttribute && n.getAttribute("role") === "tab") : [];
+      if (tabs && !authored.length) {
         try {
           const parsed = JSON.parse(tabs);
-          const list = this.ensure(".c-code-tabs__list", () => { const el = document.createElement("div"); el.className = "c-code-tabs__list"; el.setAttribute("role", "tablist"); return el; });
-          list.setAttribute("role", "tablist");
-          list.innerHTML = "";
+          const l = this.ensure(".c-code-tabs__list", () => { const el = document.createElement("div"); el.className = "c-code-tabs__list"; el.setAttribute("role", "tablist"); return el; });
+          l.setAttribute("role", "tablist");
+          l.innerHTML = "";
           parsed.forEach((t, i) => {
             const btn = document.createElement("button");
             btn.className = "c-code-tabs__tab";
@@ -248,13 +275,12 @@ class ContourCodeTabs extends ContourBase {
             btn.setAttribute("aria-selected", String(i === 0));
             btn.tabIndex = i === 0 ? 0 : -1;
             btn.textContent = typeof t === "string" ? t : t.label;
-            list.appendChild(btn);
+            l.appendChild(btn);
           });
-          if (list.parentNode !== this) this.prepend(list);
+          if (l.parentNode !== this) this.prepend(l);
         } catch (e) { /* keep existing */ }
-      } else {
-        const list = this.querySelector(".c-code-tabs__list");
-        if (list) list.remove();
+      } else if (!tabs && list) {
+        list.remove();
       }
     }
     enhance() {
@@ -271,13 +297,17 @@ class ContourBreadcrumb extends ContourBase {
     render() {
       this.classList.add("c-breadcrumb");
       const items = this.getAttribute("items");
-      if (items) {
+      // Slot composition: authored <li> items win over the JSON attribute.
+      const nav = this.querySelector("nav");
+      const ol = nav ? nav.querySelector("ol") : null;
+      const authored = ol ? Array.from(ol.children).filter((n) => n.tagName === "LI") : [];
+      if (items && !authored.length) {
         try {
           const parsed = JSON.parse(items);
-          const nav = this.ensure("nav", () => { const el = document.createElement("nav"); el.setAttribute("aria-label", "Breadcrumb"); return el; });
-          nav.setAttribute("aria-label", "Breadcrumb");
-          const ol = nav.querySelector("ol") || (() => { const el = document.createElement("ol"); nav.appendChild(el); return el; })();
-          ol.innerHTML = "";
+          const n = this.ensure("nav", () => { const el = document.createElement("nav"); el.setAttribute("aria-label", "Breadcrumb"); return el; });
+          n.setAttribute("aria-label", "Breadcrumb");
+          const o = n.querySelector("ol") || (() => { const el = document.createElement("ol"); n.appendChild(el); return el; })();
+          o.innerHTML = "";
           const sep = this.getAttribute("separator") || "/";
           parsed.forEach((item, i) => {
             const li = document.createElement("li");
@@ -295,12 +325,11 @@ class ContourBreadcrumb extends ContourBase {
               li.textContent = item.label || item;
               li.setAttribute("aria-current", "page");
             }
-            ol.appendChild(li);
+            o.appendChild(li);
           });
         } catch (e) { /* keep existing */ }
-      } else {
-        const nav = this.querySelector("nav");
-        if (nav) nav.remove();
+      } else if (!items && nav) {
+        nav.remove();
       }
     }
   }
@@ -385,25 +414,26 @@ class ContourTocFull extends ContourBase {
       const items = this.getAttribute("items");
       const titleEl = this.ensure(".c-toc__title", () => { const el = document.createElement("div"); el.className = "c-toc__title"; return el; });
       titleEl.textContent = title;
-      if (items) {
+      const list = this.querySelector(".c-toc__list");
+      const authored = list ? Array.from(list.children).filter((n) => n.tagName === "A") : [];
+      if (items && !authored.length) {
         try {
           const parsed = JSON.parse(items);
-          const list = this.ensure(".c-toc__list", () => { const el = document.createElement("nav"); el.className = "c-toc__list"; return el; });
-          list.className = "c-toc__list";
-          list.setAttribute("aria-label", title);
-          list.innerHTML = "";
+          const l = this.ensure(".c-toc__list", () => { const el = document.createElement("nav"); el.className = "c-toc__list"; return el; });
+          l.className = "c-toc__list";
+          l.setAttribute("aria-label", title);
+          l.innerHTML = "";
           parsed.forEach((item) => {
             const a = document.createElement("a");
             a.className = "c-toc__link" + (item.sub ? " c-toc__link--sub" : "");
             a.href = item.href || "#";
             a.textContent = item.label || item;
             if (item.current) a.setAttribute("aria-current", "true");
-            list.appendChild(a);
+            l.appendChild(a);
           });
         } catch (e) { /* keep existing */ }
-      } else {
-        const list = this.querySelector(".c-toc__list");
-        if (list) list.remove();
+      } else if (!items && list) {
+        list.remove();
       }
     }
   }
@@ -442,11 +472,13 @@ class ContourFilterBar extends ContourBase {
       input.placeholder = placeholder;
       input.setAttribute("aria-label", "Command");
       const items = this.getAttribute("items");
-      if (items) {
+      const list = this.querySelector(".c-command__list");
+      const authored = list ? Array.from(list.children).filter((n) => n.classList && n.classList.contains("c-command__item") || n.classList && n.classList.contains("c-command__group")) : [];
+      if (items && !authored.length) {
         try {
           const parsed = JSON.parse(items);
-          const list = this.ensure(".c-command__list", () => { const el = document.createElement("div"); el.className = "c-command__list"; return el; });
-          list.innerHTML = "";
+          const l = this.ensure(".c-command__list", () => { const el = document.createElement("div"); el.className = "c-command__list"; return el; });
+          l.innerHTML = "";
           parsed.forEach((it) => {
             if (it.group) {
               const group = document.createElement("div");
@@ -479,7 +511,7 @@ class ContourFilterBar extends ContourBase {
               }
               item.appendChild(body);
               group.appendChild(item);
-              list.appendChild(group);
+              l.appendChild(group);
             } else {
               const item = document.createElement("div");
               item.className = "c-command__item";
@@ -504,13 +536,12 @@ class ContourFilterBar extends ContourBase {
                 body.appendChild(h);
               }
               item.appendChild(body);
-              list.appendChild(item);
+              l.appendChild(item);
             }
           });
         } catch (e) { /* keep existing */ }
-      } else {
-        const list = this.querySelector(".c-command__list");
-        if (list) list.remove();
+      } else if (!items && list) {
+        list.remove();
       }
       const empty = this.getAttribute("empty");
       if (empty) {

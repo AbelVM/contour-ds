@@ -463,7 +463,31 @@
      5. CHART FRAME
      A slot for a visualisation: grid lines, axis labels, and a legend.
      ======================================================================= */
-  .c-chart--donut {
+  .c-chart__plot {
+    position: relative;
+    aspect-ratio: 16 / 7;
+    min-block-size: 8rem;
+    border-block-end: 1px solid var(--chart-axis);
+    /* One band per VALUE-axis interval, so a gridline lands on every value tick
+       BY CONSTRUCTION: a band is `100% / (ticks - 1)` tall. `--chart-ticks` is
+       how many values the author's scale produces — `Contour.chart.ticks()`
+       returns them — and a y-axis element, when the vocabulary grows one, uses
+       that same count, which is the whole point of making it a number rather
+       than a literal 25%.
+
+       It is NOT the category axis. `.c-chart__axis` below runs left-to-right
+       with `space-between` category labels (Mon…Sun); the bands are horizontal,
+       so they mark the value axis and never the category one. Measured: seven
+       category labels sit at 1.03…98.97% across, while the bands step 25% up —
+       two different axes, and no count of category labels can align with them. */
+    background-image: repeating-linear-gradient(
+      to top,
+      var(--chart-grid) 0 1px,
+      transparent 1px calc(100% / (var(--chart-ticks, 5) - 1))
+    );
+  }
+
+    .c-chart--donut {
     display: grid;
     place-items: center;
   }
@@ -516,29 +540,6 @@
     filter: grayscale(1);
   }
 
-  .c-chart__plot {
-    position: relative;
-    aspect-ratio: 16 / 7;
-    min-block-size: 8rem;
-    border-block-end: 1px solid var(--chart-axis);
-    /* One band per VALUE-axis interval, so a gridline lands on every value tick
-       BY CONSTRUCTION: a band is `100% / (ticks - 1)` tall. `--chart-ticks` is
-       how many values the author's scale produces — `Contour.chart.ticks()`
-       returns them — and a y-axis element, when the vocabulary grows one, uses
-       that same count, which is the whole point of making it a number rather
-       than a literal 25%.
-
-       It is NOT the category axis. `.c-chart__axis` below runs left-to-right
-       with `space-between` category labels (Mon…Sun); the bands are horizontal,
-       so they mark the value axis and never the category one. Measured: seven
-       category labels sit at 1.03…98.97% across, while the bands step 25% up —
-       two different axes, and no count of category labels can align with them. */
-    background-image: repeating-linear-gradient(
-      to top,
-      var(--chart-grid) 0 1px,
-      transparent 1px calc(100% / (var(--chart-ticks, 5) - 1))
-    );
-  }
 
   .c-chart__axis {
     display: flex;
@@ -878,10 +879,19 @@
   /* =======================================================================
      7. TABLE — sortable, selectable, density-aware
      ======================================================================= */
-  .c-table th[aria-sort] {
-    cursor: pointer;
-    user-select: none;
-  }
+.c-table th[aria-sort] {
+     cursor: pointer;
+     user-select: none;
+     position: relative;
+   }
+
+   .c-table th[aria-sort]:hover {
+     color: var(--color-text);
+   }
+
+   .c-table th[aria-sort]:hover .c-table__sort svg {
+     opacity: 0.7;
+   }
 
   .c-table th[aria-sort] .c-table__sort {
     display: inline-flex;

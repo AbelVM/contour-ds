@@ -141,17 +141,23 @@ import { define, MODS, REGISTERED, contourId } from './core.mjs';
       wireCopy(this);
       wireRemovable(this);
     }
-    connectedCallback() {
-      this.applyMods();
-      try { this.enhance(this.shadowRoot); } catch (e) { /* ignore */ }
-      // Re-wire behaviour when slotted content changes. Reset the wired set so
-      // behaviours can claim again now that slotted nodes exist.
-      if (this.shadowRoot) {
-        this.shadowRoot.addEventListener("slotchange", () => {
-          try { wcReset(this); this.enhance(this.shadowRoot); } catch (e) { /* ignore */ }
-        });
-      }
-    }
+connectedCallback() {
+       this.applyMods();
+       try { this.enhance(this.shadowRoot); } catch (e) { /* ignore */ }
+       // Re-wire behaviour when slotted content changes. Reset the wired set so
+       // behaviours can claim again now that slotted nodes exist.
+       //
+       // Guarded: this callback runs again whenever the host is moved in the
+       // DOM, and attaching the listener unconditionally accumulated one per
+       // move until a panel shuffled inside a tab re-wired on every slotchange
+       // it had already handled.
+       if (this.shadowRoot && !this._wiredSlotchange) {
+         this._wiredSlotchange = true;
+         this.shadowRoot.addEventListener("slotchange", () => {
+           try { wcReset(this); this.enhance(this.shadowRoot); } catch (e) { /* ignore */ }
+         });
+       }
+     }
     attributeChangedCallback() { this.applyMods(); }
     applyMods() {
       const el = this.shadowRoot.firstElementChild;

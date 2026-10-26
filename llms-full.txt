@@ -27,7 +27,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T13:14:14+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -78,7 +78,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T13:14:14+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -128,7 +128,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T13:14:14+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -165,7 +165,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T13:14:14+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -192,20 +192,21 @@ Shadows only for things that genuinely float above the page. Everything else use
 
 ## Blocks documented here
 
-6 block(s). Their facts live in `../contour.components.json`;
+7 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
 - `.c-badge`
 - `.c-btn`
 - `.c-card`
+- `.c-elevation`
 - `.c-icon-badge`
 - `.c-section-head`
 - `.c-segmented`
 
 ---
 
-Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T13:14:14+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -258,7 +259,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T13:14:14+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -291,7 +292,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T13:14:14+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -337,7 +338,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T13:14:14+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -373,7 +374,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T13:14:14+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -442,12 +443,12 @@ starts disagreeing with itself.
 - `.c-plate`
 - `.c-resizable`
 - `.c-resize-handle`
+- `.c-scroll-area`
 - `.c-section-head`
-- `.c-virtual-scroll`
 
 ---
 
-Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T13:14:14+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -478,10 +479,11 @@ On this page
 
 ## Blocks documented here
 
-20 block(s). Their facts live in `../contour.components.json`;
+21 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
+- `.c-accordion`
 - `.c-badge`
 - `.c-brand`
 - `.c-breadcrumb`
@@ -505,7 +507,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T13:14:14+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -557,7 +559,7 @@ Progress drawn as elevation rings rather than a bar — the system's own shape l
 
 ## Blocks documented here
 
-11 block(s). Their facts live in `../contour.components.json`;
+12 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
@@ -566,6 +568,7 @@ starts disagreeing with itself.
 - `.c-dot`
 - `.c-empty`
 - `.c-icon-badge`
+- `.c-loading`
 - `.c-meter`
 - `.c-progress`
 - `.c-section-head`
@@ -575,7 +578,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T13:14:14+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -641,7 +644,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T13:14:14+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -753,7 +756,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T13:14:14+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -814,7 +817,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T13:14:14+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -910,19 +913,19 @@ starts disagreeing with itself.
 - `.c-code-tabs`
 - `.c-diff`
 - `.c-do-dont`
+- `.c-file-tree`
 - `.c-icon-badge`
 - `.c-install`
 - `.c-kbd`
 - `.c-pager`
 - `.c-section-head`
 - `.c-steps`
-- `.c-tree`
 - `.c-version`
 - `.c-version-banner`
 
 ---
 
-Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T13:14:14+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -994,7 +997,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T13:14:14+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1035,7 +1038,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T13:14:14+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1212,7 +1215,7 @@ part of the component contract and nothing in an installed package defines them:
 
 ---
 
-Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T13:14:14+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1324,7 +1327,7 @@ part of the component contract and nothing in an installed package defines them:
 
 ---
 
-Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T13:14:14+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1368,7 +1371,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T13:14:14+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1442,7 +1445,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T13:14:14+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1478,7 +1481,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T13:14:14+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1495,9 +1498,15 @@ private until v1.0). See `index.json` for the whole set and the shared statement
 
 Optional progressive enhancement. Load contour-wc.js after ds.css to use contour-* and contour-shadow-* custom elements that generate their scaffolding from attributes. Light-DOM elements use the cascade directly; shadow-DOM elements ship slots and adopted stylesheets for encapsulation.
 
+Where each shape of the markup lives: §04–§22 show every block as the CSS an author writes by hand, and this section shows the same blocks as elements that generate it. The division is deliberate, not a migration left half-done. The raw markup is the contract a consumer copies, and it works with no script at all; this layer is the optional enhancement over that same contract, so a page can drop it and lose nothing but its attributes.
+
 Reactivity: every component extends ContourBase, which snapshots the author's nodes and class on first connect. An attribute change restores that snapshot, re-runs render(), and re-wires behaviour via enhance(), so authored content and listeners survive while generated nodes are rebuilt. Form values are preserved across a re-render; render bodies use ensure() for update-or-create reactivity.
 
 Composition: components never reach into one another. A host composes by nesting or slotted content, and interactive components emit bubbling contour:* CustomEvents (contour:change, contour:select, contour:copy, contour:remove, contour:page, contour:open/ contour:close) that a parent handles without coupling to internals. Shadow wrappers adopt the document's same-origin sheets once and share one parsed stylesheet across instances.
+
+One card, two ways to change it. Writing three attributes in turn rebuilds the card three times; the same three writes inside batch() rebuild it once. The count is the element's own renderCount, not a number this page keeps, so it cannot drift from what the layer did.
+
+Toggle attributes live and watch the component re-render. The alert's variant and the kpi's value are driven by the controls below; no page-level state is kept.
 
 Authored content survives re-renders.
 
@@ -1507,18 +1516,28 @@ Dialog body content.
 
 Dialog body content.
 
+## Subsections
+
+- Reactivity, counted
+- Reactivity playground
+
 ## Blocks documented here
 
-4 block(s). Their facts live in `../contour.components.json`;
+9 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
 - `.c-btn`
+- `.c-card`
+- `.c-cluster`
 - `.c-icon-badge`
 - `.c-kbd`
+- `.c-panel`
+- `.c-range`
 - `.c-section-head`
+- `.c-select`
 
 ---
 
-Source `index.html` @ `c32a41ed99dc285a` · last committed 2026-10-25T16:04:37+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T13:14:14+01:00 · no URL: the project is private until v1.0.
 

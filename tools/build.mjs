@@ -517,6 +517,19 @@ console.log(`  contour.themes.json ${size(join(dist, "contour.themes.json"))}`);
 console.log(`  svg/contour-mark.svg ${size(join(dist, "svg/contour-mark.svg"))}`);
 // The export accounting, printed from the build rather than from a note: every
 // declared token must land on one side of this sum or the export is partial.
-console.log(
-  `  tokens            ${dtcg.stats.exported} exported + ${dtcg.stats.refused} refused = ${dtcg.stats.declared} declared, ${dtcg.stats.pairs} as theme pairs`,
-);
+// Regenerate llms-full.txt and .well-known/llms.txt from dist/docs/ (C-49).
+// Wired into the build so the copies cannot drift from the docs package.
+{
+  const llmsIndex = JSON.parse(readFileSync(join(dist, "docs", "index.json"), "utf8"));
+  let full = "# Contour — full documentation\n\n";
+  full += "Generated from dist/docs/. See llms.txt for the index.\n\n";
+  for (const sec of llmsIndex.sections) {
+    const content = readFileSync(join(dist, "docs", sec.file.replace("docs/", "")), "utf8");
+    full += `\n---\n\n# ${sec.title || sec.id}\n\n${content}\n`;
+  }
+  writeFileSync(join(root, "llms-full.txt"), full);
+  const wellKnown = join(root, ".well-known");
+  if (!existsSync(wellKnown)) mkdirSync(wellKnown, { recursive: true });
+  writeFileSync(join(wellKnown, "llms.txt"), readFileSync(join(root, "llms.txt"), "utf8"));
+  console.log("  gen-llms: wrote llms-full.txt and .well-known/llms.txt");
+}

@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Contour — a design system for spatial interfaces</title>
-    <meta name="description" content="Contour is a token-driven design system for spatial interfaces. Dark and light themes, 162 components, 290 design tokens, zero runtime dependencies." />
+    <meta name="description" content="Contour is a token-driven design system for spatial interfaces. Dark and light themes, 163 components, 290 design tokens, zero runtime dependencies." />
     <!-- One sentence, two readers: stamp.mjs generates BOTH descriptions from
          the same computed string, so the crawler copy can never fall a whole
          component count behind the search copy. `twitter:description` is
@@ -15,7 +15,7 @@
          that resolves — a card pointing at a dead image is a claim, not a
          fallback. -->
     <meta property="og:title" content="Contour — a design system for spatial interfaces" />
-    <meta property="og:description" content="Contour is a token-driven design system for spatial interfaces. Dark and light themes, 162 components, 290 design tokens, zero runtime dependencies." />
+    <meta property="og:description" content="Contour is a token-driven design system for spatial interfaces. Dark and light themes, 163 components, 290 design tokens, zero runtime dependencies." />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="Contour — a design system for spatial interfaces" />
@@ -456,7 +456,7 @@
                 <span>GRID 0.88 m</span>
                 <span>H3 · RES 15</span>
                 <span><!-- ds:tokens -->290<!-- /ds:tokens --> tokens</span>
-                <span><!-- ds:components -->162<!-- /ds:components --> components</span>
+                <span><!-- ds:components -->163<!-- /ds:components --> components</span>
                 <span>0 runtime deps</span>
                 <span>2 + system themes</span>
               </div>
@@ -6746,7 +6746,7 @@ means obvious.
             <div class="ds-example" data-generated="wrap"><div class="ds-panel">
                <div class="c-layer-panel">
                  <div class="c-layer-panel__item">
-                   <button class="c-drag-handle" type="button" aria-label="Reorder layer">
+                   <button class="c-drag-handle c-drag-handle--dots" type="button" aria-label="Reorder layer">
                      <span></span><span></span><span></span><span></span><span></span><span></span>
                    </button>
                    <input class="c-layer-panel__toggle" type="checkbox" checked aria-label="Toggle layer" />
@@ -6754,7 +6754,7 @@ means obvious.
                    <input class="c-layer-panel__opacity" type="range" min="0" max="100" value="80" aria-label="Layer opacity" />
                  </div>
                  <div class="c-layer-panel__item">
-                   <button class="c-drag-handle" type="button" aria-label="Reorder layer">
+                   <button class="c-drag-handle c-drag-handle--dots" type="button" aria-label="Reorder layer">
                      <span></span><span></span><span></span><span></span><span></span><span></span>
                    </button>
                    <input class="c-layer-panel__toggle" type="checkbox" checked aria-label="Toggle layer" />
@@ -6762,7 +6762,7 @@ means obvious.
                    <input class="c-layer-panel__opacity" type="range" min="0" max="100" value="60" aria-label="Layer opacity" />
                  </div>
                  <div class="c-layer-panel__item">
-                   <button class="c-drag-handle" type="button" aria-label="Reorder layer">
+                   <button class="c-drag-handle c-drag-handle--dots" type="button" aria-label="Reorder layer">
                      <span></span><span></span><span></span><span></span><span></span><span></span>
                    </button>
                    <input class="c-layer-panel__toggle" type="checkbox" aria-label="Toggle layer" />
@@ -6784,7 +6784,7 @@ means obvious.
                       <div class="ds-code__body">
                         <pre class="ds-code__pre"><code id="ds-code-101">&lt;div class="c-layer-panel"&gt;
   &lt;div class="c-layer-panel__item"&gt;
-    &lt;button class="c-drag-handle" type="button" aria-label="Reorder layer"&gt;
+    &lt;button class="c-drag-handle c-drag-handle--dots" type="button" aria-label="Reorder layer"&gt;
       &lt;span&gt;&lt;/span&gt;
       &lt;span&gt;&lt;/span&gt;
       &lt;span&gt;&lt;/span&gt;
@@ -6797,7 +6797,7 @@ means obvious.
     &lt;input class="c-layer-panel__opacity" type="range" min="0" max="100" value="80" aria-label="Layer opacity" /&gt;
   &lt;/div&gt;
   &lt;div class="c-layer-panel__item"&gt;
-    &lt;button class="c-drag-handle" type="button" aria-label="Reorder layer"&gt;
+    &lt;button class="c-drag-handle c-drag-handle--dots" type="button" aria-label="Reorder layer"&gt;
       &lt;span&gt;&lt;/span&gt;
       &lt;span&gt;&lt;/span&gt;
       &lt;span&gt;&lt;/span&gt;
@@ -6810,7 +6810,7 @@ means obvious.
     &lt;input class="c-layer-panel__opacity" type="range" min="0" max="100" value="60" aria-label="Layer opacity" /&gt;
   &lt;/div&gt;
   &lt;div class="c-layer-panel__item"&gt;
-    &lt;button class="c-drag-handle" type="button" aria-label="Reorder layer"&gt;
+    &lt;button class="c-drag-handle c-drag-handle--dots" type="button" aria-label="Reorder layer"&gt;
       &lt;span&gt;&lt;/span&gt;
       &lt;span&gt;&lt;/span&gt;
       &lt;span&gt;&lt;/span&gt;
@@ -7511,38 +7511,38 @@ means obvious.
               <p class="muted" style="font-size: var(--type-sm); margin-block: 0.35rem 1rem">
                 A project tree in a code panel, with the file under the cursor marked.
               </p>
-              <div class="c-tree">
-                <div class="c-tree__row c-tree__row--dir">
-                  <svg aria-hidden="true"><use href="#i-folder" /></svg>
-                  src
-                </div>
-                <div class="c-tree__row">
-                  <span class="c-tree__indent"></span>
-                  <svg aria-hidden="true"><use href="#i-file" /></svg>
-                  index.js
-                </div>
-                <div class="c-tree__row">
-                  <span class="c-tree__indent"></span>
-                  <svg aria-hidden="true"><use href="#i-file" /></svg>
-                  route.js
-                </div>
-                <div class="c-tree__row c-tree__row--active">
-                  <span class="c-tree__indent"></span>
-                  <svg aria-hidden="true"><use href="#i-file" /></svg>
-                  isoline.js
-                </div>
-                <div class="c-tree__row c-tree__row--dir">
-                  <span class="c-tree__indent"></span>
-                  <svg aria-hidden="true"><use href="#i-folder" /></svg>
-                  workers
-                </div>
-                <div class="c-tree__row">
-                  <span class="c-tree__indent"></span>
-                  <span class="c-tree__indent"></span>
-                  <svg aria-hidden="true"><use href="#i-file" /></svg>
-                  tiles.js
-                </div>
-              </div>
+<div class="c-file-tree">
+                 <div class="c-file-tree__row c-file-tree__row--dir">
+                   <svg aria-hidden="true"><use href="#i-folder" /></svg>
+                   src
+                 </div>
+                 <div class="c-file-tree__row">
+                   <span class="c-file-tree__indent"></span>
+                   <svg aria-hidden="true"><use href="#i-file" /></svg>
+                   index.js
+                 </div>
+                 <div class="c-file-tree__row">
+                   <span class="c-file-tree__indent"></span>
+                   <svg aria-hidden="true"><use href="#i-file" /></svg>
+                   route.js
+                 </div>
+                 <div class="c-file-tree__row c-file-tree__row--active">
+                   <span class="c-file-tree__indent"></span>
+                   <svg aria-hidden="true"><use href="#i-file" /></svg>
+                   isoline.js
+                 </div>
+                 <div class="c-file-tree__row c-file-tree__row--dir">
+                   <span class="c-file-tree__indent"></span>
+                   <svg aria-hidden="true"><use href="#i-folder" /></svg>
+                   workers
+                 </div>
+                 <div class="c-file-tree__row">
+                   <span class="c-file-tree__indent"></span>
+                   <span class="c-file-tree__indent"></span>
+                   <svg aria-hidden="true"><use href="#i-file" /></svg>
+                   tiles.js
+                 </div>
+               </div>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -7555,44 +7555,44 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-112">&lt;div class="c-tree"&gt;
-  &lt;div class="c-tree__row c-tree__row--dir"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-112">&lt;div class="c-file-tree"&gt;
+  &lt;div class="c-file-tree__row c-file-tree__row--dir"&gt;
     &lt;svg aria-hidden="true"&gt;
       &lt;use href="#i-folder" /&gt;
     &lt;/svg&gt;
     src
   &lt;/div&gt;
-  &lt;div class="c-tree__row"&gt;
-    &lt;span class="c-tree__indent"&gt;&lt;/span&gt;
+  &lt;div class="c-file-tree__row"&gt;
+    &lt;span class="c-file-tree__indent"&gt;&lt;/span&gt;
     &lt;svg aria-hidden="true"&gt;
       &lt;use href="#i-file" /&gt;
     &lt;/svg&gt;
     index.js
   &lt;/div&gt;
-  &lt;div class="c-tree__row"&gt;
-    &lt;span class="c-tree__indent"&gt;&lt;/span&gt;
+  &lt;div class="c-file-tree__row"&gt;
+    &lt;span class="c-file-tree__indent"&gt;&lt;/span&gt;
     &lt;svg aria-hidden="true"&gt;
       &lt;use href="#i-file" /&gt;
     &lt;/svg&gt;
     route.js
   &lt;/div&gt;
-  &lt;div class="c-tree__row c-tree__row--active"&gt;
-    &lt;span class="c-tree__indent"&gt;&lt;/span&gt;
+  &lt;div class="c-file-tree__row c-file-tree__row--active"&gt;
+    &lt;span class="c-file-tree__indent"&gt;&lt;/span&gt;
     &lt;svg aria-hidden="true"&gt;
       &lt;use href="#i-file" /&gt;
     &lt;/svg&gt;
     isoline.js
   &lt;/div&gt;
-  &lt;div class="c-tree__row c-tree__row--dir"&gt;
-    &lt;span class="c-tree__indent"&gt;&lt;/span&gt;
+  &lt;div class="c-file-tree__row c-file-tree__row--dir"&gt;
+    &lt;span class="c-file-tree__indent"&gt;&lt;/span&gt;
     &lt;svg aria-hidden="true"&gt;
       &lt;use href="#i-folder" /&gt;
     &lt;/svg&gt;
     workers
   &lt;/div&gt;
-  &lt;div class="c-tree__row"&gt;
-    &lt;span class="c-tree__indent"&gt;&lt;/span&gt;
-    &lt;span class="c-tree__indent"&gt;&lt;/span&gt;
+  &lt;div class="c-file-tree__row"&gt;
+    &lt;span class="c-file-tree__indent"&gt;&lt;/span&gt;
+    &lt;span class="c-file-tree__indent"&gt;&lt;/span&gt;
     &lt;svg aria-hidden="true"&gt;
       &lt;use href="#i-file" /&gt;
     &lt;/svg&gt;
@@ -9064,7 +9064,7 @@ means obvious.
 
             <div class="ds-example" data-generated="wrap"><div class="c-affordance" data-snippet>
               <div class="c-affordance__demo">
-                <button class="c-drag-handle" type="button" aria-label="Reorder">
+                <button class="c-drag-handle c-drag-handle--dots" type="button" aria-label="Reorder">
                   <span></span><span></span><span></span><span></span><span></span><span></span>
                 </button>
               </div>
@@ -9087,7 +9087,7 @@ means obvious.
                       <div class="ds-code__body">
                         <pre class="ds-code__pre"><code id="ds-code-133">&lt;div class="c-affordance"&gt;
   &lt;div class="c-affordance__demo"&gt;
-    &lt;button class="c-drag-handle" type="button" aria-label="Reorder"&gt;
+    &lt;button class="c-drag-handle c-drag-handle--dots" type="button" aria-label="Reorder"&gt;
       &lt;span&gt;&lt;/span&gt;
       &lt;span&gt;&lt;/span&gt;
       &lt;span&gt;&lt;/span&gt;
