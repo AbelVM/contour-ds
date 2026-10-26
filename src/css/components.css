@@ -1089,6 +1089,8 @@
   }
 
   .c-card {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 200px;
     container-type: inline-size;
     position: relative;
     display: flex;
@@ -2329,6 +2331,8 @@
      17. ALERTS / CALLOUTS
      ======================================================================= */
   .c-alert {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 120px;
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
     gap: 0.75rem;
@@ -2602,6 +2606,8 @@
   }
 
   .c-empty {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 200px;
     display: grid;
     justify-items: center;
     gap: 0.5rem;

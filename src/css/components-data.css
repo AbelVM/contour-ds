@@ -217,6 +217,8 @@
      blanks the screen.
      ======================================================================= */
   .c-panel {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 200px;
     /* The grip is `position: absolute` with `inset-block: 0`, so it needs the
        panel as its containing block. `container-type: inline-size` does not
        provide one in Chromium — measured, the grip resolved against the
