@@ -11253,8 +11253,9 @@ means obvious.
               <span class="label">Install · 22</span>
               <h2 class="c-section-head__title">Install</h2>
               <p class="c-section-head__desc">
-                Plain CSS in <code class="c-kbd">src/</code>, one entry point, no build
-                step and no runtime. Link it and start using the class names.
+                One entry point, no runtime. Install from npm for the bundled
+                <code class="c-kbd">dist/</code> deliverables, or link
+                <code class="c-kbd">src/css/ds.css</code> straight off a disk.
               </p>
             </div>
           </div>
@@ -11285,8 +11286,13 @@ means obvious.
             <div class="ds-install__row">
               <span class="ds-install__key">Files</span>
               <span>
-                Everything ships in <code class="c-kbd">src/</code>.
-                <code class="c-kbd">src/css/ds.css</code> is the entry point.
+                From a checkout, everything ships in <code class="c-kbd">src/</code> and
+                <code class="c-kbd">src/css/ds.css</code> is the entry point. From npm,
+                the same system ships as <code class="c-kbd">dist/contour.min.css</code>
+                (and per-surface bundles under <code class="c-kbd">dist/surfaces/</code>),
+                plus ESM builds (<code class="c-kbd">contour.esm.js</code>,
+                <code class="c-kbd">contour-wc.esm.js</code>) and the
+                <code class="c-kbd">dist/wc/*.mjs</code> modules for tree-shaking.
                 <code class="c-kbd">tokens.css</code> — primitives, semantic layer, type, space,
                 radius, motion, chart and density tokens.
                 <code class="c-kbd">base.css</code> — reset, theme bridge, typography.
@@ -11329,11 +11335,13 @@ means obvious.
             <div class="ds-install__row">
               <span class="ds-install__key">Assets</span>
               <span>
-                Everything ships in <code class="c-kbd">src/</code>.
+                From a checkout, everything ships in <code class="c-kbd">src/</code>:
                 <code class="c-kbd">src/js/ds.js</code> is optional progressive enhancement and
-                <code class="c-kbd">src/svg/contour-mark.svg</code> is the brand mark. The style
-                guide's own shell lives in <code class="c-kbd">assets/css/docs.css</code> and is not
-                part of the system.
+                <code class="c-kbd">src/svg/contour-mark.svg</code> is the brand mark. From npm,
+                the same assets ship under <code class="c-kbd">dist/</code>
+                (<code class="c-kbd">dist/svg/</code>, <code class="c-kbd">dist/fonts/</code>).
+                The style guide's own shell lives in <code class="c-kbd">assets/css/docs.css</code>
+                and is not part of the system.
               </span>
             </div>
             <div class="ds-install__row">
