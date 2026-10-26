@@ -11451,6 +11451,31 @@ means obvious.
             </div>
           </div>
 
+          <div class="c-panel" data-wc-playground>
+            <h3 class="c-panel__title">Reactivity playground</h3>
+            <p class="c-panel__body">
+              Toggle attributes live and watch the component re-render. The alert's
+              <code class="c-kbd">variant</code> and the kpi's <code class="c-kbd">value</code>
+              are driven by the controls below; no page-level state is kept.
+            </p>
+            <contour-alert data-wc-pg-alert variant="info" title="Heads up" body="Status message"></contour-alert>
+            <div class="c-cluster">
+              <label class="c-field__label" for="wc-pg-variant">Variant</label>
+              <select class="c-select" id="wc-pg-variant" data-wc-pg-variant>
+                <option value="info">info</option>
+                <option value="success">success</option>
+                <option value="warning">warning</option>
+                <option value="danger">danger</option>
+              </select>
+            </div>
+            <contour-kpi data-wc-pg-kpi label="Live value" value="0"></contour-kpi>
+            <div class="c-cluster">
+              <label class="c-field__label" for="wc-pg-value">Value</label>
+              <input class="c-range" type="range" id="wc-pg-value" min="0" max="100" value="0" data-wc-pg-value />
+              <span class="u-mono" data-wc-pg-valuetext>0</span>
+            </div>
+          </div>
+
           <div class="ds-spec">
             <div class="ds-spec__head">
               <span class="ds-spec__name">Light DOM card</span>

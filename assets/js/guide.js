@@ -51,6 +51,30 @@
   if (window.customElements?.get("contour-kpi")) wcDemo();
   else window.addEventListener("contour:ready", wcDemo, { once: true });
 
+  const wcPlayground = () => {
+    const panel = $("[data-wc-playground]");
+    if (!panel) return;
+    const alert = $("[data-wc-pg-alert]", panel);
+    const variantSel = $("[data-wc-pg-variant]", panel);
+    const kpi = $("[data-wc-pg-kpi]", panel);
+    const range = $("[data-wc-pg-value]", panel);
+    const valueText = $("[data-wc-pg-valuetext]", panel);
+    if (variantSel && alert) {
+      variantSel.addEventListener("change", () => {
+        alert.setAttribute("variant", variantSel.value);
+      });
+    }
+    if (range && kpi) {
+      range.addEventListener("input", () => {
+        kpi.setAttribute("value", range.value);
+        if (valueText) valueText.textContent = range.value;
+      });
+    }
+  };
+
+  if (window.customElements?.get("contour-alert")) wcPlayground();
+  else window.addEventListener("contour:ready", wcPlayground, { once: true });
+
   const disclosures = $$("details.ds-code");
   if (!disclosures.length) return;
 
