@@ -266,6 +266,11 @@ const js = readFileSync(join(root, "src/js/ds.js"), "utf-8");
 writeFileSync(join(dist, "contour.js"), js, "utf-8");
 writeFileSync(join(dist, "contour.min.js"), `${minifyJs(js)}\n`, "utf-8");
 
+// ESM variant of the enhancement script (side-effectful; registers behaviour on import).
+const jsEsm = `${js}\nexport {};\n`;
+writeFileSync(join(dist, "contour.esm.js"), jsEsm, "utf-8");
+writeFileSync(join(dist, "contour.esm.min.js"), `${minifyJs(jsEsm)}\n`, "utf-8");
+
 // -- Web components (optional progressive enhancement) ---------------------
 // Source lives as ES modules under src/js/wc/; bundle into a classic script.
 const wcFragNames = [
@@ -284,6 +289,28 @@ const wcBody = wcFrags.map((f) => stripWc(readFileSync(join(root, "src/js/wc", f
 const wc = `(function () {\n  "use strict";\n${wcBody}\n})();\n`;
 writeFileSync(join(dist, "contour-wc.js"), wc, "utf-8");
 writeFileSync(join(dist, "contour-wc.min.js"), `${minifyJs(wc)}\n`, "utf-8");
+
+// -- Web components (ESM modules, preserved for tree-shaking) --------------
+// Copy the source modules verbatim so a bundler can import only what it needs.
+const wcOutDir = join(dist, "wc");
+mkdirSync(wcOutDir, { recursive: true });
+for (const f of wcFragNames) {
+  copyFileSync(join(root, "src/js/wc", f), join(wcOutDir, f));
+}
+copyFileSync(join(root, "src/js/wc/index.mjs"), join(wcOutDir, "index.mjs"));
+
+// -- Web components (ESM bundle, tree-shakeable) ---------------------------
+// Same fragments, but kept as an ES module: imports are dropped (everything
+// is inlined) while `export` declarations survive, so a bundler can drop
+// unused exports. Registration side effects still run on import.
+function stripWcEsm(code) {
+  code = code.replace(/^\s*import\s+[^;]*;?\s*$/gm, "");
+  return code;
+}
+const wcEsmBody = wcFrags.map((f) => stripWcEsm(readFileSync(join(root, "src/js/wc", f), "utf-8"))).join("\n");
+const wcEsm = `${wcEsmBody}\n`;
+writeFileSync(join(dist, "contour-wc.esm.js"), wcEsm, "utf-8");
+writeFileSync(join(dist, "contour-wc.esm.min.js"), `${minifyJs(wcEsm)}\n`, "utf-8");
 
 // -- TypeScript definitions ------------------------------------------------
 const { inventory: invFn } = await import("./lib/inventory.mjs");

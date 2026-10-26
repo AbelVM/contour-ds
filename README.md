@@ -41,6 +41,20 @@ For progressive enhancement, the built web-component layer is a classic script r
 than a module, so it loads with a plain tag — `dist/contour-wc.js`, minified in
 `dist/contour-wc.min.js`, published as `contour-ds/contour-wc.js`.
 
+### ESM (tree-shakeable)
+
+For bundler consumers, ESM builds are available so unused exports can be dropped:
+
+```js
+import "contour-ds/contour-wc.esm.js";          // registers every custom element
+// or, for tree-shaking of individual modules:
+import "contour-ds/wc/forms.mjs";
+```
+
+The classic `contour-wc.js` remains the recommended entry for a plain `<script>` tag
+off disk; the ESM build is for bundlers. Both register the same custom elements as a
+side effect on import.
+
 ### From a checkout — no build step, no dependency
 
 `src/css/ds.css` chains the sheets with relative `@import` statements, so a page can link

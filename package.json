@@ -63,7 +63,12 @@
     "./map-chrome/mapbox": "./dist/map-chrome.mapbox.css",
     "./map-chrome/maplibre": "./dist/map-chrome.maplibre.css",
     "./contour-wc.js": "./dist/contour-wc.js",
-    "./contour-wc.min.js": "./dist/contour-wc.min.js"
+    "./contour-wc.min.js": "./dist/contour-wc.min.js",
+    "./contour.esm.js": "./dist/contour.esm.js",
+    "./contour.esm.min.js": "./dist/contour.esm.min.js",
+    "./contour-wc.esm.js": "./dist/contour-wc.esm.js",
+    "./contour-wc.esm.min.js": "./dist/contour-wc.esm.min.js",
+    "./wc/*": "./dist/wc/*"
   },
   "sideEffects": [
     "*.css",
@@ -78,7 +83,7 @@
     "playwright-core": "1.64.1",
     "html-validate": "11.17.0"
   },
-  "author": "Abel Vázquez Montoro",
+  "author": "Abel V\u00e1zquez Montoro",
   "repository": {
     "type": "git",
     "url": "https://github.com/AbelVM/contour-ds.git"
