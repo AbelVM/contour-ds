@@ -14,7 +14,7 @@ class ContourAvatar extends ContourBase {
       if (name) {
         const initials = name.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2);
         // Only set if no authored content
-        if (!this.textContent.trim()) this.textContent = initials;
+        if (!this.hasChildNodes()) this.textContent = initials;
       }
     }
   }
@@ -29,7 +29,7 @@ class ContourBadgeFull extends ContourBase {
       if (variant) this.classList.add("c-badge--" + variant);
       const label = this.getAttribute("label");
       if (label) {
-        if (!this.textContent.trim()) this.textContent = label;
+        if (!this.hasChildNodes()) this.textContent = label;
       }
     }
   }
@@ -128,7 +128,7 @@ class ContourPill extends ContourBase {
       if (variant) this.classList.add("c-pill--" + variant);
       const label = this.getAttribute("label");
       if (label) {
-        if (!this.textContent.trim()) this.textContent = label;
+        if (!this.hasChildNodes()) this.textContent = label;
       }
       if (this.hasAttribute("live")) this.classList.add("c-pill--live");
     }
@@ -141,7 +141,7 @@ class ContourKbd extends ContourBase {
       this.classList.add("c-kbd");
       const key = this.getAttribute("key");
       if (key) {
-        if (!this.textContent.trim()) this.textContent = key;
+        if (!this.hasChildNodes()) this.textContent = key;
       }
     }
   }
@@ -167,9 +167,7 @@ class ContourTooltip extends ContourBase {
       this.classList.add("c-tooltip");
       if (!this.hasAttribute("popover")) this.setAttribute("popover", "hint");
       const text = this.getAttribute("text");
-      if (text !== null && !this.querySelector("*") && !this.textContent.trim()) {
-        this.textContent = text;
-      } else if (text !== null && !this.querySelector("*")) {
+      if (text !== null && !this.hasChildNodes()) {
         this.textContent = text;
       }
     }
@@ -222,6 +220,9 @@ class ContourProgress extends ContourBase {
         this._progressAriaValue = null;
       } else {
         const num = Number(value);
+        // Accept both 0-1 (fraction) and 0-100 (percentage). A value <= 1
+        // without a decimal point is treated as a percentage (e.g. "50" → 50%).
+        // A value <= 1 with a decimal point is treated as a fraction (e.g. "0.5" → 50%).
         const pct = Number.isFinite(num) ? (num <= 1 && value.includes(".") ? num * 100 : num) : 0;
         const pctStr = Math.max(0, Math.min(100, pct)) + "%";
         this.style.setProperty("--progress", pctStr);
@@ -268,7 +269,7 @@ class ContourVersionBannerFull extends ContourBase {
     render() {
       this.classList.add("c-version-banner");
       const message = this.getAttribute("message");
-      if (message && !this.textContent.trim()) {
+      if (message && !this.hasChildNodes()) {
         const icon = document.createElement("svg");
         icon.setAttribute("aria-hidden", "true");
         icon.innerHTML = '<use href="#i-info" />';
@@ -335,7 +336,7 @@ class ContourDatamark extends ContourBase {
       const unit = this.getAttribute("unit");
       const label = this.getAttribute("label");
       const text = value || label;
-      if (text && !this.querySelector("*") && !this.textContent.trim()) {
+      if (text && !this.hasChildNodes()) {
         this.textContent = text;
         if (unit) {
           const u = document.createElement("span");
@@ -353,7 +354,7 @@ class ContourDestructiveHint extends ContourBase {
     render() {
       this.classList.add("c-destructive-hint");
       const text = this.getAttribute("text");
-      if (text && !this.querySelector("*") && !this.textContent.trim()) this.textContent = text;
+      if (text && !this.hasChildNodes()) this.textContent = text;
     }
   }
   define("contour-destructive-hint", ContourDestructiveHint);
@@ -398,14 +399,13 @@ class ContourLiveBadge extends ContourBase {
       // Remove previous state modifiers.
       Array.from(this.classList).forEach((c) => { if (c.startsWith("c-live-badge--")) this.classList.remove(c); });
       const state = this.getAttribute("state");
-      Array.from(this.classList).forEach((c) => { if (c.startsWith("c-live-badge--")) this.classList.remove(c); });
       if (state) {
         this.classList.add("c-live-badge--" + state);
       } else if (this.hasAttribute("live")) {
         this.classList.add("c-live-badge--connected");
       }
       const label = this.getAttribute("label");
-      if (label && !this.querySelector("*") && !this.textContent.trim()) this.textContent = label;
+      if (label && !this.hasChildNodes()) this.textContent = label;
     }
   }
   define("contour-live-badge", ContourLiveBadge);

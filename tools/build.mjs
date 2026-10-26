@@ -269,7 +269,7 @@ writeFileSync(join(dist, "contour.min.js"), `${minifyJs(js)}\n`, "utf-8");
 // -- Web components (optional progressive enhancement) ---------------------
 // Source lives as ES modules under src/js/wc/; bundle into a classic script.
 const wcFragNames = [
-  "core.mjs", "behaviours.mjs", "content.mjs", "dashboard.mjs", "data.mjs", "docs.mjs",
+  "core.mjs", "svg.mjs", "behaviours.mjs", "content.mjs", "dashboard.mjs", "data.mjs", "docs.mjs",
   "feedback.mjs", "forms.mjs", "interaction.mjs", "layout.mjs", "map.mjs",
   "misc.mjs", "navigation.mjs", "ui.mjs", "registration.mjs", "shadow.mjs",
 ];

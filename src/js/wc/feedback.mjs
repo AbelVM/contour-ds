@@ -99,6 +99,17 @@ class ContourAlert extends ContourBase {
       }
     }
   }
+  ContourAlert.prototype.enhance = function() {
+    if (this._wiredAlert) return;
+    this._wiredAlert = true;
+    this.addEventListener("click", (e) => {
+      const btn = e.target && e.target.closest ? e.target.closest(".c-alert__close") : null;
+      if (!btn || !this.contains(btn)) return;
+      e.preventDefault();
+      this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true }));
+      this.remove();
+    });
+  };
   define("contour-alert", ContourAlert);
 class ContourDisclosure extends ContourBase {
     static get observed() { return ["summary", "icon"]; }
@@ -405,7 +416,7 @@ class ContourToast extends ContourBase {
       if (!this.hasAttribute("aria-live")) this.setAttribute("aria-live", "polite");
       if (!this.hasAttribute("aria-atomic")) this.setAttribute("aria-atomic", "true");
       const message = this.getAttribute("message");
-      if (message && !this.textContent.trim()) {
+      if (message && !this.hasChildNodes()) {
         this.textContent = message;
       }
       const variant = this.getAttribute("variant");

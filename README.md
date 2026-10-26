@@ -1,49 +1,119 @@
 # Contour
 
+[![npm version](https://img.shields.io/npm/v/contour-ds?label=npm)](https://www.npmjs.com/package/contour-ds)
+[![jsDelivr](https://img.shields.io/jsdelivr/npm/hm/contour-ds?label=jsDelivr)](https://cdn.jsdelivr.net/npm/contour-ds/dist/contour.min.css)
+
 A token-driven design system for **spatial interfaces** — routing engines, pedestrian
 simulators, map tooling and geospatial dashboards.
 
-<!-- ds:components-line -->163 components, 290 design tokens<!-- /ds:components-line -->, dark and light themes, zero runtime dependencies, no build
-step. Three surfaces share one token layer, one type scale and one set of affordance rules: a
-landing page that has to persuade, a documentation site that has to explain, and a dashboard that
-has to be read at speed.
+<!-- ds:components-line -->163 components, 290 design tokens<!-- /ds:components-line -->, dark and light themes, zero runtime dependencies, no build step.
 
-The [style guide](index.html) is the specification and the test suite. This file is the
-reference.
-
-## Contents
-
-- [Install](#install) · [Surfaces](#surfaces) · [Principles](#principles) · [Tokens](#tokens)
-- [Theming](#theming) · [Colour](#colour) · [Typography](#typography)
-- [Components](#components) · [Data](#data) · [Accessibility](#accessibility)
-- [Browser support](#browser-support) · [Repository](#repository) · [Commands](#commands)
-
----
+The [style guide](index.html) is the specification and the test suite.
 
 ## Install
 
-**For production, use the bundle.** `src/css/ds.css` is a chain of
-`@import` statements — one extra request per sheet, a waterfall on the critical
-path. Which sheets, and in what order, is not typed here:
-`node tools/check-claims.mjs` reads that list from `ds.css` and fails if the
-list below drifts from it. The bundle is one file:
-
-```html
-<link rel="stylesheet" href="dist/contour.css" />
+```bash
+npm install contour-ds
 ```
 
-**How to get it.** Two supported paths, pick one:
+The tarball ships `dist/` and `src/`: `prepack` runs `node tools/build.mjs`, so the
+bundle beside the source is derived from it, never hand-copied.
 
-- **`npm install contour-ds`** — runs `prepack` (`node tools/build.mjs`) and
-  ships `dist/` plus `src/`. The package's `main`/`style` resolve to
-  `dist/contour.css`, so a bundler import lands on the bundle.
-- **Read `src/` directly** — link `src/css/ds.css` off disk or copy the
-  folder. No build step, no dependency. `dist/` is gitignored and
-  `check-dist` refuses a *stale* bundle but not a *missing* one, so a
-  consumer who wants the bundle must build it.
+### From the package
 
-Or, if you are inlining layers with a bundler, import them in this order
-(`ds.css` declares the same order):
+Import by specifier — the `exports` map in `package.json` is the published surface, and
+`contour-ds/dist/contour.css` does **not** resolve, because no key under `./dist/` is
+exposed:
+
+```css
+@import "contour-ds/contour.min.css";               /* every layer, in cascade order */
+@import "contour-ds/surfaces/contour-data.min.css";  /* or -core, -docs, -landing */
+@import "contour-ds/hljs.css";                      /* optional companion, not in the bundle */
+@import "contour-ds/map-chrome/maplibre";           /* or /mapbox */
+```
+
+`main`, `style` and the bare `exports["."]` condition resolve to the **unminified**
+`dist/contour.css`, so a consumer who cares about weight names `contour.min.css`
+explicitly. The machine-readable documents ride that same map: `contour-ds/tokens.json`,
+`contour-ds/themes.json`, `contour-ds/components.json`.
+
+For progressive enhancement, the built web-component layer is a classic script rather
+than a module, so it loads with a plain tag — `dist/contour-wc.js`, minified in
+`dist/contour-wc.min.js`, published as `contour-ds/contour-wc.js`.
+
+### From a checkout — no build step, no dependency
+
+`src/css/ds.css` chains the sheets with relative `@import` statements, so a page can link
+the source off a disk or copy the folder:
+
+```html
+<link rel="stylesheet" href="src/css/ds.css" />
+<script src="src/js/ds.js" defer></script>  <!-- optional -->
+```
+
+### The bundle
+
+That chain costs a request per sheet, a waterfall on the critical path, so ship one file.
+A clone has no `dist/` — it is build output, and gitignored — so build it:
+
+```bash
+node tools/build.mjs
+```
+
+```html
+<link rel="stylesheet" href="dist/contour.min.css" />
+<script src="dist/contour.min.js" defer></script>  <!-- optional -->
+```
+
+`dist/contour.css` is the same bundle unminified, for reading a cascade in devtools.
+`dist/surfaces/` carries one bundle per surface — `contour-core`, `contour-docs`,
+`contour-data`, `contour-landing` — so a product that ships one surface stops downloading
+the other three. `node tools/check-size.mjs` prints the weight of each against its
+budget; the figures are not restated here, because a hand-copied number rots the moment a
+sheet changes.
+
+The CSS bundles — full and per-surface — pull the self-hosted fonts from `dist/fonts/`
+beside them, so take the two together. `hljs.css` and `map-chrome.*.css` are the
+exceptions: they reference no font. `node tools/build.mjs --single` additionally writes
+`contour.single.min.css`, the minified CSS with those fonts inlined as data URIs, for a
+consumer that must ship exactly one file.
+
+### What ships
+
+`node tools/build.mjs` writes `dist/`, and every file below is in the tarball. They are
+listed here because `node tools/check-dist.mjs` fails when a shipped artifact is named by
+no document — a bundle nobody names is a bundle nobody finds.
+
+| File | What it is |
+|---|---|
+| `contour.css` / `contour.min.css` | every layer, in cascade order |
+| `contour.js` / `contour.min.js` | the optional enhancement script |
+| `contour-wc.js` / `contour-wc.min.js` | the web components, as a classic script |
+| `contour.d.ts` | TypeScript definitions: element names, token names, the public API |
+| `contour.single.min.css` | opt-in `--single`: the minified CSS with the fonts inlined |
+| `surfaces/contour-core.min.css` | one bundle per surface, beside `-docs`, `-data`, `-landing` |
+| `fonts/` | the self-hosted woff2 files the CSS references |
+| `hljs.css` | the optional highlight.js companion, kept out of the bundle |
+| `svg/contour-mark.svg` | the brand mark |
+| `contour.tokens.json` | the token layer as a **DTCG 2025.10 Format** document |
+| `contour.themes.json` | the dark half of every `light-dark()` pair, as a **Resolver** document |
+| `contour.components.json` | the component contract: blocks, elements, variants, states, and the custom properties each one reads |
+| `docs/index.json` | the guide's prose as a machine-readable package, one file per section, re-derived from `index.html` |
+| `registry/registry.json` | a shadcn registry: one item per surface, pointing at the bundles rather than copying them |
+| `agent-rules.json` | the constraints for a machine generating UI, each naming the gate that enforces it |
+| `map-chrome.maplibre.css` / `map-chrome.mapbox.css` | the map control chrome, re-keyed per engine |
+| `map-chrome-contract.json` | the tokens those controls are re-keyed onto |
+| `build-manifest.json` | the sources and outputs of the build that wrote the directory |
+
+`node tools/check-export.mjs`, `check-components.mjs`, `check-docs.mjs` and
+`check-registry.mjs` each re-derive their artifact from `src/` and `index.html`, so a
+stale `dist/` fails the build instead of shipping. That is also why `dist/` is never
+committed: it is a derivation, and a committed copy is a second source of truth that the
+gates above exist to catch.
+
+## Bundler import order
+
+If inlining layers with a bundler, import them in this order (`ds.css` declares the same order):
 
 ```css
 @import "src/css/fonts.css";
@@ -57,647 +127,125 @@ Or, if you are inlining layers with a bundler, import them in this order
 @import "src/css/patterns.css" layer(components);
 @import "src/css/utilities.css" layer(utilities);
 @import "src/css/light-dark-fallback.css";
-
-/* Last, and with no layer() clause: it declares its own layers, because it
-   writes into two of them. An engine without light-dark() needs it — see
-   Browser support. It must be listed after the sheets whose values it re-points,
-   because within a layer the later declaration wins. */
 ```
 
-**`tokens.css` and `base.css` are not optional.** A product that takes only
-`components-data.css` gets no tokens, no reset, no typography and no focus
-ring. The component layer is split by audience, so a product that needs one
-surface takes one *component* file — but it still needs the two foundation
-files above it:
+The package does not expose this chain sheet by sheet — take one entry point from
+`contour-ds/contour.min.css`, or one surface from `contour-ds/surfaces/…`, as shown in
+Install. Re-ordering the layers is the build's job, owned by `src/css/ds.css` and checked
+by `node tools/check-claims.mjs`.
 
-```css
-@import "src/css/tokens.css" layer(tokens);
-@import "src/css/base.css" layer(base);
-@import "src/css/components-data.css" layer(components);  /* or -docs, or -landing */
-```
-
-`patterns.css` holds the composed shells (landing hero, docs shell, dash
-shell). `utilities.css` is the single-purpose helpers.
+## Quick start
 
 ```html
 <button class="c-btn c-btn--primary">Compute route</button>
+
+<div class="c-kpi">
+  <div class="c-kpi__value">42</div>
+  <div class="c-kpi__label">Routes matched</div>
+</div>
+
+<contour-card title="Hello">
+  <p>Slotted content survives re-renders.</p>
+</contour-card>
 ```
-
-**Fonts** — self-hosted variable IBM Plex (Sans, Mono) plus the Condensed weights used by
-the display scale, subsetted to Latin + Latin Extended and served under renamed family names
-(`Contour Plex Sans`, `Contour Plex Mono`, `Contour Plex Sans Condensed`). The files live in
-`src/css/fonts/` (and `dist/fonts/` after a build) with the OFL text beside them; `ds.css`
-loads them through `src/css/fonts.css`, so a consumer who links `ds.css` gets them with no
-third-party request. `display=swap` is retained on every `@font-face`. The system degrades to
-system UI fonts without them.
-
-**Icons** — Contour ships no icon set. Icons are the consumer's; the system's components use
-inline SVG with a 16 px grid and one stroke weight, so any icon set drawn on that grid will
-match. The guide's own sprite is guide-only and does not ship (T-40).
-
-**Behaviour** — optional. `src/js/ds.js` adds a command palette, a theme toggle, sortable
-tables, tabs and range output. Every page works without it. It also exposes a small public
-API on `window.Contour` (`version`, `toast`, `setScheme`, `scrollTo`, `copy`, `chart`, `commands`) for consumers who want
-to drive the system's own feedback and navigation from their own code.
-
-```html
-<script src="src/js/ds.js" defer></script>
-```
-
-**Bundle** — `node tools/build.mjs` writes `dist/`:
-
-| File | Contents |
-|---|---|
-| `contour.css` / `contour.min.css` | Every layer, in cascade order |
-| `contour.single.min.css` | Opt-in (`--single`): the minified CSS with the self-hosted fonts inlined as data URIs, so a consumer can ship one file. ~260 kB larger; off by default |
-| `contour.single.html` | Opt-in (`--single`): a one-file drop with the CSS (fonts inlined) and JS inlined |
-| `contour.single.min.js` | Opt-in (`--single-js`): a copy of the minified JS under the single.* prefix |
-| `contour.js` / `contour.min.js` | The optional enhancement |
-| `contour.d.ts` | TypeScript definitions: component class names, token names, and the `ContourAPI` interface for `window.Contour` |
-| `contour.tokens.json` | The token layer as a **DTCG 2025.10 Format** document — colours as `{ colorSpace, components }`, aliases kept as `{references}` so the lineage survives serialisation, and every declared value the Format Module cannot express named in a ledger with its reason instead of dropped |
-| `contour.themes.json` | The dark branch of every `light-dark()` pair, as a **DTCG 2025.10 Resolver** document. A Format token has exactly one value, so the theme axis cannot live in it: `contour.tokens.json` *is* the light theme, and applying this set over it gives the dark one |
-| `contour.components.json` | The **component contract**: every block in `src/css` with its elements, variants and the states its selectors actually carry, the custom properties it reads split into three kinds that behave differently — `tokens`, which the token layer declares, so re-pointing one from `:root` moves every block that reads it; `vars`, which some other sheet defaults for the block itself (`.c-btn` sets its own `--btn-bg`, so that one is retargeted on the block and a `:root` declaration cannot win against it); and `inputs`, which the system never defines at all, so they resolve to their fallback until a host supplies them. The last kind is listed per block but deliberately absent from the token→block index: `--c` reaches `.c-chart` through the markup, not through a vocabulary the stylesheet ever built. Contour's own shape, not a schema another tool reads; enforced by `node tools/check-components.mjs`, which fails unless the shipped bytes equal a fresh derivation and every name in it resolves in `src/css` |
-| `docs/` (with `docs/index.json`) | A machine-readable copy of the style guide: one markdown file per section, plus an index that lists them in guide order. Every sentence in it is the guide's own prose quoted from its DOM and every count is read from the inventory — the generator writes no description of its own, because an authored claim has no author and no gate. `docs/index.json` publishes the blocks that no section documents rather than dropping them, carries the token census as the table `node tools/stamp.mjs` already computes (taken from stamp, never recomputed here), and dates itself from git rather than from the build — a generation timestamp would move every shipped byte on every rebuild, and would claim a freshness the file cannot show. No URL appears anywhere in the package: the project is private until v1.0, so an installed copy must not point a reader at a page that 404s. Generated by `node tools/build.mjs` from `index.html` and enforced by `node tools/check-docs.mjs`, which re-derives every shipped byte, compares every paragraph against the guide, resolves every block a doc names against `contour.components.json`, reconciles the census table's own rows against its total and against the inventory, and fails on a URL, a tag or a CSS declaration |
-| `registry/` (with `registry/registry.json`) | A shadcn registry: one item per surface bundle, each pointing at that bundle plus the shared contract files through `files[].path`. **Pointers, not copies** — inlining the stylesheets would duplicate bytes this package already ships. Conformance is answered by an independent implementation (ajv) against the pinned shadcn schemas vendored under `tools/audit/schema/`, whose hashes are recorded in `sources.json` so the check is deterministic and needs no network. **The claim stops at the shape**: there is no `homepage` and no `url` field, because the project is private until v1.0 and its Pages deployment answers 404 — a pointer needs a host, so nothing here says `shadcn add` works today. Generated by `node tools/build.mjs`; enforced by `node tools/check-registry.mjs` for structure, resolution and the honesty rules, and by `node tools/audit/registry-contract.mjs` for schema conformance |
-| `map-chrome.maplibre.css` / `map-chrome.mapbox.css` | The vendor re-key profile, published under both engine names |
-| `map-chrome-contract.json` | The tokens a map control cluster is re-keyed onto, and the controls each engine ships |
-| `svg/contour-mark.svg` | The brand mark |
-| `agent-rules.json` | Machine-readable constraints for an agent generating UI with Contour: each rule names the gate that enforces it |
-**Package exports** — `package.json` exposes subpaths so a bundler can import exactly what it
-needs without guessing paths: `contour-ds/contour.css`, `contour-ds/contour.min.css`,
-`contour-ds/surfaces/*`, `contour-ds/fonts/*`, `contour-ds/tokens`, `contour-ds/themes`,
-`contour-ds/components`, `contour-ds/contour.js` and `contour-ds/map-chrome/*`. The root
-export resolves to `dist/contour.css`. Fonts resolve relative to the stylesheet, so copying
-a single CSS file is not enough — copy `fonts/` with it (or use the surface bundles, which
-carry the `@font-face` rules and the same relative URLs).
-
-Only the system is bundled — the guide's own markup and the guide-only artwork stay out.
-`docs/` is the one guide-derived artifact that ships, and it ships prose and pointers
-rather than the specimen layer: `node tools/check-docs.mjs` re-derives every byte of it from
-`index.html` and fails the build if a doc has been hand-edited, if a sentence is not the guide's
-own, if a block it names is not in the component contract, or if the package grew a URL, a tag
-or a CSS declaration.
-
-**Map chrome** — a map engine paints its own control cluster over its canvas, and that
-markup belongs to the engine, so `.c-map-slot` cannot reach it. `src/css/map-chrome.css`
-re-keys the cluster onto the tokens the system already uses for its own controls — surface,
-edge, radius, glyph colour — and touches nothing else: the engine keeps the geometry. It is
-the one file in `src/css/` that `ds.css` does not import and the one that sits outside the
-cascade layers, and both are deliberate: a vendor sheet is unlayered, so a layered rule
-could not out-rule it whatever the link order, and a page with no map has no reason to load
-it. Link it *after* the engine's own stylesheet. `node tools/build.mjs` publishes the single
-source under both engine names (`dist/map-chrome.maplibre.css`, `dist/map-chrome.mapbox.css`)
-and writes `dist/map-chrome-contract.json` beside them, which names the tokens the re-key is
-made of and the control list each engine answers to. The Mapbox logo is out of reach by
-construction — `a.mapboxgl-ctrl-logo` carries no `.mapboxgl-ctrl` class — which is as well,
-since Mapbox's terms forbid styling it. `node tools/check-dist.mjs` fails if any of these
-files ships without something in the repository naming it and linking it.
-
----
 
 ## Surfaces
 
-| Surface | What it needs | Components | Guide |
-|---|---|---|---|
-| **Landing** | An argument, read in 20 seconds | logo wall, showcase, metrics, testimonial, pricing, comparison, FAQ, CTA | [§15](index.html#landing) |
-| **Documentation** | A reference people can follow | callouts, do/don't, steps, code tabs, install block, diff, version picker, file tree, pager | [§14](index.html#docs) |
-| **Dashboard** | A lot of numbers, scanned fast | KPI tiles, panels, filter bar, dense table, chart frame, legend, activity feed, drawer | [§13](index.html#data) |
+| Surface | Guide |
+|---|---|
+| Landing | [§15](index.html#landing) |
+| Documentation | [§14](index.html#docs) |
+| Dashboard | [§13](index.html#data) |
+| Recipes | [§18](index.html#recipes) |
 
-All three are composed side by side in [§18 · Recipes](index.html#recipes).
+## Key features
 
----
-
-## Principles
-
-- **Colour is a signal.** ~85% of the interface is neutral. Tidal marks action and success,
-  Plasma marks live data, Clay marks failure.
-- **State is never colour alone.** Every status pairs a hue with a shape, an icon or a word.
-- **No chart asks you to tell two colours apart.** Hue, then dash pattern, then the legend.
-- **Affordable means obvious.** Every control looks like what it does, and says so before you
-  touch it.
-- **Depth is lightness, not shadow.** Shadows are reserved for things that genuinely float.
-- **Mono means "machine".** IBM Plex Mono is for data, coordinates, labels and code — never prose.
-- **Space carries the hierarchy.** Air around the thing that matters beats another colour or
-  border.
-
----
-
-## Tokens
-
-Four layers, resolved in this order:
-
-```
-1. Primitives   --tidal-500, --plasma-500, --basalt-900 …
-2. Semantic     --color-primary, --color-text-muted, --color-canvas-sunken …
-3. Component    local custom properties inside each component rule
-4. Utilities    .u-*
-```
-
-Primitives never change between themes; only the semantic layer does — so a theme swap is one
-line, and a fourth theme needs no component changes.
-
-`src/css/tokens.css` holds <!-- ds:tokens -->290<!-- /ds:tokens --> custom properties, of which <!-- ds:tokens-read -->290<!-- /ds:tokens-read --> are read by the system or the guide and <!-- ds:tokens-unread -->0<!-- /ds:tokens-unread --> are not. The table is generated by `node tools/stamp.mjs` from `src/css/tokens.css`, so its rows cannot disagree with the file:
-
-<!-- ds:taxonomy-table -->| Group | Count | Read | Unread | Covers |
-|---|---|---|---|---|
-| Colour ramps | 53 | 53 | — | `--basalt-…`, `--tidal-…`, `--lumen-…`, `--plasma-…`, `--sol-…`, `--clay-…` |
-| Brand ramp | 8 | 8 | — | `--brand-hue` and the ramp derived from it |
-| Semantic colours | 66 | 66 | — | `--color-…` — text, surface, border, primary; every one `light-dark()` |
-| Chart | 45 | 45 | — | categorical, sequential, diverging, dash patterns, chart chrome |
-| Fill patterns | 6 | 6 | — | `--fill-hatch-…`, `--fill-dot` — the shape branch of a filled mark |
-| Gradients | 4 | 4 | — | canvas, plate, heat, rule |
-| Typography | 30 | 30 | — | families, sizes, weights, leading, tracking, measures |
-| Space and layout | 22 | 22 | — | the 4 px scale, containers, gutter, header height, target sizes |
-| Shape | 20 | 20 | — | radii, borders, hairline, shadows, elevation |
-| Motion | 12 | 12 | — | durations and easings |
-| Z-index | 6 | 6 | — | `--z-raised` … `--z-tooltip` |
-| Density | 5 | 5 | — | row height, cell padding, label size |
-| Focus | 1 | 1 | — | the focus ring perimeter |
-| Miscellaneous | 12 | 12 | — | no documented prefix — fix the taxonomy |
-| **Total** | **290** | **290** | **0** | unique custom properties in `src/css/tokens.css` |<!-- /ds:taxonomy-table -->
-
-**Two knobs retheme and reshape everything:**
-
-```css
-:root {
-  --brand-hue: 182.5;  /* re-tints every primary surface */
-  --radius-scale: 1;   /* scales every radius at once */
-}
-```
-
-**Theme scope** — a custom property containing `var()` is resolved where it is declared, so a
-descendant that only changes `--brand-hue` has no effect. `.c-theme-scope` re-derives the whole
-brand layer from local knobs and re-tints a subtree without touching the root
-([Playground](index.html#playground)):
-
-```html
-<div class="c-theme-scope" style="--brand-hue: 250">…</div>
-```
-
----
+- **Zero runtime dependencies** — pure CSS + optional JS enhancement
+- **Dark/light themes** via `light-dark()` and `color-scheme`
+- **163 components** across 14 stylesheets (landing, docs, dashboard, data)
+- **290 design tokens** — colours, typography, space, shape, motion, density
+- **Web components** — 324 custom elements (`<contour-*>`, `<contour-shadow-*>`) with attribute reactivity
+- **DTCG 2025.10** token export (Format + Resolver documents)
+- **shadcn registry** — one item per surface bundle
+- **WCAG 2.2 AA** — contrast, focus, reflow, reduced motion, forced colours
+- **Self-hosted fonts** — IBM Plex (Sans, Mono, Condensed), subsetted, OFL 1.1
 
 ## Theming
 
-`color-scheme` on `:root` is the only switch; every theme-sensitive colour resolves through
-`light-dark()`, so the page follows the OS until a choice is stored.
+```css
+:root {
+  --brand-hue: 182.5;   /* re-tints every primary surface */
+  --radius-scale: 1;     /* scales every radius at once */
+}
+```
 
 ```html
 <meta name="color-scheme" content="light dark" />
 ```
 
+## Tokens
+
+Four layers: primitives → semantic → component → utilities. Primitives never change between themes.
+
 ```css
-:root { color-scheme: light dark; }
-:root:has(> head > meta[name="color-scheme"][content="dark"]) { color-scheme: dark; }
-:root:has(> head > meta[name="color-scheme"][content="light"]) { color-scheme: light; }
+@import "src/css/fonts.css";
+@import "src/css/tokens.css" layer(tokens);
+@import "src/css/base.css" layer(base);
+@import "src/css/components.css" layer(components);
+/* + components-shell, components-data, components-docs, components-landing, patterns, utilities */
 ```
-
-`src/js/ds.js` ships a two-state header toggle and a three-state settings control; both write
-that meta element. The toggle's icon labels the **action**, not the state — a sun means "click
-for light".
-
----
-
-## Colour
-
-Every value is OKLCH, so lightness steps read evenly, and the neutrals are tinted toward the
-brand hue rather than left as grey.
-
-| Family | Role | Anchor |
-|---|---|---|
-| **Tidal** | Brand, primary action, success | `--tidal-500` = `#14b8a6` |
-| **Plasma** | Accent, live data, editorial highlight | `--plasma-500` = `#f20084` |
-| **Lumen** | Secondary series, info | azure `h ≈ 236` |
-| **Sol** | Warnings, degraded states | amber `h ≈ 75` |
-| **Clay** | Errors, destructive actions | red-orange `h ≈ 27` |
-| **Basalt** | Neutrals — surfaces, text, borders | `h ≈ 230` |
-
-Tidal and Plasma are **anchored on the reference brand colours**; every other step is derived
-from them in OKLCH. The two chromatic families have separate jobs and are not interchangeable:
-
-| | Tidal (teal) | Plasma (magenta) |
-|---|---|---|
-| Role | **Action and state** | **Highlight** |
-| Used for | Primary buttons, active tabs, focus rings, eyebrows, status labels, links | The emphasised phrase in a headline, code strings, live data, hot values |
-| Never for | Editorial emphasis | Primary buttons |
-
-**Surfaces** — five steps. In dark mode, higher means lighter:
-
-```
---color-canvas          page
---color-canvas-sunken   recessed section band
---color-surface-1       cards
---color-surface-2       raised
---color-surface-3       hover
-```
-
-Section bands are painted on a pseudo-element, so they can bleed past the content frame to the
-viewport edges; the layout supplies the offsets.
-
-**Shadows** — `--shadow-xs` … `--shadow-xl` are `light-dark()` values: a shadow of one strength
-disappears into a dark surface, so the dark values are near-black and opaque. Depth is carried by
-surface lightness first; the shadow only marks what genuinely floats.
-
----
-
-## Typography
-
-| Role | Family | Notes |
-|---|---|---|
-| Display | IBM Plex Sans Condensed | Fluid `clamp()` scale, tight tracking |
-| Body / UI | IBM Plex Sans | Fixed `rem` sizes — product UIs need spatial predictability |
-| Data / labels | IBM Plex Mono | Coordinates, labels, code, tabular numerals |
-
-Two families, one superfamily. Body copy is capped at `68ch` and set at `1.65` leading — looser
-than the default, because light-on-dark text needs more air.
-
----
 
 ## Components
 
-| Group | Components |
-|---|---|
-| **Actions** | button (primary, secondary, outline, ghost, accent, danger, quiet-danger), sizes, icon, block, groups, loading, text link |
-| **Forms** | field, input, select, textarea, search group, range, switch, checkbox |
-| **Status** | badge, chip, status pill, waypoint dot, avatar |
-| **Surfaces** | card, plate, feature block, icon badge, section head, stat, footer |
-| **Navigation** | header, table of contents, tabs, segmented control, disclosure, breadcrumb, pagination, toolbar, sheet |
-| **Feedback** | alert, toast, progress, contour meter, skeleton, spinner, empty state |
-| **Overlays** | dialog, tooltip, popover, command palette, drawer |
-| **Data** | table (a container query drops the optional columns), legend, readout, timeline, code block, pull quote, KPI tile, panel, filter bar, activity feed |
-| **Documentation** | nav tree, callout, do/don't, steps, code tabs, install block, diff, pager, version picker, file tree, prose |
-| **Landing** | logo wall, feature showcase, metrics band, testimonial, pricing, comparison matrix, FAQ, CTA band |
-| **Layout** | grid (2/3/4), row, stack (sm/lg), cluster, sidebar, box (s/m/l/xl, border, scroll), container (scrollable), map area, map panel (top/bottom/left/right/center), map footer, app shell, app body |
+Naming: `.c-<block>`, `.c-<block>__<element>`, `.c-<block>--<variant>`.
 
-Naming is `.c-<block>`, `.c-<block>__<element>`, `.c-<block>--<variant>`. Components do not reach
-into one another with descendant selectors, with three documented exceptions: the button group
-(`.c-btn-group--attached .c-btn`), the input group (`.c-input-group .c-input`), and the panel's
-resize handle (`.c-panel:hover .c-resize-handle`, a visibility dependency, not a style). The
-<!-- ds:components -->163<!-- /ds:components --> count is the number of
-`.c-*` blocks in the component layer; the composed shells in `patterns.css` and the guide's own
-shell are not counted.
+Groups: actions, forms, status, surfaces, navigation, feedback, overlays, data, documentation, landing, layout.
+
+Full reference: [style guide](index.html).
 
 ## Web components
 
-Contour ships an optional progressive-enhancement layer as ES modules under `src/js/wc/`
-(entry point `src/js/wc/index.mjs`; also `dist/contour-wc.js` / `dist/contour-wc.min.js`). It defines 320+ custom elements
-(`<contour-btn>`, `<contour-card>`, `<contour-shadow-card>`, …) that generate their
-scaffolding from attributes and slotted content.
-
-- **Light DOM components** (`<contour-*>`) add CSS classes and generate structure from
-  attributes. They use light DOM so `ds.css` styles apply directly. Interactive blocks
-  (tabs, code-tabs, combobox, tree, segmented) wire their own keyboard and activation
-  behaviour, so they work standalone without `ds.js`.
-- **Shadow DOM components** (`<contour-shadow-*>`) use Shadow DOM with named slots and
-  adopted stylesheets, for encapsulation where desired. They reflect `variant`,
-  `size` and `color` attributes onto their root element and re-render on change, and
-  mirror the same interactive wiring (tabs, code-tabs, segmented) inside the shadow root.
-- All components are attribute-reactive: changing an attribute re-renders the component.
-
-### Reactivity
-
-Every component extends `ContourBase`. On first connect it snapshots the author's nodes
-and `class` attribute; on an attribute change it restores that snapshot, re-runs
-`render()`, and re-wires behaviour via `enhance()`. Authored content and listeners
-survive re-renders; generated nodes are rebuilt. Form control values are preserved
-across a re-render. Render bodies use `ensure(selector, factory)` for update-or-create
-reactivity instead of `if (!querySelector(...))` guards, which would otherwise freeze
-after the first render. `observedAttributes` is derived from the attributes a component
-reads; attributes a component writes to itself (`role`, `open`, `aria-*`, `tabindex`)
-are deliberately excluded to prevent re-entrant renders.
-
-### Behaviour composition
-
-Components do not reach into one another. Composition happens through the DOM and
-through events:
-
-- A host composes a component by nesting/slotted content; authored children are
-  preserved across re-renders.
-- Interactive components emit `contour:*` CustomEvents (`contour:change`,
-  `contour:select`, `contour:copy`, `contour:remove`, `contour:page`,
-  `contour:open`/`contour:close`, `contour:empty-action`) that bubble, so a parent
-  can react without coupling to the component's internals.
-- Shadow wrappers adopt the document's same-origin stylesheets once and share a
-  single parsed `CSSStyleSheet` across instances; modifier classes (`variant`,
-  `size`, `color`) are reflected onto the shadow root's first element.
-- `window.ContourElements` (frozen array) lists every registered name in
-  registration order; `customElements.get(name)` is the runtime check.
-
-- No runtime dependencies; the file is optional and the page works without it.
-
 ```html
 <script type="module" src="src/js/wc/index.mjs"></script>
-<contour-card title="Hello">
-  <p>Slotted content</p>
-</contour-card>
+<contour-card title="Hello"><p>Slotted content</p></contour-card>
 ```
 
----
-
-## Data
-
-Chart tokens are separate from the UI palette — a chart colour answers a different question from
-a button colour.
-
-```css
---chart-1 … --chart-8      categorical series, ordered so neighbours stay apart
---chart-seq-1 … -7         one hue, rising lightness
---chart-div-neg/mid/pos    diverging, for a real midpoint
---chart-dash-1 … -8        one dash pattern per series
-```
-
-Eight hues cannot all be separated by lightness, so every series also carries a dash pattern and
-the legend previews it. Every series clears **3:1** against every surface it can be drawn on, in
-both themes, and each legend key is checked against the dash token of its own series — enforced by
-`node tools/audit/contrast-and-aria.mjs`, which exits non-zero on either.
-
-**Density** — one token drives row height, cell padding and label size together, so a compact
-table is a different rhythm rather than a smaller font:
-
-```html
-<div data-density="compact"> … </div>
-```
-
-**Data grid ceiling** — `.c-table` is for the first few hundred rows. It ships row selection,
-a sticky header, pagination and column visibility, but no virtualised body; a 50 000-row grid
-is out of scope for this release (T-70).
-
----
-
-## Accessibility
-
-Conformance target: **WCAG 2.2 AA**.
-
-- Body text meets **4.5:1**, borders / focus rings / control edges **3:1**, in both themes —
-  enforced by `node tools/audit/contrast-and-aria.mjs`, which measures the control edge and the focus ring against every surface a control can sit on, in both themes, and fails the build below 3:1.
-- Every chart carries an accessible name that says what it plots, and a text alternative held in a **sibling** of the named image, never a descendant of it — enforced by `node tools/audit/chart-names.mjs`, which reads the accessibility tree and fails when a name is generic or the data never surfaces.
-- A status message is announced from a live region that exists, empty, before anything is said: the toast host carries `role="status"` and the toast carries no nested role of its own — enforced by `node tools/audit/contrast-and-aria.mjs`, which fails a region that is already filled at load, since a region watches for changes and a pre-filled one has none left to announce.
-- While a snippet disclosure is open the rest of the page leaves the tab order, and closing it releases every inert subtree — enforced by `node tools/audit/contrast-and-aria.mjs`, which fails a focusable that is still reachable behind the scrim and any `inert` left hanging after the disclosure closes.
-- A map's chrome is themed by the system and its canvas is owned by the consumer. On a map surface the attribution band owns its corner through tokens, reserves the mark's shipped box and never restyles it — enforced by `node tools/audit/component-inventory.mjs`, which measures the band's own computed geometry against `--map-attribution-*`, so a hard-coded offset shows up as a disagreement rather than as a credit line that quietly stops matching the theme.
-- A classified ramp names its breaks and its denominator, so a count is never presented as a density — enforced by `node tools/audit/component-inventory.mjs`, which refuses a `.c-legend[data-classification]` specimen with no method or no normalisation.
-- State is never colour alone; every chart series carries a dash pattern as well as a hue.
-- `prefers-reduced-motion: reduce` collapses every transition; Forced Colors Mode drops the
-  texture and the ridgelines and falls back to a system `CanvasText` outline.
-- Tabs and segmented groups use roving tabindex and arrow keys, exclusive choices use native radio
-  inputs, dialogs use the native `<dialog>`, the palette uses the popover API.
-- Single-key shortcuts stay out of the way: `/` opens the palette only when the focus is not in a
-  field, a `<select>` or a `contenteditable`.
-- Sizes are in `rem`; the layout reflows to 200% zoom and to a 390 px viewport with no horizontal
-  page scroll.
-- The reset zeroes every margin, including the `margin: auto` that centres a modal dialog —
-  `.c-dialog` puts it back, and so must any reset you write.
-
----
+Light DOM (`<contour-*>`) and Shadow DOM (`<contour-shadow-*>`) wrappers. Attribute-reactive, form-associated, keyboard-navigable. See [§23](index.html#webcomponents).
 
 ## Performance
 
-The system ships two artefacts and the choice between them is the performance
-decision.
-
-| Artefact | Size | Use when |
-|---|---|---|
-| `src/css/ds.css` (source) | ~50 kB gzipped (all sheets) | Development, reading, forking, or a build pipeline you own |
-| `dist/contour.min.css` (minified) | smaller, no comments | Production, or any page where bytes matter |
-
-`src/` is unminified on purpose: the system has zero runtime dependencies and no
-build step, and a consumer can link `src/css/ds.css` straight off a disk. The
-minified bundle exists for the case where that is not acceptable. A page that
-loads `contour.min.css` plus one template is the reference for the numbers
-below. The CSS size is measured on every release; LCP/CLS/INP are targets, not yet measured in CI.
-
-| Metric | Reference page (desktop, mid-tier mobile) |
-|---|---|
-| LCP | < 2.5 s |
-| CLS | < 0.1 |
-| INP | < 200 ms |
-| Total CSS (gzipped) | < 25 kB |
-
-The guide itself (`index.html`) is a 583 kB document that loads every component
-and 4 external scripts (highlight.js from a CDN, `ds.js`, `wc/index.mjs`, `guide.js`); its Lighthouse score is not the system's score, and
-the two should not be quoted interchangeably. The system's score is measured on
-`templates/landing.html`, which is the smallest shipped surface.
-
-### Fonts
-
-Before C-52 the guide and templates loaded IBM Plex from `fonts.googleapis.com`. That was a
-third-party request chain (DNS, TCP, TLS, then the font files) and the single largest
-contributor to the guide's `network-dependency-tree` and LCP scores, and a legal exposure:
-**LG München I, 3 O 17493/20** (2022) awarded €100 in damages for transferring a visitor's IP
-address to Google Fonts without consent, and the Austrian DSB (2023-10-26) confirmed that no
-transfer occurs when the fonts are served from the same origin. The system now ships the fonts:
-variable IBM Plex (Sans, Mono) and the Condensed weights used by the display scale, subsetted to
-Latin + Latin Extended and served under renamed family names (`Contour Plex Sans`,
-`Contour Plex Mono`, `Contour Plex Sans Condensed`) because the OFL treats subsetting as a
-modification and reserves the "Plex" name. The files live in `src/css/fonts/` (and `dist/fonts/`
-after a build) with the OFL text beside them, and `src/css/fonts.css` (imported first by
-`ds.css`) declares the `@font-face` rules with relative `fonts/…` paths that resolve identically
-from `src/css/` and `dist/`. The templates and the guide no longer request Google Fonts, so there
-is no third-party request chain and no IP transfer. `display=swap` is retained on every
-`@font-face`.
-
-**Delivering.** `ds.css` is the single entry point and it pulls `fonts.css` in first, so a
-consumer who links `ds.css` (or inlines the documented import list) gets the faces with no extra
-step. The font files are *not* inlined into the CSS: they ship beside it as `fonts/*.woff2`, and
-the relative `fonts/…` URLs resolve against the stylesheet's own location, so the same sheet works
-from `src/css/`, from `dist/`, and from any directory a consumer copies the package into. A
-consumer who inlines the CSS into a single file must also copy `fonts/` next to the resulting
-stylesheet (or rewrite the `src` URLs); the build does not base64-encode them, because inlining
-~260 kB of font data into every page's critical CSS would defeat the cacheability the separate
-files give. `font-display: swap` keeps text visible during load, and the family names are stable
-so a consumer's own `@font-face` overrides (if any) compose cleanly.
-
-### Reduced motion and forced colours
-
-`prefers-reduced-motion: reduce` collapses every transition. Forced Colors
-Mode removes the texture and the ridgelines and falls back to a system
-`CanvasText` outline. Both are measured by `tools/audit/contrast-and-aria.mjs`.
-
----
+The guide itself loads every component and 4 external scripts (highlight.js from a CDN, `ds.js`, `wc/index.mjs`, `guide.js`); its Lighthouse score is not the system's score.
 
 ## Browser support
 
-Baseline *newly available* features, with progressive enhancement where noted.
-`light-dark()` is the system's most load-bearing feature — every theme-sensitive
-colour token is a `light-dark()` call — and it is **newly available since
-2024-05-13**, expected to be **widely available on 2026-11-13**.
+Sizes are in `rem`; the layout reflows to 200% zoom and to a 390 px viewport with no horizontal page scroll.
 
-A browser without it does not fail gracefully, and the reason is worth stating
-because it is not obvious: an unregistered custom property accepts any token
-sequence, so `--x: light-dark(a, b)` parses and stores the TEXT; the break comes
-one step later, when `var(--x)` substitutes it into a real property, which makes
-that declaration invalid at computed-value time and drops it to its initial
-value. Hence `src/css/light-dark-fallback.css`, generated from the token layer by
-`node tools/gen-light-dark.mjs` and guarded on the value —
-`@supports not (color: light-dark(white, black))`, never
-`@supports (color: var(--x))`, which is always true and would freeze a modern
-engine at the light branch. It re-points the tokens to the branch each engine can
-parse, covering the OS preference and the manual `<meta name="color-scheme">`
-flip. `color-scheme` is years older than `light-dark()`, so the population that
-needs this file is exactly the one that knows the scheme but not the function —
-which is why the dark branch is emitted twice, once for the media query and once
-for the flip. (No Baseline dates are claimed for `color-scheme` here: they were
-not recomputed from `web-features`/BCD in this pass, and a reused date note is how
-this file has previously published a wrong one.)
-
-The committed file is checked, not trusted: `node tools/gen-light-dark.mjs
---check` regenerates it in memory and fails if the bytes differ, and
-`node tools/audit/contrast-and-aria.mjs` keeps measuring the real
-`light-dark()` path in both themes.
-
-| Feature | Status | Fallback |
-|---|---|---|
-| `light-dark()` (colour values) | Newly available since 2024-05-13; widely available from 2026-11-13 | `src/css/light-dark-fallback.css`, generated from the token layer and guarded on the value |
-| `light-dark()` (image values) | Newly available since 2026-09-14; widely available from 2029-03-14 | **Do not use** — a three-year support tail. The system's gradients adapt by mixing token colours instead |
-| `oklch()` | Widely available | Chrome 111+, Safari 15.4+, Firefox 113+ |
-| `:has()` | Widely available | Chrome 105+, Safari 15.4+, Firefox 121+ |
-| Container queries | Widely available | Chrome 105+, Safari 16+, Firefox 110+ |
-| `color-mix()` | Widely available | Chrome 111+, Safari 16.2+, Firefox 113+ |
-| Popover API | Widely available | `ds.js` falls back to `title`; the palette to an `is-open` class |
-| Native `<select>` option list | Platform-drawn | Drawn by the platform, in the platform's colours — it follows the OS theme, not the page's. The closed control is the system's; the list is not |
-
-The page is fully usable with JavaScript disabled.
-
----
-
-## Repository
-
-```
-.
-├── index.html            the living style guide
-├── src/                  the design system — a consumer takes this and nothing else
-│   ├── css/              ds.css (entry point), tokens, base, components*, patterns, utilities
-│   ├── js/ds.js          optional progressive enhancement
-│   └── svg/              the brand mark
-├── assets/               guide-only — never shipped
-│   ├── css/docs.css      the style guide's own shell
-│   ├── js/guide.js       the guide's own behaviour
-│   └── svg/              the contour field behind the chart-paper texture
-├── tools/                build-time scripts — never shipped
-├── templates/            three starter pages — one per surface
-└── dist/                 build output — gitignored
-```
-
-A rule in `src/` has to work without the guide, so anything that only makes sense inside it lives
-in `assets/`.
-
-`tools/snippets.mjs` extracts the markup behind every rendered example and writes it back into the
-matching disclosure, so a snippet cannot drift from what is on screen. The example and its
-disclosure travel together in a generated `.ds-example`; a specimen that is neither a `.ds-panel`
-nor a `.ds-spec` is found by the `data-snippet` attribute — and then the snippet shows that element
-itself, tag and attributes included, because that is what a reader copies.
-
-Every snippet in the guide is mounted standalone and validated as HTML by `tools/execute-docs.mjs`,
-so a snippet that does not parse, or that references a class the system does not define, fails in
-CI rather than in a consumer's project.
-Every contour line in the repository — the brand mark, the chart-paper texture, the hero
-instrument, the showcase map — is an **iso-line of a real field**, extracted with marching squares
-by `tools/contour-gen.py`. Iso-lines of one field can never cross, so the artwork is generated,
-never drawn.
-
----
+Baseline newly-available features with progressive enhancement. `light-dark()` is the most load-bearing (newly available 2024-05-13, widely available 2026-11-13). Fallback sheet: `src/css/light-dark-fallback.css`. Full details: [Browser support](index.html#browser-support).
 
 ## Commands
 
 | Command | What it does |
 |---|---|
-| `node tools/build.mjs` | Bundle and minify the system into `dist/`, export the tokens |
-| `node tools/build.mjs --single` | Additionally emit `dist/contour.single.min.css` with the self-hosted fonts inlined as data URIs (one file; ~260 kB larger) |
-| `node tools/snippets.mjs` | Regenerate the snippets in `index.html` — run after editing a specimen |
-| `python3 tools/contour-gen.py` | Regenerate the contour artwork |
-| `npx html-validate index.html templates/*.html` | Validate the markup |
-| `node --check src/js/ds.js && node --check assets/js/guide.js` | Script syntax — one file per invocation; this tool reads only its first argument |
+| `node tools/build.mjs` | Bundle into `dist/`, export tokens |
+| `node tools/build.mjs --single` | Single-file build with inlined fonts |
+| `node tools/snippets.mjs` | Regenerate code snippets in `index.html` |
+| `npx html-validate index.html templates/*.html` | Validate markup |
+| `node tools/doctor.mjs` | Run all quality gates |
 
----
+## Repository
+
+```
+src/       the design system (a consumer takes this and nothing else)
+assets/    guide-only (never shipped)
+tools/     build-time scripts (never shipped)
+templates/ three starter pages (landing, docs, dashboard)
+dist/      build output (gitignored)
+```
 
 ## Licence
 
-MIT.
+MIT. Fonts: SIL Open Font License 1.1 (see `src/css/fonts/OFL.txt`).
 
-### Fonts
+---
 
-The self-hosted fonts are IBM Plex (Sans, Mono, Sans Condensed), subsetted to
-Latin + Latin Extended and served under the renamed family names `Contour Plex
-Sans`, `Contour Plex Mono` and `Contour Plex Sans Condensed`. They are licensed
-under the **SIL Open Font License 1.1** (see `src/css/fonts/OFL.txt` and
-`dist/fonts/OFL.txt`). The OFL requires the licence text to ship beside the
-fonts, which is why `OFL.txt` is copied into `dist/fonts/` by the build. The
-OFL treats subsetting as a modification, so the renamed family names are
-retained and the original "Plex" reserved name is not claimed. Attribution:
-IBM Corp. / Mike Abbink. No other third-party code or assets are bundled; the
-system has zero runtime dependencies.
-
-## MCP (if ever built)
-
-If a server is ever built, target MCP 2026-07-28: stateless (`initialize`/`Mcp-Session-Id`
-removed), `server/discover` is MUST, Roots/Sampling/Logging deprecated. Most 2025
-tutorials describe a superseded protocol.
-
-Honest negative: no measurement shows a design-system MCP server improves
-generated-UI conformance. The CHI study measures registries; the audits count
-artifact existence. Contour ships `agent-rules.json` and the gates that enforce
-it instead.
-
-## Accent colour
-
-Audit (C-70): `--color-accent` is correctly scoped, not underused. It appears in
-25 component rules, 5 data-surface rules, 3 docs-surface rules, 1 utility and
-5 token definitions, plus 21 guide references. Usage is concentrated on
-significant meaning (action, live data, focus) rather than decoration, which
-matches the "colour is a signal" principle. No re-balance needed.
-
-## Copy button
-
-Clipboard is secure-context-only and throws `NotAllowedError`. The spec says a
-UA SHOULD treat `file:` as trustworthy but MAY refuse. Tested origins:
-`file://`, `http://localhost`, `http://127.0.0.1:<port>`, plain `http://` LAN.
-Fallback: a temporary textarea + `document.execCommand("copy")` (implemented in `src/js/ds.js`).
-
-## Adoption economics
-
-Headcount substitution: 61% of teams are ≤5 people; understaffing rises
-53%→74% with federation; designer:dev ratio moves 1:11→1:53. The restriction
-paradox: the most-cited first-person failure of a design system was having
-"almost no escape hatches… no amount of training or documentation seemed to be
-helping" — which argues against Contour's own instinct. Keep the restriction
-inside `src/` and make deviation legible and first-class.
-
-## Measures
-
-Prose is capped at 80 characters per line, citing WCAG 1.4.8 (AAA). Where a
-target is quoted, cite 45–90 average (Butterick). "45–75 is required" is
-Bringhurst's *print* guidance; a screen study found 95 cpl faster. The 80-char
-cap is a ceiling, not a target.
-
-## Code presentation
-
-Shiki transformers only *add* classes (`line`, `focused`, `highlighted`,
-`has-diff`, `highlighted-word`) — "you must provide custom CSS rules". Contour
-names those as the hooks `.c-code` / `.c-diff` style, with a `--shiki-dark`-style
-variable convention. The system ships no syntax highlighter (zero runtime
-dependencies); highlighting is the consumer's, and these classes are the
-contract it styles against.
-
-An optional companion stylesheet, `src/css/hljs.css`, maps highlight.js token
-classes onto Contour tokens for consumers who choose that highlighter. It is
-not imported by `ds.css` and ships as `dist/hljs.css`.
-
-## The contour motif
-
-Every contour line in this repository is an iso-line of a real field, extracted
-with marching squares over a continuous scalar field (asymptotic saddle decider,
-level-nudge pass that guarantees zero crossings). No line is drawn by hand:
-iso-lines of different levels of the same continuous field cannot cross, and
-hand-drawn curves have no such relationship, which is why they intersect and
-form shelves. The generator (`tools/contour-gen.py`) verifies its own output.
-`d3.contours()` is the named analogue. To get a new contour shape, add a field
-to the generator — do not draw a path.
-
-## Refusals
-
-Named refusals, after Vercel's spec shape. These are the things Contour will not do, and why:
-
-- **Decorative gradients, glows, blobs, glass, ornamental shadows, fake depth** — earn surfaces and boundaries instead.
-- **Default to stillness** — motion is opt-in via `prefers-reduced-motion: no-preference`.
-- **Design in monochrome first** — colour is reserved for significant meaning (action, live data, failure).
-- **No charting dependency** — the honest ceiling stays until a CSS seam replaces it.
-- **No basemap theming from tokens** — Mapbox Standard custom theming is a base64 LUT; no light/dark operator exists in the style-spec grammar.
-- **No `hidden="until-found"`** — Safari unsupported (blocked since Feb 2026); widely available 2029-04-23.
+Full reference: [style guide](index.html) · [CHANGELOG](CHANGELOG.md) · [DESIGN.md](DESIGN.md)

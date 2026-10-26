@@ -132,7 +132,7 @@ class ContourBtn extends ContourBase {
       if (!this.hasAttribute("role")) this.setAttribute("role", "button");
       if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
       const label = this.getAttribute("label");
-      if (label && !this.querySelector("*") && !this.textContent.trim()) this.textContent = label;
+      if (label && !this.hasChildNodes()) this.textContent = label;
       if (label && !this.hasAttribute("aria-label")) this.setAttribute("aria-label", label);
     }
   }

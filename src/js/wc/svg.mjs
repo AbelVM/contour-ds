@@ -134,6 +134,19 @@ export function polylinePoints(values, opts) {
  * @param {object} [opts] same as polylinePoints
  * @returns {string} SVG path `d` attribute
  */
+export function smoothPath(values, opts) {
+  const pts = polylinePoints(values, opts).split(" ").map((p) => p.split(",").map(Number));
+  if (!pts.length) return "";
+  let d = `M ${pts[0][0]} ${pts[0][1]}`;
+  for (let i = 1; i < pts.length; i++) {
+    const prev = pts[i - 1];
+    const cur = pts[i];
+    const cpx = (prev[0] + cur[0]) / 2;
+    d += ` C ${cpx} ${prev[1]}, ${cpx} ${cur[1]}, ${cur[0]} ${cur[1]}`;
+  }
+  return d;
+}
+
 /**
  * Build an SVG path for a compass needle pointing at `angleDeg` (clockwise
  * from north/up). The needle is a thin triangle from the centre to the tip,

@@ -57,7 +57,7 @@ const DIST = join(ROOT, "dist");
 const BUDGETS = {
   "contour.min.css": 169 * 1024,  // raised 2026-10-25: 0.2 kB overrun from CSS growth, pre-existing
   "contour.min.js": 38 * 1024,  // raised 2026-10-25: comparison slider drag (1.6 kB) added to ds.js
-  "contour.d.ts": 26 * 1024,  // raised 2026-10-25 from 12 kB: the element tag map. Measured 23.5 kB with 324 entries and 0 duplicated names, after the generator's second list (the same tags written as a union) was deleted; the map is now the one copy.
+  "contour.d.ts": 27 * 1024,  // raised 2026-10-26 from 26 kB: expanded ContourProps to include all 99 observed attributes (was 8). Measured 26.2 kB. See M-WC-08 WC8-16.
   "contour.tokens.json": 50 * 1024,
   "contour.themes.json": 22 * 1024,
   // Measured 2026-10-23 at 128.4 kB (C-44), ~3% headroom. Large and correct:

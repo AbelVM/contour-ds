@@ -103,6 +103,7 @@ const ALLOWED_THIRD_PARTY = [
   { prefix: "hljs-", why: "highlight.js theme classes — the guide loads the library to show the Contour theme (README.md discloses the script)" },
   { prefix: "function_", why: "highlight.js writes this alongside `hljs-title`; it carries no style and belongs to the library" },
   { prefix: "language-", why: "highlight.js language hint on <code>; the library reads it to select the grammar, contour.css does not style it" },
+  { prefix: "nohighlight", why: "highlight.js opt-out marker on a code block that is already highlighted by hand (the hljs theme specimen)" },
   { prefix: "maplibregl-", why: "MapLibre's own control markup, which the map specimen mounts" },
 ];
 

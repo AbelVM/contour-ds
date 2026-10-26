@@ -311,6 +311,11 @@ class ContourStreamingChart extends ContourBase {
     render() {
       this.classList.add("c-streaming-chart");
       const line = this.getAttribute("line");
+      if (!line) {
+        const svg = this.querySelector("svg");
+        if (svg) svg.remove();
+        return;
+      }
       if (line) {
         let svg = this.querySelector("svg");
         if (!svg) {
@@ -350,6 +355,9 @@ class ContourMeter extends ContourBase {
     static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" }, variant: { attribute: "variant" } }; }
     render() {
       this.classList.add("c-meter");
+      // Value is a 0-1 fraction (not 0-100). The CSS uses --meter-value as
+      // calc(var(--meter-value) * 360deg) for the conic gradient, and
+      // aria-valuemax is "1". Pass 0.5 for 50%, not 50.
       Array.from(this.classList).forEach((c) => { if (c.startsWith("c-meter--")) this.classList.remove(c); });
       const value = this.getAttribute("value");
       const label = this.getAttribute("label") || "";
@@ -693,6 +701,11 @@ class ContourMeasure extends ContourBase {
         if (p) p.remove();
       }
       const line = this.getAttribute("line");
+      if (!line) {
+        const svg = this.querySelector("svg");
+        if (svg) svg.remove();
+        return;
+      }
       if (line) {
         const ln = this.ensure(".c-measure__line", () => { const el = document.createElement("span"); el.className = "c-measure__line"; return el; });
         ln.style.inlineSize = line;

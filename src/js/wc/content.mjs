@@ -89,6 +89,8 @@ class ContourSteps extends ContourBase {
             this.appendChild(item);
           });
         } catch (e) { /* keep existing */ }
+      } else if (!steps) {
+        Array.from(this.querySelectorAll(".c-steps__item")).forEach((n) => n.remove());
       }
     }
   }
@@ -100,6 +102,9 @@ class ContourLink extends ContourBase {
       this.classList.add("c-link");
       const href = this.getAttribute("href");
       const label = this.getAttribute("label");
+      // Clear previously generated link so a re-render cannot stack a second one.
+      const prevLink = this.querySelector("a");
+      if (prevLink) prevLink.remove();
       if (href && label) {
         const a = document.createElement("a");
         a.href = href;
@@ -173,11 +178,9 @@ class ContourDiff extends ContourBase {
         const s = document.createElement("span");
         s.className = "c-diff__sign";
         s.textContent = sign;
-        const n = document.createElement("span");
-        n.className = "c-diff__sign";
         const code = document.createElement("span");
         code.textContent = text;
-        el.append(s, n, code);
+        el.append(s, code);
         return el;
       };
       const before = this.getAttribute("before");
@@ -196,7 +199,7 @@ class ContourDoDont extends ContourBase {
       // `__item--dont` — and the word on top of it is `__label`. There is no
       // `__do` or `__dont` element in the system.
       Array.from(this.querySelectorAll(".c-do-dont__item")).forEach((n) => n.remove());
-      const item = (kind, word, icon, text) => {
+      const item = (kind, word, text) => {
         const el = document.createElement("div");
         el.className = `c-do-dont__item c-do-dont__item--${kind}`;
         const label = document.createElement("p");
@@ -210,8 +213,8 @@ class ContourDoDont extends ContourBase {
       };
       const doText = this.getAttribute("do");
       const dontText = this.getAttribute("dont");
-      if (doText) this.appendChild(item("do", "Do", "i-check", doText));
-      if (dontText) this.appendChild(item("dont", "Don't", "i-x", dontText));
+      if (doText) this.appendChild(item("do", "Do", doText));
+      if (dontText) this.appendChild(item("dont", "Don't", dontText));
     }
   }
   define("contour-do-dont", ContourDoDont);
@@ -225,7 +228,7 @@ class ContourFlag extends ContourBase {
       if (variant) this.classList.add("c-flag--" + variant);
       const label = this.getAttribute("label");
       if (label) {
-        if (!this.textContent.trim()) this.textContent = label;
+        if (!this.hasChildNodes()) this.textContent = label;
       }
     }
   }
@@ -433,6 +436,8 @@ class ContourLandingFeaturesFull extends ContourBase {
             this.appendChild(item);
           });
         } catch (e) { /* keep existing */ }
+      } else if (!items) {
+        this.querySelectorAll(".c-landing-features__item").forEach((el) => el.remove());
       }
     }
   }
@@ -464,7 +469,7 @@ class ContourPriceFull extends ContourBase {
     render() {
       this.classList.add("c-price");
       const value = this.getAttribute("value");
-      if (value && !this.querySelector("*") && !this.textContent.trim()) this.textContent = value;
+      if (value && !this.hasChildNodes()) this.textContent = value;
     }
   }
   define("contour-price", ContourPriceFull);
@@ -527,6 +532,9 @@ class ContourCta extends ContourBase {
         if (p) p.remove();
       }
       const actions = this.getAttribute("actions");
+      // Clear previously generated actions wrap so a re-render cannot stack.
+      const prevWrap = this.querySelector(".c-cta__actions");
+      if (prevWrap) prevWrap.remove();
       if (actions) {
         try {
           const parsed = JSON.parse(actions);
@@ -596,7 +604,7 @@ class ContourPullquote extends ContourBase {
       // `.c-pullquote` defines no `__quote` or `__byline`: the guide's specimen is
       // the paragraph itself, and the one element the sheet styles inside it is
       // `cite`, which is what an attribution is.
-      if (quote && !this.querySelector("cite") && !this.textContent.trim()) {
+      if (quote && !this.querySelector("cite") && !this.hasChildNodes()) {
         this.textContent = quote;
       }
       const name = this.getAttribute("name");
@@ -617,6 +625,9 @@ class ContourAnchor extends ContourBase {
       this.classList.add("c-anchor");
       const href = this.getAttribute("href");
       const label = this.getAttribute("label");
+      // Clear previously generated link so a re-render cannot stack a second one.
+      const prevAnchor = this.querySelector("a");
+      if (prevAnchor) prevAnchor.remove();
       if (href && label) {
         const a = document.createElement("a");
         a.href = href;

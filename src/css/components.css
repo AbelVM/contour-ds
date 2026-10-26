@@ -2902,20 +2902,10 @@
     box-shadow: var(--shadow-md);
   }
 
-  /* One half of this block is inert and the other was never reachable while
-     `.c-toolbar` carried its own `container-type`: a `@container` rule queries an
-     element's ANCESTOR container, so the block could not read the containment the
-     element set on itself. With that gone, the `.c-toolbar` half now works against a
-     container the author supplies around the toolbar. The `.c-toolbar__btn` half is
-     still inert, because the base `.c-toolbar__btn` below follows this block at equal
-     specificity and wins, so its 2.25rem always beats this 2rem. Reordering the block after
-     the base rules would make that half real, and 36px becoming 32px inside a narrow
-     container is a design change, not a repair, so it is not made here. */
-  @container (inline-size < 16rem) {
-    .c-toolbar { gap: 0.2rem; padding: 0.25rem; }
-    .c-toolbar__btn { inline-size: 2rem; block-size: 2rem; }
-  }
-
+  /* Compact variant: in a narrow container the toolbar tightens its gap and
+     padding, and its buttons shrink from 36px to 32px. The @container block is
+     placed AFTER the base .c-toolbar__btn rule so the 2rem wins at equal
+     specificity inside a narrow container. 32px is still above the AA floor. */
   .c-toolbar__btn {
     display: grid;
     place-items: center;
@@ -2927,6 +2917,11 @@
     transition:
       background-color var(--dur-fast) var(--ease-standard),
       color var(--dur-fast) var(--ease-standard);
+  }
+
+  @container (inline-size < 16rem) {
+    .c-toolbar { gap: 0.2rem; padding: 0.25rem; }
+    .c-toolbar__btn { inline-size: 2rem; block-size: 2rem; }
   }
 
   .c-toolbar__btn svg {

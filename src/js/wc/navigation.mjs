@@ -164,12 +164,10 @@ class ContourHeader extends ContourBase {
       } else if (nav && !links) {
         nav.remove();
       }
-      // Actions slot
+      // Actions container
       if (!inner.querySelector(".c-header__actions")) {
         const actions = document.createElement("div");
         actions.className = "c-header__actions";
-        const slot = document.createElement("slot");
-        actions.appendChild(slot);
         inner.appendChild(actions);
       }
       if (inner.parentNode !== this) this.appendChild(inner);

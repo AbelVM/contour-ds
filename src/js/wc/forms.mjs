@@ -119,6 +119,7 @@ class ContourRange extends ContourBase {
       this.classList.add("c-range");
       const input = this.ensure("input", () => { const el = document.createElement("input"); el.type = "range"; return el; });
       input.type = "range";
+      input.className = "c-range";
       input.min = this.getAttribute("min") || "0";
       input.max = this.getAttribute("max") || "100";
       input.value = this.getAttribute("value") || "50";
@@ -494,6 +495,7 @@ class ContourRadioList extends ContourBase {
             lbl.className = "c-radio";
             const input = document.createElement("input");
             input.type = "radio";
+            input.className = "c-radio__input";
             input.name = this.getAttribute("name") || "radio-list";
             if (typeof it === "string") { input.value = it; lbl.appendChild(input); lbl.appendChild(document.createTextNode(" " + it)); }
             // The guide's own radio carries its text in a bare span; the sheet has

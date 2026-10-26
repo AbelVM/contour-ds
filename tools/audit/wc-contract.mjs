@@ -684,6 +684,20 @@ try {
         }
         const listenerSurvived = fired;
 
+        // Close-button probe: a component that scaffolds a close button must
+        // actually remove itself (or dispatch contour:close) when it is clicked.
+        const alertHost = document.createElement("contour-alert");
+        alertHost.setAttribute("title", "Probe");
+        alertHost.setAttribute("body", "text");
+        alertHost.setAttribute("closable", "");
+        document.body.appendChild(alertHost);
+        const closeBtn = alertHost.querySelector(".c-alert__close");
+        let closeFired = false;
+        alertHost.addEventListener("contour:close", () => { closeFired = true; });
+        if (closeBtn) closeBtn.click();
+        const alertRemoved = !document.body.contains(alertHost);
+        const closeWorked = alertRemoved || closeFired;
+
         // the modifier contract, measured through the browser rather than read
         // off the source: both layers must answer to the same attributes
         const mod = {};
@@ -746,12 +760,12 @@ try {
           bad: rendered.filter((r) => !r.ok), renderedCount: rendered.length,
           thin, unshared, parity, wrappers: wrappers.length, docRules,
           bareTable, reactivity: { changed: before !== after, duplicated: titles > 1, keptAuthored, discKept, discSummary, expKept, listenerSurvived },
-          mod, orphan: [...new Set(orphan)], orphanChecked,
+          closeWorked, mod, orphan: [...new Set(orphan)], orphanChecked,
         };
       },
       { registry: load.registry, overlapped, RENDER_CONTRACT }
     );
-    compared += out.renderedCount + out.wrappers + out.orphan.length + 8;
+    compared += out.renderedCount + out.wrappers + out.orphan.length + 9;
 
     if (out.missing.length)
       fail(`${out.missing.length} of ${out.registry} names the registry claims are not defined in the browser: ${out.missing.slice(0, 8).join(", ")}`);
@@ -773,6 +787,8 @@ try {
       fail("contour-expandable lost its authored content across a re-render — the generated container must not take the author's nodes with it when it is rebuilt");
     if (!out.reactivity.listenerSurvived)
       fail("a host-level listener did not survive a re-render — a component is adding listeners to generated nodes inside enhance() guarded by a _wired flag, so the rebuilt node has no listener");
+    if (!out.closeWorked)
+      fail("contour-alert's close button did not remove the alert or dispatch contour:close — the close button is non-functional");
     if (out.thin.length)
       fail(`${out.thin.length} of ${out.wrappers} shadow wrappers adopted fewer rules than the document has: ${out.thin.slice(0, 5).join("; ")} — a stylesheet joined on a literal backslash-n parses as one rule and drops the rest, so the component renders unstyled`);
     if (out.parity.length)

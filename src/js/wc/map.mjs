@@ -74,6 +74,8 @@ class ContourLayerPanel extends ContourBase {
             this.appendChild(item);
           });
         } catch (e) { /* keep existing */ }
+      } else if (!items) {
+        Array.from(this.querySelectorAll(".c-layer-panel__item")).forEach((el) => el.remove());
       }
     }
   }
@@ -116,6 +118,8 @@ class ContourHexbin extends ContourBase {
             this.appendChild(cell);
           });
         } catch (e) { /* keep existing */ }
+      } else if (!cells) {
+        Array.from(this.querySelectorAll(".c-hexbin__cell")).forEach((n) => n.remove());
       }
     }
   }
@@ -145,6 +149,8 @@ class ContourFlowMap extends ContourBase {
             this.appendChild(node);
           });
         } catch (e) { /* keep existing */ }
+      } else if (!nodes) {
+        Array.from(this.querySelectorAll(".c-flow-map__node, .c-flow-map__flow")).forEach((n) => n.remove());
       }
     }
   }
@@ -181,6 +187,8 @@ class ContourIsochrone extends ContourBase {
             this.appendChild(ring);
           });
         } catch (e) { /* keep existing */ }
+      } else if (!rings) {
+        Array.from(this.querySelectorAll(".c-isochrone__ring")).forEach((n) => n.remove());
       }
     }
   }
@@ -290,6 +298,8 @@ class ContourLayerSwitch extends ContourBase {
             this.appendChild(item);
           });
         } catch (e) { /* keep existing */ }
+      } else if (!items) {
+        Array.from(this.querySelectorAll(".c-layer-switch__item")).forEach((n) => n.remove());
       }
     }
   }

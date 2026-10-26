@@ -1,5 +1,49 @@
 ## [Unreleased]
 
+### Fixed (M-WC-08)
+- `ContourAlert` close button was non-functional: the component scaffolded `.c-alert__close`
+  via `ensure()` but never wired a click handler. Added `enhance()` with host-delegated
+  click listener that dispatches `contour:close` and removes the alert.
+- `ContourLink`, `ContourAnchor`, and `ContourCta` leaked DOM nodes on re-render:
+  they used direct `appendChild` without clearing previous nodes. Added clear-before-append.
+- 14 components used `if (!this.textContent.trim())` guards that prevented attribute
+  changes from updating displayed text after re-render. Replaced with `!this.hasChildNodes()`.
+- `ContourLiveBadge` had redundant modifier-removal loop (deduplicated).
+- `ContourTooltip` had convoluted dead-branch text logic (simplified).
+- `ContourDoDont` accepted unused `icon` parameter (removed).
+- `ContourDiff` created an empty line-number span with no content (removed).
+- `ContourHeader` actions container used meaningless `<slot>` in light DOM (removed).
+- `ContourStreamingChart` did not remove SVG when `line` attribute was removed (added cleanup).
+- Toolbar compact variant (`@container (inline-size < 16rem)`) was half-dead: the
+  `.c-toolbar__btn` 2rem rule was overridden by the base 2.25rem rule at equal
+  specificity. Reordered so the container query wins in narrow containers.
+
+### Changed (M-WC-08)
+- `ContourProps` TypeScript interface expanded from 8 to 99 observed attributes.
+- `wc-contract` gate extended with close-button probe (1,205 measurements, up from 1,204).
+- `contour.d.ts` budget raised from 26 kB to 27 kB for expanded ContourProps.
+
+### Added (M-WC-08)
+- Close-button demo added to reactivity playground in §23 (ContourAlert closable + reset button).
+- `ContourMeter` value range documented (0-1 fraction, not 0-100).
+
+### Fixed (M-WC-07)
+- Performance: added `content-visibility: auto` to card, panel, alert, empty components.
+- P0/P1 fixes: observed attributes, property reflection, shadow slotted behaviour,
+  tabindex, form input preservation, redundant role removal.
+- R10: Added `ContourProps` interface with common attributes.
+- R12: Added batch() demo, reactivity playground, form-association demo, event-emission demo in §23.
+- R13: Full scaffolding pass — all listed gaps already scaffolded.
+- R14: Added `contain: layout` to leaf components (badge, chip, pill, dot, kbd, tag, avatar).
+
+### Fixed (M-WC-06)
+- Focus restoration fallback for unkeyed active elements (keyed by id → name → index).
+- Authored select child detection refined in ContourSelect and ContourVersion.
+- Cartographic SVG geometry generators added (compassNeedle, scaleBarTicks).
+- Slot composition extended to timeline, steps, layer-switch.
+- Dual-syntax cross-reference badges added in Guide sections §04, §06, §14, §16.
+
+
 ### Fixed (M-WC-04)
 - 17 web components read attributes in `render()` that were missing from their own
   `static get observed()`, so changing those attributes never re-rendered: `contour-kpi`

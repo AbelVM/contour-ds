@@ -70,6 +70,21 @@
         if (valueText) valueText.textContent = range.value;
       });
     }
+    const closeAlert = $("[data-wc-pg-close]", panel);
+    const resetBtn = $("[data-wc-pg-reset]", panel);
+    if (resetBtn && closeAlert) {
+      resetBtn.addEventListener("click", () => {
+        if (!document.body.contains(closeAlert)) {
+          const newAlert = document.createElement("contour-alert");
+          newAlert.setAttribute("data-wc-pg-close", "");
+          newAlert.setAttribute("variant", "info");
+          newAlert.setAttribute("title", "Closable");
+          newAlert.setAttribute("body", "Click the × to dismiss");
+          newAlert.setAttribute("closable", "");
+          resetBtn.parentNode.insertBefore(newAlert, resetBtn);
+        }
+      });
+    }
   };
 
   if (window.customElements?.get("contour-alert")) wcPlayground();
