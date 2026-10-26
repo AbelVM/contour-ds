@@ -204,7 +204,15 @@
          // Preserve focus, scroll position and <details> open state across the
          // rebuild, so a host attribute change does not yank focus to <body>
          // or collapse an open disclosure.
-         const hadFocus = this.contains(document.activeElement) ? document.activeElement : null;
+          const hadFocus = this.contains(document.activeElement) ? document.activeElement : null;
+          // Capture a recovery key for unkeyed active elements: an id is the
+          // strongest key, then a `name`, then the relative index among all
+          // focusable controls inside the host. Without these, an attribute
+          // update that rebuilds an unkeyed input drops focus to <body>.
+          const _focusableSelector = "button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])";
+          const _focusablesBefore = Array.from(this.querySelectorAll(_focusableSelector));
+          const hadFocusIndex = hadFocus ? _focusablesBefore.indexOf(hadFocus) : -1;
+          const hadFocusName = hadFocus ? (hadFocus.getAttribute("name") || null) : null;
          const savedScrolls = Array.from(this.querySelectorAll("*")).filter((el) => el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth).map((el) => ({ el, top: el.scrollTop, left: el.scrollLeft }));
          const savedDetails = Array.from(this.querySelectorAll("details")).map((d) => ({ id: d.id || null, open: d.open }));
          // Drop generated nodes from the previous render.
@@ -309,16 +317,34 @@
           el.scrollTop = s.top;
           el.scrollLeft = s.left;
         }
-        // Restore focus if it was inside the host.
-        if (hadFocus) {
-          if (document.contains(hadFocus)) {
-            try { hadFocus.focus(); } catch (e) {}
-          } else {
-            const first = this.querySelector("button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])");
-            if (first) try { first.focus(); } catch (e) {}
-            else try { this.focus(); } catch (e) {}
-          }
-        }
+         // Restore focus if it was inside the host. Keyed elements (id) are
+         // matched first; unkeyed ones fall back to a `name` attribute, then to
+         // their relative index among focusable controls, so an attribute update
+         // that rebuilds an unkeyed input no longer drops focus to <body>.
+         if (hadFocus) {
+           let target = null;
+           if (hadFocus.id) {
+             try { target = this.querySelector("#" + CSS.escape(hadFocus.id)); } catch (e) { target = null; }
+           }
+           if (!target && hadFocusName) {
+             try { target = this.querySelector('[name="' + CSS.escape(hadFocusName) + '"]'); } catch (e) { target = null; }
+           }
+           if (!target && hadFocusIndex >= 0) {
+             const after = Array.from(this.querySelectorAll(_focusableSelector));
+             if (after.length) {
+               target = after[Math.min(hadFocusIndex, after.length - 1)];
+             }
+           }
+           if (target && typeof target.focus === "function") {
+             try { target.focus(); } catch (e) {}
+           } else if (document.contains(hadFocus)) {
+             try { hadFocus.focus(); } catch (e) {}
+           } else {
+             const first = this.querySelector(_focusableSelector);
+             if (first) try { first.focus(); } catch (e) {}
+             else try { this.focus(); } catch (e) {}
+           }
+         }
         this.enhance();
       } finally {
         this._contourRendering = false;

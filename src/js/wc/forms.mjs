@@ -292,7 +292,8 @@ class ContourSelect extends ContourBase {
       this.classList.add("c-select");
       const options = this.getAttribute("options");
       // Slot composition: an authored <select> wins over the JSON attribute.
-      const authored = Array.from(this.children).filter((n) => n.tagName !== "SELECT" || !n.classList || !n.classList.contains("c-select"));
+      const generated = new Set(this._contourGenerated || []);
+      const authored = Array.from(this.children).filter((n) => !generated.has(n));
       if (options && !authored.length) {
         try {
           const parsed = JSON.parse(options);
@@ -342,7 +343,8 @@ class ContourVersion extends ContourBase {
     render() {
       this.classList.add("c-version");
       const options = this.getAttribute("options");
-      const authored = Array.from(this.children).filter((n) => n.tagName !== "SELECT");
+      const generated = new Set(this._contourGenerated || []);
+      const authored = Array.from(this.children).filter((n) => !generated.has(n));
       if (options && !authored.length) {
         try {
           const parsed = JSON.parse(options);

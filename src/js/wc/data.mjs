@@ -701,10 +701,11 @@ class ContourTimeline extends ContourBase {
     static get properties() { return { items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-timeline");
-      // Drop previously generated items so a re-render cannot stack a second set.
-      Array.from(this.querySelectorAll(".c-timeline__item")).forEach((n) => n.remove());
+      const authored = Array.from(this.children).filter((n) => n.classList && n.classList.contains("c-timeline__item"));
       const items = this.getAttribute("items");
-      if (items) {
+      if (items && !authored.length) {
+        // Drop previously generated items so a re-render cannot stack a second set.
+        Array.from(this.querySelectorAll(".c-timeline__item")).forEach((n) => n.remove());
         try {
           const parsed = JSON.parse(items);
           parsed.forEach((it) => {

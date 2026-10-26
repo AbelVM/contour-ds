@@ -1175,23 +1175,16 @@
   }
 
   .c-compass__needle {
-    position: relative;
-    inline-size: 0.125rem;
-    block-size: 1.25rem;
-    background: var(--color-danger);
-    transform-origin: center bottom;
-    transition: transform var(--dur-fast) var(--ease-standard);
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    overflow: visible;
+    pointer-events: none;
   }
 
-  .c-compass__needle::before {
-    content: "";
-    position: absolute;
-    inset-block-start: -0.25rem;
-    inset-inline-start: -0.25rem;
-    inline-size: 0.625rem;
-    block-size: 0.625rem;
-    background: var(--color-danger);
-    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  .c-compass__needle path {
+    fill: var(--color-danger);
   }
 
   .c-compass__label {
@@ -1947,9 +1940,19 @@
   }
 
   .c-scale-bar__line {
+    position: relative;
     block-size: 2px;
     background: var(--color-text-muted);
     border-radius: var(--radius-pill);
+  }
+
+  .c-scale-bar__tick {
+    position: absolute;
+    inset-block-start: 50%;
+    inline-size: 1px;
+    block-size: 0.5rem;
+    background: var(--color-text-muted);
+    transform: translate(-50%, -50%);
   }
 
   .c-scale-bar__label {

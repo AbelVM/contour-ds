@@ -1,4 +1,5 @@
 import { ContourBase, define } from './core.mjs';
+import { compassNeedle, scaleBarTicks } from './svg.mjs';
 class ContourMinimap extends ContourBase {
     static get observed() { return ["label", "viewport"]; }
     static get properties() { return { label: { attribute: "label" }, viewport: { attribute: "viewport" } }; }
@@ -231,10 +232,21 @@ class ContourCompassFull extends ContourBase {
       }
       const needle = this.getAttribute("needle");
       if (needle) {
-        const n = this.ensure(".c-compass__needle", () => { const el = document.createElement("span"); el.className = "c-compass__needle"; return el; });
-        n.style.transform = "rotate(" + needle + "deg)";
+        const deg = Number(needle) || 0;
+        const n = this.ensure("svg.c-compass__needle", () => {
+          const el = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+          el.setAttribute("class", "c-compass__needle");
+          el.setAttribute("viewBox", "0 0 40 40");
+          el.setAttribute("aria-hidden", "true");
+          const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          path.setAttribute("d", compassNeedle(20, 20, 16, deg));
+          el.appendChild(path);
+          return el;
+        });
+        const path = n.querySelector("path");
+        if (path) path.setAttribute("d", compassNeedle(20, 20, 16, deg));
       } else {
-        const n = this.querySelector(".c-compass__needle");
+        const n = this.querySelector("svg.c-compass__needle, .c-compass__needle");
         if (n) n.remove();
       }
     }
@@ -245,10 +257,11 @@ class ContourLayerSwitch extends ContourBase {
     static get properties() { return { items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-layer-switch");
-      // Drop previously generated items so a re-render cannot stack a second set.
-      Array.from(this.querySelectorAll(".c-layer-switch__item")).forEach((n) => n.remove());
+      const authored = Array.from(this.children).filter((n) => n.classList && n.classList.contains("c-layer-switch__item"));
       const items = this.getAttribute("items");
-      if (items) {
+      if (items && !authored.length) {
+        // Drop previously generated items so a re-render cannot stack a second set.
+        Array.from(this.querySelectorAll(".c-layer-switch__item")).forEach((n) => n.remove());
         try {
           const parsed = JSON.parse(items);
           const capped = Array.isArray(parsed) ? parsed.slice(0, 50) : parsed;
@@ -411,9 +424,23 @@ class ContourScaleBar extends ContourBase {
       if (value) {
         const line = this.ensure(".c-scale-bar__line", () => { const el = document.createElement("span"); el.className = "c-scale-bar__line"; return el; });
         line.style.inlineSize = value;
+        // Render metric subdivision ticks along the bar.
+        const ticks = scaleBarTicks(parseFloat(value) || 0, 4);
+        const max = ticks[ticks.length - 1] || 1;
+        // Remove old ticks
+        Array.from(line.querySelectorAll(".c-scale-bar__tick")).forEach((t) => t.remove());
+        ticks.forEach((tv) => {
+          const tick = document.createElement("span");
+          tick.className = "c-scale-bar__tick";
+          tick.style.left = ((tv / max) * 100) + "%";
+          line.appendChild(tick);
+        });
       } else {
         const line = this.querySelector(".c-scale-bar__line");
-        if (line) line.remove();
+        if (line) {
+          Array.from(line.querySelectorAll(".c-scale-bar__tick")).forEach((t) => t.remove());
+          line.remove();
+        }
       }
     }
   }

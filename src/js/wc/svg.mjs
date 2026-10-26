@@ -134,15 +134,49 @@ export function polylinePoints(values, opts) {
  * @param {object} [opts] same as polylinePoints
  * @returns {string} SVG path `d` attribute
  */
-export function smoothPath(values, opts) {
-  const pts = polylinePoints(values, opts).split(" ").map((p) => p.split(",").map(Number));
-  if (!pts.length) return "";
-  let d = `M ${pts[0][0]} ${pts[0][1]}`;
-  for (let i = 1; i < pts.length; i++) {
-    const prev = pts[i - 1];
-    const cur = pts[i];
-    const cpx = (prev[0] + cur[0]) / 2;
-    d += ` C ${cpx} ${prev[1]}, ${cpx} ${cur[1]}, ${cur[0]} ${cur[1]}`;
+/**
+ * Build an SVG path for a compass needle pointing at `angleDeg` (clockwise
+ * from north/up). The needle is a thin triangle from the centre to the tip,
+ * with a short tail in the opposite direction.
+ *
+ * @param {number} cx centre x
+ * @param {number} cy centre y
+ * @param {number} length needle length (tip distance from centre)
+ * @param {number} [angleDeg=0] bearing in degrees, clockwise from up
+ * @param {number} [width=3] half-width of the needle at the base
+ * @returns {string} SVG path `d` attribute
+ */
+export function compassNeedle(cx, cy, length, angleDeg, width) {
+  angleDeg = angleDeg == null ? 0 : angleDeg;
+  width = width == null ? 3 : width;
+  const a = (angleDeg - 90) * Math.PI / 180; // 0deg = up
+  const tipX = cx + length * Math.cos(a);
+  const tipY = cy + length * Math.sin(a);
+  const tail = length * 0.25;
+  const tailX = cx - tail * Math.cos(a);
+  const tailY = cy - tail * Math.sin(a);
+  const perpX = Math.cos(a + Math.PI / 2);
+  const perpY = Math.sin(a + Math.PI / 2);
+  const b1x = cx + width * perpX;
+  const b1y = cy + width * perpY;
+  const b2x = cx - width * perpX;
+  const b2y = cy - width * perpY;
+  return `M ${tipX.toFixed(2)} ${tipY.toFixed(2)} L ${b1x.toFixed(2)} ${b1y.toFixed(2)} L ${tailX.toFixed(2)} ${tailY.toFixed(2)} L ${b2x.toFixed(2)} ${b2y.toFixed(2)} Z`;
+}
+
+/**
+ * Compute tick values for a scale bar.
+ *
+ * @param {number} value total value (max)
+ * @param {number} [segments=4] number of segments
+ * @returns {number[]} tick values from 0 to value inclusive
+ */
+export function scaleBarTicks(value, segments) {
+  value = Number(value) || 0;
+  segments = Math.max(1, Math.round(segments || 4));
+  const out = [];
+  for (let i = 0; i <= segments; i++) {
+    out.push((value / segments) * i);
   }
-  return d;
+  return out;
 }

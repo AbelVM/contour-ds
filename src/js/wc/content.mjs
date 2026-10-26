@@ -59,10 +59,11 @@ class ContourSteps extends ContourBase {
     static get properties() { return { steps: { attribute: "steps" } }; }
     render() {
       this.classList.add("c-steps");
-      // Drop previously generated items so a re-render cannot stack a second set.
-      Array.from(this.querySelectorAll(".c-steps__item")).forEach((n) => n.remove());
+      const authored = Array.from(this.children).filter((n) => n.classList && n.classList.contains("c-steps__item"));
       const steps = this.getAttribute("steps");
-      if (steps) {
+      if (steps && !authored.length) {
+        // Drop previously generated items so a re-render cannot stack a second set.
+        Array.from(this.querySelectorAll(".c-steps__item")).forEach((n) => n.remove());
         try {
           const parsed = JSON.parse(steps);
           // The step number is a CSS counter (`.c-steps__item::before` reads
