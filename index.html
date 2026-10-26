@@ -7635,7 +7635,7 @@ means obvious.
               font-family. Load it after the library's own stylesheet.
             </p>
             <div class="ds-example" data-generated="wrap"><div class="ds-panel ds-panel--sunken">
-              <pre class="hljs"><code class="language-javascript"><span class="hljs-keyword">const</span> r = <span class="hljs-keyword">await</span> <span class="hljs-title function_">route</span>(src, dst, url);</code></pre>
+              <pre class="hljs"><code class="language-javascript nohighlight"><span class="hljs-keyword">const</span> r = <span class="hljs-keyword">await</span> <span class="hljs-title function_">route</span>(src, dst, url);</code></pre>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -7649,7 +7649,7 @@ means obvious.
                       </summary>
                       <div class="ds-code__body">
                         <pre class="ds-code__pre"><code id="ds-code-113">&lt;pre class="hljs"&gt;
-  &lt;code class="language-javascript"&gt;
+  &lt;code class="language-javascript nohighlight"&gt;
     &lt;span class="hljs-keyword"&gt;const&lt;/span&gt;
     r =
     &lt;span class="hljs-keyword"&gt;await&lt;/span&gt;
@@ -11448,83 +11448,111 @@ means obvious.
           </div>
 
           <div class="c-panel" data-wc-demo>
-            <h3 class="c-panel__title">Reactivity, counted</h3>
-            <p class="c-panel__body">
-              One card, two ways to change it. Writing three attributes in turn rebuilds the card
-              three times; the same three writes inside <code class="c-kbd">batch()</code> rebuild
-              it once. The count is the element's own <code class="c-kbd">renderCount</code>, not a
-              number this page keeps, so it cannot drift from what the layer did.
-            </p>
-            <contour-kpi data-wc-demo-kpi label="Routes matched" value="128" delta="+12" direction="up"></contour-kpi>
-            <div class="c-cluster">
-              <button class="c-btn c-btn--sm" type="button" data-wc-demo-single>Three separate writes</button>
-              <button class="c-btn c-btn--ghost c-btn--sm" type="button" data-wc-demo-batch>Three writes, one batch</button>
-              <span class="u-mono" role="status" data-wc-demo-count></span>
+            <div class="c-panel__head">
+              <div>
+                <h3 class="c-panel__title">Reactivity, counted</h3>
+              </div>
+            </div>
+            <div class="c-panel__body">
+              <p>
+                One card, two ways to change it. Writing three attributes in turn rebuilds the card
+                three times; the same three writes inside <code class="c-kbd">batch()</code> rebuild
+                it once. The count is the element's own <code class="c-kbd">renderCount</code>, not a
+                number this page keeps, so it cannot drift from what the layer did.
+              </p>
+              <contour-kpi data-wc-demo-kpi label="Routes matched" value="128" delta="+12" direction="up"></contour-kpi>
+              <div class="c-cluster">
+                <button class="c-btn c-btn--sm" type="button" data-wc-demo-single>Three separate writes</button>
+                <button class="c-btn c-btn--ghost c-btn--sm" type="button" data-wc-demo-batch>Three writes, one batch</button>
+                <span class="u-mono" role="status" data-wc-demo-count></span>
+              </div>
             </div>
           </div>
 
           <div class="c-panel" data-wc-playground>
-            <h3 class="c-panel__title">Reactivity playground</h3>
-            <p class="c-panel__body">
-              Toggle attributes live and watch the component re-render. The alert's
-              <code class="c-kbd">variant</code> and the kpi's <code class="c-kbd">value</code>
-              are driven by the controls below; no page-level state is kept.
-            </p>
-            <contour-alert data-wc-pg-alert variant="info" title="Heads up" body="Status message"></contour-alert>
-            <div class="c-cluster">
-              <label class="c-field__label" for="wc-pg-variant">Variant</label>
-              <select class="c-select" id="wc-pg-variant" data-wc-pg-variant>
-                <option value="info">info</option>
-                <option value="success">success</option>
-                <option value="warning">warning</option>
-                <option value="danger">danger</option>
-              </select>
+            <div class="c-panel__head">
+              <div>
+                <h3 class="c-panel__title">Reactivity playground</h3>
+              </div>
             </div>
-            <contour-kpi data-wc-pg-kpi label="Live value" value="0"></contour-kpi>
-            <div class="c-cluster">
-              <label class="c-field__label" for="wc-pg-value">Value</label>
-              <input class="c-range" type="range" id="wc-pg-value" min="0" max="100" value="0" data-wc-pg-value />
-              <span class="u-mono" data-wc-pg-valuetext>0</span>
+            <div class="c-panel__body">
+              <p>
+                Toggle attributes live and watch the component re-render. The alert's
+                <code class="c-kbd">variant</code> and the kpi's <code class="c-kbd">value</code>
+                are driven by the controls below; no page-level state is kept.
+              </p>
+              <contour-alert data-wc-pg-alert variant="info" title="Heads up" body="Status message"></contour-alert>
+              <div class="c-cluster">
+                <label class="c-field__label" for="wc-pg-variant">Variant</label>
+                <select class="c-select" id="wc-pg-variant" data-wc-pg-variant>
+                  <option value="info">info</option>
+                  <option value="success">success</option>
+                  <option value="warning">warning</option>
+                  <option value="danger">danger</option>
+                </select>
+              </div>
+              <contour-kpi data-wc-pg-kpi label="Live value" value="0"></contour-kpi>
+              <div class="c-cluster">
+                <label class="c-field__label" for="wc-pg-value">Value</label>
+                <input class="c-range" type="range" id="wc-pg-value" min="0" max="100" value="0" data-wc-pg-value />
+                <span class="u-mono" data-wc-pg-valuetext>0</span>
+              </div>
+              <div class="c-cluster">
+                <contour-alert data-wc-pg-close variant="info" title="Closable" body="Click the × to dismiss" closable></contour-alert>
+                <button class="c-btn c-btn--ghost c-btn--sm" type="button" data-wc-pg-reset>Reset alert</button>
+              </div>
             </div>
           </div>
 
           <div class="c-panel" data-wc-formdemo>
-            <h3 class="c-panel__title">Form association</h3>
-            <p class="c-panel__body">
-              <code class="c-kbd">contour-input</code>, <code class="c-kbd">contour-select</code>,
-              <code class="c-kbd">contour-check</code> and <code class="c-kbd">contour-switch</code>
-              participate in a native form via
-              <code class="c-kbd">ElementInternals</code>: their values are submitted, validated
-              and reset like native controls. Submit the form below to see the
-              <code class="c-kbd">FormData</code> it produces.
-            </p>
-            <form data-wc-formdemo-form>
-              <div class="c-cluster">
-                <contour-input name="name" label="Name" placeholder="Ada Lovelace" required></contour-input>
-                <contour-select name="role" options="[{&quot;label&quot;:&quot;Engineer&quot;,&quot;value&quot;:&quot;eng&quot;},{&quot;label&quot;:&quot;Designer&quot;,&quot;value&quot;:&quot;des&quot;}]"></contour-select>
-                <contour-check name="terms" label="Accept terms"></contour-check>
+            <div class="c-panel__head">
+              <div>
+                <h3 class="c-panel__title">Form association</h3>
               </div>
-              <div class="c-cluster">
-                <button class="c-btn c-btn--primary" type="submit">Submit</button>
-                <button class="c-btn c-btn--ghost" type="reset">Reset</button>
-              </div>
-            </form>
-            <pre class="u-mono" data-wc-formdemo-out aria-live="polite"></pre>
+            </div>
+            <div class="c-panel__body">
+              <p>
+                <code class="c-kbd">contour-input</code>, <code class="c-kbd">contour-select</code>,
+                <code class="c-kbd">contour-check</code> and <code class="c-kbd">contour-switch</code>
+                participate in a native form via
+                <code class="c-kbd">ElementInternals</code>: their values are submitted, validated
+                and reset like native controls. Submit the form below to see the
+                <code class="c-kbd">FormData</code> it produces.
+              </p>
+              <form data-wc-formdemo-form>
+                <div class="c-cluster">
+                  <contour-input name="name" label="Name" placeholder="Ada Lovelace" required></contour-input>
+                  <contour-select name="role" options="[{&quot;label&quot;:&quot;Engineer&quot;,&quot;value&quot;:&quot;eng&quot;},{&quot;label&quot;:&quot;Designer&quot;,&quot;value&quot;:&quot;des&quot;}]"></contour-select>
+                  <contour-check name="terms" label="Accept terms"></contour-check>
+                </div>
+                <div class="c-cluster">
+                  <button class="c-btn c-btn--primary" type="submit">Submit</button>
+                  <button class="c-btn c-btn--ghost" type="reset">Reset</button>
+                </div>
+              </form>
+              <pre class="u-mono" data-wc-formdemo-out aria-live="polite"></pre>
+            </div>
           </div>
 
           <div class="c-panel" data-wc-eventdemo>
-            <h3 class="c-panel__title">Event emission</h3>
-            <p class="c-panel__body">
-              Interactive components emit bubbling <code class="c-kbd">contour:*</code>
-              CustomEvents on the host, so a parent handles them without coupling to
-              internals. The menu below emits <code class="c-kbd">contour:select</code>;
-              the pagination emits <code class="c-kbd">contour:page</code>.
-            </p>
-            <div class="c-cluster">
-              <contour-menu items="[{&quot;label&quot;:&quot;Open&quot;},{&quot;label&quot;:&quot;Rename&quot;},{&quot;label&quot;:&quot;Delete&quot;,&quot;danger&quot;:true}]"></contour-menu>
-              <contour-pagination pages="5" current="1"></contour-pagination>
+            <div class="c-panel__head">
+              <div>
+                <h3 class="c-panel__title">Event emission</h3>
+              </div>
             </div>
-            <pre class="u-mono" data-wc-eventdemo-out aria-live="polite"></pre>
+            <div class="c-panel__body">
+              <p>
+                Interactive components emit bubbling <code class="c-kbd">contour:*</code>
+                CustomEvents on the host, so a parent handles them without coupling to
+                internals. The menu below emits <code class="c-kbd">contour:select</code>;
+                the pagination emits <code class="c-kbd">contour:page</code>.
+              </p>
+              <div class="c-cluster">
+                <contour-menu items="[{&quot;label&quot;:&quot;Open&quot;},{&quot;label&quot;:&quot;Rename&quot;},{&quot;label&quot;:&quot;Delete&quot;,&quot;danger&quot;:true}]"></contour-menu>
+                <contour-pagination pages="5" current="1"></contour-pagination>
+              </div>
+              <pre class="u-mono" data-wc-eventdemo-out aria-live="polite"></pre>
+            </div>
           </div>
 
           <div class="ds-example" data-generated="wrap"><div class="ds-spec">
@@ -11565,7 +11593,6 @@ means obvious.
 &lt;/contour-card&gt;</code></pre>
                       </div>
                     </details></div>
-          </section></main></div>
 
           <div class="ds-spec">
             <div class="ds-spec__head">
@@ -12081,9 +12108,9 @@ means obvious.
               <span class="ds-spec__token">contour-shadow-*</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-shadow-btn variant="primary">Shadow button</contour-shadow-btn>
-              <contour-shadow-badge>Shadow badge</contour-shadow-badge>
-              <contour-shadow-chip>Shadow chip</contour-shadow-chip>
+              <contour-btn variant="primary" label="Shadow button"></contour-btn>
+              <contour-badge variant="primary" label="Shadow badge"></contour-badge>
+              <contour-chip key="Shadow" value="chip"></contour-chip>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -12096,9 +12123,9 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-188">&lt;contour-shadow-btn variant="primary"&gt;Shadow button&lt;/contour-shadow-btn&gt;
-&lt;contour-shadow-badge&gt;Shadow badge&lt;/contour-shadow-badge&gt;
-&lt;contour-shadow-chip&gt;Shadow chip&lt;/contour-shadow-chip&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-188">&lt;contour-btn variant="primary" label="Shadow button"&gt;&lt;/contour-btn&gt;
+&lt;contour-badge variant="primary" label="Shadow badge"&gt;&lt;/contour-badge&gt;
+&lt;contour-chip key="Shadow" value="chip"&gt;&lt;/contour-chip&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -12599,7 +12626,7 @@ means obvious.
               <span class="ds-spec__token">contour-icon-badge</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-icon-badge></contour-icon-badge>
+              <contour-icon-badge icon="star"></contour-icon-badge>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -12612,7 +12639,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-209">&lt;contour-icon-badge&gt;&lt;/contour-icon-badge&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-209">&lt;contour-icon-badge icon="star"&gt;&lt;/contour-icon-badge&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -12623,7 +12650,7 @@ means obvious.
               <span class="ds-spec__token">contour-input-group</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-input-group></contour-input-group>
+              <contour-input-group label="Group"></contour-input-group>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -12636,7 +12663,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-210">&lt;contour-input-group&gt;&lt;/contour-input-group&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-210">&lt;contour-input-group label="Group"&gt;&lt;/contour-input-group&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -12935,7 +12962,7 @@ means obvious.
               <span class="ds-spec__token">contour-breadcrumb</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-breadcrumb></contour-breadcrumb>
+              <contour-breadcrumb items="[{&quot;label&quot;:&quot;Home&quot;}]"></contour-breadcrumb>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -12948,7 +12975,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-223">&lt;contour-breadcrumb&gt;&lt;/contour-breadcrumb&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-223">&lt;contour-breadcrumb items="[{&amp;quot;label&amp;quot;:&amp;quot;Home&amp;quot;}]"&gt;&lt;/contour-breadcrumb&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -13271,7 +13298,7 @@ means obvious.
               <span class="ds-spec__token">contour-table</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-table></contour-table>
+              <contour-table columns="[&quot;Name&quot;,&quot;Value&quot;]" rows="[[&quot;Ada&quot;,&quot;42&quot;]]"></contour-table>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -13284,7 +13311,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-237">&lt;contour-table&gt;&lt;/contour-table&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-237">&lt;contour-table columns="[&amp;quot;Name&amp;quot;,&amp;quot;Value&amp;quot;]" rows="[[&amp;quot;Ada&amp;quot;,&amp;quot;42&amp;quot;]]"&gt;&lt;/contour-table&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -13391,7 +13418,7 @@ means obvious.
               <span class="ds-spec__token">contour-btn-group</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-btn-group></contour-btn-group>
+              <contour-btn-group title="Buttons"><span>Example</span></contour-btn-group>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -13404,7 +13431,9 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-242">&lt;contour-btn-group&gt;&lt;/contour-btn-group&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-242">&lt;contour-btn-group title="Buttons"&gt;
+  &lt;span&gt;Example&lt;/span&gt;
+&lt;/contour-btn-group&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -13463,7 +13492,7 @@ means obvious.
               <span class="ds-spec__token">contour-do-dont</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-do-dont></contour-do-dont>
+              <contour-do-dont do="Do" dont="Don't"></contour-do-dont>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -13476,7 +13505,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-245">&lt;contour-do-dont&gt;&lt;/contour-do-dont&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-245">&lt;contour-do-dont do="Do" dont="Don't"&gt;&lt;/contour-do-dont&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -13535,7 +13564,7 @@ means obvious.
               <span class="ds-spec__token">contour-drag-handle</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-drag-handle></contour-drag-handle>
+              <contour-drag-handle label="Drag"></contour-drag-handle>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -13548,7 +13577,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-248">&lt;contour-drag-handle&gt;&lt;/contour-drag-handle&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-248">&lt;contour-drag-handle label="Drag"&gt;&lt;/contour-drag-handle&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -13559,7 +13588,7 @@ means obvious.
               <span class="ds-spec__token">contour-activity</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-activity></contour-activity>
+              <contour-activity items="[{&quot;text&quot;:&quot;Event&quot;}]"></contour-activity>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -13572,7 +13601,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-249">&lt;contour-activity&gt;&lt;/contour-activity&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-249">&lt;contour-activity items="[{&amp;quot;text&amp;quot;:&amp;quot;Event&amp;quot;}]"&gt;&lt;/contour-activity&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -13607,7 +13636,7 @@ means obvious.
               <span class="ds-spec__token">contour-chart</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-chart></contour-chart>
+              <contour-chart series="[{&quot;values&quot;:[3,7,2,9,5]}]" axis="Value"></contour-chart>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -13620,7 +13649,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-251">&lt;contour-chart&gt;&lt;/contour-chart&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-251">&lt;contour-chart series="[{&amp;quot;values&amp;quot;:[3,7,2,9,5]}]" axis="Value"&gt;&lt;/contour-chart&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -13631,7 +13660,7 @@ means obvious.
               <span class="ds-spec__token">contour-chart-grid</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-chart-grid></contour-chart-grid>
+              <contour-chart-grid title="Charts"><span>Example</span></contour-chart-grid>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -13644,7 +13673,9 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-252">&lt;contour-chart-grid&gt;&lt;/contour-chart-grid&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-252">&lt;contour-chart-grid title="Charts"&gt;
+  &lt;span&gt;Example&lt;/span&gt;
+&lt;/contour-chart-grid&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -13655,7 +13686,7 @@ means obvious.
               <span class="ds-spec__token">contour-command</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-command></contour-command>
+              <contour-command placeholder="Search" items="[{&quot;label&quot;:&quot;Cmd&quot;}]"></contour-command>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -13668,7 +13699,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-253">&lt;contour-command&gt;&lt;/contour-command&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-253">&lt;contour-command placeholder="Search" items="[{&amp;quot;label&amp;quot;:&amp;quot;Cmd&amp;quot;}]"&gt;&lt;/contour-command&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -13799,7 +13830,7 @@ means obvious.
               <span class="ds-spec__token">contour-filter-bar</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-filter-bar></contour-filter-bar>
+              <contour-filter-bar label="Filter" items="[&quot;A&quot;]"></contour-filter-bar>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -13812,7 +13843,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-259">&lt;contour-filter-bar&gt;&lt;/contour-filter-bar&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-259">&lt;contour-filter-bar label="Filter" items="[&amp;quot;A&amp;quot;]"&gt;&lt;/contour-filter-bar&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -13823,7 +13854,7 @@ means obvious.
               <span class="ds-spec__token">contour-footer</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-footer></contour-footer>
+              <contour-footer brand="Contour" note="Note"></contour-footer>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -13836,7 +13867,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-260">&lt;contour-footer&gt;&lt;/contour-footer&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-260">&lt;contour-footer brand="Contour" note="Note"&gt;&lt;/contour-footer&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -13847,7 +13878,7 @@ means obvious.
               <span class="ds-spec__token">contour-header</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-header></contour-header>
+              <contour-header brand="Contour"></contour-header>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -13860,7 +13891,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-261">&lt;contour-header&gt;&lt;/contour-header&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-261">&lt;contour-header brand="Contour"&gt;&lt;/contour-header&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -13919,7 +13950,7 @@ means obvious.
               <span class="ds-spec__token">contour-layer-panel</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-layer-panel></contour-layer-panel>
+              <contour-layer-panel label="Layers" items="[&quot;L1&quot;]"></contour-layer-panel>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -13932,7 +13963,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-264">&lt;contour-layer-panel&gt;&lt;/contour-layer-panel&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-264">&lt;contour-layer-panel label="Layers" items="[&amp;quot;L1&amp;quot;]"&gt;&lt;/contour-layer-panel&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -13943,7 +13974,7 @@ means obvious.
               <span class="ds-spec__token">contour-layer-switch</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-layer-switch></contour-layer-switch>
+              <contour-layer-switch items="[&quot;A&quot;,&quot;B&quot;]"></contour-layer-switch>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -13956,7 +13987,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-265">&lt;contour-layer-switch&gt;&lt;/contour-layer-switch&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-265">&lt;contour-layer-switch items="[&amp;quot;A&amp;quot;,&amp;quot;B&amp;quot;]"&gt;&lt;/contour-layer-switch&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -13967,7 +13998,7 @@ means obvious.
               <span class="ds-spec__token">contour-legend</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-legend></contour-legend>
+              <contour-legend items="[{&quot;label&quot;:&quot;A&quot;,&quot;color&quot;:&quot;red&quot;}]" title="Legend"></contour-legend>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -13980,7 +14011,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-266">&lt;contour-legend&gt;&lt;/contour-legend&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-266">&lt;contour-legend items="[{&amp;quot;label&amp;quot;:&amp;quot;A&amp;quot;,&amp;quot;color&amp;quot;:&amp;quot;red&amp;quot;}]" title="Legend"&gt;&lt;/contour-legend&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -13991,7 +14022,7 @@ means obvious.
               <span class="ds-spec__token">contour-logos</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-logos></contour-logos>
+              <contour-logos title="Logos"><span>Logo</span></contour-logos>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -14004,7 +14035,9 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-267">&lt;contour-logos&gt;&lt;/contour-logos&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-267">&lt;contour-logos title="Logos"&gt;
+  &lt;span&gt;Logo&lt;/span&gt;
+&lt;/contour-logos&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -14015,7 +14048,7 @@ means obvious.
               <span class="ds-spec__token">contour-map-area</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-map-area></contour-map-area>
+              <contour-map-area attribution="Map"></contour-map-area>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -14028,7 +14061,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-268">&lt;contour-map-area&gt;&lt;/contour-map-area&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-268">&lt;contour-map-area attribution="Map"&gt;&lt;/contour-map-area&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -14039,7 +14072,7 @@ means obvious.
               <span class="ds-spec__token">contour-map-panel</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-map-panel></contour-map-panel>
+              <contour-map-panel title="Panel"></contour-map-panel>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -14052,7 +14085,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-269">&lt;contour-map-panel&gt;&lt;/contour-map-panel&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-269">&lt;contour-map-panel title="Panel"&gt;&lt;/contour-map-panel&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -14063,7 +14096,7 @@ means obvious.
               <span class="ds-spec__token">contour-minimap</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet style="position: relative; block-size: 8rem">
-              <contour-minimap></contour-minimap>
+              <contour-minimap label="Minimap"></contour-minimap>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -14076,7 +14109,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-270">&lt;contour-minimap&gt;&lt;/contour-minimap&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-270">&lt;contour-minimap label="Minimap"&gt;&lt;/contour-minimap&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -14135,7 +14168,7 @@ means obvious.
               <span class="ds-spec__token">contour-map-footer</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-map-footer></contour-map-footer>
+              <contour-map-footer brand="Contour"></contour-map-footer>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -14148,7 +14181,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-273">&lt;contour-map-footer&gt;&lt;/contour-map-footer&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-273">&lt;contour-map-footer brand="Contour"&gt;&lt;/contour-map-footer&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -14159,7 +14192,7 @@ means obvious.
               <span class="ds-spec__token">contour-map-slot</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-map-slot></contour-map-slot>
+              <contour-map-slot attribution="Map"></contour-map-slot>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -14172,7 +14205,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-274">&lt;contour-map-slot&gt;&lt;/contour-map-slot&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-274">&lt;contour-map-slot attribution="Map"&gt;&lt;/contour-map-slot&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -14183,7 +14216,7 @@ means obvious.
               <span class="ds-spec__token">contour-mark</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-mark></contour-mark>
+              <contour-mark label="Mark"></contour-mark>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -14196,7 +14229,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-275">&lt;contour-mark&gt;&lt;/contour-mark&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-275">&lt;contour-mark label="Mark"&gt;&lt;/contour-mark&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -14207,7 +14240,7 @@ means obvious.
               <span class="ds-spec__token">contour-measure</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet style="position: relative; block-size: 12rem">
-              <contour-measure></contour-measure>
+              <contour-measure label="Distance" value="42 km" line="100px"></contour-measure>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -14220,7 +14253,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-276">&lt;contour-measure&gt;&lt;/contour-measure&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-276">&lt;contour-measure label="Distance" value="42 km" line="100px"&gt;&lt;/contour-measure&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -14231,7 +14264,7 @@ means obvious.
               <span class="ds-spec__token">contour-metrics</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-metrics></contour-metrics>
+              <contour-metrics title="Metrics"></contour-metrics>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -14244,7 +14277,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-277">&lt;contour-metrics&gt;&lt;/contour-metrics&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-277">&lt;contour-metrics title="Metrics"&gt;&lt;/contour-metrics&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -14303,7 +14336,7 @@ means obvious.
               <span class="ds-spec__token">contour-pricing</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-pricing></contour-pricing>
+              <contour-pricing value="$99"></contour-pricing>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -14316,7 +14349,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-280">&lt;contour-pricing&gt;&lt;/contour-pricing&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-280">&lt;contour-pricing value="$99"&gt;&lt;/contour-pricing&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -14375,7 +14408,7 @@ means obvious.
               <span class="ds-spec__token">contour-recipe</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-recipe></contour-recipe>
+              <contour-recipe title="Recipe" body="Body"></contour-recipe>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -14388,7 +14421,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-283">&lt;contour-recipe&gt;&lt;/contour-recipe&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-283">&lt;contour-recipe title="Recipe" body="Body"&gt;&lt;/contour-recipe&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -14399,7 +14432,7 @@ means obvious.
               <span class="ds-spec__token">contour-reserved</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-reserved></contour-reserved>
+              <contour-reserved title="Reserved"></contour-reserved>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -14412,7 +14445,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-284">&lt;contour-reserved&gt;&lt;/contour-reserved&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-284">&lt;contour-reserved title="Reserved"&gt;&lt;/contour-reserved&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -14423,7 +14456,7 @@ means obvious.
               <span class="ds-spec__token">contour-scale-bar</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-scale-bar></contour-scale-bar>
+              <contour-scale-bar value="100" segments="4"></contour-scale-bar>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -14436,7 +14469,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-285">&lt;contour-scale-bar&gt;&lt;/contour-scale-bar&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-285">&lt;contour-scale-bar value="100" segments="4"&gt;&lt;/contour-scale-bar&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -14447,7 +14480,7 @@ means obvious.
               <span class="ds-spec__token">contour-shortcut-list</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-shortcut-list></contour-shortcut-list>
+              <contour-shortcut-list title="Shortcuts"></contour-shortcut-list>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -14460,7 +14493,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-286">&lt;contour-shortcut-list&gt;&lt;/contour-shortcut-list&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-286">&lt;contour-shortcut-list title="Shortcuts"&gt;&lt;/contour-shortcut-list&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -14495,7 +14528,7 @@ means obvious.
               <span class="ds-spec__token">contour-showcase</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-showcase></contour-showcase>
+              <contour-showcase title="Showcase"></contour-showcase>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -14508,7 +14541,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-288">&lt;contour-showcase&gt;&lt;/contour-showcase&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-288">&lt;contour-showcase title="Showcase"&gt;&lt;/contour-showcase&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -14519,7 +14552,7 @@ means obvious.
               <span class="ds-spec__token">contour-skeleton</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-skeleton></contour-skeleton>
+              <contour-skeleton title="Skeleton"></contour-skeleton>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -14532,7 +14565,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-289">&lt;contour-skeleton&gt;&lt;/contour-skeleton&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-289">&lt;contour-skeleton title="Skeleton"&gt;&lt;/contour-skeleton&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -14543,7 +14576,7 @@ means obvious.
               <span class="ds-spec__token">contour-sparkline</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-sparkline></contour-sparkline>
+              <contour-sparkline points="[0.2,0.5,0.8,0.4,0.9]"></contour-sparkline>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -14556,7 +14589,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-290">&lt;contour-sparkline&gt;&lt;/contour-sparkline&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-290">&lt;contour-sparkline points="[0.2,0.5,0.8,0.4,0.9]"&gt;&lt;/contour-sparkline&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -14591,7 +14624,7 @@ means obvious.
               <span class="ds-spec__token">contour-resize-handle</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-resize-handle></contour-resize-handle>
+              <contour-resize-handle label="Resize"></contour-resize-handle>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -14604,7 +14637,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-292">&lt;contour-resize-handle&gt;&lt;/contour-resize-handle&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-292">&lt;contour-resize-handle label="Resize"&gt;&lt;/contour-resize-handle&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -14615,7 +14648,7 @@ means obvious.
               <span class="ds-spec__token">contour-row-action</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-row-action></contour-row-action>
+              <contour-row-action label="Action"><span>Action</span></contour-row-action>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -14628,7 +14661,9 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-293">&lt;contour-row-action&gt;&lt;/contour-row-action&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-293">&lt;contour-row-action label="Action"&gt;
+  &lt;span&gt;Action&lt;/span&gt;
+&lt;/contour-row-action&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -14639,7 +14674,10 @@ means obvious.
               <span class="ds-spec__token">contour-scrim</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-scrim></contour-scrim>
+              <div class="ds-stage" style="min-block-size: 6rem; padding: var(--space-md)">
+                <p class="muted" style="font-size: var(--type-sm)">Content behind the scrim.</p>
+                <div class="c-scrim c-scrim--inline is-open">Scrim overlay</div>
+              </div>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -14652,7 +14690,9 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-294">&lt;contour-scrim&gt;&lt;/contour-scrim&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-294">&lt;div class="ds-stage" style="min-block-size: 6rem; padding: var(--space-md)"&gt;
+  &lt;div class="c-scrim c-scrim--inline is-open"&gt;Scrim overlay&lt;/div&gt;
+&lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -14687,7 +14727,7 @@ means obvious.
               <span class="ds-spec__token">contour-sheet</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-sheet></contour-sheet>
+              <contour-sheet title="Sheet" body="Body"></contour-sheet>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -14700,7 +14740,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-296">&lt;contour-sheet&gt;&lt;/contour-sheet&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-296">&lt;contour-sheet title="Sheet" body="Body"&gt;&lt;/contour-sheet&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -14711,7 +14751,7 @@ means obvious.
               <span class="ds-spec__token">contour-shortcut-list</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-shortcut-list></contour-shortcut-list>
+              <contour-shortcut-list title="Shortcuts"></contour-shortcut-list>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -14724,7 +14764,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-297">&lt;contour-shortcut-list&gt;&lt;/contour-shortcut-list&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-297">&lt;contour-shortcut-list title="Shortcuts"&gt;&lt;/contour-shortcut-list&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -14735,7 +14775,7 @@ means obvious.
               <span class="ds-spec__token">contour-shortcut-overlay</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-shortcut-overlay></contour-shortcut-overlay>
+              <contour-shortcut-overlay title="Overlay"></contour-shortcut-overlay>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -14748,7 +14788,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-298">&lt;contour-shortcut-overlay&gt;&lt;/contour-shortcut-overlay&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-298">&lt;contour-shortcut-overlay title="Overlay"&gt;&lt;/contour-shortcut-overlay&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -14759,7 +14799,7 @@ means obvious.
               <span class="ds-spec__token">contour-shortcut-panel</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-shortcut-panel></contour-shortcut-panel>
+              <contour-shortcut-panel title="Panel"></contour-shortcut-panel>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -14772,7 +14812,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-299">&lt;contour-shortcut-panel&gt;&lt;/contour-shortcut-panel&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-299">&lt;contour-shortcut-panel title="Panel"&gt;&lt;/contour-shortcut-panel&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -14807,7 +14847,7 @@ means obvious.
               <span class="ds-spec__token">contour-sidebar</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-sidebar></contour-sidebar>
+              <contour-sidebar title="Sidebar"></contour-sidebar>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -14820,7 +14860,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-301">&lt;contour-sidebar&gt;&lt;/contour-sidebar&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-301">&lt;contour-sidebar title="Sidebar"&gt;&lt;/contour-sidebar&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -14831,7 +14871,7 @@ means obvious.
               <span class="ds-spec__token">contour-skeleton</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-skeleton></contour-skeleton>
+              <contour-skeleton title="Skeleton"></contour-skeleton>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -14844,7 +14884,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-302">&lt;contour-skeleton&gt;&lt;/contour-skeleton&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-302">&lt;contour-skeleton title="Skeleton"&gt;&lt;/contour-skeleton&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -14879,7 +14919,7 @@ means obvious.
               <span class="ds-spec__token">contour-streaming-chart</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-streaming-chart></contour-streaming-chart>
+              <contour-streaming-chart line="M0,60 L300,60"></contour-streaming-chart>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -14892,7 +14932,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-304">&lt;contour-streaming-chart&gt;&lt;/contour-streaming-chart&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-304">&lt;contour-streaming-chart line="M0,60 L300,60"&gt;&lt;/contour-streaming-chart&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -14903,7 +14943,7 @@ means obvious.
               <span class="ds-spec__token">contour-survey</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-survey></contour-survey>
+              <contour-survey date="2026-01-01" instrument="Sensor A"></contour-survey>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -14916,7 +14956,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-305">&lt;contour-survey&gt;&lt;/contour-survey&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-305">&lt;contour-survey date="2026-01-01" instrument="Sensor A"&gt;&lt;/contour-survey&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -14975,7 +15015,7 @@ means obvious.
               <span class="ds-spec__token">contour-timeline</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-timeline></contour-timeline>
+              <contour-timeline items="[{&quot;time&quot;:&quot;09:00&quot;,&quot;title&quot;:&quot;Start&quot;}]"></contour-timeline>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -14988,7 +15028,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-308">&lt;contour-timeline&gt;&lt;/contour-timeline&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-308">&lt;contour-timeline items="[{&amp;quot;time&amp;quot;:&amp;quot;09:00&amp;quot;,&amp;quot;title&amp;quot;:&amp;quot;Start&amp;quot;}]"&gt;&lt;/contour-timeline&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -14999,7 +15039,7 @@ means obvious.
               <span class="ds-spec__token">contour-toast-host</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-toast-host></contour-toast-host>
+              <contour-toast-host title="Toasts"><span>Toast host</span></contour-toast-host>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15012,7 +15052,9 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-309">&lt;contour-toast-host&gt;&lt;/contour-toast-host&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-309">&lt;contour-toast-host title="Toasts"&gt;
+  &lt;span&gt;Toast host&lt;/span&gt;
+&lt;/contour-toast-host&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -15023,7 +15065,7 @@ means obvious.
               <span class="ds-spec__token">contour-toolbar</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-toolbar></contour-toolbar>
+              <contour-toolbar title="Toolbar"></contour-toolbar>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15036,7 +15078,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-310">&lt;contour-toolbar&gt;&lt;/contour-toolbar&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-310">&lt;contour-toolbar title="Toolbar"&gt;&lt;/contour-toolbar&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -15095,7 +15137,7 @@ means obvious.
               <span class="ds-spec__token">contour-version</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-version></contour-version>
+              <contour-version options="[&quot;v1&quot;]"></contour-version>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15108,7 +15150,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-313">&lt;contour-version&gt;&lt;/contour-version&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-313">&lt;contour-version options="[&amp;quot;v1&amp;quot;]"&gt;&lt;/contour-version&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -15119,7 +15161,7 @@ means obvious.
               <span class="ds-spec__token">contour-version-banner</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-version-banner></contour-version-banner>
+              <contour-version-banner message="v1.0"></contour-version-banner>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15132,7 +15174,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-314">&lt;contour-version-banner&gt;&lt;/contour-version-banner&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-314">&lt;contour-version-banner message="v1.0"&gt;&lt;/contour-version-banner&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -15143,7 +15185,7 @@ means obvious.
               <span class="ds-spec__token">contour-scroll-area</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-scroll-area></contour-scroll-area>
+              <contour-scroll-area title="Scroll"><span>Example</span></contour-scroll-area>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15156,7 +15198,9 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-315">&lt;contour-scroll-area&gt;&lt;/contour-scroll-area&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-315">&lt;contour-scroll-area title="Scroll"&gt;
+  &lt;span&gt;Example&lt;/span&gt;
+&lt;/contour-scroll-area&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -15167,7 +15211,7 @@ means obvious.
               <span class="ds-spec__token">contour-app</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet style="max-block-size: 12rem; overflow: hidden">
-              <contour-app></contour-app>
+              <contour-app title="App"><span>Example</span></contour-app>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15180,7 +15224,9 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-316">&lt;contour-app&gt;&lt;/contour-app&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-316">&lt;contour-app title="App"&gt;
+  &lt;span&gt;Example&lt;/span&gt;
+&lt;/contour-app&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -15191,7 +15237,7 @@ means obvious.
               <span class="ds-spec__token">contour-app-body</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-app-body></contour-app-body>
+              <contour-app-body title="Body"><span>Example</span></contour-app-body>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15204,7 +15250,9 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-317">&lt;contour-app-body&gt;&lt;/contour-app-body&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-317">&lt;contour-app-body title="Body"&gt;
+  &lt;span&gt;Example&lt;/span&gt;
+&lt;/contour-app-body&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -15215,7 +15263,7 @@ means obvious.
               <span class="ds-spec__token">contour-bivariate</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-bivariate></contour-bivariate>
+              <contour-bivariate size="3" axis-x="X" axis-y="Y"></contour-bivariate>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15228,7 +15276,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-318">&lt;contour-bivariate&gt;&lt;/contour-bivariate&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-318">&lt;contour-bivariate size="3" axis-x="X" axis-y="Y"&gt;&lt;/contour-bivariate&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -15239,7 +15287,7 @@ means obvious.
               <span class="ds-spec__token">contour-catchment</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet style="max-inline-size: 16rem">
-              <contour-catchment></contour-catchment>
+              <contour-catchment label="Catchment" area="10" center="0,0"></contour-catchment>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15252,7 +15300,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-319">&lt;contour-catchment&gt;&lt;/contour-catchment&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-319">&lt;contour-catchment label="Catchment" area="10" center="0,0"&gt;&lt;/contour-catchment&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -15263,7 +15311,7 @@ means obvious.
               <span class="ds-spec__token">contour-compare</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-compare></contour-compare>
+              <contour-compare yes="Yes" no="No" text="Compare"></contour-compare>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15276,7 +15324,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-320">&lt;contour-compare&gt;&lt;/contour-compare&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-320">&lt;contour-compare yes="Yes" no="No" text="Compare"&gt;&lt;/contour-compare&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -15287,7 +15335,7 @@ means obvious.
               <span class="ds-spec__token">contour-comparison</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-comparison></contour-comparison>
+              <contour-comparison divider="vs"></contour-comparison>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15300,7 +15348,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-321">&lt;contour-comparison&gt;&lt;/contour-comparison&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-321">&lt;contour-comparison divider="vs"&gt;&lt;/contour-comparison&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -15311,7 +15359,7 @@ means obvious.
               <span class="ds-spec__token">contour-compass</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-compass></contour-compass>
+              <contour-compass label="Compass" needle="45"></contour-compass>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15324,7 +15372,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-322">&lt;contour-compass&gt;&lt;/contour-compass&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-322">&lt;contour-compass label="Compass" needle="45"&gt;&lt;/contour-compass&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -15335,7 +15383,7 @@ means obvious.
               <span class="ds-spec__token">contour-contour-plot</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet style="max-inline-size: 16rem">
-              <contour-contour-plot></contour-contour-plot>
+              <contour-contour-plot axis="X" label="Plot"></contour-contour-plot>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15348,7 +15396,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-323">&lt;contour-contour-plot&gt;&lt;/contour-contour-plot&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-323">&lt;contour-contour-plot axis="X" label="Plot"&gt;&lt;/contour-contour-plot&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -15359,7 +15407,7 @@ means obvious.
               <span class="ds-spec__token">contour-dash-shell</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-dash-shell></contour-dash-shell>
+              <contour-dash-shell title="Dashboard"></contour-dash-shell>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15372,7 +15420,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-324">&lt;contour-dash-shell&gt;&lt;/contour-dash-shell&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-324">&lt;contour-dash-shell title="Dashboard"&gt;&lt;/contour-dash-shell&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -15383,7 +15431,7 @@ means obvious.
               <span class="ds-spec__token">contour-dash-toolbar</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-dash-toolbar></contour-dash-toolbar>
+              <contour-dash-toolbar title="Toolbar"></contour-dash-toolbar>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15396,7 +15444,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-325">&lt;contour-dash-toolbar&gt;&lt;/contour-dash-toolbar&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-325">&lt;contour-dash-toolbar title="Toolbar"&gt;&lt;/contour-dash-toolbar&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -15407,7 +15455,7 @@ means obvious.
               <span class="ds-spec__token">contour-docs-nav</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-docs-nav></contour-docs-nav>
+              <contour-docs-nav title="Nav"></contour-docs-nav>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15420,7 +15468,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-326">&lt;contour-docs-nav&gt;&lt;/contour-docs-nav&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-326">&lt;contour-docs-nav title="Nav"&gt;&lt;/contour-docs-nav&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -15431,7 +15479,7 @@ means obvious.
               <span class="ds-spec__token">contour-docs-shell</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-docs-shell></contour-docs-shell>
+              <contour-docs-shell title="Docs"></contour-docs-shell>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15444,7 +15492,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-327">&lt;contour-docs-shell&gt;&lt;/contour-docs-shell&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-327">&lt;contour-docs-shell title="Docs"&gt;&lt;/contour-docs-shell&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -15455,7 +15503,7 @@ means obvious.
               <span class="ds-spec__token">contour-drop-indicator</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-drop-indicator></contour-drop-indicator>
+              <contour-drop-indicator label="Drop"><span>Example</span></contour-drop-indicator>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15468,7 +15516,9 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-328">&lt;contour-drop-indicator&gt;&lt;/contour-drop-indicator&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-328">&lt;contour-drop-indicator label="Drop"&gt;
+  &lt;span&gt;Example&lt;/span&gt;
+&lt;/contour-drop-indicator&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -15479,7 +15529,7 @@ means obvious.
               <span class="ds-spec__token">contour-drop-zone</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-drop-zone></contour-drop-zone>
+              <contour-drop-zone label="Drop here"><span>Example</span></contour-drop-zone>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15492,7 +15542,9 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-329">&lt;contour-drop-zone&gt;&lt;/contour-drop-zone&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-329">&lt;contour-drop-zone label="Drop here"&gt;
+  &lt;span&gt;Example&lt;/span&gt;
+&lt;/contour-drop-zone&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -15503,7 +15555,7 @@ means obvious.
               <span class="ds-spec__token">contour-flow-map</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet style="max-inline-size: 16rem">
-              <contour-flow-map></contour-flow-map>
+              <contour-flow-map label="Flow" nodes="[{&quot;label&quot;:&quot;A&quot;,&quot;source&quot;:true},{&quot;label&quot;:&quot;B&quot;,&quot;target&quot;:true}]"></contour-flow-map>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15516,7 +15568,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-330">&lt;contour-flow-map&gt;&lt;/contour-flow-map&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-330">&lt;contour-flow-map label="Flow" nodes="[{&amp;quot;label&amp;quot;:&amp;quot;A&amp;quot;,&amp;quot;source&amp;quot;:true},{&amp;quot;label&amp;quot;:&amp;quot;B&amp;quot;,&amp;quot;target&amp;quot;:true}]"&gt;&lt;/contour-flow-map&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -15527,7 +15579,7 @@ means obvious.
               <span class="ds-spec__token">contour-heatmap</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-heatmap></contour-heatmap>
+              <contour-heatmap cells="12"></contour-heatmap>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15540,7 +15592,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-331">&lt;contour-heatmap&gt;&lt;/contour-heatmap&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-331">&lt;contour-heatmap cells="12"&gt;&lt;/contour-heatmap&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -15551,7 +15603,7 @@ means obvious.
               <span class="ds-spec__token">contour-hexbin</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-hexbin></contour-hexbin>
+              <contour-hexbin label="Hexbin" cells="[1,2,3,4,5,6]"></contour-hexbin>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15564,7 +15616,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-332">&lt;contour-hexbin&gt;&lt;/contour-hexbin&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-332">&lt;contour-hexbin label="Hexbin" cells="[1,2,3,4,5,6]"&gt;&lt;/contour-hexbin&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -15575,7 +15627,7 @@ means obvious.
               <span class="ds-spec__token">contour-instrument</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-instrument></contour-instrument>
+              <contour-instrument rows="[{&quot;key&quot;:&quot;Temp&quot;,&quot;value&quot;:&quot;22°C&quot;}]"></contour-instrument>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15588,7 +15640,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-333">&lt;contour-instrument&gt;&lt;/contour-instrument&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-333">&lt;contour-instrument rows="[{&amp;quot;key&amp;quot;:&amp;quot;Temp&amp;quot;,&amp;quot;value&amp;quot;:&amp;quot;22°C&amp;quot;}]"&gt;&lt;/contour-instrument&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -15599,7 +15651,7 @@ means obvious.
               <span class="ds-spec__token">contour-isochrone</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet style="max-inline-size: 16rem">
-              <contour-isochrone></contour-isochrone>
+              <contour-isochrone label="Isochrone" center="0,0" rings="[&quot;1km&quot;,&quot;2km&quot;,&quot;3km&quot;]"></contour-isochrone>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15612,7 +15664,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-334">&lt;contour-isochrone&gt;&lt;/contour-isochrone&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-334">&lt;contour-isochrone label="Isochrone" center="0,0" rings="[&amp;quot;1km&amp;quot;,&amp;quot;2km&amp;quot;,&amp;quot;3km&amp;quot;]"&gt;&lt;/contour-isochrone&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -15623,7 +15675,7 @@ means obvious.
               <span class="ds-spec__token">contour-advanced</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-advanced></contour-advanced>
+              <contour-advanced title="Advanced"><span>Example</span></contour-advanced>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15636,7 +15688,9 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-335">&lt;contour-advanced&gt;&lt;/contour-advanced&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-335">&lt;contour-advanced title="Advanced"&gt;
+  &lt;span&gt;Example&lt;/span&gt;
+&lt;/contour-advanced&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -15647,7 +15701,7 @@ means obvious.
               <span class="ds-spec__token">contour-affordances</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-affordances></contour-affordances>
+              <contour-affordances name="Affordance"><span>Example</span></contour-affordances>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15660,7 +15714,9 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-336">&lt;contour-affordances&gt;&lt;/contour-affordances&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-336">&lt;contour-affordances name="Affordance"&gt;
+  &lt;span&gt;Example&lt;/span&gt;
+&lt;/contour-affordances&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -15671,7 +15727,7 @@ means obvious.
               <span class="ds-spec__token">contour-dash-freshness</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-dash-freshness></contour-dash-freshness>
+              <contour-dash-freshness label="Freshness" value="Now"></contour-dash-freshness>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15684,7 +15740,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-337">&lt;contour-dash-freshness&gt;&lt;/contour-dash-freshness&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-337">&lt;contour-dash-freshness label="Freshness" value="Now"&gt;&lt;/contour-dash-freshness&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -15695,7 +15751,7 @@ means obvious.
               <span class="ds-spec__token">contour-dash-kpi-row</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-dash-kpi-row></contour-dash-kpi-row>
+              <contour-dash-kpi-row title="KPI Row"><span>KPI</span></contour-dash-kpi-row>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15708,7 +15764,9 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-338">&lt;contour-dash-kpi-row&gt;&lt;/contour-dash-kpi-row&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-338">&lt;contour-dash-kpi-row title="KPI Row"&gt;
+  &lt;span&gt;KPI&lt;/span&gt;
+&lt;/contour-dash-kpi-row&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -15719,7 +15777,7 @@ means obvious.
               <span class="ds-spec__token">contour-landing-features</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-landing-features></contour-landing-features>
+              <contour-landing-features items="[{&quot;title&quot;:&quot;F1&quot;}]"></contour-landing-features>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15732,7 +15790,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-339">&lt;contour-landing-features&gt;&lt;/contour-landing-features&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-339">&lt;contour-landing-features items="[{&amp;quot;title&amp;quot;:&amp;quot;F1&amp;quot;}]"&gt;&lt;/contour-landing-features&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -15743,7 +15801,7 @@ means obvious.
               <span class="ds-spec__token">contour-landing-hero</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-landing-hero></contour-landing-hero>
+              <contour-landing-hero actions="<button class=&quot;c-btn c-btn--primary&quot;>Go</button>"></contour-landing-hero>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15756,7 +15814,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-340">&lt;contour-landing-hero&gt;&lt;/contour-landing-hero&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-340">&lt;contour-landing-hero actions="&lt;button class=&amp;quot;c-btn c-btn--primary&amp;quot;&gt;Go&lt;/button&gt;"&gt;&lt;/contour-landing-hero&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -15791,7 +15849,7 @@ means obvious.
               <span class="ds-spec__token">contour-pager</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-pager></contour-pager>
+              <contour-pager prev="Prev" next="Next"></contour-pager>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15804,7 +15862,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-342">&lt;contour-pager&gt;&lt;/contour-pager&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-342">&lt;contour-pager prev="Prev" next="Next"&gt;&lt;/contour-pager&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -15839,7 +15897,7 @@ means obvious.
               <span class="ds-spec__token">contour-range-scale</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-range-scale></contour-range-scale>
+              <contour-range-scale label="Scale"><span>Example</span></contour-range-scale>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15852,7 +15910,9 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-344">&lt;contour-range-scale&gt;&lt;/contour-range-scale&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-344">&lt;contour-range-scale label="Scale"&gt;
+  &lt;span&gt;Example&lt;/span&gt;
+&lt;/contour-range-scale&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -15863,7 +15923,7 @@ means obvious.
               <span class="ds-spec__token">contour-resizable</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-resizable></contour-resizable>
+              <contour-resizable title="Resizable"><span>Example</span></contour-resizable>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15876,7 +15936,9 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-345">&lt;contour-resizable&gt;&lt;/contour-resizable&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-345">&lt;contour-resizable title="Resizable"&gt;
+  &lt;span&gt;Example&lt;/span&gt;
+&lt;/contour-resizable&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -15887,7 +15949,12 @@ means obvious.
               <span class="ds-spec__token">contour-scheme-toggle</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-scheme-toggle></contour-scheme-toggle>
+              <contour-scheme-toggle class="c-btn c-btn--icon c-btn--secondary" type="button" data-scheme-toggle aria-label="Switch to dark theme">
+  <span class="c-scheme-toggle__icons" aria-hidden="true">
+    <svg class="c-scheme-toggle__sun" aria-hidden="true"><use href="#i-sun" /></svg>
+    <svg class="c-scheme-toggle__moon" aria-hidden="true"><use href="#i-moon" /></svg>
+  </span>
+</contour-scheme-toggle>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15900,7 +15967,16 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-346">&lt;contour-scheme-toggle&gt;&lt;/contour-scheme-toggle&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-346">&lt;contour-scheme-toggle class="c-btn c-btn--icon c-btn--secondary" type="button" data-scheme-toggle aria-label="Switch to dark theme"&gt;
+  &lt;span class="c-scheme-toggle__icons" aria-hidden="true"&gt;
+    &lt;svg class="c-scheme-toggle__sun" aria-hidden="true"&gt;
+      &lt;use href="#i-sun" /&gt;
+    &lt;/svg&gt;
+    &lt;svg class="c-scheme-toggle__moon" aria-hidden="true"&gt;
+      &lt;use href="#i-moon" /&gt;
+    &lt;/svg&gt;
+  &lt;/span&gt;
+&lt;/contour-scheme-toggle&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -15911,7 +15987,7 @@ means obvious.
               <span class="ds-spec__token">contour-table-wrap</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-table-wrap></contour-table-wrap>
+              <contour-table-wrap title="Table"><span>Example</span></contour-table-wrap>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15924,7 +16000,9 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-347">&lt;contour-table-wrap&gt;&lt;/contour-table-wrap&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-347">&lt;contour-table-wrap title="Table"&gt;
+  &lt;span&gt;Example&lt;/span&gt;
+&lt;/contour-table-wrap&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -15959,7 +16037,7 @@ means obvious.
               <span class="ds-spec__token">contour-theme-scope</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-theme-scope></contour-theme-scope>
+              <contour-theme-scope title="Scope"></contour-theme-scope>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15972,7 +16050,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-349">&lt;contour-theme-scope&gt;&lt;/contour-theme-scope&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-349">&lt;contour-theme-scope title="Scope"&gt;&lt;/contour-theme-scope&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -15983,7 +16061,7 @@ means obvious.
               <span class="ds-spec__token">contour-time-range</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-time-range></contour-time-range>
+              <contour-time-range label="Range"><span>Example</span></contour-time-range>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -15996,7 +16074,9 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-350">&lt;contour-time-range&gt;&lt;/contour-time-range&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-350">&lt;contour-time-range label="Range"&gt;
+  &lt;span&gt;Example&lt;/span&gt;
+&lt;/contour-time-range&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -16007,7 +16087,7 @@ means obvious.
               <span class="ds-spec__token">contour-time-slider</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-time-slider></contour-time-slider>
+              <contour-time-slider label="Time" value="50"></contour-time-slider>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -16020,7 +16100,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-351">&lt;contour-time-slider&gt;&lt;/contour-time-slider&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-351">&lt;contour-time-slider label="Time" value="50"&gt;&lt;/contour-time-slider&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -16031,7 +16111,7 @@ means obvious.
               <span class="ds-spec__token">contour-toc</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-toc></contour-toc>
+              <contour-toc title="Contents" items="[{&quot;label&quot;:&quot;Intro&quot;}]"></contour-toc>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -16044,7 +16124,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-352">&lt;contour-toc&gt;&lt;/contour-toc&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-352">&lt;contour-toc title="Contents" items="[{&amp;quot;label&amp;quot;:&amp;quot;Intro&amp;quot;}]"&gt;&lt;/contour-toc&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -16055,7 +16135,7 @@ means obvious.
               <span class="ds-spec__token">contour-spinner</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-spinner></contour-spinner>
+              <contour-spinner title="Spinner"></contour-spinner>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -16068,12 +16148,13 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-353">&lt;contour-spinner&gt;&lt;/contour-spinner&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-353">&lt;contour-spinner title="Spinner"&gt;&lt;/contour-spinner&gt;</code></pre>
                       </div>
                     </details></div>
-          </div>
+           </div>
 
-
+         </section>
+            </main></div>
 
      <!-- ===================== FOOTER ===================== -->
     <footer class="c-footer">
