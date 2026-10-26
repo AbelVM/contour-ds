@@ -1,5 +1,35 @@
 ## [Unreleased]
 
+### Fixed (M-WC-04)
+- 17 web components read attributes in `render()` that were missing from their own
+  `static get observed()`, so changing those attributes never re-rendered: `contour-kpi`
+  and `contour-stat` (`unit`), `contour-legend` (`items`, `method`, `norm`),
+  `contour-panel` (`subtitle`, `status`), `contour-tag` and `contour-pill` (`variant`),
+  `contour-heatmap` (`legend`), `contour-filter-bar` (`divider`, `placeholder`, `items`,
+  `empty`), `contour-feature` (`body`), `contour-flag` (`label`), `contour-install`
+  (`prompt`, `copyable`), `contour-showcase` (`reverse`, `items`), `contour-cta`
+  (`actions`), `contour-pullquote` (`name`), `contour-filter-pill` (`removable`),
+  `contour-datamark` (`unit`, `label`), `contour-btn` (`label`). All added to both
+  `observed()` and `properties()`.
+- `contour-shadow-*` wrappers called `enhance()` in the constructor before slotted
+  children existed, spending the `wcClaim` guard so slotted tabs/menus/segmented
+  controls were dead. `enhance()` now runs in `connectedCallback` and the wired set
+  resets on `slotchange`.
+- `wireMenu` and `wirePagination` normalised `tabindex` after the `wcClaim` guard,
+  so re-rendered items lost their tab stops; normalisation now runs before the guard.
+- `ContourBase.attributeChangedCallback` restored form values by index; it now keys
+  by `name`/`id` with index fallback.
+- `shadow.mjs` injected a redundant `role="button"` on native `<button>` elements
+  (WAI-ARIA Rule 1); removed.
+- `tools/check-wc.mjs` now verifies per-component observed-attribute honesty and
+  property-reflection completeness.
+
+### Added (M-WC-04)
+- Chart variant CSS classes `.c-chart--donut` and `.c-chart--histogram`.
+- Reactivity playground specimen in §23 (variant select + value slider driving
+  `contour-alert` and `contour-kpi`).
+
+
 ### Changed
 - Bundling and delivering strategy rethought now that fonts are self-hosted (C-52).
   `src/css/fonts/*` (the seven woff2 faces plus `OFL.txt`) are now declared build
