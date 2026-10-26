@@ -75,6 +75,42 @@
   if (window.customElements?.get("contour-alert")) wcPlayground();
   else window.addEventListener("contour:ready", wcPlayground, { once: true });
 
+  const wcFormDemo = () => {
+    const panel = $("[data-wc-formdemo]");
+    if (!panel) return;
+    const form = $("[data-wc-formdemo-form]", panel);
+    const out = $("[data-wc-formdemo-out]", panel);
+    if (!form || !out) return;
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const data = new FormData(form);
+      const entries = [];
+      for (const [k, v] of data.entries()) entries.push(`${k} = ${v}`);
+      out.textContent = entries.length ? entries.join("\\n") : "(empty)";
+    });
+    form.addEventListener("reset", () => { out.textContent = ""; });
+  };
+
+  if (window.customElements?.get("contour-input")) wcFormDemo();
+  else window.addEventListener("contour:ready", wcFormDemo, { once: true });
+
+  const wcEventDemo = () => {
+    const panel = $("[data-wc-eventdemo]");
+    if (!panel) return;
+    const out = $("[data-wc-eventdemo-out]", panel);
+    if (!out) return;
+    const log = (msg) => { out.textContent = msg; };
+    panel.addEventListener("contour:select", (e) => {
+      log(`contour:select — ${JSON.stringify(e.detail)}`);
+    });
+    panel.addEventListener("contour:page", (e) => {
+      log(`contour:page — ${JSON.stringify(e.detail)}`);
+    });
+  };
+
+  if (window.customElements?.get("contour-menu")) wcEventDemo();
+  else window.addEventListener("contour:ready", wcEventDemo, { once: true });
+
   const disclosures = $$("details.ds-code");
   if (!disclosures.length) return;
 

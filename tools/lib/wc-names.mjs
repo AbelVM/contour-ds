@@ -54,12 +54,27 @@ export function elementNames(src) {
 export function typeDeclarations(names) {
   return [
     "/**",
+    " * Common attributes every Contour element may carry. Reflected to the DOM",
+    " * as attributes; setting them on the instance updates the element.",
+    " */",
+    "export interface ContourProps {",
+    "  variant?: string | null;",
+    "  size?: string | null;",
+    "  color?: string | null;",
+    "  label?: string | null;",
+    "  title?: string | null;",
+    "  value?: string | null;",
+    "  state?: string | null;",
+    "  icon?: string | null;",
+    "}",
+    "",
+    "/**",
     " * A Contour custom element, light-DOM wrapper or shadow wrapper.",
     " * A wrapper's styling contract is its `part` list; every interaction",
     " * announces itself as a bubbling `contour:*` CustomEvent dispatched on the",
     " * host, so one listener serves both layers and slotted content alike.",
     " */",
-    "export interface ContourElement extends HTMLElement {}",
+    "export interface ContourElement extends HTMLElement, ContourProps {}",
     "",
     // No separate `ContourTagName` union. Writing the same list twice is what put
     // this file over its budget the first time: the map below already names every

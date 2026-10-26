@@ -409,6 +409,7 @@ class ContourToast extends ContourBase {
         this.textContent = message;
       }
       const variant = this.getAttribute("variant");
+      Array.from(this.classList).forEach((c) => { if (c.startsWith("c-toast--")) this.classList.remove(c); });
       if (variant) this.classList.add("c-toast--" + variant);
     }
   }

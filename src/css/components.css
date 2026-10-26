@@ -389,6 +389,7 @@
      4. BADGES, CHIPS, PILLS
      ======================================================================= */
   .c-badge {
+    contain: layout;
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
@@ -440,6 +441,7 @@
 
   /* Chip: a rounded readout with a leading state dot */
   .c-chip {
+    contain: layout;
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -481,6 +483,7 @@
 
   /* Status pill — uppercase mono, used for state readouts */
   .c-pill {
+    contain: layout;
     display: inline-flex;
     align-items: center;
     gap: 0.45rem;
@@ -950,6 +953,7 @@
   }
 
   .c-dot {
+    contain: layout;
     --dot-color: var(--color-text-subtle);
     position: relative;
     display: inline-block;
@@ -2647,6 +2651,7 @@
      22. MISC ATOMS
      ======================================================================= */
   .c-avatar {
+    contain: layout;
     display: grid;
     place-items: center;
     inline-size: 2.25rem;
@@ -2723,6 +2728,7 @@
   }
 
   .c-kbd {
+    contain: layout;
     display: inline-block;
     padding: var(--kbd-padding, 0.1rem 0.4rem);
     border: 1px solid var(--color-border);

@@ -221,6 +221,7 @@ class ContourFlag extends ContourBase {
     render() {
       this.classList.add("c-flag");
       const variant = this.getAttribute("variant");
+      Array.from(this.classList).forEach((c) => { if (c.startsWith("c-flag--")) this.classList.remove(c); });
       if (variant) this.classList.add("c-flag--" + variant);
       const label = this.getAttribute("label");
       if (label) {

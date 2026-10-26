@@ -157,7 +157,9 @@
          cls: this.getAttribute("class"),
        };
           const before = Array.from(this.childNodes);
+          this._contourRenderGen = (this._contourRenderGen || 0) + 1;
           this._ensureCache = new Map();
+          this._ensureCacheGen = this._contourRenderGen;
           this._countRender();
           this.render();
          this._contourGenerated = Array.from(this.childNodes).filter((n) => !before.includes(n));
@@ -229,7 +231,9 @@
          if (this._contourAuthored.cls === null) this.removeAttribute("class");
          else this.setAttribute("class", this._contourAuthored.cls);
          const before = Array.from(this.childNodes);
+         this._contourRenderGen = (this._contourRenderGen || 0) + 1;
          this._ensureCache = new Map();
+         this._ensureCacheGen = this._contourRenderGen;
          this._countRender();
          this.render();
         this._contourGenerated = Array.from(this.childNodes).filter((n) => !before.includes(n));
@@ -429,7 +433,10 @@
     // does not — a detached element handed back instead of a fresh one appended.
     ensure(selector, factory, parent) {
       const root = parent || this;
-      if (!root._ensureCache) root._ensureCache = new Map();
+      if (!root._ensureCache || root._ensureCacheGen !== this._contourRenderGen) {
+        root._ensureCache = new Map();
+        root._ensureCacheGen = this._contourRenderGen;
+      }
       const cache = root._ensureCache;
       const key = root === this ? selector : "\u0000" + root + "\u0000" + selector;
       let node = cache.get(key);

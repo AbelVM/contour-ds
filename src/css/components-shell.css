@@ -353,6 +353,7 @@
      A removable label. The remove control is a real button.
      ======================================================================= */
   .c-tag {
+    contain: layout;
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;

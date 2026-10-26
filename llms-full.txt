@@ -27,7 +27,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T14:29:45+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `72994344a2cde70a` · last committed 2026-10-26T15:15:04+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -78,7 +78,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T14:29:45+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `72994344a2cde70a` · last committed 2026-10-26T15:15:04+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -128,7 +128,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T14:29:45+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `72994344a2cde70a` · last committed 2026-10-26T15:15:04+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -165,7 +165,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T14:29:45+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `72994344a2cde70a` · last committed 2026-10-26T15:15:04+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -182,6 +182,8 @@ private until v1.0). See `index.json` for the whole set and the shared statement
 
 Spacing is a scale, not a decision. Components inherit the rhythm so a card in a sidebar and a card on a landing page breathe at the same rate.
 
+The same blocks as contour-* elements live in §23.
+
 Shadows only for things that genuinely float above the page. Everything else uses surface lightness.
 
 ## Subsections
@@ -192,7 +194,7 @@ Shadows only for things that genuinely float above the page. Everything else use
 
 ## Blocks documented here
 
-7 block(s). Their facts live in `../contour.components.json`;
+8 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
@@ -201,12 +203,13 @@ starts disagreeing with itself.
 - `.c-card`
 - `.c-elevation`
 - `.c-icon-badge`
+- `.c-kbd`
 - `.c-section-head`
 - `.c-segmented`
 
 ---
 
-Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T14:29:45+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `72994344a2cde70a` · last committed 2026-10-26T15:15:04+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -259,7 +262,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T14:29:45+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `72994344a2cde70a` · last committed 2026-10-26T15:15:04+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -276,9 +279,11 @@ private until v1.0). See `index.json` for the whole set and the shared statement
 
 One primary action per view. Everything else is secondary, ghost or a plain link. Buttons are pills because a rounded target reads as a target on a map.
 
+The same blocks as contour-* elements live in §23.
+
 ## Blocks documented here
 
-7 block(s). Their facts live in `../contour.components.json`;
+8 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
@@ -286,13 +291,14 @@ starts disagreeing with itself.
 - `.c-btn-group`
 - `.c-expandable`
 - `.c-icon-badge`
+- `.c-kbd`
 - `.c-link`
 - `.c-pressable`
 - `.c-section-head`
 
 ---
 
-Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T14:29:45+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `72994344a2cde70a` · last committed 2026-10-26T15:15:04+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -338,7 +344,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T14:29:45+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `72994344a2cde70a` · last committed 2026-10-26T15:15:04+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -374,7 +380,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T14:29:45+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `72994344a2cde70a` · last committed 2026-10-26T15:15:04+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -448,7 +454,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T14:29:45+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `72994344a2cde70a` · last committed 2026-10-26T15:15:04+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -507,7 +513,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T14:29:45+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `72994344a2cde70a` · last committed 2026-10-26T15:15:04+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -578,7 +584,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T14:29:45+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `72994344a2cde70a` · last committed 2026-10-26T15:15:04+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -644,7 +650,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T14:29:45+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `72994344a2cde70a` · last committed 2026-10-26T15:15:04+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -756,7 +762,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T14:29:45+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `72994344a2cde70a` · last committed 2026-10-26T15:15:04+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -773,6 +779,8 @@ private until v1.0). See `index.json` for the whole set and the shared statement
 
 The cartographic half of the system, rendered. These are the parts a routing or survey surface is built from — a mark is not a target, a number carries its provenance, and a map slot themes an engine the system does not ship.
 
+The same blocks as contour-* elements live in §23.
+
 The consumer owns this canvas; the system themes the chrome around it.
 
 Hidden — the block is not rendered.
@@ -781,7 +789,7 @@ Shown — same markup, wider profile.
 
 ## Blocks documented here
 
-29 block(s). Their facts live in `../contour.components.json`;
+30 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
@@ -795,6 +803,7 @@ starts disagreeing with itself.
 - `.c-hexbin`
 - `.c-icon-badge`
 - `.c-instrument`
+- `.c-kbd`
 - `.c-layer-panel`
 - `.c-layer-switch`
 - `.c-legend`
@@ -817,7 +826,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T14:29:45+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `72994344a2cde70a` · last committed 2026-10-26T15:15:04+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -925,7 +934,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T14:29:45+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `72994344a2cde70a` · last committed 2026-10-26T15:15:04+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -941,6 +950,8 @@ private until v1.0). See `index.json` for the whole set and the shared statement
 ## What the guide says
 
 The persuasive set. These read as an argument rather than an instrument, so the surfaces breathe and the type is set looser than anywhere else in the system.
+
+The same blocks as contour-* elements live in §23.
 
 A quiet row of names. Monochrome until the pointer arrives.
 
@@ -976,7 +987,7 @@ One package, one tile source, and the same engine you can read line by line.
 
 ## Blocks documented here
 
-14 block(s). Their facts live in `../contour.components.json`;
+15 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
@@ -985,6 +996,7 @@ starts disagreeing with itself.
 - `.c-cta`
 - `.c-faq`
 - `.c-icon-badge`
+- `.c-kbd`
 - `.c-logos`
 - `.c-metrics`
 - `.c-price`
@@ -997,7 +1009,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T14:29:45+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `72994344a2cde70a` · last committed 2026-10-26T15:15:04+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1038,7 +1050,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T14:29:45+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `72994344a2cde70a` · last committed 2026-10-26T15:15:04+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1215,7 +1227,7 @@ part of the component contract and nothing in an installed package defines them:
 
 ---
 
-Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T14:29:45+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `72994344a2cde70a` · last committed 2026-10-26T15:15:04+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1327,7 +1339,7 @@ part of the component contract and nothing in an installed package defines them:
 
 ---
 
-Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T14:29:45+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `72994344a2cde70a` · last committed 2026-10-26T15:15:04+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1371,7 +1383,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T14:29:45+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `72994344a2cde70a` · last committed 2026-10-26T15:15:04+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1445,7 +1457,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T14:29:45+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `72994344a2cde70a` · last committed 2026-10-26T15:15:04+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1481,7 +1493,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T14:29:45+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `72994344a2cde70a` · last committed 2026-10-26T15:15:04+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1508,27 +1520,26 @@ One card, two ways to change it. Writing three attributes in turn rebuilds the c
 
 Toggle attributes live and watch the component re-render. The alert's variant and the kpi's value are driven by the controls below; no page-level state is kept.
 
+contour-input, contour-select, contour-check and contour-switch participate in a native form via ElementInternals: their values are submitted, validated and reset like native controls. Submit the form below to see the FormData it produces.
+
+Interactive components emit bubbling contour:* CustomEvents on the host, so a parent handles them without coupling to internals. The menu below emits contour:select; the pagination emits contour:page.
+
 Authored content survives re-renders.
-
-Slotted content in the shadow root.
-
-Dialog body content.
-
-Dialog body content.
 
 ## Subsections
 
 - Reactivity, counted
 - Reactivity playground
+- Form association
+- Event emission
 
 ## Blocks documented here
 
-9 block(s). Their facts live in `../contour.components.json`;
+8 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
 - `.c-btn`
-- `.c-card`
 - `.c-cluster`
 - `.c-icon-badge`
 - `.c-kbd`
@@ -1539,5 +1550,5 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `01bdcb8b4b599709` · last committed 2026-10-26T14:29:45+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `72994344a2cde70a` · last committed 2026-10-26T15:15:04+01:00 · no URL: the project is private until v1.0.
 

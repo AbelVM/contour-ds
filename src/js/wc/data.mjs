@@ -101,12 +101,15 @@ class ContourKpi extends ContourBase {
         if (n) n.remove();
       }
       const unit = this.getAttribute("unit");
-      if (unit) {
-        const v = this.querySelector(".c-kpi__value");
-        if (v) {
+      const v = this.querySelector(".c-kpi__value");
+      if (v) {
+        if (unit) {
           let u = v.querySelector(".c-kpi__unit");
           if (!u) { u = document.createElement("span"); u.className = "c-kpi__unit"; v.appendChild(u); }
           u.textContent = unit;
+        } else {
+          const u = v.querySelector(".c-kpi__unit");
+          if (u) u.remove();
         }
       }
     }
@@ -383,6 +386,7 @@ class ContourDelta extends ContourBase {
     static get properties() { return { value: { attribute: "value" }, direction: { attribute: "direction" } }; }
     render() {
       this.classList.add("c-delta");
+      Array.from(this.classList).forEach((c) => { if (c.startsWith("c-delta--")) this.classList.remove(c); });
       const value = this.getAttribute("value") || "";
       const direction = this.getAttribute("direction") || "up";
       // `.c-delta` carries no `__arrow` or `__value` element: `.c-delta svg` is
@@ -435,12 +439,15 @@ class ContourStat extends ContourBase {
         if (d) d.remove();
       }
       const unit = this.getAttribute("unit");
-      if (unit) {
-        const v = this.querySelector(".c-stat__value");
-        if (v) {
+      const v = this.querySelector(".c-stat__value");
+      if (v) {
+        if (unit) {
           let u = v.querySelector(".c-stat__unit");
           if (!u) { u = document.createElement("span"); u.className = "c-stat__unit"; v.appendChild(u); }
           u.textContent = unit;
+        } else {
+          const u = v.querySelector(".c-stat__unit");
+          if (u) u.remove();
         }
       }
     }
