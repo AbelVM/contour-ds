@@ -8,6 +8,8 @@ one and it runs.
 | `landing.html` | Marketing | Hero split, install block, metrics band, features, pricing, testimonial, FAQ, CTA band |
 | `documentation.html` | Documentation | Nav tree, breadcrumb, prose, code tabs, install, code block, callout, options table, pager, on-this-page |
 | `dashboard.html` | Dashboard | Toolbar, filter pills, KPI row, chart panels with a dash-pattern series, dense sortable table |
+| `vite/` | Vite + React | Minimal Vite app importing Contour from a local checkout |
+| `astro/` | Astro | Minimal Astro site with the stylesheet wired into the base layout |
 
 ## Running them
 

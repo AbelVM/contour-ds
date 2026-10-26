@@ -11471,17 +11471,19 @@ means obvious.
               </div>
             </div>
             <div class="c-panel__body">
-              <p>
-                One card, two ways to change it. Writing three attributes in turn rebuilds the card
-                three times; the same three writes inside <code class="c-kbd">batch()</code> rebuild
-                it once. The count is the element's own <code class="c-kbd">renderCount</code>, not a
-                number this page keeps, so it cannot drift from what the layer did.
-              </p>
-              <contour-kpi data-wc-demo-kpi label="Routes matched" value="128" delta="+12" direction="up"></contour-kpi>
-              <div class="c-cluster">
-                <button class="c-btn c-btn--sm" type="button" data-wc-demo-single>Three separate writes</button>
-                <button class="c-btn c-btn--ghost c-btn--sm" type="button" data-wc-demo-batch>Three writes, one batch</button>
-                <span class="u-mono" role="status" data-wc-demo-count></span>
+              <div class="c-stack">
+                <p>
+                  One card, two ways to change it. Writing three attributes in turn rebuilds the card
+                  three times; the same three writes inside <code class="c-kbd">batch()</code> rebuild
+                  it once. The count is the element's own <code class="c-kbd">renderCount</code>, not a
+                  number this page keeps, so it cannot drift from what the layer did.
+                </p>
+                <contour-kpi data-wc-demo-kpi label="Routes matched" value="128" delta="+12" direction="up"></contour-kpi>
+                <div class="c-cluster">
+                  <button class="c-btn c-btn--sm" type="button" data-wc-demo-single>Three separate writes</button>
+                  <button class="c-btn c-btn--ghost c-btn--sm" type="button" data-wc-demo-batch>Three writes, one batch</button>
+                  <span class="u-mono" role="status" data-wc-demo-count></span>
+                </div>
               </div>
             </div>
           </div>
@@ -11493,30 +11495,32 @@ means obvious.
               </div>
             </div>
             <div class="c-panel__body">
-              <p>
-                Toggle attributes live and watch the component re-render. The alert's
-                <code class="c-kbd">variant</code> and the kpi's <code class="c-kbd">value</code>
-                are driven by the controls below; no page-level state is kept.
-              </p>
-              <contour-alert data-wc-pg-alert variant="info" title="Heads up" body="Status message"></contour-alert>
-              <div class="c-cluster">
-                <label class="c-field__label" for="wc-pg-variant">Variant</label>
-                <select class="c-select" id="wc-pg-variant" data-wc-pg-variant>
-                  <option value="info">info</option>
-                  <option value="success">success</option>
-                  <option value="warning">warning</option>
-                  <option value="danger">danger</option>
-                </select>
-              </div>
-              <contour-kpi data-wc-pg-kpi label="Live value" value="0"></contour-kpi>
-              <div class="c-cluster">
-                <label class="c-field__label" for="wc-pg-value">Value</label>
-                <input class="c-range" type="range" id="wc-pg-value" min="0" max="100" value="0" data-wc-pg-value />
-                <span class="u-mono" data-wc-pg-valuetext>0</span>
-              </div>
-              <div class="c-cluster">
-                <contour-alert data-wc-pg-close variant="info" title="Closable" body="Click the × to dismiss" closable></contour-alert>
-                <button class="c-btn c-btn--ghost c-btn--sm" type="button" data-wc-pg-reset>Reset alert</button>
+              <div class="c-stack">
+                <p>
+                  Toggle attributes live and watch the component re-render. The alert's
+                  <code class="c-kbd">variant</code> and the kpi's <code class="c-kbd">value</code>
+                  are driven by the controls below; no page-level state is kept.
+                </p>
+                <contour-alert data-wc-pg-alert variant="info" title="Heads up" body="Status message"></contour-alert>
+                <div class="c-cluster">
+                  <label class="c-field__label" for="wc-pg-variant">Variant</label>
+                  <select class="c-select" id="wc-pg-variant" data-wc-pg-variant>
+                    <option value="info">info</option>
+                    <option value="success">success</option>
+                    <option value="warning">warning</option>
+                    <option value="danger">danger</option>
+                  </select>
+                </div>
+                <contour-kpi data-wc-pg-kpi label="Live value" value="0"></contour-kpi>
+                <div class="c-cluster">
+                  <label class="c-field__label" for="wc-pg-value">Value</label>
+                  <input class="c-range" type="range" id="wc-pg-value" min="0" max="100" value="0" data-wc-pg-value />
+                  <span class="u-mono" data-wc-pg-valuetext>0</span>
+                </div>
+                <div class="c-cluster">
+                  <contour-alert data-wc-pg-close variant="info" title="Closable" body="Click the × to dismiss" closable></contour-alert>
+                  <button class="c-btn c-btn--ghost c-btn--sm" type="button" data-wc-pg-reset>Reset alert</button>
+                </div>
               </div>
             </div>
           </div>
@@ -11528,26 +11532,30 @@ means obvious.
               </div>
             </div>
             <div class="c-panel__body">
-              <p>
-                <code class="c-kbd">contour-input</code>, <code class="c-kbd">contour-select</code>,
-                <code class="c-kbd">contour-check</code> and <code class="c-kbd">contour-switch</code>
-                participate in a native form via
-                <code class="c-kbd">ElementInternals</code>: their values are submitted, validated
-                and reset like native controls. Submit the form below to see the
-                <code class="c-kbd">FormData</code> it produces.
-              </p>
-              <form data-wc-formdemo-form>
-                <div class="c-cluster">
-                  <contour-input name="name" label="Name" placeholder="Ada Lovelace" required></contour-input>
-                  <contour-select name="role" options="[{&quot;label&quot;:&quot;Engineer&quot;,&quot;value&quot;:&quot;eng&quot;},{&quot;label&quot;:&quot;Designer&quot;,&quot;value&quot;:&quot;des&quot;}]"></contour-select>
-                  <contour-check name="terms" label="Accept terms"></contour-check>
-                </div>
-                <div class="c-cluster">
-                  <button class="c-btn c-btn--primary" type="submit">Submit</button>
-                  <button class="c-btn c-btn--ghost" type="reset">Reset</button>
-                </div>
-              </form>
-              <pre class="u-mono" data-wc-formdemo-out aria-live="polite"></pre>
+              <div class="c-stack">
+                <p>
+                  <code class="c-kbd">contour-input</code>, <code class="c-kbd">contour-select</code>,
+                  <code class="c-kbd">contour-check</code> and <code class="c-kbd">contour-switch</code>
+                  participate in a native form via
+                  <code class="c-kbd">ElementInternals</code>: their values are submitted, validated
+                  and reset like native controls. Submit the form below to see the
+                  <code class="c-kbd">FormData</code> it produces.
+                </p>
+                <form data-wc-formdemo-form>
+                  <div class="c-stack">
+                    <div class="c-cluster">
+                      <contour-input name="name" label="Name" placeholder="Ada Lovelace" required></contour-input>
+                      <contour-select name="role" options="[{&quot;label&quot;:&quot;Engineer&quot;,&quot;value&quot;:&quot;eng&quot;},{&quot;label&quot;:&quot;Designer&quot;,&quot;value&quot;:&quot;des&quot;}]"></contour-select>
+                      <contour-check name="terms" label="Accept terms"></contour-check>
+                    </div>
+                    <div class="c-cluster">
+                      <button class="c-btn c-btn--primary" type="submit">Submit</button>
+                      <button class="c-btn c-btn--ghost" type="reset">Reset</button>
+                    </div>
+                  </div>
+                </form>
+                <pre class="u-mono" data-wc-formdemo-out aria-live="polite"></pre>
+              </div>
             </div>
           </div>
 
@@ -11558,17 +11566,19 @@ means obvious.
               </div>
             </div>
             <div class="c-panel__body">
-              <p>
-                Interactive components emit bubbling <code class="c-kbd">contour:*</code>
-                CustomEvents on the host, so a parent handles them without coupling to
-                internals. The menu below emits <code class="c-kbd">contour:select</code>;
-                the pagination emits <code class="c-kbd">contour:page</code>.
-              </p>
-              <div class="c-cluster">
-                <contour-menu items="[{&quot;label&quot;:&quot;Open&quot;},{&quot;label&quot;:&quot;Rename&quot;},{&quot;label&quot;:&quot;Delete&quot;,&quot;danger&quot;:true}]"></contour-menu>
-                <contour-pagination pages="5" current="1"></contour-pagination>
+              <div class="c-stack">
+                <p>
+                  Interactive components emit bubbling <code class="c-kbd">contour:*</code>
+                  CustomEvents on the host, so a parent handles them without coupling to
+                  internals. The menu below emits <code class="c-kbd">contour:select</code>;
+                  the pagination emits <code class="c-kbd">contour:page</code>.
+                </p>
+                <div class="c-cluster">
+                  <contour-menu items="[{&quot;label&quot;:&quot;Open&quot;},{&quot;label&quot;:&quot;Rename&quot;},{&quot;label&quot;:&quot;Delete&quot;,&quot;danger&quot;:true}]"></contour-menu>
+                  <contour-pagination pages="5" current="1"></contour-pagination>
+                </div>
+                <pre class="u-mono" data-wc-eventdemo-out aria-live="polite"></pre>
               </div>
-              <pre class="u-mono" data-wc-eventdemo-out aria-live="polite"></pre>
             </div>
           </div>
 

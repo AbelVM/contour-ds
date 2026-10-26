@@ -163,6 +163,83 @@ by `node tools/check-claims.mjs`.
 </contour-card>
 ```
 
+## Framework quickstarts
+
+Contour is plain CSS plus an optional script, so it drops into any bundler or
+framework without an adapter. Import the stylesheet once at your app entry and
+use the classes (or the `<contour-*>` web components) anywhere.
+
+### React / Next.js
+
+```jsx
+// app/layout.jsx (Next.js) or main.jsx (Vite + React)
+import "contour-ds/contour.min.css";
+import "contour-ds/contour-wc.esm.js"; // optional web components
+
+export default function Root({ children }) {
+  return <html data-theme="dark"><body>{children}</body></html>;
+}
+```
+
+```jsx
+// Component.jsx
+export function RouteButton() {
+  return <button className="c-btn c-btn--primary">Compute route</button>;
+}
+```
+
+### Vue / Nuxt
+
+```js
+// main.js
+import "contour-ds/contour.min.css";
+import "contour-ds/contour-wc.esm.js";
+```
+
+```vue
+<!-- Component.vue -->
+<template>
+  <button class="c-btn c-btn--primary">Compute route</button>
+  <contour-card title="Hello"><p>Slotted content</p></contour-card>
+</template>
+```
+
+### Svelte / SvelteKit
+
+```js
+// +layout.svelte
+import "contour-ds/contour.min.css";
+import "contour-ds/contour-wc.esm.js";
+```
+
+```svelte
+<button class="c-btn c-btn--primary">Compute route</button>
+```
+
+### Astro
+
+```astro
+---
+// src/layouts/Base.astro
+import "contour-ds/contour.min.css";
+---
+<html data-theme="dark">
+  <head><title>Contour</title></head>
+  <body><slot /></body>
+</html>
+```
+
+### Plain HTML (no build)
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/contour-ds/dist/contour.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/contour-ds/dist/contour-wc.min.js" defer></script>
+```
+
+Web components are optional: every interactive block (tabs, combobox, tree,
+menu, segmented, dialog) works as plain markup with `ds.css` alone, and the
+`<contour-*>` elements only add scaffolding and keyboard behaviour.
+
 ## Surfaces
 
 | Surface | Guide |
@@ -226,15 +303,111 @@ Full reference: [style guide](index.html).
 
 Light DOM (`<contour-*>`) and Shadow DOM (`<contour-shadow-*>`) wrappers. Attribute-reactive, form-associated, keyboard-navigable. See [§23](index.html#webcomponents).
 
+## Starter templates
+
+Three complete pages ship in `templates/`, one per surface. They run straight
+off a checkout (no build) and are the fastest way to start:
+
+| Template | Surface | What it shows |
+|---|---|---|
+| `templates/landing.html` | Marketing | Hero split, install block, metrics band, features, pricing, testimonial, FAQ, CTA band |
+| `templates/documentation.html` | Docs | Nav tree, breadcrumb, prose, code tabs, install, code block, callout, options table, pager, on-this-page |
+| `templates/dashboard.html` | Dashboard | Toolbar, filter pills, KPI row, chart panels with a dash-pattern series, dense sortable table |
+| `templates/vite/` | Vite + React | Minimal Vite app importing `contour-ds` from a local checkout |
+| `templates/astro/` | Astro | Minimal Astro site with the stylesheet wired into the base layout |
+
+Run any of them:
+
+```bash
+python3 -m http.server 8899 --directory /data/projects/DS
+# open http://localhost:8899/templates/landing.html
+```
+
+Copy the file, delete what you do not need, and point the stylesheet at your
+own build:
+
+```html
+<link rel="stylesheet" href="/css/contour.css" />
+```
+
+## Figma & design tokens
+
+The token layer exports as two DTCG 2025.10 documents, so it round-trips into
+design tools:
+
+- `contour-ds/tokens.json` — the **Format** document (primitives, semantic,
+  component and utility tokens, with `light-dark()` resolved per theme).
+- `contour-ds/themes.json` — the **Resolver** document (the dark half of every
+  `light-dark()` pair).
+
+### Tokens Studio (Figma)
+
+1. Install the [Tokens Studio](https://tokens.studio/) plugin in Figma.
+2. Create a new token set and choose **Import → DTCG**.
+3. Point it at `node_modules/contour-ds/dist/contour.tokens.json` (or the
+   published URL).
+4. Map the `tidal` / `plasma` / `basalt` families to your Figma variables;
+   the semantic layer (`color-primary`, `color-text-muted`, …) is what
+   components should reference, not the primitives.
+
+Because the tokens are the source of truth, re-running `node tools/build.mjs`
+regenerates both documents and the Figma variables stay in sync.
+
+## shadcn registry
+
+Contour ships a [shadcn](https://ui.shadcn.com/)-compatible registry: one item
+per surface bundle, pointing at the shipped CSS rather than inlining it.
+
+```bash
+# once the registry is hosted
+npx shadcn@latest add https://<host>/r/contour-core.json
+```
+
+The registry lives at `dist/registry/registry.json` after a build and is
+validated against the vendored shadcn schemas by
+`node tools/audit/registry-contract.mjs`. It declares no `homepage` or `url`
+while the project is private; those are added at v1.0.
+
 ## Performance
 
 The guide itself loads every component and 4 external scripts (highlight.js from a CDN, `ds.js`, `wc/index.mjs`, `guide.js`); its Lighthouse score is not the system's score.
 
 ## Browser support
 
-Sizes are in `rem`; the layout reflows to 200% zoom and to a 390 px viewport with no horizontal page scroll.
+Sizes are in `rem`; the layout reflows to 200% zoom and to a 390 px viewport
+with no horizontal page scroll.
 
-Baseline newly-available features with progressive enhancement. `light-dark()` is the most load-bearing (newly available 2024-05-13, widely available 2026-11-13). Fallback sheet: `src/css/light-dark-fallback.css`. Full details: [Browser support](index.html#browser-support).
+Baseline newly-available features with progressive enhancement. `light-dark()`
+is the most load-bearing (newly available 2024-05-13, widely available
+2026-11-13). Fallback sheet: `src/css/light-dark-fallback.css`, regenerated
+by `node tools/gen-light-dark.mjs --check`.
+
+### What is supported
+
+| Feature | Status | Notes |
+|---|---|---|
+| `light-dark()` (colour) | Newly available (2024-05) | Fallback sheet ships for older browsers |
+| `light-dark()` (images) | Not used | Do not use; widely available only 2029 |
+| `oklch()` | Widely available | All colour tokens |
+| `:has()` | Widely available | Used for stateful components |
+| Container queries | Widely available | Dense tables drop optional columns |
+| Anchor positioning | Newly available (2026-01) | Behind `@supports` for tooltips/menus |
+| Web components | Widely available | Progressive enhancement only |
+
+### Single-file drop
+
+For environments that must ship exactly one file (email, embedded widget,
+offline bundle), build with `node tools/build.mjs --single` to get
+`dist/contour.single.min.css` with the self-hosted fonts inlined as data URIs
+(~260 kB larger; defeats font caching, so prefer the two-file drop otherwise).
+
+### Reduced motion & forced colours
+
+`prefers-reduced-motion: reduce` collapses every transition, and Forced
+Colors Mode removes the texture and ridgelines and falls back to a system
+`CanvasText` outline. Both are on by default; no opt-in required.
+
+Full details: [Browser support](index.html#browser-support).
 
 ## Commands
 

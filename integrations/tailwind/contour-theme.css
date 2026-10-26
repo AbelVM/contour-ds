@@ -1,0 +1,63 @@
+/* Contour → Tailwind v4 theme bridge.
+ *
+ * Drop this into a Tailwind v4 project to expose Contour's tokens as
+ * Tailwind utilities (bg-primary, text-muted, rounded-md, font-sans, …).
+ * Contour's CSS variables stay the source of truth, so the bridge tracks
+ * the system without regeneration.
+ *
+ * Usage:
+ *   @import "tailwindcss";
+ *   @import "contour-ds/contour.min.css";
+ *   @import "./contour-theme.css";   // this file
+ */
+
+@theme {
+  /* Colour — semantic layer (light-dark aware via Contour's vars) */
+  --color-primary: var(--color-primary);
+  --color-primary-hover: var(--color-primary-hover);
+  --color-text: var(--color-text);
+  --color-text-muted: var(--color-text-muted);
+  --color-text-subtle: var(--color-text-subtle);
+  --color-surface: var(--color-surface);
+  --color-surface-raised: var(--color-surface-raised);
+  --color-surface-sunken: var(--color-surface-sunken);
+  --color-border: var(--color-border);
+  --color-border-strong: var(--color-border-strong);
+  --color-canvas: var(--color-canvas);
+  --color-success: var(--color-success);
+  --color-warning: var(--color-warning);
+  --color-danger: var(--color-danger);
+  --color-info: var(--color-info);
+
+  /* Colour — brand families (for data viz / accents) */
+  --color-tidal-500: var(--tidal-500);
+  --color-plasma-500: var(--plasma-500);
+  --color-lumen-500: var(--lumen-500);
+  --color-sol-500: var(--sol-500);
+  --color-clay-500: var(--clay-500);
+
+  /* Radius */
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-full: var(--radius-full);
+
+  /* Spacing (Contour's space scale) */
+  --spacing-xs: var(--space-xs);
+  --spacing-sm: var(--space-sm);
+  --spacing-md: var(--space-md);
+  --spacing-lg: var(--space-lg);
+  --spacing-xl: var(--space-xl);
+  --spacing-2xl: var(--space-2xl);
+
+  /* Typography */
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
+  --font-mono: var(--font-mono);
+
+  /* Motion */
+  --ease-standard: var(--ease-standard);
+  --duration-fast: var(--duration-fast);
+  --duration-base: var(--duration-base);
+}

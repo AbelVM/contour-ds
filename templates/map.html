@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contour · Map demo</title>
+    <link rel="stylesheet" href="../src/css/ds.css" />
+    <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.css" />
+    <style>
+      .map-shell { display: grid; grid-template-columns: 1fr 320px; height: 100vh; }
+      .map-canvas { position: relative; }
+      #map { position: absolute; inset: 0; }
+      .map-panel { overflow: auto; border-inline-start: 1px solid var(--color-border); background: var(--color-surface); }
+    </style>
+  </head>
+  <body>
+    <div class="map-shell">
+      <div class="map-canvas"><div id="map"></div></div>
+      <aside class="map-panel">
+        <div class="c-section-head" style="padding: var(--space-md);">
+          <div>
+            <span class="label">Layers</span>
+            <h2 class="c-section-head__title">Contour chrome</h2>
+          </div>
+        </div>
+        <div class="c-stack" style="padding: var(--space-md);">
+          <div class="c-kpi">
+            <div class="c-kpi__value">12</div>
+            <div class="c-kpi__label">Active layers</div>
+          </div>
+          <div class="c-kpi">
+            <div class="c-kpi__value">3.4 km</div>
+            <div class="c-kpi__label">Route length</div>
+          </div>
+          <button class="c-btn c-btn--primary c-btn--block">Compute route</button>
+          <button class="c-btn c-btn--ghost c-btn--block">Export GeoJSON</button>
+        </div>
+      </aside>
+    </div>
+    <script src="https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.js"></script>
+    <script>
+      const map = new maplibregl.Map({
+        container: "map",
+        style: "https://demotiles.maplibre.org/style.json",
+        center: [13.4, 52.5],
+        zoom: 11,
+      });
+      map.addControl(new maplibregl.NavigationControl(), "top-right");
+    </script>
+  </body>
+</html>
