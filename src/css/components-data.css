@@ -463,6 +463,24 @@
      5. CHART FRAME
      A slot for a visualisation: grid lines, axis labels, and a legend.
      ======================================================================= */
+  .c-chart--donut {
+    display: grid;
+    place-items: center;
+  }
+  .c-chart--donut .c-chart__plot {
+    aspect-ratio: 1 / 1;
+    min-block-size: 10rem;
+    border-block-end: none;
+  }
+  .c-chart--histogram .c-chart__plot {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--space-2xs);
+  }
+  .c-chart--histogram .c-chart__bar {
+    flex: 1 1 0;
+  }
+
   .c-chart {
     container-type: inline-size;
     position: relative;
