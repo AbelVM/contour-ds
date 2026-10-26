@@ -73,3 +73,34 @@ if (errors.length) {
   process.exit(1);
 }
 console.log(`check-wc: PASS — ${frags.length} fragments, ${seen.size} registrations, base extends HTMLElement`);
+
+// 7. per-component observed-attribute honesty (WC4-07)
+// Every attribute a component reads in render() must be in its own observed()
+// list, and every observed attribute must be reflected in properties().
+const INTERNAL = new Set(["role", "open", "aria-label", "aria-valuenow", "aria-valuemin", "aria-valuemax", "tabindex", "class"]);
+const classRe = /class\s+(\w+)\s+extends\s+ContourBase\s*\{([\s\S]*?)(?=\n(?:class |define\(|export ))/g;
+let cm;
+const perCompErrors = [];
+while ((cm = classRe.exec(src)) !== null) {
+  const body = cm[2];
+  const obsM = body.match(/static get observed\(\)\s*\{\s*return\s*\[([^\]]*)\]/);
+  if (!obsM) continue; // uses default full list
+  const obs = new Set([...obsM[1].matchAll(/"([^"]+)"/g)].map((x) => x[1]));
+  const propM = body.match(/static get properties\(\)\s*\{\s*return\s*\{([\s\S]*?)\};\s*\}/);
+  const propAttrs = new Set(propM ? [...propM[1].matchAll(/attribute:\s*"([^"]+)"/g)].map((x) => x[1]) : []);
+  const writes = new Set([...body.matchAll(/this\.setAttribute\("([^"]+)"/g)].map((x) => x[1]));
+  const reads = new Set([...body.matchAll(/this\.(?:getAttribute|hasAttribute)\("([^"]+)"\)/g)].map((x) => x[1]));
+  for (const a of reads) {
+    if (INTERNAL.has(a)) continue;
+    if (writes.has(a)) continue;
+    if (!obs.has(a)) perCompErrors.push(`${cm[1]} reads "${a}" but does not observe it`);
+  }
+  for (const a of obs) {
+    if (INTERNAL.has(a)) continue;
+    if (!propAttrs.has(a)) perCompErrors.push(`${cm[1]} observes "${a}" but does not reflect it in properties()`);
+  }
+}
+if (perCompErrors.length) {
+  for (const e of perCompErrors.slice(0, 20)) fail(e);
+  if (perCompErrors.length > 20) fail(`...and ${perCompErrors.length - 20} more observed/property mismatches`);
+}

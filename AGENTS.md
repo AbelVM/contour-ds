@@ -260,6 +260,27 @@ that works.
 The select inherits the page's `color-scheme`, so a browser that honours it
 draws the list in the page's theme. That is the most the platform gives.
 
+### 12. Web-component listeners must be delegated on the host
+
+A component that adds a listener to a generated node inside `enhance()`
+guarded by a `_wired*` flag loses it on re-render: the base class rebuilds
+the generated node, `enhance()` returns early, and the new node has no
+listener. Form sync and keyboard nav silently break after the first attribute
+change.
+
+Always delegate on the host (`this.addEventListener(...)`) and look the
+generated node up again inside the handler. The `_wired*` flag then guards
+against duplicate host listeners, which is the only thing it should guard.
+
+### 13. A new attribute must be added to the OBSERVED list
+
+`src/js/wc/core.mjs` exports a shared `OBSERVED` array. A component that
+reads an attribute via `this.getAttribute(...)` but does not list it in
+`observed` (or in the shared list) never re-renders when that attribute
+changes. The `wc-contract` gate catches this ("reads but never observes"),
+but only after the build. Add the attribute to `OBSERVED` when you add it to
+a component's `render()`.
+
 ---
 
 ## Conventions

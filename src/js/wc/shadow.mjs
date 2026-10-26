@@ -1,5 +1,5 @@
 import { define, MODS, REGISTERED, contourId } from './core.mjs';
-  import { wireTabs, wireSegmented, wireCombobox, wireTree, wireMenu, wirePagination, wireCopy, wireRemovable } from './behaviours.mjs';
+  import { wireTabs, wireSegmented, wireCombobox, wireTree, wireMenu, wirePagination, wireCopy, wireRemovable, wcReset } from './behaviours.mjs';
   // ---- Shadow DOM wrappers (opt-in) ------------------------------------
   //
   // Every block below already ships a light-DOM element; a shadow wrapper is not
@@ -64,10 +64,8 @@ import { define, MODS, REGISTERED, contourId } from './core.mjs';
       // ARIA setup is idempotent (guards on hasAttribute), so it re-runs on
       // slotchange to cover slotted content. Behaviour wiring is guarded by
       // wcClaim inside each wire* function, so it stays one-shot.
-      // ARIA: ensure interactive elements have proper roles
-      root.querySelectorAll("button:not([role])").forEach((btn) => {
-        if (!btn.hasAttribute("role")) btn.setAttribute("role", "button");
-      });
+      // Native <button> already has an implicit role of "button"; do not
+      // inject a redundant role (WAI-ARIA Rule 1).
       // ARIA: sync aria-expanded on disclosure/expandable details
       root.querySelectorAll("details").forEach((d) => {
         const summary = d.querySelector("summary");
@@ -145,10 +143,12 @@ import { define, MODS, REGISTERED, contourId } from './core.mjs';
     }
     connectedCallback() {
       this.applyMods();
-      // Re-wire behaviour when slotted content changes.
+      try { this.enhance(this.shadowRoot); } catch (e) { /* ignore */ }
+      // Re-wire behaviour when slotted content changes. Reset the wired set so
+      // behaviours can claim again now that slotted nodes exist.
       if (this.shadowRoot) {
         this.shadowRoot.addEventListener("slotchange", () => {
-          try { this.enhance(this.shadowRoot); } catch (e) { /* ignore */ }
+          try { wcReset(this); this.enhance(this.shadowRoot); } catch (e) { /* ignore */ }
         });
       }
     }

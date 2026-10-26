@@ -178,8 +178,14 @@ class ContourTree extends ContourBase {
               li.className = "c-tree__node";
               if (node.children) {
                 const row = document.createElement("div");
-                row.className = "c-tree__row";
+                row.className = "c-tree__row" + (node.active ? " c-tree__row--active" : "") + (node.dir ? " c-tree__row--dir" : "");
                 row.setAttribute("aria-expanded", "false");
+                if (node.indent) {
+                  const ind = document.createElement("span");
+                  ind.className = "c-tree__indent";
+                  ind.style.inlineSize = (node.indent * 1) + "rem";
+                  row.appendChild(ind);
+                }
                 const toggle = document.createElement("button");
                 toggle.className = "c-tree__toggle";
                 toggle.setAttribute("type", "button");
@@ -194,8 +200,14 @@ class ContourTree extends ContourBase {
                 render(node.children, li);
               } else {
                 const leaf = document.createElement("div");
-                leaf.className = "c-tree__leaf";
-                leaf.textContent = node.label || node;
+                leaf.className = "c-tree__leaf" + (node.active ? " c-tree__row--active" : "") + (node.dir ? " c-tree__row--dir" : "");
+                if (node.indent) {
+                  const ind = document.createElement("span");
+                  ind.className = "c-tree__indent";
+                  ind.style.inlineSize = (node.indent * 1) + "rem";
+                  leaf.appendChild(ind);
+                }
+                leaf.appendChild(document.createTextNode(node.label || node));
                 li.appendChild(leaf);
               }
               ul.appendChild(li);
@@ -397,8 +409,8 @@ class ContourTocFull extends ContourBase {
   }
   define("contour-toc", ContourTocFull);
 class ContourFilterBar extends ContourBase {
-    static get observed() { return ["label"]; }
-    static get properties() { return { label: { attribute: "label" } }; }
+    static get observed() { return ["label", "divider", "placeholder", "items", "empty"]; }
+    static get properties() { return { label: { attribute: "label" }, divider: { attribute: "divider" }, placeholder: { attribute: "placeholder" }, items: { attribute: "items" }, empty: { attribute: "empty" } }; }
     render() {
       this.classList.add("c-filter-bar");
       const label = this.getAttribute("label");
@@ -544,8 +556,8 @@ class ContourFilterBar extends ContourBase {
   }
   define("contour-command", ContourCommand);
 class ContourFooter extends ContourBase {
-    static get observed() { return ["brand", "note", "links"]; }
-    static get properties() { return { brand: { attribute: "brand" }, note: { attribute: "note" }, links: { attribute: "links" } }; }
+    static get observed() { return ["brand", "note", "links", "cols"]; }
+    static get properties() { return { brand: { attribute: "brand" }, note: { attribute: "note" }, links: { attribute: "links" }, cols: { attribute: "cols" } }; }
     render() {
       this.classList.add("c-footer");
       const brand = this.getAttribute("brand");
@@ -580,6 +592,32 @@ class ContourFooter extends ContourBase {
       } else {
         const w = this.querySelector(".c-footer__links");
         if (w) w.remove();
+      }
+      const cols = this.getAttribute("cols");
+      if (cols) {
+        try {
+          const parsed = JSON.parse(cols);
+          // Remove previous cols
+          this.querySelectorAll(".c-footer__col").forEach((c) => c.remove());
+          parsed.forEach((col) => {
+            const c = document.createElement("div");
+            c.className = "c-footer__col";
+            if (col.title) {
+              const h = document.createElement("h3");
+              h.textContent = col.title;
+              c.appendChild(h);
+            }
+            (col.links || []).forEach((l) => {
+              const a = document.createElement("a");
+              a.href = typeof l === "string" ? "#" : (l.href || "#");
+              a.textContent = typeof l === "string" ? l : (l.label || l);
+              c.appendChild(a);
+            });
+            this.appendChild(c);
+          });
+        } catch (e) { /* keep existing */ }
+      } else {
+        this.querySelectorAll(".c-footer__col").forEach((c) => c.remove());
       }
     }
   }

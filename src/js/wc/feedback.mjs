@@ -16,7 +16,7 @@ class ContourDialog extends ContourBase {
           h.className = "c-dialog__title";
           head.appendChild(h);
           const closeBtn = document.createElement("button");
-          closeBtn.className = "c-btn c-btn--icon c-btn--ghost";
+          closeBtn.className = "c-btn c-btn--icon c-btn--ghost c-dialog__close";
           closeBtn.setAttribute("type", "button");
           closeBtn.setAttribute("aria-label", "Close");
           closeBtn.innerHTML = '<svg aria-hidden="true"><use href="#i-close" /></svg>';
@@ -132,6 +132,7 @@ class ContourDisclosure extends ContourBase {
         const details = this.ensure("details", () => {
           const d = document.createElement("details");
           const summ = document.createElement("summary");
+          summ.className = "c-disclosure__summary";
           if (icon) {
             const ic = document.createElement("span");
             ic.className = "c-disclosure__icon";
@@ -334,6 +335,7 @@ class ContourAccordion extends ContourBase {
             const details = document.createElement("details");
             details.className = "c-disclosure";
             const summary = document.createElement("summary");
+            summary.className = "c-disclosure__summary";
             summary.textContent = item.title || item.question || "";
             details.appendChild(summary);
             const body = document.createElement("div");
@@ -358,16 +360,36 @@ class ContourAccordion extends ContourBase {
   }
   define("contour-accordion", ContourAccordion);
 class ContourDrawer extends ContourBase {
+    static get observed() { return ["title", "body"]; }
+    static get properties() { return { title: { attribute: "title" }, body: { attribute: "body" } }; }
     render() {
       this.classList.add("c-drawer");
       if (!this.hasAttribute("role")) this.setAttribute("role", "dialog");
+      const body = this.getAttribute("body");
+      if (body) {
+        const b = this.ensure(".c-drawer__body", () => { const el = document.createElement("div"); el.className = "c-drawer__body"; return el; });
+        b.innerHTML = body;
+      } else {
+        const b = this.querySelector(".c-drawer__body");
+        if (b) b.remove();
+      }
     }
   }
   define("contour-drawer", ContourDrawer);
 class ContourSheet extends ContourBase {
+    static get observed() { return ["title", "body"]; }
+    static get properties() { return { title: { attribute: "title" }, body: { attribute: "body" } }; }
     render() {
       this.classList.add("c-sheet");
       if (!this.hasAttribute("role")) this.setAttribute("role", "dialog");
+      const body = this.getAttribute("body");
+      if (body) {
+        const b = this.ensure(".c-sheet__body", () => { const el = document.createElement("div"); el.className = "c-sheet__body"; return el; });
+        b.innerHTML = body;
+      } else {
+        const b = this.querySelector(".c-sheet__body");
+        if (b) b.remove();
+      }
     }
   }
   define("contour-sheet", ContourSheet);
@@ -417,6 +439,7 @@ class ContourExpandable extends ContourBase {
         const details = this.ensure("details", () => {
           const d = document.createElement("details");
           const summ = document.createElement("summary");
+          summ.className = "c-disclosure__summary";
           summ.textContent = summary;
           d.appendChild(summ);
           const content = document.createElement("div");

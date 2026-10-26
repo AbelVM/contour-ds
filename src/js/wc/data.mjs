@@ -35,7 +35,7 @@ class ContourReadout extends ContourBase {
   }
   define("contour-readout", ContourReadout);
 class ContourKpi extends ContourBase {
-    static get observed() { return ["value", "label", "delta", "direction", "note", "variant"]; }
+    static get observed() { return ["value", "label", "delta", "direction", "note", "variant", "unit"]; }
     static get properties() {
       return {
         value: { attribute: "value" },
@@ -44,6 +44,7 @@ class ContourKpi extends ContourBase {
         direction: { attribute: "direction" },
         note: { attribute: "note" },
         variant: { attribute: "variant" },
+        unit: { attribute: "unit" },
       };
     }
     render() {
@@ -64,11 +65,14 @@ class ContourKpi extends ContourBase {
         if (v) v.remove();
       }
       if (label) {
-        const l = this.ensure(".c-kpi__label", () => { const el = document.createElement("div"); el.className = "c-kpi__label"; return el; });
+        const h = this.ensure(".c-kpi__head", () => { const el = document.createElement("div"); el.className = "c-kpi__head"; return el; });
+        let l = h.querySelector(".c-kpi__label");
+        if (!l) { l = document.createElement("div"); l.className = "c-kpi__label"; h.appendChild(l); }
         l.textContent = label;
+        if (h.parentNode !== this) this.insertBefore(h, this.firstChild);
       } else {
-        const l = this.querySelector(".c-kpi__label");
-        if (l) l.remove();
+        const h = this.querySelector(".c-kpi__head");
+        if (h) h.remove();
       }
       if (delta) {
         // `.c-kpi` has no `__delta` element. The guide's card puts a `.c-delta`
@@ -128,8 +132,27 @@ class ContourTable extends ContourBase {
                 const thead = document.createElement("thead");
                 const tr = document.createElement("tr");
                 cols.forEach((c) => {
+                  const colLabel = typeof c === "string" ? c : (c.label || c.title || c);
                   const th = document.createElement("th");
-                  th.textContent = c;
+                  if (typeof c === "object" && c !== null && c.sort) {
+                    th.setAttribute("aria-sort", c.sort === true ? "none" : c.sort);
+                    const wrap = document.createElement("span");
+                    wrap.className = "c-table__sort";
+                    wrap.textContent = colLabel;
+                    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                    svg.setAttribute("aria-hidden", "true");
+                    svg.innerHTML = '<use href="#i-chevron-down" />';
+                    wrap.appendChild(svg);
+                    th.appendChild(wrap);
+                  } else if (typeof c === "object" && c !== null && c.pinned) {
+                    th.className = "c-table__pinned";
+                    th.textContent = colLabel;
+                  } else {
+                    th.textContent = colLabel;
+                  }
+                  if (typeof c === "object" && c !== null && c.select) {
+                    th.className = (th.className + " c-table__select").trim();
+                  }
                   tr.appendChild(th);
                 });
                 thead.appendChild(tr);
@@ -160,10 +183,18 @@ class ContourTable extends ContourBase {
   }
   define("contour-table", ContourTable);
 class ContourChart extends ContourBase {
-    static get observed() { return ["series"]; }
-    static get properties() { return { series: { attribute: "series" } }; }
+    static get observed() { return ["series", "axis"]; }
+    static get properties() { return { series: { attribute: "series" }, axis: { attribute: "axis" } }; }
     render() {
       this.classList.add("c-chart");
+      const axis = this.getAttribute("axis");
+      if (axis) {
+        const ax = this.ensure(".c-chart__axis", () => { const el = document.createElement("div"); el.className = "c-chart__axis"; return el; });
+        ax.textContent = axis;
+      } else {
+        const ax = this.querySelector(".c-chart__axis");
+        if (ax) ax.remove();
+      }
       const series = this.getAttribute("series");
       if (series) {
         try {
@@ -193,13 +224,59 @@ class ContourChart extends ContourBase {
   }
   define("contour-chart", ContourChart);
 class ContourComparison extends ContourBase {
+    static get observed() { return ["divider"]; }
+    static get properties() { return { divider: { attribute: "divider" } }; }
     render() {
       this.classList.add("c-comparison");
+      const divider = this.getAttribute("divider");
+      if (divider !== null) {
+        const d = this.ensure(".c-comparison__divider", () => { const el = document.createElement("div"); el.className = "c-comparison__divider"; return el; });
+        if (divider) d.textContent = divider;
+      } else {
+        const d = this.querySelector(".c-comparison__divider");
+        if (d) d.remove();
+      }
     }
   }
   define("contour-comparison", ContourComparison);
 class ContourStreamingChart extends ContourBase {
-    render() { this.classList.add("c-streaming-chart"); }
+    static get observed() { return ["line", "dot"]; }
+    static get properties() { return { line: { attribute: "line" }, dot: { attribute: "dot" } }; }
+    render() {
+      this.classList.add("c-streaming-chart");
+      const line = this.getAttribute("line");
+      if (line) {
+        let svg = this.querySelector("svg");
+        if (!svg) {
+          svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+          svg.setAttribute("viewBox", "0 0 300 192");
+          svg.setAttribute("aria-hidden", "true");
+          this.appendChild(svg);
+        }
+        let path = svg.querySelector(".c-streaming-chart__line");
+        if (!path) {
+          path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          path.setAttribute("class", "c-streaming-chart__line");
+          svg.appendChild(path);
+        }
+        path.setAttribute("d", line);
+        const dot = this.getAttribute("dot");
+        if (dot) {
+          let circle = svg.querySelector(".c-streaming-chart__live-dot");
+          if (!circle) {
+            circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            circle.setAttribute("class", "c-streaming-chart__live-dot");
+            circle.setAttribute("r", "4");
+            svg.appendChild(circle);
+          }
+          const parts = dot.split(/[ ,]+/);
+          if (parts.length >= 2) {
+            circle.setAttribute("cx", parts[0]);
+            circle.setAttribute("cy", parts[1]);
+          }
+        }
+      }
+    }
   }
   define("contour-streaming-chart", ContourStreamingChart);
 class ContourMeter extends ContourBase {
@@ -266,8 +343,8 @@ class ContourDelta extends ContourBase {
   }
   define("contour-delta", ContourDelta);
 class ContourStat extends ContourBase {
-    static get observed() { return ["value", "label", "delta"]; }
-    static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" }, delta: { attribute: "delta" } }; }
+    static get observed() { return ["value", "label", "delta", "unit"]; }
+    static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" }, delta: { attribute: "delta" }, unit: { attribute: "unit" } }; }
     render() {
       this.classList.add("c-stat");
       const value = this.getAttribute("value");
@@ -442,8 +519,8 @@ class ContourMetricsFull extends ContourBase {
   }
   define("contour-metrics", ContourMetricsFull);
 class ContourLegend extends ContourBase {
-    static get observed() { return ["title", "ramp", "scale"]; }
-    static get properties() { return { title: { attribute: "title" }, ramp: { attribute: "ramp" }, scale: { attribute: "scale" } }; }
+    static get observed() { return ["title", "ramp", "scale", "items", "method", "norm"]; }
+    static get properties() { return { title: { attribute: "title" }, ramp: { attribute: "ramp" }, scale: { attribute: "scale" }, items: { attribute: "items" }, method: { attribute: "method" }, norm: { attribute: "norm" } }; }
     render() {
       this.classList.add("c-legend");
       const title = this.getAttribute("title");
@@ -592,8 +669,8 @@ class ContourTimeline extends ContourBase {
   }
   define("contour-timeline", ContourTimeline);
 class ContourHeatmap extends ContourBase {
-    static get observed() { return ["cells", "count"]; }
-    static get properties() { return { cells: { attribute: "cells" }, count: { attribute: "count" } }; }
+    static get observed() { return ["cells", "count", "legend"]; }
+    static get properties() { return { cells: { attribute: "cells" }, count: { attribute: "count" }, legend: { attribute: "legend" } }; }
     render() {
       this.classList.add("c-heatmap");
       // Drop previously generated cells so a re-render cannot stack a second set.
@@ -679,6 +756,43 @@ class ContourSparkline extends ContourBase {
 class ContourChartGrid extends ContourBase { render() { this.classList.add("c-chart-grid"); } }
   define("contour-chart-grid", ContourChartGrid);
 class ContourContourPlot extends ContourBase {
-    render() { this.classList.add("c-contour-plot"); }
+    static get observed() { return ["axis", "label"]; }
+    static get properties() { return { axis: { attribute: "axis" }, label: { attribute: "label" } }; }
+    render() {
+      this.classList.add("c-contour-plot");
+      const axis = this.getAttribute("axis");
+      if (axis) {
+        let svg = this.querySelector("svg");
+        if (!svg) {
+          svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+          svg.setAttribute("viewBox", "0 0 100 100");
+          svg.setAttribute("aria-hidden", "true");
+          this.appendChild(svg);
+        }
+        let ax = svg.querySelector(".c-contour-plot__axis");
+        if (!ax) {
+          ax = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          ax.setAttribute("class", "c-contour-plot__axis");
+          svg.appendChild(ax);
+        }
+      }
+      const label = this.getAttribute("label");
+      if (label) {
+        let svg = this.querySelector("svg");
+        if (!svg) {
+          svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+          svg.setAttribute("viewBox", "0 0 100 100");
+          svg.setAttribute("aria-hidden", "true");
+          this.appendChild(svg);
+        }
+        let lbl = svg.querySelector(".c-contour-plot__label");
+        if (!lbl) {
+          lbl = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          lbl.setAttribute("class", "c-contour-plot__label");
+          svg.appendChild(lbl);
+        }
+        lbl.textContent = label;
+      }
+    }
   }
   define("contour-contour-plot", ContourContourPlot);

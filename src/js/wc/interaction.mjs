@@ -120,8 +120,8 @@ class ContourTableWrap extends ContourBase { render() { this.classList.add("c-ta
 class ContourScrollArea extends ContourBase { render() { this.classList.add("c-scroll-area"); } }
   define("contour-scroll-area", ContourScrollArea);
 class ContourBtn extends ContourBase {
-    static get observed() { return ["variant", "size", "color"]; }
-    static get properties() { return { variant: { attribute: "variant" }, size: { attribute: "size" }, color: { attribute: "color" } }; }
+    static get observed() { return ["variant", "size", "color", "label"]; }
+    static get properties() { return { variant: { attribute: "variant" }, size: { attribute: "size" }, color: { attribute: "color" }, label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-btn");
       Array.from(this.classList).forEach((c) => { if (c.startsWith("c-btn--")) this.classList.remove(c); });

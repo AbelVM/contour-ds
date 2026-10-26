@@ -666,6 +666,24 @@ try {
         exp.setAttribute("summary", "E2");
         const expKept = !!exp.querySelector(".exp-authored") && exp.querySelector(".exp-authored").textContent === "world";
 
+        // Listener survival across a re-render: a component that adds listeners
+        // to generated nodes inside enhance() guarded by a _wired flag loses them
+        // when the node is rebuilt. Host-level delegation survives. Mount a
+        // form-associated component, listen on the host, re-render, dispatch.
+        const lf = document.createElement("contour-field");
+        lf.setAttribute("label", "Probe");
+        lf.setAttribute("placeholder", "q");
+        document.body.appendChild(lf);
+        let fired = false;
+        lf.addEventListener("input", () => { fired = true; });
+        lf.setAttribute("placeholder", "changed");
+        const inp = lf.querySelector("input, textarea, select");
+        if (inp) {
+          inp.value = "x";
+          inp.dispatchEvent(new Event("input", { bubbles: true }));
+        }
+        const listenerSurvived = fired;
+
         // the modifier contract, measured through the browser rather than read
         // off the source: both layers must answer to the same attributes
         const mod = {};
@@ -727,13 +745,13 @@ try {
           missing, anonymous, mounted, registry: registry.length,
           bad: rendered.filter((r) => !r.ok), renderedCount: rendered.length,
           thin, unshared, parity, wrappers: wrappers.length, docRules,
-          bareTable, reactivity: { changed: before !== after, duplicated: titles > 1, keptAuthored, discKept, discSummary, expKept },
+          bareTable, reactivity: { changed: before !== after, duplicated: titles > 1, keptAuthored, discKept, discSummary, expKept, listenerSurvived },
           mod, orphan: [...new Set(orphan)], orphanChecked,
         };
       },
       { registry: load.registry, overlapped, RENDER_CONTRACT }
     );
-    compared += out.renderedCount + out.wrappers + out.orphan.length + 7;
+    compared += out.renderedCount + out.wrappers + out.orphan.length + 8;
 
     if (out.missing.length)
       fail(`${out.missing.length} of ${out.registry} names the registry claims are not defined in the browser: ${out.missing.slice(0, 8).join(", ")}`);
@@ -753,6 +771,8 @@ try {
       fail(`contour-disclosure did not update its summary on re-render: got "${out.reactivity.discSummary}"`);
     if (!out.reactivity.expKept)
       fail("contour-expandable lost its authored content across a re-render — the generated container must not take the author's nodes with it when it is rebuilt");
+    if (!out.reactivity.listenerSurvived)
+      fail("a host-level listener did not survive a re-render — a component is adding listeners to generated nodes inside enhance() guarded by a _wired flag, so the rebuilt node has no listener");
     if (out.thin.length)
       fail(`${out.thin.length} of ${out.wrappers} shadow wrappers adopted fewer rules than the document has: ${out.thin.slice(0, 5).join("; ")} — a stylesheet joined on a literal backslash-n parses as one rule and drops the rest, so the component renders unstyled`);
     if (out.parity.length)

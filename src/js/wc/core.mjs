@@ -48,8 +48,8 @@
   //   role, open, aria-label, aria-valuenow, aria-valuemin, aria-valuemax, tabindex
   // Adding one of those back to this list makes that component recurse.
   export const OBSERVED = [
-    "action", "actions", "after", "anchor", "answer", "area", "attribution", "attribution-mark", "axis-x", "axis-y", "before", "body", "brand", "center", "columns", "color", "command",
-    "cells", "chrome", "closable", "controls", "copyable", "count", "current", "date", "delta", "demo", "desc", "direction", "divider", "do", "dont",
+    "action", "actions", "after", "anchor", "answer", "area", "article", "attribution", "attribution-mark", "axis", "axis-x", "axis-y", "before", "body", "brand", "canvas", "center", "cols", "columns", "color", "command",
+    "cells", "chrome", "closable", "controls", "copyable", "count", "current", "date", "delta", "demo", "desc", "direction", "divider", "do", "dont", "dot",
     "empty", "error", "hint", "href", "icon", "index", "instrument", "items", "key",
     "label", "lede", "legend", "line", "links", "live", "max", "media", "message", "method", "min", "name", "needle", "next", "no", "nodes", "note", "norm",
     "options", "pages", "placeholder", "point", "points", "prev", "prompt", "question", "required",
@@ -199,7 +199,8 @@
          // Preserve form control values across a re-render: generated inputs are
          // dropped and rebuilt, so without this a host attribute change wipes
          // whatever the user typed.
-         const savedValues = Array.from(this.querySelectorAll("input, textarea, select")).map((el) => el.value);
+         const savedControls = Array.from(this.querySelectorAll("input, textarea, select"));
+         const savedValues = savedControls.map((el) => ({ key: el.name || el.id || null, value: el.value }));
          // Preserve focus, scroll position and <details> open state across the
          // rebuild, so a host attribute change does not yank focus to <body>
          // or collapse an open disclosure.
@@ -231,8 +232,11 @@
         const newControls = Array.from(this.querySelectorAll("input, textarea, select"));
         if (newControls.length === savedValues.length) {
           newControls.forEach((el, i) => {
-            if (savedValues[i] !== undefined && el.value === "" && el.getAttribute("value") === null) {
-              el.value = savedValues[i];
+            const saved = savedValues[i];
+            const match = saved && saved.key ? savedValues.find((sv) => sv.key && sv.key === (el.name || el.id)) : null;
+            const val = match ? match.value : (saved ? saved.value : undefined);
+            if (val !== undefined && el.value === "" && el.getAttribute("value") === null) {
+              el.value = val;
             }
           });
         }

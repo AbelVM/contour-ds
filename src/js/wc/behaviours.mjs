@@ -40,6 +40,7 @@ import { contourId } from './core.mjs';
 // calls enhance() after every render — so the guard lives in a WeakMap keyed on
 // the node, where a re-render cannot drop it.
 const WIRED_HOSTS = new WeakMap();
+export const wcReset = (host) => { WIRED_HOSTS.delete(host); };
 const wcClaim = (host, name) => {
   let set = WIRED_HOSTS.get(host);
   if (!set) { set = new Set(); WIRED_HOSTS.set(host, set); }
@@ -532,8 +533,9 @@ export function wireTree(host) {
 
 /** Menu: roving focus over items, `contour:select` from key or pointer. */
 export function wireMenu(host) {
-  if (!wcClaim(host, "menu")) return;
   const items = () => wcAll(host, "[role='menuitem']");
+  items().forEach((it) => { if (!it.hasAttribute("tabindex")) it.setAttribute("tabindex", "-1"); });
+  if (!wcClaim(host, "menu")) return;
   wcListen(host, "keydown", (e) => {
     const its = items();
     if (!its.length) return;
@@ -555,11 +557,11 @@ export function wireMenu(host) {
     const index = items().indexOf(item);
     if (index >= 0) wcEmit(host, "contour:select", { index, label: item.textContent.trim() });
   });
-  items().forEach((it) => { if (!it.hasAttribute("tabindex")) it.setAttribute("tabindex", "-1"); });
 }
 
 /** Pagination: `[aria-current="page"]` is the state the sheet paints. */
 export function wirePagination(host) {
+  wcAll(host, ".c-pagination__link").forEach((b) => { if (!b.hasAttribute("tabindex")) b.setAttribute("tabindex", "0"); });
   if (!wcClaim(host, "pagination")) return;
   const activate = (btn) => {
     const page = parseInt(btn.textContent, 10);
@@ -589,8 +591,7 @@ export function wirePagination(host) {
     else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); activate(btn); return; }
     if (next >= 0 && next !== idx) { e.preventDefault(); links[next].focus(); }
   });
-  wcAll(host, ".c-pagination__link").forEach((b) => { if (!b.hasAttribute("tabindex")) b.setAttribute("tabindex", "0"); });
-}
+  }
 
 /**
  * Copy. `.c-code__copy` copies its block, `.c-install__copy` its command — one

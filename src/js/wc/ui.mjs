@@ -63,8 +63,8 @@ class ContourChipFull extends ContourBase {
   }
   define("contour-chip", ContourChipFull);
 class ContourTag extends ContourBase {
-    static get observed() { return ["label", "removable"]; }
-    static get properties() { return { label: { attribute: "label" }, removable: { attribute: "removable", type: Boolean } }; }
+    static get observed() { return ["label", "removable", "variant"]; }
+    static get properties() { return { label: { attribute: "label" }, removable: { attribute: "removable", type: Boolean }, variant: { attribute: "variant" } }; }
     render() {
       this.classList.add("c-tag");
       if (!this.hasAttribute("role")) this.setAttribute("role", "status");
@@ -118,8 +118,8 @@ class ContourDot extends ContourBase {
   }
   define("contour-dot", ContourDot);
 class ContourPill extends ContourBase {
-    static get observed() { return ["label", "live"]; }
-    static get properties() { return { label: { attribute: "label" }, live: { attribute: "live", type: Boolean } }; }
+    static get observed() { return ["label", "live", "variant"]; }
+    static get properties() { return { label: { attribute: "label" }, live: { attribute: "live", type: Boolean }, variant: { attribute: "variant" } }; }
     render() {
       this.classList.add("c-pill");
       if (!this.hasAttribute("role")) this.setAttribute("role", "status");
@@ -281,8 +281,8 @@ class ContourVersionBannerFull extends ContourBase {
   }
   define("contour-version-banner", ContourVersionBannerFull);
 class ContourFilterPill extends ContourBase {
-    static get observed() { return ["key", "value"]; }
-    static get properties() { return { key: { attribute: "key" }, value: { attribute: "value" } }; }
+    static get observed() { return ["key", "value", "removable"]; }
+    static get properties() { return { key: { attribute: "key" }, value: { attribute: "value" }, removable: { attribute: "removable", type: Boolean } }; }
     render() {
       this.classList.add("c-filter-pill");
       const key = this.getAttribute("key");
@@ -324,8 +324,8 @@ class ContourFilterPill extends ContourBase {
   }
   define("contour-filter-pill", ContourFilterPill);
 class ContourDatamark extends ContourBase {
-    static get observed() { return ["value", "text"]; }
-    static get properties() { return { value: { attribute: "value" }, text: { attribute: "text" } }; }
+    static get observed() { return ["value", "text", "unit", "label"]; }
+    static get properties() { return { value: { attribute: "value" }, text: { attribute: "text" }, unit: { attribute: "unit" }, label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-datamark");
       // The guide sets `value` on this element (`<contour-datamark value="42">`),

@@ -21,8 +21,8 @@ class ContourCard extends ContourBase {
   }
   define("contour-card", ContourCard);
 class ContourFeature extends ContourBase {
-    static get observed() { return ["index", "title"]; }
-    static get properties() { return { index: { attribute: "index" }, title: { attribute: "title" } }; }
+    static get observed() { return ["index", "title", "body"]; }
+    static get properties() { return { index: { attribute: "index" }, title: { attribute: "title" }, body: { attribute: "body" } }; }
     render() {
       this.classList.add("c-feature");
       // `.c-feature` defines three parts: `__index`, `__title`, `__body`. It has
@@ -215,8 +215,8 @@ class ContourDoDont extends ContourBase {
   }
   define("contour-do-dont", ContourDoDont);
 class ContourFlag extends ContourBase {
-    static get observed() { return ["variant"]; }
-    static get properties() { return { variant: { attribute: "variant" } }; }
+    static get observed() { return ["variant", "label"]; }
+    static get properties() { return { variant: { attribute: "variant" }, label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-flag");
       const variant = this.getAttribute("variant");
@@ -229,8 +229,8 @@ class ContourFlag extends ContourBase {
   }
   define("contour-flag", ContourFlag);
 class ContourInstallFull extends ContourBase {
-    static get observed() { return ["command"]; }
-    static get properties() { return { command: { attribute: "command" } }; }
+    static get observed() { return ["command", "prompt", "copyable"]; }
+    static get properties() { return { command: { attribute: "command" }, prompt: { attribute: "prompt" }, copyable: { attribute: "copyable" } }; }
     render() {
       this.classList.add("c-install");
       const prompt = this.getAttribute("prompt") || "$";
@@ -299,8 +299,8 @@ class ContourTestimonialFull extends ContourBase {
   }
   define("contour-testimonial", ContourTestimonialFull);
 class ContourShowcaseFull extends ContourBase {
-    static get observed() { return ["title", "text", "media"]; }
-    static get properties() { return { title: { attribute: "title" }, text: { attribute: "text" }, media: { attribute: "media" } }; }
+    static get observed() { return ["title", "text", "media", "reverse", "items"]; }
+    static get properties() { return { title: { attribute: "title" }, text: { attribute: "text" }, media: { attribute: "media" }, reverse: { attribute: "reverse" }, items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-showcase");
       if (this.hasAttribute("reverse")) this.classList.add("c-showcase--reverse");
@@ -360,8 +360,8 @@ class ContourPricingFull extends ContourBase {
   }
   define("contour-pricing", ContourPricingFull);
 class ContourRecipeFull extends ContourBase {
-    static get observed() { return ["title"]; }
-    static get properties() { return { title: { attribute: "title" } }; }
+    static get observed() { return ["title", "body", "canvas"]; }
+    static get properties() { return { title: { attribute: "title" }, body: { attribute: "body" }, canvas: { attribute: "canvas" } }; }
     render() {
       this.classList.add("c-recipe");
       const title = this.getAttribute("title");
@@ -380,6 +380,14 @@ class ContourRecipeFull extends ContourBase {
         const b = this.querySelector(".c-recipe__desc");
         if (b) b.remove();
       }
+      const canvas = this.getAttribute("canvas");
+      if (canvas) {
+        const c = this.ensure(".c-recipe__canvas", () => { const el = document.createElement("div"); el.className = "c-recipe__canvas"; return el; });
+        c.innerHTML = canvas;
+      } else {
+        const c = this.querySelector(".c-recipe__canvas");
+        if (c) c.remove();
+      }
     }
   }
   define("contour-recipe", ContourRecipeFull);
@@ -388,11 +396,57 @@ class ContourLogosFull extends ContourBase {
   }
   define("contour-logos", ContourLogosFull);
 class ContourLandingFeaturesFull extends ContourBase {
-    render() { this.classList.add("c-landing-features"); }
+    static get observed() { return ["items"]; }
+    static get properties() { return { items: { attribute: "items" } }; }
+    render() {
+      this.classList.add("c-landing-features");
+      const items = this.getAttribute("items");
+      if (items) {
+        try {
+          const parsed = JSON.parse(items);
+          this.querySelectorAll(".c-landing-features__item").forEach((el) => el.remove());
+          parsed.forEach((it) => {
+            const item = document.createElement("div");
+            item.className = "c-landing-features__item";
+            if (it.icon) {
+              const ic = document.createElement("span");
+              ic.className = "c-landing-features__icon";
+              ic.innerHTML = '<svg aria-hidden="true"><use href="#' + String(it.icon).replace(/[^a-zA-Z0-9_-]/g, "") + '" /></svg>';
+              item.appendChild(ic);
+            }
+            if (it.title) {
+              const t = document.createElement("h3");
+              t.className = "c-landing-features__title";
+              t.textContent = it.title;
+              item.appendChild(t);
+            }
+            if (it.text) {
+              const tx = document.createElement("p");
+              tx.className = "c-landing-features__text";
+              tx.textContent = it.text;
+              item.appendChild(tx);
+            }
+            this.appendChild(item);
+          });
+        } catch (e) { /* keep existing */ }
+      }
+    }
   }
   define("contour-landing-features", ContourLandingFeaturesFull);
 class ContourLandingHeroFull extends ContourBase {
-    render() { this.classList.add("c-landing-hero"); }
+    static get observed() { return ["actions"]; }
+    static get properties() { return { actions: { attribute: "actions" } }; }
+    render() {
+      this.classList.add("c-landing-hero");
+      const actions = this.getAttribute("actions");
+      if (actions) {
+        const a = this.ensure(".c-landing-hero__actions", () => { const el = document.createElement("div"); el.className = "c-landing-hero__actions"; return el; });
+        a.innerHTML = actions;
+      } else {
+        const a = this.querySelector(".c-landing-hero__actions");
+        if (a) a.remove();
+      }
+    }
   }
   define("contour-landing-hero", ContourLandingHeroFull);
 class ContourLinkishFull extends ContourBase {
@@ -414,8 +468,8 @@ class ContourProseFull extends ContourBase {
   }
   define("contour-prose", ContourProseFull);
 class ContourPanel extends ContourBase {
-    static get observed() { return ["title"]; }
-    static get properties() { return { title: { attribute: "title" } }; }
+    static get observed() { return ["title", "subtitle", "status"]; }
+    static get properties() { return { title: { attribute: "title" }, subtitle: { attribute: "subtitle" }, status: { attribute: "status" } }; }
     render() {
       this.classList.add("c-panel");
       const title = this.getAttribute("title");
@@ -447,8 +501,8 @@ class ContourPanel extends ContourBase {
   }
   define("contour-panel", ContourPanel);
 class ContourCta extends ContourBase {
-    static get observed() { return ["title", "text"]; }
-    static get properties() { return { title: { attribute: "title" }, text: { attribute: "text" } }; }
+    static get observed() { return ["title", "text", "actions"]; }
+    static get properties() { return { title: { attribute: "title" }, text: { attribute: "text" }, actions: { attribute: "actions" } }; }
     render() {
       this.classList.add("c-cta");
       const title = this.getAttribute("title");
@@ -529,8 +583,8 @@ class ContourPlate extends ContourBase {
   }
   define("contour-plate", ContourPlate);
 class ContourPullquote extends ContourBase {
-    static get observed() { return ["quote", "by"]; }
-    static get properties() { return { quote: { attribute: "quote" }, by: { attribute: "by" } }; }
+    static get observed() { return ["quote", "by", "name"]; }
+    static get properties() { return { quote: { attribute: "quote" }, by: { attribute: "by" }, name: { attribute: "name" } }; }
     render() {
       this.classList.add("c-pullquote");
       const quote = this.getAttribute("quote");

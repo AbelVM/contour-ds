@@ -91,11 +91,21 @@ class ContourField extends ContourBase {
   ContourField.prototype.enhance = function() {
     if (this._wiredField) return;
     this._wiredField = true;
-    const input = this.querySelector("input, textarea, select");
-    if (!input || !this._internals) return;
-    const sync = () => { this._internals.setFormValue(input.value); };
-    input.addEventListener("input", sync);
-    input.addEventListener("change", sync);
+    const sync = () => {
+      const input = this.querySelector("input, textarea, select");
+      if (!input || !this._internals) return;
+      this._internals.setFormValue(input.value);
+    };
+    this.addEventListener("input", (e) => {
+      const input = this.querySelector("input, textarea, select");
+      if (!input || e.target !== input) return;
+      sync();
+    });
+    this.addEventListener("change", (e) => {
+      const input = this.querySelector("input, textarea, select");
+      if (!input || e.target !== input) return;
+      sync();
+    });
     sync();
   };
   define("contour-field", ContourField);
@@ -117,11 +127,21 @@ class ContourRange extends ContourBase {
   ContourRange.prototype.enhance = function() {
     if (this._wiredRange) return;
     this._wiredRange = true;
-    const input = this.querySelector("input");
-    if (!input || !this._internals) return;
-    const sync = () => { this._internals.setFormValue(input.value); };
-    input.addEventListener("input", sync);
-    input.addEventListener("change", sync);
+    const sync = () => {
+      const input = this.querySelector("input");
+      if (!input || !this._internals) return;
+      this._internals.setFormValue(input.value);
+    };
+    this.addEventListener("input", (e) => {
+      const input = this.querySelector("input");
+      if (!input || e.target !== input) return;
+      sync();
+    });
+    this.addEventListener("change", (e) => {
+      const input = this.querySelector("input");
+      if (!input || e.target !== input) return;
+      sync();
+    });
     sync();
   };
   define("contour-range", ContourRange);
@@ -338,10 +358,16 @@ class ContourVersion extends ContourBase {
     enhance() {
       if (this._wiredVersion) return;
       this._wiredVersion = true;
-      const select = this.querySelector("select");
-      if (!select || !this._internals) return;
-      const sync = () => { this._internals.setFormValue(select.value); };
-      select.addEventListener("change", sync);
+      const sync = () => {
+        const select = this.querySelector("select");
+        if (!select || !this._internals) return;
+        this._internals.setFormValue(select.value);
+      };
+      this.addEventListener("change", (e) => {
+        const select = this.querySelector("select");
+        if (!select || e.target !== select) return;
+        sync();
+      });
       sync();
     }
   }
