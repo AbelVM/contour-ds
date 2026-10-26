@@ -258,7 +258,17 @@ dist/      build output (gitignored)
 
 ## Licence
 
-MIT. Fonts: SIL Open Font License 1.1 (see `src/css/fonts/OFL.txt`).
+MIT for the design system. Fonts (IBM Plex Sans, Mono, Condensed) are licensed
+under the SIL Open Font License 1.1 — see `src/css/fonts/OFL.txt`.
+
+### Font attribution
+
+IBM Plex is copyright © 2017 IBM Corp., released under the SIL Open Font
+License, Version 1.1, with the Reserved Font Name "Plex". The binaries shipped
+in `src/css/fonts/` (and `dist/fonts/` after a build) are unmodified upstream
+releases; the OFL text ships beside them as `OFL.txt`. The CSS `font-family`
+names (`Contour Plex Sans`, `Contour Plex Mono`, `Contour Plex Sans Condensed`)
+are aliases only and do not rename the font software.
 
 ---
 
