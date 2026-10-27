@@ -1952,6 +1952,15 @@ class ContourHeatmap extends ContourBase {
         this.addEventListener("mouseout", (e) => {
           if (!e.relatedTarget || !this.contains(e.relatedTarget)) hideTip();
          });
+        // Focus readout: keyboard users get the same tip as mouse users.
+        this.addEventListener("focusin", (e) => {
+          const cell = e.target && e.target.closest ? e.target.closest(".c-heatmap__cell") : null;
+          if (cell && this.contains(cell)) showTip({ target: cell });
+        });
+        this.addEventListener("focusout", (e) => {
+          if (!this.contains(e.relatedTarget)) hideTip();
+        });
+        if (tip && !tip.getAttribute("role")) tip.setAttribute("role", "tooltip");
       }
       // Retry button handling.
       this.addEventListener("click", (e) => {
