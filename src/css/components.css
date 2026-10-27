@@ -2772,6 +2772,13 @@
     opacity: 0.5;
   }
 
+  .c-breadcrumb__empty,
+  .c-breadcrumb__loading,
+  .c-breadcrumb__error {
+    color: var(--color-text-muted);
+    padding: var(--space-md);
+  }
+
   .c-pagination {
     display: flex;
     align-items: center;

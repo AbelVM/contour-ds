@@ -401,11 +401,44 @@ class ContourCodeTabs extends ContourBase {
   }
   define("contour-code-tabs", ContourCodeTabs);
 class ContourBreadcrumb extends ContourBase {
-    static get observed() { return ["items", "separator"]; }
+    static get observed() { return ["items", "separator", "empty", "loading", "error", "src"]; }
     static get properties() { return { items: { attribute: "items" }, separator: { attribute: "separator" } }; }
     render() {
       this.classList.add("c-breadcrumb");
-      const items = this.getAttribute("items");
+      const src = this.getAttribute("src");
+      const items = this.getAttribute("items") || (this._remoteItems ? JSON.stringify(this._remoteItems) : null);
+      if (src && !this.getAttribute("items") && this._srcFetched !== src) {
+        this._srcFetched = src;
+        this._loading = true;
+        this.attributeChangedCallback("__rerender__", null, "");
+        fetch(src).then((r) => r.json()).then((data) => {
+          this._remoteItems = data;
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        }).catch(() => {
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        });
+      }
+      const loading = this.hasAttribute("loading") || this._loading;
+      if (loading) {
+        const loadingEl = document.createElement("div");
+        loadingEl.className = "c-breadcrumb__loading";
+        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
+        loadingEl.style.color = "var(--color-text-muted)";
+        loadingEl.style.padding = "var(--space-md)";
+        this.appendChild(loadingEl);
+        return;
+      }
+      if (this.hasAttribute("error")) {
+        const err = document.createElement("div");
+        err.className = "c-breadcrumb__error";
+        err.textContent = this.getAttribute("error") || "Error";
+        err.style.color = "var(--color-danger, var(--color-text))";
+        err.style.padding = "var(--space-md)";
+        this.appendChild(err);
+        return;
+      }
       // Slot composition: authored <li> items win over the JSON attribute.
       const nav = this.querySelector("nav");
       const ol = nav ? nav.querySelector("ol") : null;
@@ -436,9 +469,16 @@ class ContourBreadcrumb extends ContourBase {
             }
           });
         } catch (e) { /* keep existing */ }
-      } else if (!items && nav) {
-        nav.remove();
-      }
+       } else if (!items && nav) {
+         nav.remove();
+       } else if (!items && !nav) {
+         const empty = document.createElement("div");
+         empty.className = "c-breadcrumb__empty";
+         empty.textContent = this.getAttribute("empty") || "No data";
+         empty.style.color = "var(--color-text-muted)";
+         empty.style.padding = "var(--space-md)";
+         this.appendChild(empty);
+       }
     }
   }
   define("contour-breadcrumb", ContourBreadcrumb);
