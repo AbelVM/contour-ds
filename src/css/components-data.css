@@ -1237,6 +1237,12 @@
   .c-compass__label--e { inset-inline-end: 0.125rem; inset-block-start: 50%; transform: translateY(-50%); }
   .c-compass__label--w { inset-inline-start: 0.125rem; inset-block-start: 50%; transform: translateY(-50%); }
 
+  .c-compass__empty,
+  .c-compass__loading,
+  .c-compass__error {
+    color: var(--color-text-muted);
+  }
+
   /* =======================================================================
      8c. MINIMAP — inset map with viewport rectangle
      ======================================================================= */

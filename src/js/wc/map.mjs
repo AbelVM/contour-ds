@@ -633,10 +633,28 @@ class ContourCatchment extends ContourBase {
   }
   define("contour-catchment", ContourCatchment);
 class ContourCompassFull extends ContourBase {
-    static get observed() { return ["label", "needle"]; }
+    static get observed() { return ["label", "needle", "empty", "loading", "error"]; }
     static get properties() { return { label: { attribute: "label" }, needle: { attribute: "needle" } }; }
     render() {
       this.classList.add("c-compass");
+      if (this.hasAttribute("loading")) {
+        const loading = document.createElement("div");
+        loading.className = "c-compass__loading";
+        loading.textContent = this.getAttribute("loading") || "Loading…";
+        loading.style.color = "var(--color-text-muted)";
+        loading.style.padding = "var(--space-md)";
+        this.appendChild(loading);
+        return;
+      }
+      if (this.hasAttribute("error")) {
+        const err = document.createElement("div");
+        err.className = "c-compass__error";
+        err.textContent = this.getAttribute("error") || "Error";
+        err.style.color = "var(--color-danger, var(--color-text))";
+        err.style.padding = "var(--space-md)";
+        this.appendChild(err);
+        return;
+      }
       // Cardinal directions.
       for (const dir of ["n", "s", "e", "w"]) {
         const cls = ".c-compass__label--" + dir;
