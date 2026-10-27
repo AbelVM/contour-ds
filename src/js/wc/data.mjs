@@ -1111,13 +1111,60 @@ class ContourMeter extends ContourBase {
   }
   define("contour-meter", ContourMeter);
 class ContourDelta extends ContourBase {
-    static get observed() { return ["value", "direction"]; }
+    static get observed() { return ["value", "direction", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { value: { attribute: "value" }, direction: { attribute: "direction" } }; }
     render() {
       this.classList.add("c-delta");
+      const src = this.getAttribute("src");
+      const value = this.getAttribute("value") || (this._remoteData && this._remoteData.value) || "";
+      if (src && !this.getAttribute("value") && this._srcFetched !== src) {
+        this._srcFetched = src;
+        this._loading = true;
+        this.attributeChangedCallback("__rerender__", null, "");
+        fetch(src).then((r) => r.json()).then((data) => {
+          this._remoteData = data;
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        }).catch(() => {
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        });
+      }
+      const loading = this.hasAttribute("loading") || this._loading;
+      if (loading) {
+        const loadingEl = document.createElement("span");
+        loadingEl.className = "c-delta__loading";
+        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
+        loadingEl.style.color = "var(--color-text-muted)";
+        this.appendChild(loadingEl);
+        return;
+      }
+      if (this.hasAttribute("error")) {
+        const err = document.createElement("span");
+        err.className = "c-delta__error";
+        err.textContent = this.getAttribute("error") || "Error";
+        err.style.color = "var(--color-danger, var(--color-text))";
+        this.appendChild(err);
+        return;
+      }
+      if (this.hasAttribute("skeleton")) {
+        const sk = document.createElement("span");
+        sk.className = "c-skeleton c-delta__skeleton";
+        sk.style.inlineSize = "3rem";
+        sk.style.blockSize = "1rem";
+        this.appendChild(sk);
+        return;
+      }
       Array.from(this.classList).forEach((c) => { if (c.startsWith("c-delta--")) this.classList.remove(c); });
-      const value = this.getAttribute("value") || "";
-      const direction = this.getAttribute("direction") || "up";
+      const direction = this.getAttribute("direction") || (this._remoteData && this._remoteData.direction) || "up";
+      if (!value) {
+        const empty = document.createElement("span");
+        empty.className = "c-delta__empty";
+        empty.textContent = this.getAttribute("empty") || "No data";
+        empty.style.color = "var(--color-text-muted)";
+        this.appendChild(empty);
+        return;
+      }
       // `.c-delta` carries no `__arrow` or `__value` element: `.c-delta svg` is
       // the rule the block defines, so the arrow is a sprite icon and the number
       // is a text node. The direction is a state modifier, never a node.
@@ -1126,15 +1173,13 @@ class ContourDelta extends ContourBase {
       // The base class drops every node this render appended before running
       // again, so the icon and the text are rebuilt, not guarded.
       this.querySelectorAll("svg").forEach((s) => s.remove());
-      if (value) {
-        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-        svg.setAttribute("aria-hidden", "true");
-        const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
-        use.setAttribute("href", icon);
-        svg.appendChild(use);
-        this.appendChild(svg);
-        this.appendChild(document.createTextNode(" " + value));
-      }
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("aria-hidden", "true");
+      const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+      use.setAttribute("href", icon);
+      svg.appendChild(use);
+      this.appendChild(svg);
+      this.appendChild(document.createTextNode(" " + value));
     }
   }
   define("contour-delta", ContourDelta);

@@ -119,6 +119,12 @@
     color: var(--color-text-muted);
   }
 
+  .c-delta__empty,
+  .c-delta__loading,
+  .c-delta__error {
+    color: var(--color-text-muted);
+  }
+
   .c-delta svg {
     inline-size: 0.8rem;
     block-size: 0.8rem;
