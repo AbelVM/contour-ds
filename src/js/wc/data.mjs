@@ -1597,7 +1597,17 @@ class ContourSparkline extends ContourBase {
            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
            path.setAttribute("d", parsed.map((p, i) => (i === 0 ? "M" : "L") + " " + (i * 100 / (parsed.length - 1)) + " " + (30 - p * 30)).join(" "));
             svg.appendChild(path);
+            // Value-at-pointer dot marker.
+            const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            dot.setAttribute("class", "c-sparkline__dot");
+            dot.setAttribute("r", "2");
+            dot.setAttribute("cx", "0");
+            dot.setAttribute("cy", "15");
+            dot.setAttribute("hidden", "");
+            svg.appendChild(dot);
             this.appendChild(svg);
+            // Store parsed points for value-at-pointer lookup.
+            this._sparkPoints = parsed;
             // Styled tooltip element.
             const tip = this.ensure(".c-sparkline__tooltip", () => { const el = document.createElement("div"); el.className = "c-sparkline__tooltip"; el.setAttribute("hidden", ""); return el; });
             tip.setAttribute("hidden", "");
@@ -1626,16 +1636,33 @@ class ContourSparkline extends ContourBase {
       // Tooltip: show on hover.
       const tip = this.querySelector(".c-sparkline__tooltip");
       const svg = this.querySelector("svg");
+      const dot = this.querySelector(".c-sparkline__dot");
       if (tip && svg) {
         const showTip = (e) => {
-          const rect = this.getBoundingClientRect();
+          const rect = svg.getBoundingClientRect();
           const x = e.clientX - rect.left;
-          tip.textContent = this.getAttribute("aria-label") || "Sparkline";
-          tip.style.left = x + "px";
+          const pct = Math.max(0, Math.min(1, x / rect.width));
+          const pts = this._sparkPoints || [];
+          if (pts.length === 0) return;
+          const idx = Math.round(pct * (pts.length - 1));
+          const val = pts[idx];
+          const cx = (idx * 100 / (pts.length - 1));
+          const cy = 30 - val * 30;
+          if (dot) {
+            dot.setAttribute("cx", String(cx));
+            dot.setAttribute("cy", String(cy));
+            dot.removeAttribute("hidden");
+          }
+          tip.textContent = String(val);
+          const tipX = (cx / 100) * rect.width;
+          tip.style.left = tipX + "px";
           tip.style.top = "0px";
           tip.removeAttribute("hidden");
         };
-        const hideTip = () => tip.setAttribute("hidden", "");
+        const hideTip = () => {
+          tip.setAttribute("hidden", "");
+          if (dot) dot.setAttribute("hidden", "");
+        };
         this.addEventListener("mousemove", showTip);
         this.addEventListener("mouseleave", hideTip);
       }
