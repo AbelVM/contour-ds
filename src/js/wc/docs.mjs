@@ -1,6 +1,6 @@
 import { ContourBase, define } from './core.mjs';
 class ContourDocsNav extends ContourBase {
-    static get observed() { return ["items", "title", "empty", "loading", "error", "src", "skeleton"]; }
+    static get observed() { return ["items", "title", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { items: { attribute: "items" }, title: { attribute: "title" } }; }
     render() {
       this.classList.add("c-docs-nav");

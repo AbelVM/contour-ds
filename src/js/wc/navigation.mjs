@@ -299,7 +299,7 @@ render() {
             this.attributeChangedCallback("__rerender__", null, "");
           });
         }
-        if (this._loading && !items) {
+        if (this.hasAttribute("loading") || (this._loading && !items)) {
           // show loading placeholder
           if (!this.querySelector(".c-tree__loading")) {
             const loading = document.createElement("div");
@@ -614,7 +614,7 @@ class ContourPagination extends ContourBase {
     render() {
       this.classList.add("c-pagination");
       const src = this.getAttribute("src");
-      const pages = this.getAttribute("pages") || (this._remotePages ? String(this._remotePages) : null);
+      const pages = this.getAttribute("pages") || (this._remotePages ? (Array.isArray(this._remotePages) ? String(this._remotePages.length) : String(this._remotePages)) : null);
       if (src && !this.getAttribute("pages") && this._srcFetched !== src) {
         this._srcFetched = src;
         this._loading = true;

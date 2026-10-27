@@ -703,6 +703,17 @@ class ContourCatchment extends ContourBase {
        const tip = this.ensure(".c-catchment__tooltip", () => { const el = document.createElement("div"); el.className = "c-catchment__tooltip"; el.setAttribute("hidden", ""); return el; });
        tip.setAttribute("hidden", "");
        if (area) tip.textContent = area;
+       const rLabel = this.getAttribute("label") || this._remoteLabel;
+       const rArea = this.getAttribute("area") || this._remoteArea;
+       const rCenter = this.getAttribute("center") || this._remoteCenter;
+       if (!rLabel && !rArea && !rCenter) {
+         const empty = document.createElement("div");
+         empty.className = "c-catchment__empty";
+         empty.textContent = this.getAttribute("empty") || "No data";
+         empty.style.color = "var(--color-text-muted)";
+         empty.style.padding = "var(--space-md)";
+         this.appendChild(empty);
+       }
      }
     enhance() {
       if (this._wiredCatchment) return;
@@ -718,7 +729,7 @@ class ContourCatchment extends ContourBase {
   }
   define("contour-catchment", ContourCatchment);
 class ContourCompassFull extends ContourBase {
-    static get observed() { return ["label", "needle", "empty", "loading", "error", "src", "skeleton"]; }
+    static get observed() { return ["label", "needle", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { label: { attribute: "label" }, needle: { attribute: "needle" } }; }
     render() {
       this.classList.add("c-compass");
