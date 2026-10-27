@@ -1881,7 +1881,7 @@
      block-size: 1.4rem;
      margin: 0;
      border-radius: var(--radius-pill);
-     background: light-dark(oklch(78% 0.012 230), oklch(30% 0.018 230));
+     background: var(--color-border-strong);
      border: 1px solid var(--color-control-edge);
      cursor: pointer;
      transition:
