@@ -43,10 +43,26 @@ class ContourMinimap extends ContourBase {
   }
   define("contour-minimap", ContourMinimap);
 class ContourCoordinate extends ContourBase {
-    static get observed() { return ["value"]; }
+    static get observed() { return ["value", "empty", "loading", "error"]; }
     static get properties() { return { value: { attribute: "value" } }; }
     render() {
       this.classList.add("c-coordinate");
+      if (this.hasAttribute("loading")) {
+        const loading = document.createElement("span");
+        loading.className = "c-coordinate__loading";
+        loading.textContent = this.getAttribute("loading") || "Loading…";
+        loading.style.color = "var(--color-text-muted)";
+        this.appendChild(loading);
+        return;
+      }
+      if (this.hasAttribute("error")) {
+        const err = document.createElement("span");
+        err.className = "c-coordinate__error";
+        err.textContent = this.getAttribute("error") || "Error";
+        err.style.color = "var(--color-danger, var(--color-text))";
+        this.appendChild(err);
+        return;
+      }
       const value = this.getAttribute("value");
       if (value) {
         const span = this.ensure(".c-coordinate__value", () => { const el = document.createElement("span"); el.className = "c-coordinate__value"; return el; });

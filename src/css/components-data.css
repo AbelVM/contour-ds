@@ -1292,9 +1292,15 @@
     color: var(--color-text);
   }
 
-  .c-coordinate__value {
-    font-variant-numeric: tabular-nums;
-  }
+   .c-coordinate__value {
+     font-variant-numeric: tabular-nums;
+   }
+
+   .c-coordinate__empty,
+   .c-coordinate__loading,
+   .c-coordinate__error {
+     color: var(--color-text-muted);
+   }
 
   .c-coordinate__copy {
     display: inline-flex;
