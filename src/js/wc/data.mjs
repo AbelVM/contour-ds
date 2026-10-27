@@ -641,6 +641,22 @@ const series = this.getAttribute("series");
                  path.style.setProperty("--c", color);
                  path.setAttribute("d", smoothPath(s.values));
                  svg.appendChild(path);
+                 // Point markers for keyboard/click access.
+                 const pts = polylinePoints(s.values).split(" ").map((p) => p.split(",").map(Number));
+                 pts.forEach((pt, pi) => {
+                   const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                   circle.setAttribute("class", "c-chart__point");
+                   circle.setAttribute("data-series", String(i + 1));
+                   circle.setAttribute("data-index", String(pi));
+                   circle.style.setProperty("--c", color);
+                   circle.setAttribute("cx", String(pt[0]));
+                   circle.setAttribute("cy", String(pt[1]));
+                   circle.setAttribute("r", "3");
+                   circle.setAttribute("tabindex", pi === 0 ? "0" : "-1");
+                   circle.setAttribute("role", "button");
+                   circle.setAttribute("title", String(s.values[pi]));
+                   svg.appendChild(circle);
+                 });
                  plot.appendChild(svg);
                }
              });
@@ -686,7 +702,7 @@ const series = this.getAttribute("series");
       const tip = this.querySelector(".c-chart__tooltip");
       if (plot && tip) {
         const showTip = (e) => {
-          const mark = e.target && e.target.closest ? e.target.closest(".c-chart__bar, .c-chart__line") : null;
+          const mark = e.target && e.target.closest ? e.target.closest(".c-chart__bar, .c-chart__point, .c-chart__line") : null;
           if (!mark || !plot.contains(mark)) { tip.setAttribute("hidden", ""); return; }
           const title = mark.getAttribute("title");
           if (title) tip.textContent = title;
@@ -707,19 +723,47 @@ const series = this.getAttribute("series");
       if (plot2) {
         plot2.addEventListener("click", (e) => {
           const bar = e.target && e.target.closest ? e.target.closest(".c-chart__bar") : null;
-          if (!bar || !plot2.contains(bar)) return;
-          const series = parseInt(bar.getAttribute("data-series") || "1", 10);
-          const index = parseInt(bar.dataset.index || "0", 10);
-          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, detail: { series, index } }));
-        });
-        plot2.addEventListener("keydown", (e) => {
-          const bar = e.target && e.target.closest ? e.target.closest(".c-chart__bar") : null;
-          if (!bar || !plot2.contains(bar)) return;
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
+          if (bar && plot2.contains(bar)) {
             const series = parseInt(bar.getAttribute("data-series") || "1", 10);
             const index = parseInt(bar.dataset.index || "0", 10);
             this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, detail: { series, index } }));
+            return;
+          }
+          const point = e.target && e.target.closest ? e.target.closest(".c-chart__point") : null;
+          if (point && plot2.contains(point)) {
+            const series = parseInt(point.getAttribute("data-series") || "1", 10);
+            const index = parseInt(point.dataset.index || "0", 10);
+            this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, detail: { series, index } }));
+          }
+        });
+        plot2.addEventListener("keydown", (e) => {
+          const bar = e.target && e.target.closest ? e.target.closest(".c-chart__bar") : null;
+          if (bar && plot2.contains(bar)) {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              const series = parseInt(bar.getAttribute("data-series") || "1", 10);
+              const index = parseInt(bar.dataset.index || "0", 10);
+              this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, detail: { series, index } }));
+            }
+            return;
+          }
+          const point = e.target && e.target.closest ? e.target.closest(".c-chart__point") : null;
+          if (point && plot2.contains(point)) {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              const series = parseInt(point.getAttribute("data-series") || "1", 10);
+              const index = parseInt(point.dataset.index || "0", 10);
+              this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, detail: { series, index } }));
+            } else if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+              e.preventDefault();
+              const points = Array.from(plot2.querySelectorAll('.c-chart__point[data-series="' + point.getAttribute("data-series") + '"]'));
+              const idx = points.indexOf(point);
+              const next = e.key === "ArrowRight" ? Math.min(idx + 1, points.length - 1) : Math.max(idx - 1, 0);
+              if (next !== idx && points[next]) {
+                points.forEach((p, i) => p.setAttribute("tabindex", i === next ? "0" : "-1"));
+                try { points[next].focus(); } catch (err) {}
+              }
+            }
           }
         });
       }
