@@ -1411,6 +1411,13 @@
     align-content: start;
   }
 
+  .c-stat__empty,
+  .c-stat__loading,
+  .c-stat__error {
+    color: var(--color-text-muted);
+    padding: var(--space-md);
+  }
+
   .c-stat__label {
     font-family: var(--font-mono);
     font-size: var(--type-micro);

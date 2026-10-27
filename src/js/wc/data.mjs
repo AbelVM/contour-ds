@@ -90,7 +90,7 @@ render() {
   }
   define("contour-readout", ContourReadout);
 class ContourKpi extends ContourBase {
-    static get observed() { return ["value", "label", "delta", "direction", "note", "variant", "unit"]; }
+    static get observed() { return ["value", "label", "delta", "direction", "note", "variant", "unit", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() {
       return {
         value: { attribute: "value" },
@@ -104,13 +104,53 @@ class ContourKpi extends ContourBase {
     }
     render() {
       this.classList.add("c-kpi");
+      const src = this.getAttribute("src");
+      const value = this.getAttribute("value") || (this._remoteData && this._remoteData.value != null ? String(this._remoteData.value) : null);
+      if (src && !this.getAttribute("value") && !this.getAttribute("label") && this._srcFetched !== src) {
+        this._srcFetched = src;
+        this._loading = true;
+        this.attributeChangedCallback("__rerender__", null, "");
+        fetch(src).then((r) => r.json()).then((data) => {
+          this._remoteData = data;
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        }).catch(() => {
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        });
+      }
+      const loading = this.hasAttribute("loading") || this._loading;
+      if (loading) {
+        const loadingEl = document.createElement("div");
+        loadingEl.className = "c-kpi__loading";
+        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
+        loadingEl.style.color = "var(--color-text-muted)";
+        loadingEl.style.padding = "var(--space-md)";
+        this.appendChild(loadingEl);
+        return;
+      }
+      if (this.hasAttribute("error")) {
+        const err = document.createElement("div");
+        err.className = "c-kpi__error";
+        err.textContent = this.getAttribute("error") || "Error";
+        err.style.color = "var(--color-danger, var(--color-text))";
+        err.style.padding = "var(--space-md)";
+        this.appendChild(err);
+        return;
+      }
+      if (this.hasAttribute("skeleton")) {
+        const sk = document.createElement("div");
+        sk.className = "c-skeleton c-kpi__skeleton";
+        sk.style.blockSize = "3rem";
+        this.appendChild(sk);
+        return;
+      }
       // Apply variant modifier if declared.
       const variant = this.getAttribute("variant");
       // Remove any previous variant modifier.
       Array.from(this.classList).forEach((c) => { if (c.startsWith("c-kpi--")) this.classList.remove(c); });
       if (variant) this.classList.add("c-kpi--" + variant);
-      const value = this.getAttribute("value");
-      const label = this.getAttribute("label");
+      const label = this.getAttribute("label") || (this._remoteData && this._remoteData.label != null ? String(this._remoteData.label) : null);
       const delta = this.getAttribute("delta");
       if (value) {
         const v = this.ensure(".c-kpi__value", () => { const el = document.createElement("div"); el.className = "c-kpi__value"; return el; });
@@ -162,6 +202,14 @@ class ContourKpi extends ContourBase {
           const u = v.querySelector(".c-kpi__unit");
           if (u) u.remove();
         }
+      }
+      if (!value && !label) {
+        const empty = document.createElement("div");
+        empty.className = "c-kpi__empty";
+        empty.textContent = this.getAttribute("empty") || "No data";
+        empty.style.color = "var(--color-text-muted)";
+        empty.style.padding = "var(--space-md)";
+        this.appendChild(empty);
       }
     }
   }
@@ -994,12 +1042,52 @@ class ContourDelta extends ContourBase {
   }
   define("contour-delta", ContourDelta);
 class ContourStat extends ContourBase {
-    static get observed() { return ["value", "label", "delta", "unit"]; }
+    static get observed() { return ["value", "label", "delta", "unit", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" }, delta: { attribute: "delta" }, unit: { attribute: "unit" } }; }
     render() {
       this.classList.add("c-stat");
-      const value = this.getAttribute("value");
-      const label = this.getAttribute("label");
+      const src = this.getAttribute("src");
+      const value = this.getAttribute("value") || (this._remoteData && this._remoteData.value != null ? String(this._remoteData.value) : null);
+      if (src && !this.getAttribute("value") && !this.getAttribute("label") && this._srcFetched !== src) {
+        this._srcFetched = src;
+        this._loading = true;
+        this.attributeChangedCallback("__rerender__", null, "");
+        fetch(src).then((r) => r.json()).then((data) => {
+          this._remoteData = data;
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        }).catch(() => {
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        });
+      }
+      const loading = this.hasAttribute("loading") || this._loading;
+      if (loading) {
+        const loadingEl = document.createElement("div");
+        loadingEl.className = "c-stat__loading";
+        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
+        loadingEl.style.color = "var(--color-text-muted)";
+        loadingEl.style.padding = "var(--space-md)";
+        this.appendChild(loadingEl);
+        return;
+      }
+      if (this.hasAttribute("error")) {
+        const err = document.createElement("div");
+        err.className = "c-stat__error";
+        err.textContent = this.getAttribute("error") || "Error";
+        err.style.color = "var(--color-danger, var(--color-text))";
+        err.style.padding = "var(--space-md)";
+        this.appendChild(err);
+        return;
+      }
+      if (this.hasAttribute("skeleton")) {
+        const sk = document.createElement("div");
+        sk.className = "c-skeleton c-stat__skeleton";
+        sk.style.blockSize = "2rem";
+        this.appendChild(sk);
+        return;
+      }
+      const label = this.getAttribute("label") || (this._remoteData && this._remoteData.label != null ? String(this._remoteData.label) : null);
       const delta = this.getAttribute("delta");
       if (value) {
         const v = this.ensure(".c-stat__value", () => { const el = document.createElement("div"); el.className = "c-stat__value"; return el; });
@@ -1033,6 +1121,14 @@ class ContourStat extends ContourBase {
           const u = v.querySelector(".c-stat__unit");
           if (u) u.remove();
         }
+      }
+      if (!value && !label) {
+        const empty = document.createElement("div");
+        empty.className = "c-stat__empty";
+        empty.textContent = this.getAttribute("empty") || "No data";
+        empty.style.color = "var(--color-text-muted)";
+        empty.style.padding = "var(--space-md)";
+        this.appendChild(empty);
       }
     }
   }

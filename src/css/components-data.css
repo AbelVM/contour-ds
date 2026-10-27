@@ -58,6 +58,13 @@
     background: var(--color-surface-1);
   }
 
+  .c-kpi__empty,
+  .c-kpi__loading,
+  .c-kpi__error {
+    color: var(--color-text-muted);
+    padding: var(--space-md);
+  }
+
   .c-kpi__head {
     display: flex;
     align-items: center;
