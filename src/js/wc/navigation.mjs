@@ -2,61 +2,16 @@ import { ContourBase, define } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { wireMenu, wirePagination, wireTabs, wireTree } from './behaviours.mjs';
 class ContourMenu extends ContourBase {
-    static get observed() { return ["items", "empty", "loading", "error", "src", "skeleton"]; }
+    static get observed() { return ["items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-menu");
       if (!this.hasAttribute("role")) this.setAttribute("role", "menu");
-      const src = this.getAttribute("src");
-      const items = this.getAttribute("items") || (this._remoteItems ? JSON.stringify(this._remoteItems) : null);
-      if (src && !this.getAttribute("items") && this._srcFetched !== src) {
-        this._srcFetched = src;
-        this._loading = true;
-        this.attributeChangedCallback("__rerender__", null, "");
-        fetch(src).then((r) => r.json()).then((data) => {
-          this._remoteItems = data;
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        }).catch(() => {
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        });
-      }
-      const loading = this.hasAttribute("loading") || this._loading;
-      if (loading) {
-        const loadingEl = document.createElement("div");
-        loadingEl.className = "c-menu__loading";
-        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
-        loadingEl.style.color = "var(--color-text-muted)";
-        loadingEl.style.padding = "var(--space-md)";
-        this.appendChild(loadingEl);
-        return;
-      }
-      if (this.hasAttribute("error")) {
-        const err = document.createElement("div");
-        err.className = "c-menu__error";
-        err.textContent = this.getAttribute("error") || "Error";
-        err.style.color = "var(--color-danger, var(--color-text))";
-        err.style.padding = "var(--space-md)";
-        this.appendChild(err);
-        return;
-      }
-      if (this.hasAttribute("skeleton")) {
-        const count = Math.min(5, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
-        for (let i = 0; i < count; i++) {
-          const sk = document.createElement("div");
-          sk.className = "c-skeleton c-menu__skeleton";
-          sk.style.blockSize = "1.5rem";
-          sk.style.marginBlockEnd = "var(--space-2xs)";
-          this.appendChild(sk);
-        }
-        return;
-      }
+      wireStates(this);
+      loadRemote(this, "items");
+      if (renderStates(this, "menu")) return;
+      const items = remoteData(this, "items");
       // Slot composition wins over the JSON attribute.
-       // authored `<li>` children is composing the menu directly; rebuilding
-       // it from `items` would throw those away on every attribute change.
-       // The base class restores authored nodes before this runs, so the
-       // check is simply "are we holding authored content right now".
        const authored = Array.from(this.children).filter((n) => !n.classList || !n.classList.contains("c-menu"));
        if (authored.length) {
          if (this.querySelector("ul.c-menu")) return;
@@ -106,24 +61,16 @@ class ContourMenu extends ContourBase {
            if (ul.parentNode !== this) this.appendChild(ul);
            this.classList.remove("c-menu");
            ul.classList.add("c-menu");
-         } catch (e) { /* keep existing content */ }
-       } else if (!authored.length) {
-         const empty = document.createElement("div");
-         empty.className = "c-menu__empty";
-         empty.textContent = this.getAttribute("empty") || "No data";
-         empty.style.color = "var(--color-text-muted)";
-         empty.style.padding = "var(--space-md)";
-         this.appendChild(empty);
+         } catch (e) { /* keep existing */ }
+       } else {
+         renderEmpty(this, "menu");
        }
-     }
+    }
     enhance() {
-      // Interaction lives in behaviours.mjs, which the shadow wrappers call too.
-      // One implementation, so the two layers cannot drift apart again: the shadow
-      // copy queried its root for slotted nodes, found none, and wired nothing.
       wireMenu(this);
     }
   }
-  define("contour-menu", ContourMenu);
+define("contour-menu", ContourMenu);
 class ContourTabs extends ContourBase {
     static get observed() { return ["tabs", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { tabs: { attribute: "tabs" } }; }
