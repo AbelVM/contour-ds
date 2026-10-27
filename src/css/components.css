@@ -1137,10 +1137,6 @@
     opacity: 0.8;
   }
 
-  @container (inline-size < 16rem) {
-    .c-card { padding: var(--space-md); }
-  }
-
   .c-card__title {
     font-family: var(--font-display);
     font-size: var(--type-h4);
@@ -2153,6 +2149,7 @@
   .c-meter {
     container-type: inline-size;
     --meter-value: 0.72;
+    --meter-color: var(--color-primary);
     --meter-size: 6.5rem;
     position: relative;
     display: grid;
@@ -2169,15 +2166,55 @@
     border-radius: 50%;
     background: conic-gradient(
       from -90deg,
-      var(--color-primary) calc(var(--meter-value) * 360deg),
+      var(--meter-color) calc(var(--meter-value) * 360deg),
       transparent 0
     );
+    /* The ring carries the progress; the core carries the number. The ring
+       itself is invisible when there is no ring: at --meter-value 0 the
+       conic paints nothing, so an opaque ::before would read as a leftover.
+       The multiplier is 1000 (not 100): opacity is clamped to [0,1] by the
+       property, so clamp(0, value*100, 1) is an invalid 5 at value 0.05 and
+       gets ignored, leaving the ring fully visible. min(1, value*1000) stays
+       in range everywhere — 0 at 0, 1 at any value >= 0.001. */
+    opacity: min(1, calc(var(--meter-value) * 1000));
     -webkit-mask: radial-gradient(
       circle,
       transparent 0 62%,
       #000 63% 100%
     );
     mask: radial-gradient(circle, transparent 0 62%, #000 63% 100%);
+  }
+
+  .c-meter::after {
+    content: "";
+    position: absolute;
+    /* The end cap: a half-disc whose diameter equals the ring's stroke,
+       centred on the ring's mid-line where the arc stops. The flat edge lands
+       on the radius and the round bulge sweeps forward, so the arc terminates
+       in a round cap instead of a hard cut.
+       The ring's outer radius is half the meter (border-radius: 50%) and its
+       inner radius is the mask's 62% of the corner extent, so the stroke is
+       (0.5 - 0.62/√2) ≈ 0.0614 × size and the mid-line ≈ 0.47 × size.
+       The cap terminates the arc, so it is invisible when there is no arc:
+       at --meter-value 0 the conic paints nothing and a lone cap would be a
+       leftover. The multiplier is 1000 (not 100): opacity is clamped to
+       [0,1] by the property, so clamp(0, value*100, 1) is an invalid 5 at
+       value 0.05 and gets ignored, leaving the cap fully visible. min(1,
+       value*1000) stays in range everywhere — 0 at 0, 1 at any value >=
+       0.001. */
+    top: 50%;
+    left: 50%;
+    inline-size: calc(var(--meter-size) * 0.0614);
+    block-size: calc(var(--meter-size) * 0.0614);
+    border-radius: 50%;
+    background: var(--meter-color);
+    clip-path: inset(0 0 0 50%);
+    opacity: min(1, calc(var(--meter-value) * 1000));
+    transform:
+      translate(-50%, -50%)
+      rotate(calc(var(--meter-value) * 360deg - 90deg))
+      translateY(calc(var(--meter-size) * -0.47));
+    pointer-events: none;
   }
 
   /* No bullseye. Concentric hairlines across the dial read as noise, not
@@ -2210,20 +2247,12 @@
     color: var(--color-text-subtle);
   }
 
-  .c-meter--accent::before {
-    background: conic-gradient(
-      from -90deg,
-      var(--color-accent) calc(var(--meter-value) * 360deg),
-      transparent 0
-    );
+  .c-meter--accent {
+    --meter-color: var(--color-accent);
   }
 
-  .c-meter--data::before {
-    background: conic-gradient(
-      from -90deg,
-      var(--color-data) calc(var(--meter-value) * 360deg),
-      transparent 0
-    );
+  .c-meter--data {
+    --meter-color: var(--color-data);
   }
 
   /* =======================================================================
