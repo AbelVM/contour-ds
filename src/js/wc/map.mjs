@@ -40,6 +40,16 @@ class ContourMinimap extends ContourBase {
         return;
       }
       const label = this.getAttribute("label") || this._remoteLabel;
+      const viewport = this.getAttribute("viewport") || this._remoteViewport;
+      if (!label && !viewport) {
+        const empty = document.createElement("div");
+        empty.className = "c-minimap__empty";
+        empty.textContent = this.getAttribute("empty") || "No data";
+        empty.style.color = "var(--color-text-muted)";
+        empty.style.padding = "var(--space-md)";
+        this.appendChild(empty);
+        return;
+      }
       if (label) {
         const l = this.ensure(".c-minimap__label", () => { const el = document.createElement("span"); el.className = "c-minimap__label"; return el; });
         l.textContent = label;
@@ -47,7 +57,6 @@ class ContourMinimap extends ContourBase {
         const l = this.querySelector(".c-minimap__label");
         if (l) l.remove();
       }
-      const viewport = this.getAttribute("viewport") || this._remoteViewport;
       if (viewport) {
         const v = this.ensure(".c-minimap__viewport", () => { const el = document.createElement("div"); el.className = "c-minimap__viewport"; return el; });
         v.textContent = viewport;
@@ -95,13 +104,16 @@ class ContourCoordinate extends ContourBase {
         return;
       }
       const value = this.getAttribute("value") || this._remoteValue;
-      if (value) {
-        const span = this.ensure(".c-coordinate__value", () => { const el = document.createElement("span"); el.className = "c-coordinate__value"; return el; });
-        span.textContent = value;
-      } else {
-        const span = this.querySelector(".c-coordinate__value");
-        if (span) span.remove();
+      if (!value) {
+        const empty = document.createElement("span");
+        empty.className = "c-coordinate__empty";
+        empty.textContent = this.getAttribute("empty") || "No data";
+        empty.style.color = "var(--color-text-muted)";
+        this.appendChild(empty);
+        return;
       }
+      const span = this.ensure(".c-coordinate__value", () => { const el = document.createElement("span"); el.className = "c-coordinate__value"; return el; });
+      span.textContent = value;
     }
   }
   define("contour-coordinate", ContourCoordinate);
@@ -946,8 +958,16 @@ class ContourScaleBar extends ContourBase {
         if (l) l.remove();
       }
       const value = this.getAttribute("value") || this._remoteValue;
-      if (value) {
-        const line = this.ensure(".c-scale-bar__line", () => { const el = document.createElement("span"); el.className = "c-scale-bar__line"; return el; });
+      if (!value) {
+        const empty = document.createElement("div");
+        empty.className = "c-scale-bar__empty";
+        empty.textContent = this.getAttribute("empty") || "No data";
+        empty.style.color = "var(--color-text-muted)";
+        empty.style.padding = "var(--space-md)";
+        this.appendChild(empty);
+        return;
+      }
+      const line = this.ensure(".c-scale-bar__line", () => { const el = document.createElement("span"); el.className = "c-scale-bar__line"; return el; });
         line.style.inlineSize = value;
         // Render metric subdivision ticks along the bar.
         const ticks = scaleBarTicks(parseFloat(value) || 0, 4);
@@ -960,13 +980,6 @@ class ContourScaleBar extends ContourBase {
           tick.style.left = ((tv / max) * 100) + "%";
           line.appendChild(tick);
         });
-      } else {
-        const line = this.querySelector(".c-scale-bar__line");
-        if (line) {
-          Array.from(line.querySelectorAll(".c-scale-bar__tick")).forEach((t) => t.remove());
-          line.remove();
-        }
-      }
     }
   }
   define("contour-scale-bar", ContourScaleBar);
