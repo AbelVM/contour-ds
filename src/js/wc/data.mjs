@@ -1021,27 +1021,77 @@ class ContourStreamingChart extends ContourBase {
   }
   define("contour-streaming-chart", ContourStreamingChart);
 class ContourMeter extends ContourBase {
-    static get observed() { return ["value", "label", "variant"]; }
+    static get observed() { return ["value", "label", "variant", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" }, variant: { attribute: "variant" } }; }
     render() {
       this.classList.add("c-meter");
+      const src = this.getAttribute("src");
+      const value = this.getAttribute("value");
+      if (src && !this.getAttribute("value") && !this.getAttribute("label") && this._srcFetched !== src) {
+        this._srcFetched = src;
+        this._loading = true;
+        this.attributeChangedCallback("__rerender__", null, "");
+        fetch(src).then((r) => r.json()).then((data) => {
+          this._remoteData = data;
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        }).catch(() => {
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        });
+      }
+      const loading = this.hasAttribute("loading") || this._loading;
+      if (loading) {
+        const loadingEl = document.createElement("div");
+        loadingEl.className = "c-meter__loading";
+        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
+        loadingEl.style.color = "var(--color-text-muted)";
+        loadingEl.style.padding = "var(--space-md)";
+        this.appendChild(loadingEl);
+        return;
+      }
+      if (this.hasAttribute("error")) {
+        const err = document.createElement("div");
+        err.className = "c-meter__error";
+        err.textContent = this.getAttribute("error") || "Error";
+        err.style.color = "var(--color-danger, var(--color-text))";
+        err.style.padding = "var(--space-md)";
+        this.appendChild(err);
+        return;
+      }
+      if (this.hasAttribute("skeleton")) {
+        const sk = document.createElement("div");
+        sk.className = "c-skeleton c-meter__skeleton";
+        sk.style.blockSize = "3rem";
+        this.appendChild(sk);
+        return;
+      }
       // Value is a 0-1 fraction (not 0-100). The CSS uses --meter-value as
       // calc(var(--meter-value) * 360deg) for the conic gradient, and
       // aria-valuemax is "1". Pass 0.5 for 50%, not 50.
       Array.from(this.classList).forEach((c) => { if (c.startsWith("c-meter--")) this.classList.remove(c); });
-      const value = this.getAttribute("value");
-      const label = this.getAttribute("label") || "";
+      const rValue = value || (this._remoteData && this._remoteData.value);
+      const label = this.getAttribute("label") || (this._remoteData && this._remoteData.label) || "";
       const variant = this.getAttribute("variant");
+      if (!rValue && !label) {
+        const empty = document.createElement("div");
+        empty.className = "c-meter__empty";
+        empty.textContent = this.getAttribute("empty") || "No data";
+        empty.style.color = "var(--color-text-muted)";
+        empty.style.padding = "var(--space-md)";
+        this.appendChild(empty);
+        return;
+      }
       if (variant) this.classList.add("c-meter--" + variant);
-      if (value === null) {
+      if (rValue === null) {
         this.style.removeProperty("--meter-value");
       } else {
-        this.style.setProperty("--meter-value", value);
+        this.style.setProperty("--meter-value", rValue);
       }
       const core = this.ensure(".c-meter__core", () => { const el = document.createElement("span"); el.className = "c-meter__core"; return el; });
       let val = core.querySelector(".c-meter__value");
       if (!val) { val = document.createElement("span"); val.className = "c-meter__value"; core.appendChild(val); }
-      const num = parseFloat(value);
+      const num = parseFloat(rValue);
       val.textContent = (Number.isFinite(num) ? Math.round(num * 100) : 0) + "%";
       if (label) {
         const lbl = core.querySelector(".c-meter__label") || (() => { const el = document.createElement("span"); el.className = "c-meter__label"; core.appendChild(el); return el; })();
@@ -1049,7 +1099,7 @@ class ContourMeter extends ContourBase {
       }
        if (!this.hasAttribute("role")) this.setAttribute("role", "meter");
        if (label && !this.hasAttribute("aria-label")) this.setAttribute("aria-label", label);
-      const ariaValue = value === null ? "0" : value;
+      const ariaValue = rValue === null ? "0" : rValue;
       const prevVal = this._meterAriaValue;
       if (!this.hasAttribute("aria-valuenow") || this.getAttribute("aria-valuenow") === prevVal) {
         this.setAttribute("aria-valuenow", ariaValue);

@@ -2204,6 +2204,13 @@
     flex: none;
   }
 
+  .c-meter__empty,
+  .c-meter__loading,
+  .c-meter__error {
+    color: var(--color-text-muted);
+    padding: var(--space-md);
+  }
+
   .c-meter::before {
     content: "";
     position: absolute;
