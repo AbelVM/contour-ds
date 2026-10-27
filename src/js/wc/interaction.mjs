@@ -6,6 +6,13 @@ class ContourPressableFull extends ContourBase {
       if (!this.hasAttribute("role")) this.setAttribute("role", "button");
       if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
     }
+    enhance() {
+      if (this._wiredPressable) return;
+      this._wiredPressable = true;
+      this.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); this.click(); this.dispatchEvent(new CustomEvent("contour:activate", { bubbles: true, composed: true })); }
+      });
+    }
   }
   define("contour-pressable", ContourPressableFull);
 class ContourResizeHandleFull extends ContourBase {
@@ -110,6 +117,13 @@ class ContourRowActionFull extends ContourBase {
       const label = this.getAttribute("label");
       if (label && !this.hasChildNodes()) this.textContent = label;
     }
+    enhance() {
+      if (this._wiredRowAction) return;
+      this._wiredRowAction = true;
+      this.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); this.click(); this.dispatchEvent(new CustomEvent("contour:activate", { bubbles: true, composed: true })); }
+      });
+    }
   }
   define("contour-row-action", ContourRowActionFull);
 class ContourSegmented extends ContourBase {
@@ -127,6 +141,13 @@ class ContourDraggable extends ContourBase {
       this.classList.add("c-draggable");
       if (!this.hasAttribute("role")) this.setAttribute("role", "button");
       if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
+    }
+    enhance() {
+      if (this._wiredDraggable) return;
+      this._wiredDraggable = true;
+      this.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); this.dispatchEvent(new CustomEvent("contour:activate", { bubbles: true, composed: true })); }
+      });
     }
   }
   define("contour-draggable", ContourDraggable);
@@ -240,6 +261,13 @@ class ContourBtn extends ContourBase {
       const label = this.getAttribute("label");
       if (label && !this.hasChildNodes()) this.textContent = label;
       if (label && !this.hasAttribute("aria-label")) this.setAttribute("aria-label", label);
+    }
+    enhance() {
+      if (this._wiredBtn) return;
+      this._wiredBtn = true;
+      this.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); this.click(); this.dispatchEvent(new CustomEvent("contour:activate", { bubbles: true, composed: true })); }
+      });
     }
   }
   define("contour-btn", ContourBtn);

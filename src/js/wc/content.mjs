@@ -378,7 +378,7 @@ class ContourShowcaseFull extends ContourBase {
         const m = this.ensure(".c-showcase__media", () => { const el = document.createElement("div"); el.className = "c-showcase__media"; return el; });
         // `media` is author-controlled markup (images, svg, etc.). Strip any
         // <script> tags so a hostile attribute cannot execute code.
-        m.innerHTML = String(media).replace(/<(script|iframe|object|embed)[\s\S]*?(<\/\1>|\/>)/gi, "");
+        m.innerHTML = String(media).replace(/<(script|iframe|object|embed)[\s\S]*?(<\/\1>|\/>)/gi, "").replace(/\son\w+\s*=\s*"[^"]*"/gi, "");
       } else {
         const m = this.querySelector(".c-showcase__media");
         if (m) m.remove();
@@ -462,7 +462,7 @@ class ContourRecipeFull extends ContourBase {
       const canvas = this.getAttribute("canvas");
       if (canvas) {
         const c = this.ensure(".c-recipe__canvas", () => { const el = document.createElement("div"); el.className = "c-recipe__canvas"; return el; });
-        c.innerHTML = canvas;
+        c.innerHTML = String(canvas).replace(/<(script|iframe|object|embed)[\s\S]*?(<\/\1>|\/>)/gi, "");
       } else {
         const c = this.querySelector(".c-recipe__canvas");
         if (c) c.remove();
@@ -595,7 +595,7 @@ class ContourLandingHeroFull extends ContourBase {
       const authored = a ? Array.from(a.children) : [];
       if (actions && !authored.length) {
         const el = this.ensure(".c-landing-hero__actions", () => { const e = document.createElement("div"); e.className = "c-landing-hero__actions"; return e; });
-        el.innerHTML = actions;
+        el.innerHTML = String(actions).replace(/<(script|iframe|object|embed)[\s\S]*?(<\/\1>|\/>)/gi, "");
       } else if (!actions && a && !authored.length) {
         a.remove();
       }

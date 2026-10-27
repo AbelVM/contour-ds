@@ -164,6 +164,8 @@ class ContourTooltip extends ContourBase {
     static get properties() { return { text: { attribute: "text" }, anchor: { attribute: "anchor" } }; }
     render() {
       this.classList.add("c-tooltip");
+      if (!this.hasAttribute("popover")) this.setAttribute("popover", "auto");
+      if (!this.id) this.id = contourId("tip");
       const text = this.getAttribute("text");
       if (text !== null && !this.hasChildNodes()) {
         this.textContent = text;

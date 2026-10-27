@@ -149,7 +149,7 @@ class ContourDocsShell extends ContourBase {
       const article = this.getAttribute("article");
       if (article) {
         const a = this.ensure(".c-docs-shell__article", () => { const el = document.createElement("article"); el.className = "c-docs-shell__article"; return el; });
-        a.innerHTML = article;
+        a.innerHTML = String(article).replace(/<(script|iframe|object|embed)[\s\S]*?(<\/\1>|\/>)/gi, "");
       } else {
         const a = this.querySelector(".c-docs-shell__article");
         if (a) a.remove();
