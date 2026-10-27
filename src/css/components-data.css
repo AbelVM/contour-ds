@@ -364,6 +364,13 @@
     z-index: var(--z-raised, 10);
   }
 
+  .c-measure__empty,
+  .c-measure__loading,
+  .c-measure__error {
+    color: var(--color-text-muted);
+    padding: var(--space-md);
+  }
+
   .c-measure__line {
     stroke: var(--color-primary);
     stroke-width: 2;

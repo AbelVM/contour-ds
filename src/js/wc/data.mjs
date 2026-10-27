@@ -1653,43 +1653,96 @@ class ContourLegend extends ContourBase {
   }
   define("contour-legend", ContourLegend);
 class ContourMeasure extends ContourBase {
-    static get observed() { return ["label", "value", "point", "line"]; }
+    static get observed() { return ["label", "value", "point", "line", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" }, point: { attribute: "point" }, line: { attribute: "line" } }; }
     render() {
       this.classList.add("c-measure");
+      const src = this.getAttribute("src");
       const label = this.getAttribute("label");
       const value = this.getAttribute("value");
-      if (label) {
+      const point = this.getAttribute("point");
+      const line = this.getAttribute("line");
+      if (src && !this.getAttribute("label") && !this.getAttribute("value") && !this.getAttribute("point") && !this.getAttribute("line") && this._srcFetched !== src) {
+        this._srcFetched = src;
+        this._loading = true;
+        this.attributeChangedCallback("__rerender__", null, "");
+        fetch(src).then((r) => r.json()).then((data) => {
+          this._remoteData = data;
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        }).catch(() => {
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        });
+      }
+      const loading = this.hasAttribute("loading") || this._loading;
+      if (loading) {
+        const loadingEl = document.createElement("div");
+        loadingEl.className = "c-measure__loading";
+        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
+        loadingEl.style.color = "var(--color-text-muted)";
+        loadingEl.style.padding = "var(--space-md)";
+        this.appendChild(loadingEl);
+        return;
+      }
+      if (this.hasAttribute("error")) {
+        const err = document.createElement("div");
+        err.className = "c-measure__error";
+        err.textContent = this.getAttribute("error") || "Error";
+        err.style.color = "var(--color-danger, var(--color-text))";
+        err.style.padding = "var(--space-md)";
+        this.appendChild(err);
+        return;
+      }
+      if (this.hasAttribute("skeleton")) {
+        const sk = document.createElement("div");
+        sk.className = "c-skeleton c-measure__skeleton";
+        sk.style.blockSize = "1.5rem";
+        this.appendChild(sk);
+        return;
+      }
+      const rLabel = label || (this._remoteData && this._remoteData.label);
+      const rValue = value || (this._remoteData && this._remoteData.value);
+      const rPoint = point || (this._remoteData && this._remoteData.point);
+      const rLine = line || (this._remoteData && this._remoteData.line);
+      if (!rLabel && !rValue && !rPoint && !rLine) {
+        const empty = document.createElement("div");
+        empty.className = "c-measure__empty";
+        empty.textContent = this.getAttribute("empty") || "No data";
+        empty.style.color = "var(--color-text-muted)";
+        empty.style.padding = "var(--space-md)";
+        this.appendChild(empty);
+        return;
+      }
+      if (rLabel) {
         const l = this.ensure(".c-measure__label", () => { const el = document.createElement("span"); el.className = "c-measure__label"; return el; });
-        l.textContent = label;
+        l.textContent = rLabel;
       } else {
         const l = this.querySelector(".c-measure__label");
         if (l) l.remove();
       }
-      if (value) {
+      if (rValue) {
         const r = this.ensure(".c-measure__readout", () => { const el = document.createElement("span"); el.className = "c-measure__readout"; return el; });
-        r.textContent = value;
+        r.textContent = rValue;
       } else {
         const r = this.querySelector(".c-measure__readout");
         if (r) r.remove();
       }
-      const point = this.getAttribute("point");
-      if (point) {
+      if (rPoint) {
         const p = this.ensure(".c-measure__point", () => { const el = document.createElement("span"); el.className = "c-measure__point"; return el; });
-        p.textContent = point;
+        p.textContent = rPoint;
       } else {
         const p = this.querySelector(".c-measure__point");
         if (p) p.remove();
       }
-      const line = this.getAttribute("line");
-      if (!line) {
+      if (!rLine) {
         const svg = this.querySelector("svg");
         if (svg) svg.remove();
         return;
       }
-      if (line) {
+      if (rLine) {
         const ln = this.ensure(".c-measure__line", () => { const el = document.createElement("span"); el.className = "c-measure__line"; return el; });
-        ln.style.inlineSize = line;
+        ln.style.inlineSize = rLine;
       } else {
         const ln = this.querySelector(".c-measure__line");
         if (ln) ln.remove();

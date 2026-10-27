@@ -393,6 +393,29 @@
       }
     }
 
+    // Ask for a re-render without naming the attribute that changed, for work the
+    // host started itself — a `src` fetch that resolved, a timer, an observer. A
+    // render body must never reach for `attributeChangedCallback` directly: on the
+    // connect path `_contourRendering` is still false, so that call performs a
+    // synchronous nested re-render and the outer body then carries on painting the
+    // node the nested pass already painted. Measured in Chromium (tmp/wc9/probe.mjs,
+    // 2026-10-27): a host with `src` rendered "Loading…Loading…" — two nodes — while
+    // the identical host with an authored `loading` attribute rendered one.
+    //
+    // Deferring to a microtask lets the in-flight render finish before the next one
+    // starts, and the flag coalesces N asks in one pass into one render. It runs
+    // through the same reset/restore path as an attribute change, so a consumer's
+    // authored nodes and focus survive it exactly as they survive a real change.
+    requestRender() {
+      if (this._contourRerenderQueued) return;
+      this._contourRerenderQueued = true;
+      queueMicrotask(() => {
+        this._contourRerenderQueued = false;
+        if (!this.isConnected || !this._contourAuthored) return;
+        this.attributeChangedCallback("__rerender__", null, "");
+      });
+    }
+
     // Expose ::part() hooks on every generated node whose class follows the
     // `c-<block>__<element>` convention, so a consumer can theme internals
     // without shadow DOM. Runs after render() in both connect and re-render.
