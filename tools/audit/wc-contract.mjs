@@ -175,8 +175,9 @@ if (!observedBlock) {
 } else {
   const observed = new Set([...observedBlock[1].matchAll(/"([a-z-]+)"/g)].map((m) => m[1]));
   const read = new Set([
-    ...[...bytes.unminified.matchAll(/this\.(?:getAttribute|hasAttribute)\("([a-z-]+)"\)/g)].map((m) => m[1]),
+    ...[...bytes.unminified.matchAll(/(?:this|host)\.(?:getAttribute|hasAttribute)\("([a-z-]+)"\)/g)].map((m) => m[1]),
     ...[...bytes.unminified.matchAll(/(?:remoteData|loadRemote)\([^)]*,\s*"([a-z-]+)"\)/g)].map((m) => m[1]),
+    ...[...bytes.unminified.matchAll(/(?:remoteData|loadRemote)\([^)]*,\s*\[([^\]]*)\]\)/g)].flatMap((m) => [...m[1].matchAll(/"([a-z-]+)"/g)].map((x) => x[1])),
   ]);
   const written = new Set([...bytes.unminified.matchAll(/this\.setAttribute\("([a-z-]+)"/g)].map((m) => m[1]));
 

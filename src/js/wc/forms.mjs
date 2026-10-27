@@ -501,56 +501,14 @@ class ContourInputGroup extends ContourBase {
   }
   define("contour-input-group", ContourInputGroup);
 class ContourRadioList extends ContourBase {
-    static get observed() { return ["items", "name", "empty", "loading", "error", "src", "skeleton"]; }
+    static get observed() { return ["items", "name", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { items: { attribute: "items" }, name: { attribute: "name" } }; }
     render() {
       this.classList.add("c-radio-list");
-      const src = this.getAttribute("src");
-      const items = this.getAttribute("items") || (this._remoteItems ? JSON.stringify(this._remoteItems) : null);
-      if (src && !this.getAttribute("items") && this._srcFetched !== src) {
-        this._srcFetched = src;
-        this._loading = true;
-        this.attributeChangedCallback("__rerender__", null, "");
-        fetch(src).then((r) => r.json()).then((data) => {
-          this._remoteItems = data;
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        }).catch(() => {
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        });
-      }
-      const loading = this.hasAttribute("loading") || this._loading;
-      if (loading) {
-        const loadingEl = document.createElement("div");
-        loadingEl.className = "c-radio-list__loading";
-        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
-        loadingEl.style.color = "var(--color-text-muted)";
-        loadingEl.style.padding = "var(--space-md)";
-        this.appendChild(loadingEl);
-        return;
-      }
-      if (this.hasAttribute("error")) {
-        const err = document.createElement("div");
-        err.className = "c-radio-list__error";
-        err.textContent = this.getAttribute("error") || "Error";
-        err.style.color = "var(--color-danger, var(--color-text))";
-        err.style.padding = "var(--space-md)";
-        this.appendChild(err);
-        return;
-      }
-      if (this.hasAttribute("skeleton")) {
-        const count = Math.min(4, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
-        for (let i = 0; i < count; i++) {
-          const sk = document.createElement("div");
-          sk.className = "c-skeleton c-radio-list__skeleton";
-          sk.style.blockSize = "1.5rem";
-          sk.style.marginBlockEnd = "var(--space-2xs)";
-          this.appendChild(sk);
-        }
-        return;
-      }
-      // Clear previously generated radios before rebuilding.
+      wireStates(this);
+      loadRemote(this, "items");
+      if (renderStates(this, "radio-list")) return;
+      const items = remoteData(this, "items");
       Array.from(this.querySelectorAll("label.c-radio")).forEach((l) => l.remove());
       if (items) {
         try {
@@ -564,20 +522,13 @@ class ContourRadioList extends ContourBase {
             input.name = this.getAttribute("name") || "radio-list";
             if (i === 0) input.checked = true;
             if (typeof it === "string") { input.value = it; lbl.appendChild(input); lbl.appendChild(document.createTextNode(" " + it)); }
-            // The guide's own radio carries its text in a bare span; the sheet has
-            // no `__label` part on this block.
             else { input.value = it.value || it.label; if (it.checked) input.checked = true; lbl.appendChild(input); const span = document.createElement("span"); span.textContent = it.label || it.value; lbl.appendChild(span); }
             this.appendChild(lbl);
           });
         } catch (e) { /* keep existing */ }
       } else {
-        const empty = document.createElement("div");
-        empty.className = "c-radio-list__empty";
-        empty.textContent = this.getAttribute("empty") || "No data";
-        empty.style.color = "var(--color-text-muted)";
-        empty.style.padding = "var(--space-md)";
-        this.appendChild(empty);
+        renderEmpty(this, "radio-list");
       }
     }
   }
-  define("contour-radio-list", ContourRadioList);
+define("contour-radio-list", ContourRadioList);

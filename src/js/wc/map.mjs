@@ -144,11 +144,11 @@ class ContourTimeSlider extends ContourBase {
   }
   define("contour-time-slider", ContourTimeSlider);
 class ContourHexbin extends ContourBase {
-    static get observed() { return ["label", "cells", "empty", "loading", "error", "src", "skeleton"]; }
+    static get observed() { return ["label", "cells", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { label: { attribute: "label" }, cells: { attribute: "cells" } }; }
     render() {
       this.classList.add("c-hexbin");
-      const label = this.getAttribute("label") || this._remoteLabel;
+      const label = this.getAttribute("label") || (this._remoteData && this._remoteData.label);
       if (label) {
         const l = this.ensure(".c-hexbin__label", () => { const el = document.createElement("span"); el.className = "c-hexbin__label"; return el; });
         l.textContent = label;
@@ -156,85 +156,32 @@ class ContourHexbin extends ContourBase {
         const l = this.querySelector(".c-hexbin__label");
         if (l) l.remove();
       }
-       const cells = this.getAttribute("cells");
-       const src = this.getAttribute("src");
-       if (src && !cells && this._srcFetched !== src) {
-         this._srcFetched = src;
-         this._loading = true;
-         this.attributeChangedCallback("__rerender__", null, "");
-         fetch(src).then((r) => r.json()).then((data) => {
-           this._remoteCells = data;
-           this._loading = false;
-           this.attributeChangedCallback("__rerender__", null, "");
-         }).catch(() => {
-           this._loading = false;
-           this.attributeChangedCallback("__rerender__", null, "");
-         });
-       }
-       const effectiveCells = cells || (this._remoteCells ? JSON.stringify(this._remoteCells) : null);
-       const loading = this.hasAttribute("loading") || this._loading;
-       if (loading) {
-         const loadingEl = document.createElement("div");
-         loadingEl.className = "c-hexbin__loading";
-         loadingEl.textContent = this.getAttribute("loading") || "Loading…";
-         loadingEl.style.gridColumn = "1 / -1";
-         loadingEl.style.color = "var(--color-text-muted)";
-         loadingEl.style.padding = "var(--space-md)";
-         this.appendChild(loadingEl);
-         return;
-       }
-        if (this.hasAttribute("error")) {
-          const err = document.createElement("div");
-          err.className = "c-hexbin__error";
-          err.textContent = this.getAttribute("error") || "Error";
-          err.style.gridColumn = "1 / -1";
-          err.style.color = "var(--color-danger, var(--color-text))";
-          err.style.padding = "var(--space-md)";
-          this.appendChild(err);
-          return;
-        }
-        if (this.hasAttribute("skeleton")) {
-          const count = Math.min(9, Math.max(1, parseInt(this.getAttribute("skeleton") || "4", 10) || 4));
-          const cols = Math.ceil(Math.sqrt(count));
-          this.style.gridTemplateColumns = "repeat(" + cols + ", 1fr)";
-          this.style.inlineSize = "16rem";
-          for (let i = 0; i < count; i++) {
-            const sk = document.createElement("div");
-            sk.className = "c-skeleton c-hexbin__skeleton";
-            sk.style.aspectRatio = "1";
-            sk.style.clipPath = "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)";
-            this.appendChild(sk);
-          }
-          return;
-        }
-        if (effectiveCells) {
-         try {
-           const parsed = JSON.parse(effectiveCells);
-           Array.from(this.querySelectorAll(".c-hexbin__cell")).forEach((n) => n.remove());
-           const cols = Math.ceil(Math.sqrt(parsed.length || 1));
-           this.style.gridTemplateColumns = "repeat(" + cols + ", 1fr)";
-           this.style.inlineSize = "16rem";
-             parsed.forEach((c) => {
-               const cell = document.createElement("div");
-               cell.className = "c-hexbin__cell";
-               if (typeof c === "object" && c.value != null) { cell.textContent = c.value; cell.setAttribute("title", String(c.value)); }
-               else if (typeof c !== "object") { cell.textContent = c; cell.setAttribute("title", String(c)); }
-               this.appendChild(cell);
-             });
-             // Styled tooltip element.
-             const tip = this.ensure(".c-hexbin__tooltip", () => { const el = document.createElement("div"); el.className = "c-hexbin__tooltip"; el.setAttribute("hidden", ""); return el; });
-             tip.setAttribute("hidden", "");
-         } catch (e) { /* keep existing */ }
-        } else {
-          Array.from(this.querySelectorAll(".c-hexbin__cell")).forEach((n) => n.remove());
-          const empty = document.createElement("div");
-          empty.className = "c-hexbin__empty";
-          empty.textContent = this.getAttribute("empty") || "No data";
-          empty.style.gridColumn = "1 / -1";
-          empty.style.color = "var(--color-text-muted)";
-          empty.style.padding = "var(--space-md)";
-          this.appendChild(empty);
-        }
+      wireStates(this);
+      loadRemote(this, "cells");
+      if (renderStates(this, "hexbin")) return;
+      const cells = remoteData(this, "cells");
+      const effectiveCells = cells || (this._remoteData && this._remoteData.cells ? JSON.stringify(this._remoteData.cells) : null);
+      if (effectiveCells) {
+       try {
+         const parsed = JSON.parse(effectiveCells);
+         Array.from(this.querySelectorAll(".c-hexbin__cell")).forEach((n) => n.remove());
+         const cols = Math.ceil(Math.sqrt(parsed.length || 1));
+         this.style.gridTemplateColumns = "repeat(" + cols + ", 1fr)";
+         this.style.inlineSize = "16rem";
+           parsed.forEach((c) => {
+             const cell = document.createElement("div");
+             cell.className = "c-hexbin__cell";
+             if (typeof c === "object" && c.value != null) { cell.textContent = c.value; cell.setAttribute("title", String(c.value)); }
+             else if (typeof c !== "object") { cell.textContent = c; cell.setAttribute("title", String(c)); }
+             this.appendChild(cell);
+           });
+           const tip = this.ensure(".c-hexbin__tooltip", () => { const el = document.createElement("div"); el.className = "c-hexbin__tooltip"; el.setAttribute("hidden", ""); return el; });
+           tip.setAttribute("hidden", "");
+       } catch (e) { /* keep existing */ }
+      } else {
+        Array.from(this.querySelectorAll(".c-hexbin__cell")).forEach((n) => n.remove());
+        renderEmpty(this, "hexbin");
+      }
      }
     enhance() {
       if (this._wiredHexbin) return;
@@ -260,13 +207,13 @@ class ContourHexbin extends ContourBase {
       }
     }
   }
-  define("contour-hexbin", ContourHexbin);
+define("contour-hexbin", ContourHexbin);
 class ContourFlowMap extends ContourBase {
-    static get observed() { return ["label", "nodes", "empty", "loading", "error", "src", "skeleton"]; }
+    static get observed() { return ["label", "nodes", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { label: { attribute: "label" }, nodes: { attribute: "nodes" } }; }
     render() {
       this.classList.add("c-flow-map");
-      const label = this.getAttribute("label") || this._remoteLabel;
+      const label = this.getAttribute("label") || (this._remoteData && this._remoteData.label);
       if (label) {
         const l = this.ensure(".c-flow-map__label", () => { const el = document.createElement("span"); el.className = "c-flow-map__label"; return el; });
         l.textContent = label;
@@ -274,78 +221,29 @@ class ContourFlowMap extends ContourBase {
         const l = this.querySelector(".c-flow-map__label");
         if (l) l.remove();
       }
-       const nodes = this.getAttribute("nodes");
-       const src = this.getAttribute("src");
-       if (src && !nodes && this._srcFetched !== src) {
-         this._srcFetched = src;
-         this._loading = true;
-         this.attributeChangedCallback("__rerender__", null, "");
-         fetch(src).then((r) => r.json()).then((data) => {
-           this._remoteNodes = data;
-           this._loading = false;
-           this.attributeChangedCallback("__rerender__", null, "");
-         }).catch(() => {
-           this._loading = false;
-           this.attributeChangedCallback("__rerender__", null, "");
-         });
-       }
-       const effectiveNodes = nodes || (this._remoteNodes ? JSON.stringify(this._remoteNodes) : null);
-       const loading = this.hasAttribute("loading") || this._loading;
-       if (loading) {
-         const loadingEl = document.createElement("div");
-         loadingEl.className = "c-flow-map__loading";
-         loadingEl.textContent = this.getAttribute("loading") || "Loading…";
-         loadingEl.style.color = "var(--color-text-muted)";
-         loadingEl.style.padding = "var(--space-md)";
-         this.appendChild(loadingEl);
-         return;
-       }
-        if (this.hasAttribute("error")) {
-          const err = document.createElement("div");
-          err.className = "c-flow-map__error";
-          err.textContent = this.getAttribute("error") || "Error";
-          err.style.color = "var(--color-danger, var(--color-text))";
-          err.style.padding = "var(--space-md)";
-          this.appendChild(err);
-          return;
-        }
-        if (this.hasAttribute("skeleton")) {
-          const count = Math.min(5, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
-          for (let i = 0; i < count; i++) {
-            const sk = document.createElement("span");
-            sk.className = "c-skeleton c-flow-map__skeleton";
-            sk.style.display = "inline-block";
-            sk.style.inlineSize = "3rem";
-            sk.style.blockSize = "1rem";
-            sk.style.marginInlineEnd = "var(--space-xs)";
-            this.appendChild(sk);
-          }
-          return;
-        }
-        if (effectiveNodes) {
-         try {
-           const parsed = JSON.parse(effectiveNodes);
-           Array.from(this.querySelectorAll(".c-flow-map__node, .c-flow-map__flow")).forEach((n) => n.remove());
-             parsed.forEach((n) => {
-              const node = document.createElement("span");
-              node.className = "c-flow-map__node" + (n.source ? " c-flow-map__node--source" : "") + (n.target ? " c-flow-map__node--target" : "");
-              node.textContent = typeof n === "string" ? n : (n.label || n.name || "");
-              if (typeof n === "object" && (n.label || n.name)) node.setAttribute("title", n.label || n.name);
-              this.appendChild(node);
-            });
-            // Styled tooltip element.
-            const tip = this.ensure(".c-flow-map__tooltip", () => { const el = document.createElement("div"); el.className = "c-flow-map__tooltip"; el.setAttribute("hidden", ""); return el; });
-            tip.setAttribute("hidden", "");
-         } catch (e) { /* keep existing */ }
-        } else {
-          Array.from(this.querySelectorAll(".c-flow-map__node, .c-flow-map__flow")).forEach((n) => n.remove());
-          const empty = document.createElement("div");
-          empty.className = "c-flow-map__empty";
-          empty.textContent = this.getAttribute("empty") || "No data";
-          empty.style.color = "var(--color-text-muted)";
-          empty.style.padding = "var(--space-md)";
-          this.appendChild(empty);
-        }
+      wireStates(this);
+      loadRemote(this, "nodes");
+      if (renderStates(this, "flow-map")) return;
+      const nodes = remoteData(this, "nodes");
+      const effectiveNodes = nodes || (this._remoteData && this._remoteData.nodes ? JSON.stringify(this._remoteData.nodes) : null);
+      if (effectiveNodes) {
+       try {
+         const parsed = JSON.parse(effectiveNodes);
+         Array.from(this.querySelectorAll(".c-flow-map__node, .c-flow-map__flow")).forEach((n) => n.remove());
+           parsed.forEach((n) => {
+            const node = document.createElement("span");
+            node.className = "c-flow-map__node" + (n.source ? " c-flow-map__node--source" : "") + (n.target ? " c-flow-map__node--target" : "");
+            node.textContent = typeof n === "string" ? n : (n.label || n.name || "");
+            if (typeof n === "object" && (n.label || n.name)) node.setAttribute("title", n.label || n.name);
+            this.appendChild(node);
+          });
+          const tip = this.ensure(".c-flow-map__tooltip", () => { const el = document.createElement("div"); el.className = "c-flow-map__tooltip"; el.setAttribute("hidden", ""); return el; });
+          tip.setAttribute("hidden", "");
+       } catch (e) { /* keep existing */ }
+      } else {
+        Array.from(this.querySelectorAll(".c-flow-map__node, .c-flow-map__flow")).forEach((n) => n.remove());
+        renderEmpty(this, "flow-map");
+      }
      }
     enhance() {
       if (this._wiredFlowMap) return;
@@ -371,13 +269,13 @@ class ContourFlowMap extends ContourBase {
       }
     }
   }
-  define("contour-flow-map", ContourFlowMap);
+define("contour-flow-map", ContourFlowMap);
 class ContourIsochrone extends ContourBase {
-    static get observed() { return ["label", "center", "rings", "empty", "loading", "error", "src", "skeleton"]; }
+    static get observed() { return ["label", "center", "rings", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { label: { attribute: "label" }, center: { attribute: "center" }, rings: { attribute: "rings" } }; }
     render() {
       this.classList.add("c-isochrone");
-      const label = this.getAttribute("label") || this._remoteLabel;
+      const label = this.getAttribute("label") || (this._remoteData && this._remoteData.label);
       if (label) {
         const l = this.ensure(".c-isochrone__label", () => { const el = document.createElement("span"); el.className = "c-isochrone__label"; return el; });
         l.textContent = label;
@@ -385,7 +283,7 @@ class ContourIsochrone extends ContourBase {
         const l = this.querySelector(".c-isochrone__label");
         if (l) l.remove();
       }
-      const center = this.getAttribute("center");
+      const center = this.getAttribute("center") || (this._remoteData && this._remoteData.center);
       if (center) {
         const c = this.ensure(".c-isochrone__center", () => { const el = document.createElement("span"); el.className = "c-isochrone__center"; return el; });
         c.textContent = center;
@@ -393,55 +291,11 @@ class ContourIsochrone extends ContourBase {
         const c = this.querySelector(".c-isochrone__center");
         if (c) c.remove();
       }
-      const rings = this.getAttribute("rings");
-      const src = this.getAttribute("src");
-      if (src && !rings && this._srcFetched !== src) {
-        this._srcFetched = src;
-        this._loading = true;
-        this.attributeChangedCallback("__rerender__", null, "");
-        fetch(src).then((r) => r.json()).then((data) => {
-          this._remoteRings = data;
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        }).catch(() => {
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        });
-      }
-      const effectiveRings = rings || (this._remoteRings ? JSON.stringify(this._remoteRings) : null);
-      const loading = this.hasAttribute("loading") || this._loading;
-      if (loading) {
-        const loadingEl = document.createElement("div");
-        loadingEl.className = "c-isochrone__loading";
-        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
-        loadingEl.style.color = "var(--color-text-muted)";
-        loadingEl.style.padding = "var(--space-md)";
-        this.appendChild(loadingEl);
-        return;
-      }
-      if (this.hasAttribute("error")) {
-        const err = document.createElement("div");
-        err.className = "c-isochrone__error";
-        err.textContent = this.getAttribute("error") || "Error";
-        err.style.color = "var(--color-danger, var(--color-text))";
-        err.style.padding = "var(--space-md)";
-        this.appendChild(err);
-        return;
-      }
-      if (this.hasAttribute("skeleton")) {
-        const count = Math.min(4, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
-        for (let i = 0; i < count; i++) {
-          const sk = document.createElement("span");
-          sk.className = "c-skeleton c-isochrone__skeleton";
-          sk.style.display = "inline-block";
-          sk.style.inlineSize = "3rem";
-          sk.style.blockSize = "3rem";
-          sk.style.borderRadius = "50%";
-          sk.style.marginInlineEnd = "var(--space-2xs)";
-          this.appendChild(sk);
-        }
-        return;
-      }
+      wireStates(this);
+      loadRemote(this, "rings");
+      if (renderStates(this, "isochrone")) return;
+      const rings = remoteData(this, "rings");
+      const effectiveRings = rings || (this._remoteData && this._remoteData.rings ? JSON.stringify(this._remoteData.rings) : null);
       if (effectiveRings) {
          try {
            const parsed = JSON.parse(effectiveRings);
@@ -452,18 +306,12 @@ class ContourIsochrone extends ContourBase {
              if (r.label) ring.setAttribute("title", r.label || r);
              this.appendChild(ring);
            });
-           // Styled tooltip element.
            const tip = this.ensure(".c-isochrone__tooltip", () => { const el = document.createElement("div"); el.className = "c-isochrone__tooltip"; el.setAttribute("hidden", ""); return el; });
            tip.setAttribute("hidden", "");
          } catch (e) { /* keep existing */ }
        } else {
          Array.from(this.querySelectorAll(".c-isochrone__ring")).forEach((n) => n.remove());
-         const empty = document.createElement("div");
-         empty.className = "c-isochrone__empty";
-         empty.textContent = this.getAttribute("empty") || "No data";
-         empty.style.color = "var(--color-text-muted)";
-         empty.style.padding = "var(--space-md)";
-         this.appendChild(empty);
+         renderEmpty(this, "isochrone");
        }
      }
     enhance() {
@@ -490,61 +338,13 @@ class ContourIsochrone extends ContourBase {
       }
     }
   }
-  define("contour-isochrone", ContourIsochrone);
+define("contour-isochrone", ContourIsochrone);
 class ContourCatchment extends ContourBase {
-    static get observed() { return ["label", "area", "center", "empty", "loading", "error", "src", "skeleton"]; }
+    static get observed() { return ["label", "area", "center", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { label: { attribute: "label" }, area: { attribute: "area" }, center: { attribute: "center" } }; }
     render() {
       this.classList.add("c-catchment");
-      const src = this.getAttribute("src");
-      if (src && !this.getAttribute("area") && this._srcFetched !== src) {
-        this._srcFetched = src;
-        this._loading = true;
-        this.attributeChangedCallback("__rerender__", null, "");
-        fetch(src).then((r) => r.json()).then((data) => {
-          if (data.label) this._remoteLabel = data.label;
-          if (data.area) this._remoteArea = data.area;
-          if (data.center) this._remoteCenter = data.center;
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        }).catch(() => {
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        });
-      }
-      const loading = this.hasAttribute("loading") || this._loading;
-      if (loading) {
-        const loadingEl = document.createElement("div");
-        loadingEl.className = "c-catchment__loading";
-        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
-        loadingEl.style.color = "var(--color-text-muted)";
-        loadingEl.style.padding = "var(--space-md)";
-        this.appendChild(loadingEl);
-        return;
-      }
-      if (this.hasAttribute("error")) {
-        const err = document.createElement("div");
-        err.className = "c-catchment__error";
-        err.textContent = this.getAttribute("error") || "Error";
-        err.style.color = "var(--color-danger, var(--color-text))";
-        err.style.padding = "var(--space-md)";
-        this.appendChild(err);
-        return;
-      }
-      if (this.hasAttribute("skeleton")) {
-        const count = Math.min(5, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
-        for (let i = 0; i < count; i++) {
-          const sk = document.createElement("span");
-          sk.className = "c-skeleton c-catchment__skeleton";
-          sk.style.display = "inline-block";
-          sk.style.inlineSize = "3rem";
-          sk.style.blockSize = "1rem";
-          sk.style.marginInlineEnd = "var(--space-xs)";
-          this.appendChild(sk);
-        }
-        return;
-      }
-      const label = this.getAttribute("label") || this._remoteLabel;
+      const label = this.getAttribute("label") || (this._remoteData && this._remoteData.label);
       if (label) {
         const l = this.ensure(".c-catchment__label", () => { const el = document.createElement("span"); el.className = "c-catchment__label"; return el; });
         l.textContent = label;
@@ -552,7 +352,7 @@ class ContourCatchment extends ContourBase {
         const l = this.querySelector(".c-catchment__label");
         if (l) l.remove();
       }
-      const area = this.getAttribute("area") || this._remoteArea;
+      const area = this.getAttribute("area") || (this._remoteData && this._remoteData.area);
       if (area) {
         const a = this.ensure(".c-catchment__area", () => { const el = document.createElement("span"); el.className = "c-catchment__area"; return el; });
         a.textContent = area;
@@ -560,7 +360,7 @@ class ContourCatchment extends ContourBase {
         const a = this.querySelector(".c-catchment__area");
         if (a) a.remove();
       }
-      const center = this.getAttribute("center") || this._remoteCenter;
+      const center = this.getAttribute("center") || (this._remoteData && this._remoteData.center);
        if (center) {
          const c = this.ensure(".c-catchment__center", () => { const el = document.createElement("span"); el.className = "c-catchment__center"; return el; });
          c.textContent = center;
@@ -568,21 +368,19 @@ class ContourCatchment extends ContourBase {
          const c = this.querySelector(".c-catchment__center");
          if (c) c.remove();
        }
-       // Styled tooltip element.
+      wireStates(this);
+      loadRemote(this, ["label", "area", "center"]);
+      if (renderStates(this, "catchment")) return;
+      const rLabel = remoteData(this, "label") || (this._remoteData && this._remoteData.label);
+      const rArea = remoteData(this, "area") || (this._remoteData && this._remoteData.area);
+      const rCenter = remoteData(this, "center") || (this._remoteData && this._remoteData.center);
+      if (!rLabel && !rArea && !rCenter) {
+        renderEmpty(this, "catchment");
+        return;
+      }
        const tip = this.ensure(".c-catchment__tooltip", () => { const el = document.createElement("div"); el.className = "c-catchment__tooltip"; el.setAttribute("hidden", ""); return el; });
        tip.setAttribute("hidden", "");
-       if (area) tip.textContent = area;
-       const rLabel = this.getAttribute("label") || this._remoteLabel;
-       const rArea = this.getAttribute("area") || this._remoteArea;
-       const rCenter = this.getAttribute("center") || this._remoteCenter;
-       if (!rLabel && !rArea && !rCenter) {
-         const empty = document.createElement("div");
-         empty.className = "c-catchment__empty";
-         empty.textContent = this.getAttribute("empty") || "No data";
-         empty.style.color = "var(--color-text-muted)";
-         empty.style.padding = "var(--space-md)";
-         this.appendChild(empty);
-       }
+       if (rArea) tip.textContent = rArea;
      }
     enhance() {
       if (this._wiredCatchment) return;
@@ -596,56 +394,17 @@ class ContourCatchment extends ContourBase {
       }
     }
   }
-  define("contour-catchment", ContourCatchment);
+define("contour-catchment", ContourCatchment);
 class ContourCompassFull extends ContourBase {
-    static get observed() { return ["label", "needle", "loading", "error", "src", "skeleton"]; }
+    static get observed() { return ["label", "needle", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { label: { attribute: "label" }, needle: { attribute: "needle" } }; }
     render() {
       this.classList.add("c-compass");
-      const src = this.getAttribute("src");
-      if (src && !this.getAttribute("needle") && this._srcFetched !== src) {
-        this._srcFetched = src;
-        this._loading = true;
-        this.attributeChangedCallback("__rerender__", null, "");
-        fetch(src).then((r) => r.json()).then((data) => {
-          this._remoteNeedle = data.needle || data.value || this._remoteNeedle;
-          this._remoteLabel = data.label || this._remoteLabel;
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        }).catch(() => {
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        });
-      }
-      const loading = this.hasAttribute("loading") || this._loading;
-      if (loading) {
-        const loadingEl = document.createElement("div");
-        loadingEl.className = "c-compass__loading";
-        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
-        loadingEl.style.color = "var(--color-text-muted)";
-        loadingEl.style.padding = "var(--space-md)";
-        this.appendChild(loadingEl);
-        return;
-      }
-      if (this.hasAttribute("error")) {
-        const err = document.createElement("div");
-        err.className = "c-compass__error";
-        err.textContent = this.getAttribute("error") || "Error";
-        err.style.color = "var(--color-danger, var(--color-text))";
-        err.style.padding = "var(--space-md)";
-        this.appendChild(err);
-        return;
-      }
-      const label = this.getAttribute("label") || this._remoteLabel;
-      if (this.hasAttribute("skeleton")) {
-        const sk = document.createElement("div");
-        sk.className = "c-skeleton c-compass__skeleton";
-        sk.style.inlineSize = "6rem";
-        sk.style.blockSize = "6rem";
-        sk.style.borderRadius = "50%";
-        this.appendChild(sk);
-        return;
-      }
+      const label = this.getAttribute("label") || (this._remoteData && this._remoteData.label);
+      wireStates(this);
+      loadRemote(this, "needle");
+      if (renderStates(this, "compass")) return;
+      const needle = remoteData(this, "needle") || (this._remoteData && (this._remoteData.needle || this._remoteData.value));
       // Cardinal directions.
       for (const dir of ["n", "s", "e", "w"]) {
         const cls = ".c-compass__label--" + dir;
@@ -661,7 +420,6 @@ class ContourCompassFull extends ContourBase {
         const l = this.ensure(".c-compass__label", () => { const el = document.createElement("span"); el.className = "c-compass__label"; return el; });
         l.textContent = label;
       }
-      const needle = this.getAttribute("needle") || this._remoteNeedle;
       if (needle) {
         const deg = Number(needle) || 0;
         const n = this.ensure("svg.c-compass__needle", () => {
@@ -680,9 +438,12 @@ class ContourCompassFull extends ContourBase {
         const n = this.querySelector("svg.c-compass__needle, .c-compass__needle");
         if (n) n.remove();
       }
+      if (!needle && !label) {
+        renderEmpty(this, "compass");
+      }
     }
   }
-  define("contour-compass", ContourCompassFull);
+define("contour-compass", ContourCompassFull);
 class ContourLayerSwitch extends ContourBase {
     static get observed() { return ["items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { items: { attribute: "items" } }; }

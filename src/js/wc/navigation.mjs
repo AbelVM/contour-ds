@@ -175,7 +175,7 @@ class ContourHeader extends ContourBase {
   }
   define("contour-header", ContourHeader);
 class ContourTree extends ContourBase {
-    static get observed() { return ["items", "virtual", "src", "empty", "error", "skeleton"]; }
+    static get observed() { return ["items", "virtual", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { items: { attribute: "items" } }; }
 render() {
        this.classList.add("c-tree");
@@ -183,21 +183,10 @@ render() {
        // an authored tree is preserved across re-renders instead of being
        // rebuilt from `items` and losing whatever the reader put in it.
         const authored = Array.from(this.children).filter((n) => !n.classList || !n.classList.contains("c-tree"));
-        const items = this.getAttribute("items") || (this._remoteItems ? JSON.stringify(this._remoteItems) : null);
-        const src = this.getAttribute("src");
-        if (src && !this.getAttribute("items") && this._srcFetched !== src) {
-          this._srcFetched = src;
-          this._loading = true;
-          this.attributeChangedCallback("__rerender__", null, "");
-          fetch(src).then((r) => r.json()).then((data) => {
-            this._remoteItems = data;
-            this._loading = false;
-            this.attributeChangedCallback("__rerender__", null, "");
-          }).catch(() => {
-            this._loading = false;
-            this.attributeChangedCallback("__rerender__", null, "");
-          });
-        }
+        wireStates(this);
+        loadRemote(this, "items");
+        if (renderStates(this, "tree")) return;
+        const items = remoteData(this, "items");
         if (this.hasAttribute("loading") || (this._loading && !items)) {
           // show loading placeholder
           if (!this.querySelector(".c-tree__loading")) {
