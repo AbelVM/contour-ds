@@ -1229,57 +1229,14 @@ class ContourStat extends ContourBase {
   }
   define("contour-stat", ContourStat);
 class ContourInstrument extends ContourBase {
-    static get observed() { return ["rows", "empty", "loading", "error", "src", "skeleton"]; }
+    static get observed() { return ["rows", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { rows: { attribute: "rows" } }; }
     render() {
       this.classList.add("c-instrument");
-      const src = this.getAttribute("src");
-      const rows = this.getAttribute("rows") || (this._remoteRows ? JSON.stringify(this._remoteRows) : null);
-      if (src && !this.getAttribute("rows") && this._srcFetched !== src) {
-        this._srcFetched = src;
-        this._loading = true;
-        this.attributeChangedCallback("__rerender__", null, "");
-        fetch(src).then((r) => r.json()).then((data) => {
-          this._remoteRows = data;
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        }).catch(() => {
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        });
-      }
-      const loading = this.hasAttribute("loading") || this._loading;
-      if (loading) {
-        const loadingEl = document.createElement("div");
-        loadingEl.className = "c-instrument__loading";
-        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
-        loadingEl.style.color = "var(--color-text-muted)";
-        loadingEl.style.padding = "var(--space-md)";
-        this.appendChild(loadingEl);
-        return;
-      }
-      if (this.hasAttribute("error")) {
-        const err = document.createElement("div");
-        err.className = "c-instrument__error";
-        err.textContent = this.getAttribute("error") || "Error";
-        err.style.color = "var(--color-danger, var(--color-text))";
-        err.style.padding = "var(--space-md)";
-        this.appendChild(err);
-        return;
-      }
-      if (this.hasAttribute("skeleton")) {
-        const count = Math.min(4, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
-        for (let i = 0; i < count; i++) {
-          const sk = document.createElement("span");
-          sk.className = "c-skeleton c-instrument__skeleton";
-          sk.style.display = "inline-block";
-          sk.style.inlineSize = "4rem";
-          sk.style.blockSize = "1rem";
-          sk.style.marginInlineEnd = "var(--space-2xs)";
-          this.appendChild(sk);
-        }
-        return;
-      }
+      wireStates(this);
+      loadRemote(this, "rows");
+      if (renderStates(this, "instrument")) return;
+      const rows = remoteData(this, "rows");
       // The block's two parts are `__item` and `__value`: the label is the text
       // the item opens with, and the value is the span inside it. There is no
       // `__row` and no `__key` — the separators between items are CSS `::before`.
@@ -1299,16 +1256,11 @@ class ContourInstrument extends ContourBase {
           });
         } catch (e) { /* keep existing */ }
       } else {
-        const empty = document.createElement("div");
-        empty.className = "c-instrument__empty";
-        empty.textContent = this.getAttribute("empty") || "No data";
-        empty.style.color = "var(--color-text-muted)";
-        empty.style.padding = "var(--space-md)";
-        this.appendChild(empty);
+        renderEmpty(this, "instrument");
       }
     }
   }
-  define("contour-instrument", ContourInstrument);
+define("contour-instrument", ContourInstrument);
 class ContourBivariate extends ContourBase {
     static get observed() { return ["size", "axis-x", "axis-y"]; }
     static get properties() { return { size: { attribute: "size" }, axisX: { attribute: "axis-x" }, axisY: { attribute: "axis-y" } }; }
