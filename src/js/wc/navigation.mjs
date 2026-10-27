@@ -72,55 +72,14 @@ class ContourMenu extends ContourBase {
   }
 define("contour-menu", ContourMenu);
 class ContourTabs extends ContourBase {
-    static get observed() { return ["tabs", "empty", "loading", "error", "src", "skeleton"]; }
+    static get observed() { return ["tabs", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { tabs: { attribute: "tabs" } }; }
     render() {
       this.classList.add("c-tabs");
-      const src = this.getAttribute("src");
-      const tabs = this.getAttribute("tabs") || (this._remoteTabs ? JSON.stringify(this._remoteTabs) : null);
-      if (src && !this.getAttribute("tabs") && this._srcFetched !== src) {
-        this._srcFetched = src;
-        this._loading = true;
-        this.attributeChangedCallback("__rerender__", null, "");
-        fetch(src).then((r) => r.json()).then((data) => {
-          this._remoteTabs = data;
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        }).catch(() => {
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        });
-      }
-      const loading = this.hasAttribute("loading") || this._loading;
-      if (loading) {
-        const loadingEl = document.createElement("div");
-        loadingEl.className = "c-tabs__loading";
-        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
-        loadingEl.style.color = "var(--color-text-muted)";
-        loadingEl.style.padding = "var(--space-md)";
-        this.appendChild(loadingEl);
-        return;
-      }
-      if (this.hasAttribute("error")) {
-        const err = document.createElement("div");
-        err.className = "c-tabs__error";
-        err.textContent = this.getAttribute("error") || "Error";
-        err.style.color = "var(--color-danger, var(--color-text))";
-        err.style.padding = "var(--space-md)";
-        this.appendChild(err);
-        return;
-      }
-      if (this.hasAttribute("skeleton")) {
-        const count = Math.min(4, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
-        for (let i = 0; i < count; i++) {
-          const sk = document.createElement("div");
-          sk.className = "c-skeleton c-tabs__skeleton";
-          sk.style.blockSize = "2rem";
-          sk.style.marginBlockEnd = "var(--space-2xs)";
-          this.appendChild(sk);
-        }
-        return;
-      }
+      wireStates(this);
+      loadRemote(this, "tabs");
+      if (renderStates(this, "tabs")) return;
+      const tabs = remoteData(this, "tabs");
       // Slot composition wins over the JSON attribute, same as ContourMenu:
       // authored tab buttons and panels stay across re-renders and the
       // JSON scaffolding only fills in when the host is empty.
@@ -145,22 +104,14 @@ class ContourTabs extends ContourBase {
         } else if (!tabs && !authored.length) {
           const list = this.querySelector(".c-tabs__list");
           if (list) list.remove();
-          const empty = document.createElement("div");
-          empty.className = "c-tabs__empty";
-          empty.textContent = this.getAttribute("empty") || "No data";
-          empty.style.color = "var(--color-text-muted)";
-          empty.style.padding = "var(--space-md)";
-          this.appendChild(empty);
+          renderEmpty(this, "tabs");
         }
      }
     enhance() {
-      // Interaction lives in behaviours.mjs, which the shadow wrappers call too.
-      // One implementation, so the two layers cannot drift apart again: the shadow
-      // copy queried its root for slotted nodes, found none, and wired nothing.
       wireTabs(this);
     }
   }
-  define("contour-tabs", ContourTabs);
+define("contour-tabs", ContourTabs);
 class ContourHeader extends ContourBase {
     static get observed() { return ["brand", "links"]; }
     static get properties() { return { brand: { attribute: "brand" }, links: { attribute: "links" } }; }
