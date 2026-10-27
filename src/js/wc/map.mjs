@@ -1,10 +1,28 @@
 import { ContourBase, define } from './core.mjs';
 import { compassNeedle, scaleBarTicks } from './svg.mjs';
 class ContourMinimap extends ContourBase {
-    static get observed() { return ["label", "viewport"]; }
+    static get observed() { return ["label", "viewport", "empty", "loading", "error"]; }
     static get properties() { return { label: { attribute: "label" }, viewport: { attribute: "viewport" } }; }
     render() {
       this.classList.add("c-minimap");
+      if (this.hasAttribute("loading")) {
+        const loading = document.createElement("div");
+        loading.className = "c-minimap__loading";
+        loading.textContent = this.getAttribute("loading") || "Loading…";
+        loading.style.color = "var(--color-text-muted)";
+        loading.style.padding = "var(--space-md)";
+        this.appendChild(loading);
+        return;
+      }
+      if (this.hasAttribute("error")) {
+        const err = document.createElement("div");
+        err.className = "c-minimap__error";
+        err.textContent = this.getAttribute("error") || "Error";
+        err.style.color = "var(--color-danger, var(--color-text))";
+        err.style.padding = "var(--space-md)";
+        this.appendChild(err);
+        return;
+      }
       const label = this.getAttribute("label") || this._remoteLabel;
       if (label) {
         const l = this.ensure(".c-minimap__label", () => { const el = document.createElement("span"); el.className = "c-minimap__label"; return el; });

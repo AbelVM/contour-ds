@@ -1269,6 +1269,13 @@
     pointer-events: none;
   }
 
+  .c-minimap__empty,
+  .c-minimap__loading,
+  .c-minimap__error {
+    color: var(--color-text-muted);
+    font-size: var(--type-micro);
+  }
+
   /* =======================================================================
      8d. COORDINATE — lat/long display with copy
      ======================================================================= */
