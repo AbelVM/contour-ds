@@ -54,7 +54,15 @@ class ContourDashToolbar extends ContourBase {
   }
   define("contour-dash-toolbar", ContourDashToolbar);
 class ContourDashKpiRow extends ContourBase {
-    render() { this.classList.add("c-dash-kpi-row"); }
+    render() {
+      this.classList.add("c-dash-kpi-row");
+      if (!this.querySelector(".c-kpi")) {
+        const k = document.createElement("contour-kpi");
+        k.setAttribute("value", "42");
+        k.setAttribute("label", "KPI");
+        this.appendChild(k);
+      }
+    }
   }
   define("contour-dash-kpi-row", ContourDashKpiRow);
 class ContourDashFreshness extends ContourBase {

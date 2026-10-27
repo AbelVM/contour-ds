@@ -1,32 +1,56 @@
 import { ContourBase, define, contourId } from './core.mjs';
 import { wireCombobox } from './behaviours.mjs';
 class ContourCombobox extends ContourBase {
-    static get observed() { return ["options", "placeholder", "label"]; }
+    static get observed() { return ["options", "placeholder", "label", "loading", "src"]; }
     static get formAssociated() { return true; }
     static get properties() { return { options: { attribute: "options" }, placeholder: { attribute: "placeholder" }, label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-combobox");
-      const options = this.getAttribute("options");
-      // Slot composition: authored <li> options win over the JSON attribute.
-      const authored = Array.from(this.children).filter((n) => !n.classList || (!n.classList.contains("c-combobox__input") && !n.classList.contains("c-combobox__list")));
-      if (options && !authored.length) {
-        try {
-          const parsed = JSON.parse(options);
-          const input = this.ensure(".c-combobox__input", () => { const el = document.createElement("input"); el.className = "c-combobox__input"; el.type = "text"; return el; });
-          input.type = "text";
-          input.placeholder = this.getAttribute("placeholder") || "Search…";
-          input.setAttribute("aria-label", this.getAttribute("label") || "Search");
-          const list = this.ensure(".c-combobox__list", () => { const el = document.createElement("ul"); el.className = "c-combobox__list"; el.setAttribute("hidden", ""); return el; });
-          list.innerHTML = "";
-          list.setAttribute("hidden", "");
-          parsed.forEach((opt) => {
-            const li = document.createElement("li");
-            li.className = "c-combobox__option";
-            li.textContent = typeof opt === "string" ? opt : opt.label;
-            list.appendChild(li);
-          });
-        } catch (e) { /* keep existing */ }
-      }
+       const options = this.getAttribute("options") || (this._remoteOptions ? JSON.stringify(this._remoteOptions) : null);
+       const src = this.getAttribute("src");
+       // Remote loading: fetch options from `src` and populate internal state.
+       if (src && !this.getAttribute("options") && this._srcFetched !== src) {
+         this._srcFetched = src;
+         this._loading = true;
+         this.attributeChangedCallback("__rerender__", null, "");
+         fetch(src).then((r) => r.json()).then((data) => {
+           this._remoteOptions = data;
+           this._loading = false;
+           this.attributeChangedCallback("__rerender__", null, "");
+         }).catch(() => {
+           this._loading = false;
+           this.attributeChangedCallback("__rerender__", null, "");
+         });
+       }
+       const loading = this.hasAttribute("loading") || this._loading;
+       // Slot composition: authored <li> options win over the JSON attribute.
+       const authored = Array.from(this.children).filter((n) => !n.classList || (!n.classList.contains("c-combobox__input") && !n.classList.contains("c-combobox__list")));
+       if ((options || loading) && !authored.length) {
+         try {
+           const parsed = options ? JSON.parse(options) : [];
+           const input = this.ensure(".c-combobox__input", () => { const el = document.createElement("input"); el.className = "c-combobox__input"; el.type = "text"; return el; });
+           input.type = "text";
+           input.placeholder = this.getAttribute("placeholder") || "Search…";
+           input.setAttribute("aria-label", this.getAttribute("label") || "Search");
+           const list = this.ensure(".c-combobox__list", () => { const el = document.createElement("ul"); el.className = "c-combobox__list"; el.setAttribute("hidden", ""); return el; });
+           list.innerHTML = "";
+           list.setAttribute("hidden", "");
+           if (loading) {
+             const li = document.createElement("li");
+             li.className = "c-combobox__option c-combobox__loading";
+             li.textContent = (typeof this.getAttribute("loading") === "string" && this.getAttribute("loading")) ? this.getAttribute("loading") : "Loading…";
+             list.appendChild(li);
+             list.removeAttribute("hidden");
+           } else {
+             parsed.forEach((opt) => {
+               const li = document.createElement("li");
+               li.className = "c-combobox__option";
+               li.textContent = typeof opt === "string" ? opt : opt.label;
+               list.appendChild(li);
+             });
+           }
+         } catch (e) { /* keep existing */ }
+       }
     }
     enhance() {
       // Interaction lives in behaviours.mjs, which the shadow wrappers call too.
@@ -126,6 +150,19 @@ class ContourField extends ContourBase {
       const label = this.getAttribute("label");
       if (label) input.setAttribute("aria-label", label);
       else if (!input.hasAttribute("aria-label")) input.setAttribute("aria-label", "Range");
+      // Fill the track to the left of the thumb.
+      const updateFill = () => {
+        const min = Number(input.min) || 0;
+        const max = Number(input.max) || 100;
+        const val = Number(input.value) || 0;
+        const pct = max > min ? ((val - min) / (max - min)) * 100 : 0;
+        input.style.setProperty("--fill", pct + "%");
+      };
+      updateFill();
+      if (!input._fillWired) {
+        input._fillWired = true;
+        input.addEventListener("input", updateFill);
+      }
     }
   }
   // patch enhance onto ContourRange
@@ -483,7 +520,14 @@ class ContourInputFull extends ContourBase {
   }
   define("contour-input", ContourInputFull);
 class ContourInputGroup extends ContourBase {
-    render() { this.classList.add("c-input-group"); }
+    static get observed() { return ["label", "placeholder"]; }
+    static get properties() { return { label: { attribute: "label" }, placeholder: { attribute: "placeholder" } }; }
+    render() {
+      this.classList.add("c-input-group");
+      const icon = this.ensure("svg", () => { const el = document.createElementNS("http://www.w3.org/2000/svg", "svg"); el.setAttribute("aria-hidden", "true"); const use = document.createElementNS("http://www.w3.org/2000/svg", "use"); use.setAttribute("href", "#i-search"); el.appendChild(use); return el; });
+      const input = this.ensure("input.c-input", () => { const el = document.createElement("input"); el.className = "c-input"; el.type = "text"; return el; });
+      input.placeholder = this.getAttribute("placeholder") || this.getAttribute("label") || "";
+    }
   }
   define("contour-input-group", ContourInputGroup);
 class ContourRadioList extends ContourBase {
@@ -497,17 +541,18 @@ class ContourRadioList extends ContourBase {
       if (items) {
         try {
           const parsed = JSON.parse(items);
-          parsed.forEach((it) => {
+          parsed.forEach((it, i) => {
             const lbl = document.createElement("label");
             lbl.className = "c-radio";
             const input = document.createElement("input");
             input.type = "radio";
             input.className = "c-radio__input";
             input.name = this.getAttribute("name") || "radio-list";
+            if (i === 0) input.checked = true;
             if (typeof it === "string") { input.value = it; lbl.appendChild(input); lbl.appendChild(document.createTextNode(" " + it)); }
             // The guide's own radio carries its text in a bare span; the sheet has
             // no `__label` part on this block.
-            else { input.value = it.value || it.label; lbl.appendChild(input); const span = document.createElement("span"); span.textContent = it.label || it.value; lbl.appendChild(span); }
+            else { input.value = it.value || it.label; if (it.checked) input.checked = true; lbl.appendChild(input); const span = document.createElement("span"); span.textContent = it.label || it.value; lbl.appendChild(span); }
             this.appendChild(lbl);
           });
         } catch (e) { /* keep existing */ }

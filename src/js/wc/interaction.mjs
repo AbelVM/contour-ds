@@ -32,7 +32,16 @@ class ContourSearchTriggerFull extends ContourBase {
   }
   define("contour-search-trigger", ContourSearchTriggerFull);
 class ContourShortcutListFull extends ContourBase {
-    render() { this.classList.add("c-shortcut-list"); }
+    static get observed() { return ["title"]; }
+    static get properties() { return { title: { attribute: "title" } }; }
+    render() {
+      this.classList.add("c-shortcut-list");
+      const title = this.getAttribute("title");
+      if (title) {
+        const t = this.ensure(".c-shortcut-list__title", () => { const el = document.createElement("div"); el.className = "c-shortcut-list__title"; el.style.padding = "var(--space-sm)"; el.style.fontWeight = "var(--weight-semibold)"; return el; });
+        t.textContent = title;
+      }
+    }
   }
   define("contour-shortcut-list", ContourShortcutListFull);
 class ContourShortcutRowFull extends ContourBase {
@@ -78,11 +87,29 @@ class ContourShortcutPanelFull extends ContourBase {
   }
   define("contour-shortcut-panel", ContourShortcutPanelFull);
   class ContourShortcutOverlayFull extends ContourBase {
-    render() { this.classList.add("c-shortcut-overlay"); if (!this.hasAttribute("hidden")) this.setAttribute("hidden", ""); }
+    static get observed() { return ["title"]; }
+    static get properties() { return { title: { attribute: "title" } }; }
+    render() {
+      this.classList.add("c-shortcut-overlay");
+      const title = this.getAttribute("title");
+      if (title) {
+        const t = this.ensure(".c-shortcut-overlay__title", () => { const el = document.createElement("div"); el.className = "c-shortcut-overlay__title"; el.style.padding = "var(--space-sm)"; return el; });
+        t.textContent = title;
+      }
+      if (!this.hasAttribute("hidden")) this.setAttribute("hidden", "");
+    }
   }
   define("contour-shortcut-overlay", ContourShortcutOverlayFull);
 class ContourRowActionFull extends ContourBase {
-    render() { this.classList.add("c-row-action"); }
+    static get observed() { return ["label"]; }
+    static get properties() { return { label: { attribute: "label" } }; }
+    render() {
+      this.classList.add("c-row-action");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "button");
+      if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
+      const label = this.getAttribute("label");
+      if (label && !this.hasChildNodes()) this.textContent = label;
+    }
   }
   define("contour-row-action", ContourRowActionFull);
 class ContourSegmented extends ContourBase {
@@ -110,15 +137,93 @@ class ContourDragHandle extends ContourBase {
     }
   }
   define("contour-drag-handle", ContourDragHandle);
-class ContourDropIndicator extends ContourBase { render() { this.classList.add("c-drop-indicator"); } }
+class ContourDropIndicator extends ContourBase {
+    static get observed() { return ["label"]; }
+    static get properties() { return { label: { attribute: "label" } }; }
+    render() {
+      this.classList.add("c-drop-indicator");
+      this.classList.add("c-drop-indicator--visible");
+      Array.from(this.childNodes).forEach((n) => { if (n.nodeType === Node.TEXT_NODE) n.remove(); else if (n.nodeType === Node.ELEMENT_NODE && n.tagName === "SPAN") n.remove(); });
+      const label = this.getAttribute("label");
+      if (label) {
+        const t = this.ensure(".c-drop-indicator__label", () => { const el = document.createElement("span"); el.className = "c-drop-indicator__label"; return el; });
+        t.textContent = label;
+      }
+    }
+  }
   define("contour-drop-indicator", ContourDropIndicator);
-class ContourDropZone extends ContourBase { render() { this.classList.add("c-drop-zone"); } }
+class ContourDropZone extends ContourBase {
+    static get observed() { return ["label"]; }
+    static get properties() { return { label: { attribute: "label" } }; }
+    render() {
+      this.classList.add("c-drop-zone");
+      Array.from(this.childNodes).forEach((n) => { if (n.nodeType === Node.TEXT_NODE) n.remove(); else if (n.nodeType === Node.ELEMENT_NODE && n.tagName === "SPAN") n.remove(); });
+      const label = this.getAttribute("label");
+      if (label) {
+        const t = this.ensure(".c-drop-zone__label", () => { const el = document.createElement("p"); el.className = "c-drop-zone__label"; return el; });
+        t.textContent = label;
+      }
+    }
+  }
   define("contour-drop-zone", ContourDropZone);
-class ContourResizable extends ContourBase { render() { this.classList.add("c-resizable"); } }
+class ContourResizable extends ContourBase {
+    static get observed() { return ["title", "direction"]; }
+    static get properties() { return { title: { attribute: "title" }, direction: { attribute: "direction" } }; }
+    render() {
+      this.classList.add("c-resizable");
+      this.classList.add("c-resizable--horizontal");
+      if (!this.querySelector(".c-resizable__pane")) {
+        const p1 = document.createElement("div");
+        p1.className = "c-resizable__pane";
+        p1.textContent = "Pane A";
+        const handle = document.createElement("div");
+        handle.className = "c-resize-handle";
+        const p2 = document.createElement("div");
+        p2.className = "c-resizable__pane";
+        p2.textContent = "Pane B";
+        this.appendChild(p1);
+        this.appendChild(handle);
+        this.appendChild(p2);
+      }
+    }
+  }
   define("contour-resizable", ContourResizable);
-class ContourTableWrap extends ContourBase { render() { this.classList.add("c-table-wrap"); } }
+class ContourTableWrap extends ContourBase {
+    static get observed() { return ["title"]; }
+    static get properties() { return { title: { attribute: "title" } }; }
+    render() {
+      this.classList.add("c-table-wrap");
+      Array.from(this.childNodes).forEach((n) => { if (n.nodeType === Node.TEXT_NODE) n.remove(); else if (n.nodeType === Node.ELEMENT_NODE && n.tagName === "SPAN") n.remove(); });
+      if (!this.querySelector("table")) {
+        const t = document.createElement("table");
+        t.className = "c-table";
+        const thead = document.createElement("thead");
+        const tr = document.createElement("tr");
+        for (const h of ["A", "B"]) { const th = document.createElement("th"); th.textContent = h; tr.appendChild(th); }
+        thead.appendChild(tr);
+        t.appendChild(thead);
+        const tbody = document.createElement("tbody");
+        const tr2 = document.createElement("tr");
+        for (const v of ["1", "2"]) { const td = document.createElement("td"); td.textContent = v; tr2.appendChild(td); }
+        tbody.appendChild(tr2);
+        t.appendChild(tbody);
+        this.appendChild(t);
+      }
+    }
+  }
   define("contour-table-wrap", ContourTableWrap);
-class ContourScrollArea extends ContourBase { render() { this.classList.add("c-scroll-area"); } }
+class ContourScrollArea extends ContourBase {
+    static get observed() { return ["title"]; }
+    static get properties() { return { title: { attribute: "title" } }; }
+    render() {
+      this.classList.add("c-scroll-area");
+      const title = this.getAttribute("title");
+      if (title) {
+        const t = this.ensure(".c-scroll-area__title", () => { const el = document.createElement("div"); el.className = "c-scroll-area__title"; el.style.padding = "var(--space-sm)"; el.style.fontWeight = "var(--weight-semibold)"; return el; });
+        t.textContent = title;
+      }
+    }
+  }
   define("contour-scroll-area", ContourScrollArea);
 class ContourBtn extends ContourBase {
     static get observed() { return ["variant", "size", "color", "label"]; }

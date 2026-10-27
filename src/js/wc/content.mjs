@@ -145,9 +145,23 @@ class ContourSectionHead extends ContourBase {
       this.classList.add("c-section-head");
       const title = this.getAttribute("title");
       const desc = this.getAttribute("desc");
+      // icon badge
+      if (!this.querySelector(".c-icon-badge")) {
+        const badge = document.createElement("div");
+        badge.className = "c-icon-badge";
+        badge.innerHTML = '<svg aria-hidden="true"><use href="#i-crosshair" /></svg>';
+        this.prepend(badge);
+      }
+      // content wrapper
+      let content = this.querySelector(":scope > div:not(.c-icon-badge)");
+      if (!content) {
+        content = document.createElement("div");
+        this.appendChild(content);
+      }
       if (title) {
         const t = this.ensure(".c-section-head__title", () => { const el = document.createElement("h2"); el.className = "c-section-head__title"; return el; });
         t.textContent = title;
+        if (t.parentNode !== content) content.appendChild(t);
       } else {
         const t = this.querySelector(".c-section-head__title");
         if (t) t.remove();
@@ -155,6 +169,7 @@ class ContourSectionHead extends ContourBase {
       if (desc) {
         const d = this.ensure(".c-section-head__desc", () => { const el = document.createElement("p"); el.className = "c-section-head__desc"; return el; });
         d.textContent = desc;
+        if (d.parentNode !== content) content.appendChild(d);
       } else {
         const d = this.querySelector(".c-section-head__desc");
         if (d) d.remove();
@@ -398,7 +413,17 @@ class ContourRecipeFull extends ContourBase {
   }
   define("contour-recipe", ContourRecipeFull);
 class ContourLogosFull extends ContourBase {
-    render() { this.classList.add("c-logos"); }
+    render() {
+      this.classList.add("c-logos");
+      if (!this.querySelector(".c-logos__item")) {
+        for (const name of ["Cartolab", "Nordwand"]) {
+          const span = document.createElement("span");
+          span.className = "c-logos__item";
+          span.textContent = name;
+          this.appendChild(span);
+        }
+      }
+    }
   }
   define("contour-logos", ContourLogosFull);
 class ContourLandingFeaturesFull extends ContourBase {
@@ -443,10 +468,20 @@ class ContourLandingFeaturesFull extends ContourBase {
   }
   define("contour-landing-features", ContourLandingFeaturesFull);
 class ContourLandingHeroFull extends ContourBase {
-    static get observed() { return ["actions"]; }
-    static get properties() { return { actions: { attribute: "actions" } }; }
+    static get observed() { return ["actions", "title", "text"]; }
+    static get properties() { return { actions: { attribute: "actions" }, title: { attribute: "title" }, text: { attribute: "text" } }; }
     render() {
       this.classList.add("c-landing-hero");
+      const title = this.getAttribute("title");
+      if (title) {
+        const t = this.ensure(".c-landing-hero__title", () => { const el = document.createElement("h1"); el.className = "c-landing-hero__title"; return el; });
+        t.textContent = title;
+      }
+      const text = this.getAttribute("text");
+      if (text) {
+        const t = this.ensure(".c-landing-hero__text", () => { const el = document.createElement("p"); el.className = "c-landing-hero__text"; return el; });
+        t.textContent = text;
+      }
       const actions = this.getAttribute("actions");
       const a = this.querySelector(".c-landing-hero__actions");
       const authored = a ? Array.from(a.children) : [];
@@ -506,6 +541,19 @@ class ContourPanel extends ContourBase {
       } else {
         const st = this.querySelector(".c-panel__status");
         if (st) st.remove();
+      }
+      // Wrap authored content in a body so it picks up the panel's padding.
+      const body = this.ensure(".c-panel__body", () => { const el = document.createElement("div"); el.className = "c-panel__body"; return el; });
+      const head = this.querySelector(".c-panel__head");
+      Array.from(this.childNodes).forEach((n) => {
+        if (n === body || n === head) return;
+        if (n.nodeType === 1 && (n.classList.contains("c-panel__title") || n.classList.contains("c-panel__subtitle") || n.classList.contains("c-panel__status"))) return;
+        body.appendChild(n);
+      });
+      if (!body.parentNode) this.appendChild(body);
+      // keep head before body
+      if (head && head.parentNode === this && body.parentNode === this && head.compareDocumentPosition(body) & Node.DOCUMENT_POSITION_PRECEDING) {
+        this.insertBefore(body, head.nextSibling);
       }
     }
   }
@@ -581,6 +629,23 @@ class ContourCode extends ContourBase {
       } else {
         const btn = this.querySelector(".c-code__copy");
         if (btn) btn.remove();
+      }
+      // Wrap authored code text in a pre so it picks up padding.
+      const pre = this.ensure("pre", () => { const el = document.createElement("pre"); return el; });
+      Array.from(this.childNodes).forEach((n) => {
+        if (n === pre || (n.nodeType === 1 && (n.classList.contains("c-code__head") || n.classList.contains("c-code__copy")))) return;
+        pre.appendChild(n);
+      });
+      if (!pre.querySelector("code")) {
+        const code = document.createElement("code");
+        while (pre.firstChild) code.appendChild(pre.firstChild);
+        pre.appendChild(code);
+      }
+      if (pre.parentNode !== this) this.appendChild(pre);
+      // keep head before pre
+      const head = this.querySelector(".c-code__head");
+      if (head && head.parentNode === this && pre.parentNode === this && head.compareDocumentPosition(pre) & Node.DOCUMENT_POSITION_PRECEDING) {
+        this.insertBefore(pre, head.nextSibling);
       }
     }
     enhance() {

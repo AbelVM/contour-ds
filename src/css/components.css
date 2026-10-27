@@ -639,10 +639,15 @@
     background: var(--color-surface-2);
   }
 
-  .c-combobox__option--active {
-    background: var(--color-primary-soft);
-    color: var(--color-primary-text);
-  }
+   .c-combobox__option--active {
+     background: var(--color-primary-soft);
+     color: var(--color-primary-text);
+   }
+
+   .c-combobox__loading {
+     color: var(--color-text-muted);
+     font-style: italic;
+   }
 
   /* Tree view: hierarchical list with expand/collapse. */
   .c-tree {
@@ -713,9 +718,13 @@
     display: none;
   }
 
-  .c-tree__leaf {
-    padding-inline-start: calc(var(--space-md) + 1rem);
-  }
+   .c-tree__leaf {
+     padding-inline-start: calc(var(--space-md) + 1rem);
+   }
+
+   .c-tree__loading {
+     color: var(--color-text-muted);
+   }
 
   /* Drag and drop: visual vocabulary for draggable items and drop zones. */
   .c-draggable {
@@ -2259,6 +2268,8 @@
      15. PROGRESS BAR
      ======================================================================= */
   .c-progress {
+    display: block;
+    inline-size: 100%;
     block-size: 6px;
     border-radius: var(--radius-pill);
     background: var(--color-track);

@@ -189,10 +189,22 @@
     vector-effect: non-scaling-stroke;
   }
 
-  .c-sparkline__area {
-    fill: color-mix(in oklab, var(--color-primary) 16%, transparent);
-    stroke: none;
-  }
+   .c-sparkline__area {
+     fill: color-mix(in oklab, var(--color-primary) 16%, transparent);
+     stroke: none;
+   }
+
+   .c-sparkline__tooltip {
+     position: absolute;
+     z-index: var(--z-tooltip);
+     padding: var(--space-2xs) var(--space-xs);
+     border-radius: var(--radius-xs);
+     background: var(--color-surface-3);
+     color: var(--color-text);
+     font-size: var(--type-micro);
+     pointer-events: none;
+     white-space: nowrap;
+   }
 
   .c-sparkline--accent .c-sparkline__line {
     stroke: var(--color-accent);
@@ -392,9 +404,21 @@
     transition: opacity var(--dur-fast) var(--ease-standard);
   }
 
-  .c-heatmap__cell:hover {
-    opacity: 0.8;
-  }
+   .c-heatmap__cell:hover {
+     opacity: 0.8;
+   }
+
+   .c-heatmap__tooltip {
+     position: absolute;
+     z-index: var(--z-tooltip);
+     padding: var(--space-2xs) var(--space-xs);
+     border-radius: var(--radius-xs);
+     background: var(--color-surface-3);
+     color: var(--color-text);
+     font-size: var(--type-micro);
+     pointer-events: none;
+     white-space: nowrap;
+   }
 
   .c-heatmap__legend {
     display: flex;
@@ -1167,6 +1191,8 @@
     writing-mode: vertical-rl;
     text-orientation: mixed;
     transform: rotate(180deg);
+    align-self: center;
+    justify-self: center;
   }
 
   /* =======================================================================
@@ -1206,8 +1232,8 @@
     font-weight: var(--weight-bold);
   }
 
-  .c-compass__label--n { inset-block-start: 0.125rem; inset-inline-start: 50%; transform: translateX(-50%); }
-  .c-compass__label--s { inset-block-end: 0.125rem; inset-inline-start: 50%; transform: translateX(-50%); }
+  .c-compass__label--n { inset-block-start: 0; inset-inline-start: 50%; transform: translate(-50%, -50%); }
+  .c-compass__label--s { inset-block-end: 0; inset-inline-start: 50%; transform: translate(-50%, 50%); }
   .c-compass__label--e { inset-inline-end: 0.125rem; inset-block-start: 50%; transform: translateY(-50%); }
   .c-compass__label--w { inset-inline-start: 0.125rem; inset-block-start: 50%; transform: translateY(-50%); }
 
@@ -1463,9 +1489,28 @@
     transition: background-color var(--dur-fast) var(--ease-standard);
   }
 
-  .c-hexbin__cell:hover {
-    opacity: 0.8;
-  }
+   .c-hexbin__cell:hover {
+     opacity: 0.8;
+   }
+
+   .c-hexbin__tooltip {
+     position: absolute;
+     z-index: var(--z-tooltip);
+     padding: var(--space-2xs) var(--space-xs);
+     border-radius: var(--radius-xs);
+     background: var(--color-surface-3);
+     color: var(--color-text);
+     font-size: var(--type-micro);
+     pointer-events: none;
+     white-space: nowrap;
+   }
+
+   .c-hexbin__empty,
+   .c-hexbin__loading,
+   .c-hexbin__error {
+     grid-column: 1 / -1;
+     color: var(--color-text-muted);
+   }
 
   .c-hexbin__label {
     font-size: var(--type-xs);
@@ -1521,7 +1566,25 @@
   }
 
   .c-flow-map__node--source { fill: var(--chart-2, var(--color-primary)); }
-  .c-flow-map__node--target { fill: var(--chart-3, var(--color-primary)); }
+   .c-flow-map__node--target { fill: var(--chart-3, var(--color-primary)); }
+
+   .c-flow-map__tooltip {
+     position: absolute;
+     z-index: var(--z-tooltip);
+     padding: var(--space-2xs) var(--space-xs);
+     border-radius: var(--radius-xs);
+     background: var(--color-surface-3);
+     color: var(--color-text);
+     font-size: var(--type-micro);
+     pointer-events: none;
+     white-space: nowrap;
+   }
+
+   .c-flow-map__empty,
+   .c-flow-map__loading,
+   .c-flow-map__error {
+     color: var(--color-text-muted);
+   }
 
   /* =======================================================================
      8j. ISOCHRONE — travel-time polygons
@@ -2130,4 +2193,40 @@
     color: var(--color-text);
     background: var(--color-surface-3);
   }
+
+  /* Empty-state placeholders for data components */
+  .c-chart__empty,
+  .c-heatmap__empty,
+  .c-sparkline__empty,
+  .c-timeline__empty {
+    color: var(--color-text-muted);
+  }
+
+  /* Loading-state placeholders for data components */
+  .c-chart__loading,
+  .c-heatmap__loading,
+  .c-sparkline__loading,
+  .c-timeline__loading,
+  .c-table__loading {
+    color: var(--color-text-muted);
+  }
+
+  /* Error-state placeholders for data components */
+  .c-chart__error,
+  .c-heatmap__error,
+  .c-sparkline__error,
+  .c-timeline__error {
+    color: var(--color-danger, var(--color-text));
+  }
+
+  /* Empty/loading/error placeholders for map components */
+  .c-isochrone__empty,
+  .c-isochrone__loading,
+  .c-isochrone__error,
+  .c-catchment__empty,
+  .c-catchment__loading,
+  .c-catchment__error {
+    color: var(--color-text-muted);
+  }
 }
+

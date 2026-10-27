@@ -165,7 +165,6 @@ class ContourTooltip extends ContourBase {
     static get properties() { return { text: { attribute: "text" }, anchor: { attribute: "anchor" } }; }
     render() {
       this.classList.add("c-tooltip");
-      if (!this.hasAttribute("popover")) this.setAttribute("popover", "hint");
       const text = this.getAttribute("text");
       if (text !== null && !this.hasChildNodes()) {
         this.textContent = text;
@@ -188,6 +187,19 @@ class ContourTooltip extends ContourBase {
           trigger.setAttribute("aria-describedby", this.id);
         }
       }
+      // Show on hover/focus rather than only on click.
+      const show = () => { try { this.showPopover(); } catch (e) {} };
+      const hide = () => { try { this.hidePopover(); } catch (e) {} };
+      if (anchorSel) {
+        // anchorSel already resolved above; re-resolve for listeners
+      }
+      // Attach hover/focus to the trigger if present, else to host.
+      const trigger = anchorSel ? (anchorSel.startsWith("#") ? document.getElementById(anchorSel.slice(1)) : document.querySelector(anchorSel)) : null;
+      const target = trigger || this;
+      target.addEventListener("mouseenter", show);
+      target.addEventListener("mouseleave", hide);
+      target.addEventListener("focus", show);
+      target.addEventListener("blur", hide);
       this.addEventListener("toggle", (e) => {
         const t = e.target;
         if (t && t === this) {

@@ -7,8 +7,8 @@ class ContourDialog extends ContourBase {
       this.classList.add("c-dialog");
       if (!this.hasAttribute("role")) this.setAttribute("role", "dialog");
       const title = this.getAttribute("title");
+      let head = this.querySelector(".c-dialog__head");
       if (title) {
-        let head = this.querySelector(".c-dialog__head");
         if (!head) {
           head = document.createElement("div");
           head.className = "c-dialog__head";
@@ -21,10 +21,23 @@ class ContourDialog extends ContourBase {
           closeBtn.setAttribute("aria-label", "Close");
           closeBtn.innerHTML = '<svg aria-hidden="true"><use href="#i-close" /></svg>';
           head.appendChild(closeBtn);
-          this.prepend(head);
         }
         const h = head.querySelector(".c-dialog__title");
         if (h) h.textContent = title;
+      }
+      if (head && head.parentNode !== this) this.prepend(head);
+      // Wrap authored content in a body so it picks up the dialog's padding.
+      const body = this.ensure(".c-dialog__body", () => { const el = document.createElement("div"); el.className = "c-dialog__body"; return el; });
+      Array.from(this.childNodes).forEach((n) => {
+        if (n === body || n === head) return;
+        if (n.nodeType === 1 && n.classList && n.classList.contains("c-dialog__head")) return;
+        body.appendChild(n);
+      });
+      if (head && head.parentNode === this) {
+        if (body.parentNode !== this) this.insertBefore(body, head.nextSibling);
+        else if (head.compareDocumentPosition(body) & Node.DOCUMENT_POSITION_PRECEDING) this.insertBefore(body, head.nextSibling);
+      } else {
+        if (body.parentNode !== this) this.appendChild(body);
       }
     }
     enhance() {
@@ -348,11 +361,11 @@ class ContourAccordion extends ContourBase {
             details.className = "c-disclosure";
             const summary = document.createElement("summary");
             summary.className = "c-disclosure__summary";
-            summary.textContent = item.title || item.question || "";
+            summary.textContent = item.title || item.question || item.q || item.label || "";
             details.appendChild(summary);
             const body = document.createElement("div");
             body.className = "c-disclosure__body";
-            body.textContent = item.body || item.answer || "";
+            body.textContent = item.body || item.answer || item.a || item.content || "";
             details.appendChild(body);
             this.appendChild(details);
           });

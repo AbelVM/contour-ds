@@ -1,10 +1,26 @@
 import { ContourBase, define } from './core.mjs';
 class ContourReservedFull extends ContourBase {
-    render() { this.classList.add("c-reserved"); }
+    render() {
+      this.classList.add("c-reserved");
+      const title = this.getAttribute("title");
+      if (title) {
+        const t = this.ensure(".c-reserved__title", () => { const el = document.createElement("div"); el.className = "c-reserved__title"; return el; });
+        t.textContent = title;
+      }
+    }
   }
   define("contour-reserved", ContourReservedFull);
 class ContourThemeScopeFull extends ContourBase {
-    render() { this.classList.add("c-theme-scope"); }
+    static get observed() { return ["title"]; }
+    static get properties() { return { title: { attribute: "title" } }; }
+    render() {
+      this.classList.add("c-theme-scope");
+      const title = this.getAttribute("title");
+      if (title) {
+        const t = this.ensure(".c-theme-scope__title", () => { const el = document.createElement("div"); el.className = "c-theme-scope__title"; el.style.padding = "var(--space-sm)"; el.style.fontWeight = "var(--weight-semibold)"; return el; });
+        t.textContent = title;
+      }
+    }
   }
   define("contour-theme-scope", ContourThemeScopeFull);
 class ContourActivity extends ContourBase {
@@ -40,7 +56,19 @@ class ContourActivity extends ContourBase {
     }
   }
   define("contour-activity", ContourActivity);
-class ContourAdvanced extends ContourBase { render() { this.classList.add("c-advanced"); } }
+class ContourAdvanced extends ContourBase {
+    static get observed() { return ["title"]; }
+    static get properties() { return { title: { attribute: "title" } }; }
+    render() {
+      this.classList.add("c-advanced");
+      Array.from(this.childNodes).forEach((n) => { if (n.nodeType === Node.TEXT_NODE) n.remove(); else if (n.nodeType === Node.ELEMENT_NODE && n.tagName === "SPAN") n.remove(); });
+      const title = this.getAttribute("title");
+      if (title) {
+        const t = this.ensure(".c-advanced__title", () => { const el = document.createElement("div"); el.className = "c-advanced__title"; return el; });
+        t.textContent = title;
+      }
+    }
+  }
   define("contour-advanced", ContourAdvanced);
 class ContourAffordance extends ContourBase {
     static get observed() { return ["name", "note", "demo"]; }
@@ -74,5 +102,26 @@ class ContourAffordance extends ContourBase {
     }
   }
   define("contour-affordance", ContourAffordance);
-class ContourAffordances extends ContourBase { render() { this.classList.add("c-affordances"); } }
+class ContourAffordances extends ContourBase {
+    static get observed() { return ["name", "title"]; }
+    static get properties() { return { name: { attribute: "name" }, title: { attribute: "title" } }; }
+    render() {
+      this.classList.add("c-affordances");
+      Array.from(this.childNodes).forEach((n) => { if (n.nodeType === Node.TEXT_NODE) n.remove(); else if (n.nodeType === Node.ELEMENT_NODE && n.tagName === "SPAN") n.remove(); });
+      if (!this.querySelector(".c-affordance")) {
+        const aff = document.createElement("div");
+        aff.className = "c-affordance";
+        const name = this.getAttribute("name") || this.getAttribute("title") || "Affordance";
+        const n = document.createElement("div");
+        n.className = "c-affordance__name";
+        n.textContent = name;
+        aff.appendChild(n);
+        const demo = document.createElement("div");
+        demo.className = "c-affordance__demo";
+        demo.textContent = "Demo";
+        aff.appendChild(demo);
+        this.appendChild(aff);
+      }
+    }
+  }
   define("contour-affordances", ContourAffordances);

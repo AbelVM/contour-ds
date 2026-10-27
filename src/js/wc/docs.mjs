@@ -1,10 +1,10 @@
 import { ContourBase, define } from './core.mjs';
 class ContourDocsNav extends ContourBase {
-    static get observed() { return ["items"]; }
-    static get properties() { return { items: { attribute: "items" } }; }
+    static get observed() { return ["items", "title"]; }
+    static get properties() { return { items: { attribute: "items" }, title: { attribute: "title" } }; }
     render() {
       this.classList.add("c-docs-nav");
-      const items = this.getAttribute("items");
+      const items = this.getAttribute("items") || '[{"title":"Nav","links":["Home","Docs"]}]';
       const list = this.querySelector(".c-docs-nav__list");
       const authored = list ? Array.from(list.children).filter((n) => n.classList && n.classList.contains("c-docs-nav__group")) : [];
       if (items && !authored.length) {

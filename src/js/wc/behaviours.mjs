@@ -474,7 +474,11 @@ export function wireTree(host) {
     wcAll(host, ".c-tree__toggle, .c-tree__leaf").forEach((el) => el.setAttribute("tabindex", el === keep ? "0" : "-1"));
   };
   wcListen(host, "click", (e) => {
-    const toggle = wcClosest(host, e.target, ".c-tree__toggle");
+    let toggle = wcClosest(host, e.target, ".c-tree__toggle");
+    if (!toggle) {
+      const row = wcClosest(host, e.target, ".c-tree__row");
+      if (row) toggle = row.querySelector(":scope > .c-tree__toggle");
+    }
     if (!toggle) return;
     e.preventDefault();
     e.stopPropagation();

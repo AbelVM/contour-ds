@@ -51,11 +51,11 @@
     "action", "actions", "after", "anchor", "answer", "area", "article", "attribution", "attribution-mark", "axis", "axis-x", "axis-y", "before", "body", "brand", "canvas", "center", "cols", "columns", "color", "command",
     "cells", "chrome", "closable", "controls", "copyable", "count", "current", "date", "delta", "demo", "desc", "direction", "divider", "do", "dont", "dot",
     "empty", "error", "hint", "href", "icon", "index", "instrument", "items", "key",
-    "label", "lede", "legend", "line", "links", "live", "max", "media", "message", "method", "min", "name", "needle", "next", "no", "nodes", "note", "norm",
-    "options", "pages", "placeholder", "point", "points", "prev", "prompt", "question", "required",
-    "quote", "ramp", "removable", "reverse", "rings", "rows", "scale", "separator", "series", "shortcut", "size", "status",
-    "state", "steps", "subtitle", "summary", "tabs", "tag", "text", "title", "type", "unit", "value",
-    "variant", "viewport", "yes",
+    "label", "lede", "legend", "line", "links", "live", "loading", "max", "media", "message", "method", "min", "name", "needle", "next", "no", "nodes", "note", "norm",
+    "options", "page", "page-size", "pages", "placeholder", "point", "points", "prev", "prompt", "question", "required",
+    "quote", "ramp", "removable", "reverse", "rings", "retry", "rows", "scale", "separator", "series", "shortcut", "size", "skeleton", "sort", "sort-dir", "status", "virtual",
+    "state", "steps", "subtitle", "summary", "src", "tabs", "tag", "text", "title", "type", "unit", "value",
+    "variant", "values", "viewport", "yes",
   ];
 
   /**

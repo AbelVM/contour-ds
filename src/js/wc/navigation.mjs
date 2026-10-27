@@ -175,16 +175,45 @@ class ContourHeader extends ContourBase {
   }
   define("contour-header", ContourHeader);
 class ContourTree extends ContourBase {
-    static get observed() { return ["items"]; }
+    static get observed() { return ["items", "virtual", "src"]; }
     static get properties() { return { items: { attribute: "items" } }; }
 render() {
        this.classList.add("c-tree");
        // Slot composition wins over the JSON attribute, same as ContourMenu:
        // an authored tree is preserved across re-renders instead of being
        // rebuilt from `items` and losing whatever the reader put in it.
-       const authored = Array.from(this.children).filter((n) => !n.classList || !n.classList.contains("c-tree"));
-       const items = this.getAttribute("items");
-       if (items && !authored.length) {
+        const authored = Array.from(this.children).filter((n) => !n.classList || !n.classList.contains("c-tree"));
+        const items = this.getAttribute("items") || (this._remoteItems ? JSON.stringify(this._remoteItems) : null);
+        const src = this.getAttribute("src");
+        if (src && !this.getAttribute("items") && this._srcFetched !== src) {
+          this._srcFetched = src;
+          this._loading = true;
+          this.attributeChangedCallback("__rerender__", null, "");
+          fetch(src).then((r) => r.json()).then((data) => {
+            this._remoteItems = data;
+            this._loading = false;
+            this.attributeChangedCallback("__rerender__", null, "");
+          }).catch(() => {
+            this._loading = false;
+            this.attributeChangedCallback("__rerender__", null, "");
+          });
+        }
+        if (this._loading && !items) {
+          // show loading placeholder
+          if (!this.querySelector(".c-tree__loading")) {
+            const loading = document.createElement("div");
+            loading.className = "c-tree__loading";
+            loading.textContent = "Loading…";
+            loading.style.color = "var(--color-text-muted)";
+            loading.style.padding = "var(--space-md)";
+            this.appendChild(loading);
+          }
+          return;
+        }
+        // remove loading placeholder
+        const lp = this.querySelector(".c-tree__loading");
+        if (lp) lp.remove();
+        if (items && !authored.length) {
          try {
            const parsed = JSON.parse(items);
             const rootUl = this.ensure("div.c-tree", () => { const el = document.createElement("div"); el.className = "c-tree"; el.setAttribute("role", "tree"); return el; });
@@ -240,9 +269,17 @@ render() {
             if (parent) parent.appendChild(ul);
           };
           render(parsed, null);
-          this.classList.remove("c-tree");
-          rootUl.classList.add("c-tree");
-          if (rootUl.parentNode !== this) this.appendChild(rootUl);
+           this.classList.remove("c-tree");
+           rootUl.classList.add("c-tree");
+           if (this.hasAttribute("virtual")) {
+             rootUl.style.maxHeight = rootUl.style.maxHeight || "24rem";
+             rootUl.style.overflow = "auto";
+             rootUl.querySelectorAll(".c-tree__node").forEach((n) => {
+               n.style.contentVisibility = "auto";
+               n.style.containIntrinsicSize = "auto 1.5rem";
+             });
+           }
+           if (rootUl.parentNode !== this) this.appendChild(rootUl);
         } catch (e) { /* keep existing */ }
       }
     }
@@ -306,26 +343,25 @@ class ContourBreadcrumb extends ContourBase {
           const parsed = JSON.parse(items);
           const n = this.ensure("nav", () => { const el = document.createElement("nav"); el.setAttribute("aria-label", "Breadcrumb"); return el; });
           n.setAttribute("aria-label", "Breadcrumb");
-          const o = n.querySelector("ol") || (() => { const el = document.createElement("ol"); n.appendChild(el); return el; })();
-          o.innerHTML = "";
+          n.innerHTML = "";
           const sep = this.getAttribute("separator") || "/";
           parsed.forEach((item, i) => {
-            const li = document.createElement("li");
             if (i < parsed.length - 1) {
               const a = document.createElement("a");
               a.href = item.href || "#";
               a.textContent = item.label || item;
-              li.appendChild(a);
+              n.appendChild(a);
               const s = document.createElement("span");
               s.className = "c-breadcrumb__sep";
               s.setAttribute("aria-hidden", "true");
               s.textContent = sep;
-              li.appendChild(s);
+              n.appendChild(s);
             } else {
-              li.textContent = item.label || item;
-              li.setAttribute("aria-current", "page");
+              const span = document.createElement("span");
+              span.textContent = item.label || item;
+              span.setAttribute("aria-current", "page");
+              n.appendChild(span);
             }
-            o.appendChild(li);
           });
         } catch (e) { /* keep existing */ }
       } else if (!items && nav) {
@@ -497,10 +533,10 @@ class ContourFilterBar extends ContourBase {
               }
               const body = document.createElement("div");
               body.className = "c-command__item-body";
-              if (it.title) {
+              if (it.title || it.label) {
                 const t = document.createElement("div");
                 t.className = "c-command__item-title";
-                t.textContent = it.title;
+                t.textContent = it.title || it.label;
                 body.appendChild(t);
               }
               if (it.hint) {
@@ -523,10 +559,10 @@ class ContourFilterBar extends ContourBase {
               }
               const body = document.createElement("div");
               body.className = "c-command__item-body";
-              if (it.title) {
+              if (it.title || it.label) {
                 const t = document.createElement("div");
                 t.className = "c-command__item-title";
-                t.textContent = it.title;
+                t.textContent = it.title || it.label;
                 body.appendChild(t);
               }
               if (it.hint) {
@@ -677,7 +713,16 @@ class ContourSchemeToggle extends ContourBase {
   }
   define("contour-scheme-toggle", ContourSchemeToggle);
 class ContourSidebar extends ContourBase {
-    render() { this.classList.add("c-sidebar"); }
+    static get observed() { return ["title"]; }
+    static get properties() { return { title: { attribute: "title" } }; }
+    render() {
+      this.classList.add("c-sidebar");
+      const title = this.getAttribute("title");
+      if (title) {
+        const t = this.ensure(".c-sidebar__title", () => { const el = document.createElement("div"); el.className = "c-sidebar__title"; el.style.padding = "var(--space-sm)"; el.style.fontWeight = "var(--weight-semibold)"; return el; });
+        t.textContent = title;
+      }
+    }
   }
   define("contour-sidebar", ContourSidebar);
 class ContourToolbar extends ContourBase {

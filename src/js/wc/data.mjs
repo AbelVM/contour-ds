@@ -116,8 +116,21 @@ class ContourKpi extends ContourBase {
   }
   define("contour-kpi", ContourKpi);
 class ContourTable extends ContourBase {
-    static get observed() { return ["columns", "rows"]; }
-    static get properties() { return { columns: { attribute: "columns" }, rows: { attribute: "rows" } }; }
+    static get observed() { return ["columns", "rows", "page", "page-size", "sort", "sort-dir", "virtual", "empty", "loading", "error", "retry", "skeleton"]; }
+    static get properties() { return { columns: { attribute: "columns" }, rows: { attribute: "rows" }, page: { attribute: "page", type: Number }, pageSize: { attribute: "page-size", type: Number } }; }
+    _cellValue(cell) {
+      if (cell === null || cell === undefined) return "";
+      if (typeof cell === "object") return cell.value !== undefined ? cell.value : (cell.label !== undefined ? cell.label : JSON.stringify(cell));
+      return cell;
+    }
+    _compare(a, b, type) {
+      const av = this._cellValue(a);
+      const bv = this._cellValue(b);
+      if (type === "number" || type === "numeric") {
+        return (parseFloat(av) || 0) - (parseFloat(bv) || 0);
+      }
+      return String(av).localeCompare(String(bv), undefined, { numeric: true });
+    }
     render() {
       // The host is not a <table>, so it carries no table rule. The scroller the
       // reflow contract requires is a real block element inside it.
@@ -129,6 +142,183 @@ class ContourTable extends ContourBase {
         try {
           const cols = JSON.parse(columns);
           const data = JSON.parse(rows);
+          // Loading state: show a spinner row instead of data.
+          if (this.hasAttribute("loading")) {
+            const wrap = this.ensure(".c-table-wrap", () => { const el = document.createElement("div"); el.className = "c-table-wrap"; return el; });
+            const colsKey = JSON.stringify(cols);
+            const table = (wrap.querySelector("table.c-table") && this._tableCols === colsKey)
+              ? wrap.querySelector("table.c-table")
+              : (() => {
+                  const t = document.createElement("table");
+                  t.className = "c-table";
+                  const thead = document.createElement("thead");
+                  const tr = document.createElement("tr");
+                  cols.forEach((c) => {
+                    const colLabel = typeof c === "string" ? c : (c.label || c.title || c);
+                    const th = document.createElement("th");
+                    th.textContent = colLabel;
+                    tr.appendChild(th);
+                  });
+                  thead.appendChild(tr);
+                  t.appendChild(thead);
+                  t.appendChild(document.createElement("tbody"));
+                  return t;
+                })();
+            this._tableCols = colsKey;
+            const tbody = table.querySelector("tbody");
+            tbody.innerHTML = "";
+            const tr = document.createElement("tr");
+            const td = document.createElement("td");
+            td.colSpan = cols.length;
+            td.style.textAlign = "center";
+            td.style.color = "var(--color-text-muted)";
+            td.textContent = this.getAttribute("loading") || "Loading…";
+            tr.appendChild(td);
+            tbody.appendChild(tr);
+            if (table.parentNode !== wrap) { wrap.innerHTML = ""; wrap.appendChild(table); }
+            if (wrap.parentNode !== this) this.appendChild(wrap);
+            const footer = this.querySelector(".c-table__pagination");
+            if (footer) footer.remove();
+            return;
+          }
+          if (this.hasAttribute("error")) {
+            const wrap = this.ensure(".c-table-wrap", () => { const el = document.createElement("div"); el.className = "c-table-wrap"; return el; });
+            const colsKey = JSON.stringify(cols);
+            const table = (wrap.querySelector("table.c-table") && this._tableCols === colsKey)
+              ? wrap.querySelector("table.c-table")
+              : (() => {
+                  const t = document.createElement("table");
+                  t.className = "c-table";
+                  const thead = document.createElement("thead");
+                  const tr = document.createElement("tr");
+                  cols.forEach((c) => {
+                    const colLabel = typeof c === "string" ? c : (c.label || c.title || c);
+                    const th = document.createElement("th");
+                    th.textContent = colLabel;
+                    tr.appendChild(th);
+                  });
+                  thead.appendChild(tr);
+                  t.appendChild(thead);
+                  t.appendChild(document.createElement("tbody"));
+                  return t;
+                })();
+            this._tableCols = colsKey;
+            const tbody = table.querySelector("tbody");
+            tbody.innerHTML = "";
+            const tr = document.createElement("tr");
+            const td = document.createElement("td");
+            td.colSpan = cols.length;
+            td.textContent = this.getAttribute("error") || "Error";
+            td.style.textAlign = "center";
+            td.style.color = "var(--color-danger, var(--color-text))";
+            if (this.hasAttribute("retry")) {
+              const btn = document.createElement("button");
+              btn.className = "c-btn c-btn--ghost c-btn--sm";
+              btn.type = "button";
+              btn.textContent = this.getAttribute("retry") || "Retry";
+              btn.style.marginInlineStart = "var(--space-sm)";
+              btn.dataset.action = "retry";
+              td.appendChild(btn);
+            }
+            tr.appendChild(td);
+            tbody.appendChild(tr);
+            if (table.parentNode !== wrap) { wrap.innerHTML = ""; wrap.appendChild(table); }
+            if (wrap.parentNode !== this) this.appendChild(wrap);
+            const footer = this.querySelector(".c-table__pagination");
+            if (footer) footer.remove();
+            return;
+          }
+          if (this.hasAttribute("skeleton")) {
+            const wrap = this.ensure(".c-table-wrap", () => { const el = document.createElement("div"); el.className = "c-table-wrap"; return el; });
+            const colsKey = JSON.stringify(cols);
+            const table = (wrap.querySelector("table.c-table") && this._tableCols === colsKey)
+              ? wrap.querySelector("table.c-table")
+              : (() => {
+                  const t = document.createElement("table");
+                  t.className = "c-table";
+                  const thead = document.createElement("thead");
+                  const tr = document.createElement("tr");
+                  cols.forEach((c) => {
+                    const colLabel = typeof c === "string" ? c : (c.label || c.title || c);
+                    const th = document.createElement("th");
+                    th.textContent = colLabel;
+                    tr.appendChild(th);
+                  });
+                  thead.appendChild(tr);
+                  t.appendChild(thead);
+                  t.appendChild(document.createElement("tbody"));
+                  return t;
+                })();
+            this._tableCols = colsKey;
+            const tbody = table.querySelector("tbody");
+            tbody.innerHTML = "";
+            const count = Math.min(5, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
+            for (let i = 0; i < count; i++) {
+              const tr = document.createElement("tr");
+              cols.forEach(() => {
+                const td = document.createElement("td");
+                const sk = document.createElement("span");
+                sk.className = "c-skeleton";
+                sk.style.display = "inline-block";
+                sk.style.inlineSize = "60%";
+                sk.style.blockSize = "0.8rem";
+                td.appendChild(sk);
+                tr.appendChild(td);
+              });
+              tbody.appendChild(tr);
+            }
+            if (table.parentNode !== wrap) { wrap.innerHTML = ""; wrap.appendChild(table); }
+            if (wrap.parentNode !== this) this.appendChild(wrap);
+            const footer = this.querySelector(".c-table__pagination");
+            if (footer) footer.remove();
+            return;
+          }
+          // Initialise sort state from attributes on first render.
+          if (this._sortCol === undefined) {
+            const sortAttr = this.getAttribute("sort");
+            if (sortAttr !== null) {
+              const idx = Number(sortAttr);
+              this._sortCol = Number.isFinite(idx) ? idx : cols.findIndex((c) => (typeof c === "object" && c && (c.label || c.title || c) === sortAttr));
+              if (this._sortCol < 0) this._sortCol = null;
+            } else {
+              this._sortCol = null;
+            }
+            const dirAttr = this.getAttribute("sort-dir");
+            this._sortDir = dirAttr === "descending" || dirAttr === "desc" ? -1 : 1;
+          }
+          // Apply sort.
+          let working = Array.isArray(data) ? data.slice() : [];
+          if (this._sortCol !== null && this._sortCol !== undefined && this._sortCol >= 0 && this._sortCol < cols.length) {
+            const col = this._sortCol;
+            const dir = this._sortDir || 1;
+            const colSpec = cols[col];
+            const type = (typeof colSpec === "object" && colSpec && colSpec.sortType) ? colSpec.sortType : "text";
+            working.sort((a, b) => this._compare(a && a[col], b && b[col], type) * dir);
+          }
+          // Pagination.
+          const pageSizeRaw = this.getAttribute("page-size");
+          const pageSize = pageSizeRaw !== null ? parseInt(pageSizeRaw, 10) : NaN;
+          const usePaging = Number.isFinite(pageSize) && pageSize > 0;
+          // Sync internal page state with external attribute changes.
+          const pageAttr = this.getAttribute("page");
+          if (pageAttr !== this._pageAttrLast) {
+            this._page = null;
+            this._pageAttrLast = pageAttr;
+          }
+          let page = this._page !== null ? this._page : (parseInt(pageAttr || "1", 10));
+          if (!Number.isFinite(page) || page < 1) page = 1;
+          let totalPages = 1;
+          let pageData = working;
+          if (usePaging) {
+            totalPages = Math.max(1, Math.ceil(working.length / pageSize));
+            if (page > totalPages) page = totalPages;
+            const start = (page - 1) * pageSize;
+            pageData = working.slice(start, start + pageSize);
+          }
+          this._page = page;
+          this._totalPages = totalPages;
+          this._pageSize = pageSize;
+
           const wrap = this.ensure(".c-table-wrap", () => { const el = document.createElement("div"); el.className = "c-table-wrap"; return el; });
           // Reuse the existing table when columns are unchanged, rebuilding
           // only the body. This avoids O(n) DOM churn on row-only updates.
@@ -140,19 +330,22 @@ class ContourTable extends ContourBase {
                 t.className = "c-table";
                 const thead = document.createElement("thead");
                 const tr = document.createElement("tr");
-                cols.forEach((c) => {
+                cols.forEach((c, i) => {
                   const colLabel = typeof c === "string" ? c : (c.label || c.title || c);
                   const th = document.createElement("th");
-                  if (typeof c === "object" && c !== null && c.sort) {
-                    th.setAttribute("aria-sort", c.sort === true ? "none" : c.sort);
-                    const wrap = document.createElement("span");
-                    wrap.className = "c-table__sort";
-                    wrap.textContent = colLabel;
+                  const sortable = (typeof c === "object" && c !== null && c.sort);
+                  if (sortable) {
+                    th.setAttribute("aria-sort", (this._sortCol === i)
+                      ? (this._sortDir === -1 ? "descending" : "ascending")
+                      : "none");
+                    const wrapEl = document.createElement("span");
+                    wrapEl.className = "c-table__sort";
+                    wrapEl.textContent = colLabel;
                     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
                     svg.setAttribute("aria-hidden", "true");
                     svg.innerHTML = '<use href="#i-chevron-down" />';
-                    wrap.appendChild(svg);
-                    th.appendChild(wrap);
+                    wrapEl.appendChild(svg);
+                    th.appendChild(wrapEl);
                   } else if (typeof c === "object" && c !== null && c.pinned) {
                     th.className = "c-table__pinned";
                     th.textContent = colLabel;
@@ -162,6 +355,11 @@ class ContourTable extends ContourBase {
                   if (typeof c === "object" && c !== null && c.select) {
                     th.className = (th.className + " c-table__select").trim();
                   }
+                  if (sortable) {
+                    th.setAttribute("tabindex", "0");
+                    th.setAttribute("role", "columnheader");
+                    th.dataset.sortIndex = String(i);
+                  }
                   tr.appendChild(th);
                 });
                 thead.appendChild(tr);
@@ -170,32 +368,208 @@ class ContourTable extends ContourBase {
                 return t;
               })();
           this._tableCols = colsKey;
+          // Keep sort indicators in sync even when the table element is reused.
+          cols.forEach((c, i) => {
+            if (typeof c === "object" && c !== null && c.sort) {
+              const th = table.querySelector("thead tr th:nth-child(" + (i + 1) + ")");
+              if (th) th.setAttribute("aria-sort", (this._sortCol === i) ? (this._sortDir === -1 ? "descending" : "ascending") : "none");
+            }
+          });
           const tbody = table.querySelector("tbody");
           tbody.innerHTML = "";
-          data.forEach((row) => {
+          if (pageData.length === 0) {
             const tr = document.createElement("tr");
-            row.forEach((cell) => {
-              const td = document.createElement("td");
-              td.textContent = cell;
-              tr.appendChild(td);
-            });
+            const td = document.createElement("td");
+            td.colSpan = cols.length;
+            td.textContent = this.getAttribute("empty") || "No data";
+            td.style.textAlign = "center";
+            td.style.color = "var(--color-text-muted)";
+            tr.appendChild(td);
             tbody.appendChild(tr);
-          });
+          } else {
+            pageData.forEach((row) => {
+              const tr = document.createElement("tr");
+              row.forEach((cell) => {
+                const td = document.createElement("td");
+                td.textContent = this._cellValue(cell);
+                tr.appendChild(td);
+              });
+              tbody.appendChild(tr);
+            });
+          }
           if (table.parentNode !== wrap) {
             wrap.innerHTML = "";
             wrap.appendChild(table);
           }
           if (wrap.parentNode !== this) this.appendChild(wrap);
+          // Optional virtualization: native content-visibility windowing for
+          // large datasets, without a JS scroll handler. Opt-in via `virtual`.
+          if (this.hasAttribute("virtual")) {
+            wrap.style.maxHeight = wrap.style.maxHeight || "24rem";
+            wrap.style.overflow = "auto";
+            table.classList.add("c-table--virtual");
+            Array.from(tbody.querySelectorAll("tr")).forEach((tr) => {
+              tr.style.contentVisibility = "auto";
+              tr.style.containIntrinsicSize = "auto 2rem";
+            });
+          } else {
+            wrap.style.maxHeight = "";
+            wrap.style.overflow = "";
+            table.classList.remove("c-table--virtual");
+          }
+          // Pagination footer.
+          if (usePaging) {
+            const footer = this.ensure(".c-table__pagination", () => { const el = document.createElement("div"); el.className = "c-table__pagination"; return el; });
+            footer.innerHTML = "";
+            const prev = document.createElement("button");
+            prev.className = "c-btn c-btn--ghost c-btn--sm";
+            prev.type = "button";
+            prev.textContent = "Previous";
+            prev.disabled = page <= 1;
+            prev.dataset.action = "prev";
+            const info = document.createElement("span");
+            info.textContent = `Page ${page} of ${totalPages}`;
+            const next = document.createElement("button");
+            next.className = "c-btn c-btn--ghost c-btn--sm";
+            next.type = "button";
+            next.textContent = "Next";
+            next.disabled = page >= totalPages;
+            next.dataset.action = "next";
+            footer.appendChild(prev);
+            footer.appendChild(info);
+            footer.appendChild(next);
+          } else {
+            const footer = this.querySelector(".c-table__pagination");
+            if (footer) footer.remove();
+          }
         } catch (e) { /* keep existing */ }
       }
+    }
+    enhance() {
+      if (this._wiredTable) return;
+      this._wiredTable = true;
+      const handleSort = (th) => {
+        const idx = Number(th.dataset.sortIndex);
+        if (!Number.isFinite(idx)) return;
+        if (this._sortCol === idx) {
+          this._sortDir = (this._sortDir === 1) ? -1 : 1;
+        } else {
+          this._sortCol = idx;
+          this._sortDir = 1;
+        }
+        this.dispatchEvent(new CustomEvent("contour:sort", { bubbles: true, detail: { column: idx, direction: this._sortDir === 1 ? "ascending" : "descending" } }));
+        this.attributeChangedCallback("__rerender__", null, "");
+      };
+      this.addEventListener("click", (e) => {
+        const retryBtn = e.target && e.target.closest ? e.target.closest('button[data-action="retry"]') : null;
+        if (retryBtn && this.contains(retryBtn)) {
+          e.preventDefault();
+          this.dispatchEvent(new CustomEvent("contour:retry", { bubbles: true }));
+          return;
+        }
+        const th = e.target && e.target.closest ? e.target.closest("th[aria-sort]") : null;
+        if (th && this.contains(th)) {
+          e.preventDefault();
+          handleSort(th);
+          return;
+        }
+          const btn = e.target && e.target.closest ? e.target.closest(".c-table__pagination button") : null;
+        if (btn && this.contains(btn)) {
+          e.preventDefault();
+          const action = btn.dataset.action;
+          let page = this._page !== null ? this._page : (parseInt(this.getAttribute("page") || "1", 10));
+          if (!Number.isFinite(page) || page < 1) page = 1;
+          if (action === "prev" && page > 1) page -= 1;
+          if (action === "next") page += 1;
+          this._page = page;
+          this._pageAttrLast = String(page);
+          this.dispatchEvent(new CustomEvent("contour:page", { bubbles: true, detail: { page } }));
+          this.attributeChangedCallback("__rerender__", null, "");
+        }
+      });
+      this.addEventListener("keydown", (e) => {
+        if (e.key !== "Enter" && e.key !== " ") return;
+        const th = e.target && e.target.closest ? e.target.closest("th[aria-sort]") : null;
+        if (th && this.contains(th)) {
+          e.preventDefault();
+          handleSort(th);
+        }
+      });
     }
   }
   define("contour-table", ContourTable);
 class ContourChart extends ContourBase {
-    static get observed() { return ["series", "axis"]; }
+    static get observed() { return ["series", "axis", "empty", "loading", "error", "retry", "skeleton"]; }
     static get properties() { return { series: { attribute: "series" }, axis: { attribute: "axis" } }; }
     render() {
       this.classList.add("c-chart");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "img");
+      if (this.getAttribute("axis") && !this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("axis"));
+      if (this.hasAttribute("loading")) {
+        const plot = this.ensure(".c-chart__plot", () => { const el = document.createElement("div"); el.className = "c-chart__plot"; return el; });
+        plot.innerHTML = "";
+        const loading = document.createElement("div");
+        loading.className = "c-chart__loading";
+        loading.textContent = this.getAttribute("loading") || "Loading…";
+        loading.style.display = "grid";
+        loading.style.placeItems = "center";
+        loading.style.height = "100%";
+        loading.style.color = "var(--color-text-muted)";
+        plot.appendChild(loading);
+        const axis = this.getAttribute("axis");
+        if (axis) {
+          const ax = this.ensure(".c-chart__axis", () => { const el = document.createElement("div"); el.className = "c-chart__axis"; return el; });
+          ax.textContent = axis;
+        }
+        return;
+      }
+      if (this.hasAttribute("error")) {
+        const plot = this.ensure(".c-chart__plot", () => { const el = document.createElement("div"); el.className = "c-chart__plot"; return el; });
+        plot.innerHTML = "";
+        const err = document.createElement("div");
+        err.className = "c-chart__error";
+        err.textContent = this.getAttribute("error") || "Error";
+        err.style.display = "grid";
+        err.style.placeItems = "center";
+        err.style.height = "100%";
+        err.style.color = "var(--color-danger, var(--color-text))";
+        if (this.hasAttribute("retry")) {
+          const btn = document.createElement("button");
+          btn.className = "c-btn c-btn--ghost c-btn--sm";
+          btn.type = "button";
+          btn.textContent = this.getAttribute("retry") || "Retry";
+          btn.dataset.action = "retry";
+          btn.style.marginBlockStart = "var(--space-sm)";
+          err.appendChild(btn);
+        }
+        plot.appendChild(err);
+        const axis = this.getAttribute("axis");
+        if (axis) {
+          const ax = this.ensure(".c-chart__axis", () => { const el = document.createElement("div"); el.className = "c-chart__axis"; return el; });
+          ax.textContent = axis;
+        }
+        return;
+      }
+      if (this.hasAttribute("skeleton")) {
+        const plot = this.ensure(".c-chart__plot", () => { const el = document.createElement("div"); el.className = "c-chart__plot"; return el; });
+        plot.innerHTML = "";
+        const count = Math.min(5, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
+        for (let i = 0; i < count; i++) {
+          const sk = document.createElement("div");
+          sk.className = "c-skeleton";
+          sk.style.display = "block";
+          sk.style.inlineSize = "100%";
+          sk.style.blockSize = "0.6rem";
+          sk.style.marginBlockEnd = "var(--space-2xs)";
+          plot.appendChild(sk);
+        }
+        const axis = this.getAttribute("axis");
+        if (axis) {
+          const ax = this.ensure(".c-chart__axis", () => { const el = document.createElement("div"); el.className = "c-chart__axis"; return el; });
+          ax.textContent = axis;
+        }
+        return;
+      }
       const axis = this.getAttribute("axis");
       if (axis) {
         const ax = this.ensure(".c-chart__axis", () => { const el = document.createElement("div"); el.className = "c-chart__axis"; return el; });
@@ -223,14 +597,15 @@ const series = this.getAttribute("series");
                  svg.setAttribute("viewBox", "0 0 200 200");
                  svg.style.cssText = "position: absolute; inset: 0; width: 100%; height: 100%";
                  svg.setAttribute("aria-hidden", "true");
-                 donutSlices(s.values).forEach((sl) => {
-                   const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                   path.setAttribute("class", "c-chart__line");
-                   path.setAttribute("data-series", String(i + 1));
-                   path.style.setProperty("--c", color);
-                   path.setAttribute("d", sl.path);
-                   svg.appendChild(path);
-                 });
+                  donutSlices(s.values).forEach((sl, si) => {
+                    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    path.setAttribute("class", "c-chart__line");
+                    path.setAttribute("data-series", String(i + 1));
+                    path.style.setProperty("--c", color);
+                    path.setAttribute("d", sl.path);
+                    path.setAttribute("title", String(s.values[si]));
+                    svg.appendChild(path);
+                  });
                  plot.appendChild(svg);
                } else if (s.type === "histogram") {
                  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -238,17 +613,18 @@ const series = this.getAttribute("series");
                  svg.setAttribute("preserveAspectRatio", "none");
                  svg.style.cssText = "position: absolute; inset: 0; width: 100%; height: 100%";
                  svg.setAttribute("aria-hidden", "true");
-                 barRects(s.values).forEach((r) => {
-                   const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-                   rect.setAttribute("class", "c-chart__bar");
-                   rect.setAttribute("data-series", String(i + 1));
-                   rect.style.setProperty("--c", color);
-                   rect.setAttribute("x", r.x);
-                   rect.setAttribute("y", r.y);
-                   rect.setAttribute("width", r.width);
-                   rect.setAttribute("height", r.height);
-                   svg.appendChild(rect);
-                 });
+                  barRects(s.values).forEach((r, ri) => {
+                    const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    rect.setAttribute("class", "c-chart__bar");
+                    rect.setAttribute("data-series", String(i + 1));
+                    rect.style.setProperty("--c", color);
+                    rect.setAttribute("x", r.x);
+                    rect.setAttribute("y", r.y);
+                    rect.setAttribute("width", r.width);
+                    rect.setAttribute("height", r.height);
+                    rect.setAttribute("title", String(s.values[ri]));
+                    svg.appendChild(rect);
+                  });
                  plot.appendChild(svg);
                } else {
                  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -281,11 +657,77 @@ const series = this.getAttribute("series");
              });
              plot.appendChild(svg);
            }
-         } catch (e) { /* keep existing */ }
-       } else {
-        const plot = this.querySelector(".c-chart__plot");
-        if (plot) plot.remove();
+          } catch (e) { /* keep existing */ }
+          // Styled tooltip element (positioned via --chart-tip-*).
+          const tip = this.ensure(".c-chart__tooltip", () => { const el = document.createElement("div"); el.className = "c-chart__tooltip"; el.setAttribute("hidden", ""); return el; });
+          tip.setAttribute("hidden", "");
+         } else {
+         const plot = this.ensure(".c-chart__plot", () => { const el = document.createElement("div"); el.className = "c-chart__plot"; return el; });
+         plot.innerHTML = "";
+         const empty = document.createElement("div");
+         empty.className = "c-chart__empty";
+         empty.textContent = this.getAttribute("empty") || "No data";
+         empty.style.display = "grid";
+         empty.style.placeItems = "center";
+         empty.style.height = "100%";
+         empty.style.color = "var(--color-text-muted)";
+         plot.appendChild(empty);
+       }
+     }
+    enhance() {
+      if (this._wiredChart) return;
+      this._wiredChart = true;
+      if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
+      // Tooltip: show on hover of a mark.
+      const plot = this.querySelector(".c-chart__plot");
+      const tip = this.querySelector(".c-chart__tooltip");
+      if (plot && tip) {
+        const showTip = (e) => {
+          const mark = e.target && e.target.closest ? e.target.closest(".c-chart__bar, .c-chart__line") : null;
+          if (!mark || !plot.contains(mark)) { tip.setAttribute("hidden", ""); return; }
+          const title = mark.getAttribute("title");
+          if (title) tip.textContent = title;
+          const rect = plot.getBoundingClientRect();
+          const mr = mark.getBoundingClientRect();
+          const x = mr.left - rect.left + mr.width / 2;
+          const y = mr.top - rect.top;
+          plot.style.setProperty("--chart-tip-inline-start", x + "px");
+          plot.style.setProperty("--chart-tip-block-start", y + "px");
+          tip.removeAttribute("hidden");
+        };
+        const hideTip = () => tip.setAttribute("hidden", "");
+        plot.addEventListener("mousemove", showTip);
+        plot.addEventListener("mouseleave", hideTip);
       }
+      // Retry button handling.
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest('button[data-action="retry"]') : null;
+        if (btn && this.contains(btn)) {
+          e.preventDefault();
+          this.dispatchEvent(new CustomEvent("contour:retry", { bubbles: true }));
+        }
+      });
+      this.addEventListener("keydown", (e) => {
+        let seriesCount = 0;
+        try { seriesCount = JSON.parse(this.getAttribute("series") || "[]").length; } catch (e) { seriesCount = 0; }
+        if (seriesCount === 0) return;
+        if (this._activeSeries === undefined) this._activeSeries = 0;
+        let next = this._activeSeries;
+        if (e.key === "ArrowRight" || e.key === "ArrowDown") next = Math.min(this._activeSeries + 1, seriesCount - 1);
+        else if (e.key === "ArrowLeft" || e.key === "ArrowUp") next = Math.max(this._activeSeries - 1, 0);
+        else if (e.key === "Home") next = 0;
+        else if (e.key === "End") next = seriesCount - 1;
+        else if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, detail: { series: this._activeSeries } }));
+          return;
+        } else return;
+        if (next !== this._activeSeries) {
+          e.preventDefault();
+          this._activeSeries = next;
+          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, detail: { series: next } }));
+        }
+      });
     }
   }
   define("contour-chart", ContourChart);
@@ -294,6 +736,20 @@ class ContourComparison extends ContourBase {
     static get properties() { return { divider: { attribute: "divider" } }; }
     render() {
       this.classList.add("c-comparison");
+      this.style.blockSize = "12rem";
+      // Ensure two panes exist.
+      if (!this.querySelector(".c-comparison__pane--before")) {
+        const p = document.createElement("div");
+        p.className = "c-comparison__pane c-comparison__pane--before";
+        p.textContent = "Before";
+        this.appendChild(p);
+      }
+      if (!this.querySelector(".c-comparison__pane:not(.c-comparison__pane--before)")) {
+        const p = document.createElement("div");
+        p.className = "c-comparison__pane";
+        p.textContent = "After";
+        this.appendChild(p);
+      }
       const divider = this.getAttribute("divider");
       if (divider !== null) {
         const d = this.ensure(".c-comparison__divider", () => { const el = document.createElement("div"); el.className = "c-comparison__divider"; return el; });
@@ -598,7 +1054,22 @@ class ContourThreshold extends ContourBase {
   }
   define("contour-threshold", ContourThreshold);
 class ContourMetricsFull extends ContourBase {
-    render() { this.classList.add("c-metrics"); }
+    render() {
+      this.classList.add("c-metrics");
+      if (!this.querySelector(".c-metrics__item")) {
+        const item = document.createElement("div");
+        item.className = "c-metrics__item";
+        const v = document.createElement("div");
+        v.className = "c-metrics__value";
+        v.textContent = "42";
+        const l = document.createElement("div");
+        l.className = "c-metrics__label";
+        l.textContent = "Metric";
+        item.appendChild(v);
+        item.appendChild(l);
+        this.appendChild(item);
+      }
+    }
   }
   define("contour-metrics", ContourMetricsFull);
 class ContourLegend extends ContourBase {
@@ -718,10 +1189,37 @@ class ContourMeasure extends ContourBase {
   }
   define("contour-measure", ContourMeasure);
 class ContourTimeline extends ContourBase {
-    static get observed() { return ["items"]; }
+    static get observed() { return ["items", "empty", "loading", "error", "retry"]; }
     static get properties() { return { items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-timeline");
+      if (this.hasAttribute("loading")) {
+        const loading = document.createElement("div");
+        loading.className = "c-timeline__loading";
+        loading.textContent = this.getAttribute("loading") || "Loading…";
+        loading.style.color = "var(--color-text-muted)";
+        loading.style.padding = "var(--space-md)";
+        this.appendChild(loading);
+        return;
+      }
+      if (this.hasAttribute("error")) {
+        const err = document.createElement("div");
+        err.className = "c-timeline__error";
+        err.textContent = this.getAttribute("error") || "Error";
+        err.style.color = "var(--color-danger, var(--color-text))";
+        err.style.padding = "var(--space-md)";
+        if (this.hasAttribute("retry")) {
+          const btn = document.createElement("button");
+          btn.className = "c-btn c-btn--ghost c-btn--sm";
+          btn.type = "button";
+          btn.textContent = this.getAttribute("retry") || "Retry";
+          btn.dataset.action = "retry";
+          btn.style.marginBlockStart = "var(--space-sm)";
+          err.appendChild(btn);
+        }
+        this.appendChild(err);
+        return;
+      }
       const authored = Array.from(this.children).filter((n) => n.classList && n.classList.contains("c-timeline__item"));
       const items = this.getAttribute("items");
       if (items && !authored.length) {
@@ -753,26 +1251,144 @@ class ContourTimeline extends ContourBase {
             this.appendChild(item);
           });
         } catch (e) { /* keep existing */ }
+      } else if (!authored.length) {
+        const empty = document.createElement("div");
+        empty.className = "c-timeline__empty";
+        empty.textContent = this.getAttribute("empty") || "No data";
+        empty.style.color = "var(--color-text-muted)";
+        empty.style.padding = "var(--space-md)";
+        this.appendChild(empty);
       }
+     }
+    enhance() {
+      if (this._wiredTimeline) return;
+      this._wiredTimeline = true;
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest('button[data-action="retry"]') : null;
+        if (btn && this.contains(btn)) {
+          e.preventDefault();
+          this.dispatchEvent(new CustomEvent("contour:retry", { bubbles: true }));
+        }
+      });
     }
   }
   define("contour-timeline", ContourTimeline);
 class ContourHeatmap extends ContourBase {
-    static get observed() { return ["cells", "count", "legend"]; }
+    static get observed() { return ["cells", "count", "legend", "empty", "loading", "values", "error", "retry", "skeleton"]; }
     static get properties() { return { cells: { attribute: "cells" }, count: { attribute: "count" }, legend: { attribute: "legend" } }; }
     render() {
       this.classList.add("c-heatmap");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "grid");
+      if (this.hasAttribute("loading")) {
+        const loading = document.createElement("div");
+        loading.className = "c-heatmap__loading";
+        loading.textContent = this.getAttribute("loading") || "Loading…";
+        loading.style.gridColumn = "1 / -1";
+        loading.style.textAlign = "center";
+        loading.style.color = "var(--color-text-muted)";
+        loading.style.padding = "var(--space-md)";
+        this.appendChild(loading);
+        if (this.hasAttribute("legend")) {
+          const leg = this.ensure(".c-heatmap__legend", () => {
+            const el = document.createElement("div");
+            el.className = "c-heatmap__legend";
+            const bar = document.createElement("div");
+            bar.className = "c-heatmap__legend-bar";
+            el.appendChild(bar);
+            return el;
+          });
+        }
+        return;
+      }
+      if (this.hasAttribute("error")) {
+        const err = document.createElement("div");
+        err.className = "c-heatmap__error";
+        err.textContent = this.getAttribute("error") || "Error";
+        err.style.gridColumn = "1 / -1";
+        err.style.textAlign = "center";
+        err.style.color = "var(--color-danger, var(--color-text))";
+        err.style.padding = "var(--space-md)";
+        if (this.hasAttribute("retry")) {
+          const btn = document.createElement("button");
+          btn.className = "c-btn c-btn--ghost c-btn--sm";
+          btn.type = "button";
+          btn.textContent = this.getAttribute("retry") || "Retry";
+          btn.dataset.action = "retry";
+          btn.style.marginBlockStart = "var(--space-sm)";
+          err.appendChild(btn);
+        }
+        this.appendChild(err);
+        if (this.hasAttribute("legend")) {
+          const leg = this.ensure(".c-heatmap__legend", () => {
+            const el = document.createElement("div");
+            el.className = "c-heatmap__legend";
+            const bar = document.createElement("div");
+            bar.className = "c-heatmap__legend-bar";
+            el.appendChild(bar);
+            return el;
+          });
+        }
+        return;
+       }
+      if (this.hasAttribute("skeleton")) {
+        const count = Math.min(9, Math.max(1, parseInt(this.getAttribute("skeleton") || "4", 10) || 4));
+        const cols = Math.ceil(Math.sqrt(count));
+        this.style.gridTemplateColumns = "repeat(" + cols + ", 1fr)";
+        for (let i = 0; i < count; i++) {
+          const sk = document.createElement("div");
+          sk.className = "c-skeleton c-heatmap__skeleton";
+          sk.style.aspectRatio = "1";
+          this.appendChild(sk);
+        }
+        if (this.hasAttribute("legend")) {
+          const leg = this.ensure(".c-heatmap__legend", () => {
+            const el = document.createElement("div");
+            el.className = "c-heatmap__legend";
+            const bar = document.createElement("div");
+            bar.className = "c-heatmap__legend-bar";
+            el.appendChild(bar);
+            return el;
+          });
+        }
+        return;
+      }
       // Drop previously generated cells so a re-render cannot stack a second set.
       Array.from(this.querySelectorAll(".c-heatmap__cell")).forEach((n) => n.remove());
       const count = Math.min(200, Math.max(0, parseInt(this.getAttribute("cells") || this.getAttribute("count") || "0", 10) || 0));
-      if (count > 0) {
-        for (let i = 0; i < count; i++) {
-          const cell = document.createElement("div");
-          cell.className = "c-heatmap__cell";
-          this.appendChild(cell);
+      const cols = count > 0 ? Math.ceil(Math.sqrt(count)) : 1;
+      this.style.gridTemplateColumns = "repeat(" + cols + ", 1fr)";
+      this.style.inlineSize = "16rem";
+       if (count > 0) {
+         let values = [];
+         try { values = JSON.parse(this.getAttribute("values") || "[]"); } catch (e) { values = []; }
+         for (let i = 0; i < count; i++) {
+           const cell = document.createElement("div");
+           cell.className = "c-heatmap__cell";
+           cell.setAttribute("role", "gridcell");
+           cell.setAttribute("tabindex", i === 0 ? "0" : "-1");
+           cell.dataset.index = String(i);
+           if (values[i] !== undefined) cell.setAttribute("title", String(values[i]));
+           this.appendChild(cell);
+         }
+       } else {
+         const empty = document.createElement("div");
+         empty.className = "c-heatmap__empty";
+         empty.textContent = this.getAttribute("empty") || "No data";
+         empty.style.gridColumn = "1 / -1";
+         empty.style.textAlign = "center";
+         empty.style.color = "var(--color-text-muted)";
+         empty.style.padding = "var(--space-md)";
+         this.appendChild(empty);
         }
-      }
-      if (this.hasAttribute("legend")) {
+        // Styled tooltip element.
+        if (count > 0) {
+          const tip = this.ensure(".c-heatmap__tooltip", () => { const el = document.createElement("div"); el.className = "c-heatmap__tooltip"; el.setAttribute("hidden", ""); return el; });
+          tip.setAttribute("hidden", "");
+        } else {
+          const tip = this.querySelector(".c-heatmap__tooltip");
+          if (tip) tip.remove();
+        }
+       if (this.hasAttribute("legend")) {
         const leg = this.ensure(".c-heatmap__legend", () => {
           const el = document.createElement("div");
           el.className = "c-heatmap__legend";
@@ -785,6 +1401,70 @@ class ContourHeatmap extends ContourBase {
         const leg = this.querySelector(".c-heatmap__legend");
         if (leg) leg.remove();
       }
+     }
+    enhance() {
+      if (this._wiredHeatmap) return;
+      this._wiredHeatmap = true;
+      const cells = () => Array.from(this.querySelectorAll(".c-heatmap__cell"));
+      // Tooltip: show on hover of a cell.
+      const tip = this.querySelector(".c-heatmap__tooltip");
+      if (tip) {
+        const showTip = (e) => {
+          const cell = e.target && e.target.closest ? e.target.closest(".c-heatmap__cell") : null;
+          if (!cell || !this.contains(cell)) { tip.setAttribute("hidden", ""); return; }
+          const title = cell.getAttribute("title");
+          if (title) tip.textContent = title;
+          else tip.textContent = "Cell " + (cell.dataset.index || "");
+          const rect = this.getBoundingClientRect();
+          const cr = cell.getBoundingClientRect();
+          this.style.position = this.style.position || "relative";
+          tip.style.left = (cr.left - rect.left + cr.width / 2) + "px";
+          tip.style.top = (cr.top - rect.top) + "px";
+          tip.removeAttribute("hidden");
+        };
+        const hideTip = () => tip.setAttribute("hidden", "");
+        this.addEventListener("mouseover", showTip);
+        this.addEventListener("mouseout", (e) => {
+          if (!e.relatedTarget || !this.contains(e.relatedTarget)) hideTip();
+         });
+      }
+      // Retry button handling.
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest('button[data-action="retry"]') : null;
+        if (btn && this.contains(btn)) {
+          e.preventDefault();
+          this.dispatchEvent(new CustomEvent("contour:retry", { bubbles: true }));
+        }
+      });
+      this.addEventListener("keydown", (e) => {
+        const cell = e.target && e.target.closest ? e.target.closest(".c-heatmap__cell") : null;
+        if (!cell || !this.contains(cell)) return;
+        const list = cells();
+        const idx = list.indexOf(cell);
+        let next = -1;
+        if (e.key === "ArrowRight") next = Math.min(idx + 1, list.length - 1);
+        else if (e.key === "ArrowLeft") next = Math.max(idx - 1, 0);
+        else if (e.key === "ArrowDown") next = Math.min(idx + Math.ceil(Math.sqrt(list.length)), list.length - 1);
+        else if (e.key === "ArrowUp") next = Math.max(idx - Math.ceil(Math.sqrt(list.length)), 0);
+        else if (e.key === "Home") next = 0;
+        else if (e.key === "End") next = list.length - 1;
+        else if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, detail: { index: idx } }));
+          return;
+        }
+        if (next >= 0 && next !== idx) {
+          e.preventDefault();
+          list.forEach((c, i) => c.setAttribute("tabindex", i === next ? "0" : "-1"));
+          try { list[next].focus(); } catch (e) {}
+        }
+      });
+      this.addEventListener("click", (e) => {
+        const cell = e.target && e.target.closest ? e.target.closest(".c-heatmap__cell") : null;
+        if (!cell || !this.contains(cell)) return;
+        const idx = cells().indexOf(cell);
+        if (idx >= 0) this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, detail: { index: idx } }));
+      });
     }
   }
   define("contour-heatmap", ContourHeatmap);
@@ -793,15 +1473,16 @@ class ContourCompare extends ContourBase {
     static get properties() { return { no: { attribute: "no" }, text: { attribute: "text" }, yes: { attribute: "yes" } }; }
     render() {
       this.classList.add("c-compare");
+      this.style.padding = "var(--space-md)";
       // Drop previously generated children so a re-render cannot stack a second set.
       Array.from(this.querySelectorAll(".c-compare__yes, .c-compare__no, .c-compare__text")).forEach((n) => n.remove());
       const yes = this.getAttribute("yes");
       const no = this.getAttribute("no");
       const text = this.getAttribute("text");
       if (yes) {
-        const y = document.createElement("div");
+        const y = document.createElement("span");
         y.className = "c-compare__yes";
-        y.textContent = yes;
+        y.innerHTML = '<svg aria-hidden="true"><use href="#i-check" /></svg>';
         this.appendChild(y);
       }
       if (no) {
@@ -820,29 +1501,129 @@ class ContourCompare extends ContourBase {
   }
   define("contour-compare", ContourCompare);
 class ContourSparkline extends ContourBase {
-    static get observed() { return ["points"]; }
+    static get observed() { return ["points", "empty", "loading", "error", "retry"]; }
     static get properties() { return { points: { attribute: "points" } }; }
     render() {
       this.classList.add("c-sparkline");
-      const points = this.getAttribute("points");
-      if (points) {
-        try {
-          const parsed = JSON.parse(points);
-          Array.from(this.querySelectorAll(".c-sparkline__dot, .c-sparkline__line, .c-sparkline__area")).forEach((n) => n.remove());
-          const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-          svg.setAttribute("class", "c-sparkline__line");
-          svg.setAttribute("viewBox", "0 0 100 30");
-          svg.setAttribute("preserveAspectRatio", "none");
-          const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-          path.setAttribute("d", parsed.map((p, i) => (i === 0 ? "M" : "L") + " " + (i * 100 / (parsed.length - 1)) + " " + (30 - p * 30)).join(" "));
-          svg.appendChild(path);
-          this.appendChild(svg);
-        } catch (e) { /* keep existing */ }
+      if (!this.hasAttribute("role")) this.setAttribute("role", "img");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Sparkline");
+      if (this.hasAttribute("loading")) {
+        const loading = document.createElement("span");
+        loading.className = "c-sparkline__loading";
+        loading.textContent = this.getAttribute("loading") || "Loading…";
+        loading.style.color = "var(--color-text-muted)";
+        loading.style.fontSize = "var(--type-xs)";
+        this.appendChild(loading);
+        return;
       }
+      if (this.hasAttribute("error")) {
+        const err = document.createElement("span");
+        err.className = "c-sparkline__error";
+        err.textContent = this.getAttribute("error") || "Error";
+        err.style.color = "var(--color-danger, var(--color-text))";
+        err.style.fontSize = "var(--type-xs)";
+        if (this.hasAttribute("retry")) {
+          const btn = document.createElement("button");
+          btn.className = "c-btn c-btn--ghost c-btn--sm";
+          btn.type = "button";
+          btn.textContent = this.getAttribute("retry") || "Retry";
+          btn.dataset.action = "retry";
+          btn.style.marginInlineStart = "var(--space-xs)";
+          err.appendChild(btn);
+        }
+        this.appendChild(err);
+        return;
+      }
+      const points = this.getAttribute("points");
+       if (points) {
+         try {
+           const parsed = JSON.parse(points);
+           if (!Array.isArray(parsed) || parsed.length === 0) throw new Error("empty");
+           Array.from(this.querySelectorAll(".c-sparkline__dot, .c-sparkline__line, .c-sparkline__area")).forEach((n) => n.remove());
+           const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+           svg.setAttribute("class", "c-sparkline__line");
+           svg.setAttribute("viewBox", "0 0 100 30");
+           svg.setAttribute("preserveAspectRatio", "none");
+           svg.style.inlineSize = "100%";
+           svg.style.blockSize = "100%";
+           svg.setAttribute("width", "100%");
+           svg.setAttribute("height", "100%");
+           svg.setAttribute("title", this.getAttribute("aria-label") || "Sparkline");
+           const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+           path.setAttribute("d", parsed.map((p, i) => (i === 0 ? "M" : "L") + " " + (i * 100 / (parsed.length - 1)) + " " + (30 - p * 30)).join(" "));
+            svg.appendChild(path);
+            this.appendChild(svg);
+            // Styled tooltip element.
+            const tip = this.ensure(".c-sparkline__tooltip", () => { const el = document.createElement("div"); el.className = "c-sparkline__tooltip"; el.setAttribute("hidden", ""); return el; });
+            tip.setAttribute("hidden", "");
+         } catch (e) {
+           Array.from(this.querySelectorAll("svg")).forEach((n) => n.remove());
+           const empty = document.createElement("span");
+           empty.className = "c-sparkline__empty";
+           empty.textContent = this.getAttribute("empty") || "No data";
+           empty.style.color = "var(--color-text-muted)";
+           empty.style.fontSize = "var(--type-xs)";
+           this.appendChild(empty);
+         }
+       } else {
+         const empty = document.createElement("span");
+         empty.className = "c-sparkline__empty";
+         empty.textContent = this.getAttribute("empty") || "No data";
+         empty.style.color = "var(--color-text-muted)";
+         empty.style.fontSize = "var(--type-xs)";
+         this.appendChild(empty);
+       }
+     }
+    enhance() {
+      if (this._wiredSparkline) return;
+      this._wiredSparkline = true;
+      if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
+      // Tooltip: show on hover.
+      const tip = this.querySelector(".c-sparkline__tooltip");
+      const svg = this.querySelector("svg");
+      if (tip && svg) {
+        const showTip = (e) => {
+          const rect = this.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          tip.textContent = this.getAttribute("aria-label") || "Sparkline";
+          tip.style.left = x + "px";
+          tip.style.top = "0px";
+          tip.removeAttribute("hidden");
+        };
+        const hideTip = () => tip.setAttribute("hidden", "");
+        this.addEventListener("mousemove", showTip);
+        this.addEventListener("mouseleave", hideTip);
+      }
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest('button[data-action="retry"]') : null;
+        if (btn && this.contains(btn)) {
+          e.preventDefault();
+          this.dispatchEvent(new CustomEvent("contour:retry", { bubbles: true }));
+        }
+      });
+      this.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, detail: {} }));
+        }
+      });
     }
   }
   define("contour-sparkline", ContourSparkline);
-class ContourChartGrid extends ContourBase { render() { this.classList.add("c-chart-grid"); } }
+class ContourChartGrid extends ContourBase {
+    static get observed() { return ["title"]; }
+    static get properties() { return { title: { attribute: "title" } }; }
+    render() {
+      this.classList.add("c-chart-grid");
+      Array.from(this.childNodes).forEach((n) => { if (n.nodeType === Node.TEXT_NODE) n.remove(); else if (n.nodeType === Node.ELEMENT_NODE && n.tagName === "SPAN") n.remove(); });
+      if (!this.querySelector(".c-chart")) {
+        const c = document.createElement("div");
+        c.className = "c-chart";
+        c.textContent = "Chart";
+        this.appendChild(c);
+      }
+    }
+  }
   define("contour-chart-grid", ContourChartGrid);
 class ContourContourPlot extends ContourBase {
     static get observed() { return ["axis", "label"]; }

@@ -5,7 +5,7 @@ class ContourMinimap extends ContourBase {
     static get properties() { return { label: { attribute: "label" }, viewport: { attribute: "viewport" } }; }
     render() {
       this.classList.add("c-minimap");
-      const label = this.getAttribute("label");
+      const label = this.getAttribute("label") || this._remoteLabel;
       if (label) {
         const l = this.ensure(".c-minimap__label", () => { const el = document.createElement("span"); el.className = "c-minimap__label"; return el; });
         l.textContent = label;
@@ -123,11 +123,11 @@ class ContourTimeSlider extends ContourBase {
   }
   define("contour-time-slider", ContourTimeSlider);
 class ContourHexbin extends ContourBase {
-    static get observed() { return ["label", "cells"]; }
+    static get observed() { return ["label", "cells", "empty", "loading", "error", "src"]; }
     static get properties() { return { label: { attribute: "label" }, cells: { attribute: "cells" } }; }
     render() {
       this.classList.add("c-hexbin");
-      const label = this.getAttribute("label");
+      const label = this.getAttribute("label") || this._remoteLabel;
       if (label) {
         const l = this.ensure(".c-hexbin__label", () => { const el = document.createElement("span"); el.className = "c-hexbin__label"; return el; });
         l.textContent = label;
@@ -135,30 +135,103 @@ class ContourHexbin extends ContourBase {
         const l = this.querySelector(".c-hexbin__label");
         if (l) l.remove();
       }
-      const cells = this.getAttribute("cells");
-      if (cells) {
-        try {
-          const parsed = JSON.parse(cells);
+       const cells = this.getAttribute("cells");
+       const src = this.getAttribute("src");
+       if (src && !cells && this._srcFetched !== src) {
+         this._srcFetched = src;
+         this._loading = true;
+         this.attributeChangedCallback("__rerender__", null, "");
+         fetch(src).then((r) => r.json()).then((data) => {
+           this._remoteCells = data;
+           this._loading = false;
+           this.attributeChangedCallback("__rerender__", null, "");
+         }).catch(() => {
+           this._loading = false;
+           this.attributeChangedCallback("__rerender__", null, "");
+         });
+       }
+       const effectiveCells = cells || (this._remoteCells ? JSON.stringify(this._remoteCells) : null);
+       const loading = this.hasAttribute("loading") || this._loading;
+       if (loading) {
+         const loadingEl = document.createElement("div");
+         loadingEl.className = "c-hexbin__loading";
+         loadingEl.textContent = this.getAttribute("loading") || "Loading…";
+         loadingEl.style.gridColumn = "1 / -1";
+         loadingEl.style.color = "var(--color-text-muted)";
+         loadingEl.style.padding = "var(--space-md)";
+         this.appendChild(loadingEl);
+         return;
+       }
+       if (this.hasAttribute("error")) {
+         const err = document.createElement("div");
+         err.className = "c-hexbin__error";
+         err.textContent = this.getAttribute("error") || "Error";
+         err.style.gridColumn = "1 / -1";
+         err.style.color = "var(--color-danger, var(--color-text))";
+         err.style.padding = "var(--space-md)";
+         this.appendChild(err);
+         return;
+       }
+        if (effectiveCells) {
+         try {
+           const parsed = JSON.parse(effectiveCells);
+           Array.from(this.querySelectorAll(".c-hexbin__cell")).forEach((n) => n.remove());
+           const cols = Math.ceil(Math.sqrt(parsed.length || 1));
+           this.style.gridTemplateColumns = "repeat(" + cols + ", 1fr)";
+           this.style.inlineSize = "16rem";
+             parsed.forEach((c) => {
+               const cell = document.createElement("div");
+               cell.className = "c-hexbin__cell";
+               if (typeof c === "object" && c.value != null) { cell.textContent = c.value; cell.setAttribute("title", String(c.value)); }
+               else if (typeof c !== "object") { cell.textContent = c; cell.setAttribute("title", String(c)); }
+               this.appendChild(cell);
+             });
+             // Styled tooltip element.
+             const tip = this.ensure(".c-hexbin__tooltip", () => { const el = document.createElement("div"); el.className = "c-hexbin__tooltip"; el.setAttribute("hidden", ""); return el; });
+             tip.setAttribute("hidden", "");
+         } catch (e) { /* keep existing */ }
+        } else {
           Array.from(this.querySelectorAll(".c-hexbin__cell")).forEach((n) => n.remove());
-          parsed.forEach((c) => {
-            const cell = document.createElement("div");
-            cell.className = "c-hexbin__cell";
-            if (typeof c === "object" && c.value != null) cell.textContent = c.value;
-            this.appendChild(cell);
-          });
-        } catch (e) { /* keep existing */ }
-      } else if (!cells) {
-        Array.from(this.querySelectorAll(".c-hexbin__cell")).forEach((n) => n.remove());
+          const empty = document.createElement("div");
+          empty.className = "c-hexbin__empty";
+          empty.textContent = this.getAttribute("empty") || "No data";
+          empty.style.gridColumn = "1 / -1";
+          empty.style.color = "var(--color-text-muted)";
+          empty.style.padding = "var(--space-md)";
+          this.appendChild(empty);
+        }
+     }
+    enhance() {
+      if (this._wiredHexbin) return;
+      this._wiredHexbin = true;
+      const tip = this.querySelector(".c-hexbin__tooltip");
+      if (tip) {
+        const showTip = (e) => {
+          const cell = e.target && e.target.closest ? e.target.closest(".c-hexbin__cell") : null;
+          if (!cell || !this.contains(cell)) { tip.setAttribute("hidden", ""); return; }
+          const title = cell.getAttribute("title");
+          if (title) tip.textContent = title;
+          const rect = this.getBoundingClientRect();
+          const cr = cell.getBoundingClientRect();
+          tip.style.left = (cr.left - rect.left + cr.width / 2) + "px";
+          tip.style.top = (cr.top - rect.top) + "px";
+          tip.removeAttribute("hidden");
+        };
+        const hideTip = () => tip.setAttribute("hidden", "");
+        this.addEventListener("mouseover", showTip);
+        this.addEventListener("mouseout", (e) => {
+          if (!e.relatedTarget || !this.contains(e.relatedTarget)) hideTip();
+        });
       }
     }
   }
   define("contour-hexbin", ContourHexbin);
 class ContourFlowMap extends ContourBase {
-    static get observed() { return ["label", "nodes"]; }
+    static get observed() { return ["label", "nodes", "empty", "loading", "error", "src"]; }
     static get properties() { return { label: { attribute: "label" }, nodes: { attribute: "nodes" } }; }
     render() {
       this.classList.add("c-flow-map");
-      const label = this.getAttribute("label");
+      const label = this.getAttribute("label") || this._remoteLabel;
       if (label) {
         const l = this.ensure(".c-flow-map__label", () => { const el = document.createElement("span"); el.className = "c-flow-map__label"; return el; });
         l.textContent = label;
@@ -166,30 +239,97 @@ class ContourFlowMap extends ContourBase {
         const l = this.querySelector(".c-flow-map__label");
         if (l) l.remove();
       }
-      const nodes = this.getAttribute("nodes");
-      if (nodes) {
-        try {
-          const parsed = JSON.parse(nodes);
+       const nodes = this.getAttribute("nodes");
+       const src = this.getAttribute("src");
+       if (src && !nodes && this._srcFetched !== src) {
+         this._srcFetched = src;
+         this._loading = true;
+         this.attributeChangedCallback("__rerender__", null, "");
+         fetch(src).then((r) => r.json()).then((data) => {
+           this._remoteNodes = data;
+           this._loading = false;
+           this.attributeChangedCallback("__rerender__", null, "");
+         }).catch(() => {
+           this._loading = false;
+           this.attributeChangedCallback("__rerender__", null, "");
+         });
+       }
+       const effectiveNodes = nodes || (this._remoteNodes ? JSON.stringify(this._remoteNodes) : null);
+       const loading = this.hasAttribute("loading") || this._loading;
+       if (loading) {
+         const loadingEl = document.createElement("div");
+         loadingEl.className = "c-flow-map__loading";
+         loadingEl.textContent = this.getAttribute("loading") || "Loading…";
+         loadingEl.style.color = "var(--color-text-muted)";
+         loadingEl.style.padding = "var(--space-md)";
+         this.appendChild(loadingEl);
+         return;
+       }
+       if (this.hasAttribute("error")) {
+         const err = document.createElement("div");
+         err.className = "c-flow-map__error";
+         err.textContent = this.getAttribute("error") || "Error";
+         err.style.color = "var(--color-danger, var(--color-text))";
+         err.style.padding = "var(--space-md)";
+         this.appendChild(err);
+         return;
+       }
+       if (effectiveNodes) {
+         try {
+           const parsed = JSON.parse(effectiveNodes);
+           Array.from(this.querySelectorAll(".c-flow-map__node, .c-flow-map__flow")).forEach((n) => n.remove());
+             parsed.forEach((n) => {
+              const node = document.createElement("span");
+              node.className = "c-flow-map__node" + (n.source ? " c-flow-map__node--source" : "") + (n.target ? " c-flow-map__node--target" : "");
+              node.textContent = typeof n === "string" ? n : (n.label || n.name || "");
+              if (typeof n === "object" && (n.label || n.name)) node.setAttribute("title", n.label || n.name);
+              this.appendChild(node);
+            });
+            // Styled tooltip element.
+            const tip = this.ensure(".c-flow-map__tooltip", () => { const el = document.createElement("div"); el.className = "c-flow-map__tooltip"; el.setAttribute("hidden", ""); return el; });
+            tip.setAttribute("hidden", "");
+         } catch (e) { /* keep existing */ }
+        } else {
           Array.from(this.querySelectorAll(".c-flow-map__node, .c-flow-map__flow")).forEach((n) => n.remove());
-          parsed.forEach((n) => {
-            const node = document.createElement("span");
-            node.className = "c-flow-map__node" + (n.source ? " c-flow-map__node--source" : "") + (n.target ? " c-flow-map__node--target" : "");
-            node.textContent = typeof n === "string" ? n : (n.label || n.name || "");
-            this.appendChild(node);
-          });
-        } catch (e) { /* keep existing */ }
-      } else if (!nodes) {
-        Array.from(this.querySelectorAll(".c-flow-map__node, .c-flow-map__flow")).forEach((n) => n.remove());
+          const empty = document.createElement("div");
+          empty.className = "c-flow-map__empty";
+          empty.textContent = this.getAttribute("empty") || "No data";
+          empty.style.color = "var(--color-text-muted)";
+          empty.style.padding = "var(--space-md)";
+          this.appendChild(empty);
+        }
+     }
+    enhance() {
+      if (this._wiredFlowMap) return;
+      this._wiredFlowMap = true;
+      const tip = this.querySelector(".c-flow-map__tooltip");
+      if (tip) {
+        const showTip = (e) => {
+          const node = e.target && e.target.closest ? e.target.closest(".c-flow-map__node") : null;
+          if (!node || !this.contains(node)) { tip.setAttribute("hidden", ""); return; }
+          const title = node.getAttribute("title");
+          if (title) tip.textContent = title;
+          const rect = this.getBoundingClientRect();
+          const nr = node.getBoundingClientRect();
+          tip.style.left = (nr.left - rect.left + nr.width / 2) + "px";
+          tip.style.top = (nr.top - rect.top) + "px";
+          tip.removeAttribute("hidden");
+        };
+        const hideTip = () => tip.setAttribute("hidden", "");
+        this.addEventListener("mouseover", showTip);
+        this.addEventListener("mouseout", (e) => {
+          if (!e.relatedTarget || !this.contains(e.relatedTarget)) hideTip();
+        });
       }
     }
   }
   define("contour-flow-map", ContourFlowMap);
 class ContourIsochrone extends ContourBase {
-    static get observed() { return ["label", "center", "rings"]; }
+    static get observed() { return ["label", "center", "rings", "empty", "loading", "error", "src"]; }
     static get properties() { return { label: { attribute: "label" }, center: { attribute: "center" }, rings: { attribute: "rings" } }; }
     render() {
       this.classList.add("c-isochrone");
-      const label = this.getAttribute("label");
+      const label = this.getAttribute("label") || this._remoteLabel;
       if (label) {
         const l = this.ensure(".c-isochrone__label", () => { const el = document.createElement("span"); el.className = "c-isochrone__label"; return el; });
         l.textContent = label;
@@ -206,28 +346,103 @@ class ContourIsochrone extends ContourBase {
         if (c) c.remove();
       }
       const rings = this.getAttribute("rings");
-      if (rings) {
-        try {
-          const parsed = JSON.parse(rings);
-          Array.from(this.querySelectorAll(".c-isochrone__ring")).forEach((n) => n.remove());
-          parsed.forEach((r) => {
-            const ring = document.createElement("span");
-            ring.className = "c-isochrone__ring c-isochrone__ring--" + (r.label || r);
-            this.appendChild(ring);
-          });
-        } catch (e) { /* keep existing */ }
-      } else if (!rings) {
-        Array.from(this.querySelectorAll(".c-isochrone__ring")).forEach((n) => n.remove());
+      const src = this.getAttribute("src");
+      if (src && !rings && this._srcFetched !== src) {
+        this._srcFetched = src;
+        this._loading = true;
+        this.attributeChangedCallback("__rerender__", null, "");
+        fetch(src).then((r) => r.json()).then((data) => {
+          this._remoteRings = data;
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        }).catch(() => {
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        });
       }
+      const effectiveRings = rings || (this._remoteRings ? JSON.stringify(this._remoteRings) : null);
+      const loading = this.hasAttribute("loading") || this._loading;
+      if (loading) {
+        const loadingEl = document.createElement("div");
+        loadingEl.className = "c-isochrone__loading";
+        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
+        loadingEl.style.color = "var(--color-text-muted)";
+        loadingEl.style.padding = "var(--space-md)";
+        this.appendChild(loadingEl);
+        return;
+      }
+      if (this.hasAttribute("error")) {
+        const err = document.createElement("div");
+        err.className = "c-isochrone__error";
+        err.textContent = this.getAttribute("error") || "Error";
+        err.style.color = "var(--color-danger, var(--color-text))";
+        err.style.padding = "var(--space-md)";
+        this.appendChild(err);
+        return;
+      }
+      if (effectiveRings) {
+         try {
+           const parsed = JSON.parse(effectiveRings);
+           Array.from(this.querySelectorAll(".c-isochrone__ring")).forEach((n) => n.remove());
+           parsed.forEach((r) => {
+             const ring = document.createElement("span");
+             ring.className = "c-isochrone__ring c-isochrone__ring--" + (r.label || r);
+             this.appendChild(ring);
+           });
+         } catch (e) { /* keep existing */ }
+       } else {
+         Array.from(this.querySelectorAll(".c-isochrone__ring")).forEach((n) => n.remove());
+         const empty = document.createElement("div");
+         empty.className = "c-isochrone__empty";
+         empty.textContent = this.getAttribute("empty") || "No data";
+         empty.style.color = "var(--color-text-muted)";
+         empty.style.padding = "var(--space-md)";
+         this.appendChild(empty);
+       }
     }
   }
   define("contour-isochrone", ContourIsochrone);
 class ContourCatchment extends ContourBase {
-    static get observed() { return ["label", "area", "center"]; }
+    static get observed() { return ["label", "area", "center", "empty", "loading", "error", "src"]; }
     static get properties() { return { label: { attribute: "label" }, area: { attribute: "area" }, center: { attribute: "center" } }; }
     render() {
       this.classList.add("c-catchment");
-      const label = this.getAttribute("label");
+      const src = this.getAttribute("src");
+      if (src && !this.getAttribute("area") && this._srcFetched !== src) {
+        this._srcFetched = src;
+        this._loading = true;
+        this.attributeChangedCallback("__rerender__", null, "");
+        fetch(src).then((r) => r.json()).then((data) => {
+          if (data.label) this._remoteLabel = data.label;
+          if (data.area) this._remoteArea = data.area;
+          if (data.center) this._remoteCenter = data.center;
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        }).catch(() => {
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        });
+      }
+      const loading = this.hasAttribute("loading") || this._loading;
+      if (loading) {
+        const loadingEl = document.createElement("div");
+        loadingEl.className = "c-catchment__loading";
+        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
+        loadingEl.style.color = "var(--color-text-muted)";
+        loadingEl.style.padding = "var(--space-md)";
+        this.appendChild(loadingEl);
+        return;
+      }
+      if (this.hasAttribute("error")) {
+        const err = document.createElement("div");
+        err.className = "c-catchment__error";
+        err.textContent = this.getAttribute("error") || "Error";
+        err.style.color = "var(--color-danger, var(--color-text))";
+        err.style.padding = "var(--space-md)";
+        this.appendChild(err);
+        return;
+      }
+      const label = this.getAttribute("label") || this._remoteLabel;
       if (label) {
         const l = this.ensure(".c-catchment__label", () => { const el = document.createElement("span"); el.className = "c-catchment__label"; return el; });
         l.textContent = label;
@@ -235,7 +450,7 @@ class ContourCatchment extends ContourBase {
         const l = this.querySelector(".c-catchment__label");
         if (l) l.remove();
       }
-      const area = this.getAttribute("area");
+      const area = this.getAttribute("area") || this._remoteArea;
       if (area) {
         const a = this.ensure(".c-catchment__area", () => { const el = document.createElement("span"); el.className = "c-catchment__area"; return el; });
         a.textContent = area;
@@ -243,7 +458,7 @@ class ContourCatchment extends ContourBase {
         const a = this.querySelector(".c-catchment__area");
         if (a) a.remove();
       }
-      const center = this.getAttribute("center");
+      const center = this.getAttribute("center") || this._remoteCenter;
       if (center) {
         const c = this.ensure(".c-catchment__center", () => { const el = document.createElement("span"); el.className = "c-catchment__center"; return el; });
         c.textContent = center;
@@ -259,13 +474,21 @@ class ContourCompassFull extends ContourBase {
     static get properties() { return { label: { attribute: "label" }, needle: { attribute: "needle" } }; }
     render() {
       this.classList.add("c-compass");
-      const label = this.getAttribute("label");
-      if (label) {
+      // Cardinal directions.
+      for (const dir of ["n", "s", "e", "w"]) {
+        const cls = ".c-compass__label--" + dir;
+        let l = this.querySelector(cls);
+        if (!l) {
+          l = document.createElement("span");
+          l.className = "c-compass__label " + cls.slice(1);
+          l.textContent = dir.toUpperCase();
+          this.appendChild(l);
+        }
+      }
+      const label = this.getAttribute("label") || this._remoteLabel;
+      if (label && label.toLowerCase() !== "compass") {
         const l = this.ensure(".c-compass__label", () => { const el = document.createElement("span"); el.className = "c-compass__label"; return el; });
         l.textContent = label;
-      } else {
-        const l = this.querySelector(".c-compass__label");
-        if (l) l.remove();
       }
       const needle = this.getAttribute("needle");
       if (needle) {
@@ -322,7 +545,8 @@ class ContourLayerSwitch extends ContourBase {
             const toggle = document.createElement("button");
             toggle.className = "c-layer-switch__toggle";
             toggle.type = "button";
-            toggle.textContent = "Toggle";
+            toggle.setAttribute("aria-label", "Toggle layer");
+            toggle.innerHTML = '<svg aria-hidden="true"><use href="#i-check" /></svg>';
             item.appendChild(toggle);
             this.appendChild(item);
           });
@@ -451,7 +675,7 @@ class ContourScaleBar extends ContourBase {
     static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" } }; }
     render() {
       this.classList.add("c-scale-bar");
-      const label = this.getAttribute("label");
+      const label = this.getAttribute("label") || this._remoteLabel;
       if (label) {
         const l = this.ensure(".c-scale-bar__label", () => { const el = document.createElement("span"); el.className = "c-scale-bar__label"; return el; });
         l.textContent = label;
