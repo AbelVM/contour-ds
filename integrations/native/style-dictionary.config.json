@@ -1,0 +1,20 @@
+{
+  "source": ["../../dist/contour.tokens.json"],
+  "platforms": {
+    "ios": {
+      "transformGroup": "ios-swift",
+      "buildPath": "build/ios/",
+      "files": [{ "destination": "ContourTokens.swift", "format": "ios-swift/class.swift" }]
+    },
+    "android": {
+      "transformGroup": "android",
+      "buildPath": "build/android/",
+      "files": [{ "destination": "colors.xml", "format": "android/colors" }]
+    },
+    "flutter": {
+      "transformGroup": "flutter",
+      "buildPath": "build/flutter/",
+      "files": [{ "destination": "contour_tokens.dart", "format": "flutter/class.dart" }]
+    }
+  }
+}

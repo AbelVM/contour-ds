@@ -368,6 +368,23 @@ validated against the vendored shadcn schemas by
 `node tools/audit/registry-contract.mjs`. It declares no `homepage` or `url`
 while the project is private; those are added at v1.0.
 
+## Integrations
+
+Optional bridges into other toolchains. None are required to use the system.
+
+- **Tailwind v4** — `integrations/tailwind/contour-theme.css` exposes Contour
+  tokens as Tailwind utilities (`bg-primary`, `text-muted`, `rounded-md`,
+  `font-sans`, …). See `integrations/README.md`.
+- **AI assistants** — `integrations/ai/.cursorrules`, `integrations/ai/CLAUDE.md`
+  and `integrations/ai/v0-prompt.md` teach Cursor / Claude Code / v0 / Bolt /
+  Lovable to use Contour correctly. The machine-readable contract they point at
+  is `dist/agent-rules.json`.
+- **MapLibre / Mapbox** — `contour-ds/map-chrome/maplibre` (or `/mapbox`)
+  re-keys the map controls onto Contour tokens. See `templates/map.html` for a
+  live example.
+- **Native (iOS / Android / Flutter)** — `integrations/native/` feeds Style
+  Dictionary from `contour.tokens.json` so native companions stay in sync.
+
 ## Performance
 
 The guide itself loads every component and 4 external scripts (highlight.js from a CDN, `ds.js`, `wc/index.mjs`, `guide.js`); its Lighthouse score is not the system's score.
