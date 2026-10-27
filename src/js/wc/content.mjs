@@ -1,4 +1,5 @@
 import { ContourBase, define } from './core.mjs';
+import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { wireCopy } from './behaviours.mjs';
 class ContourCard extends ContourBase {
     static get observed() { return ["title", "variant"]; }
@@ -55,69 +56,25 @@ class ContourFeature extends ContourBase {
   }
   define("contour-feature", ContourFeature);
 class ContourSteps extends ContourBase {
-    static get observed() { return ["steps", "empty", "loading", "error", "src", "skeleton"]; }
+    static get observed() { return ["steps", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { steps: { attribute: "steps" } }; }
     render() {
       this.classList.add("c-steps");
-      const src = this.getAttribute("src");
-      const steps = this.getAttribute("steps") || (this._remoteSteps ? JSON.stringify(this._remoteSteps) : null);
-      if (src && !this.getAttribute("steps") && this._srcFetched !== src) {
-        this._srcFetched = src;
-        this._loading = true;
-        this.attributeChangedCallback("__rerender__", null, "");
-        fetch(src).then((r) => r.json()).then((data) => {
-          this._remoteSteps = data;
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        }).catch(() => {
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        });
-      }
-      const loading = this.hasAttribute("loading") || this._loading;
-      if (loading) {
-        const loadingEl = document.createElement("div");
-        loadingEl.className = "c-steps__loading";
-        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
-        loadingEl.style.color = "var(--color-text-muted)";
-        loadingEl.style.padding = "var(--space-md)";
-        this.appendChild(loadingEl);
-        return;
-      }
-      if (this.hasAttribute("error")) {
-        const err = document.createElement("div");
-        err.className = "c-steps__error";
-        err.textContent = this.getAttribute("error") || "Error";
-        err.style.color = "var(--color-danger, var(--color-text))";
-        err.style.padding = "var(--space-md)";
-        this.appendChild(err);
-        return;
-      }
-      if (this.hasAttribute("skeleton")) {
-        const count = Math.min(4, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
-        for (let i = 0; i < count; i++) {
-          const sk = document.createElement("div");
-          sk.className = "c-skeleton c-steps__skeleton";
-          sk.style.blockSize = "2rem";
-          sk.style.marginBlockEnd = "var(--space-2xs)";
-          this.appendChild(sk);
-        }
-        return;
-      }
+      wireStates(this);
+      loadRemote(this, "steps");
+      if (renderStates(this, "steps")) return;
+      const steps = remoteData(this, "steps");
       const authored = Array.from(this.children).filter((n) => n.classList && n.classList.contains("c-steps__item"));
       if (steps && !authored.length) {
         // Drop previously generated items so a re-render cannot stack a second set.
         Array.from(this.querySelectorAll(".c-steps__item")).forEach((n) => n.remove());
         try {
           const parsed = JSON.parse(steps);
-          // The step number is a CSS counter (`.c-steps__item::before` reads
-          // `counter(c-step)`), so it is never a node. The item carries a title
-          // and a body, which are the two elements the block defines.
-          parsed.forEach((s) => {
+          parsed.forEach((st) => {
             const item = document.createElement("div");
             item.className = "c-steps__item";
-            const title = typeof s === "string" ? s : s.title;
-            const body = typeof s === "string" ? "" : s.body;
+            const title = typeof st === "string" ? st : st.title;
+            const body = typeof st === "string" ? "" : st.body;
             if (title) {
               const h = document.createElement("h3");
               h.className = "c-steps__title";
@@ -134,17 +91,11 @@ class ContourSteps extends ContourBase {
           });
         } catch (e) { /* keep existing */ }
       } else if (!steps && !authored.length) {
-        Array.from(this.querySelectorAll(".c-steps__item")).forEach((n) => n.remove());
-        const empty = document.createElement("div");
-        empty.className = "c-steps__empty";
-        empty.textContent = this.getAttribute("empty") || "No data";
-        empty.style.color = "var(--color-text-muted)";
-        empty.style.padding = "var(--space-md)";
-        this.appendChild(empty);
+        renderEmpty(this, "steps");
       }
     }
   }
-  define("contour-steps", ContourSteps);
+define("contour-steps", ContourSteps);
 class ContourLink extends ContourBase {
     static get observed() { return ["href", "label"]; }
     static get properties() { return { href: { attribute: "href" }, label: { attribute: "label" } }; }

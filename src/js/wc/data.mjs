@@ -1,6 +1,6 @@
 import { ContourBase, define } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
-import { donutSlices, barRects, smoothPath } from './svg.mjs';
+import { donutSlices, barRects, smoothPath, polylinePoints } from './svg.mjs';
 class ContourReadout extends ContourBase {
     static get observed() { return ["rows", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { rows: { attribute: "rows" } }; }
@@ -509,14 +509,14 @@ class ContourTable extends ContourBase {
           this._sortCol = idx;
           this._sortDir = 1;
         }
-        this.dispatchEvent(new CustomEvent("contour:sort", { bubbles: true, detail: { column: idx, direction: this._sortDir === 1 ? "ascending" : "descending" } }));
+        this.dispatchEvent(new CustomEvent("contour:sort", { bubbles: true, composed: true, detail: { column: idx, direction: this._sortDir === 1 ? "ascending" : "descending" } }));
         this.attributeChangedCallback("__rerender__", null, "");
       };
       this.addEventListener("click", (e) => {
         const retryBtn = e.target && e.target.closest ? e.target.closest('button[data-action="retry"]') : null;
         if (retryBtn && this.contains(retryBtn)) {
           e.preventDefault();
-          this.dispatchEvent(new CustomEvent("contour:retry", { bubbles: true }));
+          this.dispatchEvent(new CustomEvent("contour:retry", { bubbles: true, composed: true }));
           return;
         }
         const th = e.target && e.target.closest ? e.target.closest("th[aria-sort]") : null;
@@ -535,7 +535,7 @@ class ContourTable extends ContourBase {
           if (action === "next") page += 1;
           this._page = page;
           this._pageAttrLast = String(page);
-          this.dispatchEvent(new CustomEvent("contour:page", { bubbles: true, detail: { page } }));
+          this.dispatchEvent(new CustomEvent("contour:page", { bubbles: true, composed: true, detail: { page } }));
           this.attributeChangedCallback("__rerender__", null, "");
         }
       });
@@ -778,14 +778,14 @@ const series = this.getAttribute("series");
           if (bar && plot2.contains(bar)) {
             const series = parseInt(bar.getAttribute("data-series") || "1", 10);
             const index = parseInt(bar.dataset.index || "0", 10);
-            this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, detail: { series, index } }));
+            this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { series, index } }));
             return;
           }
           const point = e.target && e.target.closest ? e.target.closest(".c-chart__point") : null;
           if (point && plot2.contains(point)) {
             const series = parseInt(point.getAttribute("data-series") || "1", 10);
             const index = parseInt(point.dataset.index || "0", 10);
-            this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, detail: { series, index } }));
+            this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { series, index } }));
           }
         });
         plot2.addEventListener("keydown", (e) => {
@@ -795,7 +795,7 @@ const series = this.getAttribute("series");
               e.preventDefault();
               const series = parseInt(bar.getAttribute("data-series") || "1", 10);
               const index = parseInt(bar.dataset.index || "0", 10);
-              this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, detail: { series, index } }));
+              this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { series, index } }));
             }
             return;
           }
@@ -805,7 +805,7 @@ const series = this.getAttribute("series");
               e.preventDefault();
               const series = parseInt(point.getAttribute("data-series") || "1", 10);
               const index = parseInt(point.dataset.index || "0", 10);
-              this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, detail: { series, index } }));
+              this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { series, index } }));
             } else if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
               e.preventDefault();
               const points = Array.from(plot2.querySelectorAll('.c-chart__point[data-series="' + point.getAttribute("data-series") + '"]'));
@@ -824,7 +824,7 @@ const series = this.getAttribute("series");
         const btn = e.target && e.target.closest ? e.target.closest('button[data-action="retry"]') : null;
         if (btn && this.contains(btn)) {
           e.preventDefault();
-          this.dispatchEvent(new CustomEvent("contour:retry", { bubbles: true }));
+          this.dispatchEvent(new CustomEvent("contour:retry", { bubbles: true, composed: true }));
         }
       });
       this.addEventListener("keydown", (e) => {
@@ -839,13 +839,13 @@ const series = this.getAttribute("series");
         else if (e.key === "End") next = seriesCount - 1;
         else if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, detail: { series: this._activeSeries } }));
+          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { series: this._activeSeries } }));
           return;
         } else return;
         if (next !== this._activeSeries) {
           e.preventDefault();
           this._activeSeries = next;
-          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, detail: { series: next } }));
+          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { series: next } }));
         }
       });
     }
@@ -1792,7 +1792,7 @@ class ContourTimeline extends ContourBase {
         const btn = e.target && e.target.closest ? e.target.closest('button[data-action="retry"]') : null;
         if (btn && this.contains(btn)) {
           e.preventDefault();
-          this.dispatchEvent(new CustomEvent("contour:retry", { bubbles: true }));
+          this.dispatchEvent(new CustomEvent("contour:retry", { bubbles: true, composed: true }));
         }
       });
     }
@@ -1958,7 +1958,7 @@ class ContourHeatmap extends ContourBase {
         const btn = e.target && e.target.closest ? e.target.closest('button[data-action="retry"]') : null;
         if (btn && this.contains(btn)) {
           e.preventDefault();
-          this.dispatchEvent(new CustomEvent("contour:retry", { bubbles: true }));
+          this.dispatchEvent(new CustomEvent("contour:retry", { bubbles: true, composed: true }));
         }
       });
       this.addEventListener("keydown", (e) => {
@@ -1975,7 +1975,7 @@ class ContourHeatmap extends ContourBase {
         else if (e.key === "End") next = list.length - 1;
         else if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, detail: { index: idx } }));
+          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index: idx } }));
           return;
         }
         if (next >= 0 && next !== idx) {
@@ -1988,7 +1988,7 @@ class ContourHeatmap extends ContourBase {
         const cell = e.target && e.target.closest ? e.target.closest(".c-heatmap__cell") : null;
         if (!cell || !this.contains(cell)) return;
         const idx = cells().indexOf(cell);
-        if (idx >= 0) this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, detail: { index: idx } }));
+        if (idx >= 0) this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index: idx } }));
       });
     }
   }
@@ -2207,13 +2207,13 @@ class ContourSparkline extends ContourBase {
         const btn = e.target && e.target.closest ? e.target.closest('button[data-action="retry"]') : null;
         if (btn && this.contains(btn)) {
           e.preventDefault();
-          this.dispatchEvent(new CustomEvent("contour:retry", { bubbles: true }));
+          this.dispatchEvent(new CustomEvent("contour:retry", { bubbles: true, composed: true }));
         }
       });
       this.addEventListener("keydown", (e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, detail: {} }));
+          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: {} }));
         }
       });
     }

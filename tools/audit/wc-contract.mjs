@@ -174,7 +174,10 @@ if (!observedBlock) {
   fail("no `const OBSERVED = [...]` in the artifact — the render contract has no attribute list to check");
 } else {
   const observed = new Set([...observedBlock[1].matchAll(/"([a-z-]+)"/g)].map((m) => m[1]));
-  const read = new Set([...bytes.unminified.matchAll(/this\.(?:getAttribute|hasAttribute)\("([a-z-]+)"\)/g)].map((m) => m[1]));
+  const read = new Set([
+    ...[...bytes.unminified.matchAll(/this\.(?:getAttribute|hasAttribute)\("([a-z-]+)"\)/g)].map((m) => m[1]),
+    ...[...bytes.unminified.matchAll(/(?:remoteData|loadRemote)\([^)]*,\s*"([a-z-]+)"\)/g)].map((m) => m[1]),
+  ]);
   const written = new Set([...bytes.unminified.matchAll(/this\.setAttribute\("([a-z-]+)"/g)].map((m) => m[1]));
 
   // Reads through a shared list. `MODS` is the modifier contract both layers use;
