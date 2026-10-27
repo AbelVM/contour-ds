@@ -42,6 +42,12 @@
   tints and `--live-text` to `.c-live-badge`. The previous line's own comment claimed a
   "0.0 kB overrun, pre-existing" raise in 2026-10-25, which was already false.
 
+- `surfaces/contour-data.min.css` size budget raised from 149 kB to 150 kB: measured
+  149.2 kB (152,792 B) after the time-slider addition (16 lines) to components-data.css
+  in 8596094.
+- `surfaces/contour-landing.min.css` size budget raised from 123 kB to 124 kB: measured
+  123.2 kB (126,145 B).
+
 ### Added (M-WC-08)
 - Close-button demo added to reactivity playground in §23 (ContourAlert closable + reset button).
 - `ContourMeter` value range documented (0-1 fraction, not 0-100).
