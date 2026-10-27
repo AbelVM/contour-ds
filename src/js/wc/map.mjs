@@ -559,6 +559,20 @@ class ContourIsochrone extends ContourBase {
         this.appendChild(err);
         return;
       }
+      if (this.hasAttribute("skeleton")) {
+        const count = Math.min(4, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
+        for (let i = 0; i < count; i++) {
+          const sk = document.createElement("span");
+          sk.className = "c-skeleton c-isochrone__skeleton";
+          sk.style.display = "inline-block";
+          sk.style.inlineSize = "3rem";
+          sk.style.blockSize = "3rem";
+          sk.style.borderRadius = "50%";
+          sk.style.marginInlineEnd = "var(--space-2xs)";
+          this.appendChild(sk);
+        }
+        return;
+      }
       if (effectiveRings) {
          try {
            const parsed = JSON.parse(effectiveRings);

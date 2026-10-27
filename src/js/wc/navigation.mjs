@@ -470,7 +470,7 @@ class ContourCodeTabs extends ContourBase {
   }
   define("contour-code-tabs", ContourCodeTabs);
 class ContourBreadcrumb extends ContourBase {
-    static get observed() { return ["items", "separator", "empty", "loading", "error", "src"]; }
+    static get observed() { return ["items", "separator", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { items: { attribute: "items" }, separator: { attribute: "separator" } }; }
     render() {
       this.classList.add("c-breadcrumb");
@@ -506,6 +506,19 @@ class ContourBreadcrumb extends ContourBase {
         err.style.color = "var(--color-danger, var(--color-text))";
         err.style.padding = "var(--space-md)";
         this.appendChild(err);
+        return;
+      }
+      if (this.hasAttribute("skeleton")) {
+        const count = Math.min(4, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
+        for (let i = 0; i < count; i++) {
+          const sk = document.createElement("span");
+          sk.className = "c-skeleton c-breadcrumb__skeleton";
+          sk.style.display = "inline-block";
+          sk.style.inlineSize = "4rem";
+          sk.style.blockSize = "1rem";
+          sk.style.marginInlineEnd = "var(--space-2xs)";
+          this.appendChild(sk);
+        }
         return;
       }
       // Slot composition: authored <li> items win over the JSON attribute.

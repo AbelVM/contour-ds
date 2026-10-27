@@ -294,7 +294,7 @@ class ContourEmpty extends ContourBase {
   }
   define("contour-empty", ContourEmpty);
 class ContourFaq extends ContourBase {
-    static get observed() { return ["question", "answer", "items", "empty", "loading", "error", "src"]; }
+    static get observed() { return ["question", "answer", "items", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { question: { attribute: "question" }, answer: { attribute: "answer" }, items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-faq");
@@ -330,6 +330,17 @@ class ContourFaq extends ContourBase {
         err.style.color = "var(--color-danger, var(--color-text))";
         err.style.padding = "var(--space-md)";
         this.appendChild(err);
+        return;
+      }
+      if (this.hasAttribute("skeleton")) {
+        const count = Math.min(3, Math.max(1, parseInt(this.getAttribute("skeleton") || "2", 10) || 2));
+        for (let i = 0; i < count; i++) {
+          const sk = document.createElement("div");
+          sk.className = "c-skeleton c-faq__skeleton";
+          sk.style.blockSize = "2rem";
+          sk.style.marginBlockEnd = "var(--space-2xs)";
+          this.appendChild(sk);
+        }
         return;
       }
       const question = this.getAttribute("question");
@@ -386,7 +397,7 @@ class ContourFaq extends ContourBase {
   }
   define("contour-faq", ContourFaq);
 class ContourAccordion extends ContourBase {
-    static get observed() { return ["items", "empty", "loading", "error", "src"]; }
+    static get observed() { return ["items", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { items: { attribute: "items" } }; }
     render() {
       // The host is a plain container; the children carry .c-disclosure, which
@@ -425,6 +436,17 @@ class ContourAccordion extends ContourBase {
         err.style.color = "var(--color-danger, var(--color-text))";
         err.style.padding = "var(--space-md)";
         this.appendChild(err);
+        return;
+      }
+      if (this.hasAttribute("skeleton")) {
+        const count = Math.min(4, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
+        for (let i = 0; i < count; i++) {
+          const sk = document.createElement("div");
+          sk.className = "c-skeleton c-accordion__skeleton";
+          sk.style.blockSize = "2rem";
+          sk.style.marginBlockEnd = "var(--space-2xs)";
+          this.appendChild(sk);
+        }
         return;
       }
       if (items && !authored.length) {
