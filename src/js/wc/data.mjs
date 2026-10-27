@@ -1,16 +1,60 @@
 import { ContourBase, define } from './core.mjs';
 import { donutSlices, barRects, smoothPath } from './svg.mjs';
 class ContourReadout extends ContourBase {
-    static get observed() { return ["rows"]; }
+    static get observed() { return ["rows", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { rows: { attribute: "rows" } }; }
 render() {
        this.classList.add("c-readout");
+       const src = this.getAttribute("src");
+       const rows = this.getAttribute("rows") || (this._remoteRows ? JSON.stringify(this._remoteRows) : null);
+       if (src && !this.getAttribute("rows") && this._srcFetched !== src) {
+         this._srcFetched = src;
+         this._loading = true;
+         this.attributeChangedCallback("__rerender__", null, "");
+         fetch(src).then((r) => r.json()).then((data) => {
+           this._remoteRows = data;
+           this._loading = false;
+           this.attributeChangedCallback("__rerender__", null, "");
+         }).catch(() => {
+           this._loading = false;
+           this.attributeChangedCallback("__rerender__", null, "");
+         });
+       }
+       const loading = this.hasAttribute("loading") || this._loading;
+       if (loading) {
+         const loadingEl = document.createElement("div");
+         loadingEl.className = "c-readout__loading";
+         loadingEl.textContent = this.getAttribute("loading") || "Loading…";
+         loadingEl.style.color = "var(--color-text-muted)";
+         loadingEl.style.padding = "var(--space-md)";
+         this.appendChild(loadingEl);
+         return;
+       }
+       if (this.hasAttribute("error")) {
+         const err = document.createElement("div");
+         err.className = "c-readout__error";
+         err.textContent = this.getAttribute("error") || "Error";
+         err.style.color = "var(--color-danger, var(--color-text))";
+         err.style.padding = "var(--space-md)";
+         this.appendChild(err);
+         return;
+       }
+       if (this.hasAttribute("skeleton")) {
+         const count = Math.min(4, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
+         for (let i = 0; i < count; i++) {
+           const sk = document.createElement("div");
+           sk.className = "c-skeleton c-readout__skeleton";
+           sk.style.blockSize = "1.5rem";
+           sk.style.marginBlockEnd = "var(--space-2xs)";
+           this.appendChild(sk);
+         }
+         return;
+       }
        // Drop previously generated rows so a re-render cannot stack a second set.
        Array.from(this.querySelectorAll(".c-readout__row")).forEach((n) => n.remove());
        // Slot composition wins over the JSON attribute, same as the navigation
        // components: an authored readout is preserved across re-renders.
        const authored = Array.from(this.children).filter((n) => !n.classList || !n.classList.contains("c-readout__row"));
-       const rows = this.getAttribute("rows");
        if (rows && !authored.length) {
          try {
            const parsed = JSON.parse(rows);
@@ -34,6 +78,13 @@ render() {
              this.appendChild(row);
            });
          } catch (e) { /* keep existing */ }
+       } else if (!rows && !authored.length) {
+         const empty = document.createElement("div");
+         empty.className = "c-readout__empty";
+         empty.textContent = this.getAttribute("empty") || "No data";
+         empty.style.color = "var(--color-text-muted)";
+         empty.style.padding = "var(--space-md)";
+         this.appendChild(empty);
        }
      }
   }
@@ -987,15 +1038,61 @@ class ContourStat extends ContourBase {
   }
   define("contour-stat", ContourStat);
 class ContourInstrument extends ContourBase {
-    static get observed() { return ["rows"]; }
+    static get observed() { return ["rows", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { rows: { attribute: "rows" } }; }
     render() {
       this.classList.add("c-instrument");
+      const src = this.getAttribute("src");
+      const rows = this.getAttribute("rows") || (this._remoteRows ? JSON.stringify(this._remoteRows) : null);
+      if (src && !this.getAttribute("rows") && this._srcFetched !== src) {
+        this._srcFetched = src;
+        this._loading = true;
+        this.attributeChangedCallback("__rerender__", null, "");
+        fetch(src).then((r) => r.json()).then((data) => {
+          this._remoteRows = data;
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        }).catch(() => {
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        });
+      }
+      const loading = this.hasAttribute("loading") || this._loading;
+      if (loading) {
+        const loadingEl = document.createElement("div");
+        loadingEl.className = "c-instrument__loading";
+        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
+        loadingEl.style.color = "var(--color-text-muted)";
+        loadingEl.style.padding = "var(--space-md)";
+        this.appendChild(loadingEl);
+        return;
+      }
+      if (this.hasAttribute("error")) {
+        const err = document.createElement("div");
+        err.className = "c-instrument__error";
+        err.textContent = this.getAttribute("error") || "Error";
+        err.style.color = "var(--color-danger, var(--color-text))";
+        err.style.padding = "var(--space-md)";
+        this.appendChild(err);
+        return;
+      }
+      if (this.hasAttribute("skeleton")) {
+        const count = Math.min(4, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
+        for (let i = 0; i < count; i++) {
+          const sk = document.createElement("span");
+          sk.className = "c-skeleton c-instrument__skeleton";
+          sk.style.display = "inline-block";
+          sk.style.inlineSize = "4rem";
+          sk.style.blockSize = "1rem";
+          sk.style.marginInlineEnd = "var(--space-2xs)";
+          this.appendChild(sk);
+        }
+        return;
+      }
       // The block's two parts are `__item` and `__value`: the label is the text
       // the item opens with, and the value is the span inside it. There is no
       // `__row` and no `__key` — the separators between items are CSS `::before`.
       Array.from(this.querySelectorAll(".c-instrument__item")).forEach((n) => n.remove());
-      const rows = this.getAttribute("rows");
       if (rows) {
         try {
           const parsed = JSON.parse(rows);
@@ -1010,6 +1107,13 @@ class ContourInstrument extends ContourBase {
             this.appendChild(item);
           });
         } catch (e) { /* keep existing */ }
+      } else {
+        const empty = document.createElement("div");
+        empty.className = "c-instrument__empty";
+        empty.textContent = this.getAttribute("empty") || "No data";
+        empty.style.color = "var(--color-text-muted)";
+        empty.style.padding = "var(--space-md)";
+        this.appendChild(empty);
       }
     }
   }
@@ -1141,10 +1245,55 @@ class ContourMetricsFull extends ContourBase {
   }
   define("contour-metrics", ContourMetricsFull);
 class ContourLegend extends ContourBase {
-    static get observed() { return ["title", "ramp", "scale", "items", "method", "norm"]; }
+    static get observed() { return ["title", "ramp", "scale", "items", "method", "norm", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { title: { attribute: "title" }, ramp: { attribute: "ramp" }, scale: { attribute: "scale" }, items: { attribute: "items" }, method: { attribute: "method" }, norm: { attribute: "norm" } }; }
     render() {
       this.classList.add("c-legend");
+      const src = this.getAttribute("src");
+      const items = this.getAttribute("items") || (this._remoteItems ? JSON.stringify(this._remoteItems) : null);
+      if (src && !this.getAttribute("items") && this._srcFetched !== src) {
+        this._srcFetched = src;
+        this._loading = true;
+        this.attributeChangedCallback("__rerender__", null, "");
+        fetch(src).then((r) => r.json()).then((data) => {
+          this._remoteItems = data;
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        }).catch(() => {
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        });
+      }
+      const loading = this.hasAttribute("loading") || this._loading;
+      if (loading) {
+        const loadingEl = document.createElement("div");
+        loadingEl.className = "c-legend__loading";
+        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
+        loadingEl.style.color = "var(--color-text-muted)";
+        loadingEl.style.padding = "var(--space-md)";
+        this.appendChild(loadingEl);
+        return;
+      }
+      if (this.hasAttribute("error")) {
+        const err = document.createElement("div");
+        err.className = "c-legend__error";
+        err.textContent = this.getAttribute("error") || "Error";
+        err.style.color = "var(--color-danger, var(--color-text))";
+        err.style.padding = "var(--space-md)";
+        this.appendChild(err);
+        return;
+      }
+      if (this.hasAttribute("skeleton")) {
+        const count = Math.min(4, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
+        for (let i = 0; i < count; i++) {
+          const sk = document.createElement("div");
+          sk.className = "c-skeleton c-legend__skeleton";
+          sk.style.blockSize = "1rem";
+          sk.style.marginBlockEnd = "var(--space-2xs)";
+          this.appendChild(sk);
+        }
+        return;
+      }
       const title = this.getAttribute("title");
       if (title) {
         const t = this.ensure(".c-legend__title", () => { const el = document.createElement("div"); el.className = "c-legend__title"; return el; });
@@ -1153,7 +1302,6 @@ class ContourLegend extends ContourBase {
         const t = this.querySelector(".c-legend__title");
         if (t) t.remove();
       }
-      const items = this.getAttribute("items");
       if (items) {
         try {
           const parsed = JSON.parse(items);
@@ -1175,6 +1323,15 @@ class ContourLegend extends ContourBase {
       } else {
         const list = this.querySelector(".c-legend__items");
         if (list) list.remove();
+        const hasOther = this.getAttribute("title") || this.getAttribute("ramp") || this.getAttribute("scale") || this.getAttribute("method") || this.getAttribute("norm");
+        if (!hasOther) {
+          const empty = document.createElement("div");
+          empty.className = "c-legend__empty";
+          empty.textContent = this.getAttribute("empty") || "No data";
+          empty.style.color = "var(--color-text-muted)";
+          empty.style.padding = "var(--space-md)";
+          this.appendChild(empty);
+        }
       }
       const method = this.getAttribute("method");
       if (method) {

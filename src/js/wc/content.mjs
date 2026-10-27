@@ -55,12 +55,56 @@ class ContourFeature extends ContourBase {
   }
   define("contour-feature", ContourFeature);
 class ContourSteps extends ContourBase {
-    static get observed() { return ["steps"]; }
+    static get observed() { return ["steps", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { steps: { attribute: "steps" } }; }
     render() {
       this.classList.add("c-steps");
+      const src = this.getAttribute("src");
+      const steps = this.getAttribute("steps") || (this._remoteSteps ? JSON.stringify(this._remoteSteps) : null);
+      if (src && !this.getAttribute("steps") && this._srcFetched !== src) {
+        this._srcFetched = src;
+        this._loading = true;
+        this.attributeChangedCallback("__rerender__", null, "");
+        fetch(src).then((r) => r.json()).then((data) => {
+          this._remoteSteps = data;
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        }).catch(() => {
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        });
+      }
+      const loading = this.hasAttribute("loading") || this._loading;
+      if (loading) {
+        const loadingEl = document.createElement("div");
+        loadingEl.className = "c-steps__loading";
+        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
+        loadingEl.style.color = "var(--color-text-muted)";
+        loadingEl.style.padding = "var(--space-md)";
+        this.appendChild(loadingEl);
+        return;
+      }
+      if (this.hasAttribute("error")) {
+        const err = document.createElement("div");
+        err.className = "c-steps__error";
+        err.textContent = this.getAttribute("error") || "Error";
+        err.style.color = "var(--color-danger, var(--color-text))";
+        err.style.padding = "var(--space-md)";
+        this.appendChild(err);
+        return;
+      }
+      if (this.hasAttribute("skeleton")) {
+        const count = Math.min(4, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
+        for (let i = 0; i < count; i++) {
+          const sk = document.createElement("div");
+          sk.className = "c-skeleton c-steps__skeleton";
+          sk.style.blockSize = "2rem";
+          sk.style.marginBlockEnd = "var(--space-2xs)";
+          this.appendChild(sk);
+        }
+        return;
+      }
       const authored = Array.from(this.children).filter((n) => n.classList && n.classList.contains("c-steps__item"));
-      const steps = this.getAttribute("steps");
       if (steps && !authored.length) {
         // Drop previously generated items so a re-render cannot stack a second set.
         Array.from(this.querySelectorAll(".c-steps__item")).forEach((n) => n.remove());
@@ -89,8 +133,14 @@ class ContourSteps extends ContourBase {
             this.appendChild(item);
           });
         } catch (e) { /* keep existing */ }
-      } else if (!steps) {
+      } else if (!steps && !authored.length) {
         Array.from(this.querySelectorAll(".c-steps__item")).forEach((n) => n.remove());
+        const empty = document.createElement("div");
+        empty.className = "c-steps__empty";
+        empty.textContent = this.getAttribute("empty") || "No data";
+        empty.style.color = "var(--color-text-muted)";
+        empty.style.padding = "var(--space-md)";
+        this.appendChild(empty);
       }
     }
   }
@@ -243,7 +293,7 @@ class ContourFlag extends ContourBase {
       if (variant) this.classList.add("c-flag--" + variant);
       const label = this.getAttribute("label");
       if (label) {
-        if (!this.hasChildNodes()) this.textContent = label;
+        this.textContent = label;
       }
     }
   }
@@ -319,12 +369,57 @@ class ContourTestimonialFull extends ContourBase {
   }
   define("contour-testimonial", ContourTestimonialFull);
 class ContourShowcaseFull extends ContourBase {
-    static get observed() { return ["title", "text", "media", "reverse", "items"]; }
+    static get observed() { return ["title", "text", "media", "reverse", "items", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { title: { attribute: "title" }, text: { attribute: "text" }, media: { attribute: "media" }, reverse: { attribute: "reverse" }, items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-showcase");
       if (this.hasAttribute("reverse")) this.classList.add("c-showcase--reverse");
       else this.classList.remove("c-showcase--reverse");
+      const src = this.getAttribute("src");
+      const items = this.getAttribute("items") || (this._remoteItems ? JSON.stringify(this._remoteItems) : null);
+      if (src && !this.getAttribute("items") && this._srcFetched !== src) {
+        this._srcFetched = src;
+        this._loading = true;
+        this.attributeChangedCallback("__rerender__", null, "");
+        fetch(src).then((r) => r.json()).then((data) => {
+          this._remoteItems = data;
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        }).catch(() => {
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        });
+      }
+      const loading = this.hasAttribute("loading") || this._loading;
+      if (loading) {
+        const loadingEl = document.createElement("div");
+        loadingEl.className = "c-showcase__loading";
+        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
+        loadingEl.style.color = "var(--color-text-muted)";
+        loadingEl.style.padding = "var(--space-md)";
+        this.appendChild(loadingEl);
+        return;
+      }
+      if (this.hasAttribute("error")) {
+        const err = document.createElement("div");
+        err.className = "c-showcase__error";
+        err.textContent = this.getAttribute("error") || "Error";
+        err.style.color = "var(--color-danger, var(--color-text))";
+        err.style.padding = "var(--space-md)";
+        this.appendChild(err);
+        return;
+      }
+      if (this.hasAttribute("skeleton")) {
+        const count = Math.min(3, Math.max(1, parseInt(this.getAttribute("skeleton") || "2", 10) || 2));
+        for (let i = 0; i < count; i++) {
+          const sk = document.createElement("div");
+          sk.className = "c-skeleton c-showcase__skeleton";
+          sk.style.blockSize = "4rem";
+          sk.style.marginBlockEnd = "var(--space-2xs)";
+          this.appendChild(sk);
+        }
+        return;
+      }
       const title = this.getAttribute("title");
       const text = this.getAttribute("text");
       const media = this.getAttribute("media");
@@ -351,7 +446,6 @@ class ContourShowcaseFull extends ContourBase {
         const p = this.querySelector(".c-showcase__text");
         if (p) p.remove();
       }
-const items = this.getAttribute("items");
       const ul = this.querySelector(".c-showcase__list");
       const authored = ul ? Array.from(ul.children).filter((n) => n.tagName === "LI") : [];
       if (items && !authored.length) {
@@ -367,6 +461,19 @@ const items = this.getAttribute("items");
         } catch (e) { /* keep existing */ }
       } else if (!items && ul) {
         ul.remove();
+        const empty = document.createElement("div");
+        empty.className = "c-showcase__empty";
+        empty.textContent = this.getAttribute("empty") || "No data";
+        empty.style.color = "var(--color-text-muted)";
+        empty.style.padding = "var(--space-md)";
+        this.appendChild(empty);
+      } else if (!items && !ul && !title && !text && !media) {
+        const empty = document.createElement("div");
+        empty.className = "c-showcase__empty";
+        empty.textContent = this.getAttribute("empty") || "No data";
+        empty.style.color = "var(--color-text-muted)";
+        empty.style.padding = "var(--space-md)";
+        this.appendChild(empty);
       }
     }
   }
@@ -427,11 +534,55 @@ class ContourLogosFull extends ContourBase {
   }
   define("contour-logos", ContourLogosFull);
 class ContourLandingFeaturesFull extends ContourBase {
-    static get observed() { return ["items"]; }
+    static get observed() { return ["items", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-landing-features");
-      const items = this.getAttribute("items");
+      const src = this.getAttribute("src");
+      const items = this.getAttribute("items") || (this._remoteItems ? JSON.stringify(this._remoteItems) : null);
+      if (src && !this.getAttribute("items") && this._srcFetched !== src) {
+        this._srcFetched = src;
+        this._loading = true;
+        this.attributeChangedCallback("__rerender__", null, "");
+        fetch(src).then((r) => r.json()).then((data) => {
+          this._remoteItems = data;
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        }).catch(() => {
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        });
+      }
+      const loading = this.hasAttribute("loading") || this._loading;
+      if (loading) {
+        const loadingEl = document.createElement("div");
+        loadingEl.className = "c-landing-features__loading";
+        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
+        loadingEl.style.color = "var(--color-text-muted)";
+        loadingEl.style.padding = "var(--space-md)";
+        this.appendChild(loadingEl);
+        return;
+      }
+      if (this.hasAttribute("error")) {
+        const err = document.createElement("div");
+        err.className = "c-landing-features__error";
+        err.textContent = this.getAttribute("error") || "Error";
+        err.style.color = "var(--color-danger, var(--color-text))";
+        err.style.padding = "var(--space-md)";
+        this.appendChild(err);
+        return;
+      }
+      if (this.hasAttribute("skeleton")) {
+        const count = Math.min(4, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
+        for (let i = 0; i < count; i++) {
+          const sk = document.createElement("div");
+          sk.className = "c-skeleton c-landing-features__skeleton";
+          sk.style.blockSize = "4rem";
+          sk.style.marginBlockEnd = "var(--space-2xs)";
+          this.appendChild(sk);
+        }
+        return;
+      }
       const authored = Array.from(this.children).filter((n) => n.classList && n.classList.contains("c-landing-features__item"));
       if (items && !authored.length) {
         try {
@@ -461,8 +612,14 @@ class ContourLandingFeaturesFull extends ContourBase {
             this.appendChild(item);
           });
         } catch (e) { /* keep existing */ }
-      } else if (!items) {
+      } else if (!items && !authored.length) {
         this.querySelectorAll(".c-landing-features__item").forEach((el) => el.remove());
+        const empty = document.createElement("div");
+        empty.className = "c-landing-features__empty";
+        empty.textContent = this.getAttribute("empty") || "No data";
+        empty.style.color = "var(--color-text-muted)";
+        empty.style.padding = "var(--space-md)";
+        this.appendChild(empty);
       }
     }
   }
@@ -504,7 +661,7 @@ class ContourPriceFull extends ContourBase {
     render() {
       this.classList.add("c-price");
       const value = this.getAttribute("value");
-      if (value && !this.hasChildNodes()) this.textContent = value;
+      if (value) this.textContent = value;
     }
   }
   define("contour-price", ContourPriceFull);
@@ -669,8 +826,11 @@ class ContourPullquote extends ContourBase {
       // `.c-pullquote` defines no `__quote` or `__byline`: the guide's specimen is
       // the paragraph itself, and the one element the sheet styles inside it is
       // `cite`, which is what an attribution is.
-      if (quote && !this.querySelector("cite") && !this.hasChildNodes()) {
-        this.textContent = quote;
+      if (quote) {
+        // Preserve a generated <cite> (attribution) while updating the quote text.
+        Array.from(this.childNodes).forEach((n) => { if (n.nodeType === 3) n.remove(); });
+        const cite = this.querySelector("cite");
+        this.insertBefore(document.createTextNode(quote), cite);
       }
       const name = this.getAttribute("name");
       if (name) {

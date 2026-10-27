@@ -1332,6 +1332,13 @@
     font-size: var(--type-xs);
   }
 
+  .c-readout__empty,
+  .c-readout__loading,
+  .c-readout__error {
+    color: var(--color-text-muted);
+    padding: var(--space-md);
+  }
+
   .c-readout__row {
     display: grid;
     grid-template-columns: minmax(6rem, auto) minmax(0, 1fr);
@@ -2324,6 +2331,13 @@
     font-size: var(--type-xs);
   }
 
+  .c-legend__empty,
+  .c-legend__loading,
+  .c-legend__error {
+    color: var(--color-text-muted);
+    padding: var(--space-md);
+  }
+
   /* The inline legend: a wrapping row of keys that sits on the surface it
      belongs to — a panel foot, a chart caption. No box, no border, and never
      a name broken across two lines. */
@@ -2791,6 +2805,13 @@
     display: flex;
     align-items: center;
     gap: 0.25rem;
+  }
+
+  .c-pagination__empty,
+  .c-pagination__loading,
+  .c-pagination__error {
+    color: var(--color-text-muted);
+    padding: var(--space-md);
   }
 
   .c-pagination__link {

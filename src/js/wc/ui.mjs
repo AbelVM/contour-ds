@@ -13,8 +13,7 @@ class ContourAvatar extends ContourBase {
       if (variant) this.classList.add("c-avatar--" + variant);
       if (name) {
         const initials = name.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2);
-        // Only set if no authored content
-        if (!this.hasChildNodes()) this.textContent = initials;
+        this.textContent = initials;
       }
     }
   }
@@ -29,7 +28,7 @@ class ContourBadgeFull extends ContourBase {
       if (variant) this.classList.add("c-badge--" + variant);
       const label = this.getAttribute("label");
       if (label) {
-        if (!this.hasChildNodes()) this.textContent = label;
+        this.textContent = label;
       }
     }
   }
@@ -128,7 +127,7 @@ class ContourPill extends ContourBase {
       if (variant) this.classList.add("c-pill--" + variant);
       const label = this.getAttribute("label");
       if (label) {
-        if (!this.hasChildNodes()) this.textContent = label;
+        this.textContent = label;
       }
       if (this.hasAttribute("live")) this.classList.add("c-pill--live");
     }
@@ -141,7 +140,7 @@ class ContourKbd extends ContourBase {
       this.classList.add("c-kbd");
       const key = this.getAttribute("key");
       if (key) {
-        if (!this.hasChildNodes()) this.textContent = key;
+        this.textContent = key;
       }
     }
   }
@@ -283,7 +282,7 @@ class ContourVersionBannerFull extends ContourBase {
     render() {
       this.classList.add("c-version-banner");
       const message = this.getAttribute("message");
-      if (message && !this.hasChildNodes()) {
+      if (message) {
         const icon = document.createElement("svg");
         icon.setAttribute("aria-hidden", "true");
         icon.innerHTML = '<use href="#i-info" />';
@@ -350,7 +349,7 @@ class ContourDatamark extends ContourBase {
       const unit = this.getAttribute("unit");
       const label = this.getAttribute("label");
       const text = value || label;
-      if (text && !this.hasChildNodes()) {
+      if (text) {
         this.textContent = text;
         if (unit) {
           const u = document.createElement("span");
@@ -368,7 +367,7 @@ class ContourDestructiveHint extends ContourBase {
     render() {
       this.classList.add("c-destructive-hint");
       const text = this.getAttribute("text");
-      if (text && !this.hasChildNodes()) this.textContent = text;
+      if (text) this.textContent = text;
     }
   }
   define("contour-destructive-hint", ContourDestructiveHint);

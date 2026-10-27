@@ -86,6 +86,13 @@
     gap: var(--space-xl) var(--space-lg);
   }
 
+  .c-landing-features__empty,
+  .c-landing-features__loading,
+  .c-landing-features__error {
+    color: var(--color-text-muted);
+    padding: var(--space-md);
+  }
+
   .c-landing-features__item {
     display: grid;
     gap: 0.5rem;

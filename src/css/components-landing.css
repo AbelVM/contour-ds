@@ -295,6 +295,13 @@
     align-items: center;
   }
 
+  .c-showcase__empty,
+  .c-showcase__loading,
+  .c-showcase__error {
+    color: var(--color-text-muted);
+    padding: var(--space-md);
+  }
+
   .c-showcase--reverse .c-showcase__media {
     order: -1;
   }

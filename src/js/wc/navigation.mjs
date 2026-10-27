@@ -420,11 +420,55 @@ render() {
   }
   define("contour-tree", ContourTree);
 class ContourCodeTabs extends ContourBase {
-    static get observed() { return ["tabs"]; }
+    static get observed() { return ["tabs", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { tabs: { attribute: "tabs" } }; }
     render() {
       this.classList.add("c-code-tabs");
-      const tabs = this.getAttribute("tabs");
+      const src = this.getAttribute("src");
+      const tabs = this.getAttribute("tabs") || (this._remoteTabs ? JSON.stringify(this._remoteTabs) : null);
+      if (src && !this.getAttribute("tabs") && this._srcFetched !== src) {
+        this._srcFetched = src;
+        this._loading = true;
+        this.attributeChangedCallback("__rerender__", null, "");
+        fetch(src).then((r) => r.json()).then((data) => {
+          this._remoteTabs = data;
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        }).catch(() => {
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        });
+      }
+      const loading = this.hasAttribute("loading") || this._loading;
+      if (loading) {
+        const loadingEl = document.createElement("div");
+        loadingEl.className = "c-code-tabs__loading";
+        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
+        loadingEl.style.color = "var(--color-text-muted)";
+        loadingEl.style.padding = "var(--space-md)";
+        this.appendChild(loadingEl);
+        return;
+      }
+      if (this.hasAttribute("error")) {
+        const err = document.createElement("div");
+        err.className = "c-code-tabs__error";
+        err.textContent = this.getAttribute("error") || "Error";
+        err.style.color = "var(--color-danger, var(--color-text))";
+        err.style.padding = "var(--space-md)";
+        this.appendChild(err);
+        return;
+      }
+      if (this.hasAttribute("skeleton")) {
+        const count = Math.min(4, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
+        for (let i = 0; i < count; i++) {
+          const sk = document.createElement("div");
+          sk.className = "c-skeleton c-code-tabs__skeleton";
+          sk.style.blockSize = "2rem";
+          sk.style.marginBlockEnd = "var(--space-2xs)";
+          this.appendChild(sk);
+        }
+        return;
+      }
       const list = this.querySelector(".c-code-tabs__list");
       const authored = list ? Array.from(list.children).filter((n) => n.getAttribute && n.getAttribute("role") === "tab") : [];
       if (tabs && !authored.length) {
@@ -444,17 +488,17 @@ class ContourCodeTabs extends ContourBase {
           });
           if (l.parentNode !== this) this.prepend(l);
         } catch (e) { /* keep existing */ }
-      } else if (!items && list) {
+      } else if (!tabs && list) {
         list.remove();
         const empty = document.createElement("div");
-        empty.className = "c-toc__empty";
+        empty.className = "c-code-tabs__empty";
         empty.textContent = this.getAttribute("empty") || "No data";
         empty.style.color = "var(--color-text-muted)";
         empty.style.padding = "var(--space-md)";
         this.appendChild(empty);
-      } else if (!items && !list) {
+      } else if (!tabs && !list) {
         const empty = document.createElement("div");
-        empty.className = "c-toc__empty";
+        empty.className = "c-code-tabs__empty";
         empty.textContent = this.getAttribute("empty") || "No data";
         empty.style.color = "var(--color-text-muted)";
         empty.style.padding = "var(--space-md)";
@@ -565,13 +609,59 @@ class ContourBreadcrumb extends ContourBase {
   }
   define("contour-breadcrumb", ContourBreadcrumb);
 class ContourPagination extends ContourBase {
-    static get observed() { return ["pages", "current"]; }
+    static get observed() { return ["pages", "current", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { pages: { attribute: "pages" }, current: { attribute: "current" } }; }
     render() {
       this.classList.add("c-pagination");
+      const src = this.getAttribute("src");
+      const pages = this.getAttribute("pages") || (this._remotePages ? String(this._remotePages) : null);
+      if (src && !this.getAttribute("pages") && this._srcFetched !== src) {
+        this._srcFetched = src;
+        this._loading = true;
+        this.attributeChangedCallback("__rerender__", null, "");
+        fetch(src).then((r) => r.json()).then((data) => {
+          this._remotePages = data;
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        }).catch(() => {
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        });
+      }
+      const loading = this.hasAttribute("loading") || this._loading;
+      if (loading) {
+        const loadingEl = document.createElement("div");
+        loadingEl.className = "c-pagination__loading";
+        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
+        loadingEl.style.color = "var(--color-text-muted)";
+        loadingEl.style.padding = "var(--space-md)";
+        this.appendChild(loadingEl);
+        return;
+      }
+      if (this.hasAttribute("error")) {
+        const err = document.createElement("div");
+        err.className = "c-pagination__error";
+        err.textContent = this.getAttribute("error") || "Error";
+        err.style.color = "var(--color-danger, var(--color-text))";
+        err.style.padding = "var(--space-md)";
+        this.appendChild(err);
+        return;
+      }
+      if (this.hasAttribute("skeleton")) {
+        const count = Math.min(5, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
+        for (let i = 0; i < count; i++) {
+          const sk = document.createElement("span");
+          sk.className = "c-skeleton c-pagination__skeleton";
+          sk.style.display = "inline-block";
+          sk.style.inlineSize = "2rem";
+          sk.style.blockSize = "2rem";
+          sk.style.marginInlineEnd = "var(--space-2xs)";
+          this.appendChild(sk);
+        }
+        return;
+      }
       // Drop previously generated links so a re-render cannot stack a second set.
       Array.from(this.querySelectorAll(".c-pagination__link")).forEach((n) => n.remove());
-      const pages = this.getAttribute("pages");
       const current = parseInt(this.getAttribute("current") || "1", 10);
       if (pages) {
         const count = parseInt(pages, 10);
@@ -585,6 +675,13 @@ class ContourPagination extends ContourBase {
           }
           this.appendChild(btn);
         }
+      } else {
+        const empty = document.createElement("div");
+        empty.className = "c-pagination__empty";
+        empty.textContent = this.getAttribute("empty") || "No data";
+        empty.style.color = "var(--color-text-muted)";
+        empty.style.padding = "var(--space-md)";
+        this.appendChild(empty);
       }
     }
     enhance() {
