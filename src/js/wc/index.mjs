@@ -4,6 +4,7 @@
 import { REGISTERED } from "./core.mjs";
 import "./core.mjs";
 import "./behaviours.mjs";
+import "./states.mjs";
 import "./content.mjs";
 import "./dashboard.mjs";
 import "./data.mjs";

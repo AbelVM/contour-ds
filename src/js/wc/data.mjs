@@ -1394,33 +1394,79 @@ class ContourBivariate extends ContourBase {
   }
   define("contour-bivariate", ContourBivariate);
 class ContourSurvey extends ContourBase {
-    static get observed() { return ["date", "instrument"]; }
+    static get observed() { return ["date", "instrument", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { date: { attribute: "date" }, instrument: { attribute: "instrument" } }; }
     render() {
       this.classList.add("c-survey");
+      const src = this.getAttribute("src");
+      const date = this.getAttribute("date");
+      if (src && !this.getAttribute("date") && !this.getAttribute("instrument") && this._srcFetched !== src) {
+        this._srcFetched = src;
+        this._loading = true;
+        this.attributeChangedCallback("__rerender__", null, "");
+        fetch(src).then((r) => r.json()).then((data) => {
+          this._remoteData = data;
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        }).catch(() => {
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        });
+      }
+      const loading = this.hasAttribute("loading") || this._loading;
+      if (loading) {
+        const loadingEl = document.createElement("span");
+        loadingEl.className = "c-survey__loading";
+        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
+        loadingEl.style.color = "var(--color-text-muted)";
+        this.appendChild(loadingEl);
+        return;
+      }
+      if (this.hasAttribute("error")) {
+        const err = document.createElement("span");
+        err.className = "c-survey__error";
+        err.textContent = this.getAttribute("error") || "Error";
+        err.style.color = "var(--color-danger, var(--color-text))";
+        this.appendChild(err);
+        return;
+      }
+      if (this.hasAttribute("skeleton")) {
+        const sk = document.createElement("span");
+        sk.className = "c-skeleton c-survey__skeleton";
+        sk.style.inlineSize = "4rem";
+        sk.style.blockSize = "1rem";
+        this.appendChild(sk);
+        return;
+      }
       // Drop previously generated nodes so a re-render cannot stack a second set.
       Array.from(this.childNodes).forEach((n) => {
         if (n.nodeType === Node.TEXT_NODE) { if (n.textContent.trim() === "Surveyed" || n.textContent.trim() === "·") n.remove(); }
         else if (n.classList && (n.classList.contains("c-survey__value") || n.classList.contains("c-survey__sep"))) n.remove();
       });
-      const date = this.getAttribute("date");
-      const instrument = this.getAttribute("instrument");
-      if (date) {
-        const v = document.createElement("span");
-        v.className = "c-survey__value";
-        v.textContent = date;
-        this.appendChild(document.createTextNode("Surveyed "));
-        this.appendChild(v);
-        if (instrument) {
-          const sep = document.createElement("span");
-          sep.className = "c-survey__sep";
-          sep.textContent = "·";
-          this.appendChild(sep);
-          const v2 = document.createElement("span");
-          v2.className = "c-survey__value";
-          v2.textContent = instrument;
-          this.appendChild(v2);
-        }
+      const rDate = date || (this._remoteData && this._remoteData.date);
+      const instrument = this.getAttribute("instrument") || (this._remoteData && this._remoteData.instrument);
+      if (!rDate) {
+        const empty = document.createElement("span");
+        empty.className = "c-survey__empty";
+        empty.textContent = this.getAttribute("empty") || "No data";
+        empty.style.color = "var(--color-text-muted)";
+        this.appendChild(empty);
+        return;
+      }
+      const v = document.createElement("span");
+      v.className = "c-survey__value";
+      v.textContent = rDate;
+      this.appendChild(document.createTextNode("Surveyed "));
+      this.appendChild(v);
+      if (instrument) {
+        const sep = document.createElement("span");
+        sep.className = "c-survey__sep";
+        sep.textContent = "·";
+        this.appendChild(sep);
+        const v2 = document.createElement("span");
+        v2.className = "c-survey__value";
+        v2.textContent = instrument;
+        this.appendChild(v2);
       }
     }
   }

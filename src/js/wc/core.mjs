@@ -24,6 +24,33 @@
   // browser was handed.
   export const REGISTERED = [];
 
+  // Per-host teardown, run when a host leaves the page.
+  //
+  // The layer had no way to stop anything: `grep -c removeEventListener src/js/wc`
+  // returned 0, and each component relied on GC. That is sound for a listener on a
+  // node the host owns, because the node and its listeners die together — but a
+  // fetch, a timer, or an IntersectionObserver is not owned by a node. It is owned
+  // by the document, and it outlives the host that asked for it. Measured
+  // (tmp/wc9/probe.mjs, 2026-10-27): a `contour-readout src=…` removed from the page
+  // mid-request kept `loadingAfterDetach: 2` stale nodes and was still written to
+  // after `isConnected` went false.
+  //
+  // So anything a host starts against the document registers its cleanup here, and
+  // `disconnectedCallback` runs the list. A reconnect re-renders and re-registers,
+  // which is why the list is dropped rather than kept: one disposal per mount.
+  const DISPOSERS = new WeakMap();
+  export const onDispose = (host, fn) => {
+    let list = DISPOSERS.get(host);
+    if (!list) { list = []; DISPOSERS.set(host, list); }
+    list.push(fn);
+  };
+  const runDisposers = (host) => {
+    const list = DISPOSERS.get(host);
+    if (!list) return;
+    DISPOSERS.delete(host);
+    for (const fn of list) { try { fn(); } catch (e) { /* one bad cleanup cannot strand the rest */ } }
+  };
+
   // Monotonic counter for unique IDs (avoids Math.random() collision risk).
   let _contourIdCounter = 0;
   export const contourId = (prefix) => prefix + "-" + (++_contourIdCounter).toString(36);
@@ -360,6 +387,7 @@
       this._ensureCache = null;
       this._batchDepth = 0;
       this._batchDirty = false;
+      runDisposers(this);
       // Override in subclasses that attach event listeners or timers.
     }
 

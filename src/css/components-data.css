@@ -2091,6 +2091,12 @@
     text-transform: uppercase;
   }
 
+  .c-survey__empty,
+  .c-survey__loading,
+  .c-survey__error {
+    color: var(--color-text-muted);
+  }
+
   .c-survey__value {
     font-size: var(--type-body);
     font-weight: var(--weight-semibold);
