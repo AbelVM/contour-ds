@@ -123,7 +123,7 @@ class ContourTimeSlider extends ContourBase {
   }
   define("contour-time-slider", ContourTimeSlider);
 class ContourHexbin extends ContourBase {
-    static get observed() { return ["label", "cells", "empty", "loading", "error", "src"]; }
+    static get observed() { return ["label", "cells", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { label: { attribute: "label" }, cells: { attribute: "cells" } }; }
     render() {
       this.classList.add("c-hexbin");
@@ -162,16 +162,30 @@ class ContourHexbin extends ContourBase {
          this.appendChild(loadingEl);
          return;
        }
-       if (this.hasAttribute("error")) {
-         const err = document.createElement("div");
-         err.className = "c-hexbin__error";
-         err.textContent = this.getAttribute("error") || "Error";
-         err.style.gridColumn = "1 / -1";
-         err.style.color = "var(--color-danger, var(--color-text))";
-         err.style.padding = "var(--space-md)";
-         this.appendChild(err);
-         return;
-       }
+        if (this.hasAttribute("error")) {
+          const err = document.createElement("div");
+          err.className = "c-hexbin__error";
+          err.textContent = this.getAttribute("error") || "Error";
+          err.style.gridColumn = "1 / -1";
+          err.style.color = "var(--color-danger, var(--color-text))";
+          err.style.padding = "var(--space-md)";
+          this.appendChild(err);
+          return;
+        }
+        if (this.hasAttribute("skeleton")) {
+          const count = Math.min(9, Math.max(1, parseInt(this.getAttribute("skeleton") || "4", 10) || 4));
+          const cols = Math.ceil(Math.sqrt(count));
+          this.style.gridTemplateColumns = "repeat(" + cols + ", 1fr)";
+          this.style.inlineSize = "16rem";
+          for (let i = 0; i < count; i++) {
+            const sk = document.createElement("div");
+            sk.className = "c-skeleton c-hexbin__skeleton";
+            sk.style.aspectRatio = "1";
+            sk.style.clipPath = "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)";
+            this.appendChild(sk);
+          }
+          return;
+        }
         if (effectiveCells) {
          try {
            const parsed = JSON.parse(effectiveCells);
@@ -227,7 +241,7 @@ class ContourHexbin extends ContourBase {
   }
   define("contour-hexbin", ContourHexbin);
 class ContourFlowMap extends ContourBase {
-    static get observed() { return ["label", "nodes", "empty", "loading", "error", "src"]; }
+    static get observed() { return ["label", "nodes", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { label: { attribute: "label" }, nodes: { attribute: "nodes" } }; }
     render() {
       this.classList.add("c-flow-map");
@@ -265,16 +279,29 @@ class ContourFlowMap extends ContourBase {
          this.appendChild(loadingEl);
          return;
        }
-       if (this.hasAttribute("error")) {
-         const err = document.createElement("div");
-         err.className = "c-flow-map__error";
-         err.textContent = this.getAttribute("error") || "Error";
-         err.style.color = "var(--color-danger, var(--color-text))";
-         err.style.padding = "var(--space-md)";
-         this.appendChild(err);
-         return;
-       }
-       if (effectiveNodes) {
+        if (this.hasAttribute("error")) {
+          const err = document.createElement("div");
+          err.className = "c-flow-map__error";
+          err.textContent = this.getAttribute("error") || "Error";
+          err.style.color = "var(--color-danger, var(--color-text))";
+          err.style.padding = "var(--space-md)";
+          this.appendChild(err);
+          return;
+        }
+        if (this.hasAttribute("skeleton")) {
+          const count = Math.min(5, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
+          for (let i = 0; i < count; i++) {
+            const sk = document.createElement("span");
+            sk.className = "c-skeleton c-flow-map__skeleton";
+            sk.style.display = "inline-block";
+            sk.style.inlineSize = "3rem";
+            sk.style.blockSize = "1rem";
+            sk.style.marginInlineEnd = "var(--space-xs)";
+            this.appendChild(sk);
+          }
+          return;
+        }
+        if (effectiveNodes) {
          try {
            const parsed = JSON.parse(effectiveNodes);
            Array.from(this.querySelectorAll(".c-flow-map__node, .c-flow-map__flow")).forEach((n) => n.remove());
@@ -325,7 +352,7 @@ class ContourFlowMap extends ContourBase {
   }
   define("contour-flow-map", ContourFlowMap);
 class ContourIsochrone extends ContourBase {
-    static get observed() { return ["label", "center", "rings", "empty", "loading", "error", "src"]; }
+    static get observed() { return ["label", "center", "rings", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { label: { attribute: "label" }, center: { attribute: "center" }, rings: { attribute: "rings" } }; }
     render() {
       this.classList.add("c-isochrone");
@@ -403,7 +430,7 @@ class ContourIsochrone extends ContourBase {
   }
   define("contour-isochrone", ContourIsochrone);
 class ContourCatchment extends ContourBase {
-    static get observed() { return ["label", "area", "center", "empty", "loading", "error", "src"]; }
+    static get observed() { return ["label", "area", "center", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { label: { attribute: "label" }, area: { attribute: "area" }, center: { attribute: "center" } }; }
     render() {
       this.classList.add("c-catchment");
@@ -440,6 +467,19 @@ class ContourCatchment extends ContourBase {
         err.style.color = "var(--color-danger, var(--color-text))";
         err.style.padding = "var(--space-md)";
         this.appendChild(err);
+        return;
+      }
+      if (this.hasAttribute("skeleton")) {
+        const count = Math.min(5, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
+        for (let i = 0; i < count; i++) {
+          const sk = document.createElement("span");
+          sk.className = "c-skeleton c-catchment__skeleton";
+          sk.style.display = "inline-block";
+          sk.style.inlineSize = "3rem";
+          sk.style.blockSize = "1rem";
+          sk.style.marginInlineEnd = "var(--space-xs)";
+          this.appendChild(sk);
+        }
         return;
       }
       const label = this.getAttribute("label") || this._remoteLabel;

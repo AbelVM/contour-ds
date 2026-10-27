@@ -1189,7 +1189,7 @@ class ContourMeasure extends ContourBase {
   }
   define("contour-measure", ContourMeasure);
 class ContourTimeline extends ContourBase {
-    static get observed() { return ["items", "empty", "loading", "error", "retry"]; }
+    static get observed() { return ["items", "empty", "loading", "error", "retry", "skeleton"]; }
     static get properties() { return { items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-timeline");
@@ -1218,6 +1218,18 @@ class ContourTimeline extends ContourBase {
           err.appendChild(btn);
         }
         this.appendChild(err);
+        return;
+      }
+      if (this.hasAttribute("skeleton")) {
+        const count = Math.min(5, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
+        for (let i = 0; i < count; i++) {
+          const sk = document.createElement("div");
+          sk.className = "c-skeleton c-timeline__skeleton";
+          sk.style.display = "block";
+          sk.style.blockSize = "1rem";
+          sk.style.marginBlockEnd = "var(--space-xs)";
+          this.appendChild(sk);
+        }
         return;
       }
       const authored = Array.from(this.children).filter((n) => n.classList && n.classList.contains("c-timeline__item"));
@@ -1501,7 +1513,7 @@ class ContourCompare extends ContourBase {
   }
   define("contour-compare", ContourCompare);
 class ContourSparkline extends ContourBase {
-    static get observed() { return ["points", "empty", "loading", "error", "retry"]; }
+    static get observed() { return ["points", "empty", "loading", "error", "retry", "skeleton"]; }
     static get properties() { return { points: { attribute: "points" } }; }
     render() {
       this.classList.add("c-sparkline");
@@ -1532,6 +1544,15 @@ class ContourSparkline extends ContourBase {
           err.appendChild(btn);
         }
         this.appendChild(err);
+        return;
+       }
+      if (this.hasAttribute("skeleton")) {
+        const sk = document.createElement("span");
+        sk.className = "c-skeleton c-sparkline__skeleton";
+        sk.style.display = "inline-block";
+        sk.style.inlineSize = "100%";
+        sk.style.blockSize = "100%";
+        this.appendChild(sk);
         return;
       }
       const points = this.getAttribute("points");
