@@ -106,16 +106,49 @@ class ContourMenu extends ContourBase {
   }
   define("contour-menu", ContourMenu);
 class ContourTabs extends ContourBase {
-    static get observed() { return ["tabs"]; }
+    static get observed() { return ["tabs", "empty", "loading", "error", "src"]; }
     static get properties() { return { tabs: { attribute: "tabs" } }; }
-render() {
-       this.classList.add("c-tabs");
-       // Slot composition wins over the JSON attribute, same as ContourMenu:
-       // authored tab buttons and panels stay across re-renders and the
-       // JSON scaffolding only fills in when the host is empty.
-       const authored = Array.from(this.children).filter((n) => !n.classList || !n.classList.contains("c-tabs__list"));
-       const tabs = this.getAttribute("tabs");
-       if (tabs && !authored.length) {
+    render() {
+      this.classList.add("c-tabs");
+      const src = this.getAttribute("src");
+      const tabs = this.getAttribute("tabs") || (this._remoteTabs ? JSON.stringify(this._remoteTabs) : null);
+      if (src && !this.getAttribute("tabs") && this._srcFetched !== src) {
+        this._srcFetched = src;
+        this._loading = true;
+        this.attributeChangedCallback("__rerender__", null, "");
+        fetch(src).then((r) => r.json()).then((data) => {
+          this._remoteTabs = data;
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        }).catch(() => {
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        });
+      }
+      const loading = this.hasAttribute("loading") || this._loading;
+      if (loading) {
+        const loadingEl = document.createElement("div");
+        loadingEl.className = "c-tabs__loading";
+        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
+        loadingEl.style.color = "var(--color-text-muted)";
+        loadingEl.style.padding = "var(--space-md)";
+        this.appendChild(loadingEl);
+        return;
+      }
+      if (this.hasAttribute("error")) {
+        const err = document.createElement("div");
+        err.className = "c-tabs__error";
+        err.textContent = this.getAttribute("error") || "Error";
+        err.style.color = "var(--color-danger, var(--color-text))";
+        err.style.padding = "var(--space-md)";
+        this.appendChild(err);
+        return;
+      }
+      // Slot composition wins over the JSON attribute, same as ContourMenu:
+      // authored tab buttons and panels stay across re-renders and the
+      // JSON scaffolding only fills in when the host is empty.
+      const authored = Array.from(this.children).filter((n) => !n.classList || !n.classList.contains("c-tabs__list"));
+      if (tabs && !authored.length) {
          try {
            const parsed = JSON.parse(tabs);
            const list = this.ensure(".c-tabs__list", () => { const el = document.createElement("div"); el.className = "c-tabs__list"; el.setAttribute("role", "tablist"); return el; });
@@ -132,10 +165,16 @@ render() {
            });
            if (list.parentNode !== this) this.prepend(list);
          } catch (e) { /* keep existing */ }
-       } else if (!tabs && !authored.length) {
-         const list = this.querySelector(".c-tabs__list");
-         if (list) list.remove();
-       }
+        } else if (!tabs && !authored.length) {
+          const list = this.querySelector(".c-tabs__list");
+          if (list) list.remove();
+          const empty = document.createElement("div");
+          empty.className = "c-tabs__empty";
+          empty.textContent = this.getAttribute("empty") || "No data";
+          empty.style.color = "var(--color-text-muted)";
+          empty.style.padding = "var(--space-md)";
+          this.appendChild(empty);
+        }
      }
     enhance() {
       // Interaction lives in behaviours.mjs, which the shadow wrappers call too.

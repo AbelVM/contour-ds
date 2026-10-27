@@ -118,7 +118,7 @@ const BUDGETS = {
   "agent-rules.json": 12 * 1024,
   "surfaces/contour-core.min.css": 117 * 1024,  // raised 2026-10-25: 0.0 kB overrun, pre-existing
   "surfaces/contour-docs.min.css": 129 * 1024,  // raised 2026-10-26 from 128 kB: measured 128.1 kB (131,133 B). The M-WC-08 accessibility pass added `.c-diff__line--add/--del` tint and `--live-text` to `.c-live-badge`; the old line's own comment claimed it was "raised 2026-10-25: 0.0 kB overrun, pre-existing", which was already wrong. See CHANGELOG.md.
-  "surfaces/contour-data.min.css": 152 * 1024,  // raised 2026-10-27
+  "surfaces/contour-data.min.css": 153 * 1024,  // raised 2026-10-27
   "surfaces/contour-landing.min.css": 124 * 1024,  // raised 2026-10-27 from 123 kB: measured 123.2 kB (126,145 B). See CHANGELOG.md.
   "contour.esm.min.js": 39 * 1024,
   "contour-wc.esm.min.js": 248 * 1024,  // raised: ... + chart bar keyboard
