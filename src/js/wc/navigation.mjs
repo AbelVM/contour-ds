@@ -1,12 +1,46 @@
 import { ContourBase, define } from './core.mjs';
 import { wireMenu, wirePagination, wireTabs, wireTree } from './behaviours.mjs';
 class ContourMenu extends ContourBase {
-    static get observed() { return ["items"]; }
+    static get observed() { return ["items", "empty", "loading", "error", "src"]; }
     static get properties() { return { items: { attribute: "items" } }; }
-render() {
-       this.classList.add("c-menu");
-       if (!this.hasAttribute("role")) this.setAttribute("role", "menu");
-       // Slot composition wins over the JSON attribute. A consumer who has
+    render() {
+      this.classList.add("c-menu");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "menu");
+      const src = this.getAttribute("src");
+      const items = this.getAttribute("items") || (this._remoteItems ? JSON.stringify(this._remoteItems) : null);
+      if (src && !this.getAttribute("items") && this._srcFetched !== src) {
+        this._srcFetched = src;
+        this._loading = true;
+        this.attributeChangedCallback("__rerender__", null, "");
+        fetch(src).then((r) => r.json()).then((data) => {
+          this._remoteItems = data;
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        }).catch(() => {
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        });
+      }
+      const loading = this.hasAttribute("loading") || this._loading;
+      if (loading) {
+        const loadingEl = document.createElement("div");
+        loadingEl.className = "c-menu__loading";
+        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
+        loadingEl.style.color = "var(--color-text-muted)";
+        loadingEl.style.padding = "var(--space-md)";
+        this.appendChild(loadingEl);
+        return;
+      }
+      if (this.hasAttribute("error")) {
+        const err = document.createElement("div");
+        err.className = "c-menu__error";
+        err.textContent = this.getAttribute("error") || "Error";
+        err.style.color = "var(--color-danger, var(--color-text))";
+        err.style.padding = "var(--space-md)";
+        this.appendChild(err);
+        return;
+      }
+      // Slot composition wins over the JSON attribute.
        // authored `<li>` children is composing the menu directly; rebuilding
        // it from `items` would throw those away on every attribute change.
        // The base class restores authored nodes before this runs, so the
@@ -20,7 +54,6 @@ render() {
          this.appendChild(ul);
          return;
        }
-       const items = this.getAttribute("items");
        if (items) {
          try {
            const parsed = JSON.parse(items);
