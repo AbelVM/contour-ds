@@ -150,6 +150,13 @@
     overflow: hidden;
   }
 
+  .c-threshold__empty,
+  .c-threshold__loading,
+  .c-threshold__error {
+    color: var(--color-text-muted);
+    padding: var(--space-md);
+  }
+
   .c-threshold__fill {
     position: absolute;
     inset-block: 0;
@@ -1744,6 +1751,13 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     overflow: hidden;
+  }
+
+  .c-streaming-chart__empty,
+  .c-streaming-chart__loading,
+  .c-streaming-chart__error {
+    color: var(--color-text-muted);
+    padding: var(--space-md);
   }
 
   .c-streaming-chart svg {

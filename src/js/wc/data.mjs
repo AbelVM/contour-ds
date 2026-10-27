@@ -929,14 +929,62 @@ class ContourComparison extends ContourBase {
   }
   define("contour-comparison", ContourComparison);
 class ContourStreamingChart extends ContourBase {
-    static get observed() { return ["line", "dot"]; }
+    static get observed() { return ["line", "dot", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { line: { attribute: "line" }, dot: { attribute: "dot" } }; }
     render() {
       this.classList.add("c-streaming-chart");
-      const line = this.getAttribute("line");
+      const src = this.getAttribute("src");
+      const line = this.getAttribute("line") || (this._remoteLine ? this._remoteLine : null);
+      if (src && !this.getAttribute("line") && this._srcFetched !== src) {
+        this._srcFetched = src;
+        this._loading = true;
+        this.attributeChangedCallback("__rerender__", null, "");
+        fetch(src).then((r) => r.json()).then((data) => {
+          this._remoteLine = (data && (data.line || data)) || null;
+          this._remoteDot = (data && data.dot) || null;
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        }).catch(() => {
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        });
+      }
+      const loading = this.hasAttribute("loading") || this._loading;
+      if (loading) {
+        const loadingEl = document.createElement("div");
+        loadingEl.className = "c-streaming-chart__loading";
+        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
+        loadingEl.style.color = "var(--color-text-muted)";
+        loadingEl.style.padding = "var(--space-md)";
+        this.appendChild(loadingEl);
+        return;
+      }
+      if (this.hasAttribute("error")) {
+        const err = document.createElement("div");
+        err.className = "c-streaming-chart__error";
+        err.textContent = this.getAttribute("error") || "Error";
+        err.style.color = "var(--color-danger, var(--color-text))";
+        err.style.padding = "var(--space-md)";
+        this.appendChild(err);
+        return;
+      }
+      if (this.hasAttribute("skeleton")) {
+        const sk = document.createElement("div");
+        sk.className = "c-skeleton c-streaming-chart__skeleton";
+        sk.style.blockSize = "6rem";
+        this.appendChild(sk);
+        return;
+      }
+      const dot = this.getAttribute("dot") || this._remoteDot;
       if (!line) {
         const svg = this.querySelector("svg");
         if (svg) svg.remove();
+        const empty = document.createElement("div");
+        empty.className = "c-streaming-chart__empty";
+        empty.textContent = this.getAttribute("empty") || "No data";
+        empty.style.color = "var(--color-text-muted)";
+        empty.style.padding = "var(--space-md)";
+        this.appendChild(empty);
         return;
       }
       if (line) {
@@ -954,7 +1002,6 @@ class ContourStreamingChart extends ContourBase {
           svg.appendChild(path);
         }
         path.setAttribute("d", line);
-        const dot = this.getAttribute("dot");
         if (dot) {
           let circle = svg.querySelector(".c-streaming-chart__live-dot");
           if (!circle) {
@@ -1284,26 +1331,72 @@ class ContourSurvey extends ContourBase {
   }
   define("contour-survey", ContourSurvey);
 class ContourThreshold extends ContourBase {
-    static get observed() { return ["label", "norm", "state", "value"]; }
+    static get observed() { return ["label", "norm", "state", "value", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { label: { attribute: "label" }, norm: { attribute: "norm" }, state: { attribute: "state" }, value: { attribute: "value" } }; }
     render() {
       this.classList.add("c-threshold");
+      const src = this.getAttribute("src");
+      const value = this.getAttribute("value");
+      if (src && !this.getAttribute("value") && !this.getAttribute("norm") && this._srcFetched !== src) {
+        this._srcFetched = src;
+        this._loading = true;
+        this.attributeChangedCallback("__rerender__", null, "");
+        fetch(src).then((r) => r.json()).then((data) => {
+          this._remoteData = data;
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        }).catch(() => {
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        });
+      }
+      const loading = this.hasAttribute("loading") || this._loading;
+      if (loading) {
+        const loadingEl = document.createElement("div");
+        loadingEl.className = "c-threshold__loading";
+        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
+        loadingEl.style.color = "var(--color-text-muted)";
+        loadingEl.style.padding = "var(--space-md)";
+        this.appendChild(loadingEl);
+        return;
+      }
+      if (this.hasAttribute("error")) {
+        const err = document.createElement("div");
+        err.className = "c-threshold__error";
+        err.textContent = this.getAttribute("error") || "Error";
+        err.style.color = "var(--color-danger, var(--color-text))";
+        err.style.padding = "var(--space-md)";
+        this.appendChild(err);
+        return;
+      }
+      if (this.hasAttribute("skeleton")) {
+        const sk = document.createElement("div");
+        sk.className = "c-skeleton c-threshold__skeleton";
+        sk.style.blockSize = "1rem";
+        this.appendChild(sk);
+        return;
+      }
       // The sheet reads this block through custom properties and a state
       // attribute — `.c-threshold__fill { inline-size: var(--value) }`,
       // `.c-threshold__target { inset-inline-start: var(--target) }` and
       // `.c-threshold[data-state="…"]` — so the element sets those, not text.
-      const value = this.getAttribute("value");
-      const target = this.getAttribute("norm");
-      const state = this.getAttribute("state");
-      const label = this.getAttribute("label");
-      const pct = (v) => {
-        const n = Number(v);
-        if (!Number.isFinite(n)) return String(v);
-        return (n <= 1 ? n * 100 : n) + "%";
-      };
-      if (value) {
+      const pct = (v) => { const n = Number(v); if (!Number.isFinite(n)) return String(v); return (n <= 1 ? n * 100 : n) + "%"; };
+      const rValue = value || (this._remoteData && this._remoteData.value);
+      const target = this.getAttribute("norm") || (this._remoteData && this._remoteData.norm);
+      const state = this.getAttribute("state") || (this._remoteData && this._remoteData.state);
+      const label = this.getAttribute("label") || (this._remoteData && this._remoteData.label);
+      if (!rValue && !target && !label) {
+        const empty = document.createElement("div");
+        empty.className = "c-threshold__empty";
+        empty.textContent = this.getAttribute("empty") || "No data";
+        empty.style.color = "var(--color-text-muted)";
+        empty.style.padding = "var(--space-md)";
+        this.appendChild(empty);
+        return;
+      }
+      if (rValue) {
         const v = this.ensure(".c-threshold__fill", () => { const el = document.createElement("span"); el.className = "c-threshold__fill"; return el; });
-        v.style.setProperty("--value", pct(value));
+        v.style.setProperty("--value", pct(rValue));
       } else {
         const v = this.querySelector(".c-threshold__fill");
         if (v) v.remove();
@@ -1320,7 +1413,7 @@ class ContourThreshold extends ContourBase {
       if (label) this.setAttribute("aria-label", label);
     }
   }
-  define("contour-threshold", ContourThreshold);
+define("contour-threshold", ContourThreshold);
 class ContourMetricsFull extends ContourBase {
     render() {
       this.classList.add("c-metrics");
