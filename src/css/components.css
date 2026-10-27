@@ -732,6 +732,7 @@
    .c-tree__empty,
    .c-tree__error {
      color: var(--color-text-muted);
+     padding: var(--space-md);
    }
 
   /* Drag and drop: visual vocabulary for draggable items and drop zones. */

@@ -455,7 +455,7 @@ class ContourTable extends ContourBase {
           this._sortDir = 1;
         }
         this.dispatchEvent(new CustomEvent("contour:sort", { bubbles: true, composed: true, detail: { column: idx, direction: this._sortDir === 1 ? "ascending" : "descending" } }));
-        this.attributeChangedCallback("__rerender__", null, "");
+        this.requestRender();
       };
       this.addEventListener("click", (e) => {
         const retryBtn = e.target && e.target.closest ? e.target.closest('button[data-action="retry"]') : null;
@@ -481,7 +481,7 @@ class ContourTable extends ContourBase {
           this._page = page;
           this._pageAttrLast = String(page);
           this.dispatchEvent(new CustomEvent("contour:page", { bubbles: true, composed: true, detail: { page } }));
-          this.attributeChangedCallback("__rerender__", null, "");
+          this.requestRender();
         }
       });
       this.addEventListener("keydown", (e) => {

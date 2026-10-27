@@ -187,41 +187,6 @@ render() {
         loadRemote(this, "items");
         if (renderStates(this, "tree")) return;
         const items = remoteData(this, "items");
-        if (this.hasAttribute("loading") || (this._loading && !items)) {
-          // show loading placeholder
-          if (!this.querySelector(".c-tree__loading")) {
-            const loading = document.createElement("div");
-            loading.className = "c-tree__loading";
-            loading.textContent = "Loading…";
-            loading.style.color = "var(--color-text-muted)";
-            loading.style.padding = "var(--space-md)";
-            this.appendChild(loading);
-          }
-          return;
-        }
-        if (this.hasAttribute("error")) {
-          const err = document.createElement("div");
-          err.className = "c-tree__error";
-          err.textContent = this.getAttribute("error") || "Error";
-          err.style.color = "var(--color-danger, var(--color-text))";
-          err.style.padding = "var(--space-md)";
-          this.appendChild(err);
-          return;
-        }
-        if (this.hasAttribute("skeleton")) {
-          const count = Math.min(5, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
-          for (let i = 0; i < count; i++) {
-            const sk = document.createElement("div");
-            sk.className = "c-skeleton c-tree__skeleton";
-            sk.style.blockSize = "1.5rem";
-            sk.style.marginBlockEnd = "var(--space-2xs)";
-            this.appendChild(sk);
-          }
-          return;
-        }
-        // remove loading placeholder
-        const lp = this.querySelector(".c-tree__loading");
-        if (lp) lp.remove();
         if (items && !authored.length) {
          try {
            const parsed = JSON.parse(items);
@@ -291,12 +256,7 @@ render() {
            if (rootUl.parentNode !== this) this.appendChild(rootUl);
         } catch (e) { /* keep existing */ }
       } else if (!items && !authored.length) {
-        const empty = document.createElement("div");
-        empty.className = "c-tree__empty";
-        empty.textContent = this.getAttribute("empty") || "No data";
-        empty.style.color = "var(--color-text-muted)";
-        empty.style.padding = "var(--space-md)";
-        this.appendChild(empty);
+        renderEmpty(this, "tree");
       }
     }
     enhance() {
