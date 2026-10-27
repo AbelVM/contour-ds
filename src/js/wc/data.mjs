@@ -43,68 +43,21 @@ class ContourReadout extends ContourBase {
   }
 define("contour-readout", ContourReadout);
 class ContourKpi extends ContourBase {
-    static get observed() { return ["value", "label", "delta", "direction", "note", "variant", "unit", "empty", "loading", "error", "src", "skeleton"]; }
+    static get observed() { return ["value", "label", "delta", "direction", "note", "variant", "unit", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() {
-      return {
-        value: { attribute: "value" },
-        label: { attribute: "label" },
-        delta: { attribute: "delta" },
-        direction: { attribute: "direction" },
-        note: { attribute: "note" },
-        variant: { attribute: "variant" },
-        unit: { attribute: "unit" },
-      };
+      return { value: { attribute: "value" }, label: { attribute: "label" }, delta: { attribute: "delta" }, direction: { attribute: "direction" }, note: { attribute: "note" }, variant: { attribute: "variant" }, unit: { attribute: "unit" } };
     }
     render() {
       this.classList.add("c-kpi");
-      const src = this.getAttribute("src");
-      const value = this.getAttribute("value") || (this._remoteData && this._remoteData.value != null ? String(this._remoteData.value) : null);
-      if (src && !this.getAttribute("value") && !this.getAttribute("label") && this._srcFetched !== src) {
-        this._srcFetched = src;
-        this._loading = true;
-        this.attributeChangedCallback("__rerender__", null, "");
-        fetch(src).then((r) => r.json()).then((data) => {
-          this._remoteData = data;
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        }).catch(() => {
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        });
-      }
-      const loading = this.hasAttribute("loading") || this._loading;
-      if (loading) {
-        const loadingEl = document.createElement("div");
-        loadingEl.className = "c-kpi__loading";
-        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
-        loadingEl.style.color = "var(--color-text-muted)";
-        loadingEl.style.padding = "var(--space-md)";
-        this.appendChild(loadingEl);
-        return;
-      }
-      if (this.hasAttribute("error")) {
-        const err = document.createElement("div");
-        err.className = "c-kpi__error";
-        err.textContent = this.getAttribute("error") || "Error";
-        err.style.color = "var(--color-danger, var(--color-text))";
-        err.style.padding = "var(--space-md)";
-        this.appendChild(err);
-        return;
-      }
-      if (this.hasAttribute("skeleton")) {
-        const sk = document.createElement("div");
-        sk.className = "c-skeleton c-kpi__skeleton";
-        sk.style.blockSize = "3rem";
-        this.appendChild(sk);
-        return;
-      }
-      // Apply variant modifier if declared.
+      wireStates(this);
+      loadRemote(this, ["value", "label"]);
+      if (renderStates(this, "kpi")) return;
+      const value = remoteData(this, "value");
+      const label = remoteData(this, "label");
+      const delta = this.getAttribute("delta");
       const variant = this.getAttribute("variant");
-      // Remove any previous variant modifier.
       Array.from(this.classList).forEach((c) => { if (c.startsWith("c-kpi--")) this.classList.remove(c); });
       if (variant) this.classList.add("c-kpi--" + variant);
-      const label = this.getAttribute("label") || (this._remoteData && this._remoteData.label != null ? String(this._remoteData.label) : null);
-      const delta = this.getAttribute("delta");
       if (value) {
         const v = this.ensure(".c-kpi__value", () => { const el = document.createElement("div"); el.className = "c-kpi__value"; return el; });
         v.textContent = value;
@@ -123,9 +76,6 @@ class ContourKpi extends ContourBase {
         if (h) h.remove();
       }
       if (delta) {
-        // `.c-kpi` has no `__delta` element. The guide's card puts a `.c-delta`
-        // inside `.c-kpi__foot`, beside the note, so the foot is built here and
-        // the delta is carried by the block that owns it.
         const f = this.ensure(".c-kpi__foot", () => { const el = document.createElement("div"); el.className = "c-kpi__foot"; return el; });
         const d = f.querySelector(".c-delta") || document.createElement("span");
         if (!d.parentNode) f.insertBefore(d, f.firstChild);
@@ -157,16 +107,11 @@ class ContourKpi extends ContourBase {
         }
       }
       if (!value && !label) {
-        const empty = document.createElement("div");
-        empty.className = "c-kpi__empty";
-        empty.textContent = this.getAttribute("empty") || "No data";
-        empty.style.color = "var(--color-text-muted)";
-        empty.style.padding = "var(--space-md)";
-        this.appendChild(empty);
+        renderEmpty(this, "kpi");
       }
     }
   }
-  define("contour-kpi", ContourKpi);
+define("contour-kpi", ContourKpi);
 class ContourTable extends ContourBase {
     static get observed() { return ["columns", "rows", "page", "page-size", "sort", "sort-dir", "virtual", "empty", "loading", "error", "retry", "skeleton"]; }
     static get properties() { return { columns: { attribute: "columns" }, rows: { attribute: "rows" }, page: { attribute: "page", type: Number }, pageSize: { attribute: "page-size", type: Number } }; }
@@ -1068,67 +1013,22 @@ class ContourMeter extends ContourBase {
   }
   define("contour-meter", ContourMeter);
 class ContourDelta extends ContourBase {
-    static get observed() { return ["value", "direction", "empty", "loading", "error", "src", "skeleton"]; }
+    static get observed() { return ["value", "direction", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { value: { attribute: "value" }, direction: { attribute: "direction" } }; }
     render() {
       this.classList.add("c-delta");
-      const src = this.getAttribute("src");
-      const value = this.getAttribute("value") || (this._remoteData && this._remoteData.value) || "";
-      if (src && !this.getAttribute("value") && this._srcFetched !== src) {
-        this._srcFetched = src;
-        this._loading = true;
-        this.attributeChangedCallback("__rerender__", null, "");
-        fetch(src).then((r) => r.json()).then((data) => {
-          this._remoteData = data;
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        }).catch(() => {
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        });
-      }
-      const loading = this.hasAttribute("loading") || this._loading;
-      if (loading) {
-        const loadingEl = document.createElement("span");
-        loadingEl.className = "c-delta__loading";
-        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
-        loadingEl.style.color = "var(--color-text-muted)";
-        this.appendChild(loadingEl);
-        return;
-      }
-      if (this.hasAttribute("error")) {
-        const err = document.createElement("span");
-        err.className = "c-delta__error";
-        err.textContent = this.getAttribute("error") || "Error";
-        err.style.color = "var(--color-danger, var(--color-text))";
-        this.appendChild(err);
-        return;
-      }
-      if (this.hasAttribute("skeleton")) {
-        const sk = document.createElement("span");
-        sk.className = "c-skeleton c-delta__skeleton";
-        sk.style.inlineSize = "3rem";
-        sk.style.blockSize = "1rem";
-        this.appendChild(sk);
-        return;
-      }
+      wireStates(this);
+      loadRemote(this, "value");
+      if (renderStates(this, "delta")) return;
+      const value = remoteData(this, "value") || "";
       Array.from(this.classList).forEach((c) => { if (c.startsWith("c-delta--")) this.classList.remove(c); });
       const direction = this.getAttribute("direction") || (this._remoteData && this._remoteData.direction) || "up";
       if (!value) {
-        const empty = document.createElement("span");
-        empty.className = "c-delta__empty";
-        empty.textContent = this.getAttribute("empty") || "No data";
-        empty.style.color = "var(--color-text-muted)";
-        this.appendChild(empty);
+        renderEmpty(this, "delta");
         return;
       }
-      // `.c-delta` carries no `__arrow` or `__value` element: `.c-delta svg` is
-      // the rule the block defines, so the arrow is a sprite icon and the number
-      // is a text node. The direction is a state modifier, never a node.
       this.classList.add("c-delta--" + direction);
       const icon = { up: "#i-arrow-up", down: "#i-arrow-down", flat: "#i-minus" }[direction] || "#i-arrow-up";
-      // The base class drops every node this render appended before running
-      // again, so the icon and the text are rebuilt, not guarded.
       this.querySelectorAll("svg").forEach((s) => s.remove());
       const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
       svg.setAttribute("aria-hidden", "true");
@@ -1139,54 +1039,17 @@ class ContourDelta extends ContourBase {
       this.appendChild(document.createTextNode(" " + value));
     }
   }
-  define("contour-delta", ContourDelta);
+define("contour-delta", ContourDelta);
 class ContourStat extends ContourBase {
-    static get observed() { return ["value", "label", "delta", "unit", "empty", "loading", "error", "src", "skeleton"]; }
+    static get observed() { return ["value", "label", "delta", "unit", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" }, delta: { attribute: "delta" }, unit: { attribute: "unit" } }; }
     render() {
       this.classList.add("c-stat");
-      const src = this.getAttribute("src");
-      const value = this.getAttribute("value") || (this._remoteData && this._remoteData.value != null ? String(this._remoteData.value) : null);
-      if (src && !this.getAttribute("value") && !this.getAttribute("label") && this._srcFetched !== src) {
-        this._srcFetched = src;
-        this._loading = true;
-        this.attributeChangedCallback("__rerender__", null, "");
-        fetch(src).then((r) => r.json()).then((data) => {
-          this._remoteData = data;
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        }).catch(() => {
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        });
-      }
-      const loading = this.hasAttribute("loading") || this._loading;
-      if (loading) {
-        const loadingEl = document.createElement("div");
-        loadingEl.className = "c-stat__loading";
-        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
-        loadingEl.style.color = "var(--color-text-muted)";
-        loadingEl.style.padding = "var(--space-md)";
-        this.appendChild(loadingEl);
-        return;
-      }
-      if (this.hasAttribute("error")) {
-        const err = document.createElement("div");
-        err.className = "c-stat__error";
-        err.textContent = this.getAttribute("error") || "Error";
-        err.style.color = "var(--color-danger, var(--color-text))";
-        err.style.padding = "var(--space-md)";
-        this.appendChild(err);
-        return;
-      }
-      if (this.hasAttribute("skeleton")) {
-        const sk = document.createElement("div");
-        sk.className = "c-skeleton c-stat__skeleton";
-        sk.style.blockSize = "2rem";
-        this.appendChild(sk);
-        return;
-      }
-      const label = this.getAttribute("label") || (this._remoteData && this._remoteData.label != null ? String(this._remoteData.label) : null);
+      wireStates(this);
+      loadRemote(this, ["value", "label"]);
+      if (renderStates(this, "stat")) return;
+      const value = remoteData(this, "value");
+      const label = remoteData(this, "label");
       const delta = this.getAttribute("delta");
       if (value) {
         const v = this.ensure(".c-stat__value", () => { const el = document.createElement("div"); el.className = "c-stat__value"; return el; });
@@ -1222,16 +1085,11 @@ class ContourStat extends ContourBase {
         }
       }
       if (!value && !label) {
-        const empty = document.createElement("div");
-        empty.className = "c-stat__empty";
-        empty.textContent = this.getAttribute("empty") || "No data";
-        empty.style.color = "var(--color-text-muted)";
-        empty.style.padding = "var(--space-md)";
-        this.appendChild(empty);
+        renderEmpty(this, "stat");
       }
     }
   }
-  define("contour-stat", ContourStat);
+define("contour-stat", ContourStat);
 class ContourInstrument extends ContourBase {
     static get observed() { return ["rows", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { rows: { attribute: "rows" } }; }
@@ -1303,51 +1161,14 @@ class ContourBivariate extends ContourBase {
   }
   define("contour-bivariate", ContourBivariate);
 class ContourSurvey extends ContourBase {
-    static get observed() { return ["date", "instrument", "empty", "loading", "error", "src", "skeleton"]; }
+    static get observed() { return ["date", "instrument", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { date: { attribute: "date" }, instrument: { attribute: "instrument" } }; }
     render() {
       this.classList.add("c-survey");
-      const src = this.getAttribute("src");
-      const date = this.getAttribute("date");
-      if (src && !this.getAttribute("date") && !this.getAttribute("instrument") && this._srcFetched !== src) {
-        this._srcFetched = src;
-        this._loading = true;
-        this.attributeChangedCallback("__rerender__", null, "");
-        fetch(src).then((r) => r.json()).then((data) => {
-          this._remoteData = data;
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        }).catch(() => {
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        });
-      }
-      const loading = this.hasAttribute("loading") || this._loading;
-      if (loading) {
-        const loadingEl = document.createElement("span");
-        loadingEl.className = "c-survey__loading";
-        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
-        loadingEl.style.color = "var(--color-text-muted)";
-        this.appendChild(loadingEl);
-        return;
-      }
-      if (this.hasAttribute("error")) {
-        const err = document.createElement("span");
-        err.className = "c-survey__error";
-        err.textContent = this.getAttribute("error") || "Error";
-        err.style.color = "var(--color-danger, var(--color-text))";
-        this.appendChild(err);
-        return;
-      }
-      if (this.hasAttribute("skeleton")) {
-        const sk = document.createElement("span");
-        sk.className = "c-skeleton c-survey__skeleton";
-        sk.style.inlineSize = "4rem";
-        sk.style.blockSize = "1rem";
-        this.appendChild(sk);
-        return;
-      }
-      // Drop previously generated nodes so a re-render cannot stack a second set.
+      wireStates(this);
+      loadRemote(this, "date");
+      if (renderStates(this, "survey")) return;
+      const date = remoteData(this, "date");
       Array.from(this.childNodes).forEach((n) => {
         if (n.nodeType === Node.TEXT_NODE) { if (n.textContent.trim() === "Surveyed" || n.textContent.trim() === "·") n.remove(); }
         else if (n.classList && (n.classList.contains("c-survey__value") || n.classList.contains("c-survey__sep"))) n.remove();
@@ -1355,11 +1176,7 @@ class ContourSurvey extends ContourBase {
       const rDate = date || (this._remoteData && this._remoteData.date);
       const instrument = this.getAttribute("instrument") || (this._remoteData && this._remoteData.instrument);
       if (!rDate) {
-        const empty = document.createElement("span");
-        empty.className = "c-survey__empty";
-        empty.textContent = this.getAttribute("empty") || "No data";
-        empty.style.color = "var(--color-text-muted)";
-        this.appendChild(empty);
+        renderEmpty(this, "survey");
         return;
       }
       const v = document.createElement("span");
@@ -1379,7 +1196,7 @@ class ContourSurvey extends ContourBase {
       }
     }
   }
-  define("contour-survey", ContourSurvey);
+define("contour-survey", ContourSurvey);
 class ContourThreshold extends ContourBase {
     static get observed() { return ["label", "norm", "state", "value", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { label: { attribute: "label" }, norm: { attribute: "norm" }, state: { attribute: "state" }, value: { attribute: "value" } }; }

@@ -320,64 +320,21 @@ class ContourTestimonialFull extends ContourBase {
   }
   define("contour-testimonial", ContourTestimonialFull);
 class ContourShowcaseFull extends ContourBase {
-    static get observed() { return ["title", "text", "media", "reverse", "items", "empty", "loading", "error", "src", "skeleton"]; }
+    static get observed() { return ["title", "text", "media", "reverse", "items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { title: { attribute: "title" }, text: { attribute: "text" }, media: { attribute: "media" }, reverse: { attribute: "reverse" }, items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-showcase");
       if (this.hasAttribute("reverse")) this.classList.add("c-showcase--reverse");
       else this.classList.remove("c-showcase--reverse");
-      const src = this.getAttribute("src");
-      const items = this.getAttribute("items") || (this._remoteItems ? JSON.stringify(this._remoteItems) : null);
-      if (src && !this.getAttribute("items") && this._srcFetched !== src) {
-        this._srcFetched = src;
-        this._loading = true;
-        this.attributeChangedCallback("__rerender__", null, "");
-        fetch(src).then((r) => r.json()).then((data) => {
-          this._remoteItems = data;
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        }).catch(() => {
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        });
-      }
-      const loading = this.hasAttribute("loading") || this._loading;
-      if (loading) {
-        const loadingEl = document.createElement("div");
-        loadingEl.className = "c-showcase__loading";
-        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
-        loadingEl.style.color = "var(--color-text-muted)";
-        loadingEl.style.padding = "var(--space-md)";
-        this.appendChild(loadingEl);
-        return;
-      }
-      if (this.hasAttribute("error")) {
-        const err = document.createElement("div");
-        err.className = "c-showcase__error";
-        err.textContent = this.getAttribute("error") || "Error";
-        err.style.color = "var(--color-danger, var(--color-text))";
-        err.style.padding = "var(--space-md)";
-        this.appendChild(err);
-        return;
-      }
-      if (this.hasAttribute("skeleton")) {
-        const count = Math.min(3, Math.max(1, parseInt(this.getAttribute("skeleton") || "2", 10) || 2));
-        for (let i = 0; i < count; i++) {
-          const sk = document.createElement("div");
-          sk.className = "c-skeleton c-showcase__skeleton";
-          sk.style.blockSize = "4rem";
-          sk.style.marginBlockEnd = "var(--space-2xs)";
-          this.appendChild(sk);
-        }
-        return;
-      }
+      wireStates(this);
+      loadRemote(this, "items");
+      if (renderStates(this, "showcase")) return;
+      const items = remoteData(this, "items");
       const title = this.getAttribute("title");
       const text = this.getAttribute("text");
       const media = this.getAttribute("media");
       if (media) {
         const m = this.ensure(".c-showcase__media", () => { const el = document.createElement("div"); el.className = "c-showcase__media"; return el; });
-        // `media` is author-controlled markup (images, svg, etc.). Strip any
-        // <script> tags so a hostile attribute cannot execute code.
         m.innerHTML = String(media).replace(/<(script|iframe|object|embed)[\s\S]*?(<\/\1>|\/>)/gi, "").replace(/\son\w+\s*=\s*"[^"]*"/gi, "");
       } else {
         const m = this.querySelector(".c-showcase__media");
@@ -410,25 +367,14 @@ class ContourShowcaseFull extends ContourBase {
             l.appendChild(li);
           });
         } catch (e) { /* keep existing */ }
+      } else if (!items && !authored.length && !title && !text && !media) {
+        renderEmpty(this, "showcase");
       } else if (!items && ul) {
         ul.remove();
-        const empty = document.createElement("div");
-        empty.className = "c-showcase__empty";
-        empty.textContent = this.getAttribute("empty") || "No data";
-        empty.style.color = "var(--color-text-muted)";
-        empty.style.padding = "var(--space-md)";
-        this.appendChild(empty);
-      } else if (!items && !ul && !title && !text && !media) {
-        const empty = document.createElement("div");
-        empty.className = "c-showcase__empty";
-        empty.textContent = this.getAttribute("empty") || "No data";
-        empty.style.color = "var(--color-text-muted)";
-        empty.style.padding = "var(--space-md)";
-        this.appendChild(empty);
       }
     }
   }
-  define("contour-showcase", ContourShowcaseFull);
+define("contour-showcase", ContourShowcaseFull);
 class ContourPricingFull extends ContourBase {
     render() {
       // `.c-pricing` is the grid; every part the guide shows lives on `.c-price`.
@@ -485,55 +431,14 @@ class ContourLogosFull extends ContourBase {
   }
   define("contour-logos", ContourLogosFull);
 class ContourLandingFeaturesFull extends ContourBase {
-    static get observed() { return ["items", "empty", "loading", "error", "src", "skeleton"]; }
+    static get observed() { return ["items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-landing-features");
-      const src = this.getAttribute("src");
-      const items = this.getAttribute("items") || (this._remoteItems ? JSON.stringify(this._remoteItems) : null);
-      if (src && !this.getAttribute("items") && this._srcFetched !== src) {
-        this._srcFetched = src;
-        this._loading = true;
-        this.attributeChangedCallback("__rerender__", null, "");
-        fetch(src).then((r) => r.json()).then((data) => {
-          this._remoteItems = data;
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        }).catch(() => {
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        });
-      }
-      const loading = this.hasAttribute("loading") || this._loading;
-      if (loading) {
-        const loadingEl = document.createElement("div");
-        loadingEl.className = "c-landing-features__loading";
-        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
-        loadingEl.style.color = "var(--color-text-muted)";
-        loadingEl.style.padding = "var(--space-md)";
-        this.appendChild(loadingEl);
-        return;
-      }
-      if (this.hasAttribute("error")) {
-        const err = document.createElement("div");
-        err.className = "c-landing-features__error";
-        err.textContent = this.getAttribute("error") || "Error";
-        err.style.color = "var(--color-danger, var(--color-text))";
-        err.style.padding = "var(--space-md)";
-        this.appendChild(err);
-        return;
-      }
-      if (this.hasAttribute("skeleton")) {
-        const count = Math.min(4, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
-        for (let i = 0; i < count; i++) {
-          const sk = document.createElement("div");
-          sk.className = "c-skeleton c-landing-features__skeleton";
-          sk.style.blockSize = "4rem";
-          sk.style.marginBlockEnd = "var(--space-2xs)";
-          this.appendChild(sk);
-        }
-        return;
-      }
+      wireStates(this);
+      loadRemote(this, "items");
+      if (renderStates(this, "landing-features")) return;
+      const items = remoteData(this, "items");
       const authored = Array.from(this.children).filter((n) => n.classList && n.classList.contains("c-landing-features__item"));
       if (items && !authored.length) {
         try {
@@ -565,16 +470,11 @@ class ContourLandingFeaturesFull extends ContourBase {
         } catch (e) { /* keep existing */ }
       } else if (!items && !authored.length) {
         this.querySelectorAll(".c-landing-features__item").forEach((el) => el.remove());
-        const empty = document.createElement("div");
-        empty.className = "c-landing-features__empty";
-        empty.textContent = this.getAttribute("empty") || "No data";
-        empty.style.color = "var(--color-text-muted)";
-        empty.style.padding = "var(--space-md)";
-        this.appendChild(empty);
+        renderEmpty(this, "landing-features");
       }
     }
   }
-  define("contour-landing-features", ContourLandingFeaturesFull);
+define("contour-landing-features", ContourLandingFeaturesFull);
 class ContourLandingHeroFull extends ContourBase {
     static get observed() { return ["actions", "title", "text"]; }
     static get properties() { return { actions: { attribute: "actions" }, title: { attribute: "title" }, text: { attribute: "text" } }; }
