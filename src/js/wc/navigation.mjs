@@ -276,7 +276,7 @@ class ContourHeader extends ContourBase {
   }
   define("contour-header", ContourHeader);
 class ContourTree extends ContourBase {
-    static get observed() { return ["items", "virtual", "src", "empty", "error", "loading", "skeleton"]; }
+    static get observed() { return ["items", "virtual", "src", "empty", "error", "skeleton"]; }
     static get properties() { return { items: { attribute: "items" } }; }
 render() {
        this.classList.add("c-tree");
@@ -733,7 +733,7 @@ class ContourPagerFull extends ContourBase {
   }
   define("contour-pager", ContourPagerFull);
 class ContourTocFull extends ContourBase {
-    static get observed() { return ["title", "items", "empty", "loading", "error", "src", "skeleton"]; }
+    static get observed() { return ["title", "items", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { title: { attribute: "title" }, items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-toc");
@@ -810,8 +810,8 @@ class ContourTocFull extends ContourBase {
   }
   define("contour-toc", ContourTocFull);
 class ContourFilterBar extends ContourBase {
-    static get observed() { return ["label", "divider", "placeholder", "items", "empty"]; }
-    static get properties() { return { label: { attribute: "label" }, divider: { attribute: "divider" }, placeholder: { attribute: "placeholder" }, items: { attribute: "items" }, empty: { attribute: "empty" } }; }
+    static get observed() { return ["label", "divider"]; }
+    static get properties() { return { label: { attribute: "label" }, divider: { attribute: "divider" } }; }
     render() {
       this.classList.add("c-filter-bar");
       const label = this.getAttribute("label");

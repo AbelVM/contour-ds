@@ -489,8 +489,8 @@ class ContourAccordion extends ContourBase {
   }
   define("contour-accordion", ContourAccordion);
 class ContourDrawer extends ContourBase {
-    static get observed() { return ["title", "body"]; }
-    static get properties() { return { title: { attribute: "title" }, body: { attribute: "body" } }; }
+    static get observed() { return ["body"]; }
+    static get properties() { return { body: { attribute: "body" } }; }
     render() {
       this.classList.add("c-drawer");
       if (!this.hasAttribute("role")) this.setAttribute("role", "dialog");
@@ -507,8 +507,8 @@ class ContourDrawer extends ContourBase {
   }
   define("contour-drawer", ContourDrawer);
 class ContourSheet extends ContourBase {
-    static get observed() { return ["title", "body"]; }
-    static get properties() { return { title: { attribute: "title" }, body: { attribute: "body" } }; }
+    static get observed() { return ["body"]; }
+    static get properties() { return { body: { attribute: "body" } }; }
     render() {
       this.classList.add("c-sheet");
       if (!this.hasAttribute("role")) this.setAttribute("role", "dialog");

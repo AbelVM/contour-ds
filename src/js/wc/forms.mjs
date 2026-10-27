@@ -281,6 +281,8 @@ class ContourCheck extends ContourBase {
         const txt = this.querySelector(":scope > span:not([class]):not(.c-check__box)") || (() => { const el = document.createElement("span"); this.appendChild(el); return el; })();
         txt.textContent = label;
       }
+      if (this.hasAttribute("name")) input.name = this.getAttribute("name");
+      if (this.hasAttribute("value")) input.value = this.getAttribute("value");
     }
     enhance() {
       const input = this.querySelector("input");

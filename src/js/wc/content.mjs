@@ -769,8 +769,8 @@ class ContourPlate extends ContourBase {
   }
   define("contour-plate", ContourPlate);
 class ContourPullquote extends ContourBase {
-    static get observed() { return ["quote", "by", "name"]; }
-    static get properties() { return { quote: { attribute: "quote" }, by: { attribute: "by" }, name: { attribute: "name" } }; }
+    static get observed() { return ["quote", "name"]; }
+    static get properties() { return { quote: { attribute: "quote" }, name: { attribute: "name" } }; }
     render() {
       this.classList.add("c-pullquote");
       const quote = this.getAttribute("quote");

@@ -167,8 +167,8 @@ class ContourDropZone extends ContourBase {
   }
   define("contour-drop-zone", ContourDropZone);
 class ContourResizable extends ContourBase {
-    static get observed() { return ["title", "direction"]; }
-    static get properties() { return { title: { attribute: "title" }, direction: { attribute: "direction" } }; }
+    static get observed() { return []; }
+    static get properties() { return {}; }
     render() {
       this.classList.add("c-resizable");
       this.classList.add("c-resizable--horizontal");
@@ -189,8 +189,8 @@ class ContourResizable extends ContourBase {
   }
   define("contour-resizable", ContourResizable);
 class ContourTableWrap extends ContourBase {
-    static get observed() { return ["title"]; }
-    static get properties() { return { title: { attribute: "title" } }; }
+    static get observed() { return []; }
+    static get properties() { return {}; }
     render() {
       this.classList.add("c-table-wrap");
       Array.from(this.childNodes).forEach((n) => { if (n.nodeType === Node.TEXT_NODE) n.remove(); else if (n.nodeType === Node.ELEMENT_NODE && n.tagName === "SPAN") n.remove(); });
