@@ -532,17 +532,20 @@ class ContourFilterBar extends ContourBase {
   }
   define("contour-filter-bar", ContourFilterBar);
   class ContourCommand extends ContourBase {
-    static get observed() { return ["placeholder", "items", "empty"]; }
+    static get observed() { return ["placeholder", "items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { placeholder: { attribute: "placeholder" }, items: { attribute: "items" }, empty: { attribute: "empty" } }; }
     render() {
       this.classList.add("c-command");
       if (!this.hasAttribute("popover")) this.setAttribute("popover", "auto");
+      wireStates(this);
+      loadRemote(this, "items");
+      if (renderStates(this, "command")) return;
       const placeholder = this.getAttribute("placeholder") || "Search…";
       const input = this.ensure(".c-command__input", () => { const el = document.createElement("input"); el.className = "c-command__input"; el.type = "text"; return el; });
       input.type = "text";
       input.placeholder = placeholder;
       input.setAttribute("aria-label", "Command");
-      const items = this.getAttribute("items");
+      const items = remoteData(this, "items");
       const list = this.querySelector(".c-command__list");
       const authored = list ? Array.from(list.children).filter((n) => n.classList && n.classList.contains("c-command__item") || n.classList && n.classList.contains("c-command__group")) : [];
       if (items && !authored.length) {
@@ -622,6 +625,9 @@ class ContourFilterBar extends ContourBase {
         const e = this.querySelector(".c-command__empty");
         if (e) e.remove();
       }
+      if (!items && !list) {
+        renderEmpty(this, "command");
+      }
     }
     enhance() {
       if (this._wiredCommand) return;
@@ -656,7 +662,7 @@ class ContourFilterBar extends ContourBase {
       });
     }
   }
-  define("contour-command", ContourCommand);
+define("contour-command", ContourCommand);
 class ContourFooter extends ContourBase {
     static get observed() { return ["brand", "note", "links", "cols"]; }
     static get properties() { return { brand: { attribute: "brand" }, note: { attribute: "note" }, links: { attribute: "links" }, cols: { attribute: "cols" } }; }

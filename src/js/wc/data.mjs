@@ -1295,53 +1295,16 @@ class ContourMeasure extends ContourBase {
   }
 define("contour-measure", ContourMeasure);
 class ContourTimeline extends ContourBase {
-    static get observed() { return ["items", "empty", "loading", "error", "retry", "skeleton"]; }
+    static get observed() { return ["items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-timeline");
-      if (this.hasAttribute("loading")) {
-        const loading = document.createElement("div");
-        loading.className = "c-timeline__loading";
-        loading.textContent = this.getAttribute("loading") || "Loading…";
-        loading.style.color = "var(--color-text-muted)";
-        loading.style.padding = "var(--space-md)";
-        this.appendChild(loading);
-        return;
-      }
-      if (this.hasAttribute("error")) {
-        const err = document.createElement("div");
-        err.className = "c-timeline__error";
-        err.textContent = this.getAttribute("error") || "Error";
-        err.style.color = "var(--color-danger, var(--color-text))";
-        err.style.padding = "var(--space-md)";
-        if (this.hasAttribute("retry")) {
-          const btn = document.createElement("button");
-          btn.className = "c-btn c-btn--ghost c-btn--sm";
-          btn.type = "button";
-          btn.textContent = this.getAttribute("retry") || "Retry";
-          btn.dataset.action = "retry";
-          btn.style.marginBlockStart = "var(--space-sm)";
-          err.appendChild(btn);
-        }
-        this.appendChild(err);
-        return;
-      }
-      if (this.hasAttribute("skeleton")) {
-        const count = Math.min(5, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
-        for (let i = 0; i < count; i++) {
-          const sk = document.createElement("div");
-          sk.className = "c-skeleton c-timeline__skeleton";
-          sk.style.display = "block";
-          sk.style.blockSize = "1rem";
-          sk.style.marginBlockEnd = "var(--space-xs)";
-          this.appendChild(sk);
-        }
-        return;
-      }
+      wireStates(this);
+      loadRemote(this, "items");
+      if (renderStates(this, "timeline")) return;
       const authored = Array.from(this.children).filter((n) => n.classList && n.classList.contains("c-timeline__item"));
-      const items = this.getAttribute("items");
+      const items = remoteData(this, "items");
       if (items && !authored.length) {
-        // Drop previously generated items so a re-render cannot stack a second set.
         Array.from(this.querySelectorAll(".c-timeline__item")).forEach((n) => n.remove());
         try {
           const parsed = JSON.parse(items);
@@ -1370,12 +1333,7 @@ class ContourTimeline extends ContourBase {
           });
         } catch (e) { /* keep existing */ }
       } else if (!authored.length) {
-        const empty = document.createElement("div");
-        empty.className = "c-timeline__empty";
-        empty.textContent = this.getAttribute("empty") || "No data";
-        empty.style.color = "var(--color-text-muted)";
-        empty.style.padding = "var(--space-md)";
-        this.appendChild(empty);
+        renderEmpty(this, "timeline");
       }
      }
     enhance() {
@@ -1390,87 +1348,16 @@ class ContourTimeline extends ContourBase {
       });
     }
   }
-  define("contour-timeline", ContourTimeline);
+define("contour-timeline", ContourTimeline);
 class ContourHeatmap extends ContourBase {
-    static get observed() { return ["cells", "count", "legend", "empty", "loading", "values", "error", "retry", "skeleton"]; }
+    static get observed() { return ["cells", "count", "legend", "empty", "loading", "values", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { cells: { attribute: "cells" }, count: { attribute: "count" }, legend: { attribute: "legend" } }; }
     render() {
       this.classList.add("c-heatmap");
       if (!this.hasAttribute("role")) this.setAttribute("role", "grid");
-      if (this.hasAttribute("loading")) {
-        const loading = document.createElement("div");
-        loading.className = "c-heatmap__loading";
-        loading.textContent = this.getAttribute("loading") || "Loading…";
-        loading.style.gridColumn = "1 / -1";
-        loading.style.textAlign = "center";
-        loading.style.color = "var(--color-text-muted)";
-        loading.style.padding = "var(--space-md)";
-        this.appendChild(loading);
-        if (this.hasAttribute("legend")) {
-          const leg = this.ensure(".c-heatmap__legend", () => {
-            const el = document.createElement("div");
-            el.className = "c-heatmap__legend";
-            const bar = document.createElement("div");
-            bar.className = "c-heatmap__legend-bar";
-            el.appendChild(bar);
-            return el;
-          });
-        }
-        return;
-      }
-      if (this.hasAttribute("error")) {
-        const err = document.createElement("div");
-        err.className = "c-heatmap__error";
-        err.textContent = this.getAttribute("error") || "Error";
-        err.style.gridColumn = "1 / -1";
-        err.style.textAlign = "center";
-        err.style.color = "var(--color-danger, var(--color-text))";
-        err.style.padding = "var(--space-md)";
-        if (this.hasAttribute("retry")) {
-          const btn = document.createElement("button");
-          btn.className = "c-btn c-btn--ghost c-btn--sm";
-          btn.type = "button";
-          btn.textContent = this.getAttribute("retry") || "Retry";
-          btn.dataset.action = "retry";
-          btn.style.marginBlockStart = "var(--space-sm)";
-          err.appendChild(btn);
-        }
-        this.appendChild(err);
-        if (this.hasAttribute("legend")) {
-          const leg = this.ensure(".c-heatmap__legend", () => {
-            const el = document.createElement("div");
-            el.className = "c-heatmap__legend";
-            const bar = document.createElement("div");
-            bar.className = "c-heatmap__legend-bar";
-            el.appendChild(bar);
-            return el;
-          });
-        }
-        return;
-       }
-      if (this.hasAttribute("skeleton")) {
-        const count = Math.min(9, Math.max(1, parseInt(this.getAttribute("skeleton") || "4", 10) || 4));
-        const cols = Math.ceil(Math.sqrt(count));
-        this.style.gridTemplateColumns = "repeat(" + cols + ", 1fr)";
-        for (let i = 0; i < count; i++) {
-          const sk = document.createElement("div");
-          sk.className = "c-skeleton c-heatmap__skeleton";
-          sk.style.aspectRatio = "1";
-          this.appendChild(sk);
-        }
-        if (this.hasAttribute("legend")) {
-          const leg = this.ensure(".c-heatmap__legend", () => {
-            const el = document.createElement("div");
-            el.className = "c-heatmap__legend";
-            const bar = document.createElement("div");
-            bar.className = "c-heatmap__legend-bar";
-            el.appendChild(bar);
-            return el;
-          });
-        }
-        return;
-      }
-      // Drop previously generated cells so a re-render cannot stack a second set.
+      wireStates(this);
+      loadRemote(this, "cells");
+      if (renderStates(this, "heatmap")) return;
       Array.from(this.querySelectorAll(".c-heatmap__cell")).forEach((n) => n.remove());
       const count = Math.min(200, Math.max(0, parseInt(this.getAttribute("cells") || this.getAttribute("count") || "0", 10) || 0));
       const cols = count > 0 ? Math.ceil(Math.sqrt(count)) : 1;
@@ -1488,24 +1375,11 @@ class ContourHeatmap extends ContourBase {
            if (values[i] !== undefined) cell.setAttribute("title", String(values[i]));
            this.appendChild(cell);
          }
+         const tip = this.ensure(".c-heatmap__tooltip", () => { const el = document.createElement("div"); el.className = "c-heatmap__tooltip"; el.setAttribute("hidden", ""); return el; });
+         tip.setAttribute("hidden", "");
        } else {
-         const empty = document.createElement("div");
-         empty.className = "c-heatmap__empty";
-         empty.textContent = this.getAttribute("empty") || "No data";
-         empty.style.gridColumn = "1 / -1";
-         empty.style.textAlign = "center";
-         empty.style.color = "var(--color-text-muted)";
-         empty.style.padding = "var(--space-md)";
-         this.appendChild(empty);
-        }
-        // Styled tooltip element.
-        if (count > 0) {
-          const tip = this.ensure(".c-heatmap__tooltip", () => { const el = document.createElement("div"); el.className = "c-heatmap__tooltip"; el.setAttribute("hidden", ""); return el; });
-          tip.setAttribute("hidden", "");
-        } else {
-          const tip = this.querySelector(".c-heatmap__tooltip");
-          if (tip) tip.remove();
-        }
+         renderEmpty(this, "heatmap");
+       }
        if (this.hasAttribute("legend")) {
         const leg = this.ensure(".c-heatmap__legend", () => {
           const el = document.createElement("div");
@@ -1524,7 +1398,6 @@ class ContourHeatmap extends ContourBase {
       if (this._wiredHeatmap) return;
       this._wiredHeatmap = true;
       const cells = () => Array.from(this.querySelectorAll(".c-heatmap__cell"));
-      // Tooltip: show on hover of a cell.
       const tip = this.querySelector(".c-heatmap__tooltip");
       if (tip) {
         const showTip = (e) => {
@@ -1545,7 +1418,6 @@ class ContourHeatmap extends ContourBase {
         this.addEventListener("mouseout", (e) => {
           if (!e.relatedTarget || !this.contains(e.relatedTarget)) hideTip();
          });
-        // Focus readout: keyboard users get the same tip as mouse users.
         this.addEventListener("focusin", (e) => {
           const cell = e.target && e.target.closest ? e.target.closest(".c-heatmap__cell") : null;
           if (cell && this.contains(cell)) showTip({ target: cell });
@@ -1555,7 +1427,6 @@ class ContourHeatmap extends ContourBase {
         });
         if (tip && !tip.getAttribute("role")) tip.setAttribute("role", "tooltip");
       }
-      // Retry button handling.
       this.addEventListener("click", (e) => {
         const btn = e.target && e.target.closest ? e.target.closest('button[data-action="retry"]') : null;
         if (btn && this.contains(btn)) {
@@ -1594,7 +1465,7 @@ class ContourHeatmap extends ContourBase {
       });
     }
   }
-  define("contour-heatmap", ContourHeatmap);
+define("contour-heatmap", ContourHeatmap);
 class ContourCompare extends ContourBase {
     static get observed() { return ["no", "text", "yes", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { no: { attribute: "no" }, text: { attribute: "text" }, yes: { attribute: "yes" } }; }
@@ -1633,103 +1504,56 @@ class ContourCompare extends ContourBase {
   }
 define("contour-compare", ContourCompare);
 class ContourSparkline extends ContourBase {
-    static get observed() { return ["points", "empty", "loading", "error", "retry", "skeleton"]; }
+    static get observed() { return ["points", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { points: { attribute: "points" } }; }
     render() {
       this.classList.add("c-sparkline");
       if (!this.hasAttribute("role")) this.setAttribute("role", "img");
       if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Sparkline");
-      if (this.hasAttribute("loading")) {
-        const loading = document.createElement("span");
-        loading.className = "c-sparkline__loading";
-        loading.textContent = this.getAttribute("loading") || "Loading…";
-        loading.style.color = "var(--color-text-muted)";
-        loading.style.fontSize = "var(--type-xs)";
-        this.appendChild(loading);
-        return;
-      }
-      if (this.hasAttribute("error")) {
-        const err = document.createElement("span");
-        err.className = "c-sparkline__error";
-        err.textContent = this.getAttribute("error") || "Error";
-        err.style.color = "var(--color-danger, var(--color-text))";
-        err.style.fontSize = "var(--type-xs)";
-        if (this.hasAttribute("retry")) {
-          const btn = document.createElement("button");
-          btn.className = "c-btn c-btn--ghost c-btn--sm";
-          btn.type = "button";
-          btn.textContent = this.getAttribute("retry") || "Retry";
-          btn.dataset.action = "retry";
-          btn.style.marginInlineStart = "var(--space-xs)";
-          err.appendChild(btn);
-        }
-        this.appendChild(err);
-        return;
-       }
-      if (this.hasAttribute("skeleton")) {
-        const sk = document.createElement("span");
-        sk.className = "c-skeleton c-sparkline__skeleton";
-        sk.style.display = "inline-block";
-        sk.style.inlineSize = "100%";
-        sk.style.blockSize = "100%";
-        this.appendChild(sk);
-        return;
-      }
-      const points = this.getAttribute("points");
-       if (points) {
-         try {
-           const parsed = JSON.parse(points);
-           if (!Array.isArray(parsed) || parsed.length === 0) throw new Error("empty");
-           Array.from(this.querySelectorAll(".c-sparkline__dot, .c-sparkline__line, .c-sparkline__area")).forEach((n) => n.remove());
-           const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-           svg.setAttribute("class", "c-sparkline__line");
-           svg.setAttribute("viewBox", "0 0 100 30");
-           svg.setAttribute("preserveAspectRatio", "none");
-           svg.style.inlineSize = "100%";
-           svg.style.blockSize = "100%";
-           svg.setAttribute("width", "100%");
-           svg.setAttribute("height", "100%");
-           svg.setAttribute("title", this.getAttribute("aria-label") || "Sparkline");
-           const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-           path.setAttribute("d", parsed.map((p, i) => (i === 0 ? "M" : "L") + " " + (i * 100 / (parsed.length - 1)) + " " + (30 - p * 30)).join(" "));
-            svg.appendChild(path);
-            // Value-at-pointer dot marker.
-            const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-            dot.setAttribute("class", "c-sparkline__dot");
-            dot.setAttribute("r", "2");
-            dot.setAttribute("cx", "0");
-            dot.setAttribute("cy", "15");
-            dot.setAttribute("hidden", "");
-            svg.appendChild(dot);
-            this.appendChild(svg);
-            // Store parsed points for value-at-pointer lookup.
-            this._sparkPoints = parsed;
-            // Styled tooltip element.
-            const tip = this.ensure(".c-sparkline__tooltip", () => { const el = document.createElement("div"); el.className = "c-sparkline__tooltip"; el.setAttribute("hidden", ""); return el; });
-            tip.setAttribute("hidden", "");
-         } catch (e) {
+      wireStates(this);
+      loadRemote(this, "points");
+      if (renderStates(this, "sparkline")) return;
+      const points = remoteData(this, "points");
+      if (points) {
+        try {
+          const parsed = JSON.parse(points);
+          if (!Array.isArray(parsed) || parsed.length === 0) throw new Error("empty");
+          Array.from(this.querySelectorAll(".c-sparkline__dot, .c-sparkline__line, .c-sparkline__area")).forEach((n) => n.remove());
+          const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+          svg.setAttribute("class", "c-sparkline__line");
+          svg.setAttribute("viewBox", "0 0 100 30");
+          svg.setAttribute("preserveAspectRatio", "none");
+          svg.style.inlineSize = "100%";
+          svg.style.blockSize = "100%";
+          svg.setAttribute("width", "100%");
+          svg.setAttribute("height", "100%");
+          svg.setAttribute("title", this.getAttribute("aria-label") || "Sparkline");
+          const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          path.setAttribute("d", parsed.map((p, i) => (i === 0 ? "M" : "L") + " " + (i * 100 / (parsed.length - 1)) + " " + (30 - p * 30)).join(" "));
+           svg.appendChild(path);
+           const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+           dot.setAttribute("class", "c-sparkline__dot");
+           dot.setAttribute("r", "2");
+           dot.setAttribute("cx", "0");
+           dot.setAttribute("cy", "15");
+           dot.setAttribute("hidden", "");
+           svg.appendChild(dot);
+           this.appendChild(svg);
+           this._sparkPoints = parsed;
+           const tip = this.ensure(".c-sparkline__tooltip", () => { const el = document.createElement("div"); el.className = "c-sparkline__tooltip"; el.setAttribute("hidden", ""); return el; });
+           tip.setAttribute("hidden", "");
+        } catch (e) {
            Array.from(this.querySelectorAll("svg")).forEach((n) => n.remove());
-           const empty = document.createElement("span");
-           empty.className = "c-sparkline__empty";
-           empty.textContent = this.getAttribute("empty") || "No data";
-           empty.style.color = "var(--color-text-muted)";
-           empty.style.fontSize = "var(--type-xs)";
-           this.appendChild(empty);
-         }
-       } else {
-         const empty = document.createElement("span");
-         empty.className = "c-sparkline__empty";
-         empty.textContent = this.getAttribute("empty") || "No data";
-         empty.style.color = "var(--color-text-muted)";
-         empty.style.fontSize = "var(--type-xs)";
-         this.appendChild(empty);
-       }
-     }
+           renderEmpty(this, "sparkline");
+        }
+      } else {
+        renderEmpty(this, "sparkline");
+      }
+    }
     enhance() {
       if (this._wiredSparkline) return;
       this._wiredSparkline = true;
       if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
-      // Tooltip: show on hover.
       const tip = this.querySelector(".c-sparkline__tooltip");
       const svg = this.querySelector("svg");
       const dot = this.querySelector(".c-sparkline__dot");
@@ -1777,7 +1601,7 @@ class ContourSparkline extends ContourBase {
       });
     }
   }
-  define("contour-sparkline", ContourSparkline);
+define("contour-sparkline", ContourSparkline);
 class ContourChartGrid extends ContourBase {
     static get observed() { return ["title"]; }
     static get properties() { return { title: { attribute: "title" } }; }
