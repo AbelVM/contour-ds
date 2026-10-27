@@ -2,43 +2,50 @@
    CONTOUR — data state and remote loading
    ----------------------------------------------------------------------------
    One implementation of the four data states (`empty`, `loading`, `error`,
-   `skeleton`) and of the remote source (`src`, `lazy`, `refresh`, `timeout`).
+   `skeleton`) and of the remote source (`src`, plus `lazy`, `refresh`,
+   `timeout`).
 
-   Before this file the same forty-line block was written into eight fragments
-   by hand — 6 `_srcFetched` sites in `content.mjs`, 8 in `data.mjs`, 20 in
-   `map.mjs`, 14 in `navigation.mjs` — and every copy carried the same four
-   defects, measured in Chromium against `dist/contour-wc.js` built at 7d75b3d
-   (probe `tmp/wc9/probe.mjs`, 2026-10-27):
+   Before this file the same forty-line block was written into eight fragments by
+   hand — 6 copies in `content.mjs`, 8 in `data.mjs`, 20 in `map.mjs`, 14 in
+   `navigation.mjs` — and every copy carried the same defects, measured in
+   Chromium against `dist/contour-wc.js` built at 7d75b3d (probe
+   `tmp/wc9/probe.mjs`, 2026-10-27):
 
-     1. a host with `src` painted "Loading…Loading…" — two nodes, because the
+     1. a host with `src` painted `"Loading…Loading…"` — two nodes — because the
         copy re-rendered by calling `attributeChangedCallback` from inside
         `render()`, which on the connect path is a synchronous nested render;
-     2. a 404 and a malformed body both landed on the EMPTY state, so the
-        component claimed it had no data when it had failed to fetch;
-     3. nothing aborted the request, so a detached host kept two stale nodes
-        and was still written to after it left the page;
-     4. the state was styled by an inline `style.color`, which beat the CSS
-        rule written beside it in the same commit, so the rule was dead and the
-        skeleton — 33 generated `c-*__skeleton` names — had no rule at all.
+     2. a 404 and a malformed body both landed on the EMPTY state
+        (`{"empty":1,"error":0,"text":"No data"}`), so the component claimed it
+        had no data when in fact it had failed to fetch it;
+     3. nothing aborted the request: a host removed mid-flight kept
+        `loadingAfterDetach: 2` stale nodes and was still written to;
+     4. the state was styled by an inline `style.color`, which beat the CSS rule
+        written beside it in the same commit, so the rule was dead — and 33
+        generated `c-*__skeleton` names had no rule anywhere.
 
-   Two rules follow from that and are the whole design here. The state node is
-   built from the block the system already ships (`c-skeleton--text`, `c-empty`),
-   never from a name invented per component, so a generated class cannot exist
-   without a rule. And presentation belongs to the sheet: nothing in this file
-   writes a `style` attribute — the values moved into `components.css`, with the
-   computed colour and padding measured before and after the move.
+   Three rules fall out of that, and they are the whole design here.
 
-   The remote loader is shared per URL, not per host: a dashboard that mounts
-   forty chrome widgets against one endpoint asks it forty times, so one request
-   is started and the rest subscribe to it. That is also what lets a re-mounted
-   host paint from the cache instead of flashing a loading state the page has
-   already paid for.
+   Presentation belongs to the sheet. Nothing in this file writes a `style`
+   attribute; the state nodes carry the block-scoped element class the system
+   already defines (102 of them exist in `src/css/`), so a generated class cannot
+   be one the system cannot style.
+
+   A state is not a live region. `role="alert"` on a node inserted already
+   carrying text is exactly what `tools/audit/contrast-and-aria.mjs` refuses — it
+   scans every `[role="status"],[role="alert"],[aria-live]` whose text is non-empty
+   at load, because such a region "has no change left to announce". So the widget
+   says `aria-busy` while it works and nothing at all when it has failed; the
+   consumer that wants the failure spoken routes `contour:error` to the page's own
+   `#toast-host`, which exists empty for that purpose.
+
+   The loader is shared per URL, not per host: a dashboard that mounts forty
+   chrome widgets against one endpoint should ask it once.
    ========================================================================= */
 
 import { onDispose } from './core.mjs';
 
 // Copy. A component overrides any of these through its own attribute, because a
-// legend and a table should not both say "No data" — but the default must exist,
+// legend and a table should not both say "No data" — but a default must exist,
 // because a state with no text is a state the reader cannot see.
 export const STATE_FALLBACK = {
   empty: "No data",
@@ -46,151 +53,31 @@ export const STATE_FALLBACK = {
   error: "Could not load.",
 };
 
-// One in-flight request per URL, shared by every host that asked for it. `hosts`
-// is a Set of WeakRefs: a host that leaves the page must not be held alive by a
-// request it started, and must not be woken when that request answers.
+// One in-flight request per URL, shared by every host that asked for it.
 const remoteInflight = new Map();
-// The last result per URL, so a re-mounted host paints instead of re-asking.
-// `refresh` revalidates it; a failed URL is not cached.
+// The last result per URL, so a re-mounted host paints instead of re-asking. A
+// refused URL is never cached: one blip must not black out a widget until reload.
 const remoteCache = new Map();
 
-// A URL that is answered from the cache still needs one microtask before the
-// host paints, so a render that asked for data never sees it synchronously —
-// the alternative is a state that depends on whether some other host happened
-// to ask first, which is not a state a page can reason about.
-const resolveSoon = (host) => { queueMicrotask(() => host.requestRender()); };
+// A URL answered from the cache still waits one microtask before the host paints,
+// so a render that asked for data never sees it synchronously. The alternative
+// makes the state depend on whether some other host happened to ask first, which
+// is not a state a page can reason about.
+const soon = (host) => { queueMicrotask(() => { if (host.isConnected) host.requestRender(); }); };
 
 function setStatus(host, status, detail) {
-  const prev = host._remoteStatus;
   host._remoteStatus = status;
   if (status === "error") host._remoteError = (detail && detail.message) || "Request failed";
-  else if (prev !== status) host._remoteError = null;
-  // `aria-busy` is the platform's own word for "this region is mid-update", and
-  // it is not in OBSERVED, so writing it cannot re-enter this render. The error
-  // node carries role="alert" where it is painted; the host carries busy while
-  // a request is open, and clears it the moment one is not.
+  else if (status !== "loading") host._remoteError = null;
+  // `aria-busy` is the platform's own word for "this region is mid-update", it is
+  // not in OBSERVED, so writing it cannot re-enter this render, and it is removed
+  // the moment a request is not open.
   if (status === "loading") host.setAttribute("aria-busy", "true");
   else host.removeAttribute("aria-busy");
 }
 
-/**
- * Ask for `src` and report whether the host is waiting on it.
- *
- * `fields` are the attributes the payload may feed, in the order the component
- * prefers them: an array payload feeds the first, an object payload is matched
- * by key. Returns nothing the caller paints — read the values with `remoteData`.
- */
-export function loadRemote(host, fields) {
-  const src = host.getAttribute("src");
-  if (!src) {
-    // No source: any previous state is stale, and `idle` says so.
-    setStatus(host, host._remoteData ? "ready" : "idle");
-    return;
-  }
-  const wanted = typeof fields === "string" ? [fields] : fields;
-  // An authored attribute wins outright — the component must not fetch over the
-  // top of markup the author wrote. But it must still answer when the author
-  // gave only *some* of the fields, which is why this checks every field rather
-  // than the whole list.
-  if (wanted.every((f) => host.getAttribute(f) !== null)) {
-    setStatus(host, "ready");
-    return;
-  }
-  if (remoteCache.has(src)) {
-    if (!host._remoteData || host._remoteSrc !== src) {
-      host._remoteSrc = src;
-      host._remoteData = remoteCache.get(src);
-      setStatus(host, "ready");
-      resolveSoon(host);
-    }
-    return;
-  }
-
-  host._remoteSrc = src;
-  setStatus(host, "loading");
-
-  let entry = remoteInflight.get(src);
-  if (!entry) {
-    entry = { hosts: new Set(), settled: false };
-    remoteInflight.set(src, entry);
-    entry.request = startFetch(host, src);
-  }
-  entry.hosts.add(host);
-
-  if (!entry.promise) {
-    entry.promise = entry.request.then((data) => {
-      remoteCache.set(src, data);
-      remoteInflight.delete(src);
-      for (const h of entry.hosts) {
-        if (!h.isConnected) continue;
-        h._remoteData = data;
-        setStatus(h, "ready");
-        emitState(h, "contour:load", { src, count: countOf(data) });
-        h.requestRender();
-      }
-    }).catch((err) => {
-      // A refused URL is not cached: the next host to ask must be able to try,
-      // or one blip poisons the page until it reloads.
-      remoteInflight.delete(src);
-      for (const h of entry.hosts) {
-        if (!h.isConnected) continue;
-        setStatus(h, "error", { message: String(err && err.message || err) });
-        emitState(h, "contour:error", { src, message: h._remoteError, name: err && err.name });
-        h.requestRender();
-      }
-    });
-  }
-  entry.promise.catch(() => { /* every host above already handled it */ });
-}
-
-// `AbortSignal.timeout` is the platform's own deadline; where it is missing the
-// same thing is done with a timer and an abort. Either way a hung internal tile
-// server cannot leave a widget in `loading` for the life of the page.
-function startFetch(host, src) {
-  const ms = parseInt(host.getAttribute("timeout") || "", 10);
-  const controller = new AbortController();
-  host._remoteAbort = controller;
-  onDispose(host, () => controller.abort());
-  let timer = null;
-  if (Number.isFinite(ms) && ms > 0) {
-    if (typeof AbortSignal !== "undefined" && AbortSignal.timeout) {
-      host._remoteSignal = AbortSignal.timeout(ms);
-      host._remoteSignal.addEventListener("abort", () => controller.abort());
-    } else {
-      timer = setTimeout(() => controller.abort(), ms);
-    }
-  }
-  // `lazy` is the one attribute here that defers the request rather than shaping
-  // it: a host below the fold must not compete with the forty above it.
-  if (host.hasAttribute("lazy") && typeof IntersectionObserver === "function") {
-    const io = new IntersectionObserver((records) => {
-      if (!records.some((r) => r.isIntersecting)) return;
-      io.disconnect();
-      host._remoteObserver = null;
-      host._remoteSrc = null; // force this pass to ask
-      host.requestRender();
-    }, { rootMargin: "200px" });
-    io.observe(host);
-    host._remoteObserver = io;
-    onDispose(host, () => io.disconnect());
-    return new Promise(() => {}); // never settles: the re-render starts the real request
-  }
-
-  return fetch(src, { signal: controller.signal })
-    .then((res) => {
-      if (timer) clearTimeout(timer);
-      // The status line is the boundary. `fetch` resolves on 404 and on 500, so
-      // without this test a failed request became an empty dataset and the
-      // component told the reader there was nothing to show.
-      if (!res.ok) { const e = new Error(`HTTP ${res.status}`); e.name = "HttpError"; e.status = res.status; throw e; }
-      return res.text();
-    })
-    .then((text) => {
-      // A JSON body that parses to nothing is still data — `null` included — so
-      // this returns the parsed value rather than treating falsy as failure.
-      try { return JSON.parse(text); }
-      catch (err) { const e = new Error("Invalid JSON"); e.name = "ParseError"; e.cause = err; throw e; }
-    });
+function emitState(host, name, detail) {
+  host.dispatchEvent(new CustomEvent(name, { detail, bubbles: true, composed: true }));
 }
 
 function countOf(data) {
@@ -199,8 +86,111 @@ function countOf(data) {
   return data === null || data === undefined ? 0 : 1;
 }
 
-function emitState(host, name, detail) {
-  host.dispatchEvent(new CustomEvent(name, { detail, bubbles: true, composed: true }));
+/**
+ * Ask for `src` and report whether the host is waiting on it.
+ *
+ * `fields` are the attributes the payload may feed, in the order the component
+ * prefers them. Reads nothing and writes nothing the component paints — the
+ * values come back through `remoteData`.
+ */
+export function loadRemote(host, fields) {
+  const src = host.getAttribute("src");
+  if (!src) {
+    setStatus(host, host._remoteData !== undefined ? "ready" : "idle");
+    return;
+  }
+  remoteRefresh(host);
+  const wanted = typeof fields === "string" ? [fields] : fields;
+  // An authored attribute wins outright: the component must not fetch over the
+  // top of markup the author wrote.
+  if (wanted.every((f) => host.getAttribute(f) !== null)) {
+    setStatus(host, "ready");
+    return;
+  }
+  if (!remoteVisible(host)) {
+    setStatus(host, "idle");
+    return;
+  }
+  const cached = remoteCache.get(src);
+  if (cached !== undefined) {
+    host._remoteSrc = src;
+    host._remoteData = cached;
+    setStatus(host, "ready");
+    return;
+  }
+  if (host._remoteSrc === src && host._remoteStatus === "loading") return; // already asked
+
+  host._remoteSrc = src;
+  setStatus(host, "loading");
+
+  let entry = remoteInflight.get(src);
+  if (!entry) {
+    entry = { hosts: new Set() };
+    remoteInflight.set(src, entry);
+    entry.promise = startFetch(host, src).then(
+      (data) => {
+        remoteCache.set(src, data);
+        remoteInflight.delete(src);
+        for (const h of entry.hosts) {
+          h._remoteData = data;
+          setStatus(h, "ready");
+          emitState(h, "contour:load", { src, count: countOf(data) });
+        }
+      },
+      (err) => {
+        remoteInflight.delete(src);
+        for (const h of entry.hosts) {
+          const message = err && err.name === "HttpError" ? `Could not load (${err.status})` : STATE_FALLBACK.error;
+          setStatus(h, "error", { message });
+          emitState(h, "contour:error", { src, message, name: err && err.name });
+        }
+      }
+    ).finally(() => { for (const h of entry.hosts) if (h.isConnected) h.requestRender(); });
+  }
+  entry.hosts.add(host);
+}
+
+// `AbortSignal.timeout` is the platform's own deadline; where it is missing, the
+// same thing is a timer and an abort. Either way an unreachable internal tile
+// server cannot leave a widget in `loading` for the life of the page.
+function startFetch(host, src) {
+  const ms = parseInt(host.getAttribute("timeout") || "", 10);
+  const controller = new AbortController();
+  let timer = null;
+  if (Number.isFinite(ms) && ms > 0) {
+    if (typeof AbortSignal !== "undefined" && AbortSignal.timeout) {
+      host._remoteSignal = AbortSignal.timeout(ms);
+      host._remoteSignal.addEventListener("abort", () => controller.abort(), { once: true });
+    } else {
+      timer = setTimeout(() => controller.abort(), ms);
+    }
+  }
+  // The request belongs to the mount, not to the element's lifetime in a drawer.
+  onDispose(host, () => { controller.abort(); if (timer) clearTimeout(timer); });
+
+  return fetch(src, { signal: controller.signal })
+    .then((res) => {
+      if (timer) clearTimeout(timer);
+      // The status line is the boundary. `fetch` resolves on 404 and on 500, so
+      // without this test a failed request became an empty dataset and the
+      // component told the reader there was nothing to show.
+      if (!res.ok) {
+        const e = new Error(`Could not load (${res.status})`);
+        e.name = "HttpError";
+        e.status = res.status;
+        throw e;
+      }
+      return res.text();
+    })
+    .then((text) => {
+      try { return JSON.parse(text); }
+      catch (err) {
+        const e = new Error(STATE_FALLBACK.error);
+        e.name = "ParseError";
+        e.cause = err;
+        throw e;
+      }
+    });
 }
 
 /**
@@ -209,28 +199,30 @@ function emitState(host, name, detail) {
  *
  * An array payload feeds the field the component asked for, so
  * `<contour-readout src="/rows.json">` works with a bare list; an object payload
- * is matched by key, so one endpoint can serve a component's several fields at
- * once. Scalars keep their text. The return is always the string the existing
- * render body parses, so adopting this changes no component's parsing rules.
+ * is matched by key, so one endpoint can serve several fields of one component.
+ * The return is always the string the render body already parses, so adopting
+ * this changes no component's parsing.
  */
 export function remoteData(host, field) {
   const authored = host.getAttribute(field);
   if (authored !== null) return authored;
   const data = host._remoteData;
   if (data === undefined || data === null) return null;
-  if (Array.isArray(data)) return field ? JSON.stringify(data) : JSON.stringify(data);
+  if (Array.isArray(data)) return JSON.stringify(data);
   if (typeof data === "object") {
     const keys = typeof field === "string" ? [field] : field;
-    for (const k of keys) if (data[k] !== undefined) return typeof data[k] === "string" ? data[k] : JSON.stringify(data[k]);
+    for (const k of keys) {
+      if (data[k] === undefined) continue;
+      return typeof data[k] === "string" ? data[k] : JSON.stringify(data[k]);
+    }
     return null;
   }
   return String(data);
 }
 
-/** True when the host is waiting on, or has failed, a remote source. */
+/** True while a remote source is open. Lets a component keep content it already drew. */
 export function remotePending(host) {
-  const s = host._remoteStatus;
-  return s === "loading" || s === "error";
+  return host._remoteStatus === "loading";
 }
 
 /**
@@ -244,78 +236,104 @@ export function remoteRefresh(host) {
   const want = host.hasAttribute("src") && Number.isFinite(seconds) && seconds > 0;
   if (!want) {
     if (host._remoteTimer !== undefined) { clearTimeout(host._remoteTimer); host._remoteTimer = undefined; }
-    if (host._remoteVisibility) { document.removeEventListener("visibilitychange", host._remoteVisibility); host._remoteVisibility = null; }
     return;
   }
-  if (host._remoteTimer !== undefined) return; // already looping for this host
+  if (host._remoteTimer !== undefined) return; // already looping for this mount
   const tick = () => {
     host._remoteTimer = undefined;
     if (!host.isConnected || !host.hasAttribute("refresh")) return;
     if (document.hidden) { host._remoteTimer = setTimeout(tick, 1000); return; }
+    const src = host.getAttribute("src");
+    remoteCache.delete(src);
     host._remoteSrc = null;
-    remoteCache.delete(host.getAttribute("src"));
     host.requestRender();
   };
   host._remoteTimer = setTimeout(tick, Math.max(1000, seconds * 1000));
   onDispose(host, () => { clearTimeout(host._remoteTimer); host._remoteTimer = undefined; });
-  const onVisible = () => { if (!document.hidden && host._remoteTimer === undefined) tick(); };
-  document.addEventListener("visibilitychange", onVisible);
-  host._remoteVisibility = onVisible;
-  onDispose(host, () => document.removeEventListener("visibilitychange", onVisible));
+}
+
+// `loading="lazy"` belongs to the markup, not to the platform: an element below
+// the fold must not compete with the forty above it for the same connection.
+// Observed through IntersectionObserver where it exists; without it the host
+// simply asks, which is the honest fallback rather than never asking.
+export function remoteVisible(host) {
+  if (!host.hasAttribute("lazy")) return true;
+  if (typeof IntersectionObserver !== "function") return true;
+  if (host._remoteVisible) return true;
+  const io = new IntersectionObserver((records) => {
+    if (!records.some((r) => r.isIntersecting)) return;
+    io.disconnect();
+    host._remoteVisible = true;
+    soon(host);
+  }, { rootMargin: "200px" });
+  io.observe(host);
+  onDispose(host, () => io.disconnect());
+  return false;
 }
 
 // ---------------------------------------------------------------------------
 // The states themselves
 // ---------------------------------------------------------------------------
 
-// A state node is built once per render and is owned by the base class's
-// generated-node bookkeeping, so a re-render cannot stack a second one — which
-// is the defect the hand-written copies all shared.
-function stateNode(host, kind, text) {
+// A state node carries the block-scoped element class the sheet already defines
+// (`c-readout__loading`, `c-tree__empty`, …) so an author can theme one block's
+// state without reaching for the whole system, and never carries a `style`
+// attribute — which is the defect that made the matching CSS rule dead.
+//
+// It also carries `data-contour-state`, and that is the only new hook here. The
+// error state has to read as a failure, but the 34 `__error` rules in the sheets
+// group it with `__empty` and `__loading` as muted text, so giving it the danger
+// hue would mean editing 34 rules in the four sheets an active writer is landing
+// changes into. A data attribute is a host-set input, not a published class: it
+// needs no specimen, adds nothing to the component inventory, and cannot be
+// mistaken for a retunable token.
+function stateNode(host, block, kind, text) {
   const node = document.createElement("div");
-  node.className = "c-data-state c-data-state--" + kind;
+  node.className = "c-" + block + "__" + kind;
+  node.dataset.contourState = kind;
   node.textContent = text;
-  if (kind === "error") node.setAttribute("role", "alert");
   return node;
 }
 
-function skeletonRow(host, i, total) {
+function skeletonRow(i, total) {
+  // The system's own skeleton block and its own modifiers: `--title` for the
+  // first line so a placeholder has a shape instead of a uniform stack of bars,
+  // `--text` for the rest. No per-block name is invented here, which is how the
+  // 33 undefined `c-*__skeleton` classes stayed undefined.
   const node = document.createElement("div");
-  // The system's own skeleton block, with its own modifiers: `--title` for the
-  // first line so a placeholder has a shape rather than a uniform stack of bars.
-  const variant = i === 0 && total > 1 ? " c-skeleton--title" : " c-skeleton--text";
-  node.className = "c-skeleton" + variant;
+  node.className = "c-skeleton " + (i === 0 && total > 1 ? "c-skeleton--title" : "c-skeleton--text");
   return node;
 }
 
 /**
- * Paint the host's data state, if it has one.
+ * Paint the host's data state, if it has one. Returns true when a state took over
+ * the render, so the caller returns before building content it would discard.
  *
- * Returns true when a state took over the render, so the caller returns before
- * building content it would only throw away. The order is deliberate: an
- * explicit `loading` attribute or an open request wins over `error` (a retry is
- * in flight, not failed), and either wins over `skeleton`, which is a placeholder
- * for a state the host may already be in.
+ * The order is deliberate: `loading` (attribute or open request) wins over
+ * `error`, because a retry in flight is not a failure, and either wins over
+ * `skeleton`, which is a placeholder for a state the host may already be in.
  */
-export function renderStates(host, opts) {
+export function renderStates(host, block, opts) {
   const options = opts || {};
   const loading = host.getAttribute("loading");
-  const error = host.getAttribute("error");
-  if (host._remoteStatus === "loading" || loading !== null && host.hasAttribute("src")) {
-    host.appendChild(stateNode(host, "loading", loading || STATE_FALLBACK.loading));
+  if (loading !== null || host._remoteStatus === "loading") {
+    host.appendChild(stateNode(host, block, "loading", loading || STATE_FALLBACK.loading));
     return true;
   }
-  if (host._remoteStatus === "error" || error !== null) {
-    const message = error !== null && error !== "" ? error
+  const error = host.getAttribute("error");
+  if (error !== null || host._remoteStatus === "error") {
+    const message = (error !== null && error !== "") ? error
       : (host._remoteError || STATE_FALLBACK.error);
-    const node = stateNode(host, "error", message);
-    // `retry` is the actionable half of an error. The button carries no data
-    // of its own — clicking it clears the cache for this URL and asks again.
+    const node = stateNode(host, block, "error", message);
+    // `retry` is the actionable half of an error, and it reuses the button the
+    // system already ships and the `contour:retry` event three components already
+    // emit, rather than inventing a control for the same job.
     if (host.hasAttribute("retry")) {
       const btn = document.createElement("button");
       btn.type = "button";
-      btn.className = "c-data-state__retry";
+      btn.className = "c-btn c-btn--ghost c-btn--sm";
       btn.textContent = host.getAttribute("retry") || "Retry";
+      btn.dataset.action = "retry";
       node.appendChild(btn);
     }
     host.appendChild(node);
@@ -324,24 +342,24 @@ export function renderStates(host, opts) {
   if (host.hasAttribute("skeleton")) {
     const asked = parseInt(host.getAttribute("skeleton") || "3", 10);
     const count = Math.min(options.max || 6, Math.max(1, Number.isFinite(asked) ? asked : 3));
-    for (let i = 0; i < count; i++) host.appendChild(skeletonRow(host, i, count));
+    for (let i = 0; i < count; i++) host.appendChild(skeletonRow(i, count));
     return true;
   }
   return false;
 }
 
-/** Paint the empty state. Only for a host that has no data *and* no authored content. */
-export function renderEmpty(host, text) {
-  host.appendChild(stateNode(host, "empty", text || host.getAttribute("empty") || STATE_FALLBACK.empty));
+/** Paint the empty state — for a host with no data and no authored content. */
+export function renderEmpty(host, block) {
+  host.appendChild(stateNode(host, block, "empty", host.getAttribute("empty") || STATE_FALLBACK.empty));
 }
 
 // Delegated on the host (AGENTS.md rule 12): the retry button is regenerated on
-// every render, so a listener bound to the node would be lost by the next pass.
+// every render, so a listener bound to the node would be dropped by the next pass.
 export function wireStates(host) {
   if (host._contourStatesWired) return;
   host._contourStatesWired = true;
   host.addEventListener("click", (e) => {
-    const btn = e.target && e.target.closest ? e.target.closest(".c-data-state__retry") : null;
+    const btn = e.target && e.target.closest ? e.target.closest('[data-action="retry"]') : null;
     if (!btn || !host.contains(btn)) return;
     e.preventDefault();
     const src = host.getAttribute("src");

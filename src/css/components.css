@@ -2709,6 +2709,26 @@
     border-width: 3px;
   }
 
+  /* A data state a widget paints for itself (`src/js/wc/states.mjs`): the
+     `empty` / `loading` / `error` line that stands in for content the host does
+     not have yet.
+
+     `empty` and `loading` need no rule here — every block already styles its own
+     `__empty` / `__loading`, and those carry spacing that belongs to the block.
+
+     `error` is the exception, and it is stated once here rather than 34 times in
+     the sheets. The per-block rules group `__error` with `__empty` and
+     `__loading` as muted text, so a failure reads exactly like a placeholder that
+     has simply not arrived; the generator agreed, and asked for
+     `--color-danger` inline. An attribute selector on `div` is what makes the
+     override win: `.c-activity__error` is (0,1,0), and `components.css` is
+     imported *before* `components-data.css`, so a plain attribute rule would lose
+     to the block rule on order alone. `div[data-contour-state="error"]` is
+     (0,1,1) and wins on specificity wherever the block rule lives. */
+  div[data-contour-state="error"] {
+    color: var(--color-danger);
+  }
+
   .c-empty {
     content-visibility: auto;
     contain-intrinsic-size: auto 200px;
