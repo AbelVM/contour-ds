@@ -1,7 +1,7 @@
 import { ContourBase, define } from './core.mjs';
 import { wireMenu, wirePagination, wireTabs, wireTree } from './behaviours.mjs';
 class ContourMenu extends ContourBase {
-    static get observed() { return ["items", "empty", "loading", "error", "src"]; }
+    static get observed() { return ["items", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-menu");
@@ -38,6 +38,17 @@ class ContourMenu extends ContourBase {
         err.style.color = "var(--color-danger, var(--color-text))";
         err.style.padding = "var(--space-md)";
         this.appendChild(err);
+        return;
+      }
+      if (this.hasAttribute("skeleton")) {
+        const count = Math.min(5, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
+        for (let i = 0; i < count; i++) {
+          const sk = document.createElement("div");
+          sk.className = "c-skeleton c-menu__skeleton";
+          sk.style.blockSize = "1.5rem";
+          sk.style.marginBlockEnd = "var(--space-2xs)";
+          this.appendChild(sk);
+        }
         return;
       }
       // Slot composition wins over the JSON attribute.
@@ -113,7 +124,7 @@ class ContourMenu extends ContourBase {
   }
   define("contour-menu", ContourMenu);
 class ContourTabs extends ContourBase {
-    static get observed() { return ["tabs", "empty", "loading", "error", "src"]; }
+    static get observed() { return ["tabs", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { tabs: { attribute: "tabs" } }; }
     render() {
       this.classList.add("c-tabs");
@@ -149,6 +160,17 @@ class ContourTabs extends ContourBase {
         err.style.color = "var(--color-danger, var(--color-text))";
         err.style.padding = "var(--space-md)";
         this.appendChild(err);
+        return;
+      }
+      if (this.hasAttribute("skeleton")) {
+        const count = Math.min(4, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
+        for (let i = 0; i < count; i++) {
+          const sk = document.createElement("div");
+          sk.className = "c-skeleton c-tabs__skeleton";
+          sk.style.blockSize = "2rem";
+          sk.style.marginBlockEnd = "var(--space-2xs)";
+          this.appendChild(sk);
+        }
         return;
       }
       // Slot composition wins over the JSON attribute, same as ContourMenu:
@@ -254,7 +276,7 @@ class ContourHeader extends ContourBase {
   }
   define("contour-header", ContourHeader);
 class ContourTree extends ContourBase {
-    static get observed() { return ["items", "virtual", "src", "empty", "error", "loading"]; }
+    static get observed() { return ["items", "virtual", "src", "empty", "error", "loading", "skeleton"]; }
     static get properties() { return { items: { attribute: "items" } }; }
 render() {
        this.classList.add("c-tree");
@@ -296,6 +318,17 @@ render() {
           err.style.color = "var(--color-danger, var(--color-text))";
           err.style.padding = "var(--space-md)";
           this.appendChild(err);
+          return;
+        }
+        if (this.hasAttribute("skeleton")) {
+          const count = Math.min(5, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
+          for (let i = 0; i < count; i++) {
+            const sk = document.createElement("div");
+            sk.className = "c-skeleton c-tree__skeleton";
+            sk.style.blockSize = "1.5rem";
+            sk.style.marginBlockEnd = "var(--space-2xs)";
+            this.appendChild(sk);
+          }
           return;
         }
         // remove loading placeholder
@@ -590,7 +623,7 @@ class ContourPagerFull extends ContourBase {
   }
   define("contour-pager", ContourPagerFull);
 class ContourTocFull extends ContourBase {
-    static get observed() { return ["title", "items", "empty", "loading", "error", "src"]; }
+    static get observed() { return ["title", "items", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { title: { attribute: "title" }, items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-toc");
@@ -626,6 +659,17 @@ class ContourTocFull extends ContourBase {
         err.style.color = "var(--color-danger, var(--color-text))";
         err.style.padding = "var(--space-md)";
         this.appendChild(err);
+        return;
+      }
+      if (this.hasAttribute("skeleton")) {
+        const count = Math.min(4, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
+        for (let i = 0; i < count; i++) {
+          const sk = document.createElement("div");
+          sk.className = "c-skeleton c-toc__skeleton";
+          sk.style.blockSize = "1rem";
+          sk.style.marginBlockEnd = "var(--space-2xs)";
+          this.appendChild(sk);
+        }
         return;
       }
       const title = this.getAttribute("title") || "On this page";

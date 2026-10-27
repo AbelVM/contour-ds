@@ -1,7 +1,7 @@
 import { ContourBase, define, contourId } from './core.mjs';
 import { wireCombobox } from './behaviours.mjs';
 class ContourCombobox extends ContourBase {
-    static get observed() { return ["options", "placeholder", "label", "loading", "src", "error", "empty"]; }
+    static get observed() { return ["options", "placeholder", "label", "loading", "src", "error", "empty", "skeleton"]; }
     static get formAssociated() { return true; }
     static get properties() { return { options: { attribute: "options" }, placeholder: { attribute: "placeholder" }, label: { attribute: "label" } }; }
     render() {
@@ -13,6 +13,13 @@ class ContourCombobox extends ContourBase {
         err.style.color = "var(--color-danger, var(--color-text))";
         err.style.padding = "var(--space-md)";
         this.appendChild(err);
+        return;
+      }
+      if (this.hasAttribute("skeleton")) {
+        const sk = document.createElement("div");
+        sk.className = "c-skeleton c-combobox__skeleton";
+        sk.style.blockSize = "2rem";
+        this.appendChild(sk);
         return;
       }
        const options = this.getAttribute("options") || (this._remoteOptions ? JSON.stringify(this._remoteOptions) : null);

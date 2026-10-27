@@ -121,7 +121,7 @@ const BUDGETS = {
   "surfaces/contour-data.min.css": 153 * 1024,  // raised 2026-10-27
   "surfaces/contour-landing.min.css": 124 * 1024,  // raised 2026-10-27 from 123 kB: measured 123.2 kB (126,145 B). See CHANGELOG.md.
   "contour.esm.min.js": 39 * 1024,
-  "contour-wc.esm.min.js": 255 * 1024,  // raised: ... + layer panel states
+  "contour-wc.esm.min.js": 265 * 1024,  // raised: ... + skeleton/empty/error states
 };
 
 const kB = (n) => `${(n / 1024).toFixed(1)} kB`;

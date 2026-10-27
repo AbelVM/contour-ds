@@ -326,6 +326,13 @@
     background: var(--color-danger-soft);
   }
 
+  .c-menu__empty,
+  .c-menu__error,
+  .c-menu__loading {
+    color: var(--color-text-muted);
+    padding: var(--space-md);
+  }
+
   .c-menu__shortcut {
     margin-inline-start: auto;
     font-family: var(--font-mono);

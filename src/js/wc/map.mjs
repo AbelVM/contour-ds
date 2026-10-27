@@ -1,7 +1,7 @@
 import { ContourBase, define } from './core.mjs';
 import { compassNeedle, scaleBarTicks } from './svg.mjs';
 class ContourMinimap extends ContourBase {
-    static get observed() { return ["label", "viewport", "empty", "loading", "error", "src"]; }
+    static get observed() { return ["label", "viewport", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { label: { attribute: "label" }, viewport: { attribute: "viewport" } }; }
     render() {
       this.classList.add("c-minimap");
@@ -39,6 +39,14 @@ class ContourMinimap extends ContourBase {
         this.appendChild(err);
         return;
       }
+      if (this.hasAttribute("skeleton")) {
+        const sk = document.createElement("div");
+        sk.className = "c-skeleton c-minimap__skeleton";
+        sk.style.inlineSize = "100%";
+        sk.style.blockSize = "6rem";
+        this.appendChild(sk);
+        return;
+      }
       const label = this.getAttribute("label") || this._remoteLabel;
       const viewport = this.getAttribute("viewport") || this._remoteViewport;
       if (!label && !viewport) {
@@ -68,7 +76,7 @@ class ContourMinimap extends ContourBase {
   }
   define("contour-minimap", ContourMinimap);
 class ContourCoordinate extends ContourBase {
-    static get observed() { return ["value", "empty", "loading", "error", "src"]; }
+    static get observed() { return ["value", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { value: { attribute: "value" } }; }
     render() {
       this.classList.add("c-coordinate");
@@ -103,6 +111,15 @@ class ContourCoordinate extends ContourBase {
         this.appendChild(err);
         return;
       }
+      if (this.hasAttribute("skeleton")) {
+        const sk = document.createElement("span");
+        sk.className = "c-skeleton c-coordinate__skeleton";
+        sk.style.display = "inline-block";
+        sk.style.inlineSize = "4rem";
+        sk.style.blockSize = "1rem";
+        this.appendChild(sk);
+        return;
+      }
       const value = this.getAttribute("value") || this._remoteValue;
       if (!value) {
         const empty = document.createElement("span");
@@ -118,7 +135,7 @@ class ContourCoordinate extends ContourBase {
   }
   define("contour-coordinate", ContourCoordinate);
 class ContourLayerPanel extends ContourBase {
-    static get observed() { return ["label", "items", "empty", "loading", "error", "src"]; }
+    static get observed() { return ["label", "items", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { label: { attribute: "label" }, items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-layer-panel");
@@ -154,6 +171,17 @@ class ContourLayerPanel extends ContourBase {
         err.style.color = "var(--color-danger, var(--color-text))";
         err.style.padding = "var(--space-md)";
         this.appendChild(err);
+        return;
+      }
+      if (this.hasAttribute("skeleton")) {
+        const count = Math.min(4, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
+        for (let i = 0; i < count; i++) {
+          const sk = document.createElement("div");
+          sk.className = "c-skeleton c-layer-panel__skeleton";
+          sk.style.blockSize = "1.5rem";
+          sk.style.marginBlockEnd = "var(--space-2xs)";
+          this.appendChild(sk);
+        }
         return;
       }
       const label = this.getAttribute("label");
@@ -676,7 +704,7 @@ class ContourCatchment extends ContourBase {
   }
   define("contour-catchment", ContourCatchment);
 class ContourCompassFull extends ContourBase {
-    static get observed() { return ["label", "needle", "empty", "loading", "error", "src"]; }
+    static get observed() { return ["label", "needle", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { label: { attribute: "label" }, needle: { attribute: "needle" } }; }
     render() {
       this.classList.add("c-compass");
@@ -715,6 +743,15 @@ class ContourCompassFull extends ContourBase {
         return;
       }
       const label = this.getAttribute("label") || this._remoteLabel;
+      if (this.hasAttribute("skeleton")) {
+        const sk = document.createElement("div");
+        sk.className = "c-skeleton c-compass__skeleton";
+        sk.style.inlineSize = "6rem";
+        sk.style.blockSize = "6rem";
+        sk.style.borderRadius = "50%";
+        this.appendChild(sk);
+        return;
+      }
       // Cardinal directions.
       for (const dir of ["n", "s", "e", "w"]) {
         const cls = ".c-compass__label--" + dir;
@@ -911,7 +948,7 @@ class ContourMapFooter extends ContourBase {
   }
   define("contour-map-footer", ContourMapFooter);
 class ContourScaleBar extends ContourBase {
-    static get observed() { return ["label", "value", "empty", "loading", "error", "src"]; }
+    static get observed() { return ["label", "value", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" } }; }
     render() {
       this.classList.add("c-scale-bar");
@@ -956,6 +993,15 @@ class ContourScaleBar extends ContourBase {
       } else {
         const l = this.querySelector(".c-scale-bar__label");
         if (l) l.remove();
+      }
+      if (this.hasAttribute("skeleton")) {
+        const sk = document.createElement("span");
+        sk.className = "c-skeleton c-scale-bar__skeleton";
+        sk.style.display = "inline-block";
+        sk.style.inlineSize = "100%";
+        sk.style.blockSize = "0.5rem";
+        this.appendChild(sk);
+        return;
       }
       const value = this.getAttribute("value") || this._remoteValue;
       if (!value) {

@@ -649,6 +649,12 @@
      font-style: italic;
    }
 
+   .c-combobox__empty,
+   .c-combobox__error {
+     color: var(--color-text-muted);
+     font-style: italic;
+   }
+
   /* Tree view: hierarchical list with expand/collapse. */
   .c-tree {
     list-style: none;
@@ -722,7 +728,9 @@
      padding-inline-start: calc(var(--space-md) + 1rem);
    }
 
-   .c-tree__loading {
+   .c-tree__loading,
+   .c-tree__empty,
+   .c-tree__error {
      color: var(--color-text-muted);
    }
 
