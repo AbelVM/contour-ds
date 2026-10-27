@@ -1,98 +1,43 @@
 import { ContourBase, define, contourId } from './core.mjs';
 import { wireCombobox } from './behaviours.mjs';
 class ContourCombobox extends ContourBase {
-    static get observed() { return ["options", "placeholder", "label", "loading", "src", "error", "empty", "skeleton"]; }
+    static get observed() { return ["options", "placeholder", "label", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "empty", "skeleton"]; }
     static get formAssociated() { return true; }
     static get properties() { return { options: { attribute: "options" }, placeholder: { attribute: "placeholder" }, label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-combobox");
-      if (this.hasAttribute("error")) {
-        const err = document.createElement("div");
-        err.className = "c-combobox__error";
-        err.textContent = this.getAttribute("error") || "Error";
-        err.style.color = "var(--color-danger, var(--color-text))";
-        err.style.padding = "var(--space-md)";
-        this.appendChild(err);
-        return;
+      wireStates(this);
+      loadRemote(this, "options");
+      if (renderStates(this, "combobox")) return;
+      const options = remoteData(this, "options");
+      // Slot composition: authored <li> options win over the JSON attribute.
+      const authored = Array.from(this.children).filter((n) => !n.classList || (!n.classList.contains("c-combobox__input") && !n.classList.contains("c-combobox__list")));
+      if ((options) && !authored.length) {
+        try {
+          const parsed = options ? JSON.parse(options) : [];
+          const input = this.ensure(".c-combobox__input", () => { const el = document.createElement("input"); el.className = "c-combobox__input"; el.type = "text"; return el; });
+          input.type = "text";
+          input.placeholder = this.getAttribute("placeholder") || "Search…";
+          input.setAttribute("aria-label", this.getAttribute("label") || "Search");
+          const list = this.ensure(".c-combobox__list", () => { const el = document.createElement("ul"); el.className = "c-combobox__list"; el.setAttribute("hidden", ""); return el; });
+          list.innerHTML = "";
+          list.setAttribute("hidden", "");
+          parsed.forEach((opt) => {
+            const li = document.createElement("li");
+            li.className = "c-combobox__option";
+            li.textContent = typeof opt === "string" ? opt : opt.label;
+            list.appendChild(li);
+          });
+        } catch (e) { /* keep existing */ }
+      } else if (!authored.length && !options) {
+        renderEmpty(this, "combobox");
       }
-      if (this.hasAttribute("skeleton")) {
-        const sk = document.createElement("div");
-        sk.className = "c-skeleton c-combobox__skeleton";
-        sk.style.blockSize = "2rem";
-        this.appendChild(sk);
-        return;
-      }
-       const options = this.getAttribute("options") || (this._remoteOptions ? JSON.stringify(this._remoteOptions) : null);
-       const src = this.getAttribute("src");
-       // Remote loading: fetch options from `src` and populate internal state.
-       if (src && !this.getAttribute("options") && this._srcFetched !== src) {
-         this._srcFetched = src;
-         this._loading = true;
-         this.attributeChangedCallback("__rerender__", null, "");
-         fetch(src).then((r) => r.json()).then((data) => {
-           this._remoteOptions = data;
-           this._loading = false;
-           this.attributeChangedCallback("__rerender__", null, "");
-         }).catch(() => {
-           this._loading = false;
-           this.attributeChangedCallback("__rerender__", null, "");
-         });
-       }
-       const loading = this.hasAttribute("loading") || this._loading;
-       // Slot composition: authored <li> options win over the JSON attribute.
-       const authored = Array.from(this.children).filter((n) => !n.classList || (!n.classList.contains("c-combobox__input") && !n.classList.contains("c-combobox__list")));
-       if ((options || loading) && !authored.length) {
-         try {
-           const parsed = options ? JSON.parse(options) : [];
-           const input = this.ensure(".c-combobox__input", () => { const el = document.createElement("input"); el.className = "c-combobox__input"; el.type = "text"; return el; });
-           input.type = "text";
-           input.placeholder = this.getAttribute("placeholder") || "Search…";
-           input.setAttribute("aria-label", this.getAttribute("label") || "Search");
-           const list = this.ensure(".c-combobox__list", () => { const el = document.createElement("ul"); el.className = "c-combobox__list"; el.setAttribute("hidden", ""); return el; });
-           list.innerHTML = "";
-           list.setAttribute("hidden", "");
-           if (loading) {
-             const li = document.createElement("li");
-             li.className = "c-combobox__option c-combobox__loading";
-             li.textContent = (typeof this.getAttribute("loading") === "string" && this.getAttribute("loading")) ? this.getAttribute("loading") : "Loading…";
-             list.appendChild(li);
-             list.removeAttribute("hidden");
-           } else {
-             parsed.forEach((opt) => {
-               const li = document.createElement("li");
-               li.className = "c-combobox__option";
-               li.textContent = typeof opt === "string" ? opt : opt.label;
-               list.appendChild(li);
-             });
-           }
-         } catch (e) { /* keep existing */ }
-       } else if (!authored.length && !options && !loading) {
-         const empty = document.createElement("div");
-         empty.className = "c-combobox__empty";
-         empty.textContent = this.getAttribute("empty") || "No data";
-         empty.style.color = "var(--color-text-muted)";
-         empty.style.padding = "var(--space-md)";
-         this.appendChild(empty);
-       }
     }
     enhance() {
-      // Interaction lives in behaviours.mjs, which the shadow wrappers call too.
-      // One implementation, so the two layers cannot drift apart again: the shadow
-      // copy queried its root for slotted nodes, found none, and wired nothing.
       wireCombobox(this);
-      if (this._wiredComboboxForm) return;
-      this._wiredComboboxForm = true;
-      const sync = () => {
-        const input = this.querySelector("input, .c-combobox__input");
-        if (!input || !this._internals) return;
-        this._internals.setFormValue(input.value);
-      };
-      this.addEventListener("input", sync);
-      this.addEventListener("change", sync);
-      sync();
     }
   }
-  define("contour-combobox", ContourCombobox);
+define("contour-combobox", ContourCombobox);
 class ContourField extends ContourBase {
     static get observed() { return ["label", "hint", "error", "placeholder", "type"]; }
     static get formAssociated() { return true; }

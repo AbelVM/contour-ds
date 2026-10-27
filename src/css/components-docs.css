@@ -138,6 +138,13 @@
     font-size: var(--type-xs);
   }
 
+  .c-toc__empty,
+  .c-toc__loading,
+  .c-toc__error {
+    color: var(--color-text-muted);
+    padding: var(--space-md);
+  }
+
   .c-toc__title {
     font-family: var(--font-mono);
     font-size: var(--type-micro);
