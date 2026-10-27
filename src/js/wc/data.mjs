@@ -621,9 +621,12 @@ const series = this.getAttribute("series");
                     rect.setAttribute("x", r.x);
                     rect.setAttribute("y", r.y);
                     rect.setAttribute("width", r.width);
-                    rect.setAttribute("height", r.height);
-                    rect.setAttribute("title", String(s.values[ri]));
-                    svg.appendChild(rect);
+                     rect.setAttribute("height", r.height);
+                     rect.setAttribute("title", String(s.values[ri]));
+                     rect.setAttribute("tabindex", "0");
+                     rect.setAttribute("role", "button");
+                     rect.dataset.index = String(ri);
+                     svg.appendChild(rect);
                   });
                  plot.appendChild(svg);
                } else {
@@ -697,7 +700,28 @@ const series = this.getAttribute("series");
         };
         const hideTip = () => tip.setAttribute("hidden", "");
         plot.addEventListener("mousemove", showTip);
-        plot.addEventListener("mouseleave", hideTip);
+         plot.addEventListener("mouseleave", hideTip);
+      }
+      // Per-bar keyboard/click handling for histogram bars.
+      const plot2 = this.querySelector(".c-chart__plot");
+      if (plot2) {
+        plot2.addEventListener("click", (e) => {
+          const bar = e.target && e.target.closest ? e.target.closest(".c-chart__bar") : null;
+          if (!bar || !plot2.contains(bar)) return;
+          const series = parseInt(bar.getAttribute("data-series") || "1", 10);
+          const index = parseInt(bar.dataset.index || "0", 10);
+          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, detail: { series, index } }));
+        });
+        plot2.addEventListener("keydown", (e) => {
+          const bar = e.target && e.target.closest ? e.target.closest(".c-chart__bar") : null;
+          if (!bar || !plot2.contains(bar)) return;
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            const series = parseInt(bar.getAttribute("data-series") || "1", 10);
+            const index = parseInt(bar.dataset.index || "0", 10);
+            this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, detail: { series, index } }));
+          }
+        });
       }
       // Retry button handling.
       this.addEventListener("click", (e) => {

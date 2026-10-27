@@ -386,14 +386,47 @@ class ContourFaq extends ContourBase {
   }
   define("contour-faq", ContourFaq);
 class ContourAccordion extends ContourBase {
-    static get observed() { return ["items"]; }
+    static get observed() { return ["items", "empty", "loading", "error", "src"]; }
     static get properties() { return { items: { attribute: "items" } }; }
     render() {
       // The host is a plain container; the children carry .c-disclosure, which
       // is the block that owns the styling. No .c-accordion rule exists, so the
       // host class is dropped rather than invented.
       const authored = Array.from(this.children).filter((n) => n.tagName === "DETAILS");
-      const items = this.getAttribute("items");
+      const src = this.getAttribute("src");
+      const items = this.getAttribute("items") || (this._remoteItems ? JSON.stringify(this._remoteItems) : null);
+      if (src && !this.getAttribute("items") && this._srcFetched !== src) {
+        this._srcFetched = src;
+        this._loading = true;
+        this.attributeChangedCallback("__rerender__", null, "");
+        fetch(src).then((r) => r.json()).then((data) => {
+          this._remoteItems = data;
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        }).catch(() => {
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        });
+      }
+      const loading = this.hasAttribute("loading") || this._loading;
+      if (loading) {
+        const loadingEl = document.createElement("div");
+        loadingEl.className = "c-accordion__loading";
+        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
+        loadingEl.style.color = "var(--color-text-muted)";
+        loadingEl.style.padding = "var(--space-md)";
+        this.appendChild(loadingEl);
+        return;
+      }
+      if (this.hasAttribute("error")) {
+        const err = document.createElement("div");
+        err.className = "c-accordion__error";
+        err.textContent = this.getAttribute("error") || "Error";
+        err.style.color = "var(--color-danger, var(--color-text))";
+        err.style.padding = "var(--space-md)";
+        this.appendChild(err);
+        return;
+      }
       if (items && !authored.length) {
         Array.from(this.querySelectorAll("details.c-disclosure")).forEach((d) => d.remove());
         try {
@@ -411,8 +444,15 @@ class ContourAccordion extends ContourBase {
             details.appendChild(body);
             this.appendChild(details);
           });
-        } catch (e) { /* keep existing */ }
-      }
+         } catch (e) { /* keep existing */ }
+       } else if (!items && !authored.length) {
+         const empty = document.createElement("div");
+         empty.className = "c-accordion__empty";
+         empty.textContent = this.getAttribute("empty") || "No data";
+         empty.style.color = "var(--color-text-muted)";
+         empty.style.padding = "var(--space-md)";
+         this.appendChild(empty);
+       }
     }
     enhance() {
       if (this._wiredAccordion) return;

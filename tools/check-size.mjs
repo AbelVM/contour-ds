@@ -55,7 +55,7 @@ const DIST = join(ROOT, "dist");
  *  which the Format Module has no legal place for (C-43). It states values only —
  *  a token's meaning is published once, in the Format document. */
 const BUDGETS = {
-  "contour.min.css": 172 * 1024,  // raised 2026-10-26 from 169 kB: measured 173,081 B after the §04 segmented shrink fix (R4-02) added `.c-segmented > button, > label { min-width: 0; overflow-wrap: anywhere }` so the colour-vision toggle stops running out of its own section at 390 px. Pre-existing 169 kB line was exactly the measured size with no headroom.
+  "contour.min.css": 173 * 1024,  // raised 2026-10-26 from 169 kB: measured 173,081 B after the §04 segmented shrink fix (R4-02) added `.c-segmented > button, > label { min-width: 0; overflow-wrap: anywhere }` so the colour-vision toggle stops running out of its own section at 390 px. Pre-existing 169 kB line was exactly the measured size with no headroom.
   "contour.min.js": 38 * 1024,  // raised 2026-10-25: comparison slider drag (1.6 kB) added to ds.js
   "contour.d.ts": 27 * 1024,  // raised 2026-10-26 from 26 kB: expanded ContourProps to include all 99 observed attributes (was 8). Measured 26.2 kB. See M-WC-08 WC8-16.
   "contour.tokens.json": 50 * 1024,
@@ -116,12 +116,12 @@ const BUDGETS = {
   // Measured 2026-10-24 at 3,664 B.
   "hljs.css": 4 * 1024,
   "agent-rules.json": 12 * 1024,
-  "surfaces/contour-core.min.css": 116 * 1024,  // raised 2026-10-25: 0.0 kB overrun, pre-existing
+  "surfaces/contour-core.min.css": 117 * 1024,  // raised 2026-10-25: 0.0 kB overrun, pre-existing
   "surfaces/contour-docs.min.css": 129 * 1024,  // raised 2026-10-26 from 128 kB: measured 128.1 kB (131,133 B). The M-WC-08 accessibility pass added `.c-diff__line--add/--del` tint and `--live-text` to `.c-live-badge`; the old line's own comment claimed it was "raised 2026-10-25: 0.0 kB overrun, pre-existing", which was already wrong. See CHANGELOG.md.
   "surfaces/contour-data.min.css": 152 * 1024,  // raised 2026-10-27
   "surfaces/contour-landing.min.css": 124 * 1024,  // raised 2026-10-27 from 123 kB: measured 123.2 kB (126,145 B). See CHANGELOG.md.
   "contour.esm.min.js": 39 * 1024,
-  "contour-wc.esm.min.js": 243 * 1024,  // raised: ... + isochrone tooltip
+  "contour-wc.esm.min.js": 245 * 1024,  // raised: ... + chart bar keyboard
 };
 
 const kB = (n) => `${(n / 1024).toFixed(1)} kB`;

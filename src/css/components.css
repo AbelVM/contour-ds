@@ -1603,10 +1603,17 @@
   /* =======================================================================
      10. DISCLOSURE / ACCORDION
      ======================================================================= */
-  .c-accordion {
-    display: grid;
-    gap: var(--space-sm);
-  }
+   .c-accordion {
+     display: grid;
+     gap: var(--space-sm);
+   }
+
+   .c-accordion__empty,
+   .c-accordion__loading,
+   .c-accordion__error {
+     color: var(--color-text-muted);
+     padding: var(--space-md);
+   }
 
   .c-disclosure {
     border-block-end: 1px solid var(--color-border-subtle);
@@ -1867,20 +1874,20 @@
     color: var(--color-text);
   }
 
-  .c-switch__input {
-    appearance: none;
-    position: relative;
-    inline-size: 2.4rem;
-    block-size: 1.4rem;
-    margin: 0;
-    border-radius: var(--radius-pill);
-    background: var(--color-track);
-    border: 1px solid var(--color-control-edge);
-    cursor: pointer;
-    transition:
-      background-color var(--dur-base) var(--ease-standard),
-      border-color var(--dur-base) var(--ease-standard);
-  }
+   .c-switch__input {
+     appearance: none;
+     position: relative;
+     inline-size: 2.4rem;
+     block-size: 1.4rem;
+     margin: 0;
+     border-radius: var(--radius-pill);
+     background: light-dark(oklch(78% 0.012 230), oklch(30% 0.018 230));
+     border: 1px solid var(--color-control-edge);
+     cursor: pointer;
+     transition:
+       background-color var(--dur-base) var(--ease-standard),
+       border-color var(--dur-base) var(--ease-standard);
+   }
 
   .c-switch__input::after {
     content: "";
