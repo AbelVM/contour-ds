@@ -3138,6 +3138,13 @@
     gap: var(--space-3xs);
   }
 
+  .c-radio-list__empty,
+  .c-radio-list__loading,
+  .c-radio-list__error {
+    color: var(--color-text-muted);
+    padding: var(--space-md);
+  }
+
   .c-radio-list .c-radio {
     padding-block: var(--space-3xs);
   }

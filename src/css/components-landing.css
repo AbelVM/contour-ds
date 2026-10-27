@@ -18,6 +18,13 @@
     font-size: var(--type-sm);
   }
 
+  .c-compare__empty,
+  .c-compare__loading,
+  .c-compare__error {
+    color: var(--color-text-muted);
+    padding: var(--space-md);
+  }
+
   .c-compare th,
   .c-compare td {
     padding: var(--space-sm) var(--space-md);

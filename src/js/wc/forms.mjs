@@ -554,13 +554,57 @@ class ContourInputGroup extends ContourBase {
   }
   define("contour-input-group", ContourInputGroup);
 class ContourRadioList extends ContourBase {
-    static get observed() { return ["items", "name"]; }
+    static get observed() { return ["items", "name", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { items: { attribute: "items" }, name: { attribute: "name" } }; }
     render() {
       this.classList.add("c-radio-list");
+      const src = this.getAttribute("src");
+      const items = this.getAttribute("items") || (this._remoteItems ? JSON.stringify(this._remoteItems) : null);
+      if (src && !this.getAttribute("items") && this._srcFetched !== src) {
+        this._srcFetched = src;
+        this._loading = true;
+        this.attributeChangedCallback("__rerender__", null, "");
+        fetch(src).then((r) => r.json()).then((data) => {
+          this._remoteItems = data;
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        }).catch(() => {
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        });
+      }
+      const loading = this.hasAttribute("loading") || this._loading;
+      if (loading) {
+        const loadingEl = document.createElement("div");
+        loadingEl.className = "c-radio-list__loading";
+        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
+        loadingEl.style.color = "var(--color-text-muted)";
+        loadingEl.style.padding = "var(--space-md)";
+        this.appendChild(loadingEl);
+        return;
+      }
+      if (this.hasAttribute("error")) {
+        const err = document.createElement("div");
+        err.className = "c-radio-list__error";
+        err.textContent = this.getAttribute("error") || "Error";
+        err.style.color = "var(--color-danger, var(--color-text))";
+        err.style.padding = "var(--space-md)";
+        this.appendChild(err);
+        return;
+      }
+      if (this.hasAttribute("skeleton")) {
+        const count = Math.min(4, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
+        for (let i = 0; i < count; i++) {
+          const sk = document.createElement("div");
+          sk.className = "c-skeleton c-radio-list__skeleton";
+          sk.style.blockSize = "1.5rem";
+          sk.style.marginBlockEnd = "var(--space-2xs)";
+          this.appendChild(sk);
+        }
+        return;
+      }
       // Clear previously generated radios before rebuilding.
       Array.from(this.querySelectorAll("label.c-radio")).forEach((l) => l.remove());
-      const items = this.getAttribute("items");
       if (items) {
         try {
           const parsed = JSON.parse(items);
@@ -579,6 +623,13 @@ class ContourRadioList extends ContourBase {
             this.appendChild(lbl);
           });
         } catch (e) { /* keep existing */ }
+      } else {
+        const empty = document.createElement("div");
+        empty.className = "c-radio-list__empty";
+        empty.textContent = this.getAttribute("empty") || "No data";
+        empty.style.color = "var(--color-text-muted)";
+        empty.style.padding = "var(--space-md)";
+        this.appendChild(empty);
       }
     }
   }

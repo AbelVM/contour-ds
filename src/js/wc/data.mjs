@@ -1802,33 +1802,81 @@ class ContourHeatmap extends ContourBase {
   }
   define("contour-heatmap", ContourHeatmap);
 class ContourCompare extends ContourBase {
-    static get observed() { return ["no", "text", "yes"]; }
+    static get observed() { return ["no", "text", "yes", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { no: { attribute: "no" }, text: { attribute: "text" }, yes: { attribute: "yes" } }; }
     render() {
       this.classList.add("c-compare");
       this.style.padding = "var(--space-md)";
-      // Drop previously generated children so a re-render cannot stack a second set.
-      Array.from(this.querySelectorAll(".c-compare__yes, .c-compare__no, .c-compare__text")).forEach((n) => n.remove());
+      const src = this.getAttribute("src");
       const yes = this.getAttribute("yes");
       const no = this.getAttribute("no");
       const text = this.getAttribute("text");
-      if (yes) {
+      if (src && !this.getAttribute("yes") && !this.getAttribute("no") && !this.getAttribute("text") && this._srcFetched !== src) {
+        this._srcFetched = src;
+        this._loading = true;
+        this.attributeChangedCallback("__rerender__", null, "");
+        fetch(src).then((r) => r.json()).then((data) => {
+          this._remoteData = data;
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        }).catch(() => {
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        });
+      }
+      const loading = this.hasAttribute("loading") || this._loading;
+      if (loading) {
+        const loadingEl = document.createElement("div");
+        loadingEl.className = "c-compare__loading";
+        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
+        loadingEl.style.color = "var(--color-text-muted)";
+        this.appendChild(loadingEl);
+        return;
+      }
+      if (this.hasAttribute("error")) {
+        const err = document.createElement("div");
+        err.className = "c-compare__error";
+        err.textContent = this.getAttribute("error") || "Error";
+        err.style.color = "var(--color-danger, var(--color-text))";
+        this.appendChild(err);
+        return;
+      }
+      if (this.hasAttribute("skeleton")) {
+        const sk = document.createElement("div");
+        sk.className = "c-skeleton c-compare__skeleton";
+        sk.style.blockSize = "2rem";
+        this.appendChild(sk);
+        return;
+      }
+      // Drop previously generated children so a re-render cannot stack a second set.
+      Array.from(this.querySelectorAll(".c-compare__yes, .c-compare__no, .c-compare__text")).forEach((n) => n.remove());
+      const rYes = yes || (this._remoteData && this._remoteData.yes);
+      const rNo = no || (this._remoteData && this._remoteData.no);
+      const rText = text || (this._remoteData && this._remoteData.text);
+      if (rYes) {
         const y = document.createElement("span");
         y.className = "c-compare__yes";
         y.innerHTML = '<svg aria-hidden="true"><use href="#i-check" /></svg>';
         this.appendChild(y);
       }
-      if (no) {
+      if (rNo) {
         const n = document.createElement("div");
         n.className = "c-compare__no";
-        n.textContent = no;
+        n.textContent = rNo;
         this.appendChild(n);
       }
-      if (text) {
+      if (rText) {
         const t = document.createElement("p");
         t.className = "c-compare__text";
-        t.textContent = text;
+        t.textContent = rText;
         this.appendChild(t);
+      }
+      if (!rYes && !rNo && !rText) {
+        const empty = document.createElement("div");
+        empty.className = "c-compare__empty";
+        empty.textContent = this.getAttribute("empty") || "No data";
+        empty.style.color = "var(--color-text-muted)";
+        this.appendChild(empty);
       }
     }
   }
