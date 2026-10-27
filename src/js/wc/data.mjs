@@ -1,94 +1,47 @@
 import { ContourBase, define } from './core.mjs';
+import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { donutSlices, barRects, smoothPath } from './svg.mjs';
 class ContourReadout extends ContourBase {
-    static get observed() { return ["rows", "empty", "loading", "error", "src", "skeleton"]; }
+    static get observed() { return ["rows", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { rows: { attribute: "rows" } }; }
-render() {
-       this.classList.add("c-readout");
-       const src = this.getAttribute("src");
-       const rows = this.getAttribute("rows") || (this._remoteRows ? JSON.stringify(this._remoteRows) : null);
-       if (src && !this.getAttribute("rows") && this._srcFetched !== src) {
-         this._srcFetched = src;
-         this._loading = true;
-         this.attributeChangedCallback("__rerender__", null, "");
-         fetch(src).then((r) => r.json()).then((data) => {
-           this._remoteRows = data;
-           this._loading = false;
-           this.attributeChangedCallback("__rerender__", null, "");
-         }).catch(() => {
-           this._loading = false;
-           this.attributeChangedCallback("__rerender__", null, "");
-         });
-       }
-       const loading = this.hasAttribute("loading") || this._loading;
-       if (loading) {
-         const loadingEl = document.createElement("div");
-         loadingEl.className = "c-readout__loading";
-         loadingEl.textContent = this.getAttribute("loading") || "Loading…";
-         loadingEl.style.color = "var(--color-text-muted)";
-         loadingEl.style.padding = "var(--space-md)";
-         this.appendChild(loadingEl);
-         return;
-       }
-       if (this.hasAttribute("error")) {
-         const err = document.createElement("div");
-         err.className = "c-readout__error";
-         err.textContent = this.getAttribute("error") || "Error";
-         err.style.color = "var(--color-danger, var(--color-text))";
-         err.style.padding = "var(--space-md)";
-         this.appendChild(err);
-         return;
-       }
-       if (this.hasAttribute("skeleton")) {
-         const count = Math.min(4, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
-         for (let i = 0; i < count; i++) {
-           const sk = document.createElement("div");
-           sk.className = "c-skeleton c-readout__skeleton";
-           sk.style.blockSize = "1.5rem";
-           sk.style.marginBlockEnd = "var(--space-2xs)";
-           this.appendChild(sk);
-         }
-         return;
-       }
-       // Drop previously generated rows so a re-render cannot stack a second set.
-       Array.from(this.querySelectorAll(".c-readout__row")).forEach((n) => n.remove());
-       // Slot composition wins over the JSON attribute, same as the navigation
-       // components: an authored readout is preserved across re-renders.
-       const authored = Array.from(this.children).filter((n) => !n.classList || !n.classList.contains("c-readout__row"));
-       if (rows && !authored.length) {
-         try {
-           const parsed = JSON.parse(rows);
-           parsed.forEach((r) => {
-             const row = document.createElement("div");
-             row.className = "c-readout__row";
-             const key = document.createElement("span");
-             key.className = "c-readout__key";
-             key.textContent = r.key || r[0];
-             const val = document.createElement("span");
-             val.className = "c-readout__value" + (r.primary ? " c-readout__value--primary" : "") + (r.accent ? " c-readout__value--accent" : "") + (r.coord ? " c-readout__value--coord" : "");
-             val.textContent = r.value || r[1];
-             row.appendChild(key);
-             row.appendChild(val);
-             if (r.order) {
-               const ord = document.createElement("span");
-               ord.className = "c-readout__order";
-               ord.textContent = r.order;
-               row.appendChild(ord);
-             }
-             this.appendChild(row);
-           });
-         } catch (e) { /* keep existing */ }
-       } else if (!rows && !authored.length) {
-         const empty = document.createElement("div");
-         empty.className = "c-readout__empty";
-         empty.textContent = this.getAttribute("empty") || "No data";
-         empty.style.color = "var(--color-text-muted)";
-         empty.style.padding = "var(--space-md)";
-         this.appendChild(empty);
-       }
-     }
+    render() {
+      this.classList.add("c-readout");
+      wireStates(this);
+      loadRemote(this, "rows");
+      if (renderStates(this, "readout")) return;
+      const rows = remoteData(this, "rows");
+      // Drop previously generated rows so a re-render cannot stack a second set.
+      Array.from(this.querySelectorAll(".c-readout__row")).forEach((n) => n.remove());
+      const authored = Array.from(this.children).filter((n) => !n.classList || !n.classList.contains("c-readout__row"));
+      if (rows && !authored.length) {
+        try {
+          const parsed = JSON.parse(rows);
+          parsed.forEach((r) => {
+            const row = document.createElement("div");
+            row.className = "c-readout__row";
+            const key = document.createElement("span");
+            key.className = "c-readout__key";
+            key.textContent = r.key || r[0];
+            const val = document.createElement("span");
+            val.className = "c-readout__value" + (r.primary ? " c-readout__value--primary" : "") + (r.accent ? " c-readout__value--accent" : "") + (r.coord ? " c-readout__value--coord" : "");
+            val.textContent = r.value || r[1];
+            row.appendChild(key);
+            row.appendChild(val);
+            if (r.order) {
+              const ord = document.createElement("span");
+              ord.className = "c-readout__order";
+              ord.textContent = r.order;
+              row.appendChild(ord);
+            }
+            this.appendChild(row);
+          });
+        } catch (e) { /* keep existing */ }
+      } else if (!rows && !authored.length) {
+        renderEmpty(this, "readout");
+      }
+    }
   }
-  define("contour-readout", ContourReadout);
+define("contour-readout", ContourReadout);
 class ContourKpi extends ContourBase {
     static get observed() { return ["value", "label", "delta", "direction", "note", "variant", "unit", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() {

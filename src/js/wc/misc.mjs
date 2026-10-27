@@ -57,12 +57,7 @@ class ContourActivity extends ContourBase {
           });
         } catch (e) { /* keep existing */ }
       } else {
-        const empty = document.createElement("div");
-        empty.className = "c-activity__empty";
-        empty.textContent = this.getAttribute("empty") || "No data";
-        empty.style.color = "var(--color-text-muted)";
-        empty.style.padding = "var(--space-md)";
-        this.appendChild(empty);
+        renderEmpty(this, "activity");
       }
     }
   }
