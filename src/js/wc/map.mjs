@@ -633,17 +633,33 @@ class ContourCatchment extends ContourBase {
   }
   define("contour-catchment", ContourCatchment);
 class ContourCompassFull extends ContourBase {
-    static get observed() { return ["label", "needle", "empty", "loading", "error"]; }
+    static get observed() { return ["label", "needle", "empty", "loading", "error", "src"]; }
     static get properties() { return { label: { attribute: "label" }, needle: { attribute: "needle" } }; }
     render() {
       this.classList.add("c-compass");
-      if (this.hasAttribute("loading")) {
-        const loading = document.createElement("div");
-        loading.className = "c-compass__loading";
-        loading.textContent = this.getAttribute("loading") || "Loading…";
-        loading.style.color = "var(--color-text-muted)";
-        loading.style.padding = "var(--space-md)";
-        this.appendChild(loading);
+      const src = this.getAttribute("src");
+      if (src && !this.getAttribute("needle") && this._srcFetched !== src) {
+        this._srcFetched = src;
+        this._loading = true;
+        this.attributeChangedCallback("__rerender__", null, "");
+        fetch(src).then((r) => r.json()).then((data) => {
+          this._remoteNeedle = data.needle || data.value || this._remoteNeedle;
+          this._remoteLabel = data.label || this._remoteLabel;
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        }).catch(() => {
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        });
+      }
+      const loading = this.hasAttribute("loading") || this._loading;
+      if (loading) {
+        const loadingEl = document.createElement("div");
+        loadingEl.className = "c-compass__loading";
+        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
+        loadingEl.style.color = "var(--color-text-muted)";
+        loadingEl.style.padding = "var(--space-md)";
+        this.appendChild(loadingEl);
         return;
       }
       if (this.hasAttribute("error")) {
@@ -655,6 +671,7 @@ class ContourCompassFull extends ContourBase {
         this.appendChild(err);
         return;
       }
+      const label = this.getAttribute("label") || this._remoteLabel;
       // Cardinal directions.
       for (const dir of ["n", "s", "e", "w"]) {
         const cls = ".c-compass__label--" + dir;
@@ -666,12 +683,11 @@ class ContourCompassFull extends ContourBase {
           this.appendChild(l);
         }
       }
-      const label = this.getAttribute("label") || this._remoteLabel;
       if (label && label.toLowerCase() !== "compass") {
         const l = this.ensure(".c-compass__label", () => { const el = document.createElement("span"); el.className = "c-compass__label"; return el; });
         l.textContent = label;
       }
-      const needle = this.getAttribute("needle");
+      const needle = this.getAttribute("needle") || this._remoteNeedle;
       if (needle) {
         const deg = Number(needle) || 0;
         const n = this.ensure("svg.c-compass__needle", () => {
