@@ -1,11 +1,20 @@
 import { ContourBase, define, contourId } from './core.mjs';
 import { wireCombobox } from './behaviours.mjs';
 class ContourCombobox extends ContourBase {
-    static get observed() { return ["options", "placeholder", "label", "loading", "src"]; }
+    static get observed() { return ["options", "placeholder", "label", "loading", "src", "error", "empty"]; }
     static get formAssociated() { return true; }
     static get properties() { return { options: { attribute: "options" }, placeholder: { attribute: "placeholder" }, label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-combobox");
+      if (this.hasAttribute("error")) {
+        const err = document.createElement("div");
+        err.className = "c-combobox__error";
+        err.textContent = this.getAttribute("error") || "Error";
+        err.style.color = "var(--color-danger, var(--color-text))";
+        err.style.padding = "var(--space-md)";
+        this.appendChild(err);
+        return;
+      }
        const options = this.getAttribute("options") || (this._remoteOptions ? JSON.stringify(this._remoteOptions) : null);
        const src = this.getAttribute("src");
        // Remote loading: fetch options from `src` and populate internal state.
@@ -50,6 +59,13 @@ class ContourCombobox extends ContourBase {
              });
            }
          } catch (e) { /* keep existing */ }
+       } else if (!authored.length && !options && !loading) {
+         const empty = document.createElement("div");
+         empty.className = "c-combobox__empty";
+         empty.textContent = this.getAttribute("empty") || "No data";
+         empty.style.color = "var(--color-text-muted)";
+         empty.style.padding = "var(--space-md)";
+         this.appendChild(empty);
        }
     }
     enhance() {

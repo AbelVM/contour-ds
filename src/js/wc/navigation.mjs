@@ -95,6 +95,13 @@ class ContourMenu extends ContourBase {
            this.classList.remove("c-menu");
            ul.classList.add("c-menu");
          } catch (e) { /* keep existing content */ }
+       } else if (!authored.length) {
+         const empty = document.createElement("div");
+         empty.className = "c-menu__empty";
+         empty.textContent = this.getAttribute("empty") || "No data";
+         empty.style.color = "var(--color-text-muted)";
+         empty.style.padding = "var(--space-md)";
+         this.appendChild(empty);
        }
      }
     enhance() {
@@ -247,7 +254,7 @@ class ContourHeader extends ContourBase {
   }
   define("contour-header", ContourHeader);
 class ContourTree extends ContourBase {
-    static get observed() { return ["items", "virtual", "src"]; }
+    static get observed() { return ["items", "virtual", "src", "empty", "error", "loading"]; }
     static get properties() { return { items: { attribute: "items" } }; }
 render() {
        this.classList.add("c-tree");
@@ -280,6 +287,15 @@ render() {
             loading.style.padding = "var(--space-md)";
             this.appendChild(loading);
           }
+          return;
+        }
+        if (this.hasAttribute("error")) {
+          const err = document.createElement("div");
+          err.className = "c-tree__error";
+          err.textContent = this.getAttribute("error") || "Error";
+          err.style.color = "var(--color-danger, var(--color-text))";
+          err.style.padding = "var(--space-md)";
+          this.appendChild(err);
           return;
         }
         // remove loading placeholder
@@ -353,6 +369,13 @@ render() {
            }
            if (rootUl.parentNode !== this) this.appendChild(rootUl);
         } catch (e) { /* keep existing */ }
+      } else if (!items && !authored.length) {
+        const empty = document.createElement("div");
+        empty.className = "c-tree__empty";
+        empty.textContent = this.getAttribute("empty") || "No data";
+        empty.style.color = "var(--color-text-muted)";
+        empty.style.padding = "var(--space-md)";
+        this.appendChild(empty);
       }
     }
     enhance() {
@@ -388,8 +411,21 @@ class ContourCodeTabs extends ContourBase {
           });
           if (l.parentNode !== this) this.prepend(l);
         } catch (e) { /* keep existing */ }
-      } else if (!tabs && list) {
+      } else if (!items && list) {
         list.remove();
+        const empty = document.createElement("div");
+        empty.className = "c-toc__empty";
+        empty.textContent = this.getAttribute("empty") || "No data";
+        empty.style.color = "var(--color-text-muted)";
+        empty.style.padding = "var(--space-md)";
+        this.appendChild(empty);
+      } else if (!items && !list) {
+        const empty = document.createElement("div");
+        empty.className = "c-toc__empty";
+        empty.textContent = this.getAttribute("empty") || "No data";
+        empty.style.color = "var(--color-text-muted)";
+        empty.style.padding = "var(--space-md)";
+        this.appendChild(empty);
       }
     }
     enhance() {
