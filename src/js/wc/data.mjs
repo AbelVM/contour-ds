@@ -831,62 +831,19 @@ class ContourComparison extends ContourBase {
   }
   define("contour-comparison", ContourComparison);
 class ContourStreamingChart extends ContourBase {
-    static get observed() { return ["line", "dot", "empty", "loading", "error", "src", "skeleton"]; }
+    static get observed() { return ["line", "dot", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { line: { attribute: "line" }, dot: { attribute: "dot" } }; }
     render() {
       this.classList.add("c-streaming-chart");
-      const src = this.getAttribute("src");
-      const line = this.getAttribute("line") || (this._remoteLine ? this._remoteLine : null);
-      if (src && !this.getAttribute("line") && this._srcFetched !== src) {
-        this._srcFetched = src;
-        this._loading = true;
-        this.attributeChangedCallback("__rerender__", null, "");
-        fetch(src).then((r) => r.json()).then((data) => {
-          this._remoteLine = (data && (data.line || data)) || null;
-          this._remoteDot = (data && data.dot) || null;
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        }).catch(() => {
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        });
-      }
-      const loading = this.hasAttribute("loading") || this._loading;
-      if (loading) {
-        const loadingEl = document.createElement("div");
-        loadingEl.className = "c-streaming-chart__loading";
-        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
-        loadingEl.style.color = "var(--color-text-muted)";
-        loadingEl.style.padding = "var(--space-md)";
-        this.appendChild(loadingEl);
-        return;
-      }
-      if (this.hasAttribute("error")) {
-        const err = document.createElement("div");
-        err.className = "c-streaming-chart__error";
-        err.textContent = this.getAttribute("error") || "Error";
-        err.style.color = "var(--color-danger, var(--color-text))";
-        err.style.padding = "var(--space-md)";
-        this.appendChild(err);
-        return;
-      }
-      if (this.hasAttribute("skeleton")) {
-        const sk = document.createElement("div");
-        sk.className = "c-skeleton c-streaming-chart__skeleton";
-        sk.style.blockSize = "6rem";
-        this.appendChild(sk);
-        return;
-      }
-      const dot = this.getAttribute("dot") || this._remoteDot;
+      wireStates(this);
+      loadRemote(this, "line");
+      if (renderStates(this, "streaming-chart")) return;
+      const line = remoteData(this, "line");
+      const dot = remoteData(this, "dot");
       if (!line) {
         const svg = this.querySelector("svg");
         if (svg) svg.remove();
-        const empty = document.createElement("div");
-        empty.className = "c-streaming-chart__empty";
-        empty.textContent = this.getAttribute("empty") || "No data";
-        empty.style.color = "var(--color-text-muted)";
-        empty.style.padding = "var(--space-md)";
-        this.appendChild(empty);
+        renderEmpty(this, "streaming-chart");
         return;
       }
       if (line) {
@@ -921,7 +878,7 @@ class ContourStreamingChart extends ContourBase {
       }
     }
   }
-  define("contour-streaming-chart", ContourStreamingChart);
+define("contour-streaming-chart", ContourStreamingChart);
 class ContourMeter extends ContourBase {
     static get observed() { return ["value", "label", "variant", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" }, variant: { attribute: "variant" } }; }
@@ -1198,67 +1155,20 @@ class ContourSurvey extends ContourBase {
   }
 define("contour-survey", ContourSurvey);
 class ContourThreshold extends ContourBase {
-    static get observed() { return ["label", "norm", "state", "value", "empty", "loading", "error", "src", "skeleton"]; }
+    static get observed() { return ["label", "norm", "state", "value", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { label: { attribute: "label" }, norm: { attribute: "norm" }, state: { attribute: "state" }, value: { attribute: "value" } }; }
     render() {
       this.classList.add("c-threshold");
-      const src = this.getAttribute("src");
-      const value = this.getAttribute("value");
-      if (src && !this.getAttribute("value") && !this.getAttribute("norm") && this._srcFetched !== src) {
-        this._srcFetched = src;
-        this._loading = true;
-        this.attributeChangedCallback("__rerender__", null, "");
-        fetch(src).then((r) => r.json()).then((data) => {
-          this._remoteData = data;
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        }).catch(() => {
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        });
-      }
-      const loading = this.hasAttribute("loading") || this._loading;
-      if (loading) {
-        const loadingEl = document.createElement("div");
-        loadingEl.className = "c-threshold__loading";
-        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
-        loadingEl.style.color = "var(--color-text-muted)";
-        loadingEl.style.padding = "var(--space-md)";
-        this.appendChild(loadingEl);
-        return;
-      }
-      if (this.hasAttribute("error")) {
-        const err = document.createElement("div");
-        err.className = "c-threshold__error";
-        err.textContent = this.getAttribute("error") || "Error";
-        err.style.color = "var(--color-danger, var(--color-text))";
-        err.style.padding = "var(--space-md)";
-        this.appendChild(err);
-        return;
-      }
-      if (this.hasAttribute("skeleton")) {
-        const sk = document.createElement("div");
-        sk.className = "c-skeleton c-threshold__skeleton";
-        sk.style.blockSize = "1rem";
-        this.appendChild(sk);
-        return;
-      }
-      // The sheet reads this block through custom properties and a state
-      // attribute — `.c-threshold__fill { inline-size: var(--value) }`,
-      // `.c-threshold__target { inset-inline-start: var(--target) }` and
-      // `.c-threshold[data-state="…"]` — so the element sets those, not text.
+      wireStates(this);
+      loadRemote(this, "value");
+      if (renderStates(this, "threshold")) return;
       const pct = (v) => { const n = Number(v); if (!Number.isFinite(n)) return String(v); return (n <= 1 ? n * 100 : n) + "%"; };
-      const rValue = value || (this._remoteData && this._remoteData.value);
+      const rValue = remoteData(this, "value") || (this._remoteData && this._remoteData.value);
       const target = this.getAttribute("norm") || (this._remoteData && this._remoteData.norm);
       const state = this.getAttribute("state") || (this._remoteData && this._remoteData.state);
       const label = this.getAttribute("label") || (this._remoteData && this._remoteData.label);
       if (!rValue && !target && !label) {
-        const empty = document.createElement("div");
-        empty.className = "c-threshold__empty";
-        empty.textContent = this.getAttribute("empty") || "No data";
-        empty.style.color = "var(--color-text-muted)";
-        empty.style.padding = "var(--space-md)";
-        this.appendChild(empty);
+        renderEmpty(this, "threshold");
         return;
       }
       if (rValue) {
@@ -1425,65 +1335,19 @@ class ContourLegend extends ContourBase {
   }
   define("contour-legend", ContourLegend);
 class ContourMeasure extends ContourBase {
-    static get observed() { return ["label", "value", "point", "line", "empty", "loading", "error", "src", "skeleton"]; }
+    static get observed() { return ["label", "value", "point", "line", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" }, point: { attribute: "point" }, line: { attribute: "line" } }; }
     render() {
       this.classList.add("c-measure");
-      const src = this.getAttribute("src");
-      const label = this.getAttribute("label");
-      const value = this.getAttribute("value");
-      const point = this.getAttribute("point");
-      const line = this.getAttribute("line");
-      if (src && !this.getAttribute("label") && !this.getAttribute("value") && !this.getAttribute("point") && !this.getAttribute("line") && this._srcFetched !== src) {
-        this._srcFetched = src;
-        this._loading = true;
-        this.attributeChangedCallback("__rerender__", null, "");
-        fetch(src).then((r) => r.json()).then((data) => {
-          this._remoteData = data;
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        }).catch(() => {
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        });
-      }
-      const loading = this.hasAttribute("loading") || this._loading;
-      if (loading) {
-        const loadingEl = document.createElement("div");
-        loadingEl.className = "c-measure__loading";
-        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
-        loadingEl.style.color = "var(--color-text-muted)";
-        loadingEl.style.padding = "var(--space-md)";
-        this.appendChild(loadingEl);
-        return;
-      }
-      if (this.hasAttribute("error")) {
-        const err = document.createElement("div");
-        err.className = "c-measure__error";
-        err.textContent = this.getAttribute("error") || "Error";
-        err.style.color = "var(--color-danger, var(--color-text))";
-        err.style.padding = "var(--space-md)";
-        this.appendChild(err);
-        return;
-      }
-      if (this.hasAttribute("skeleton")) {
-        const sk = document.createElement("div");
-        sk.className = "c-skeleton c-measure__skeleton";
-        sk.style.blockSize = "1.5rem";
-        this.appendChild(sk);
-        return;
-      }
-      const rLabel = label || (this._remoteData && this._remoteData.label);
-      const rValue = value || (this._remoteData && this._remoteData.value);
-      const rPoint = point || (this._remoteData && this._remoteData.point);
-      const rLine = line || (this._remoteData && this._remoteData.line);
+      wireStates(this);
+      loadRemote(this, ["label", "value", "point", "line"]);
+      if (renderStates(this, "measure")) return;
+      const rLabel = remoteData(this, "label");
+      const rValue = remoteData(this, "value");
+      const rPoint = remoteData(this, "point");
+      const rLine = remoteData(this, "line");
       if (!rLabel && !rValue && !rPoint && !rLine) {
-        const empty = document.createElement("div");
-        empty.className = "c-measure__empty";
-        empty.textContent = this.getAttribute("empty") || "No data";
-        empty.style.color = "var(--color-text-muted)";
-        empty.style.padding = "var(--space-md)";
-        this.appendChild(empty);
+        renderEmpty(this, "measure");
         return;
       }
       if (rLabel) {
@@ -1521,7 +1385,7 @@ class ContourMeasure extends ContourBase {
       }
     }
   }
-  define("contour-measure", ContourMeasure);
+define("contour-measure", ContourMeasure);
 class ContourTimeline extends ContourBase {
     static get observed() { return ["items", "empty", "loading", "error", "retry", "skeleton"]; }
     static get properties() { return { items: { attribute: "items" } }; }
@@ -1824,57 +1688,18 @@ class ContourHeatmap extends ContourBase {
   }
   define("contour-heatmap", ContourHeatmap);
 class ContourCompare extends ContourBase {
-    static get observed() { return ["no", "text", "yes", "empty", "loading", "error", "src", "skeleton"]; }
+    static get observed() { return ["no", "text", "yes", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { no: { attribute: "no" }, text: { attribute: "text" }, yes: { attribute: "yes" } }; }
     render() {
       this.classList.add("c-compare");
       this.style.padding = "var(--space-md)";
-      const src = this.getAttribute("src");
-      const yes = this.getAttribute("yes");
-      const no = this.getAttribute("no");
-      const text = this.getAttribute("text");
-      if (src && !this.getAttribute("yes") && !this.getAttribute("no") && !this.getAttribute("text") && this._srcFetched !== src) {
-        this._srcFetched = src;
-        this._loading = true;
-        this.attributeChangedCallback("__rerender__", null, "");
-        fetch(src).then((r) => r.json()).then((data) => {
-          this._remoteData = data;
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        }).catch(() => {
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        });
-      }
-      const loading = this.hasAttribute("loading") || this._loading;
-      if (loading) {
-        const loadingEl = document.createElement("div");
-        loadingEl.className = "c-compare__loading";
-        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
-        loadingEl.style.color = "var(--color-text-muted)";
-        this.appendChild(loadingEl);
-        return;
-      }
-      if (this.hasAttribute("error")) {
-        const err = document.createElement("div");
-        err.className = "c-compare__error";
-        err.textContent = this.getAttribute("error") || "Error";
-        err.style.color = "var(--color-danger, var(--color-text))";
-        this.appendChild(err);
-        return;
-      }
-      if (this.hasAttribute("skeleton")) {
-        const sk = document.createElement("div");
-        sk.className = "c-skeleton c-compare__skeleton";
-        sk.style.blockSize = "2rem";
-        this.appendChild(sk);
-        return;
-      }
-      // Drop previously generated children so a re-render cannot stack a second set.
+      wireStates(this);
+      loadRemote(this, ["no", "text", "yes"]);
+      if (renderStates(this, "compare")) return;
+      const rYes = remoteData(this, "yes") || (this._remoteData && this._remoteData.yes);
+      const rNo = remoteData(this, "no") || (this._remoteData && this._remoteData.no);
+      const rText = remoteData(this, "text") || (this._remoteData && this._remoteData.text);
       Array.from(this.querySelectorAll(".c-compare__yes, .c-compare__no, .c-compare__text")).forEach((n) => n.remove());
-      const rYes = yes || (this._remoteData && this._remoteData.yes);
-      const rNo = no || (this._remoteData && this._remoteData.no);
-      const rText = text || (this._remoteData && this._remoteData.text);
       if (rYes) {
         const y = document.createElement("span");
         y.className = "c-compare__yes";
@@ -1894,15 +1719,11 @@ class ContourCompare extends ContourBase {
         this.appendChild(t);
       }
       if (!rYes && !rNo && !rText) {
-        const empty = document.createElement("div");
-        empty.className = "c-compare__empty";
-        empty.textContent = this.getAttribute("empty") || "No data";
-        empty.style.color = "var(--color-text-muted)";
-        this.appendChild(empty);
+        renderEmpty(this, "compare");
       }
     }
   }
-  define("contour-compare", ContourCompare);
+define("contour-compare", ContourCompare);
 class ContourSparkline extends ContourBase {
     static get observed() { return ["points", "empty", "loading", "error", "retry", "skeleton"]; }
     static get properties() { return { points: { attribute: "points" } }; }
