@@ -421,55 +421,14 @@ render() {
   }
   define("contour-tree", ContourTree);
 class ContourCodeTabs extends ContourBase {
-    static get observed() { return ["tabs", "empty", "loading", "error", "src", "skeleton"]; }
+    static get observed() { return ["tabs", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { tabs: { attribute: "tabs" } }; }
     render() {
       this.classList.add("c-code-tabs");
-      const src = this.getAttribute("src");
-      const tabs = this.getAttribute("tabs") || (this._remoteTabs ? JSON.stringify(this._remoteTabs) : null);
-      if (src && !this.getAttribute("tabs") && this._srcFetched !== src) {
-        this._srcFetched = src;
-        this._loading = true;
-        this.attributeChangedCallback("__rerender__", null, "");
-        fetch(src).then((r) => r.json()).then((data) => {
-          this._remoteTabs = data;
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        }).catch(() => {
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        });
-      }
-      const loading = this.hasAttribute("loading") || this._loading;
-      if (loading) {
-        const loadingEl = document.createElement("div");
-        loadingEl.className = "c-code-tabs__loading";
-        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
-        loadingEl.style.color = "var(--color-text-muted)";
-        loadingEl.style.padding = "var(--space-md)";
-        this.appendChild(loadingEl);
-        return;
-      }
-      if (this.hasAttribute("error")) {
-        const err = document.createElement("div");
-        err.className = "c-code-tabs__error";
-        err.textContent = this.getAttribute("error") || "Error";
-        err.style.color = "var(--color-danger, var(--color-text))";
-        err.style.padding = "var(--space-md)";
-        this.appendChild(err);
-        return;
-      }
-      if (this.hasAttribute("skeleton")) {
-        const count = Math.min(4, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
-        for (let i = 0; i < count; i++) {
-          const sk = document.createElement("div");
-          sk.className = "c-skeleton c-code-tabs__skeleton";
-          sk.style.blockSize = "2rem";
-          sk.style.marginBlockEnd = "var(--space-2xs)";
-          this.appendChild(sk);
-        }
-        return;
-      }
+      wireStates(this);
+      loadRemote(this, "tabs");
+      if (renderStates(this, "code-tabs")) return;
+      const tabs = remoteData(this, "tabs");
       const list = this.querySelector(".c-code-tabs__list");
       const authored = list ? Array.from(list.children).filter((n) => n.getAttribute && n.getAttribute("role") === "tab") : [];
       if (tabs && !authored.length) {
@@ -491,29 +450,16 @@ class ContourCodeTabs extends ContourBase {
         } catch (e) { /* keep existing */ }
       } else if (!tabs && list) {
         list.remove();
-        const empty = document.createElement("div");
-        empty.className = "c-code-tabs__empty";
-        empty.textContent = this.getAttribute("empty") || "No data";
-        empty.style.color = "var(--color-text-muted)";
-        empty.style.padding = "var(--space-md)";
-        this.appendChild(empty);
+        renderEmpty(this, "code-tabs");
       } else if (!tabs && !list) {
-        const empty = document.createElement("div");
-        empty.className = "c-code-tabs__empty";
-        empty.textContent = this.getAttribute("empty") || "No data";
-        empty.style.color = "var(--color-text-muted)";
-        empty.style.padding = "var(--space-md)";
-        this.appendChild(empty);
+        renderEmpty(this, "code-tabs");
       }
     }
     enhance() {
-      // Interaction lives in behaviours.mjs, which the shadow wrappers call too.
-      // One implementation, so the two layers cannot drift apart again: the shadow
-      // copy queried its root for slotted nodes, found none, and wired nothing.
       wireTabs(this);
     }
   }
-  define("contour-code-tabs", ContourCodeTabs);
+define("contour-code-tabs", ContourCodeTabs);
 class ContourBreadcrumb extends ContourBase {
     static get observed() { return ["items", "separator", "empty", "loading", "error", "src", "skeleton"]; }
     static get properties() { return { items: { attribute: "items" }, separator: { attribute: "separator" } }; }
