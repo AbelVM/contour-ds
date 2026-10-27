@@ -750,32 +750,35 @@ const series = this.getAttribute("series");
       this._wiredChart = true;
       if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
       // Tooltip: show on hover of a mark.
-      const plot = this.querySelector(".c-chart__plot");
-      const tip = this.querySelector(".c-chart__tooltip");
-      if (plot && tip) {
-        const showTip = (e) => {
-          const mark = e.target && e.target.closest ? e.target.closest(".c-chart__bar, .c-chart__point, .c-chart__line") : null;
-          if (!mark || !plot.contains(mark)) { tip.setAttribute("hidden", ""); return; }
-          const title = mark.getAttribute("title");
-          if (title) tip.textContent = title;
-          const rect = plot.getBoundingClientRect();
-          const mr = mark.getBoundingClientRect();
-          const x = mr.left - rect.left + mr.width / 2;
-          const y = mr.top - rect.top;
-          plot.style.setProperty("--chart-tip-inline-start", x + "px");
-          plot.style.setProperty("--chart-tip-block-start", y + "px");
-          tip.removeAttribute("hidden");
-        };
-        const hideTip = () => tip.setAttribute("hidden", "");
-        plot.addEventListener("mousemove", showTip);
-         plot.addEventListener("mouseleave", hideTip);
-      }
-      // Per-bar keyboard/click handling for histogram bars.
-      const plot2 = this.querySelector(".c-chart__plot");
-      if (plot2) {
-        plot2.addEventListener("click", (e) => {
-          const bar = e.target && e.target.closest ? e.target.closest(".c-chart__bar") : null;
-          if (bar && plot2.contains(bar)) {
+      const showTip = (e) => {
+        const plot = this.querySelector(".c-chart__plot");
+        const tip = this.querySelector(".c-chart__tooltip");
+        if (!plot || !tip) return;
+        const mark = e.target && e.target.closest ? e.target.closest(".c-chart__bar, .c-chart__point, .c-chart__line") : null;
+        if (!mark || !plot.contains(mark)) { tip.setAttribute("hidden", ""); return; }
+        const title = mark.getAttribute("title");
+        if (title) tip.textContent = title;
+        const rect = plot.getBoundingClientRect();
+        const mr = mark.getBoundingClientRect();
+        const x = mr.left - rect.left + mr.width / 2;
+        const y = mr.top - rect.top;
+        plot.style.setProperty("--chart-tip-inline-start", x + "px");
+        plot.style.setProperty("--chart-tip-block-start", y + "px");
+        tip.removeAttribute("hidden");
+      };
+      const hideTip = () => {
+        const tip = this.querySelector(".c-chart__tooltip");
+        if (tip) tip.setAttribute("hidden", "");
+      };
+      // Host-delegated so the handlers survive re-renders (rule 12).
+      this.addEventListener("mousemove", showTip);
+      this.addEventListener("mouseleave", hideTip);
+      // Per-bar keyboard/click handling for histogram bars (host-delegated).
+      this.addEventListener("click", (e) => {
+        const plot2 = this.querySelector(".c-chart__plot");
+        if (!plot2) return;
+        const bar = e.target && e.target.closest ? e.target.closest(".c-chart__bar") : null;
+        if (bar && plot2.contains(bar)) {
             const series = parseInt(bar.getAttribute("data-series") || "1", 10);
             const index = parseInt(bar.dataset.index || "0", 10);
             this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { series, index } }));
@@ -788,7 +791,9 @@ const series = this.getAttribute("series");
             this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { series, index } }));
           }
         });
-        plot2.addEventListener("keydown", (e) => {
+        this.addEventListener("keydown", (e) => {
+          const plot2 = this.querySelector(".c-chart__plot");
+          if (!plot2) return;
           const bar = e.target && e.target.closest ? e.target.closest(".c-chart__bar") : null;
           if (bar && plot2.contains(bar)) {
             if (e.key === "Enter" || e.key === " ") {
@@ -818,7 +823,6 @@ const series = this.getAttribute("series");
             }
           }
         });
-      }
       // Retry button handling.
       this.addEventListener("click", (e) => {
         const btn = e.target && e.target.closest ? e.target.closest('button[data-action="retry"]') : null;
