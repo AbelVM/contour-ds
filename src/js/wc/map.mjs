@@ -41,11 +41,52 @@ class ContourCoordinate extends ContourBase {
   }
   define("contour-coordinate", ContourCoordinate);
 class ContourLayerPanel extends ContourBase {
-    static get observed() { return ["label", "items"]; }
+    static get observed() { return ["label", "items", "empty", "loading", "error", "src"]; }
     static get properties() { return { label: { attribute: "label" }, items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-layer-panel");
-      const items = this.getAttribute("items");
+      const src = this.getAttribute("src");
+      const items = this.getAttribute("items") || (this._remoteItems ? JSON.stringify(this._remoteItems) : null);
+      if (src && !this.getAttribute("items") && this._srcFetched !== src) {
+        this._srcFetched = src;
+        this._loading = true;
+        this.attributeChangedCallback("__rerender__", null, "");
+        fetch(src).then((r) => r.json()).then((data) => {
+          this._remoteItems = data;
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        }).catch(() => {
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        });
+      }
+      const loading = this.hasAttribute("loading") || this._loading;
+      if (loading) {
+        const loadingEl = document.createElement("div");
+        loadingEl.className = "c-layer-panel__loading";
+        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
+        loadingEl.style.color = "var(--color-text-muted)";
+        loadingEl.style.padding = "var(--space-md)";
+        this.appendChild(loadingEl);
+        return;
+      }
+      if (this.hasAttribute("error")) {
+        const err = document.createElement("div");
+        err.className = "c-layer-panel__error";
+        err.textContent = this.getAttribute("error") || "Error";
+        err.style.color = "var(--color-danger, var(--color-text))";
+        err.style.padding = "var(--space-md)";
+        this.appendChild(err);
+        return;
+      }
+      const label = this.getAttribute("label");
+      if (label) {
+        const l = this.ensure(".c-layer-panel__label", () => { const el = document.createElement("span"); el.className = "c-layer-panel__label"; return el; });
+        l.textContent = label;
+      } else {
+        const l = this.querySelector(".c-layer-panel__label");
+        if (l) l.remove();
+      }
       if (items) {
         try {
           const parsed = JSON.parse(items);
@@ -76,9 +117,15 @@ class ContourLayerPanel extends ContourBase {
             this.appendChild(item);
           });
         } catch (e) { /* keep existing */ }
-      } else if (!items) {
-        Array.from(this.querySelectorAll(".c-layer-panel__item")).forEach((el) => el.remove());
-      }
+       } else if (!items) {
+         Array.from(this.querySelectorAll(".c-layer-panel__item")).forEach((el) => el.remove());
+         const empty = document.createElement("div");
+         empty.className = "c-layer-panel__empty";
+         empty.textContent = this.getAttribute("empty") || "No data";
+         empty.style.color = "var(--color-text-muted)";
+         empty.style.padding = "var(--space-md)";
+         this.appendChild(empty);
+       }
     }
   }
   define("contour-layer-panel", ContourLayerPanel);

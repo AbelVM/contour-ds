@@ -1361,6 +1361,13 @@
     white-space: nowrap;
   }
 
+  .c-layer-panel__empty,
+  .c-layer-panel__loading,
+  .c-layer-panel__error {
+    color: var(--color-text-muted);
+    padding: var(--space-md);
+  }
+
   /* =======================================================================
      8f. TIME SLIDER — temporal data scrubber
      ======================================================================= */
