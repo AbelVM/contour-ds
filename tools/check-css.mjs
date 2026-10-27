@@ -14,6 +14,12 @@
  * design). The gate reads the source, not dist/, so a stale bundle cannot
  * hide a collision.
  *
+ * Selectors nested inside @media / @supports / @container are still
+ * collected (a collision there is still a collision), but selectors inside
+ * @keyframes are not — `0%`/`to`/`from` are keyframe positions, not
+ * component selectors. The @layer wrapper every sheet uses is treated as a
+ * transparent container so its contents are actually scanned.
+ *
  *   node tools/check-css.mjs          exit 1 on any collision
  *   node tools/check-css.mjs --json   machine-readable report
  */
@@ -27,36 +33,63 @@ const SHEETS = readdirSync(CSS)
   .filter((f) => /^components.*\.css$/.test(f))
   .sort();
 
-// Collect top-level selector lists per sheet. We only care about the selector
-// text before the first `{`, split on commas, trimmed. Nested selectors inside
-// @media/@supports are flattened by stripping the at-rule wrapper.
+function stripComments(text) {
+  return text.replace(/\/\*[\s\S]*?\*\//g, "");
+}
+
+function parseBlock(str, startIdx) {
+  let j = startIdx + 1;
+  let d = 1;
+  let content = "";
+  const L = str.length;
+  while (j < L && d > 0) {
+    if (str[j] === "{") { d++; content += str[j]; j++; }
+    else if (str[j] === "}") { d--; if (d > 0) content += str[j]; j++; }
+    else { content += str[j]; j++; }
+  }
+  return { content, end: j };
+}
+
+// Collect selector lists, descending into at-rule blocks (except @keyframes,
+// whose body holds keyframe positions rather than component selectors).
 function selectorsIn(text) {
+  const stripped = stripComments(text);
   const out = [];
-  // Remove comments.
-  const stripped = text.replace(/\/\*[\s\S]*?\*\//g, "");
-  // Walk braces, tracking selector text.
-  let depth = 0;
-  let buf = "";
-  for (let i = 0; i < stripped.length; i++) {
-    const ch = stripped[i];
-    if (ch === "{") {
-      const sel = buf.trim();
-      if (sel && !sel.startsWith("@")) {
-        // Split comma-separated selectors.
-        for (const part of sel.split(",")) {
-          const p = part.trim();
-          if (p) out.push(p);
+  function walk(str, ctx) {
+    let i = 0;
+    let buf = "";
+    const L = str.length;
+    while (i < L) {
+      if (str[i] === "{") {
+        const sel = buf.trim();
+        const { content, end } = parseBlock(str, i);
+        if (sel.startsWith("@")) {
+          // Descend into every at-rule except @keyframes.
+          if (!/^@keyframes\b/i.test(sel)) {
+            walk(content, ctx.concat(sel));
+          }
+        } else {
+          // Only collect when not inside a @keyframes context.
+          const inKeyframes = ctx.some((c) => /^@keyframes\b/i.test(c));
+          if (!inKeyframes && sel) {
+            for (const part of sel.split(",")) {
+              const p = part.trim().replace(/\s+/g, " ");
+              if (p) out.push(p);
+            }
+          }
         }
+        buf = "";
+        i = end;
+      } else if (str[i] === "}") {
+        buf = "";
+        i++;
+      } else {
+        buf += str[i];
+        i++;
       }
-      depth++;
-      buf = "";
-    } else if (ch === "}") {
-      depth--;
-      buf = "";
-    } else {
-      if (depth === 0) buf += ch;
     }
   }
+  walk(stripped, []);
   return out;
 }
 

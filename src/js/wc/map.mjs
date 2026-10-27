@@ -87,12 +87,38 @@ class ContourTimeSlider extends ContourBase {
     static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" } }; }
     render() {
       this.classList.add("c-time-slider");
-      const play = this.ensure(".c-time-slider__play", () => { const el = document.createElement("button"); el.className = "c-time-slider__play"; el.type = "button"; el.setAttribute("aria-label", "Play"); el.textContent = "▶"; return el; });
-       const track = this.ensure(".c-time-slider__track", () => { const el = document.createElement("input"); el.className = "c-time-slider__track"; el.type = "range"; el.min = "0"; el.max = "100"; el.setAttribute("aria-label", "Time"); return el; });
-       track.value = this.getAttribute("value") || "0";
-       track.setAttribute("aria-label", this.getAttribute("label") || "Time");
+      const play = this.ensure(".c-time-slider__play", () => {
+        const el = document.createElement("button");
+        el.className = "c-time-slider__play";
+        el.type = "button";
+        el.setAttribute("aria-label", "Play");
+        el.setAttribute("data-state", "play");
+        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("aria-hidden", "true");
+        const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+        use.setAttribute("href", "#i-play");
+        svg.appendChild(use);
+        el.appendChild(svg);
+        return el;
+      });
+      const track = this.ensure(".c-time-slider__track", () => { const el = document.createElement("input"); el.className = "c-time-slider__track"; el.type = "range"; el.min = "0"; el.max = "100"; el.setAttribute("aria-label", "Time"); return el; });
+      track.value = this.getAttribute("value") || "0";
+      track.setAttribute("aria-label", this.getAttribute("label") || "Time");
       const time = this.ensure(".c-time-slider__time", () => { const el = document.createElement("span"); el.className = "c-time-slider__time"; return el; });
       time.textContent = this.getAttribute("label") || "";
+    }
+    enhance() {
+      if (this._wiredTimeSlider) return;
+      this._wiredTimeSlider = true;
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest(".c-time-slider__play") : null;
+        if (!btn) return;
+        const playing = btn.getAttribute("data-state") === "play";
+        btn.setAttribute("data-state", playing ? "pause" : "play");
+        btn.setAttribute("aria-label", playing ? "Pause" : "Play");
+        const use = btn.querySelector("use");
+        if (use) use.setAttribute("href", playing ? "#i-pause" : "#i-play");
+      });
     }
   }
   define("contour-time-slider", ContourTimeSlider);

@@ -228,11 +228,24 @@
     return String(value);
   };
 
-  $$('input[type="range"][data-format]').forEach((input) => {
+  $$('input[type="range"].c-range').forEach((input) => {
     paintRange(input);
     input.addEventListener("input", () => {
       paintRange(input);
       input.dispatchEvent(new CustomEvent("contour:input", { bubbles: true, detail: { value: Number(input.value) } }));
+    });
+  });
+
+  /* ---------------------------------------------------------------------
+    4b. Time slider — play/pause toggle
+     --------------------------------------------------------------------- */
+  $$('.c-time-slider__play').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const playing = btn.getAttribute('data-state') === 'play';
+      btn.setAttribute('data-state', playing ? 'pause' : 'play');
+      btn.setAttribute('aria-label', playing ? 'Pause' : 'Play');
+      const use = btn.querySelector('use');
+      if (use) use.setAttribute('href', playing ? '#i-pause' : '#i-play');
     });
   });
 

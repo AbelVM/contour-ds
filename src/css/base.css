@@ -478,9 +478,6 @@
     }
 
     /* Avoid breaking inside components. */
-    .c-card,
-    .c-panel,
-    .c-kpi,
     tr {
       break-inside: avoid;
     }

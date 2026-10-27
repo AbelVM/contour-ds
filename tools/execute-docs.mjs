@@ -157,9 +157,9 @@ const outDir = join(ROOT, "tmp", "executed-docs");
 if (existsSync(outDir)) rmSync(outDir, { recursive: true });
 mkdirSync(outDir, { recursive: true });
 
-let errors = 0;
-let validated = 0;
-let fragments = 0;
+// Write every mounted page first (cheap), then validate them in a single
+// html-validate invocation instead of one process per snippet — the per-file
+// spawn was the dominant cost of this gate.
 for (const { id, code } of snippets) {
   const page = `<!DOCTYPE html>
 <html lang="en">
@@ -172,26 +172,66 @@ for (const { id, code } of snippets) {
 ${code}
 </body>
 </html>`;
-  const file = join(outDir, `snippet-${id}.html`);
-  writeFileSync(file, page);
+  writeFileSync(join(outDir, `snippet-${id}.html`), page);
+}
+
+let errors = 0;
+let validated = 0;
+let fragments = 0;
+
+// One batched run: html-validate accepts a directory and emits a JSON array
+// with one entry per file that has problems (valid files are omitted).
+let results = [];
+let rawOut = "";
+let runError = null;
+try {
+  rawOut = execFileSync("npx", ["html-validate", "-f", "json", outDir], { cwd: ROOT, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
+} catch (e) {
+  runError = e;
+  rawOut = (e && (e.stdout || e.stderr)) || "";
+}
+// html-validate exits non-zero when any file has errors; that is expected here.
+const text = String(rawOut || "").trim();
+if (text) {
   try {
-    execFileSync("npx", ["html-validate", file], { cwd: ROOT, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
-    validated++;
+    results = JSON.parse(text);
+    if (!Array.isArray(results)) results = [];
   } catch (e) {
-    const raw = (e.stdout || e.stderr || "").trim();
-    const lines = raw.split("\n").filter(function(l){ return l.indexOf("npm notice") === -1; });
-    const msg = lines.join(" ").slice(0, 300);
-    // Fragment snippets (partial lists, partial grids) are expected to be
-    // incomplete documents; only fail on real markup errors.
-    const fragmentOnly = /no-implicit-close|Unclosed element|close-order/.test(msg)
-      && !/no-raw-characters|no-trailing-whitespace|element-permitted-content/.test(msg);
-    if (fragmentOnly) {
-      fragments++;
-      if (process.argv.includes("--verbose")) console.log(`snippet ${id}: fragment (skipped)`);
-    } else {
-      errors++;
-      if (errors <= 10) console.error(`snippet ${id}: ${msg}`);
-    }
+    console.error("execute-docs: FAIL — could not parse html-validate output");
+    console.error(String(rawOut).slice(0, 500));
+    process.exit(1);
+  }
+}
+if (runError && !text) {
+  console.error("execute-docs: FAIL — html-validate did not run: " + (runError.message || runError));
+  process.exit(1);
+}
+
+const byFile = new Map();
+for (const r of results) {
+  const base = String(r.filePath || "").split(/[\\/]/).pop();
+  byFile.set(base, r);
+}
+
+for (const { id } of snippets) {
+  const base = `snippet-${id}.html`;
+  const r = byFile.get(base);
+  if (!r) {
+    validated++;
+    continue;
+  }
+  const msgs = Array.isArray(r.messages) ? r.messages : [];
+  const msg = msgs.map((m) => `${m.ruleId || ""} ${m.message || ""}`).join(" ").slice(0, 300);
+  // Fragment snippets (partial lists, partial grids) are expected to be
+  // incomplete documents; only fail on real markup errors.
+  const fragmentOnly = /no-implicit-close|Unclosed element|close-order/.test(msg)
+    && !/no-raw-characters|no-trailing-whitespace|element-permitted-content/.test(msg);
+  if (fragmentOnly) {
+    fragments++;
+    if (process.argv.includes("--verbose")) console.log(`snippet ${id}: fragment (skipped)`);
+  } else {
+    errors++;
+    if (errors <= 10) console.error(`snippet ${id}: ${msg}`);
   }
 }
 

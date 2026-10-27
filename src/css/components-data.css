@@ -551,6 +551,13 @@
     color: var(--chart-label);
   }
 
+  .c-chart__axis--centered {
+    justify-content: initial;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    text-align: center;
+  }
+
   .c-chart__bar {
     position: absolute;
     inset-block-end: 0;
@@ -1103,6 +1110,8 @@
     border-radius: var(--radius-lg);
     box-shadow: none;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
 
 
@@ -1347,10 +1356,15 @@
     block-size: 2rem;
     border-radius: 50%;
     background: var(--color-primary);
-    color: var(--color-primary-text, var(--color-text-strong));
+    color: var(--color-on-primary);
     border: none;
     cursor: pointer;
     flex: none;
+  }
+
+  .c-time-slider__play svg {
+    inline-size: 1rem;
+    block-size: 1rem;
   }
 
   .c-time-slider__play:hover {

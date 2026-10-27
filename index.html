@@ -288,6 +288,13 @@
             <path d="m9 6 6 6-6 6" />
           </g>
         </symbol>
+    <symbol id="i-play" viewbox="0 0 24 24">
+          <path d="M8 5v14l11-7z" fill="currentColor" />
+        </symbol>
+    <symbol id="i-pause" viewbox="0 0 24 24">
+          <rect x="6" y="5" width="4" height="14" fill="currentColor" />
+          <rect x="14" y="5" width="4" height="14" fill="currentColor" />
+        </symbol>
         <symbol id="i-folder" viewbox="0 0 24 24">
           <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
             <path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z" />
@@ -5016,13 +5023,13 @@ means obvious.
             </p>
             <div class="c-chart" role="img" aria-label="Route volume by region, five regions" aria-describedby="bar-region-data">
               <div class="c-chart__plot">
-                <span class="c-chart__bar" style="--x: 0%; --h: 92%; --w: 15%; --c: var(--chart-1)"></span>
-                <span class="c-chart__bar" style="--x: 19%; --h: 74%; --w: 15%; --c: var(--chart-1)"></span>
-                <span class="c-chart__bar" style="--x: 38%; --h: 61%; --w: 15%; --c: var(--chart-1)"></span>
-                <span class="c-chart__bar" style="--x: 57%; --h: 44%; --w: 15%; --c: var(--chart-1)"></span>
-                <span class="c-chart__bar" style="--x: 76%; --h: 29%; --w: 15%; --c: var(--chart-1)"></span>
+                <span class="c-chart__bar" style="--x: 2.5%; --h: 92%; --w: 15%; --c: var(--chart-1)"></span>
+                <span class="c-chart__bar" style="--x: 22.5%; --h: 74%; --w: 15%; --c: var(--chart-1)"></span>
+                <span class="c-chart__bar" style="--x: 42.5%; --h: 61%; --w: 15%; --c: var(--chart-1)"></span>
+                <span class="c-chart__bar" style="--x: 62.5%; --h: 44%; --w: 15%; --c: var(--chart-1)"></span>
+                <span class="c-chart__bar" style="--x: 82.5%; --h: 29%; --w: 15%; --c: var(--chart-1)"></span>
               </div>
-              <div class="c-chart__axis">
+              <div class="c-chart__axis c-chart__axis--centered">
                 <span>Madrid</span><span>Berlin</span><span>Lisbon</span>
                 <span>Lyon</span><span>Oslo</span>
               </div>
@@ -5042,13 +5049,13 @@ means obvious.
                       <div class="ds-code__body">
                         <pre class="ds-code__pre"><code id="ds-code-70">&lt;div class="c-chart" role="img" aria-label="Route volume by region, five regions" aria-describedby="bar-region-data"&gt;
   &lt;div class="c-chart__plot"&gt;
-    &lt;span class="c-chart__bar" style="--x: 0%; --h: 92%; --w: 15%; --c: var(--chart-1)"&gt;&lt;/span&gt;
-    &lt;span class="c-chart__bar" style="--x: 19%; --h: 74%; --w: 15%; --c: var(--chart-1)"&gt;&lt;/span&gt;
-    &lt;span class="c-chart__bar" style="--x: 38%; --h: 61%; --w: 15%; --c: var(--chart-1)"&gt;&lt;/span&gt;
-    &lt;span class="c-chart__bar" style="--x: 57%; --h: 44%; --w: 15%; --c: var(--chart-1)"&gt;&lt;/span&gt;
-    &lt;span class="c-chart__bar" style="--x: 76%; --h: 29%; --w: 15%; --c: var(--chart-1)"&gt;&lt;/span&gt;
+    &lt;span class="c-chart__bar" style="--x: 2.5%; --h: 92%; --w: 15%; --c: var(--chart-1)"&gt;&lt;/span&gt;
+    &lt;span class="c-chart__bar" style="--x: 22.5%; --h: 74%; --w: 15%; --c: var(--chart-1)"&gt;&lt;/span&gt;
+    &lt;span class="c-chart__bar" style="--x: 42.5%; --h: 61%; --w: 15%; --c: var(--chart-1)"&gt;&lt;/span&gt;
+    &lt;span class="c-chart__bar" style="--x: 62.5%; --h: 44%; --w: 15%; --c: var(--chart-1)"&gt;&lt;/span&gt;
+    &lt;span class="c-chart__bar" style="--x: 82.5%; --h: 29%; --w: 15%; --c: var(--chart-1)"&gt;&lt;/span&gt;
   &lt;/div&gt;
-  &lt;div class="c-chart__axis"&gt;
+  &lt;div class="c-chart__axis c-chart__axis--centered"&gt;
     &lt;span&gt;Madrid&lt;/span&gt;
     &lt;span&gt;Berlin&lt;/span&gt;
     &lt;span&gt;Lisbon&lt;/span&gt;
@@ -6464,7 +6471,7 @@ means obvious.
               appears in this specimen and in no template.
             </p>
             <div class="ds-example" data-generated="wrap"><div class="ds-panel">
-              <div class="c-map-area" data-spatial-workspace style="min-block-size: 21rem; border: 1px solid var(--color-border); border-radius: var(--radius-md)">
+              <div class="c-map-area" data-spatial-workspace style="min-block-size: 32rem; border: 1px solid var(--color-border); border-radius: var(--radius-md)">
                 <div class="c-map-slot">
                       <div data-map role="img" aria-label="Map canvas placeholder — the consumer owns this element"></div>
                       <div class="c-map-slot__chrome">
@@ -6552,7 +6559,7 @@ means obvious.
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-97">&lt;div class="c-map-area" data-spatial-workspace style="min-block-size: 21rem; border: 1px solid var(--color-border); border-radius: var(--radius-md)"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-97">&lt;div class="c-map-area" data-spatial-workspace style="min-block-size: 32rem; border: 1px solid var(--color-border); border-radius: var(--radius-md)"&gt;
   &lt;div class="c-map-slot"&gt;
     &lt;div data-map role="img" aria-label="Map canvas placeholder — the consumer owns this element"&gt;&lt;/div&gt;
     &lt;div class="c-map-slot__chrome"&gt;
@@ -6698,7 +6705,7 @@ means obvious.
                 <span class="c-compass__label c-compass__label--s">S</span>
                 <span class="c-compass__label c-compass__label--e">E</span>
                 <span class="c-compass__label c-compass__label--w">W</span>
-                <div class="c-compass__needle" style="transform: rotate(30deg)"></div>
+                <svg class="c-compass__needle" viewBox="0 0 40 40" aria-hidden="true" style="transform: rotate(30deg)"><path d="M 28.00 6.14 L 22.60 21.50 L 18.00 23.46 L 17.40 18.50 Z" /></svg>
               </div>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
@@ -6717,7 +6724,9 @@ means obvious.
   &lt;span class="c-compass__label c-compass__label--s"&gt;S&lt;/span&gt;
   &lt;span class="c-compass__label c-compass__label--e"&gt;E&lt;/span&gt;
   &lt;span class="c-compass__label c-compass__label--w"&gt;W&lt;/span&gt;
-  &lt;div class="c-compass__needle" style="transform: rotate(30deg)"&gt;&lt;/div&gt;
+  &lt;svg class="c-compass__needle" viewBox="0 0 40 40" aria-hidden="true" style="transform: rotate(30deg)"&gt;
+    &lt;path d="M 28.00 6.14 L 22.60 21.50 L 18.00 23.46 L 17.40 18.50 Z" /&gt;
+  &lt;/svg&gt;
 &lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
@@ -6853,8 +6862,8 @@ means obvious.
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-panel">
               <div class="c-time-slider">
-                <button class="c-time-slider__play" type="button" aria-label="Play">
-                  <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                <button class="c-time-slider__play" type="button" aria-label="Play" data-state="play">
+                  <svg aria-hidden="true"><use href="#i-play" /></svg>
                 </button>
                 <input class="c-time-slider__track" type="range" min="0" max="100" value="30" aria-label="Time position" />
                 <span class="c-time-slider__time">2024-01-15</span>
@@ -6872,9 +6881,9 @@ means obvious.
                       </summary>
                       <div class="ds-code__body">
                         <pre class="ds-code__pre"><code id="ds-code-102">&lt;div class="c-time-slider"&gt;
-  &lt;button class="c-time-slider__play" type="button" aria-label="Play"&gt;
+  &lt;button class="c-time-slider__play" type="button" aria-label="Play" data-state="play"&gt;
     &lt;svg aria-hidden="true"&gt;
-      &lt;use href="#i-chevron-right" /&gt;
+      &lt;use href="#i-play" /&gt;
     &lt;/svg&gt;
   &lt;/button&gt;
   &lt;input class="c-time-slider__track" type="range" min="0" max="100" value="30" aria-label="Time position" /&gt;
@@ -10605,11 +10614,11 @@ means obvious.
                       <div class="c-panel__body">
                         <div class="c-chart" role="img" aria-label="Route volume by region, five regions, descending" aria-describedby="region-data">
                           <div class="c-chart__plot" style="aspect-ratio: 4 / 5">
-                            <span class="c-chart__bar" style="--x: 0%; --h: 92%; --w: 15%; --c: var(--chart-1)"></span>
-                            <span class="c-chart__bar" style="--x: 19%; --h: 74%; --w: 15%; --c: var(--chart-1)"></span>
-                            <span class="c-chart__bar" style="--x: 38%; --h: 61%; --w: 15%; --c: var(--chart-1)"></span>
-                            <span class="c-chart__bar" style="--x: 57%; --h: 44%; --w: 15%; --c: var(--chart-1)"></span>
-                            <span class="c-chart__bar" style="--x: 76%; --h: 29%; --w: 15%; --c: var(--chart-1)"></span>
+                            <span class="c-chart__bar" style="--x: 2.5%; --h: 92%; --w: 15%; --c: var(--chart-1)"></span>
+                            <span class="c-chart__bar" style="--x: 22.5%; --h: 74%; --w: 15%; --c: var(--chart-1)"></span>
+                            <span class="c-chart__bar" style="--x: 42.5%; --h: 61%; --w: 15%; --c: var(--chart-1)"></span>
+                            <span class="c-chart__bar" style="--x: 62.5%; --h: 44%; --w: 15%; --c: var(--chart-1)"></span>
+                            <span class="c-chart__bar" style="--x: 82.5%; --h: 29%; --w: 15%; --c: var(--chart-1)"></span>
                           </div>
                           <div class="c-chart__axis">
                             <span>Madrid</span><span>Berlin</span><span>Lisbon</span>
