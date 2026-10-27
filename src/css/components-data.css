@@ -2084,9 +2084,15 @@
     transform: translate(-50%, -50%);
   }
 
-  .c-scale-bar__label {
-    white-space: nowrap;
-  }
+   .c-scale-bar__label {
+     white-space: nowrap;
+   }
+
+   .c-scale-bar__empty,
+   .c-scale-bar__loading,
+   .c-scale-bar__error {
+     color: var(--color-text-muted);
+   }
 
 
   /* =======================================================================
