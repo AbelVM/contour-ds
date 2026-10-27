@@ -2450,6 +2450,13 @@
     line-height: var(--leading-normal);
   }
 
+  .c-alert__empty,
+  .c-alert__loading,
+  .c-alert__error {
+    color: var(--color-text-muted);
+    padding: var(--space-md);
+  }
+
   .c-alert__icon {
     inline-size: 1.15rem;
     block-size: 1.15rem;

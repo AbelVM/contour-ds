@@ -63,12 +63,15 @@ class ContourDialog extends ContourBase {
   }
   define("contour-dialog", ContourDialog);
 class ContourAlert extends ContourBase {
-    static get observed() { return ["title", "body", "variant", "icon", "closable"]; }
+    static get observed() { return ["title", "body", "variant", "icon", "closable", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() {
       return { title: { attribute: "title" }, body: { attribute: "body" }, variant: { attribute: "variant" }, icon: { attribute: "icon" }, closable: { attribute: "closable", type: Boolean } };
     }
     render() {
       this.classList.add("c-alert");
+      wireStates(this);
+      loadRemote(this, "title");
+      if (renderStates(this, "alert")) return;
       const variant = this.getAttribute("variant");
       Array.from(this.classList).forEach((c) => { if (c.startsWith("c-alert--")) this.classList.remove(c); });
       if (variant) this.classList.add("c-alert--" + variant);
@@ -81,7 +84,7 @@ class ContourAlert extends ContourBase {
         const ic = this.querySelector(".c-alert__icon");
         if (ic) ic.remove();
       }
-      const title = this.getAttribute("title");
+      const title = this.getAttribute("title") || (this._remoteData && this._remoteData.title);
       if (title) {
         const t = this.ensure(".c-alert__title", () => { const el = document.createElement("div"); el.className = "c-alert__title"; return el; });
         if (t.parentNode === this && this.firstChild !== t) this.prepend(t);
@@ -111,6 +114,9 @@ class ContourAlert extends ContourBase {
         const btn = this.querySelector(".c-alert__close");
         if (btn) btn.remove();
       }
+      if (!title && !body && !icon) {
+        renderEmpty(this, "alert");
+      }
     }
   }
   ContourAlert.prototype.enhance = function() {
@@ -124,7 +130,7 @@ class ContourAlert extends ContourBase {
       this.remove();
     });
   };
-  define("contour-alert", ContourAlert);
+define("contour-alert", ContourAlert);
 class ContourDisclosure extends ContourBase {
     static get observed() { return ["summary", "icon"]; }
     static get properties() { return { summary: { attribute: "summary" }, icon: { attribute: "icon" } }; }
