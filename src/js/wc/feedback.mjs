@@ -1,4 +1,5 @@
 import { ContourBase, define } from './core.mjs';
+import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { wireRemovable } from './behaviours.mjs';
 class ContourDialog extends ContourBase {
     static get observed() { return ["title"]; }
@@ -294,55 +295,14 @@ class ContourEmpty extends ContourBase {
   }
   define("contour-empty", ContourEmpty);
 class ContourFaq extends ContourBase {
-    static get observed() { return ["question", "answer", "items", "empty", "loading", "error", "src", "skeleton"]; }
+    static get observed() { return ["question", "answer", "items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { question: { attribute: "question" }, answer: { attribute: "answer" }, items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-faq");
-      const src = this.getAttribute("src");
-      const items = this.getAttribute("items") || (this._remoteItems ? JSON.stringify(this._remoteItems) : null);
-      if (src && !this.getAttribute("items") && this._srcFetched !== src) {
-        this._srcFetched = src;
-        this._loading = true;
-        this.attributeChangedCallback("__rerender__", null, "");
-        fetch(src).then((r) => r.json()).then((data) => {
-          this._remoteItems = data;
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        }).catch(() => {
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        });
-      }
-      const loading = this.hasAttribute("loading") || this._loading;
-      if (loading) {
-        const loadingEl = document.createElement("div");
-        loadingEl.className = "c-faq__loading";
-        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
-        loadingEl.style.color = "var(--color-text-muted)";
-        loadingEl.style.padding = "var(--space-md)";
-        this.appendChild(loadingEl);
-        return;
-      }
-      if (this.hasAttribute("error")) {
-        const err = document.createElement("div");
-        err.className = "c-faq__error";
-        err.textContent = this.getAttribute("error") || "Error";
-        err.style.color = "var(--color-danger, var(--color-text))";
-        err.style.padding = "var(--space-md)";
-        this.appendChild(err);
-        return;
-      }
-      if (this.hasAttribute("skeleton")) {
-        const count = Math.min(3, Math.max(1, parseInt(this.getAttribute("skeleton") || "2", 10) || 2));
-        for (let i = 0; i < count; i++) {
-          const sk = document.createElement("div");
-          sk.className = "c-skeleton c-faq__skeleton";
-          sk.style.blockSize = "2rem";
-          sk.style.marginBlockEnd = "var(--space-2xs)";
-          this.appendChild(sk);
-        }
-        return;
-      }
+      wireStates(this);
+      loadRemote(this, "items");
+      if (renderStates(this, "faq")) return;
+      const items = remoteData(this, "items");
       const question = this.getAttribute("question");
       const answer = this.getAttribute("answer");
       const authored = Array.from(this.children).filter((n) => n.classList && n.classList.contains("c-faq__item"));
@@ -370,12 +330,7 @@ class ContourFaq extends ContourBase {
         } catch (e) { /* keep existing */ }
        } else if (!items) {
          if (!question && !answer) {
-           const empty = document.createElement("div");
-           empty.className = "c-faq__empty";
-           empty.textContent = this.getAttribute("empty") || "No data";
-           empty.style.color = "var(--color-text-muted)";
-           empty.style.padding = "var(--space-md)";
-           this.appendChild(empty);
+           renderEmpty(this, "faq");
          } else {
            if (question) {
              const q = this.ensure(".c-faq__question", () => { const el = document.createElement("div"); el.className = "c-faq__question"; return el; });
@@ -395,60 +350,19 @@ class ContourFaq extends ContourBase {
        }
     }
   }
-  define("contour-faq", ContourFaq);
+define("contour-faq", ContourFaq);
 class ContourAccordion extends ContourBase {
-    static get observed() { return ["items", "empty", "loading", "error", "src", "skeleton"]; }
+    static get observed() { return ["items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { items: { attribute: "items" } }; }
     render() {
       // The host is a plain container; the children carry .c-disclosure, which
       // is the block that owns the styling. No .c-accordion rule exists, so the
       // host class is dropped rather than invented.
       const authored = Array.from(this.children).filter((n) => n.tagName === "DETAILS");
-      const src = this.getAttribute("src");
-      const items = this.getAttribute("items") || (this._remoteItems ? JSON.stringify(this._remoteItems) : null);
-      if (src && !this.getAttribute("items") && this._srcFetched !== src) {
-        this._srcFetched = src;
-        this._loading = true;
-        this.attributeChangedCallback("__rerender__", null, "");
-        fetch(src).then((r) => r.json()).then((data) => {
-          this._remoteItems = data;
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        }).catch(() => {
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        });
-      }
-      const loading = this.hasAttribute("loading") || this._loading;
-      if (loading) {
-        const loadingEl = document.createElement("div");
-        loadingEl.className = "c-accordion__loading";
-        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
-        loadingEl.style.color = "var(--color-text-muted)";
-        loadingEl.style.padding = "var(--space-md)";
-        this.appendChild(loadingEl);
-        return;
-      }
-      if (this.hasAttribute("error")) {
-        const err = document.createElement("div");
-        err.className = "c-accordion__error";
-        err.textContent = this.getAttribute("error") || "Error";
-        err.style.color = "var(--color-danger, var(--color-text))";
-        err.style.padding = "var(--space-md)";
-        this.appendChild(err);
-        return;
-      }
-      if (this.hasAttribute("skeleton")) {
-        const count = Math.min(4, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
-        for (let i = 0; i < count; i++) {
-          const sk = document.createElement("div");
-          sk.className = "c-skeleton c-accordion__skeleton";
-          sk.style.blockSize = "2rem";
-          sk.style.marginBlockEnd = "var(--space-2xs)";
-          this.appendChild(sk);
-        }
-        return;
-      }
+      wireStates(this);
+      loadRemote(this, "items");
+      if (renderStates(this, "accordion")) return;
+      const items = remoteData(this, "items");
       if (items && !authored.length) {
         Array.from(this.querySelectorAll("details.c-disclosure")).forEach((d) => d.remove());
         try {
@@ -468,12 +382,7 @@ class ContourAccordion extends ContourBase {
           });
          } catch (e) { /* keep existing */ }
        } else if (!items && !authored.length) {
-         const empty = document.createElement("div");
-         empty.className = "c-accordion__empty";
-         empty.textContent = this.getAttribute("empty") || "No data";
-         empty.style.color = "var(--color-text-muted)";
-         empty.style.padding = "var(--space-md)";
-         this.appendChild(empty);
+         renderEmpty(this, "accordion");
        }
     }
     enhance() {
@@ -487,7 +396,7 @@ class ContourAccordion extends ContourBase {
       }, true);
     }
   }
-  define("contour-accordion", ContourAccordion);
+define("contour-accordion", ContourAccordion);
 class ContourDrawer extends ContourBase {
     static get observed() { return ["body"]; }
     static get properties() { return { body: { attribute: "body" } }; }

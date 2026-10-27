@@ -1,4 +1,5 @@
 import { ContourBase, define } from './core.mjs';
+import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { compassNeedle, scaleBarTicks } from './svg.mjs';
 class ContourMinimap extends ContourBase {
     static get observed() { return ["label", "viewport", "empty", "loading", "error", "src", "skeleton"]; }
@@ -135,55 +136,14 @@ class ContourCoordinate extends ContourBase {
   }
   define("contour-coordinate", ContourCoordinate);
 class ContourLayerPanel extends ContourBase {
-    static get observed() { return ["label", "items", "empty", "loading", "error", "src", "skeleton"]; }
+    static get observed() { return ["label", "items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { label: { attribute: "label" }, items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-layer-panel");
-      const src = this.getAttribute("src");
-      const items = this.getAttribute("items") || (this._remoteItems ? JSON.stringify(this._remoteItems) : null);
-      if (src && !this.getAttribute("items") && this._srcFetched !== src) {
-        this._srcFetched = src;
-        this._loading = true;
-        this.attributeChangedCallback("__rerender__", null, "");
-        fetch(src).then((r) => r.json()).then((data) => {
-          this._remoteItems = data;
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        }).catch(() => {
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        });
-      }
-      const loading = this.hasAttribute("loading") || this._loading;
-      if (loading) {
-        const loadingEl = document.createElement("div");
-        loadingEl.className = "c-layer-panel__loading";
-        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
-        loadingEl.style.color = "var(--color-text-muted)";
-        loadingEl.style.padding = "var(--space-md)";
-        this.appendChild(loadingEl);
-        return;
-      }
-      if (this.hasAttribute("error")) {
-        const err = document.createElement("div");
-        err.className = "c-layer-panel__error";
-        err.textContent = this.getAttribute("error") || "Error";
-        err.style.color = "var(--color-danger, var(--color-text))";
-        err.style.padding = "var(--space-md)";
-        this.appendChild(err);
-        return;
-      }
-      if (this.hasAttribute("skeleton")) {
-        const count = Math.min(4, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
-        for (let i = 0; i < count; i++) {
-          const sk = document.createElement("div");
-          sk.className = "c-skeleton c-layer-panel__skeleton";
-          sk.style.blockSize = "1.5rem";
-          sk.style.marginBlockEnd = "var(--space-2xs)";
-          this.appendChild(sk);
-        }
-        return;
-      }
+      wireStates(this);
+      loadRemote(this, "items");
+      if (renderStates(this, "layer-panel")) return;
+      const items = remoteData(this, "items");
       const label = this.getAttribute("label");
       if (label) {
         const l = this.ensure(".c-layer-panel__label", () => { const el = document.createElement("span"); el.className = "c-layer-panel__label"; return el; });
@@ -195,7 +155,6 @@ class ContourLayerPanel extends ContourBase {
       if (items) {
         try {
           const parsed = JSON.parse(items);
-          // Clear previously generated items.
           Array.from(this.querySelectorAll(".c-layer-panel__item")).forEach((el) => el.remove());
           parsed.forEach((it) => {
             const name = typeof it === "string" ? it : (it.name || it.label || "");
@@ -222,18 +181,13 @@ class ContourLayerPanel extends ContourBase {
             this.appendChild(item);
           });
         } catch (e) { /* keep existing */ }
-       } else if (!items) {
-         Array.from(this.querySelectorAll(".c-layer-panel__item")).forEach((el) => el.remove());
-         const empty = document.createElement("div");
-         empty.className = "c-layer-panel__empty";
-         empty.textContent = this.getAttribute("empty") || "No data";
-         empty.style.color = "var(--color-text-muted)";
-         empty.style.padding = "var(--space-md)";
-         this.appendChild(empty);
-       }
+      } else {
+        Array.from(this.querySelectorAll(".c-layer-panel__item")).forEach((el) => el.remove());
+        renderEmpty(this, "layer-panel");
+      }
     }
   }
-  define("contour-layer-panel", ContourLayerPanel);
+define("contour-layer-panel", ContourLayerPanel);
 class ContourTimeSlider extends ContourBase {
     static get observed() { return ["label", "value"]; }
     static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" } }; }
@@ -815,58 +769,16 @@ class ContourCompassFull extends ContourBase {
   }
   define("contour-compass", ContourCompassFull);
 class ContourLayerSwitch extends ContourBase {
-    static get observed() { return ["items", "empty", "loading", "error", "src", "skeleton"]; }
+    static get observed() { return ["items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-layer-switch");
-      const src = this.getAttribute("src");
-      const items = this.getAttribute("items") || (this._remoteItems ? JSON.stringify(this._remoteItems) : null);
-      if (src && !this.getAttribute("items") && this._srcFetched !== src) {
-        this._srcFetched = src;
-        this._loading = true;
-        this.attributeChangedCallback("__rerender__", null, "");
-        fetch(src).then((r) => r.json()).then((data) => {
-          this._remoteItems = data;
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        }).catch(() => {
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        });
-      }
-      const loading = this.hasAttribute("loading") || this._loading;
-      if (loading) {
-        const loadingEl = document.createElement("div");
-        loadingEl.className = "c-layer-switch__loading";
-        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
-        loadingEl.style.color = "var(--color-text-muted)";
-        loadingEl.style.padding = "var(--space-md)";
-        this.appendChild(loadingEl);
-        return;
-      }
-      if (this.hasAttribute("error")) {
-        const err = document.createElement("div");
-        err.className = "c-layer-switch__error";
-        err.textContent = this.getAttribute("error") || "Error";
-        err.style.color = "var(--color-danger, var(--color-text))";
-        err.style.padding = "var(--space-md)";
-        this.appendChild(err);
-        return;
-      }
-      if (this.hasAttribute("skeleton")) {
-        const count = Math.min(4, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
-        for (let i = 0; i < count; i++) {
-          const sk = document.createElement("div");
-          sk.className = "c-skeleton c-layer-switch__skeleton";
-          sk.style.blockSize = "2rem";
-          sk.style.marginBlockEnd = "var(--space-2xs)";
-          this.appendChild(sk);
-        }
-        return;
-      }
+      wireStates(this);
+      loadRemote(this, "items");
+      if (renderStates(this, "layer-switch")) return;
+      const items = remoteData(this, "items");
       const authored = Array.from(this.children).filter((n) => n.classList && n.classList.contains("c-layer-switch__item"));
       if (items && !authored.length) {
-        // Drop previously generated items so a re-render cannot stack a second set.
         Array.from(this.querySelectorAll(".c-layer-switch__item")).forEach((n) => n.remove());
         try {
           const parsed = JSON.parse(items);
@@ -899,16 +811,11 @@ class ContourLayerSwitch extends ContourBase {
         } catch (e) { /* keep existing */ }
       } else if (!items && !authored.length) {
         Array.from(this.querySelectorAll(".c-layer-switch__item")).forEach((n) => n.remove());
-        const empty = document.createElement("div");
-        empty.className = "c-layer-switch__empty";
-        empty.textContent = this.getAttribute("empty") || "No data";
-        empty.style.color = "var(--color-text-muted)";
-        empty.style.padding = "var(--space-md)";
-        this.appendChild(empty);
+        renderEmpty(this, "layer-switch");
       }
     }
   }
-  define("contour-layer-switch", ContourLayerSwitch);
+define("contour-layer-switch", ContourLayerSwitch);
 class ContourMapSlot extends ContourBase {
     static get observed() { return ["attribution", "scale", "chrome"]; }
     static get properties() { return { attribution: { attribute: "attribution" }, scale: { attribute: "scale" }, chrome: { attribute: "chrome" } }; }
