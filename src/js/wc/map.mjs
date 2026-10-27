@@ -526,12 +526,27 @@ class ContourCatchment extends ContourBase {
         if (a) a.remove();
       }
       const center = this.getAttribute("center") || this._remoteCenter;
-      if (center) {
-        const c = this.ensure(".c-catchment__center", () => { const el = document.createElement("span"); el.className = "c-catchment__center"; return el; });
-        c.textContent = center;
-      } else {
-        const c = this.querySelector(".c-catchment__center");
-        if (c) c.remove();
+       if (center) {
+         const c = this.ensure(".c-catchment__center", () => { const el = document.createElement("span"); el.className = "c-catchment__center"; return el; });
+         c.textContent = center;
+       } else {
+         const c = this.querySelector(".c-catchment__center");
+         if (c) c.remove();
+       }
+       // Styled tooltip element.
+       const tip = this.ensure(".c-catchment__tooltip", () => { const el = document.createElement("div"); el.className = "c-catchment__tooltip"; el.setAttribute("hidden", ""); return el; });
+       tip.setAttribute("hidden", "");
+       if (area) tip.textContent = area;
+     }
+    enhance() {
+      if (this._wiredCatchment) return;
+      this._wiredCatchment = true;
+      const tip = this.querySelector(".c-catchment__tooltip");
+      if (tip) {
+        const showTip = () => tip.removeAttribute("hidden");
+        const hideTip = () => tip.setAttribute("hidden", "");
+        this.addEventListener("mouseenter", showTip);
+        this.addEventListener("mouseleave", hideTip);
       }
     }
   }

@@ -1675,6 +1675,18 @@
     stroke-width: 2;
   }
 
+  .c-catchment__tooltip {
+    position: absolute;
+    z-index: var(--z-tooltip);
+    padding: var(--space-2xs) var(--space-xs);
+    border-radius: var(--radius-xs);
+    background: var(--color-surface-3);
+    color: var(--color-text);
+    font-size: var(--type-micro);
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
   .c-catchment__label {
     font-family: var(--font-mono);
     font-size: 0.6rem;
