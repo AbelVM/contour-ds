@@ -1211,55 +1211,14 @@ class ContourMetricsFull extends ContourBase {
   }
   define("contour-metrics", ContourMetricsFull);
 class ContourLegend extends ContourBase {
-    static get observed() { return ["title", "ramp", "scale", "items", "method", "norm", "empty", "loading", "error", "src", "skeleton"]; }
+    static get observed() { return ["title", "ramp", "scale", "items", "method", "norm", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { title: { attribute: "title" }, ramp: { attribute: "ramp" }, scale: { attribute: "scale" }, items: { attribute: "items" }, method: { attribute: "method" }, norm: { attribute: "norm" } }; }
     render() {
       this.classList.add("c-legend");
-      const src = this.getAttribute("src");
-      const items = this.getAttribute("items") || (this._remoteItems ? JSON.stringify(this._remoteItems) : null);
-      if (src && !this.getAttribute("items") && this._srcFetched !== src) {
-        this._srcFetched = src;
-        this._loading = true;
-        this.attributeChangedCallback("__rerender__", null, "");
-        fetch(src).then((r) => r.json()).then((data) => {
-          this._remoteItems = data;
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        }).catch(() => {
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        });
-      }
-      const loading = this.hasAttribute("loading") || this._loading;
-      if (loading) {
-        const loadingEl = document.createElement("div");
-        loadingEl.className = "c-legend__loading";
-        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
-        loadingEl.style.color = "var(--color-text-muted)";
-        loadingEl.style.padding = "var(--space-md)";
-        this.appendChild(loadingEl);
-        return;
-      }
-      if (this.hasAttribute("error")) {
-        const err = document.createElement("div");
-        err.className = "c-legend__error";
-        err.textContent = this.getAttribute("error") || "Error";
-        err.style.color = "var(--color-danger, var(--color-text))";
-        err.style.padding = "var(--space-md)";
-        this.appendChild(err);
-        return;
-      }
-      if (this.hasAttribute("skeleton")) {
-        const count = Math.min(4, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
-        for (let i = 0; i < count; i++) {
-          const sk = document.createElement("div");
-          sk.className = "c-skeleton c-legend__skeleton";
-          sk.style.blockSize = "1rem";
-          sk.style.marginBlockEnd = "var(--space-2xs)";
-          this.appendChild(sk);
-        }
-        return;
-      }
+      wireStates(this);
+      loadRemote(this, "items");
+      if (renderStates(this, "legend")) return;
+      const items = remoteData(this, "items");
       const title = this.getAttribute("title");
       if (title) {
         const t = this.ensure(".c-legend__title", () => { const el = document.createElement("div"); el.className = "c-legend__title"; return el; });
@@ -1291,12 +1250,7 @@ class ContourLegend extends ContourBase {
         if (list) list.remove();
         const hasOther = this.getAttribute("title") || this.getAttribute("ramp") || this.getAttribute("scale") || this.getAttribute("method") || this.getAttribute("norm");
         if (!hasOther) {
-          const empty = document.createElement("div");
-          empty.className = "c-legend__empty";
-          empty.textContent = this.getAttribute("empty") || "No data";
-          empty.style.color = "var(--color-text-muted)";
-          empty.style.padding = "var(--space-md)";
-          this.appendChild(empty);
+          renderEmpty(this, "legend");
         }
       }
       const method = this.getAttribute("method");
@@ -1333,7 +1287,7 @@ class ContourLegend extends ContourBase {
       }
     }
   }
-  define("contour-legend", ContourLegend);
+define("contour-legend", ContourLegend);
 class ContourMeasure extends ContourBase {
     static get observed() { return ["label", "value", "point", "line", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" }, point: { attribute: "point" }, line: { attribute: "line" } }; }

@@ -2,61 +2,17 @@ import { ContourBase, define } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { compassNeedle, scaleBarTicks } from './svg.mjs';
 class ContourMinimap extends ContourBase {
-    static get observed() { return ["label", "viewport", "empty", "loading", "error", "src", "skeleton"]; }
+    static get observed() { return ["label", "viewport", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { label: { attribute: "label" }, viewport: { attribute: "viewport" } }; }
     render() {
       this.classList.add("c-minimap");
-      const src = this.getAttribute("src");
-      if (src && !this.getAttribute("viewport") && !this.getAttribute("label") && this._srcFetched !== src) {
-        this._srcFetched = src;
-        this._loading = true;
-        this.attributeChangedCallback("__rerender__", null, "");
-        fetch(src).then((r) => r.json()).then((data) => {
-          this._remoteLabel = data.label || this._remoteLabel;
-          this._remoteViewport = data.viewport || data.value || this._remoteViewport;
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        }).catch(() => {
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        });
-      }
-      const loading = this.hasAttribute("loading") || this._loading;
-      if (loading) {
-        const loadingEl = document.createElement("div");
-        loadingEl.className = "c-minimap__loading";
-        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
-        loadingEl.style.color = "var(--color-text-muted)";
-        loadingEl.style.padding = "var(--space-md)";
-        this.appendChild(loadingEl);
-        return;
-      }
-      if (this.hasAttribute("error")) {
-        const err = document.createElement("div");
-        err.className = "c-minimap__error";
-        err.textContent = this.getAttribute("error") || "Error";
-        err.style.color = "var(--color-danger, var(--color-text))";
-        err.style.padding = "var(--space-md)";
-        this.appendChild(err);
-        return;
-      }
-      if (this.hasAttribute("skeleton")) {
-        const sk = document.createElement("div");
-        sk.className = "c-skeleton c-minimap__skeleton";
-        sk.style.inlineSize = "100%";
-        sk.style.blockSize = "6rem";
-        this.appendChild(sk);
-        return;
-      }
-      const label = this.getAttribute("label") || this._remoteLabel;
-      const viewport = this.getAttribute("viewport") || this._remoteViewport;
+      wireStates(this);
+      loadRemote(this, ["label", "viewport"]);
+      if (renderStates(this, "minimap")) return;
+      const label = remoteData(this, "label") || (this._remoteData && this._remoteData.label);
+      const viewport = remoteData(this, "viewport") || (this._remoteData && (this._remoteData.viewport || this._remoteData.value));
       if (!label && !viewport) {
-        const empty = document.createElement("div");
-        empty.className = "c-minimap__empty";
-        empty.textContent = this.getAttribute("empty") || "No data";
-        empty.style.color = "var(--color-text-muted)";
-        empty.style.padding = "var(--space-md)";
-        this.appendChild(empty);
+        renderEmpty(this, "minimap");
         return;
       }
       if (label) {
@@ -75,66 +31,25 @@ class ContourMinimap extends ContourBase {
       }
     }
   }
-  define("contour-minimap", ContourMinimap);
+define("contour-minimap", ContourMinimap);
 class ContourCoordinate extends ContourBase {
-    static get observed() { return ["value", "empty", "loading", "error", "src", "skeleton"]; }
+    static get observed() { return ["value", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { value: { attribute: "value" } }; }
     render() {
       this.classList.add("c-coordinate");
-      const src = this.getAttribute("src");
-      if (src && !this.getAttribute("value") && this._srcFetched !== src) {
-        this._srcFetched = src;
-        this._loading = true;
-        this.attributeChangedCallback("__rerender__", null, "");
-        fetch(src).then((r) => r.json()).then((data) => {
-          this._remoteValue = data.value || data.coordinate || this._remoteValue;
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        }).catch(() => {
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        });
-      }
-      const loading = this.hasAttribute("loading") || this._loading;
-      if (loading) {
-        const loadingEl = document.createElement("span");
-        loadingEl.className = "c-coordinate__loading";
-        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
-        loadingEl.style.color = "var(--color-text-muted)";
-        this.appendChild(loadingEl);
-        return;
-      }
-      if (this.hasAttribute("error")) {
-        const err = document.createElement("span");
-        err.className = "c-coordinate__error";
-        err.textContent = this.getAttribute("error") || "Error";
-        err.style.color = "var(--color-danger, var(--color-text))";
-        this.appendChild(err);
-        return;
-      }
-      if (this.hasAttribute("skeleton")) {
-        const sk = document.createElement("span");
-        sk.className = "c-skeleton c-coordinate__skeleton";
-        sk.style.display = "inline-block";
-        sk.style.inlineSize = "4rem";
-        sk.style.blockSize = "1rem";
-        this.appendChild(sk);
-        return;
-      }
-      const value = this.getAttribute("value") || this._remoteValue;
+      wireStates(this);
+      loadRemote(this, "value");
+      if (renderStates(this, "coordinate")) return;
+      const value = remoteData(this, "value") || (this._remoteData && (this._remoteData.value || this._remoteData.coordinate));
       if (!value) {
-        const empty = document.createElement("span");
-        empty.className = "c-coordinate__empty";
-        empty.textContent = this.getAttribute("empty") || "No data";
-        empty.style.color = "var(--color-text-muted)";
-        this.appendChild(empty);
+        renderEmpty(this, "coordinate");
         return;
       }
       const span = this.ensure(".c-coordinate__value", () => { const el = document.createElement("span"); el.className = "c-coordinate__value"; return el; });
       span.textContent = value;
     }
   }
-  define("contour-coordinate", ContourCoordinate);
+define("contour-coordinate", ContourCoordinate);
 class ContourLayerPanel extends ContourBase {
     static get observed() { return ["label", "items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { label: { attribute: "label" }, items: { attribute: "items" } }; }
@@ -930,45 +845,14 @@ class ContourMapFooter extends ContourBase {
   }
   define("contour-map-footer", ContourMapFooter);
 class ContourScaleBar extends ContourBase {
-    static get observed() { return ["label", "value", "empty", "loading", "error", "src", "skeleton"]; }
+    static get observed() { return ["label", "value", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" } }; }
     render() {
       this.classList.add("c-scale-bar");
-      const src = this.getAttribute("src");
-      if (src && !this.getAttribute("value") && !this.getAttribute("label") && this._srcFetched !== src) {
-        this._srcFetched = src;
-        this._loading = true;
-        this.attributeChangedCallback("__rerender__", null, "");
-        fetch(src).then((r) => r.json()).then((data) => {
-          this._remoteLabel = data.label || this._remoteLabel;
-          this._remoteValue = data.value || this._remoteValue;
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        }).catch(() => {
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        });
-      }
-      const loading = this.hasAttribute("loading") || this._loading;
-      if (loading) {
-        const loadingEl = document.createElement("div");
-        loadingEl.className = "c-scale-bar__loading";
-        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
-        loadingEl.style.color = "var(--color-text-muted)";
-        loadingEl.style.padding = "var(--space-md)";
-        this.appendChild(loadingEl);
-        return;
-      }
-      if (this.hasAttribute("error")) {
-        const err = document.createElement("div");
-        err.className = "c-scale-bar__error";
-        err.textContent = this.getAttribute("error") || "Error";
-        err.style.color = "var(--color-danger, var(--color-text))";
-        err.style.padding = "var(--space-md)";
-        this.appendChild(err);
-        return;
-      }
-      const label = this.getAttribute("label") || this._remoteLabel;
+      wireStates(this);
+      loadRemote(this, ["label", "value"]);
+      if (renderStates(this, "scale-bar")) return;
+      const label = remoteData(this, "label") || (this._remoteData && this._remoteData.label);
       if (label) {
         const l = this.ensure(".c-scale-bar__label", () => { const el = document.createElement("span"); el.className = "c-scale-bar__label"; return el; });
         l.textContent = label;
@@ -976,31 +860,15 @@ class ContourScaleBar extends ContourBase {
         const l = this.querySelector(".c-scale-bar__label");
         if (l) l.remove();
       }
-      if (this.hasAttribute("skeleton")) {
-        const sk = document.createElement("span");
-        sk.className = "c-skeleton c-scale-bar__skeleton";
-        sk.style.display = "inline-block";
-        sk.style.inlineSize = "100%";
-        sk.style.blockSize = "0.5rem";
-        this.appendChild(sk);
-        return;
-      }
-      const value = this.getAttribute("value") || this._remoteValue;
+      const value = remoteData(this, "value") || (this._remoteData && this._remoteData.value);
       if (!value) {
-        const empty = document.createElement("div");
-        empty.className = "c-scale-bar__empty";
-        empty.textContent = this.getAttribute("empty") || "No data";
-        empty.style.color = "var(--color-text-muted)";
-        empty.style.padding = "var(--space-md)";
-        this.appendChild(empty);
+        renderEmpty(this, "scale-bar");
         return;
       }
       const line = this.ensure(".c-scale-bar__line", () => { const el = document.createElement("span"); el.className = "c-scale-bar__line"; return el; });
         line.style.inlineSize = value;
-        // Render metric subdivision ticks along the bar.
         const ticks = scaleBarTicks(parseFloat(value) || 0, 4);
         const max = ticks[ticks.length - 1] || 1;
-        // Remove old ticks
         Array.from(line.querySelectorAll(".c-scale-bar__tick")).forEach((t) => t.remove());
         ticks.forEach((tv) => {
           const tick = document.createElement("span");
@@ -1010,4 +878,4 @@ class ContourScaleBar extends ContourBase {
         });
     }
   }
-  define("contour-scale-bar", ContourScaleBar);
+define("contour-scale-bar", ContourScaleBar);
