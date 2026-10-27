@@ -1,4 +1,5 @@
 import { ContourBase, define } from './core.mjs';
+import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { wireMenu, wirePagination, wireTabs, wireTree } from './behaviours.mjs';
 class ContourMenu extends ContourBase {
     static get observed() { return ["items", "empty", "loading", "error", "src", "skeleton"]; }
@@ -609,62 +610,22 @@ class ContourBreadcrumb extends ContourBase {
   }
   define("contour-breadcrumb", ContourBreadcrumb);
 class ContourPagination extends ContourBase {
-    static get observed() { return ["pages", "current", "empty", "loading", "error", "src", "skeleton"]; }
+    static get observed() { return ["pages", "current", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { pages: { attribute: "pages" }, current: { attribute: "current" } }; }
     render() {
       this.classList.add("c-pagination");
-      const src = this.getAttribute("src");
-      const pages = this.getAttribute("pages") || (this._remotePages ? (Array.isArray(this._remotePages) ? String(this._remotePages.length) : String(this._remotePages)) : null);
-      if (src && !this.getAttribute("pages") && this._srcFetched !== src) {
-        this._srcFetched = src;
-        this._loading = true;
-        this.attributeChangedCallback("__rerender__", null, "");
-        fetch(src).then((r) => r.json()).then((data) => {
-          this._remotePages = data;
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        }).catch(() => {
-          this._loading = false;
-          this.attributeChangedCallback("__rerender__", null, "");
-        });
-      }
-      const loading = this.hasAttribute("loading") || this._loading;
-      if (loading) {
-        const loadingEl = document.createElement("div");
-        loadingEl.className = "c-pagination__loading";
-        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
-        loadingEl.style.color = "var(--color-text-muted)";
-        loadingEl.style.padding = "var(--space-md)";
-        this.appendChild(loadingEl);
-        return;
-      }
-      if (this.hasAttribute("error")) {
-        const err = document.createElement("div");
-        err.className = "c-pagination__error";
-        err.textContent = this.getAttribute("error") || "Error";
-        err.style.color = "var(--color-danger, var(--color-text))";
-        err.style.padding = "var(--space-md)";
-        this.appendChild(err);
-        return;
-      }
-      if (this.hasAttribute("skeleton")) {
-        const count = Math.min(5, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
-        for (let i = 0; i < count; i++) {
-          const sk = document.createElement("span");
-          sk.className = "c-skeleton c-pagination__skeleton";
-          sk.style.display = "inline-block";
-          sk.style.inlineSize = "2rem";
-          sk.style.blockSize = "2rem";
-          sk.style.marginInlineEnd = "var(--space-2xs)";
-          this.appendChild(sk);
-        }
-        return;
-      }
+      wireStates(this);
+      loadRemote(this, "pages");
+      if (renderStates(this, "pagination")) return;
+      const pages = remoteData(this, "pages");
       // Drop previously generated links so a re-render cannot stack a second set.
       Array.from(this.querySelectorAll(".c-pagination__link")).forEach((n) => n.remove());
       const current = parseInt(this.getAttribute("current") || "1", 10);
       if (pages) {
-        const count = parseInt(pages, 10);
+        let count = parseInt(pages, 10);
+        if (!Number.isFinite(count) || count < 1) {
+          try { const p = JSON.parse(pages); if (Array.isArray(p)) count = p.length; } catch (e) {}
+        }
         for (let i = 1; i <= count; i++) {
           const btn = document.createElement("button");
           btn.type = "button";
@@ -676,22 +637,14 @@ class ContourPagination extends ContourBase {
           this.appendChild(btn);
         }
       } else {
-        const empty = document.createElement("div");
-        empty.className = "c-pagination__empty";
-        empty.textContent = this.getAttribute("empty") || "No data";
-        empty.style.color = "var(--color-text-muted)";
-        empty.style.padding = "var(--space-md)";
-        this.appendChild(empty);
+        renderEmpty(this, "pagination");
       }
     }
     enhance() {
-      // Interaction lives in behaviours.mjs, which the shadow wrappers call too.
-      // One implementation, so the two layers cannot drift apart again: the shadow
-      // copy queried its root for slotted nodes, found none, and wired nothing.
       wirePagination(this);
     }
   }
-  define("contour-pagination", ContourPagination);
+define("contour-pagination", ContourPagination);
 class ContourPagerFull extends ContourBase {
     static get observed() { return ["prev", "next"]; }
     static get properties() { return { prev: { attribute: "prev" }, next: { attribute: "next" } }; }
