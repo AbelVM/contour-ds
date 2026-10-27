@@ -414,8 +414,12 @@ class ContourIsochrone extends ContourBase {
            parsed.forEach((r) => {
              const ring = document.createElement("span");
              ring.className = "c-isochrone__ring c-isochrone__ring--" + (r.label || r);
+             if (r.label) ring.setAttribute("title", r.label || r);
              this.appendChild(ring);
            });
+           // Styled tooltip element.
+           const tip = this.ensure(".c-isochrone__tooltip", () => { const el = document.createElement("div"); el.className = "c-isochrone__tooltip"; el.setAttribute("hidden", ""); return el; });
+           tip.setAttribute("hidden", "");
          } catch (e) { /* keep existing */ }
        } else {
          Array.from(this.querySelectorAll(".c-isochrone__ring")).forEach((n) => n.remove());
@@ -426,6 +430,29 @@ class ContourIsochrone extends ContourBase {
          empty.style.padding = "var(--space-md)";
          this.appendChild(empty);
        }
+     }
+    enhance() {
+      if (this._wiredIsochrone) return;
+      this._wiredIsochrone = true;
+      const tip = this.querySelector(".c-isochrone__tooltip");
+      if (tip) {
+        const showTip = (e) => {
+          const ring = e.target && e.target.closest ? e.target.closest(".c-isochrone__ring") : null;
+          if (!ring || !this.contains(ring)) { tip.setAttribute("hidden", ""); return; }
+          const title = ring.getAttribute("title");
+          if (title) tip.textContent = title;
+          const rect = this.getBoundingClientRect();
+          const rr = ring.getBoundingClientRect();
+          tip.style.left = (rr.left - rect.left + rr.width / 2) + "px";
+          tip.style.top = (rr.top - rect.top) + "px";
+          tip.removeAttribute("hidden");
+        };
+        const hideTip = () => tip.setAttribute("hidden", "");
+        this.addEventListener("mouseover", showTip);
+        this.addEventListener("mouseout", (e) => {
+          if (!e.relatedTarget || !this.contains(e.relatedTarget)) hideTip();
+        });
+      }
     }
   }
   define("contour-isochrone", ContourIsochrone);

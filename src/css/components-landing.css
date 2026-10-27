@@ -456,4 +456,11 @@
     font-size: var(--type-sm);
     line-height: var(--leading-relaxed);
   }
+
+  .c-faq__empty,
+  .c-faq__loading,
+  .c-faq__error {
+    color: var(--color-text-muted);
+    padding: var(--space-md);
+  }
 }

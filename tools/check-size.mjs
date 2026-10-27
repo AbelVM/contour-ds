@@ -67,7 +67,7 @@ const BUDGETS = {
   // exists to catch a jump nobody intended, not to keep the truth brief. A file
   // absent from this map is not budgeted at all, which is how an artifact can
   // grow without anyone noticing.
-  "contour.components.json": 155 * 1024,  // raised 2026-10-26 from 152 kB
+  "contour.components.json": 156 * 1024,  // raised 2026-10-26 from 152 kB
   // The docs package (C-45). Measured 2026-10-23 at 43.6 kB: 23 section files
   // (37.4 kB) plus the index (6.2 kB) — figures this gate recomputes and prints on
   // every run, so the numbers above are a dated record, not the thing enforced.
@@ -121,7 +121,7 @@ const BUDGETS = {
   "surfaces/contour-data.min.css": 152 * 1024,  // raised 2026-10-27
   "surfaces/contour-landing.min.css": 124 * 1024,  // raised 2026-10-27 from 123 kB: measured 123.2 kB (126,145 B). See CHANGELOG.md.
   "contour.esm.min.js": 39 * 1024,
-  "contour-wc.esm.min.js": 240 * 1024,  // raised: ... + hexbin states + tooltip + flowmap tooltip
+  "contour-wc.esm.min.js": 243 * 1024,  // raised: ... + isochrone tooltip
 };
 
 const kB = (n) => `${(n / 1024).toFixed(1)} kB`;

@@ -1625,6 +1625,18 @@
   .c-isochrone__ring--10min { fill: color-mix(in oklab, var(--color-primary) 15%, transparent); }
   .c-isochrone__ring--15min { fill: color-mix(in oklab, var(--color-primary) 8%, transparent); }
 
+  .c-isochrone__tooltip {
+    position: absolute;
+    z-index: var(--z-tooltip);
+    padding: var(--space-2xs) var(--space-xs);
+    border-radius: var(--radius-xs);
+    background: var(--color-surface-3);
+    color: var(--color-text);
+    font-size: var(--type-micro);
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
   .c-isochrone__center {
     fill: var(--color-danger);
     stroke: var(--color-surface-1);
@@ -2227,6 +2239,19 @@
   .c-catchment__loading,
   .c-catchment__error {
     color: var(--color-text-muted);
+  }
+
+  /* Tooltip placeholders for map components */
+  .c-catchment__tooltip {
+    position: absolute;
+    z-index: var(--z-tooltip);
+    padding: var(--space-2xs) var(--space-xs);
+    border-radius: var(--radius-xs);
+    background: var(--color-surface-3);
+    color: var(--color-text);
+    font-size: var(--type-micro);
+    pointer-events: none;
+    white-space: nowrap;
   }
 }
 

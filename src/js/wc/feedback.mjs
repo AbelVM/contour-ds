@@ -294,13 +294,46 @@ class ContourEmpty extends ContourBase {
   }
   define("contour-empty", ContourEmpty);
 class ContourFaq extends ContourBase {
-    static get observed() { return ["question", "answer", "items"]; }
+    static get observed() { return ["question", "answer", "items", "empty", "loading", "error", "src"]; }
     static get properties() { return { question: { attribute: "question" }, answer: { attribute: "answer" }, items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-faq");
+      const src = this.getAttribute("src");
+      const items = this.getAttribute("items") || (this._remoteItems ? JSON.stringify(this._remoteItems) : null);
+      if (src && !this.getAttribute("items") && this._srcFetched !== src) {
+        this._srcFetched = src;
+        this._loading = true;
+        this.attributeChangedCallback("__rerender__", null, "");
+        fetch(src).then((r) => r.json()).then((data) => {
+          this._remoteItems = data;
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        }).catch(() => {
+          this._loading = false;
+          this.attributeChangedCallback("__rerender__", null, "");
+        });
+      }
+      const loading = this.hasAttribute("loading") || this._loading;
+      if (loading) {
+        const loadingEl = document.createElement("div");
+        loadingEl.className = "c-faq__loading";
+        loadingEl.textContent = this.getAttribute("loading") || "Loading…";
+        loadingEl.style.color = "var(--color-text-muted)";
+        loadingEl.style.padding = "var(--space-md)";
+        this.appendChild(loadingEl);
+        return;
+      }
+      if (this.hasAttribute("error")) {
+        const err = document.createElement("div");
+        err.className = "c-faq__error";
+        err.textContent = this.getAttribute("error") || "Error";
+        err.style.color = "var(--color-danger, var(--color-text))";
+        err.style.padding = "var(--space-md)";
+        this.appendChild(err);
+        return;
+      }
       const question = this.getAttribute("question");
       const answer = this.getAttribute("answer");
-      const items = this.getAttribute("items");
       const authored = Array.from(this.children).filter((n) => n.classList && n.classList.contains("c-faq__item"));
       if (items && !authored.length) {
         try {
@@ -324,22 +357,31 @@ class ContourFaq extends ContourBase {
             this.appendChild(item);
           });
         } catch (e) { /* keep existing */ }
-      } else if (!items) {
-        if (question) {
-          const q = this.ensure(".c-faq__question", () => { const el = document.createElement("div"); el.className = "c-faq__question"; return el; });
-          q.textContent = question;
-        } else {
-          const q = this.querySelector(".c-faq__question");
-          if (q) q.remove();
-        }
-        if (answer) {
-          const a = this.ensure(".c-faq__answer", () => { const el = document.createElement("div"); el.className = "c-faq__answer"; return el; });
-          a.textContent = answer;
-        } else {
-          const a = this.querySelector(".c-faq__answer");
-          if (a) a.remove();
-        }
-      }
+       } else if (!items) {
+         if (!question && !answer) {
+           const empty = document.createElement("div");
+           empty.className = "c-faq__empty";
+           empty.textContent = this.getAttribute("empty") || "No data";
+           empty.style.color = "var(--color-text-muted)";
+           empty.style.padding = "var(--space-md)";
+           this.appendChild(empty);
+         } else {
+           if (question) {
+             const q = this.ensure(".c-faq__question", () => { const el = document.createElement("div"); el.className = "c-faq__question"; return el; });
+             q.textContent = question;
+           } else {
+             const q = this.querySelector(".c-faq__question");
+             if (q) q.remove();
+           }
+           if (answer) {
+             const a = this.ensure(".c-faq__answer", () => { const el = document.createElement("div"); el.className = "c-faq__answer"; return el; });
+             a.textContent = answer;
+           } else {
+             const a = this.querySelector(".c-faq__answer");
+             if (a) a.remove();
+           }
+         }
+       }
     }
   }
   define("contour-faq", ContourFaq);
