@@ -789,6 +789,9 @@ const series = this.getAttribute("series");
         }
       });
       this.addEventListener("keydown", (e) => {
+        // Only the host itself drives series switching; marks handle their own
+        // keys (B3-03). Without this gate one Enter fires contour:select twice.
+        if (e.target !== this) return;
         let seriesCount = 0;
         try { seriesCount = JSON.parse(this.getAttribute("series") || "[]").length; } catch (e) { seriesCount = 0; }
         if (seriesCount === 0) return;
