@@ -1,4 +1,4 @@
-import { ContourBase, define, onDispose } from './core.mjs';
+import { ContourBase, define, onDispose, supportsUntilFound } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { wireMenu, wirePagination, wireTabs, wireTree } from './behaviours.mjs';
 class ContourMenu extends ContourBase {
@@ -290,7 +290,7 @@ render() {
               if (parent) {
                 ul.className = "c-tree__children";
                 ul.setAttribute("role", "group");
-                ul.setAttribute("hidden", "");
+                if (supportsUntilFound()) ul.setAttribute("hidden", "until-found"); else ul.setAttribute("hidden", "");
               }
              nodes.forEach((node) => {
               const li = document.createElement("div");

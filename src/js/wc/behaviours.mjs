@@ -34,7 +34,7 @@
 // listbox's options, an aria-controls target) takes it from here rather than
 // calling Math.random(), which can hand two instances the same id and then point
 // one control at another's list.
-import { contourId } from './core.mjs';
+import { contourId, supportsUntilFound } from './core.mjs';
 
 // A host is wired once per behaviour. Re-entering is normal — the base class
 // calls enhance() after every render — so the guard lives in a WeakMap keyed on
@@ -492,7 +492,14 @@ export function wireTree(host) {
     if (row) row.setAttribute("aria-expanded", String(!wasOpen));
     const node = toggle.closest(".c-tree__node");
     const children = node ? node.querySelector(":scope > .c-tree__children") : null;
-    if (children) children.hidden = wasOpen;
+    if (children) {
+      if (wasOpen) {
+        if (supportsUntilFound()) children.setAttribute("hidden", "until-found");
+        else children.hidden = true;
+      } else {
+        children.removeAttribute("hidden");
+      }
+    }
     if (node) node.setAttribute("aria-expanded", String(!wasOpen));
     wcEmit(host, "contour:toggle", { open: !wasOpen, label: (row ? row.textContent : "").trim().slice(0, 120) });
   };

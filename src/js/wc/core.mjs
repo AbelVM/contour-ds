@@ -831,6 +831,17 @@
     "box", "cluster", "container", "row", "scrim", "stack"
   ];
 
+  // Feature detection for `hidden="until-found"` (BY-51). Browsers that do not
+  // support it treat the value as the boolean hidden attribute, which would
+  // hide the content permanently — so we only upgrade where supported.
+  export function supportsUntilFound() {
+    try {
+      const t = document.createElement("div");
+      t.setAttribute("hidden", "until-found");
+      return t.getAttribute("hidden") === "until-found";
+    } catch (e) { return false; }
+  }
+
   // Value formatting (BY-31): opt-in Intl formatting for kpi/stat/readout/coordinate.
   // `format` is a preset ("number","currency","percent","compact","date","time")
   // or a JSON string of Intl.NumberFormat/DateTimeFormat options. `locale`
