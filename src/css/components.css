@@ -569,7 +569,7 @@
   .c-shortcut-overlay {
     position: fixed;
     inset: 0;
-    z-index: var(--z-toast, 900);
+    z-index: var(--z-toast, 700);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -660,7 +660,7 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-md);
-    z-index: var(--z-tooltip, 100);
+    z-index: var(--z-tooltip, 800);
     margin-block-start: var(--space-2xs);
     padding: var(--space-2xs);
     list-style: none;
