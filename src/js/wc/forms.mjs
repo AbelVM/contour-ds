@@ -40,9 +40,9 @@ class ContourCombobox extends ContourBase {
   }
 define("contour-combobox", ContourCombobox);
 class ContourField extends ContourBase {
-    static get observed() { return ["label", "hint", "error", "placeholder", "type"]; }
+    static get observed() { return ["label", "hint", "error", "placeholder", "type", "required"]; }
     static get formAssociated() { return true; }
-    static get properties() { return { label: { attribute: "label" }, hint: { attribute: "hint" }, error: { attribute: "error" }, placeholder: { attribute: "placeholder" }, type: { attribute: "type" } }; }
+    static get properties() { return { label: { attribute: "label" }, hint: { attribute: "hint" }, error: { attribute: "error" }, placeholder: { attribute: "placeholder" }, type: { attribute: "type" }, required: { attribute: "required", type: Boolean } }; }
     render() {
       this.classList.add("c-field");
       const label = this.getAttribute("label");
@@ -81,6 +81,16 @@ class ContourField extends ContourBase {
         const e = this.querySelector(".c-field__error");
         if (e) e.remove();
       }
+      // ARIA: link the input to its hint and its error message (parity with the
+      // shadow layer's bootstrap). The ids are generated so a screen reader does
+      // not hear one message without the other.
+      const hintEl = this.querySelector(".c-field__hint");
+      const errEl = this.querySelector(".c-field__error");
+      const describedBy = [];
+      if (hintEl) { if (!hintEl.id) hintEl.id = contourId("hint"); describedBy.push(hintEl.id); }
+      if (errEl) { if (!errEl.id) errEl.id = contourId("err"); describedBy.push(errEl.id); }
+      if (describedBy.length) input.setAttribute("aria-describedby", describedBy.join(" "));
+      if (this.hasAttribute("required")) input.setAttribute("aria-required", "true");
     }
   }
   ContourField.prototype.enhance = function() {

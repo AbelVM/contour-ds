@@ -613,7 +613,24 @@ export function wireCopy(host) {
     const owner = wcClosest(host, btn, ".c-code") || wcClosest(host, btn, ".c-install") || host;
     const src = owner.querySelector("code, .c-install__command");
     const text = (src ? src.textContent : owner.textContent) || "";
-    if (navigator.clipboard) navigator.clipboard.writeText(text).catch(() => { /* denied: the event still says what was copied */ });
+    // The confirmation is the one the system script paints for the guide's own
+    // copy buttons: a label swap, `data-copied` (which the shipped CSS styles)
+    // and an icon check on the trigger, reverted after the same beat. The
+    // trigger keeps focus, so the label change is what a screen reader hears.
+    const confirm = (ok) => {
+      const icon = btn.querySelector("use");
+      const originalHref = icon && icon.getAttribute("href");
+      const originalLabel = btn.getAttribute("aria-label") || btn.title || "";
+      if (ok && icon) icon.setAttribute("href", "#i-check");
+      btn.setAttribute("aria-label", ok ? "Copied" : "Copy failed");
+      btn.dataset.copied = String(ok);
+      setTimeout(() => {
+        if (icon && originalHref) icon.setAttribute("href", originalHref);
+        btn.setAttribute("aria-label", originalLabel);
+        delete btn.dataset.copied;
+      }, 1600);
+    };
+    if (navigator.clipboard) navigator.clipboard.writeText(text).then(() => confirm(true)).catch(() => confirm(false));
     wcEmit(host, "contour:copy", { text });
   });
 }

@@ -748,7 +748,9 @@ class ContourScaleBar extends ContourBase {
         return;
       }
       const line = this.ensure(".c-scale-bar__line", () => { const el = document.createElement("span"); el.className = "c-scale-bar__line"; return el; });
-        line.style.inlineSize = value;
+        // CSS lengths need a unit; a bare number would be dropped as an invalid
+        // property value and the bar would render at zero width.
+        line.style.inlineSize = /^\d+(\.\d+)?$/.test(String(value)) ? value + "px" : value;
         const ticks = scaleBarTicks(parseFloat(value) || 0, 4);
         const max = ticks[ticks.length - 1] || 1;
         Array.from(line.querySelectorAll(".c-scale-bar__tick")).forEach((t) => t.remove());

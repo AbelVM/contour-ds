@@ -98,6 +98,11 @@ class ContourAlert extends ContourBase {
     }
     render() {
       this.classList.add("c-alert");
+      // ARIA: an alert is a live region (parity with the shadow layer, which sets
+      // the same pair on every .c-alert). Written on the host, so the authored
+      // attributes win and the loader's state nodes announce inside the region.
+      if (!this.hasAttribute("role")) this.setAttribute("role", "alert");
+      if (!this.hasAttribute("aria-live")) this.setAttribute("aria-live", "assertive");
       wireStates(this);
       loadRemote(this, "title");
       if (renderStates(this, "alert")) return;
@@ -345,14 +350,19 @@ class ContourFaq extends ContourBase {
         try {
           const parsed = JSON.parse(items);
           Array.from(this.querySelectorAll(".c-faq__item")).forEach((n) => n.remove());
-          parsed.forEach((it) => {
-            const item = document.createElement("div");
+          parsed.forEach((it, i) => {
+            // Native disclosure, the same shape the guide authors: details +
+            // summary, so the [open] styling and the marker hiding apply. The
+            // first item opens like the guide's own FAQ section does.
+            const item = document.createElement("details");
             item.className = "c-faq__item";
-            const q = document.createElement("div");
+            if (i === 0) item.setAttribute("open", "");
+            const q = document.createElement("summary");
             q.className = "c-faq__question";
             q.textContent = typeof it === "string" ? it : (it.question || it.q || "");
             const sign = document.createElement("span");
             sign.className = "c-faq__sign";
+            sign.setAttribute("aria-hidden", "true");
             sign.innerHTML = '<svg aria-hidden="true"><use href="#i-plus" /></svg>';
             q.appendChild(sign);
             item.appendChild(q);
@@ -367,20 +377,15 @@ class ContourFaq extends ContourBase {
          if (!question && !answer) {
            renderEmpty(this, "faq");
          } else {
-           if (question) {
-             const q = this.ensure(".c-faq__question", () => { const el = document.createElement("div"); el.className = "c-faq__question"; return el; });
-             q.textContent = question;
-           } else {
-             const q = this.querySelector(".c-faq__question");
-             if (q) q.remove();
-           }
-           if (answer) {
-             const a = this.ensure(".c-faq__answer", () => { const el = document.createElement("div"); el.className = "c-faq__answer"; return el; });
-             a.textContent = answer;
-           } else {
-             const a = this.querySelector(".c-faq__answer");
-             if (a) a.remove();
-           }
+           const item = this.ensure("details.c-faq__item", () => { const el = document.createElement("details"); el.className = "c-faq__item"; return el; });
+           if (!item.hasAttribute("open")) item.setAttribute("open", "");
+           const q = this.ensure("summary.c-faq__question", () => { const el = document.createElement("summary"); el.className = "c-faq__question"; return el; }, item);
+           q.textContent = question || "";
+           const sign = this.ensure(".c-faq__sign", () => { const el = document.createElement("span"); el.className = "c-faq__sign"; return el; }, q);
+           sign.setAttribute("aria-hidden", "true");
+           sign.innerHTML = '<svg aria-hidden="true"><use href="#i-plus" /></svg>';
+           const a = this.ensure(".c-faq__answer", () => { const el = document.createElement("div"); el.className = "c-faq__answer"; return el; }, item);
+           a.textContent = answer || "";
          }
        }
     }

@@ -136,12 +136,29 @@ export function loadRemote(host, fields) {
     setStatus(host, "loading");
     return;
   }
-  const cached = remoteCache.get(src);
-  if (cached !== undefined) {
-    host._remoteSrc = src;
-    host._remoteData = cached;
-    setStatus(host, "ready");
-    return;
+  // The shared cache is keyed by `cache-key` when the author names one,
+  // otherwise by the URL itself. `no-cache` opts a host OUT of the shared
+  // read: it always asks the network fresh, and the fresh bytes it received
+  // are its own for this mount (the guard below re-reads `_remoteData`, so a
+  // re-render must not fire a second request). The settle still writes the
+  // fresh result to the shared cache — "don't reuse" and "don't store" are
+  // different policies, and this is the former; `remoteInvalidate` gives the
+  // page the latter.
+  const noCache = host.hasAttribute("no-cache");
+  const cacheKey = host.getAttribute("cache-key") || src;
+  if (noCache) {
+    if (host._remoteSrc === src && host._remoteData !== undefined) {
+      setStatus(host, "ready");
+      return;
+    }
+  } else {
+    const cached = remoteCache.get(cacheKey);
+    if (cached !== undefined) {
+      host._remoteSrc = src;
+      host._remoteData = cached;
+      setStatus(host, "ready");
+      return;
+    }
   }
   // Already asked: a host still waiting, or one whose last ask settled in
   // error, must not re-ask on its own. The retry button (wireStates) and the
@@ -158,7 +175,7 @@ export function loadRemote(host, fields) {
 
   let entry = remoteInflight.get(src);
   if (!entry) {
-    entry = { hosts: new Set(), controller: new AbortController() };
+    entry = { hosts: new Set(), controller: new AbortController(), cacheKey };
     remoteInflight.set(src, entry);
     // All three arguments: `host` carries the timeout attribute and owns the
     // disposer, `src` is the URL to ask, `entry` holds the shared controller.
@@ -169,7 +186,13 @@ export function loadRemote(host, fields) {
     entry.promise = startFetch(host, src, entry).then(
       (data) => {
         if (remoteInflight.get(src) === entry) remoteInflight.delete(src);
+        // The entry is keyed by URL, but a host that named a cache-key must be
+        // able to paint from cache on a re-mount: the fresh result is filed
+        // under both the URL and its named key, so the key is not a private
+        // lane that only ever misses.
         cacheResult(src, data);
+        const namedKey = entry.cacheKey;
+        if (namedKey && namedKey !== src) cacheResult(namedKey, data);
         for (const h of entry.hosts) {
           h._remoteData = data;
           h._remoteEntry = null;
@@ -209,6 +232,17 @@ export function loadRemote(host, fields) {
       leaveRequest(host);
     });
   }
+}
+
+/**
+ * Drop a URL's cached result so the next host that asks for it re-fetches.
+ * The refresh timer and the retry button already clear the entry themselves;
+ * this is the page-side handle for the same job (an admin action, a
+ * websocket that says the tiles changed) without forcing a remount.
+ * @param {string} srcOrKey the URL — or the cache-key a host asked under
+ */
+export function remoteInvalidate(srcOrKey) {
+  remoteCache.delete(srcOrKey);
 }
 
 // `AbortSignal.timeout` is the platform's own deadline; where it is missing, the
@@ -307,6 +341,8 @@ export function remoteRefresh(host) {
     if (!host.isConnected || !host.hasAttribute("refresh")) { host._remoteLoop = false; return; }
     if (document.hidden) { host._remoteTimer = setTimeout(tick, 1000); return; }
     const src = host.getAttribute("src");
+    const namedKey = host.getAttribute("cache-key");
+    if (namedKey) remoteCache.delete(namedKey);
     remoteCache.delete(src);
     host._remoteSrc = null;
     host._remoteLoop = false;
@@ -465,6 +501,8 @@ export function wireStates(host) {
     if (!btn || !host.contains(btn)) return;
     e.preventDefault();
     const src = host.getAttribute("src");
+    const namedKey = host.getAttribute("cache-key");
+    if (namedKey) remoteCache.delete(namedKey);
     if (src) remoteCache.delete(src);
     leaveRequest(host);
     host._remoteSrc = null;

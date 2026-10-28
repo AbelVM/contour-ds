@@ -111,10 +111,10 @@
   //   role, open, aria-label, aria-valuenow, aria-valuemin, aria-valuemax, tabindex
   // Adding one of those back to this list makes that component recurse.
   export const OBSERVED = [
-    "action", "actions", "after", "anchor", "answer", "area", "article", "attribution", "attribution-mark", "axis", "axis-x", "axis-y", "before", "body", "brand", "canvas", "center", "cols", "columns", "color", "command",
+    "action", "actions", "after", "anchor", "answer", "area", "article", "attribution", "attribution-mark", "axis", "axis-x", "axis-y", "before", "body", "brand", "cache-key", "canvas", "center", "cols", "columns", "color", "command",
     "cells", "checked", "chrome", "closable", "controls", "copyable", "count", "current", "date", "delta", "demo", "desc", "direction", "divider", "do", "dont", "dot",
     "empty", "error", "hint", "href", "icon", "index", "instrument", "items", "key",
-    "label", "lazy", "lede", "legend", "line", "links", "live", "loading", "max", "media", "message", "method", "min", "name", "needle", "next", "no", "nodes", "note", "norm",
+    "label", "lazy", "lede", "legend", "line", "links", "live", "loading", "max", "media", "message", "method", "min", "name", "needle", "next", "no", "no-cache", "nodes", "note", "norm",
     "options", "page", "page-size", "pages", "placeholder", "point", "points", "prev", "prompt", "question", "required",
     "quote", "ramp", "refresh", "removable", "reverse", "rings", "retry", "rows", "scale", "separator", "series", "shortcut", "size", "skeleton", "sort", "sort-dir", "status", "timeout", "virtual",
     "state", "steps", "subtitle", "summary", "src", "tabs", "tag", "text", "title", "type", "unit", "value",

@@ -341,6 +341,10 @@ const CANARY = "__wcContractCanary";
 // and then succeeds: rows can only appear after the retry click if the click
 // really asked the network again.
 let flakyHits = 0;
+// BY-43: a counting route — every request returns the hit count, so a cached
+// mount is proven by a count that did not move and a no-cache mount by one
+// that did. One payload key keeps the assertion readable.
+let countHits = 0;
 const FX_ROWS = JSON.stringify([{ key: "A", value: "1" }, { key: "B", value: "2" }]);
 
 const server = createServer((req, res) => {
@@ -372,6 +376,7 @@ const server = createServer((req, res) => {
   else if (req.url === "/fx/missing") res.writeHead(404, { "content-type": "text/plain" }).end("missing");
   else if (req.url === "/fx/slow.json") setTimeout(() => res.writeHead(200, { "content-type": "application/json" }).end(FX_ROWS), 150);
   else if (req.url === "/fx/flaky.json") { flakyHits += 1; if (flakyHits === 1) res.writeHead(404, { "content-type": "text/plain" }).end("flaky"); else res.writeHead(200, { "content-type": "application/json" }).end(FX_ROWS); }
+  else if (req.url === "/fx/count.json") { countHits += 1; res.writeHead(200, { "content-type": "application/json" }).end(JSON.stringify({ value: String(countHits) })); }
   else res.writeHead(404).end("no");
 });
 await new Promise((r) => server.listen(0, "127.0.0.1", r));
@@ -1580,6 +1585,136 @@ try {
       fail(`viewport visibility events broke (BY-42): ${bad.join(" | ")}`);
     else
       console.log("wc-contract: watchViewport exports and fires contour:view-enter/view-leave across a real boundary crossing");
+  }
+
+  // ---- 19. ARIA parity, loader cache policy, copy confirmation (BY-25/43/47) ----
+  //
+  // Three rows, one arm, each measured against the shipped bundle. The cache
+  // half uses a counting route: a cached mount must not move the count, a
+  // no-cache mount must, a fresh cache-key must open its own slot, the same
+  // key must hit, and remoteInvalidate must make the next ask re-fetch. The
+  // copy half clicks the real generated trigger, not a hand-built stub.
+  {
+    const p = await browser.newPage();
+    const errs = [];
+    p.on("pageerror", (e) => errs.push(String(e.message || e)));
+    await p.goto(`${origin}/unmin.html`, { waitUntil: "load" });
+    await p.waitForFunction(() => !!window.ContourElements, null, { timeout: 20000 });
+    const out = await p.evaluate(async () => {
+      const { loadRemote, remoteData, remoteInvalidate } = await import("/wc-esm.js");
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+      const results = {};
+      // BY-25 alert: light layer carries the alert live-region pair.
+      const alert = document.createElement("contour-alert");
+      alert.setAttribute("title", "Heads up");
+      alert.setAttribute("body", "Message");
+      document.body.appendChild(alert);
+      await wait(30);
+      results.alertRole = alert.getAttribute("role");
+      results.alertLive = alert.getAttribute("aria-live");
+      // BY-25 field: input linked to both messages; required reflected.
+      const field = document.createElement("contour-field");
+      field.setAttribute("label", "Name");
+      field.setAttribute("hint", "Full name");
+      field.setAttribute("error", "Required");
+      field.setAttribute("required", "");
+      document.body.appendChild(field);
+      await wait(30);
+      const input = field.querySelector("input");
+      results.describedBy = input ? input.getAttribute("aria-describedby") : null;
+      results.hintErrLinked = (results.describedBy || "").split(" ").filter(Boolean).length >= 2;
+      results.ariaRequired = input ? input.getAttribute("aria-required") : null;
+      // BY-25 faq: generated disclosure is native details/summary and toggles.
+      const faq = document.createElement("contour-faq");
+      faq.setAttribute("question", "What is it?");
+      faq.setAttribute("answer", "A design system.");
+      document.body.appendChild(faq);
+      await wait(30);
+      const details = faq.querySelector(".c-faq__item");
+      results.faqDetails = details ? details.tagName : null;
+      results.faqSummary = details ? details.querySelector(":scope > .c-faq__question").tagName : null;
+      results.faqOpenBefore = details ? details.hasAttribute("open") : null;
+      if (details) { details.querySelector(":scope > .c-faq__question").click(); await wait(30); }
+      results.faqOpenAfter = details ? details.hasAttribute("open") : null;
+      // BY-43: cache policy on the counting route.
+      const host = (src, extra) => {
+        const h = document.createElement("div");
+        // The loader settles with `host.requestRender()` (ContourBase's own
+        // method); a harness host must provide the same surface or the settle
+        // throws before the cache write the arm is measuring.
+        h.requestRender = () => {};
+        h.setAttribute("src", src);
+        for (const [k, v] of Object.entries(extra || {})) h.setAttribute(k, v);
+        document.body.appendChild(h);
+        return h;
+      };
+      const waitData = async (h, ms = 500) => { const t0 = Date.now(); while (Date.now() - t0 < ms) { const v = remoteData(h, "value"); if (v !== null && v !== undefined) return v; await wait(20); } return null; };
+      const a = host("/fx/count.json");
+      loadRemote(a, "value");
+      results.aValue = await waitData(a);
+      const b = host("/fx/count.json");
+      loadRemote(b, "value");
+      results.bValue = await waitData(b);
+      const c = host("/fx/count.json", { "no-cache": "" });
+      loadRemote(c, "value");
+      results.cValue = await waitData(c);
+      const d = host("/fx/count.json", { "cache-key": "tenant-a" });
+      loadRemote(d, "value");
+      results.dValue = await waitData(d);
+      const e = host("/fx/count.json", { "cache-key": "tenant-a" });
+      loadRemote(e, "value");
+      results.eValue = await waitData(e);
+      remoteInvalidate("/fx/count.json");
+      const f = host("/fx/count.json");
+      loadRemote(f, "value");
+      results.fValue = await waitData(f);
+      // BY-30 carve-out: a unit-less value still gets a unit on the scale bar.
+      const bar = document.createElement("contour-scale-bar");
+      bar.setAttribute("label", "1 km");
+      bar.setAttribute("value", "120");
+      document.body.appendChild(bar);
+      await wait(30);
+      const line = bar.querySelector(".c-scale-bar__line");
+      results.scaleInline = line ? line.style.inlineSize : null;
+      // BY-47: the copy trigger confirms and still emits for the page to toast.
+      const install = document.createElement("contour-install");
+      install.setAttribute("command", "npm i contour-ds");
+      install.setAttribute("copyable", "");
+      document.body.appendChild(install);
+      await wait(30);
+      const btn = install.querySelector(".c-install__copy");
+      const heard = [];
+      install.addEventListener("contour:copy", (ev) => heard.push(ev.detail.text));
+      if (btn) btn.click();
+      await wait(120);
+      results.copied = btn ? btn.dataset.copied : null;
+      results.copyLabel = btn ? btn.getAttribute("aria-label") : null;
+      results.copyEvent = heard;
+      return results;
+    });
+    const bad = [];
+    if (out.alertRole !== "alert") bad.push(`alert role=${String(out.alertRole)} (want alert)`);
+    if (out.alertLive !== "assertive") bad.push(`alert aria-live=${String(out.alertLive)} (want assertive)`);
+    if (!out.hintErrLinked) bad.push(`field aria-describedby=${String(out.describedBy)} (want hint+error ids)`);
+    if (out.ariaRequired !== "true") bad.push(`field aria-required=${String(out.ariaRequired)} (want true)`);
+    if (out.faqDetails !== "DETAILS") bad.push(`faq item tag=${String(out.faqDetails)} (want DETAILS)`);
+    if (out.faqSummary !== "SUMMARY") bad.push(`faq summary tag=${String(out.faqSummary)} (want SUMMARY)`);
+    if (!(out.faqOpenBefore === true && out.faqOpenAfter === false)) bad.push(`faq open toggled ${out.faqOpenBefore}->${out.faqOpenAfter} (want true->false)`);
+    if (!(out.bValue !== null && out.aValue === out.bValue)) bad.push(`cache: second mount re-fetched (${out.aValue} vs ${out.bValue}) — the shared cache must paint without a new request`);
+    if (!(out.cValue !== null && out.cValue !== out.bValue)) bad.push(`cache: no-cache mount did not refetch (${out.bValue} vs ${out.cValue})`);
+    if (!(out.dValue !== null && out.dValue !== out.cValue)) bad.push(`cache: cache-key did not open a fresh slot (${out.cValue} vs ${out.dValue})`);
+    if (out.eValue !== out.dValue) bad.push(`cache: same cache-key re-fetched (${out.dValue} vs ${out.eValue})`);
+    if (!(out.fValue !== null && out.fValue !== out.eValue)) bad.push(`cache: remoteInvalidate did not drop the entry (${out.eValue} vs ${out.fValue})`);
+    if (out.scaleInline !== "120px") bad.push(`scale-bar inline-size=${String(out.scaleInline)} (want "120px" from a unit-less 120)`);
+    if (out.copied !== "true" && out.copied !== "false") bad.push(`copy data-copied=${String(out.copied)} (want "true"/"false" after the write settles)`);
+    if (out.copyLabel !== "Copied" && out.copyLabel !== "Copy failed") bad.push(`copy label=${String(out.copyLabel)}`);
+    if (out.copyEvent.join() !== "npm i contour-ds") bad.push(`contour:copy detail=${JSON.stringify(out.copyEvent)} (want the copied command)`);
+    if (errs.length) bad.push(`page errors: ${errs.slice(0, 2).join(" | ")}`);
+    compared += 15;
+    if (bad.length)
+      fail(`ARIA parity, loader cache policy or copy confirmation broke (BY-25/43/47): ${bad.join(" | ")}`);
+    else
+      console.log("wc-contract: alert/field/faq ARIA, loader no-cache/cache-key/remoteInvalidate and copy confirmation all measured");
   }
 } finally {
   await browser.close();
