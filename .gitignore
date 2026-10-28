@@ -13,3 +13,5 @@ node_modules/
 tmp/
 __pycache__/
 *.pyc
+# Generated native token output
+build/
