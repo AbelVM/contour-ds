@@ -1238,22 +1238,37 @@ class ContourThreshold extends ContourBase {
   }
 define("contour-threshold", ContourThreshold);
 class ContourMetricsFull extends ContourBase {
+    static get observed() { return ["items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
+    static get properties() { return { items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-metrics");
-      if (!this.querySelector(".c-metrics__item")) {
-        const item = document.createElement("div");
-        item.className = "c-metrics__item";
-        const v = document.createElement("div");
-        v.className = "c-metrics__value";
-        v.textContent = "42";
-        const l = document.createElement("div");
-        l.className = "c-metrics__label";
-        l.textContent = "Metric";
-        item.appendChild(v);
-        item.appendChild(l);
-        this.appendChild(item);
+      wireStates(this);
+      loadRemote(this, "items");
+      if (renderStates(this, "metrics")) return;
+      const items = remoteData(this, "items");
+      // Drop previously generated items so re-render doesn't stack.
+      Array.from(this.querySelectorAll(".c-metrics__item")).forEach((n) => n.remove());
+      let parsed = null;
+      if (items) { try { parsed = JSON.parse(items); } catch (e) { parsed = null; } }
+      if (Array.isArray(parsed) && parsed.length) {
+        parsed.forEach((it) => {
+          const item = document.createElement("div");
+          item.className = "c-metrics__item";
+          const v = document.createElement("div");
+          v.className = "c-metrics__value";
+          v.textContent = (typeof it === "object" && it !== null) ? (it.value ?? it.v ?? "") : String(it);
+          const l = document.createElement("div");
+          l.className = "c-metrics__label";
+          l.textContent = (typeof it === "object" && it !== null) ? (it.label ?? it.l ?? "") : "";
+          item.appendChild(v);
+          item.appendChild(l);
+          this.appendChild(item);
+        });
+      } else if (!items) {
+        renderEmpty(this, "metrics");
       }
     }
+    enhance() { wireStates(this); }
   }
   define("contour-metrics", ContourMetricsFull);
 class ContourLegend extends ContourBase {
@@ -1753,16 +1768,20 @@ class ContourSparkline extends ContourBase {
   }
 define("contour-sparkline", ContourSparkline);
 class ContourChartGrid extends ContourBase {
-    static get observed() { return ["title"]; }
-    static get properties() { return { title: { attribute: "title" } }; }
+    static get observed() { return ["title", "series", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
+    static get properties() { return { title: { attribute: "title" }, series: { attribute: "series" } }; }
     render() {
       this.classList.add("c-chart-grid");
-      if (!this.querySelector(".c-chart")) {
-        const c = document.createElement("div");
-        c.className = "c-chart";
-        c.textContent = "Chart";
-        this.appendChild(c);
+      wireStates(this);
+      loadRemote(this, "series");
+      if (renderStates(this, "chart-grid")) return;
+      const title = this.getAttribute("title");
+      if (title) {
+        const t = this.ensure(".c-chart-grid__title", () => { const el = document.createElement("div"); el.className = "c-chart-grid__title"; return el; });
+        t.textContent = title;
       }
+      const series = remoteData(this, "series");
+      if (!series && !title) renderEmpty(this, "chart-grid");
     }
   }
   define("contour-chart-grid", ContourChartGrid);

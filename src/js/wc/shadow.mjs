@@ -157,12 +157,12 @@ connectedCallback() {
        // it had already handled.
        if (this.shadowRoot && !this._wiredSlotchange) {
          this._wiredSlotchange = true;
-         this.shadowRoot.addEventListener("slotchange", () => {
-           try { wcReset(this); this.enhance(this.shadowRoot);
-             wireTabs(this); wireSegmented(this); wireCombobox(this); wireTree(this);
-             wireMenu(this); wirePagination(this); wireCopy(this); wireRemovable(this);
-           } catch (e) { /* ignore */ }
-         });
+          this.shadowRoot.addEventListener("slotchange", () => {
+            try { this.enhance(this.shadowRoot);
+              wireTabs(this); wireSegmented(this); wireCombobox(this); wireTree(this);
+              wireMenu(this); wirePagination(this); wireCopy(this); wireRemovable(this);
+            } catch (e) { /* ignore */ }
+          });
        }
      }
     attributeChangedCallback() { this.applyMods(); }

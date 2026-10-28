@@ -630,8 +630,8 @@ class ContourSheet extends ContourBase {
   }
   define("contour-sheet", ContourSheet);
 class ContourToast extends ContourBase {
-    static get observed() { return ["message", "variant"]; }
-    static get properties() { return { message: { attribute: "message" }, variant: { attribute: "variant" } }; }
+    static get observed() { return ["message", "variant", "duration"]; }
+    static get properties() { return { message: { attribute: "message" }, variant: { attribute: "variant" }, duration: { attribute: "duration", type: Number } }; }
     render() {
       this.classList.add("c-toast");
       if (!this.hasAttribute("role")) this.setAttribute("role", "status");
@@ -642,9 +642,18 @@ class ContourToast extends ContourBase {
         this.textContent = message;
       }
       const variant = this.getAttribute("variant");
-      // Variant classes are not shipped in the CSS (BY3-C removed the dead
-      // c-toast--* modifiers), so do not generate a class the sheet cannot style.
       void variant;
+    }
+    enhance() {
+      if (this._wiredToast) return;
+      this._wiredToast = true;
+      const ms = (this.duration && this.duration > 0) ? this.duration : 1500;
+      const timer = setTimeout(() => {
+        if (!this.isConnected) return;
+        this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true }));
+        this.remove();
+      }, ms);
+      onDispose(this, () => clearTimeout(timer));
     }
   }
   define("contour-toast", ContourToast);

@@ -66,12 +66,31 @@ class ContourDashToolbar extends ContourBase {
   }
   define("contour-dash-toolbar", ContourDashToolbar);
 class ContourDashKpiRow extends ContourBase {
+    static get observed() { return ["items"]; }
+    static get properties() { return { items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-dash-kpi-row");
       this.setAttribute("role", "group");
-      if (!this.querySelector(".c-kpi")) {
+      // Drop previously generated kpis so re-render doesn't stack.
+      Array.from(this.querySelectorAll("contour-kpi")).forEach((n) => n.remove());
+      const items = this.getAttribute("items");
+      let parsed = null;
+      if (items) { try { parsed = JSON.parse(items); } catch (e) { parsed = null; } }
+      if (Array.isArray(parsed) && parsed.length) {
+        parsed.forEach((it) => {
+          const k = document.createElement("contour-kpi");
+          if (typeof it === "object" && it !== null) {
+            if (it.value !== undefined) k.setAttribute("value", String(it.value));
+            if (it.label !== undefined) k.setAttribute("label", String(it.label));
+          } else {
+            k.setAttribute("value", String(it));
+          }
+          this.appendChild(k);
+        });
+      } else if (!this.querySelector("contour-kpi")) {
+        // Fallback: keep a single placeholder kpi only when no items provided.
         const k = document.createElement("contour-kpi");
-        k.setAttribute("value", "42");
+        k.setAttribute("value", "0");
         k.setAttribute("label", "KPI");
         this.appendChild(k);
       }
