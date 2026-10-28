@@ -675,6 +675,8 @@ export function wirePagination(host) {
     wcEmit(host, "contour:page", { page });
     if (host.getAttribute("persist") === "storage" && host.id) {
       try { localStorage.setItem("contour-pagination:" + host.id, String(page)); } catch (e) {}
+    } else if (host.getAttribute("persist") === "url") {
+      try { const url = new URL(window.location.href); url.searchParams.set("c-pagination", String(page)); window.history.replaceState(null, "", url.toString()); } catch (e) {}
     }
   };
   wcListen(host, "click", (e) => {

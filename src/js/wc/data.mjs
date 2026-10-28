@@ -113,7 +113,7 @@ class ContourKpi extends ContourBase {
   }
 define("contour-kpi", ContourKpi);
 class ContourTable extends ContourBase {
-    static get observed() { return ["columns", "rows", "page", "page-size", "sort", "sort-dir", "virtual", "empty", "loading", "error", "retry", "skeleton"]; }
+    static get observed() { return ["columns", "rows", "page", "page-size", "sort", "sort-dir", "virtual", "empty", "loading", "error", "retry", "skeleton", "persist"]; }
     static get properties() { return { columns: { attribute: "columns" }, rows: { attribute: "rows" }, page: { attribute: "page", type: Number }, pageSize: { attribute: "page-size", type: Number } }; }
     _cellValue(cell) {
       if (cell === null || cell === undefined) return "";
@@ -297,7 +297,14 @@ class ContourTable extends ContourBase {
           const pageSize = pageSizeRaw !== null ? parseInt(pageSizeRaw, 10) : NaN;
           const usePaging = Number.isFinite(pageSize) && pageSize > 0;
           // Sync internal page state with external attribute changes.
-          const pageAttr = this.getAttribute("page");
+          let pageAttr = this.getAttribute("page");
+          if (this.getAttribute("persist") && this.id) {
+            const mode = this.getAttribute("persist");
+            let stored = null;
+            if (mode === "storage") { try { stored = localStorage.getItem("contour-table:" + this.id); } catch (e) {} }
+            else if (mode === "url") { try { stored = new URLSearchParams(window.location.search).get("c-table"); } catch (e) {} }
+            if (stored !== null) pageAttr = stored;
+          }
           if (this._pageInternal) {
             this._pageInternal = false;
             this._pageAttrLast = pageAttr;
@@ -491,6 +498,9 @@ class ContourTable extends ContourBase {
           this._pageInternal = true;
           this.requestRender();
           this.dispatchEvent(new CustomEvent("contour:page", { bubbles: true, composed: true, detail: { page } }));
+          const persist = this.getAttribute("persist");
+          if (persist === "storage" && this.id) { try { localStorage.setItem("contour-table:" + this.id, String(page)); } catch (e) {} }
+          else if (persist === "url") { try { const url = new URL(window.location.href); url.searchParams.set("c-table", String(page)); window.history.replaceState(null, "", url.toString()); } catch (e) {} }
         }
       });
       this.addEventListener("keydown", (e) => {

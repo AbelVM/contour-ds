@@ -479,6 +479,8 @@ class ContourPagination extends ContourBase {
       let currentAttr = this.getAttribute("current") || "1";
       if (this.getAttribute("persist") === "storage" && this.id) {
         try { const stored = localStorage.getItem("contour-pagination:" + this.id); if (stored !== null) currentAttr = stored; } catch (e) {}
+      } else if (this.getAttribute("persist") === "url") {
+        try { const v = new URLSearchParams(window.location.search).get("c-pagination"); if (v !== null) currentAttr = v; } catch (e) {}
       }
       const current = parseInt(currentAttr, "10") || 1;
       if (pages) {
