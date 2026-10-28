@@ -69,7 +69,9 @@
     "./contour-wc.esm.js": "./dist/contour-wc.esm.js",
     "./contour-wc.esm.min.js": "./dist/contour-wc.esm.min.js",
     "./wc/*": "./dist/wc/*",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./agent-rules": "./dist/agent-rules.json",
+    "./agent-rules.json": "./dist/agent-rules.json"
   },
   "sideEffects": [
     "*.css",
