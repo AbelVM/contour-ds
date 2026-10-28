@@ -466,7 +466,7 @@ class ContourBreadcrumb extends ContourBase {
   }
 define("contour-breadcrumb", ContourBreadcrumb);
 class ContourPagination extends ContourBase {
-    static get observed() { return ["pages", "current", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
+    static get observed() { return ["pages", "current", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "persist"]; }
     static get properties() { return { pages: { attribute: "pages" }, current: { attribute: "current" } }; }
     render() {
       this.classList.add("c-pagination");
@@ -476,7 +476,11 @@ class ContourPagination extends ContourBase {
       const pages = remoteData(this, "pages");
       // Drop previously generated links so a re-render cannot stack a second set.
       Array.from(this.querySelectorAll(".c-pagination__link")).forEach((n) => n.remove());
-      const current = parseInt(this.getAttribute("current") || "1", 10);
+      let currentAttr = this.getAttribute("current") || "1";
+      if (this.getAttribute("persist") === "storage" && this.id) {
+        try { const stored = localStorage.getItem("contour-pagination:" + this.id); if (stored !== null) currentAttr = stored; } catch (e) {}
+      }
+      const current = parseInt(currentAttr, "10") || 1;
       if (pages) {
         let count = parseInt(pages, 10);
         if (!Number.isFinite(count) || count < 1) {

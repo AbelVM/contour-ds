@@ -661,6 +661,9 @@ export function wirePagination(host) {
       else b.removeAttribute("aria-current");
     });
     wcEmit(host, "contour:page", { page });
+    if (host.getAttribute("persist") === "storage" && host.id) {
+      try { localStorage.setItem("contour-pagination:" + host.id, String(page)); } catch (e) {}
+    }
   };
   wcListen(host, "click", (e) => {
     const btn = wcClosest(host, e.target, ".c-pagination__link");
