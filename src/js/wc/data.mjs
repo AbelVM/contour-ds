@@ -816,8 +816,11 @@ const series = this.getAttribute("series");
         if (seriesCount === 0) return;
         if (this._activeSeries === undefined) this._activeSeries = 0;
         let next = this._activeSeries;
-        if (e.key === "ArrowRight" || e.key === "ArrowDown") next = Math.min(this._activeSeries + 1, seriesCount - 1);
-        else if (e.key === "ArrowLeft" || e.key === "ArrowUp") next = Math.max(this._activeSeries - 1, 0);
+        const rtl = (this.getAttribute("dir") || document.documentElement.getAttribute("dir") || "").toLowerCase() === "rtl";
+        if (e.key === "ArrowRight") next = rtl ? Math.max(this._activeSeries - 1, 0) : Math.min(this._activeSeries + 1, seriesCount - 1);
+        else if (e.key === "ArrowLeft") next = rtl ? Math.min(this._activeSeries + 1, seriesCount - 1) : Math.max(this._activeSeries - 1, 0);
+        else if (e.key === "ArrowDown") next = Math.min(this._activeSeries + 1, seriesCount - 1);
+        else if (e.key === "ArrowUp") next = Math.max(this._activeSeries - 1, 0);
         else if (e.key === "Home") next = 0;
         else if (e.key === "End") next = seriesCount - 1;
         else if (e.key === "Enter" || e.key === " ") {
@@ -1559,8 +1562,9 @@ class ContourHeatmap extends ContourBase {
         const list = cells();
         const idx = list.indexOf(cell);
         let next = -1;
-        if (e.key === "ArrowRight") next = Math.min(idx + 1, list.length - 1);
-        else if (e.key === "ArrowLeft") next = Math.max(idx - 1, 0);
+        const rtl = (this.getAttribute("dir") || document.documentElement.getAttribute("dir") || "").toLowerCase() === "rtl";
+        if (e.key === "ArrowRight") next = rtl ? Math.max(idx - 1, 0) : Math.min(idx + 1, list.length - 1);
+        else if (e.key === "ArrowLeft") next = rtl ? Math.min(idx + 1, list.length - 1) : Math.max(idx - 1, 0);
         else if (e.key === "ArrowDown") next = Math.min(idx + Math.ceil(Math.sqrt(list.length)), list.length - 1);
         else if (e.key === "ArrowUp") next = Math.max(idx - Math.ceil(Math.sqrt(list.length)), 0);
         else if (e.key === "Home") next = 0;

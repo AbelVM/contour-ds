@@ -126,6 +126,21 @@ const wcEmit = (host, name, detail) => {
  * The active tab is `[aria-selected="true"]`, which is the rule the sheet
  * paints, so no state class is ever written — and none is invented either.
  */
+// RTL awareness (BY2-A7): a horizontal control reverses its arrow keys in a
+// right-to-left context, so ArrowRight moves to the previous item and
+// ArrowLeft to the next. The direction is read from the host, then its
+// nearest ancestor, then the document — the same cascade the platform uses.
+function isRtl(host) {
+  let el = host;
+  while (el && el.nodeType === 1) {
+    const d = el.getAttribute && el.getAttribute("dir");
+    if (d) return d.toLowerCase() === "rtl";
+    el = el.parentElement;
+  }
+  try { return (document.documentElement.getAttribute("dir") || "").toLowerCase() === "rtl"; }
+  catch (e) { return false; }
+}
+
 export function wireTabs(host) {
   if (!wcClaim(host, "tabs")) return;
   for (const list of wcSelfOrAll(host, ".c-tabs__list, .c-code-tabs__list")) {
@@ -187,7 +202,10 @@ export function wireTabs(host) {
       const tabs = tabsOf();
       const index = tabs.indexOf(tab);
       if (index < 0) return;
-      const move = { ArrowRight: index + 1, ArrowLeft: index - 1, Home: 0, End: tabs.length - 1 };
+      const rtl = isRtl(host);
+      const move = rtl
+        ? { ArrowRight: index - 1, ArrowLeft: index + 1, Home: tabs.length - 1, End: 0 }
+        : { ArrowRight: index + 1, ArrowLeft: index - 1, Home: 0, End: tabs.length - 1 };
       if (!(e.key in move)) return;
       e.preventDefault();
       const next = tabs[(move[e.key] + tabs.length) % tabs.length];
@@ -307,8 +325,9 @@ export function wireSegmented(host) {
     const opts = wcGroup(host, seg, "button");
     const idx = opts.indexOf(btn);
     let next = -1;
-    if (e.key === "ArrowRight" || e.key === "ArrowDown") next = Math.min(idx + 1, opts.length - 1);
-    else if (e.key === "ArrowLeft" || e.key === "ArrowUp") next = Math.max(idx - 1, 0);
+    const rtl = isRtl(host);
+    if (e.key === "ArrowRight" || e.key === "ArrowDown") next = rtl ? Math.max(idx - 1, 0) : Math.min(idx + 1, opts.length - 1);
+    else if (e.key === "ArrowLeft" || e.key === "ArrowUp") next = rtl ? Math.min(idx + 1, opts.length - 1) : Math.max(idx - 1, 0);
     else if (e.key === "Home") next = 0;
     else if (e.key === "End") next = opts.length - 1;
     else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); activate(btn); return; }
@@ -655,8 +674,9 @@ export function wirePagination(host) {
     const links = wcAll(host, ".c-pagination__link");
     const idx = links.indexOf(btn);
     let next = -1;
-    if (e.key === "ArrowRight") next = Math.min(idx + 1, links.length - 1);
-    else if (e.key === "ArrowLeft") next = Math.max(idx - 1, 0);
+    const rtl = isRtl(host);
+    if (e.key === "ArrowRight") next = rtl ? Math.max(idx - 1, 0) : Math.min(idx + 1, links.length - 1);
+    else if (e.key === "ArrowLeft") next = rtl ? Math.min(idx + 1, links.length - 1) : Math.max(idx - 1, 0);
     else if (e.key === "Home") next = 0;
     else if (e.key === "End") next = links.length - 1;
     else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); activate(btn); return; }
