@@ -428,7 +428,7 @@ const mapChromeContract = {
   description: "Vendor-neutralisation contract for map chrome. A host re-keys a vendor control cluster onto Contour tokens.",
   contourTokens: { surface: "--color-surface-1", border: "--color-border", radius: "--radius-md", icon: "--color-text-muted", gap: "--space-3xs" },
   engines: {
-    maplibre: { controls: ["navigation","fullscreen","compass","geolocate","globe","terrain","scale","attribution","logo","layer-control"] },
+    maplibre: { controls: ["navigation","fullscreen","compass","geolocate","scale","attribution","logo","layer-control"] },
     mapbox: { controls: ["navigation","fullscreen","geolocate","scale","attribution","logo"] },
   },
 };
