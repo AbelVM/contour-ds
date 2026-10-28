@@ -44,20 +44,47 @@ class ContourDialog extends ContourBase {
     enhance() {
       if (this._wiredDialog) return;
       this._wiredDialog = true;
-      this.addEventListener("click", (e) => {
-        const btn = e.target && e.target.closest ? e.target.closest(".c-btn--icon") : null;
-        if (!btn || !this.contains(btn)) return;
+      // The open state is carried by the `open` attribute so CSS can target it
+      // and a caller can read host.open; it is written here and never observed,
+      // so changing it cannot re-enter the render (the shared list excludes it
+      // for exactly this reason).
+      this.show = () => {
+        if (this.hasAttribute("open")) return;
+        this._dialogLastFocus = document.activeElement;
+        this.setAttribute("open", "");
+        const dlg = this.querySelector("dialog") || (this.tagName === "DIALOG" ? this : null);
+        if (dlg && typeof dlg.showModal === "function") { try { dlg.showModal(); } catch (e) {} }
+        // Focus the close button or the first focusable, like the shadow twin.
+        const focusable = this.querySelector("button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])");
+        if (focusable) { try { focusable.focus(); } catch (e) {} }
+        this.dispatchEvent(new CustomEvent("contour:open", { bubbles: true, composed: true }));
+      };
+      this.close = () => {
+        const wasOpen = this.hasAttribute("open");
         const dlg = this.querySelector("dialog") || (this.tagName === "DIALOG" ? this : null);
         if (dlg && typeof dlg.close === "function") dlg.close();
-        this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true }));
-      });
-      // Close on Escape
-      this.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") {
-          const dlg = this.querySelector("dialog") || (this.tagName === "DIALOG" ? this : null);
-          if (dlg && typeof dlg.close === "function") dlg.close();
+        if (this.hasAttribute("open")) this.removeAttribute("open");
+        if (wasOpen) {
           this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true }));
+          const last = this._dialogLastFocus;
+          if (last && typeof last.focus === "function") { try { last.focus(); } catch (e) {} }
         }
+      };
+      this.focus = () => {
+        const focusable = this.querySelector("button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])");
+        if (focusable) { try { focusable.focus(); } catch (e) {} }
+        else { try { HTMLElement.prototype.focus.call(this); } catch (e) {} }
+      };
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest(".c-dialog__close") : null;
+        if (!btn || !this.contains(btn)) return;
+        this.close();
+      });
+      // Close on Escape, only while open: a dialog that is not open has no
+      // close to report, and an unconditional event is a claim the component
+      // cannot back (F-18).
+      this.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && this.hasAttribute("open")) this.close();
       });
     }
   }
@@ -404,11 +431,33 @@ class ContourAccordion extends ContourBase {
   }
 define("contour-accordion", ContourAccordion);
 class ContourDrawer extends ContourBase {
-    static get observed() { return ["body"]; }
-    static get properties() { return { body: { attribute: "body" } }; }
+    static get observed() { return ["title", "body"]; }
+    static get properties() { return { title: { attribute: "title" }, body: { attribute: "body" } }; }
     render() {
       this.classList.add("c-drawer");
       if (!this.hasAttribute("role")) this.setAttribute("role", "dialog");
+      const title = this.getAttribute("title");
+      let head = this.querySelector(".c-drawer__head");
+      if (title) {
+        if (!head) {
+          head = document.createElement("div");
+          head.className = "c-drawer__head";
+          const t = document.createElement("div");
+          t.className = "c-drawer__title";
+          head.appendChild(t);
+          const closeBtn = document.createElement("button");
+          closeBtn.className = "c-btn c-btn--icon c-btn--ghost c-drawer__close";
+          closeBtn.setAttribute("type", "button");
+          closeBtn.setAttribute("aria-label", "Close");
+          closeBtn.innerHTML = '<svg aria-hidden="true"><use href="#i-close" /></svg>';
+          head.appendChild(closeBtn);
+        }
+        const t = head.querySelector(".c-drawer__title");
+        if (t) t.textContent = title;
+        if (head.parentNode !== this) this.prepend(head);
+      } else if (head) {
+        head.remove();
+      }
       const body = this.getAttribute("body");
       const b = this.querySelector(".c-drawer__body");
       const authored = b ? Array.from(b.children) : [];
@@ -419,14 +468,59 @@ class ContourDrawer extends ContourBase {
         b.remove();
       }
     }
+    enhance() {
+      if (this._wiredDrawer) return;
+      this._wiredDrawer = true;
+      // Open state is the author's `.is-open` class (the sheet's own CSS keys
+      // off it); the close button removes it and reports a real close.
+      this.show = () => {
+        if (!this.classList.contains("is-open")) {
+          this.classList.add("is-open");
+          this.dispatchEvent(new CustomEvent("contour:open", { bubbles: true, composed: true }));
+        }
+      };
+      this.close = () => {
+        if (this.classList.contains("is-open")) {
+          this.classList.remove("is-open");
+          this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true }));
+        }
+      };
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest(".c-drawer__close") : null;
+        if (!btn || !this.contains(btn)) return;
+        this.close();
+      });
+    }
   }
   define("contour-drawer", ContourDrawer);
 class ContourSheet extends ContourBase {
-    static get observed() { return ["body"]; }
-    static get properties() { return { body: { attribute: "body" } }; }
+    static get observed() { return ["title", "body"]; }
+    static get properties() { return { title: { attribute: "title" }, body: { attribute: "body" } }; }
     render() {
       this.classList.add("c-sheet");
       if (!this.hasAttribute("role")) this.setAttribute("role", "dialog");
+      const title = this.getAttribute("title");
+      let head = this.querySelector(".c-sheet__head");
+      if (title) {
+        if (!head) {
+          head = document.createElement("div");
+          head.className = "c-sheet__head";
+          const t = document.createElement("div");
+          t.className = "c-sheet__title";
+          head.appendChild(t);
+          const closeBtn = document.createElement("button");
+          closeBtn.className = "c-btn c-btn--icon c-btn--ghost c-sheet__close";
+          closeBtn.setAttribute("type", "button");
+          closeBtn.setAttribute("aria-label", "Close");
+          closeBtn.innerHTML = '<svg aria-hidden="true"><use href="#i-close" /></svg>';
+          head.appendChild(closeBtn);
+        }
+        const t = head.querySelector(".c-sheet__title");
+        if (t) t.textContent = title;
+        if (head.parentNode !== this) this.prepend(head);
+      } else if (head) {
+        head.remove();
+      }
       const body = this.getAttribute("body");
       const b = this.querySelector(".c-sheet__body");
       const authored = b ? Array.from(b.children) : [];
@@ -436,6 +530,27 @@ class ContourSheet extends ContourBase {
       } else if (!body && b && !authored.length) {
         b.remove();
       }
+    }
+    enhance() {
+      if (this._wiredSheet) return;
+      this._wiredSheet = true;
+      this.show = () => {
+        if (!this.classList.contains("is-open")) {
+          this.classList.add("is-open");
+          this.dispatchEvent(new CustomEvent("contour:open", { bubbles: true, composed: true }));
+        }
+      };
+      this.close = () => {
+        if (this.classList.contains("is-open")) {
+          this.classList.remove("is-open");
+          this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true }));
+        }
+      };
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest(".c-sheet__close") : null;
+        if (!btn || !this.contains(btn)) return;
+        this.close();
+      });
     }
   }
   define("contour-sheet", ContourSheet);

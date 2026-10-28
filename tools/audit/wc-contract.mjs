@@ -1082,6 +1082,113 @@ try {
     else
       console.log(`wc-contract: state contract holds — one node per state, 404/malformed are errors not empties, no inline style on a state node, disconnect aborts, retry re-fetches (${out.ok.rows} ok rows, ${out.flakyAfter.rows} re-fetched rows)`);
   }
+
+  // ---- 13. dialog-family parity -------------------------------------------
+  //
+  // BY-19. The light dialog, drawer and sheet must expose show()/close() (the
+  // dialog also focus()), fire contour:open/contour:close exactly once per
+  // transition, and never fire contour:close for a close that did not happen
+  // (this was "the unconditional close event"; F-18). The shadow twin must
+  // expose the same methods and events — it previously listened for a native
+  // `show` event `<dialog>` never fires in this engine, so its events were dead
+  // (measured opened:0/closed:0), and after switching to beforetoggle an
+  // unguarded listener doubled every dispatch (measured open:2) until the
+  // _wired guard landed (open:1/close:1).
+  {
+    const p = await browser.newPage();
+    const errs = [];
+    p.on("pageerror", (e) => errs.push(String(e.message || e)));
+    await p.goto(`${origin}/unmin.html`, { waitUntil: "load" });
+    await p.waitForFunction(() => !!window.ContourElements, null, { timeout: 20000 });
+    const out = await p.evaluate(async () => {
+      const count = (host, name) => {
+        let n = 0;
+        host.addEventListener(name, () => { n += 1; });
+        return () => n;
+      };
+      const results = {};
+
+      // Light dialog: methods exist; close() when never opened is silent;
+      // show() opens + focuses the close button; close() fires once + clears.
+      const dlg = document.createElement("contour-dialog");
+      dlg.setAttribute("title", "Move layer");
+      dlg.textContent = "Body";
+      document.body.appendChild(dlg);
+      const dlgOpen = count(dlg, "contour:open");
+      const dlgClose = count(dlg, "contour:close");
+      const dlgMethods = ["show", "close", "focus"].map((m) => typeof dlg[m] === "function");
+      dlg.close(); // never opened — must be a non-event
+      const dlgSilent = dlgClose();
+      dlg.show();
+      const dlgOpened = dlgOpen();
+      const dlgHasOpen = dlg.hasAttribute("open");
+      const dlgFocusIn = document.activeElement === dlg.querySelector(".c-dialog__close");
+      dlg.close();
+      const dlgClosed = dlgClose();
+      const dlgCleared = !dlg.hasAttribute("open");
+      results.dialog = { dlgMethods, dlgSilent, dlgOpened, dlgHasOpen, dlgFocusIn, dlgClosed, dlgCleared };
+
+      // Drawer + sheet: title and close render; show/close events exactly once.
+      for (const [tag, selTitle, selClose] of [
+        ["contour-drawer", ".c-drawer__title", ".c-drawer__close"],
+        ["contour-sheet", ".c-sheet__title", ".c-sheet__close"],
+      ]) {
+        const el = document.createElement(tag);
+        el.setAttribute("title", "Drawer");
+        document.body.appendChild(el);
+        const open = count(el, "contour:open");
+        const close = count(el, "contour:close");
+        el.close(); // never opened — silent
+        const silent = close();
+        el.show();
+        const opened = open();
+        const isOpen = el.classList.contains("is-open");
+        el.close();
+        const closed = close();
+        results[tag] = {
+          title: el.querySelector(selTitle) ? el.querySelector(selTitle).textContent : null,
+          closeBtn: !!el.querySelector(selClose),
+          silent, opened, isOpen, closed,
+        };
+      }
+
+      // Shadow twin: same methods; show()/close() fire open/close exactly once.
+      const sw = document.createElement("contour-shadow-dialog");
+      sw.innerHTML = "<span slot=title>Title</span><p>Body</p>";
+      document.body.appendChild(sw);
+      const swMethods = ["show", "close"].map((m) => typeof sw[m] === "function");
+      const swOpen = count(sw, "contour:open");
+      const swClose = count(sw, "contour:close");
+      sw.show();
+      const swOpened = swOpen();
+      sw.close();
+      const swClosed = swClose();
+      results.shadow = { swMethods, swOpened, swClosed };
+
+      return results;
+    });
+    const bad = [];
+    const d = out.dialog;
+    if (!d.dlgMethods.every(Boolean)) bad.push("light dialog lacks show/close/focus methods");
+    if (d.dlgSilent !== 0) bad.push(`close() on a never-opened dialog dispatched contour:close ${d.dlgSilent} time(s) — the unconditional close event is back`);
+    if (d.dlgOpened !== 1 || !d.dlgHasOpen) bad.push(`show() dispatched contour:open ${d.dlgOpened} time(s), open attr ${d.dlgHasOpen}`);
+    if (!d.dlgFocusIn) bad.push("show() did not focus the dialog's own close button");
+    if (d.dlgClosed !== 1 || !d.dlgCleared) bad.push(`close() fired ${d.dlgClosed} contour:close, cleared ${d.dlgCleared}`);
+    for (const tag of ["contour-drawer", "contour-sheet"]) {
+      const r = out[tag];
+      if (r.title !== "Drawer" || !r.closeBtn) bad.push(`${tag} did not render its title/close`);
+      if (r.silent !== 0 || r.opened !== 1 || r.closed !== 1 || !r.isOpen) bad.push(`${tag} lifecycle: ${JSON.stringify(r)}`);
+    }
+    const s = out.shadow;
+    if (!s.swMethods.every(Boolean)) bad.push("shadow dialog lacks show/close methods");
+    if (s.swOpened !== 1 || s.swClosed !== 1) bad.push(`shadow dialog fired open ${s.swOpened}/close ${s.swClosed} — dead or doubled events`);
+    if (errs.length) bad.push(`page errors: ${errs.slice(0, 2).join(" | ")}`);
+    compared += 21;
+    if (bad.length)
+      fail(`dialog-family parity broke: ${bad.join(" | ")}`);
+    else
+      console.log("wc-contract: dialog family exposes the same methods/events in light and shadow, and never reports an unconditional close");
+  }
 } finally {
   await browser.close();
   server.close();

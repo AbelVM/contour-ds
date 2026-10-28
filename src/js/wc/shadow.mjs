@@ -302,23 +302,36 @@ shadow("contour-shadow-filter-pill", `<span class="c-filter-pill" part="filter-p
     })();
     enhance(root) {
       super.enhance(root);
+      // The base constructor AND connectedCallback both call enhance; the base's
+      // own edits are idempotent by guard, so this override must guard as well
+      // or one native beforetoggle dispatches contour:open/close twice (measured
+      // open:2/close:2 for a single show()/close(), shadow-dialog-events probe).
+      if (this._wiredShadowDialog) return;
+      this._wiredShadowDialog = true;
       const dlg = root.querySelector("dialog");
       const close = root.querySelector('[part="close"]');
       if (close) close.addEventListener("click", () => dlg?.close());
       if (dlg) {
         let lastFocus = null;
-        dlg.addEventListener("show", () => {
-          lastFocus = document.activeElement;
-          this.dispatchEvent(new CustomEvent("contour:open", { bubbles: true, composed: true }));
-          // Focus the close button or first focusable element
-          const focusable = dlg.querySelector("button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])");
-          if (focusable) try { focusable.focus(); } catch (e) {}
-        });
-        dlg.addEventListener("close", () => {
-          this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true }));
-          // Restore focus
-          if (lastFocus && typeof lastFocus.focus === "function") {
-            try { lastFocus.focus(); } catch (e) {}
+        // `<dialog>` fires no `show` or `close` events in this engine (measured
+        // bare-dialog probe, 2026-10-28): the only open/close signal is
+        // `beforetoggle` with a `newState`. The earlier `show`/`close` listeners
+        // were dead code, so the shadow twin's contour:open/contour:close never
+        // fired while the light twin's did — a parity break the dialog-family
+        // probe caught at opened:0, closed:0.
+        dlg.addEventListener("beforetoggle", (e) => {
+          if (e.newState === "open") {
+            lastFocus = document.activeElement;
+            this.dispatchEvent(new CustomEvent("contour:open", { bubbles: true, composed: true }));
+            // Focus the close button or first focusable element
+            const focusable = dlg.querySelector("button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])");
+            if (focusable) try { focusable.focus(); } catch (e) {}
+          } else if (e.newState === "closed") {
+            this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true }));
+            // Restore focus
+            if (lastFocus && typeof lastFocus.focus === "function") {
+              try { lastFocus.focus(); } catch (e) {}
+            }
           }
         });
         // Focus trap: keep Tab within the dialog

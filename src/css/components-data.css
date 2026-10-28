@@ -1137,6 +1137,19 @@
     color: var(--color-text-strong);
   }
 
+  .c-drawer__close {
+    margin-inline-start: auto;
+    color: var(--color-text-subtle);
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: var(--radius-xs);
+  }
+
+  .c-drawer__close:hover {
+    color: var(--color-text-strong);
+    background: var(--color-surface-3);
+  }
+
   .c-drawer__body {
     flex: 1;
     overflow-y: auto;
