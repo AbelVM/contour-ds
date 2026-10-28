@@ -98,6 +98,20 @@ if (!eventsBlock) {
     fail(`manifest names nothing references: ${dead.slice(0, 10).join(", ")} — the vocabulary drifted from the layer that claims to own it`);
 }
 
+// 9. §23 event table must agree with CONTOUR_EVENTS (BY3-I5)
+const indexHtmlPath = join(ROOT, "index.html");
+if (existsSync(indexHtmlPath) && eventsBlock) {
+  const html = readFileSync(indexHtmlPath, "utf-8");
+  const tableKeys = new Set([...html.matchAll(/<tr><td><code>(contour:[a-z-]+)<\/code><\/td>/g)].map((m) => m[1]));
+  const manifestKeys = new Set([...eventsBlock[1].matchAll(/"contour:([a-z-]+)"/g)].map((m) => "contour:" + m[1]));
+  const missingInTable = [...manifestKeys].filter((n) => !tableKeys.has(n)).sort();
+  const extraInTable = [...tableKeys].filter((n) => !manifestKeys.has(n)).sort();
+  if (missingInTable.length)
+    fail(`§23 event table is missing manifest entries: ${missingInTable.slice(0, 10).join(", ")} — add the rows or remove them from CONTOUR_EVENTS`);
+  if (extraInTable.length)
+    fail(`§23 event table names events not in the manifest: ${extraInTable.slice(0, 10).join(", ")} — add them to CONTOUR_EVENTS or remove the rows`);
+}
+
 if (errors.length) {
   console.error("check-wc: FAIL\n  " + errors.join("\n  "));
   process.exit(1);
