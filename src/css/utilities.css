@@ -487,6 +487,12 @@
     cursor: not-allowed;
   }
 
+  .c-switch__input:disabled,
+  .c-check__input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
   .c-switch__input:disabled + .c-switch__track,
   .c-check__input:disabled + .c-check__box {
     opacity: 0.5;
