@@ -14,7 +14,7 @@ engines, pedestrian simulators, geospatial dashboards). It ships three
 surfaces: a **landing page**, a **documentation site** and a **technical
 dashboard**.
 
-- Dark and light themes, <!-- ds:components -->163<!-- /ds:components --> components, <!-- ds:tokens -->290<!-- /ds:tokens --> design tokens.
+- Dark and light themes, <!-- ds:components -->163<!-- /ds:components --> components, <!-- ds:tokens -->291<!-- /ds:tokens --> design tokens.
 - **Zero runtime dependencies, no build step.** `src/css/ds.css` is the whole
   system and can be linked straight off a disk.
 - The style guide (`index.html`) is the documentation *and* the test suite.
@@ -299,6 +299,8 @@ a component's `render()`.
   `.c-stack` are NOT the same rule — they gap by different tokens — so never
   alias one onto the other; the gate pins both tokens for that reason.
 - Never rely on a descendant selector to reach into another component.
+- Press language: the single active model is `translateY(1px)` on `:active` (a press moves the control down 1 px). Hover may lift (`translateY(-1px)`); the pressed state always presses down. Documented here so a new interactive control does not invent a third model.
+- Containment and content-visibility: use `contain: layout` (or `contain: content`) on a component's root when its subtree is self-contained and its size is stable, so a change inside cannot reflow ancestors; use `contain: strict` only when the box has an explicit size. Use `content-visibility: auto` on long, off-screen lists (tables, activity feeds, specimen grids) with a `contain-intrinsic-size` estimate, so off-screen rows skip layout/paint; never put it on a `.section` or any element that participates in anchor navigation (it collapses the scroll target). Both are enhancement-only: a browser that ignores them still renders correctly.
 - Tokens are defined in `src/css/tokens.css` and consumed as
   `var(--color-…)`. A raw hex value in a component is a bug.
 - `light-dark()` for anything that changes between themes.

@@ -6,7 +6,7 @@ license: MIT
 repository: https://github.com/abelvm/contour-ds
 
 tokens:
-  count: 290
+  count: 291
   layers: [primitives, semantic, component, utility]
   themes: [light, dark]
   theme_mechanism: light-dark() + [data-theme]
@@ -52,6 +52,10 @@ browser_support:
   has: "Widely available"
   container_queries: "Widely available"
   anchor_positioning: "Newly available 2026-01 (parts vary); used behind @supports for tooltips/menus"
+  starting_style: "Newly available 2024-08-06, widely available 2027-02-06; used for open/close transitions on command + drawer (enhancement-only, reduced-motion gated by the global kill-switch)"
+  view_transitions_same_document: "Baseline 2025-10-14; used optionally for tab swaps (feature-detected, reduced-motion gated)"
+  scroll_driven_animations: "Not widely available (Chrome/Edge full, Safari partial, Firefox in development) — deferred"
+  light_dark_colour_note: "Do not 'fix' the 2026-11-13 date; it is arithmetically correct per the re-derivation rule (wide = newly + 30 months)"
 
 install:
   production: "dist/contour.css"

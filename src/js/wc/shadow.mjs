@@ -55,7 +55,6 @@ import { define, MODS, REGISTERED, CONTOUR_EVENTS, contourId } from './core.mjs'
       if (sheets.length) root.adoptedStyleSheets = sheets;
       root.appendChild(this.constructor.contourTemplate.content.cloneNode(true));
       this._shadowBase = root.firstElementChild ? root.firstElementChild.className : "";
-      this.enhance(root);
     }
     // Subclasses with behaviour beyond the template override this.
     enhance(root) {
@@ -78,6 +77,11 @@ import { define, MODS, REGISTERED, CONTOUR_EVENTS, contourId } from './core.mjs'
       });
       // ARIA: ensure live regions have proper roles
       root.querySelectorAll("[data-live]").forEach((el) => {
+        if (!el.hasAttribute("role")) el.setAttribute("role", "status");
+        if (!el.hasAttribute("aria-live")) el.setAttribute("aria-live", "polite");
+      });
+      // ARIA: spinners and toasts get live region roles (opt-in: an author-set role wins)
+      root.querySelectorAll(".c-spinner").forEach((el) => {
         if (!el.hasAttribute("role")) el.setAttribute("role", "status");
         if (!el.hasAttribute("aria-live")) el.setAttribute("aria-live", "polite");
       });
@@ -132,18 +136,18 @@ import { define, MODS, REGISTERED, CONTOUR_EVENTS, contourId } from './core.mjs'
       // tabs reported 2 such nodes outside the root and 0 inside it. The shared
       // module looks in both trees and dispatches on the host, the only node an
       // outside listener can reach across a shadow boundary.
-      wireTabs(this);
-      wireSegmented(this);
-      wireCombobox(this);
-      wireTree(this);
-      wireMenu(this);
-      wirePagination(this);
-      wireCopy(this);
-      wireRemovable(this);
+      // Behaviour wiring lives in connectedCallback (slotted content present)
+      // and is re-run on slotchange; see connectedCallback.
     }
 connectedCallback() {
        this.applyMods();
        try { this.enhance(this.shadowRoot); } catch (e) { /* ignore */ }
+       // Wire behaviours now that slotted content is present.
+       try {
+         wcReset(this);
+         wireTabs(this); wireSegmented(this); wireCombobox(this); wireTree(this);
+         wireMenu(this); wirePagination(this); wireCopy(this); wireRemovable(this);
+       } catch (e) { /* ignore */ }
        // Re-wire behaviour when slotted content changes. Reset the wired set so
        // behaviours can claim again now that slotted nodes exist.
        //
@@ -154,7 +158,10 @@ connectedCallback() {
        if (this.shadowRoot && !this._wiredSlotchange) {
          this._wiredSlotchange = true;
          this.shadowRoot.addEventListener("slotchange", () => {
-           try { wcReset(this); this.enhance(this.shadowRoot); } catch (e) { /* ignore */ }
+           try { wcReset(this); this.enhance(this.shadowRoot);
+             wireTabs(this); wireSegmented(this); wireCombobox(this); wireTree(this);
+             wireMenu(this); wirePagination(this); wireCopy(this); wireRemovable(this);
+           } catch (e) { /* ignore */ }
          });
        }
      }
@@ -248,7 +255,7 @@ connectedCallback() {
   // Structured templates: more than one slot, or a class that is not the block's
   // own, so the markup is the definition and is written out.
   shadow("contour-shadow-callout", `<div class="c-callout" part="callout"><div class="c-callout__title" part="title"><slot name="title"></slot></div><div class="c-callout__body" part="body"><slot></slot></div></div>`);
-  shadow("contour-shadow-empty", `<div class="c-empty" part="empty"><div class="c-empty__title" part="title"><slot name="title"></slot></div><div class="c-empty__text" part="body"><slot></slot></div><div part="action"><slot name="action"></slot></div></div>`);
+  shadow("contour-shadow-empty", `<div class="c-empty" part="empty"><div class="c-empty__title" part="title"><slot name="title"></slot></div><div class="c-empty__text" part="body"><slot></slot></div><div><slot name="action"></slot></div></div>`);
   shadow("contour-shadow-feature", `<div class="c-feature" part="feature"><span class="c-feature__index" part="index"><slot name="index"></slot></span><div class="c-feature__title" part="title"><slot name="title"></slot></div><div class="c-feature__body" part="body"><slot></slot></div></div>`);
   shadow("contour-shadow-kpi", `<div class="c-kpi" part="kpi"><div class="c-kpi__value" part="value"><slot name="value"></slot></div><div class="c-kpi__label" part="label"><slot name="label"></slot></div><div class="c-kpi__foot" part="foot"><slot name="delta"></slot><slot name="note"></slot></div></div>`);
   shadow("contour-shadow-stat", `<div class="c-stat" part="stat"><div class="c-stat__value" part="value"><slot name="value"></slot></div><div class="c-stat__label" part="label"><slot name="label"></slot></div><div class="c-stat__delta" part="delta"><slot name="delta"></slot></div></div>`);
@@ -264,22 +271,22 @@ connectedCallback() {
   shadow("contour-shadow-brand", `<a class="c-brand" part="brand"><span class="c-mark" part="mark"><slot name="mark"></slot></span><span class="c-brand__name" part="name"><slot name="name"></slot></span></a>`);
   shadow("contour-shadow-section-head", `<div class="c-section-head" part="head"><h2 class="c-section-head__title" part="title"><slot name="title"></slot></h2><p class="c-section-head__desc" part="desc"><slot name="desc"></slot></p></div>`);
   shadow("contour-shadow-loading", `<div class="c-loading" part="loading"><span class="c-spinner" part="spinner"></span><slot></slot></div>`);
-   shadow("contour-shadow-tabs", `<div class="c-tabs" part="tabs"><div class="c-tabs__list" part="list" role="tablist"><slot name="tabs"></slot></div><div part="panels"><slot></slot></div></div>`);
-  shadow("contour-shadow-breadcrumb", `<nav class="c-breadcrumb" part="breadcrumb" aria-label="Breadcrumb"><ol part="list"><slot></slot></ol></nav>`);
+   shadow("contour-shadow-tabs", `<div class="c-tabs" part="tabs"><div class="c-tabs__list" part="list" role="tablist"><slot name="tabs"></slot></div><div><slot></slot></div></div>`);
+  shadow("contour-shadow-breadcrumb", `<nav class="c-breadcrumb" part="breadcrumb" aria-label="Breadcrumb"><ol><slot></slot></ol></nav>`);
   shadow("contour-shadow-menu", `<div class="c-menu" part="menu" role="menu"><slot></slot></div>`);
   shadow("contour-shadow-combobox", `<div class="c-combobox" part="combobox"><input class="c-combobox__input" part="input" type="text" /><ul class="c-combobox__list" part="list" hidden><slot></slot></ul></div>`);
-  shadow("contour-shadow-table", `<div class="c-table-wrap" part="wrap"><table class="c-table" part="table"><thead part="head"><slot name="head"></slot></thead><tbody part="body"><slot></slot></tbody></table></div>`);
+  shadow("contour-shadow-table", `<div class="c-table-wrap" part="wrap"><table class="c-table" part="table"><thead><slot name="head"></slot></thead><tbody><slot></slot></tbody></table></div>`);
   shadow("contour-shadow-chart", `<div class="c-chart" part="chart"><div class="c-chart__plot" part="plot"><slot></slot></div></div>`);
   shadow("contour-shadow-bivariate", `<div class="c-bivariate" part="bivariate"><div class="c-bivariate__matrix" part="matrix"><slot></slot></div></div>`);
-  shadow("contour-shadow-expandable", `<details class="c-expandable" part="expandable"><summary part="summary"><slot name="summary"></slot></summary><div class="c-expandable__body" part="body"><slot></slot></div></details>`);
-  shadow("contour-shadow-disclosure", `<details class="c-disclosure" part="disclosure"><summary part="summary"><slot name="summary"></slot></summary><div class="c-disclosure__body" part="body"><slot></slot></div></details>`);
+  shadow("contour-shadow-expandable", `<details class="c-expandable" part="expandable"><summary class="c-expandable__summary"><slot name="summary"></slot></summary><div class="c-expandable__body" part="body"><slot></slot></div></details>`);
+  shadow("contour-shadow-disclosure", `<details class="c-disclosure" part="disclosure"><summary><slot name="summary"></slot></summary><div class="c-disclosure__body" part="body"><slot></slot></div></details>`);
   shadow("contour-shadow-faq", `<div class="c-faq" part="faq"><div class="c-faq__question" part="question"><slot name="question"></slot></div><div class="c-faq__answer" part="answer"><slot name="answer"></slot></div></div>`);
-   shadow("contour-shadow-code-tabs", `<div class="c-code-tabs" part="code-tabs"><div class="c-code-tabs__list" part="list" role="tablist"><slot name="tabs"></slot></div><div part="panels"><slot></slot></div></div>`);
+   shadow("contour-shadow-code-tabs", `<div class="c-code-tabs" part="code-tabs"><div class="c-code-tabs__list" part="list" role="tablist"><slot name="tabs"></slot></div><div><slot></slot></div></div>`);
   shadow("contour-shadow-header", `<header class="c-header" part="header"><div class="container c-header__inner" part="inner"><a class="c-brand" part="brand"><slot name="brand"></slot></a><nav class="c-header__nav" part="nav"><slot name="nav"></slot></nav><div class="c-header__actions" part="actions"><slot name="actions"></slot></div></div></header>`);
   shadow("contour-shadow-footer", `<footer class="c-footer" part="footer"><div class="container c-footer__grid" part="grid"><div class="c-footer__brand" part="brand"><slot name="brand"></slot></div><div class="c-footer__links" part="links"><slot name="links"></slot></div></div></footer>`);
   shadow("contour-shadow-container", `<div class="container" part="container"><slot></slot></div>`);
   shadow("contour-shadow-input", `<input class="c-input" part="input" />`);
-  shadow("contour-shadow-spinner", `<span class="c-spinner" part="spinner" role="status" aria-label="Loading"></span>`);
+  shadow("contour-shadow-spinner", `<span class="c-spinner" part="spinner" aria-label="Loading"></span>`);
   shadow("contour-shadow-textarea", `<textarea class="c-textarea" part="textarea"></textarea>`);
   shadow("contour-shadow-code", `<pre class="c-code" part="code"><code><slot></slot></code><button class="c-code__copy" part="copy" type="button">Copy</button></pre>`);
   // (folded in from the hand-written component that used to carry its own copy of the sheet logic)

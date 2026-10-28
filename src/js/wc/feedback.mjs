@@ -198,7 +198,7 @@ class ContourDisclosure extends ContourBase {
         const details = this.ensure("details", () => {
           const d = document.createElement("details");
           const summ = document.createElement("summary");
-          summ.className = "c-disclosure__summary";
+          summ.className = "c-expandable__summary";
           if (icon) {
             const ic = document.createElement("span");
             ic.className = "c-disclosure__icon";
@@ -606,8 +606,9 @@ class ContourToast extends ContourBase {
         this.textContent = message;
       }
       const variant = this.getAttribute("variant");
-      Array.from(this.classList).forEach((c) => { if (c.startsWith("c-toast--")) this.classList.remove(c); });
-      if (variant) this.classList.add("c-toast--" + variant);
+      // Variant classes are not shipped in the CSS (BY3-C removed the dead
+      // c-toast--* modifiers), so do not generate a class the sheet cannot style.
+      void variant;
     }
   }
   define("contour-toast", ContourToast);
@@ -640,7 +641,7 @@ class ContourExpandable extends ContourBase {
         const details = this.ensure("details", () => {
           const d = document.createElement("details");
           const summ = document.createElement("summary");
-          summ.className = "c-disclosure__summary";
+          summ.className = "c-expandable__summary";
           summ.textContent = summary;
           d.appendChild(summ);
           const content = document.createElement("div");

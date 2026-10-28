@@ -1,9 +1,5 @@
-/**
- * Contour Design System — TypeScript definitions
- * Generated from src/css. Do not edit by hand.
- */
+/** Contour Design System — TypeScript definitions. Generated. */
 
-/** All component class names shipped by Contour. */
 export type ContourComponent =
   | "c-accordion"
   | "c-activity"
@@ -170,7 +166,6 @@ export type ContourComponent =
   | "c-version-banner"
 ;
 
-/** All design tokens declared by Contour. */
 export type ContourToken =
   | "--basalt-50"
   | "--basalt-100"
@@ -302,6 +297,7 @@ export type ContourToken =
   | "--ease-out-expo"
   | "--ease-in-out"
   | "--ease-exit"
+  | "--ease-linear"
   | "--container-sm"
   | "--container-md"
   | "--container-xl"
@@ -464,7 +460,6 @@ export type ContourToken =
   | "--gradient-rule"
 ;
 
-/** The Contour JavaScript API (window.Contour). */
 export interface ContourAPI {
   __loaded: true;
   version: string;
@@ -472,60 +467,452 @@ export interface ContourAPI {
   setScheme: (scheme: 'dark' | 'light') => void;
   scrollTo: (id: string | HTMLElement) => void;
   copy: (text: string) => Promise<void>;
-  chart: {
-    scale: (domain: [number, number], range: [number, number]) => (v: number) => number;
-    ticks: (min: number, max: number, count: number) => number[];
-    datum: (x: number, y: number) => { x: number; y: number };
-  };
-  commands: {
-    register: (cmd: { title: string; hint?: string; icon?: string; shortcut?: string; run: () => void }) => void;
-    list: () => Array<{ title: string; hint: string; icon: string; shortcut: string | null }>; 
-  };
+  chart: { scale: (d: [number, number], r: [number, number]) => (v: number) => number; ticks: (min: number, max: number, count: number) => number[]; };
+  commands: { register: (cmd: { title: string; hint?: string; icon?: string; shortcut?: string; run: () => void }) => void; list: () => Array<{ title: string; hint: string; icon: string; shortcut: string | null }>; };
 }
+
+declare global { interface Window { Contour: ContourAPI; } }
+
+/**
+ * Common attributes every Contour element may carry. Reflected to the DOM
+ * as attributes; setting them on the instance updates the element.
+ */
+export interface ContourProps {
+  action?: string | null;
+  actions?: string | null;
+  after?: string | null;
+  anchor?: string | null;
+  answer?: string | null;
+  area?: string | null;
+  article?: string | null;
+  attribution?: string | null;
+  attribution-mark?: string | null;
+  axis?: string | null;
+  axis-x?: string | null;
+  axis-y?: string | null;
+  before?: string | null;
+  body?: string | null;
+  brand?: string | null;
+  canvas?: string | null;
+  cells?: string | null;
+  center?: string | null;
+  chrome?: string | null;
+  closable?: string | null;
+  color?: string | null;
+  cols?: string | null;
+  columns?: string | null;
+  command?: string | null;
+  controls?: string | null;
+  copyable?: string | null;
+  count?: string | null;
+  current?: string | null;
+  date?: string | null;
+  delta?: string | null;
+  demo?: string | null;
+  desc?: string | null;
+  direction?: string | null;
+  divider?: string | null;
+  do?: string | null;
+  dont?: string | null;
+  dot?: string | null;
+  empty?: string | null;
+  error?: string | null;
+  hint?: string | null;
+  href?: string | null;
+  icon?: string | null;
+  index?: string | null;
+  instrument?: string | null;
+  items?: string | null;
+  key?: string | null;
+  label?: string | null;
+  lede?: string | null;
+  legend?: string | null;
+  line?: string | null;
+  links?: string | null;
+  live?: string | null;
+  max?: string | null;
+  media?: string | null;
+  message?: string | null;
+  method?: string | null;
+  min?: string | null;
+  name?: string | null;
+  needle?: string | null;
+  next?: string | null;
+  no?: string | null;
+  nodes?: string | null;
+  norm?: string | null;
+  note?: string | null;
+  options?: string | null;
+  pages?: string | null;
+  placeholder?: string | null;
+  point?: string | null;
+  points?: string | null;
+  prev?: string | null;
+  prompt?: string | null;
+  question?: string | null;
+  quote?: string | null;
+  ramp?: string | null;
+  removable?: string | null;
+  required?: string | null;
+  reverse?: string | null;
+  rings?: string | null;
+  rows?: string | null;
+  scale?: string | null;
+  separator?: string | null;
+  series?: string | null;
+  shortcut?: string | null;
+  size?: string | null;
+  state?: string | null;
+  status?: string | null;
+  steps?: string | null;
+  subtitle?: string | null;
+  summary?: string | null;
+  tabs?: string | null;
+  tag?: string | null;
+  text?: string | null;
+  title?: string | null;
+  type?: string | null;
+  unit?: string | null;
+  value?: string | null;
+  variant?: string | null;
+  viewport?: string | null;
+  yes?: string | null;
+}
+
+/**
+ * A Contour custom element, light-DOM wrapper or shadow wrapper.
+ * A wrapper's styling contract is its `part` list; every interaction
+ * announces itself as a bubbling `contour:*` CustomEvent dispatched on the
+ * host, so one listener serves both layers and slotted content alike.
+ */
+export interface ContourElement extends HTMLElement, ContourProps {}
+
 
 declare global {
-  interface Window {
-    Contour: ContourAPI;
+  interface HTMLElementTagNameMap {
+    "contour-accordion": ContourElement;
+    "contour-activity": ContourElement;
+    "contour-advanced": ContourElement;
+    "contour-affordance": ContourElement;
+    "contour-affordances": ContourElement;
+    "contour-alert": ContourElement;
+    "contour-anchor": ContourElement;
+    "contour-app": ContourElement;
+    "contour-app-body": ContourElement;
+    "contour-avatar": ContourElement;
+    "contour-badge": ContourElement;
+    "contour-bivariate": ContourElement;
+    "contour-box": ContourElement;
+    "contour-brand": ContourElement;
+    "contour-breadcrumb": ContourElement;
+    "contour-btn": ContourElement;
+    "contour-btn-group": ContourElement;
+    "contour-callout": ContourElement;
+    "contour-card": ContourElement;
+    "contour-catchment": ContourElement;
+    "contour-chart": ContourElement;
+    "contour-chart-grid": ContourElement;
+    "contour-check": ContourElement;
+    "contour-chip": ContourElement;
+    "contour-cluster": ContourElement;
+    "contour-code": ContourElement;
+    "contour-code-tabs": ContourElement;
+    "contour-combobox": ContourElement;
+    "contour-command": ContourElement;
+    "contour-compare": ContourElement;
+    "contour-comparison": ContourElement;
+    "contour-compass": ContourElement;
+    "contour-container": ContourElement;
+    "contour-contour-plot": ContourElement;
+    "contour-coordinate": ContourElement;
+    "contour-cta": ContourElement;
+    "contour-dash-freshness": ContourElement;
+    "contour-dash-kpi-row": ContourElement;
+    "contour-dash-shell": ContourElement;
+    "contour-dash-toolbar": ContourElement;
+    "contour-datamark": ContourElement;
+    "contour-delta": ContourElement;
+    "contour-destructive-hint": ContourElement;
+    "contour-dialog": ContourElement;
+    "contour-diff": ContourElement;
+    "contour-disclosure": ContourElement;
+    "contour-do-dont": ContourElement;
+    "contour-docs-nav": ContourElement;
+    "contour-docs-shell": ContourElement;
+    "contour-dot": ContourElement;
+    "contour-drag-handle": ContourElement;
+    "contour-draggable": ContourElement;
+    "contour-drawer": ContourElement;
+    "contour-drop-indicator": ContourElement;
+    "contour-drop-zone": ContourElement;
+    "contour-elevation": ContourElement;
+    "contour-empty": ContourElement;
+    "contour-expandable": ContourElement;
+    "contour-faq": ContourElement;
+    "contour-feature": ContourElement;
+    "contour-field": ContourElement;
+    "contour-filter-bar": ContourElement;
+    "contour-filter-pill": ContourElement;
+    "contour-flag": ContourElement;
+    "contour-flow-map": ContourElement;
+    "contour-footer": ContourElement;
+    "contour-header": ContourElement;
+    "contour-heatmap": ContourElement;
+    "contour-hexbin": ContourElement;
+    "contour-icon-badge": ContourElement;
+    "contour-input": ContourElement;
+    "contour-input-group": ContourElement;
+    "contour-install": ContourElement;
+    "contour-instrument": ContourElement;
+    "contour-isochrone": ContourElement;
+    "contour-kbd": ContourElement;
+    "contour-kpi": ContourElement;
+    "contour-landing-features": ContourElement;
+    "contour-landing-hero": ContourElement;
+    "contour-layer-panel": ContourElement;
+    "contour-layer-switch": ContourElement;
+    "contour-legend": ContourElement;
+    "contour-link": ContourElement;
+    "contour-linkish": ContourElement;
+    "contour-live-badge": ContourElement;
+    "contour-loading": ContourElement;
+    "contour-logos": ContourElement;
+    "contour-map-area": ContourElement;
+    "contour-map-footer": ContourElement;
+    "contour-map-panel": ContourElement;
+    "contour-map-slot": ContourElement;
+    "contour-mark": ContourElement;
+    "contour-measure": ContourElement;
+    "contour-menu": ContourElement;
+    "contour-meter": ContourElement;
+    "contour-metrics": ContourElement;
+    "contour-minimap": ContourElement;
+    "contour-pager": ContourElement;
+    "contour-pagination": ContourElement;
+    "contour-panel": ContourElement;
+    "contour-pill": ContourElement;
+    "contour-plate": ContourElement;
+    "contour-pressable": ContourElement;
+    "contour-price": ContourElement;
+    "contour-pricing": ContourElement;
+    "contour-progress": ContourElement;
+    "contour-prose": ContourElement;
+    "contour-pullquote": ContourElement;
+    "contour-radio": ContourElement;
+    "contour-radio-list": ContourElement;
+    "contour-range": ContourElement;
+    "contour-range-scale": ContourElement;
+    "contour-readout": ContourElement;
+    "contour-recipe": ContourElement;
+    "contour-reserved": ContourElement;
+    "contour-resizable": ContourElement;
+    "contour-resize-handle": ContourElement;
+    "contour-row": ContourElement;
+    "contour-row-action": ContourElement;
+    "contour-scale-bar": ContourElement;
+    "contour-scheme-toggle": ContourElement;
+    "contour-scrim": ContourElement;
+    "contour-scroll-area": ContourElement;
+    "contour-search-trigger": ContourElement;
+    "contour-section-head": ContourElement;
+    "contour-segmented": ContourElement;
+    "contour-select": ContourElement;
+    "contour-shadow-accordion": ContourElement;
+    "contour-shadow-activity": ContourElement;
+    "contour-shadow-advanced": ContourElement;
+    "contour-shadow-affordance": ContourElement;
+    "contour-shadow-affordances": ContourElement;
+    "contour-shadow-alert": ContourElement;
+    "contour-shadow-anchor": ContourElement;
+    "contour-shadow-app": ContourElement;
+    "contour-shadow-app-body": ContourElement;
+    "contour-shadow-avatar": ContourElement;
+    "contour-shadow-badge": ContourElement;
+    "contour-shadow-bivariate": ContourElement;
+    "contour-shadow-box": ContourElement;
+    "contour-shadow-brand": ContourElement;
+    "contour-shadow-breadcrumb": ContourElement;
+    "contour-shadow-btn": ContourElement;
+    "contour-shadow-btn-group": ContourElement;
+    "contour-shadow-callout": ContourElement;
+    "contour-shadow-card": ContourElement;
+    "contour-shadow-catchment": ContourElement;
+    "contour-shadow-chart": ContourElement;
+    "contour-shadow-chart-grid": ContourElement;
+    "contour-shadow-check": ContourElement;
+    "contour-shadow-chip": ContourElement;
+    "contour-shadow-cluster": ContourElement;
+    "contour-shadow-code": ContourElement;
+    "contour-shadow-code-tabs": ContourElement;
+    "contour-shadow-combobox": ContourElement;
+    "contour-shadow-command": ContourElement;
+    "contour-shadow-compare": ContourElement;
+    "contour-shadow-comparison": ContourElement;
+    "contour-shadow-compass": ContourElement;
+    "contour-shadow-container": ContourElement;
+    "contour-shadow-contour-plot": ContourElement;
+    "contour-shadow-coordinate": ContourElement;
+    "contour-shadow-cta": ContourElement;
+    "contour-shadow-dash-freshness": ContourElement;
+    "contour-shadow-dash-kpi-row": ContourElement;
+    "contour-shadow-dash-shell": ContourElement;
+    "contour-shadow-dash-toolbar": ContourElement;
+    "contour-shadow-datamark": ContourElement;
+    "contour-shadow-delta": ContourElement;
+    "contour-shadow-destructive-hint": ContourElement;
+    "contour-shadow-dialog": ContourElement;
+    "contour-shadow-diff": ContourElement;
+    "contour-shadow-disclosure": ContourElement;
+    "contour-shadow-do-dont": ContourElement;
+    "contour-shadow-docs-nav": ContourElement;
+    "contour-shadow-docs-shell": ContourElement;
+    "contour-shadow-dot": ContourElement;
+    "contour-shadow-drag-handle": ContourElement;
+    "contour-shadow-draggable": ContourElement;
+    "contour-shadow-drawer": ContourElement;
+    "contour-shadow-drop-indicator": ContourElement;
+    "contour-shadow-drop-zone": ContourElement;
+    "contour-shadow-elevation": ContourElement;
+    "contour-shadow-empty": ContourElement;
+    "contour-shadow-expandable": ContourElement;
+    "contour-shadow-faq": ContourElement;
+    "contour-shadow-feature": ContourElement;
+    "contour-shadow-field": ContourElement;
+    "contour-shadow-filter-bar": ContourElement;
+    "contour-shadow-filter-pill": ContourElement;
+    "contour-shadow-flag": ContourElement;
+    "contour-shadow-flow-map": ContourElement;
+    "contour-shadow-footer": ContourElement;
+    "contour-shadow-header": ContourElement;
+    "contour-shadow-heatmap": ContourElement;
+    "contour-shadow-hexbin": ContourElement;
+    "contour-shadow-icon-badge": ContourElement;
+    "contour-shadow-input": ContourElement;
+    "contour-shadow-input-group": ContourElement;
+    "contour-shadow-install": ContourElement;
+    "contour-shadow-instrument": ContourElement;
+    "contour-shadow-isochrone": ContourElement;
+    "contour-shadow-kbd": ContourElement;
+    "contour-shadow-kpi": ContourElement;
+    "contour-shadow-landing-features": ContourElement;
+    "contour-shadow-landing-hero": ContourElement;
+    "contour-shadow-layer-panel": ContourElement;
+    "contour-shadow-layer-switch": ContourElement;
+    "contour-shadow-legend": ContourElement;
+    "contour-shadow-link": ContourElement;
+    "contour-shadow-linkish": ContourElement;
+    "contour-shadow-live-badge": ContourElement;
+    "contour-shadow-loading": ContourElement;
+    "contour-shadow-logos": ContourElement;
+    "contour-shadow-map-area": ContourElement;
+    "contour-shadow-map-footer": ContourElement;
+    "contour-shadow-map-panel": ContourElement;
+    "contour-shadow-map-slot": ContourElement;
+    "contour-shadow-mark": ContourElement;
+    "contour-shadow-measure": ContourElement;
+    "contour-shadow-menu": ContourElement;
+    "contour-shadow-meter": ContourElement;
+    "contour-shadow-metrics": ContourElement;
+    "contour-shadow-minimap": ContourElement;
+    "contour-shadow-pager": ContourElement;
+    "contour-shadow-pagination": ContourElement;
+    "contour-shadow-panel": ContourElement;
+    "contour-shadow-pill": ContourElement;
+    "contour-shadow-plate": ContourElement;
+    "contour-shadow-pressable": ContourElement;
+    "contour-shadow-price": ContourElement;
+    "contour-shadow-pricing": ContourElement;
+    "contour-shadow-progress": ContourElement;
+    "contour-shadow-prose": ContourElement;
+    "contour-shadow-pullquote": ContourElement;
+    "contour-shadow-radio": ContourElement;
+    "contour-shadow-radio-list": ContourElement;
+    "contour-shadow-range": ContourElement;
+    "contour-shadow-range-scale": ContourElement;
+    "contour-shadow-readout": ContourElement;
+    "contour-shadow-recipe": ContourElement;
+    "contour-shadow-reserved": ContourElement;
+    "contour-shadow-resizable": ContourElement;
+    "contour-shadow-resize-handle": ContourElement;
+    "contour-shadow-row": ContourElement;
+    "contour-shadow-row-action": ContourElement;
+    "contour-shadow-scale-bar": ContourElement;
+    "contour-shadow-scheme-toggle": ContourElement;
+    "contour-shadow-scrim": ContourElement;
+    "contour-shadow-scroll-area": ContourElement;
+    "contour-shadow-search-trigger": ContourElement;
+    "contour-shadow-section-head": ContourElement;
+    "contour-shadow-segmented": ContourElement;
+    "contour-shadow-select": ContourElement;
+    "contour-shadow-sheet": ContourElement;
+    "contour-shadow-shortcut-list": ContourElement;
+    "contour-shadow-shortcut-overlay": ContourElement;
+    "contour-shadow-shortcut-panel": ContourElement;
+    "contour-shadow-shortcut-row": ContourElement;
+    "contour-shadow-showcase": ContourElement;
+    "contour-shadow-sidebar": ContourElement;
+    "contour-shadow-skeleton": ContourElement;
+    "contour-shadow-sparkline": ContourElement;
+    "contour-shadow-spinner": ContourElement;
+    "contour-shadow-stack": ContourElement;
+    "contour-shadow-stat": ContourElement;
+    "contour-shadow-steps": ContourElement;
+    "contour-shadow-streaming-chart": ContourElement;
+    "contour-shadow-survey": ContourElement;
+    "contour-shadow-switch": ContourElement;
+    "contour-shadow-table": ContourElement;
+    "contour-shadow-table-wrap": ContourElement;
+    "contour-shadow-tabs": ContourElement;
+    "contour-shadow-tag": ContourElement;
+    "contour-shadow-testimonial": ContourElement;
+    "contour-shadow-textarea": ContourElement;
+    "contour-shadow-theme-scope": ContourElement;
+    "contour-shadow-threshold": ContourElement;
+    "contour-shadow-time-range": ContourElement;
+    "contour-shadow-time-slider": ContourElement;
+    "contour-shadow-timeline": ContourElement;
+    "contour-shadow-toast": ContourElement;
+    "contour-shadow-toast-host": ContourElement;
+    "contour-shadow-toc": ContourElement;
+    "contour-shadow-toolbar": ContourElement;
+    "contour-shadow-tooltip": ContourElement;
+    "contour-shadow-tree": ContourElement;
+    "contour-shadow-version": ContourElement;
+    "contour-shadow-version-banner": ContourElement;
+    "contour-sheet": ContourElement;
+    "contour-shortcut-list": ContourElement;
+    "contour-shortcut-overlay": ContourElement;
+    "contour-shortcut-panel": ContourElement;
+    "contour-shortcut-row": ContourElement;
+    "contour-showcase": ContourElement;
+    "contour-sidebar": ContourElement;
+    "contour-skeleton": ContourElement;
+    "contour-sparkline": ContourElement;
+    "contour-spinner": ContourElement;
+    "contour-stack": ContourElement;
+    "contour-stat": ContourElement;
+    "contour-steps": ContourElement;
+    "contour-streaming-chart": ContourElement;
+    "contour-survey": ContourElement;
+    "contour-switch": ContourElement;
+    "contour-table": ContourElement;
+    "contour-table-wrap": ContourElement;
+    "contour-tabs": ContourElement;
+    "contour-tag": ContourElement;
+    "contour-testimonial": ContourElement;
+    "contour-textarea": ContourElement;
+    "contour-theme-scope": ContourElement;
+    "contour-threshold": ContourElement;
+    "contour-time-range": ContourElement;
+    "contour-time-slider": ContourElement;
+    "contour-timeline": ContourElement;
+    "contour-toast": ContourElement;
+    "contour-toast-host": ContourElement;
+    "contour-toc": ContourElement;
+    "contour-toolbar": ContourElement;
+    "contour-tooltip": ContourElement;
+    "contour-tree": ContourElement;
+    "contour-version": ContourElement;
+    "contour-version-banner": ContourElement;
   }
 }
-
-/** Detail payloads for the Contour event vocabulary. */
-export interface ContourEventDetailMap {
-  "contour:activate": undefined;
-  "contour:bearing": { direction: unknown; degrees: unknown };
-  "contour:change": { name: unknown; value: unknown; checked: unknown };
-  "contour:close": undefined;
-  "contour:copy": { text: unknown };
-  "contour:dragend": { value: unknown };
-  "contour:dragstart": { value: unknown };
-  "contour:drop": { value: unknown; label: unknown };
-  "contour:empty-action": { state: unknown };
-  "contour:error": { src: unknown; message: unknown; name: unknown; status: unknown };
-  "contour:hide": undefined;
-  "contour:input": { name: unknown; value: unknown; checked: unknown };
-  "contour:layer-opacity": { name: unknown; opacity: unknown };
-  "contour:layer-toggle": { name: unknown };
-  "contour:layer-visibility": { name: unknown; visible: unknown };
-  "contour:legend-toggle": { label: unknown; key: unknown; pressed: unknown };
-  "contour:load": { src: unknown; count: unknown };
-  "contour:map-control": { control: unknown };
-  "contour:move": { direction: unknown };
-  "contour:open": undefined;
-  "contour:page": { page: unknown };
-  "contour:ready": { version: unknown; count: unknown };
-  "contour:remove": { label: unknown; key: unknown; value: unknown };
-  "contour:retry": { src: unknown };
-  "contour:select": { series: unknown; index: unknown; label: unknown; value: unknown };
-  "contour:show": undefined;
-  "contour:sort": { column: unknown; direction: unknown };
-  "contour:stream-state": { running: unknown };
-  "contour:tab-change": { index: unknown; label: unknown };
-  "contour:theme-change": { theme: unknown };
-  "contour:tick": { frame: unknown };
-  "contour:time-change": { value: unknown };
-  "contour:toggle": { open: unknown; label: unknown };
-  "contour:view-enter": undefined;
-  "contour:view-leave": undefined;
-}
-
-export type ContourEventName = keyof ContourEventDetailMap;

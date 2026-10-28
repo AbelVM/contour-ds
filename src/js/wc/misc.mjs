@@ -29,6 +29,7 @@ class ContourActivity extends ContourBase {
     static get properties() { return { items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-activity");
+      this.setAttribute("role", "list");
       wireStates(this);
       loadRemote(this, "items");
       if (renderStates(this, "activity")) return;
@@ -37,11 +38,14 @@ class ContourActivity extends ContourBase {
         try {
           const parsed = JSON.parse(items);
           Array.from(this.querySelectorAll(".c-activity__item")).forEach((n) => n.remove());
-          parsed.forEach((it) => {
+          parsed.forEach((it, i) => {
             const item = document.createElement("div");
             item.className = "c-activity__item";
+            item.setAttribute("role", "listitem");
+            item.tabIndex = -1;
             const dot = document.createElement("span");
             dot.className = "c-activity__dot c-activity__dot--" + (it.variant || "primary");
+            dot.setAttribute("aria-hidden", "true");
             item.appendChild(dot);
             const text = document.createElement("span");
             text.className = "c-activity__text";
@@ -60,6 +64,41 @@ class ContourActivity extends ContourBase {
         renderEmpty(this, "activity");
       }
     }
+    enhance() {
+      if (this._wiredActivity) return;
+      this._wiredActivity = true;
+      this.addEventListener("click", (e) => {
+        const item = e.target && e.target.closest ? e.target.closest(".c-activity__item") : null;
+        if (item && this.contains(item)) {
+          const items = Array.from(this.querySelectorAll(".c-activity__item"));
+          const index = items.indexOf(item);
+          const text = item.querySelector(".c-activity__text")?.textContent || "";
+          this.dispatchEvent(new CustomEvent("contour:activity-select", { bubbles: true, composed: true, detail: { index, text } }));
+        }
+      });
+      this.addEventListener("keydown", (e) => {
+        const items = Array.from(this.querySelectorAll(".c-activity__item"));
+        if (!items.length) return;
+        const active = document.activeElement;
+        const idx = items.indexOf(active);
+        let next = -1;
+        if (e.key === "ArrowDown") next = idx < 0 ? 0 : Math.min(items.length - 1, idx + 1);
+        else if (e.key === "ArrowUp") next = idx < 0 ? 0 : Math.max(0, idx - 1);
+        else if (e.key === "Home") next = 0;
+        else if (e.key === "End") next = items.length - 1;
+        if (next >= 0 && next !== idx) {
+          e.preventDefault();
+          items[next].focus();
+          items[next].tabIndex = 0;
+          if (idx >= 0) items[idx].tabIndex = -1;
+        }
+        if ((e.key === "Enter" || e.key === " ") && idx >= 0) {
+          e.preventDefault();
+          const text = items[idx].querySelector(".c-activity__text")?.textContent || "";
+          this.dispatchEvent(new CustomEvent("contour:activity-select", { bubbles: true, composed: true, detail: { index: idx, text } }));
+        }
+      });
+    }
   }
   define("contour-activity", ContourActivity);
 class ContourAdvanced extends ContourBase {
@@ -67,11 +106,28 @@ class ContourAdvanced extends ContourBase {
     static get properties() { return { title: { attribute: "title" } }; }
     render() {
       this.classList.add("c-advanced");
+      this.setAttribute("role", "region");
       const title = this.getAttribute("title");
       if (title) {
         const t = this.ensure(".c-advanced__title", () => { const el = document.createElement("div"); el.className = "c-advanced__title"; return el; });
         t.textContent = title;
+        this.setAttribute("aria-label", title);
       }
+    }
+    enhance() {
+      if (this._wiredAdvanced) return;
+      this._wiredAdvanced = true;
+      this.addEventListener("click", (e) => {
+        const title = this.getAttribute("title") || "";
+        this.dispatchEvent(new CustomEvent("contour:advanced-toggle", { bubbles: true, composed: true, detail: { title } }));
+      });
+      this.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          const title = this.getAttribute("title") || "";
+          this.dispatchEvent(new CustomEvent("contour:advanced-toggle", { bubbles: true, composed: true, detail: { title } }));
+        }
+      });
     }
   }
   define("contour-advanced", ContourAdvanced);
@@ -80,10 +136,12 @@ class ContourAffordance extends ContourBase {
     static get properties() { return { name: { attribute: "name" }, note: { attribute: "note" }, demo: { attribute: "demo" } }; }
     render() {
       this.classList.add("c-affordance");
+      this.setAttribute("role", "group");
       const name = this.getAttribute("name");
       if (name) {
         const n = this.ensure(".c-affordance__name", () => { const el = document.createElement("div"); el.className = "c-affordance__name"; return el; });
         n.textContent = name;
+        this.setAttribute("aria-label", name);
       } else {
         const n = this.querySelector(".c-affordance__name");
         if (n) n.remove();
@@ -105,6 +163,14 @@ class ContourAffordance extends ContourBase {
         if (d) d.remove();
       }
     }
+    enhance() {
+      if (this._wiredAffordance) return;
+      this._wiredAffordance = true;
+      this.addEventListener("click", (e) => {
+        const name = this.getAttribute("name") || "";
+        this.dispatchEvent(new CustomEvent("contour:affordance-activate", { bubbles: true, composed: true, detail: { name } }));
+      });
+    }
   }
   define("contour-affordance", ContourAffordance);
 class ContourAffordances extends ContourBase {
@@ -112,6 +178,7 @@ class ContourAffordances extends ContourBase {
     static get properties() { return { name: { attribute: "name" }, title: { attribute: "title" } }; }
     render() {
       this.classList.add("c-affordances");
+      this.setAttribute("role", "group");
       if (!this.querySelector(".c-affordance")) {
         const aff = document.createElement("div");
         aff.className = "c-affordance";

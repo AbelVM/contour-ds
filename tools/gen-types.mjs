@@ -60,6 +60,12 @@ lines.push("  };");
 lines.push("}");
 lines.push("");
 lines.push("declare global {");
+lines.push("  interface HTMLElementTagNameMap {");
+for (const n of names) {
+  const tag = "contour-" + n.replace(/^c-/, "");
+  lines.push(`    "${tag}": HTMLElement;`);
+}
+lines.push("  }");
 lines.push("  interface Window {");
 lines.push("    Contour: ContourAPI;");
 lines.push("  }");

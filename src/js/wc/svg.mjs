@@ -26,6 +26,14 @@
  * @returns {string} SVG path `d` attribute
  */
 export function arcPath(cx, cy, r, inner, startAngle, endAngle) {
+  // Clamp non-finite inputs so a bad value cannot emit NaN/Infinity into the
+  // path string (B3-22). A degenerate slice collapses to a point.
+  cx = Number.isFinite(cx) ? cx : 0;
+  cy = Number.isFinite(cy) ? cy : 0;
+  r = Number.isFinite(r) && r > 0 ? r : 0;
+  inner = Number.isFinite(inner) && inner >= 0 ? inner : 0;
+  startAngle = Number.isFinite(startAngle) ? startAngle : 0;
+  endAngle = Number.isFinite(endAngle) ? endAngle : 0;
   const largeArc = endAngle - startAngle > Math.PI ? 1 : 0;
   const x1 = cx + r * Math.cos(startAngle);
   const y1 = cy + r * Math.sin(startAngle);

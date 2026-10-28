@@ -56,10 +56,11 @@ class ContourFeature extends ContourBase {
   }
   define("contour-feature", ContourFeature);
 class ContourSteps extends ContourBase {
-    static get observed() { return ["steps", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { steps: { attribute: "steps" } }; }
+    static get observed() { return ["steps", "current", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
+    static get properties() { return { steps: { attribute: "steps" }, current: { attribute: "current", type: Number } }; }
     render() {
       this.classList.add("c-steps");
+      this.setAttribute("role", "list");
       wireStates(this);
       loadRemote(this, "steps");
       if (renderStates(this, "steps")) return;
@@ -70,9 +71,11 @@ class ContourSteps extends ContourBase {
         Array.from(this.querySelectorAll(".c-steps__item")).forEach((n) => n.remove());
         try {
           const parsed = JSON.parse(steps);
-          parsed.forEach((st) => {
+          parsed.forEach((st, i) => {
             const item = document.createElement("div");
             item.className = "c-steps__item";
+            item.setAttribute("role", "listitem");
+            item.tabIndex = -1;
             const title = typeof st === "string" ? st : st.title;
             const body = typeof st === "string" ? "" : st.body;
             if (title) {
@@ -92,6 +95,71 @@ class ContourSteps extends ContourBase {
         } catch (e) { /* keep existing */ }
       } else if (!steps && !authored.length) {
         renderEmpty(this, "steps");
+      }
+      // Reflect the current step onto the items (aria-current) without clobbering
+      // a re-render's generated nodes.
+      const attrCurrent = this.getAttribute("current");
+      const current = (this._current != null) ? this._current : (attrCurrent != null ? parseInt(attrCurrent, 10) : NaN);
+      const items = Array.from(this.querySelectorAll(".c-steps__item"));
+      items.forEach((it, i) => {
+        if (Number.isFinite(current) && i === current) it.setAttribute("aria-current", "step");
+        else it.removeAttribute("aria-current");
+        it.tabIndex = (Number.isFinite(current) && i === current) ? 0 : -1;
+      });
+      if (items.length && !Number.isFinite(current)) {
+        items[0].tabIndex = 0;
+      }
+    }
+    enhance() {
+      if (!this._wiredSteps) {
+        this._wiredSteps = true;
+        this.addEventListener("keydown", (e) => {
+          const items = Array.from(this.querySelectorAll(".c-steps__item"));
+          if (!items.length) return;
+          const active = document.activeElement;
+          const idx = items.indexOf(active);
+          let next = -1;
+          const rtl = (this.getAttribute("dir") || document.documentElement.getAttribute("dir") || "").toLowerCase() === "rtl";
+          if (e.key === "ArrowDown") next = idx < 0 ? 0 : Math.min(items.length - 1, idx + 1);
+          else if (e.key === "ArrowUp") next = idx < 0 ? 0 : Math.max(0, idx - 1);
+          else if (e.key === "ArrowRight") next = rtl ? (idx < 0 ? 0 : Math.max(0, idx - 1)) : (idx < 0 ? 0 : Math.min(items.length - 1, idx + 1));
+          else if (e.key === "ArrowLeft") next = rtl ? (idx < 0 ? 0 : Math.min(items.length - 1, idx + 1)) : (idx < 0 ? 0 : Math.max(0, idx - 1));
+          else if (e.key === "Home") next = 0;
+          else if (e.key === "End") next = items.length - 1;
+          if (next >= 0 && next !== idx) {
+            e.preventDefault();
+            items[next].focus();
+            this._current = next;
+            items.forEach((it, i) => {
+              if (i === next) it.setAttribute("aria-current", "step");
+              else it.removeAttribute("aria-current");
+              it.tabIndex = i === next ? 0 : -1;
+            });
+            if (idx >= 0) items[idx].tabIndex = -1;
+            const title = items[next].querySelector(".c-steps__title")?.textContent || "";
+            this.dispatchEvent(new CustomEvent("contour:step-change", { bubbles: true, composed: true, detail: { index: next, title } }));
+          }
+          if ((e.key === "Enter" || e.key === " ") && idx >= 0) {
+            e.preventDefault();
+            const title = items[idx].querySelector(".c-steps__title")?.textContent || "";
+            this.dispatchEvent(new CustomEvent("contour:step-activate", { bubbles: true, composed: true, detail: { index: idx, title } }));
+          }
+        });
+        this.addEventListener("click", (e) => {
+          const item = e.target && e.target.closest ? e.target.closest(".c-steps__item") : null;
+          if (!item || !this.contains(item)) return;
+          const items = Array.from(this.querySelectorAll(".c-steps__item"));
+          const idx = items.indexOf(item);
+          if (idx < 0) return;
+          this._current = idx;
+          items.forEach((it, i) => {
+            if (i === idx) it.setAttribute("aria-current", "step");
+            else it.removeAttribute("aria-current");
+            it.tabIndex = i === idx ? 0 : -1;
+          });
+          const title = item.querySelector(".c-steps__title")?.textContent || "";
+          this.dispatchEvent(new CustomEvent("contour:step-activate", { bubbles: true, composed: true, detail: { index: idx, title } }));
+        });
       }
     }
   }
@@ -183,6 +251,8 @@ class ContourDiff extends ContourBase {
     static get properties() { return { before: { attribute: "before" }, after: { attribute: "after" } }; }
     render() {
       this.classList.add("c-diff");
+      this.setAttribute("role", "group");
+      this.setAttribute("aria-label", "Diff");
       // The block is a list of lines, not two panes: `.c-diff__line` carries the
       // +/- sign, the line number, and the text, and `--add`/`--del` are the only
       // two states it defines. A removed line and an added line are what a
@@ -191,6 +261,7 @@ class ContourDiff extends ContourBase {
       const line = (kind, sign, text) => {
         const el = document.createElement("div");
         el.className = kind ? `c-diff__line c-diff__line--${kind}` : "c-diff__line";
+        el.setAttribute("role", "listitem");
         const s = document.createElement("span");
         s.className = "c-diff__sign";
         s.textContent = sign;
@@ -204,6 +275,18 @@ class ContourDiff extends ContourBase {
       if (before) this.appendChild(line("del", "−", before));
       if (after) this.appendChild(line("add", "+", after));
     }
+    enhance() {
+      if (this._wiredDiff) return;
+      this._wiredDiff = true;
+      this.addEventListener("click", (e) => {
+        const line = e.target && e.target.closest ? e.target.closest(".c-diff__line") : null;
+        if (line && this.contains(line)) {
+          const kind = line.classList.contains("c-diff__line--add") ? "add" : line.classList.contains("c-diff__line--del") ? "del" : "context";
+          const text = line.querySelector("span:last-child")?.textContent || "";
+          this.dispatchEvent(new CustomEvent("contour:diff-activate", { bubbles: true, composed: true, detail: { kind, text } }));
+        }
+      });
+    }
   }
   define("contour-diff", ContourDiff);
 class ContourDoDont extends ContourBase {
@@ -211,6 +294,8 @@ class ContourDoDont extends ContourBase {
     static get properties() { return { do: { attribute: "do" }, dont: { attribute: "dont" } }; }
     render() {
       this.classList.add("c-do-dont");
+      this.setAttribute("role", "group");
+      this.setAttribute("aria-label", "Do and don't");
       // An item is one element with one state modifier — `__item--do`,
       // `__item--dont` — and the word on top of it is `__label`. There is no
       // `__do` or `__dont` element in the system.
@@ -218,6 +303,7 @@ class ContourDoDont extends ContourBase {
       const item = (kind, word, text) => {
         const el = document.createElement("div");
         el.className = `c-do-dont__item c-do-dont__item--${kind}`;
+        el.setAttribute("role", "listitem");
         const label = document.createElement("p");
         label.className = "c-do-dont__label";
         label.textContent = word;
@@ -231,6 +317,18 @@ class ContourDoDont extends ContourBase {
       const dontText = this.getAttribute("dont");
       if (doText) this.appendChild(item("do", "Do", doText));
       if (dontText) this.appendChild(item("dont", "Don't", dontText));
+    }
+    enhance() {
+      if (this._wiredDoDont) return;
+      this._wiredDoDont = true;
+      this.addEventListener("click", (e) => {
+        const item = e.target && e.target.closest ? e.target.closest(".c-do-dont__item") : null;
+        if (item && this.contains(item)) {
+          const kind = item.classList.contains("c-do-dont__item--do") ? "do" : "dont";
+          const text = item.querySelector(".u-muted")?.textContent || "";
+          this.dispatchEvent(new CustomEvent("contour:do-dont-activate", { bubbles: true, composed: true, detail: { kind, text } }));
+        }
+      });
     }
   }
   define("contour-do-dont", ContourDoDont);
@@ -326,16 +424,20 @@ class ContourShowcaseFull extends ContourBase {
       this.classList.add("c-showcase");
       if (this.hasAttribute("reverse")) this.classList.add("c-showcase--reverse");
       else this.classList.remove("c-showcase--reverse");
+      const title = this.getAttribute("title");
+      if (title) this.setAttribute("aria-label", title);
+      else this.removeAttribute("aria-label");
+      this.setAttribute("role", "region");
       wireStates(this);
       loadRemote(this, "items");
       if (renderStates(this, "showcase")) return;
       const items = remoteData(this, "items");
-      const title = this.getAttribute("title");
       const text = this.getAttribute("text");
       const media = this.getAttribute("media");
       if (media) {
-        const m = this.ensure(".c-showcase__media", () => { const el = document.createElement("div"); el.className = "c-showcase__media"; return el; });
+        const m = this.ensure(".c-showcase__media", () => { const el = document.createElement("div"); el.className = "c-showcase__media"; el.setAttribute("role", "img"); return el; });
         m.innerHTML = sanitizeHtml(media);
+        if (title) m.setAttribute("aria-label", title);
       } else {
         const m = this.querySelector(".c-showcase__media");
         if (m) m.remove();
@@ -372,6 +474,17 @@ class ContourShowcaseFull extends ContourBase {
       } else if (!items && ul) {
         ul.remove();
       }
+    }
+    enhance() {
+      if (this._wiredShowcase) return;
+      this._wiredShowcase = true;
+      this.addEventListener("click", (e) => {
+        const media = e.target && e.target.closest ? e.target.closest(".c-showcase__media") : null;
+        if (media && this.contains(media)) {
+          const title = this.getAttribute("title") || "";
+          this.dispatchEvent(new CustomEvent("contour:showcase-activate", { bubbles: true, composed: true, detail: { title } }));
+        }
+      });
     }
   }
 define("contour-showcase", ContourShowcaseFull);

@@ -5,6 +5,10 @@ class ContourDocsNav extends ContourBase {
     static get properties() { return { items: { attribute: "items" }, title: { attribute: "title" } }; }
     render() {
       this.classList.add("c-docs-nav");
+      this.setAttribute("role", "navigation");
+      const title = this.getAttribute("title");
+      if (title) this.setAttribute("aria-label", title);
+      else this.setAttribute("aria-label", "Documentation navigation");
       wireStates(this);
       loadRemote(this, "items");
       if (renderStates(this, "docs-nav")) return;
@@ -74,17 +78,30 @@ class ContourDocsNav extends ContourBase {
         renderEmpty(this, "docs-nav");
       }
     }
+    enhance() {
+      if (this._wiredDocsNav) return;
+      this._wiredDocsNav = true;
+      this.addEventListener("click", (e) => {
+        const link = e.target && e.target.closest ? e.target.closest(".c-docs-nav__link") : null;
+        if (link && this.contains(link)) {
+          const label = link.textContent || "";
+          this.dispatchEvent(new CustomEvent("contour:docs-nav-select", { bubbles: true, composed: true, detail: { label, href: link.getAttribute("href") } }));
+        }
+      });
+    }
   }
-define("contour-docs-nav", ContourDocsNav);
+  define("contour-docs-nav", ContourDocsNav);
 class ContourDocsShell extends ContourBase {
     static get observed() { return ["title", "lede", "article"]; }
     static get properties() { return { title: { attribute: "title" }, lede: { attribute: "lede" }, article: { attribute: "article" } }; }
     render() {
       this.classList.add("c-docs-shell");
+      this.setAttribute("role", "region");
       const title = this.getAttribute("title");
       if (title) {
         const h = this.ensure(".c-docs-shell__title", () => { const el = document.createElement("h1"); el.className = "c-docs-shell__title"; return el; });
         h.textContent = title;
+        this.setAttribute("aria-label", title);
       } else {
         const h = this.querySelector(".c-docs-shell__title");
         if (h) h.remove();

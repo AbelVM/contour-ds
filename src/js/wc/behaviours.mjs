@@ -221,6 +221,12 @@ export function wireTabs(host) {
     let restored = null;
     if (persist === "storage" && host.id) {
       try { restored = localStorage.getItem("contour-tabs:" + host.id); } catch (e) { restored = null; }
+    } else if (persist === "url") {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const v = params.get("c-tabs");
+        if (v !== null) restored = v;
+      } catch (e) { restored = null; }
     }
     const marked = tabs.find((t) => t.getAttribute("aria-selected") === "true");
     let first = marked || tabs[0];
@@ -231,10 +237,16 @@ export function wireTabs(host) {
     if (first) activate(first, false);
     // Persist on every subsequent activation.
     if (persist === "storage" && host.id) {
-      const origActivate = activate;
-      // Wrap by re-emitting: listen for contour:tab-change and store the index.
       host.addEventListener("contour:tab-change", (e) => {
         try { localStorage.setItem("contour-tabs:" + host.id, String(e.detail && e.detail.index)); } catch (err) { /* quota/private mode */ }
+      });
+    } else if (persist === "url") {
+      host.addEventListener("contour:tab-change", (e) => {
+        try {
+          const url = new URL(window.location.href);
+          url.searchParams.set("c-tabs", String(e.detail && e.detail.index));
+          window.history.replaceState(null, "", url.toString());
+        } catch (err) { /* no history API */ }
       });
     }
   }

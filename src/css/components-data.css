@@ -390,7 +390,7 @@
   .c-measure__readout {
     position: absolute;
     bottom: var(--space-sm);
-    left: 50%;
+    inset-inline-start: 50%;
     transform: translateX(-50%);
     background: var(--color-surface-1);
     border: 1px solid var(--color-border);

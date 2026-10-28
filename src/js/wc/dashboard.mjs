@@ -4,6 +4,7 @@ class ContourDashShell extends ContourBase {
     static get properties() { return { title: { attribute: "title" } }; }
     render() {
       this.classList.add("c-dash-shell");
+      this.setAttribute("role", "region");
       const title = this.getAttribute("title");
       if (title) {
         // `.c-dash-shell` is the grid and owns no title; the guide's title lives
@@ -12,9 +13,7 @@ class ContourDashShell extends ContourBase {
         const bar = this.ensure(".c-dash-toolbar", () => { const el = document.createElement("div"); el.className = "c-dash-toolbar"; return el; });
         const h = bar.querySelector(".c-dash-toolbar__title") || (() => { const el = document.createElement("span"); el.className = "c-dash-toolbar__title"; bar.appendChild(el); return el; })();
         h.textContent = title;
-      } else {
-        const h = this.querySelector(".c-dash-toolbar__title");
-        if (h) h.remove();
+        this.setAttribute("aria-label", title);
       }
     }
   }
@@ -24,10 +23,12 @@ class ContourDashToolbar extends ContourBase {
     static get properties() { return { title: { attribute: "title" }, actions: { attribute: "actions" } }; }
     render() {
       this.classList.add("c-dash-toolbar");
+      this.setAttribute("role", "toolbar");
       const title = this.getAttribute("title");
       if (title) {
         const t = this.ensure(".c-dash-toolbar__title", () => { const el = document.createElement("span"); el.className = "c-dash-toolbar__title"; return el; });
         t.textContent = title;
+        this.setAttribute("aria-label", title);
       } else {
         const t = this.querySelector(".c-dash-toolbar__title");
         if (t) t.remove();
@@ -51,11 +52,23 @@ class ContourDashToolbar extends ContourBase {
         if (w) w.remove();
       }
     }
+    enhance() {
+      if (this._wiredDashToolbar) return;
+      this._wiredDashToolbar = true;
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest(".c-btn") : null;
+        if (btn && this.contains(btn)) {
+          const label = btn.textContent || "";
+          this.dispatchEvent(new CustomEvent("contour:dash-action", { bubbles: true, composed: true, detail: { label } }));
+        }
+      });
+    }
   }
   define("contour-dash-toolbar", ContourDashToolbar);
 class ContourDashKpiRow extends ContourBase {
     render() {
       this.classList.add("c-dash-kpi-row");
+      this.setAttribute("role", "group");
       if (!this.querySelector(".c-kpi")) {
         const k = document.createElement("contour-kpi");
         k.setAttribute("value", "42");
@@ -70,6 +83,8 @@ class ContourDashFreshness extends ContourBase {
     static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" } }; }
     render() {
       this.classList.add("c-dash-freshness");
+      this.setAttribute("role", "status");
+      this.setAttribute("aria-live", "polite");
       const label = this.getAttribute("label");
       const value = this.getAttribute("value");
       // The block defines no elements of its own: the guide's chip is a live dot
