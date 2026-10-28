@@ -7,7 +7,7 @@
  *
  *   base.css (unprefixed)  .container .stack .cluster .section .grid .grid--2/3/4 .split
  *   utilities.css          .u-cols-2 .u-cols-3 .u-auto-grid
- *   components.css         .c-row .c-stack .c-stack--sm/--lg .c-cluster .c-sidebar
+ *   components.css         .c-row .c-stack .c-cluster .c-sidebar
  *
  * What the numbers say:
  *   - the shipped templates use base vocabulary only (landing 29, dashboard 2,
@@ -56,7 +56,7 @@ const LEDGER = {
   base: ["container", "container--narrow", "container--reading", "stack", "stack--tight", "stack--loose",
     "cluster", "section", "section--sunken", "section--raised", "grid", "grid--2", "grid--3", "grid--4", "split"],
   // component-level layout, `@layer components`
-  components: ["c-row", "c-row--wrap", "c-stack", "c-stack--sm", "c-stack--lg", "c-cluster", "c-sidebar", "c-container",
+  components: ["c-row", "c-stack", "c-cluster", "c-sidebar", "c-container",
     "c-container--scrollable"],
   // utilities, `@layer utilities`
   utilities: ["u-cols-2", "u-cols-3", "u-auto-grid"],

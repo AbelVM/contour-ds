@@ -228,20 +228,8 @@
      white-space: nowrap;
    }
 
-  .c-sparkline--accent .c-sparkline__line {
-    stroke: var(--color-accent);
-  }
-
-  .c-sparkline--accent .c-sparkline__area {
-    fill: color-mix(in oklab, var(--color-accent) 16%, transparent);
-  }
-
   .c-sparkline__dot {
     fill: var(--color-primary);
-  }
-
-  .c-sparkline--accent .c-sparkline__dot {
-    fill: var(--color-accent);
   }
 
   /* =======================================================================
@@ -1991,13 +1979,6 @@
   .c-map-panel--bottom { inset-block-end: var(--space-sm); }
   .c-map-panel--left { inset-inline-start: var(--space-sm); }
   .c-map-panel--right { inset-inline-end: var(--space-sm); }
-  .c-map-panel--center {
-    inset-block-start: 50%;
-    inset-inline-start: 50%;
-    transform: translate(-50%, -50%);
-  }
-
-  .c-map-panel--vertical { flex-direction: column; }
 
   /* =======================================================================
      MAP FOOTER — bottom panel for charts/tables (Airship-inspired)
@@ -2029,20 +2010,8 @@
     background: var(--color-surface-1);
   }
 
-  .c-box--s, .c-box--small { padding: var(--space-xs); }
-  .c-box--m, .c-box--medium { padding: var(--space-md); }
-  .c-box--l, .c-box--large { padding: var(--space-lg); }
-  .c-box--xl, .c-box--xlarge { padding: var(--space-xl); }
-
   .c-box--border {
     border: 1px solid var(--color-border);
-  }
-
-  .c-box--scroll {
-    overflow: auto;
-    overscroll-behavior: contain;
-    scroll-padding: 0.5rem;
-    max-block-size: 100%;
   }
 
   /* =======================================================================
@@ -2072,10 +2041,6 @@
   .c-container--scrollable::-webkit-scrollbar-thumb {
     background: var(--color-control-edge);
     border-radius: var(--radius-pill);
-  }
-
-  .c-container--border > *:not(:last-child) {
-    border-block-end: 1px solid var(--color-border);
   }
 
   /* =======================================================================

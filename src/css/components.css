@@ -26,22 +26,6 @@
     block-size: 1.35rem;
   }
 
-  .c-mark--lg {
-    inline-size: var(--ring-3);
-    block-size: var(--ring-3);
-    border-radius: var(--radius-lg);
-  }
-
-  .c-mark--lg svg {
-    inline-size: 1.75rem;
-    block-size: 1.75rem;
-  }
-
-  .c-mark--solid {
-    background: var(--color-primary);
-    color: var(--color-on-primary);
-  }
-
   .c-brand {
     display: inline-flex;
     align-items: center;
@@ -244,7 +228,7 @@
   }
 
   .c-btn:active {
-    transform: translateY(0);
+    transform: translateY(1px);
   }
 
   .c-btn[disabled],
@@ -976,10 +960,6 @@
     pointer-events: none;
   }
 
-  .c-resize-handle--snapping::after {
-    opacity: 0.3;
-  }
-
   /* View transitions: page-level morphing. */
   @view-transition {
     navigation: auto;
@@ -1233,32 +1213,6 @@
     padding-block-start: var(--space-sm);
   }
 
-  .c-card--flat {
-    background: transparent;
-  }
-
-  .c-card--raised {
-    background: var(--color-surface-2);
-    box-shadow: var(--shadow-md);
-  }
-
-  .c-card--accent {
-    background: var(--color-accent-soft);
-    border-color: color-mix(in oklab, var(--color-accent) 32%, transparent);
-  }
-
-  .c-card--accent .c-card__title {
-    color: var(--color-accent-text);
-  }
-
-  .c-card--interactive {
-    cursor: pointer;
-  }
-
-  .c-card--interactive:hover {
-    transform: translateY(-3px);
-  }
-
   /* Plate: a raised, gradient-backed specimen surface */
   .c-plate {
     position: relative;
@@ -1509,12 +1463,6 @@
     font-family: var(--font-mono);
     font-size: var(--type-xs);
     color: var(--color-success-text);
-  }
-
-  .c-stat--inline {
-    display: flex;
-    align-items: baseline;
-    gap: 0.6rem;
   }
 
   /* =======================================================================
@@ -2622,14 +2570,6 @@
     max-inline-size: min(28rem, calc(100vw - 2rem));
   }
 
-  .c-toast--success {
-    border-color: color-mix(in oklab, var(--color-success) 45%, transparent);
-  }
-
-  .c-toast--danger {
-    border-color: color-mix(in oklab, var(--color-danger) 45%, transparent);
-  }
-
   /* =======================================================================
      19. DIALOG
      ======================================================================= */
@@ -3341,18 +3281,11 @@
     gap: var(--space-sm);
   }
 
-  .c-row--wrap {
-    flex-wrap: wrap;
-  }
-
   .c-stack {
     display: flex;
     flex-direction: column;
     gap: var(--space-sm);
   }
-
-  .c-stack--sm { gap: var(--space-xs); }
-  .c-stack--lg { gap: var(--space-xl); }
 
   .c-cluster {
     display: flex;
