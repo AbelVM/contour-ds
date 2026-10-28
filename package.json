@@ -5,6 +5,7 @@
   "license": "MIT",
   "type": "module",
   "main": "dist/contour.css",
+  "module": "dist/contour.esm.js",
   "style": "dist/contour.css",
   "files": [
     "dist/",
