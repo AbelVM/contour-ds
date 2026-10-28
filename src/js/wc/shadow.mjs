@@ -188,7 +188,7 @@ connectedCallback() {
   // the class, the part and the name all follow from the block, so the table
   // holds the block and the tag.
   const slotWrapper = (tag, block, part) =>
-    "<" + tag + ' class="c-' + block + '" part="' + (part || block) + '"><slot></slot></' + tag + ">";
+    "<" + tag + ' class="c-' + block + '" part="' + (part || block) + '"' + (tag === "button" ? ' type="button"' : "") + "><slot></slot></" + tag + ">";
   const SHADOW_SLOTS = {
     div: [
       "accordion", "activity", "advanced", "affordance", "affordances", "anchor", "app", "app-body", "box", "btn-group", "chart-grid",
