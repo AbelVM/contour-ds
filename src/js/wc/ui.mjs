@@ -290,10 +290,11 @@ class ContourElevation extends ContourBase {
   }
   define("contour-elevation", ContourElevation);
 class ContourVersionBannerFull extends ContourBase {
-    static get observed() { return ["message"]; }
-    static get properties() { return { message: { attribute: "message" } }; }
+    static get observed() { return ["message", "link", "href", "dismissible"]; }
+    static get properties() { return { message: { attribute: "message" }, link: { attribute: "link" }, href: { attribute: "href" }, dismissible: { attribute: "dismissible", type: Boolean } }; }
     render() {
       this.classList.add("c-version-banner");
+      Array.from(this.children).forEach((n) => n.remove());
       const message = this.getAttribute("message");
       if (message) {
         const icon = document.createElement("svg");
@@ -304,6 +305,35 @@ class ContourVersionBannerFull extends ContourBase {
         span.textContent = message;
         this.appendChild(span);
       }
+      const link = this.getAttribute("link");
+      const href = this.getAttribute("href");
+      if (link && href) {
+        const a = document.createElement("a");
+        a.className = "c-version-banner__link";
+        a.href = href;
+        a.textContent = link;
+        this.appendChild(a);
+      }
+      if (this.hasAttribute("dismissible")) {
+        const btn = document.createElement("button");
+        btn.className = "c-version-banner__dismiss";
+        btn.type = "button";
+        btn.setAttribute("aria-label", "Dismiss");
+        btn.textContent = "×";
+        this.appendChild(btn);
+      }
+    }
+    enhance() {
+      if (this._wiredVersionBanner) return;
+      this._wiredVersionBanner = true;
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest(".c-version-banner__dismiss") : null;
+        if (btn && this.contains(btn)) {
+          e.preventDefault();
+          this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true }));
+          this.remove();
+        }
+      });
     }
   }
   define("contour-version-banner", ContourVersionBannerFull);
