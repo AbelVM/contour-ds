@@ -1,10 +1,18 @@
 import { ContourBase, define } from './core.mjs';
 import { wireSegmented } from './behaviours.mjs';
 class ContourPressableFull extends ContourBase {
+    static get observed() { return ["disabled"]; }
+    static get properties() { return { disabled: { attribute: "disabled", type: Boolean } }; }
     render() {
       this.classList.add("c-pressable");
       if (!this.hasAttribute("role")) this.setAttribute("role", "button");
-      if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
+      if (this.hasAttribute("disabled")) {
+        this.setAttribute("aria-disabled", "true");
+        this.setAttribute("tabindex", "-1");
+      } else {
+        this.removeAttribute("aria-disabled");
+        if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
+      }
     }
     enhance() {
       if (this._wiredPressable) return;
@@ -108,12 +116,18 @@ class ContourShortcutPanelFull extends ContourBase {
   }
   define("contour-shortcut-overlay", ContourShortcutOverlayFull);
 class ContourRowActionFull extends ContourBase {
-    static get observed() { return ["label"]; }
-    static get properties() { return { label: { attribute: "label" } }; }
+    static get observed() { return ["label", "disabled"]; }
+    static get properties() { return { label: { attribute: "label" }, disabled: { attribute: "disabled", type: Boolean } }; }
     render() {
       this.classList.add("c-row-action");
       if (!this.hasAttribute("role")) this.setAttribute("role", "button");
-      if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
+      if (this.hasAttribute("disabled")) {
+        this.setAttribute("aria-disabled", "true");
+        this.setAttribute("tabindex", "-1");
+      } else {
+        this.removeAttribute("aria-disabled");
+        if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
+      }
       const label = this.getAttribute("label");
       if (label && !this.hasChildNodes()) this.textContent = label;
     }
@@ -356,8 +370,8 @@ class ContourScrollArea extends ContourBase {
   }
   define("contour-scroll-area", ContourScrollArea);
 class ContourBtn extends ContourBase {
-    static get observed() { return ["variant", "size", "color", "label"]; }
-    static get properties() { return { variant: { attribute: "variant" }, size: { attribute: "size" }, color: { attribute: "color" }, label: { attribute: "label" } }; }
+    static get observed() { return ["variant", "size", "color", "label", "disabled"]; }
+    static get properties() { return { variant: { attribute: "variant" }, size: { attribute: "size" }, color: { attribute: "color" }, label: { attribute: "label" }, disabled: { attribute: "disabled", type: Boolean } }; }
     render() {
       this.classList.add("c-btn");
       Array.from(this.classList).forEach((c) => { if (c.startsWith("c-btn--")) this.classList.remove(c); });
@@ -366,7 +380,13 @@ class ContourBtn extends ContourBase {
         if (val) this.classList.add("c-btn--" + val);
       }
       if (!this.hasAttribute("role")) this.setAttribute("role", "button");
-      if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
+      if (this.hasAttribute("disabled")) {
+        this.setAttribute("aria-disabled", "true");
+        this.setAttribute("tabindex", "-1");
+      } else {
+        this.removeAttribute("aria-disabled");
+        if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
+      }
       const label = this.getAttribute("label");
       if (label && !this.hasChildNodes()) this.textContent = label;
       if (label && !this.hasAttribute("aria-label")) this.setAttribute("aria-label", label);
