@@ -1672,6 +1672,19 @@
     color: var(--color-text-strong);
   }
 
+  .c-expandable__summary {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding-block: 1rem;
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--font-display);
+    font-size: var(--type-h4);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-strong);
+  }
+
   .c-disclosure__summary::-webkit-details-marker {
     display: none;
   }
@@ -2278,8 +2291,8 @@
        value 0.05 and gets ignored, leaving the cap fully visible. min(1,
        value*1000) stays in range everywhere — 0 at 0, 1 at any value >=
        0.001. */
-    top: 50%;
-    left: 50%;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
     inline-size: calc(var(--meter-size) * 0.0614);
     block-size: calc(var(--meter-size) * 0.0614);
     border-radius: 50%;
@@ -2590,6 +2603,23 @@
     background: var(--color-surface-1);
     color: var(--color-text);
     box-shadow: var(--shadow-xl);
+    /* Open/close transition (BY-50). Enhancement-only: native <dialog> owns
+       display via showModal()/close(), so the base declares the closed opacity
+       and a transition over opacity + display + overlay with allow-discrete;
+       the [open] rule carries opacity 1 and an @starting-style frame. An
+       engine without allow-discrete drops the whole transition and keeps
+       today's instant open. */
+    opacity: 0;
+    transition: opacity var(--dur-base) var(--ease-standard),
+      display var(--dur-base) var(--ease-standard) allow-discrete,
+      overlay var(--dur-base) var(--ease-standard) allow-discrete;
+  }
+
+  .c-dialog[open] {
+    opacity: 1;
+    @starting-style {
+      opacity: 0;
+    }
   }
 
   .c-dialog::backdrop {
