@@ -107,6 +107,7 @@
     color: var(--color-link);
     text-decoration-thickness: 1px;
     text-underline-offset: 0.22em;
+    overflow-wrap: break-word;
     transition: color var(--dur-fast) var(--ease-standard);
   }
 
