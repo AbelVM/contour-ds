@@ -630,7 +630,7 @@ Legend: **VERIFIED** = author re-derived from source/gate this pass · **SOURCE*
 | BY2-S11 | ⬜ | Document the chart-pattern fills (hatch/dots/lines) beside the dash-pattern contract | P3 | Med | Low | S | src/svg/chart-patterns.svg ships and is referenced nowhere |
 | BY3-G | ⬜ | Cap the panel-body prose measure and add overflow-wrap for inline code in section 23 | P3 | Med | Low | S | unmeasured 61 rem column vs 46 to 68 ch caps elsewhere |
 | BY3-H | ⬜ | Give specimen headings stable ids (or mark the real rail with data-command-nav) so command-k reaches subsections | P3 | Med | Low | S | only 3 id'd h2/h3 exist; the actions group is empty |
-| BY3-I | ⬜ | Advertise the question-mark shortcuts overlay in the palette foot or header and add aria-keyshortcuts | P3 | Med | Low | S | overlay exists at index.html:16348 but only the key it documents reveals it |
+| BY3-I | ✅ | Advertise the question-mark shortcuts overlay in the palette foot or header and add aria-keyshortcuts | P3 | Med | Low | S | overlay exists at index.html:16348 but only the key it documents reveals it |
 | BY3-I11 | ✅ | Emit the src detail from the 5 retry sites (or annotate per-site presence in the manifest) | P3 | Med | Low | S | data.mjs:464/785/1355/1447/1622 vs states.mjs:511 |
 | BY3-I12 | ✅ | Strike the unstyled contract names (globe, terrain) or add their rules so the contract lists only what the sheet themes | P3 | Low | Low | S | map-chrome-contract.json vs map-chrome.css |
 | BY3-I13 | ⬜ | Publish the shadow slot and part lists in a wc contract file if Figma/codegen adoption is a 1.0 goal | P3 | Med | Low | S | components.json has no slots key today |
