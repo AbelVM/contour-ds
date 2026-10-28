@@ -241,6 +241,43 @@ Web components are optional: every interactive block (tabs, combobox, tree,
 menu, segmented, dialog) works as plain markup with `ds.css` alone, and the
 `<contour-*>` elements only add scaffolding and keyboard behaviour.
 
+## Observing component events
+
+Every interactive `<contour-*>` element emits bubbling, composed `contour:*`
+CustomEvents, so a host (including one inside a shadow tree) can listen with
+plain `addEventListener`. Events carry a `detail` payload; see the §23 event
+table in the style guide for the full list.
+
+```js
+// Plain JavaScript
+const table = document.querySelector("contour-table");
+table.addEventListener("contour:page", (e) => {
+  console.log("page", e.detail.page);
+});
+table.addEventListener("contour:sort", (e) => {
+  console.log(e.detail.column, e.detail.direction);
+});
+```
+
+```jsx
+// React — attach via a ref (events are not props)
+import { useEffect, useRef } from "react";
+export function Table() {
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    const handler = (e) => console.log("page", e.detail.page);
+    el?.addEventListener("contour:page", handler);
+    return () => el?.removeEventListener("contour:page", handler);
+  }, []);
+  return <contour-table ref={ref} page-size="10" />;
+}
+```
+
+Because the events are `composed: true`, they cross shadow boundaries: a
+`contour-table` nested inside another component's shadow tree still reaches a
+listener on `document`.
+
 ## Surfaces
 
 | Surface | Guide |
