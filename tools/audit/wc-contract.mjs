@@ -1338,6 +1338,85 @@ try {
     else
       console.log("wc-contract: focusing a chart/map mark exposes its tooltip as a role=tooltip, and blur hides it");
   }
+
+  // ---- 16. map event vocabulary (BY-22) -----------------------------------
+  //
+  // F-8 measured map.mjs at 0 dispatchEvent / 0 CustomEvent: the layer-panel
+  // toggles, layer-switch, map-area controls and the compass generated
+  // controls that could not switch anything. Each arm performs the one
+  // interaction the component offers and asserts the matching contour:* event
+  // arrived with the right detail, composed=true (the data family's own flag,
+  // which is what a consumer wrapping contour in a shadow tree depends on).
+  {
+    const p = await browser.newPage();
+    const errs = [];
+    p.on("pageerror", (e) => errs.push(String(e.message || e)));
+    await p.goto(`${origin}/unmin.html`, { waitUntil: "load" });
+    await p.waitForFunction(() => !!window.ContourElements, null, { timeout: 20000 });
+    const out = await p.evaluate(async () => {
+      const mk = (name, attrs) => {
+        const host = document.createElement(name);
+        for (const [k, v] of Object.entries(attrs)) host.setAttribute(k, v);
+        document.body.appendChild(host);
+        return host;
+      };
+      const heard = (host, eventName) => {
+        let detail = null;
+        let composed = null;
+        host.addEventListener(eventName, (e) => { detail = e.detail; composed = e.composed; });
+        return () => ({ detail, composed });
+      };
+      const results = {};
+
+      {
+        const host = mk("contour-layer-panel", { label: "Layers", items: '[{"name":"Roads","visible":true}]' });
+        const read = heard(host, "contour:layer-visibility");
+        const toggle = host.querySelector(".c-layer-panel__toggle");
+        toggle.checked = false;
+        toggle.dispatchEvent(new Event("change", { bubbles: true }));
+        results.layerVisibility = read();
+      }
+      {
+        const host = mk("contour-layer-switch", { items: '["A","B"]' });
+        const read = heard(host, "contour:layer-toggle");
+        host.querySelector(".c-layer-switch__toggle").click();
+        results.layerToggle = read();
+      }
+      {
+        const host = mk("contour-map-area", { controls: '[{"label":"Zoom in"}]' });
+        const read = heard(host, "contour:map-control");
+        host.querySelector(".c-map-slot__control").click();
+        results.mapControl = read();
+      }
+      {
+        const host = mk("contour-compass", { label: "Compass", needle: "45" });
+        const read = heard(host, "contour:bearing");
+        host.querySelector(".c-compass__label--e").click();
+        results.bearing = read();
+      }
+
+      return results;
+    });
+    const bad = [];
+    const rv = out.layerVisibility;
+    if (!rv || rv.detail?.name !== "Roads" || rv.detail?.visible !== false)
+      bad.push(`layer-panel visibility ${JSON.stringify(rv)}`);
+    const lt = out.layerToggle;
+    if (!lt || lt.detail?.name !== "A") bad.push(`layer-switch toggle ${JSON.stringify(lt)}`);
+    const mc = out.mapControl;
+    if (!mc || mc.detail?.control !== "Zoom in") bad.push(`map-area control ${JSON.stringify(mc)}`);
+    const br = out.bearing;
+    if (!br || br.detail?.direction !== "e" || br.detail?.degrees !== 90) bad.push(`compass bearing ${JSON.stringify(br)}`);
+    for (const [k, r] of Object.entries(out)) {
+      if (r && r.composed !== true) bad.push(`${k} not composed=true: ${JSON.stringify(r)}`);
+    }
+    if (errs.length) bad.push(`page errors: ${errs.slice(0, 2).join(" | ")}`);
+    compared += 8;
+    if (bad.length)
+      fail(`map event vocabulary broke (BY-22): ${bad.join(" | ")}`);
+    else
+      console.log("wc-contract: layer-panel/layer-switch/map-area/compass all emit their contour:* events with composed=true");
+  }
 } finally {
   await browser.close();
   server.close();

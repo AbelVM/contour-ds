@@ -101,6 +101,22 @@ class ContourLayerPanel extends ContourBase {
         renderEmpty(this, "layer-panel");
       }
     }
+    enhance() {
+      if (this._wiredLayerPanel) return;
+      this._wiredLayerPanel = true;
+      // The panel's two controls (visibility toggle, opacity range) are rebuilt
+      // on every render, so both keep the host-delegated pattern (rule 12).
+      this.addEventListener("change", (e) => {
+        const item = e.target && e.target.closest ? e.target.closest(".c-layer-panel__item") : null;
+        if (!item || !this.contains(item)) return;
+        const name = item.querySelector(".c-layer-panel__name")?.textContent || "";
+        if (e.target.classList.contains("c-layer-panel__toggle")) {
+          this.dispatchEvent(new CustomEvent("contour:layer-visibility", { bubbles: true, composed: true, detail: { name, visible: e.target.checked } }));
+        } else if (e.target.classList.contains("c-layer-panel__opacity")) {
+          this.dispatchEvent(new CustomEvent("contour:layer-opacity", { bubbles: true, composed: true, detail: { name, opacity: Number(e.target.value) } }));
+        }
+      });
+    }
   }
 define("contour-layer-panel", ContourLayerPanel);
 class ContourTimeSlider extends ContourBase {
@@ -462,6 +478,10 @@ class ContourCompassFull extends ContourBase {
           l = document.createElement("span");
           l.className = "c-compass__label " + cls.slice(1);
           l.textContent = dir.toUpperCase();
+          // The cardinals are the compass's input: each one is a button-like
+          // target that sets the bearing (BY-22 `contour:bearing`).
+          l.setAttribute("role", "button");
+          l.setAttribute("tabindex", "0");
           this.appendChild(l);
         }
       }
@@ -490,6 +510,38 @@ class ContourCompassFull extends ContourBase {
       if (!needle && !label) {
         renderEmpty(this, "compass");
       }
+    }
+    enhance() {
+      if (this._wiredCompass) return;
+      this._wiredCompass = true;
+      // A cardinal is the compass's input: activate one to set the bearing and
+      // report it. The labels are rebuilt by render, so the handler is delegated
+      // on the host (rule 12) and resolves the degrees from the label itself.
+      const DEGREES = { n: 0, e: 90, s: 180, w: 270 };
+      const setBearing = (dir) => {
+        const deg = DEGREES[dir];
+        if (deg === undefined) return;
+        const n = this.querySelector(".c-compass__needle");
+        if (n) {
+          const path = n.querySelector("path");
+          if (path) path.setAttribute("d", compassNeedle(20, 20, 16, deg));
+        }
+        this.dispatchEvent(new CustomEvent("contour:bearing", { bubbles: true, composed: true, detail: { direction: dir, degrees: deg } }));
+      };
+      this.addEventListener("click", (e) => {
+        const label = e.target && e.target.closest ? e.target.closest(".c-compass__label--n, .c-compass__label--e, .c-compass__label--s, .c-compass__label--w") : null;
+        if (!label || !this.contains(label)) return;
+        const m = label.className.match(/c-compass__label--([nsew])/);
+        if (m) setBearing(m[1]);
+      });
+      this.addEventListener("keydown", (e) => {
+        if (e.key !== "Enter" && e.key !== " ") return;
+        const label = e.target && e.target.closest ? e.target.closest(".c-compass__label--n, .c-compass__label--e, .c-compass__label--s, .c-compass__label--w") : null;
+        if (!label || !this.contains(label)) return;
+        e.preventDefault();
+        const m = label.className.match(/c-compass__label--([nsew])/);
+        if (m) setBearing(m[1]);
+      });
     }
   }
 define("contour-compass", ContourCompassFull);
@@ -538,6 +590,17 @@ class ContourLayerSwitch extends ContourBase {
         Array.from(this.querySelectorAll(".c-layer-switch__item")).forEach((n) => n.remove());
         renderEmpty(this, "layer-switch");
       }
+    }
+    enhance() {
+      if (this._wiredLayerSwitch) return;
+      this._wiredLayerSwitch = true;
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest(".c-layer-switch__toggle") : null;
+        if (!btn || !this.contains(btn)) return;
+        const item = btn.closest(".c-layer-switch__item");
+        const name = item ? (item.querySelector(".c-layer-switch__name")?.textContent || "") : "";
+        this.dispatchEvent(new CustomEvent("contour:layer-toggle", { bubbles: true, composed: true, detail: { name } }));
+      });
     }
   }
 define("contour-layer-switch", ContourLayerSwitch);
@@ -620,6 +683,15 @@ class ContourMapArea extends ContourBase {
         const w = this.querySelector(".c-map-slot__controls");
         if (w) w.remove();
       }
+    }
+    enhance() {
+      if (this._wiredMapArea) return;
+      this._wiredMapArea = true;
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest(".c-map-slot__control") : null;
+        if (!btn || !this.contains(btn)) return;
+        this.dispatchEvent(new CustomEvent("contour:map-control", { bubbles: true, composed: true, detail: { control: btn.textContent } }));
+      });
     }
   }
   define("contour-map-area", ContourMapArea);
