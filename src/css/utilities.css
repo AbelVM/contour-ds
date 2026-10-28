@@ -277,7 +277,16 @@
     .c-chart,
     .c-legend,
     .c-kpi,
-    .c-meter {
+    .c-meter,
+    .c-switch,
+    .c-check,
+    .c-radio,
+    .c-range,
+    .c-tabs,
+    .c-segmented,
+    .c-command,
+    .c-menu,
+    .c-toolbar {
       border: 1px solid CanvasText;
     }
 
