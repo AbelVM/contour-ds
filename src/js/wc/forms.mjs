@@ -113,6 +113,21 @@ class ContourField extends ContourBase {
       sync();
       this._emitForm("contour:change");
     });
+    // Inline validation (BY2-U6): on blur, reflect validity on the input via
+    // aria-invalid and toggle the error/success state. The CSS already paints
+    // the invalid ring (components.css aria-invalid rules); this just drives it.
+    this.addEventListener("blur", (e) => {
+      const input = this.querySelector("input, textarea, select");
+      if (!input || e.target !== input) return;
+      const valid = input.checkValidity();
+      if (valid) {
+        input.removeAttribute("aria-invalid");
+        input.setAttribute("aria-invalid", "false");
+      } else {
+        input.setAttribute("aria-invalid", "true");
+      }
+      sync();
+    }, true);
     sync();
   };
   define("contour-field", ContourField);
