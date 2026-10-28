@@ -1417,6 +1417,108 @@ try {
     else
       console.log("wc-contract: layer-panel/layer-switch/map-area/compass all emit their contour:* events with composed=true");
   }
+
+  // ---- 17. form value events (BY-44) --------------------------------------
+  //
+  // The form family had 16 user-interaction listeners and 0 dispatchEvent, so
+  // a consumer could not observe a change without polling (plan §7: "change a
+  // contour-switch, assert contour:change with the composite's own state").
+  // Each arm performs the one interaction a component offers and asserts the
+  // matching contour:input / contour:change arrived with {name, value, checked}
+  // drawn from the same state the entry list carries, composed=true.
+  {
+    const p = await browser.newPage();
+    const errs = [];
+    p.on("pageerror", (e) => errs.push(String(e.message || e)));
+    await p.goto(`${origin}/unmin.html`, { waitUntil: "load" });
+    await p.waitForFunction(() => !!window.ContourElements, null, { timeout: 20000 });
+    const out = await p.evaluate(async () => {
+      const mk = (name, attrs) => {
+        const host = document.createElement(name);
+        for (const [k, v] of Object.entries(attrs)) host.setAttribute(k, v);
+        document.body.appendChild(host);
+        return host;
+      };
+      const heard = (host, eventName) => {
+        let detail = null;
+        let composed = null;
+        host.addEventListener(eventName, (e) => { detail = e.detail; composed = e.composed; });
+        return () => ({ detail, composed });
+      };
+      const results = {};
+
+      // switch: click flips checked -> contour:change {name, value:"on", checked}
+      {
+        const host = mk("contour-switch", { label: "WiFi", name: "sw" });
+        const read = heard(host, "contour:change");
+        host.querySelector("input").click();
+        results.switch = read();
+      }
+      // check: click -> contour:change {name, value, checked}
+      {
+        const host = mk("contour-check", { label: "Agree", name: "agree", value: "yes" });
+        const read = heard(host, "contour:change");
+        host.querySelector("input").click();
+        results.check = read();
+      }
+      // input: typing -> contour:input AND contour:change
+      {
+        const host = mk("contour-input", { name: "q", value: "default" });
+        const readIn = heard(host, "contour:input");
+        const readCh = heard(host, "contour:change");
+        const inp = host.querySelector("input");
+        inp.value = "typed";
+        inp.dispatchEvent(new Event("input", { bubbles: true }));
+        const gotInput = readIn();
+        inp.dispatchEvent(new Event("change", { bubbles: true }));
+        const gotChange = readCh();
+        results.input = { gotInput, gotChange };
+      }
+      // radio: click -> contour:change {name, value, checked}
+      {
+        const host = mk("contour-radio", { name: "g", value: "a", label: "A" });
+        const read = heard(host, "contour:change");
+        host.querySelector("input").click();
+        results.radio = read();
+      }
+      // radio-list: click x then ArrowDown -> change with x, then with z
+      {
+        const host = mk("contour-radio-list", { name: "opt", items: '[{"label":"X","value":"x"},{"label":"Y","value":"y"},{"label":"Z","value":"z","checked":true}]' });
+        const read = heard(host, "contour:change");
+        const radios = Array.from(host.querySelectorAll("input"));
+        radios.find((r) => r.value === "x").click();
+        const afterClick = read();
+        const y = radios.find((r) => r.value === "y");
+        y.focus();
+        y.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
+        const afterArrow = read();
+        results.radioList = { afterClick, afterArrow };
+      }
+
+      return results;
+    });
+    const bad = [];
+    const check = (label, r, wantDetail) => {
+      if (!r || r.composed !== true || !r.detail) bad.push(`${label} ${JSON.stringify(r)}`);
+      else if (wantDetail && Object.keys(wantDetail).some((k) => wantDetail[k] !== null && r.detail[k] !== wantDetail[k]))
+        bad.push(`${label} detail ${JSON.stringify(r.detail)} != ${JSON.stringify(wantDetail)}`);
+    };
+    check("switch", out.switch, { name: "sw", value: "on", checked: true });
+    check("check", out.check, { name: "agree", value: "yes", checked: true });
+    check("input-input", out.input?.gotInput, { name: "q", value: "typed", checked: null });
+    check("input-change", out.input?.gotChange, { name: "q", value: "typed", checked: null });
+    check("radio", out.radio, { name: "g", value: "a", checked: true });
+    check("radioList-click", out.radioList?.afterClick, { name: "opt", value: "x", checked: true });
+    check("radioList-arrow", out.radioList?.afterArrow, { name: "opt", value: "z", checked: true });
+    if (out.radioList?.afterArrow?.detail?.value === out.radioList?.afterClick?.detail?.value)
+      bad.push("radio-list arrow onto the same radio fired contour:change (wrap-around is not a change)");
+    if (errs.length) bad.push(`page errors: ${errs.slice(0, 2).join(" | ")}`);
+    compared += 12;
+    if (bad.length)
+      fail(`form value events broke (BY-44): ${bad.join(" | ")}`);
+    else
+      console.log("wc-contract: the form family emits contour:input/contour:change with {name, value, checked} and composed=true");
+  }
 } finally {
   await browser.close();
   server.close();

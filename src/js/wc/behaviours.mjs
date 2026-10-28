@@ -362,6 +362,9 @@ export function wireCombobox(host) {
     if (!isField(e.target)) return;
     filter(e.target.value);
     open();
+    // The form-value event (BY-44) rides on the same interaction; the shadow
+    // wrappers share this behaviour but have no `_emitForm`, so guard it.
+    if (typeof host._emitForm === "function") host._emitForm("contour:input");
   });
   wcListen(host, "focusin", (e) => {
     if (!isField(e.target)) return;

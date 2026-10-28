@@ -95,11 +95,13 @@ class ContourField extends ContourBase {
       const input = this.querySelector("input, textarea, select");
       if (!input || e.target !== input) return;
       sync();
+      this._emitForm("contour:input");
     });
     this.addEventListener("change", (e) => {
       const input = this.querySelector("input, textarea, select");
       if (!input || e.target !== input) return;
       sync();
+      this._emitForm("contour:change");
     });
     sync();
   };
@@ -148,11 +150,13 @@ class ContourField extends ContourBase {
       const input = this.querySelector("input");
       if (!input || e.target !== input) return;
       sync();
+      this._emitForm("contour:input");
     });
     this.addEventListener("change", (e) => {
       const input = this.querySelector("input");
       if (!input || e.target !== input) return;
       sync();
+      this._emitForm("contour:change");
     });
     sync();
   };
@@ -200,6 +204,7 @@ class ContourSwitch extends ContourBase {
         if (!inp || e.target !== inp || !this._internals) return;
         inp.setAttribute("aria-checked", String(inp.checked));
         this._internals.setFormValue(inp.checked ? (inp.value || "on") : null);
+        this._emitForm("contour:change");
         if (this.hasAttribute("required") && !inp.checked) {
           this._internals.setValidity({ valueMissing: true }, "This field is required.");
         } else {
@@ -249,6 +254,7 @@ class ContourCheck extends ContourBase {
         const inp = this.querySelector("input");
         if (!inp || e.target !== inp || !this._internals) return;
         this._internals.setFormValue(inp.checked ? (inp.value || "on") : null);
+        this._emitForm("contour:change");
         if (this.hasAttribute("required") && !inp.checked) {
           this._internals.setValidity({ valueMissing: true }, "This field is required.");
         } else {
@@ -292,6 +298,7 @@ class ContourRadio extends ContourBase {
         // Unchecking (group movement) must clear the stale FormData entry,
         // not leave it behind beside the new selection.
         this._internals.setFormValue(inp.checked ? (inp.value || "on") : null);
+        this._emitForm("contour:change");
         if (this.hasAttribute("required") && !inp.checked) {
           this._internals.setValidity({ valueMissing: true }, "This field is required.");
         } else {
@@ -347,6 +354,7 @@ class ContourRadio extends ContourBase {
         const sel = this.querySelector("select");
         if (!sel || e.target !== sel || !this._internals) return;
         this._internals.setFormValue(sel.value);
+        this._emitForm("contour:change");
         if (this.hasAttribute("required") && !sel.value) {
           this._internals.setValidity({ valueMissing: true }, "This field is required.");
         } else {
@@ -395,6 +403,7 @@ class ContourVersion extends ContourBase {
         const select = this.querySelector("select");
         if (!select || e.target !== select) return;
         sync();
+        this._emitForm("contour:change");
       });
       sync();
     }
@@ -428,6 +437,7 @@ class ContourTextarea extends ContourBase {
         const t = this.querySelector("textarea");
         if (!t || e.target !== t || !this._internals) return;
         this._internals.setFormValue(t.value);
+        this._emitForm("contour:input");
         if (this.hasAttribute("required") && !t.value.trim()) {
           this._internals.setValidity({ valueMissing: true }, "This field is required.");
         } else {
@@ -438,6 +448,7 @@ class ContourTextarea extends ContourBase {
         const t = this.querySelector("textarea");
         if (!t || e.target !== t || !this._internals) return;
         this._internals.setFormValue(t.value);
+        this._emitForm("contour:change");
         if (this.hasAttribute("required") && !t.value.trim()) {
           this._internals.setValidity({ valueMissing: true }, "This field is required.");
         } else {
@@ -477,6 +488,7 @@ class ContourInputFull extends ContourBase {
         const inp = this.querySelector("input");
         if (!inp || e.target !== inp || !this._internals) return;
         this._internals.setFormValue(inp.value);
+        this._emitForm("contour:input");
         if (this.hasAttribute("required") && !inp.value.trim()) {
           this._internals.setValidity({ valueMissing: true }, "This field is required.");
         } else {
@@ -487,6 +499,7 @@ class ContourInputFull extends ContourBase {
         const inp = this.querySelector("input");
         if (!inp || e.target !== inp || !this._internals) return;
         this._internals.setFormValue(inp.value);
+        this._emitForm("contour:change");
         if (this.hasAttribute("required") && !inp.value.trim()) {
           this._internals.setValidity({ valueMissing: true }, "This field is required.");
         } else {
@@ -560,6 +573,7 @@ class ContourRadioList extends ContourBase {
         const input = e.target && e.target.closest ? e.target.closest("input.c-radio__input") : null;
         if (!input || !this.contains(input)) return;
         sync();
+        this._emitForm("contour:change");
       });
       this.addEventListener("keydown", (e) => {
         const radios = Array.from(this.querySelectorAll("input.c-radio__input"));
@@ -573,11 +587,15 @@ class ContourRadioList extends ContourBase {
         else if (e.key === "End") next = radios.length - 1;
         else return;
         e.preventDefault();
+        const before = radios.find((r) => r.checked);
         for (const r of radios) r.tabIndex = -1;
         radios[next].tabIndex = 0;
         radios[next].checked = true;
         radios[next].focus();
         sync();
+        // Native radio groups fire change when an arrow moves the selection;
+        // wrap-around onto the same radio is not a change.
+        if (before !== radios[next]) this._emitForm("contour:change");
       });
     }
     formResetCallback() {

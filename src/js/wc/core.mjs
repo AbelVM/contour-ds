@@ -430,6 +430,28 @@
         this._internals.setValidity({});
       }
     }
+
+    // The form value events (BY-44). §23 promises interactive components emit
+    // bubbling contour:* events; the form family had 16 user-interaction
+    // listeners and emitted none, so a consumer could not observe a change
+    // without polling. This is the ONE value-shape both `contour:input` and
+    // `contour:change` carry, derived from the same control state _syncFormValue
+    // submits, so the event can never disagree with the entry list.
+    _emitForm(type) {
+      if (!this._internals) return;
+      const ctl = this.querySelector("input:checked, textarea, select") || this.querySelector("input, textarea, select");
+      if (!ctl) return;
+      const boolean = ctl.type === "checkbox" || ctl.type === "radio";
+      this.dispatchEvent(new CustomEvent(type, {
+        bubbles: true,
+        composed: true,
+        detail: {
+          name: this.getAttribute("name"),
+          value: boolean ? (ctl.checked ? (ctl.value || "on") : null) : ctl.value,
+          checked: boolean ? ctl.checked : null,
+        },
+      }));
+    }
     formResetCallback() {
       // Reset synchronously: re-rendering would restore the base class's
       // *preserved* typed value, not the authored default. The authored
