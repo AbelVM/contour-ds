@@ -1293,4 +1293,11 @@
   #webcomponents .c-panel + .c-panel {
     margin-block-start: var(--space-md);
   }
+
+  /* Cap the prose measure in §23 panel bodies and wrap long inline code so a
+     wide token name or event name cannot push the column past the rail. */
+  #webcomponents .c-panel__body {
+    max-inline-size: 68ch;
+    overflow-wrap: anywhere;
+  }
 }
