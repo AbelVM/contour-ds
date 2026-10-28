@@ -393,7 +393,7 @@ class ContourFaq extends ContourBase {
   }
 define("contour-faq", ContourFaq);
 class ContourAccordion extends ContourBase {
-    static get observed() { return ["items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
+    static get observed() { return ["items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "persist"]; }
     static get properties() { return { items: { attribute: "items" } }; }
     render() {
       // The host is a plain container; the children carry .c-disclosure, which
@@ -425,6 +425,26 @@ class ContourAccordion extends ContourBase {
        } else if (!items && !authored.length) {
          renderEmpty(this, "accordion");
        }
+      // Restore persisted open state (BY-49).
+      const persist = this.getAttribute("persist");
+      if (persist) {
+        let saved = null;
+        if (persist === "storage" && this.id) { try { saved = localStorage.getItem("contour-accordion:" + this.id); } catch (e) {} }
+        else if (persist === "url") { try { saved = new URLSearchParams(window.location.search).get("c-accordion"); } catch (e) {} }
+        if (saved !== null) {
+          try {
+            const labels = JSON.parse(saved);
+            if (Array.isArray(labels)) {
+              const want = new Set(labels.map((l) => String(l)));
+              Array.from(this.querySelectorAll("details.c-disclosure")).forEach((d) => {
+                const summary = d.querySelector("summary");
+                const label = (summary ? summary.textContent : "").trim().slice(0, 120);
+                if (want.has(label)) d.open = true;
+              });
+            }
+          } catch (e) {}
+        }
+      }
     }
     enhance() {
       if (this._wiredAccordion) return;
@@ -433,6 +453,22 @@ class ContourAccordion extends ContourBase {
         const t = e.target;
         if (t && t.tagName === "DETAILS") {
           this.dispatchEvent(new CustomEvent("contour:toggle", { detail: { open: t.open }, bubbles: true, composed: true }));
+          const persist = this.getAttribute("persist");
+          if (persist === "storage" && this.id) {
+            try {
+              const open = [];
+              Array.from(this.querySelectorAll("details.c-disclosure")).forEach((d) => { if (d.open) { const s = d.querySelector("summary"); open.push((s ? s.textContent : "").trim().slice(0, 120)); } });
+              localStorage.setItem("contour-accordion:" + this.id, JSON.stringify(open));
+            } catch (e) {}
+          } else if (persist === "url") {
+            try {
+              const open = [];
+              Array.from(this.querySelectorAll("details.c-disclosure")).forEach((d) => { if (d.open) { const s = d.querySelector("summary"); open.push((s ? s.textContent : "").trim().slice(0, 120)); } });
+              const url = new URL(window.location.href);
+              url.searchParams.set("c-accordion", JSON.stringify(open));
+              window.history.replaceState(null, "", url.toString());
+            } catch (e) {}
+          }
         }
       }, true);
     }

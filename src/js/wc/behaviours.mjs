@@ -543,6 +543,60 @@ export function wireTree(host) {
   });
 
   if (!wcClaim(host, "tree")) return;
+  // Expanded-state persistence (BY-49), one path per component like tabs:
+  // restore runs once at connect, the write fires from the same handler that
+  // emits contour:toggle. Identity is the emitted label — the row's text
+  // trimmed and sliced to 120 chars — because the generated DOM stamps no node
+  // ids (route table tmp/persist-route-table.md). Storage requires a host id;
+  // url mode is the single `c-tree` search param, never a hash write.
+  const persist = host.getAttribute("persist");
+  if (persist === "storage" && host.id) {
+    try {
+      const saved = localStorage.getItem("contour-tree:" + host.id);
+      if (saved !== null) {
+        const labels = JSON.parse(saved);
+        if (Array.isArray(labels)) {
+          const want = new Set(labels.map((l) => String(l)));
+          wcAll(host, ".c-tree__row").forEach((row) => {
+            if (row.getAttribute("aria-expanded") === "true") return;
+            const label = (row.textContent || "").trim().slice(0, 120);
+            if (!want.has(label)) return;
+            const toggle = row.querySelector(":scope > .c-tree__toggle");
+            if (!toggle) return;
+            const node = row.closest(".c-tree__node");
+            const children = node ? node.querySelector(":scope > .c-tree__children") : null;
+            toggle.setAttribute("aria-expanded", "true");
+            row.setAttribute("aria-expanded", "true");
+            if (node) node.setAttribute("aria-expanded", "true");
+            if (children) children.removeAttribute("hidden");
+          });
+        }
+      }
+    } catch (e) { /* private mode / malformed: keep the authored state */ }
+  } else if (persist === "url") {
+    try {
+      const v = new URLSearchParams(window.location.search).get("c-tree");
+      if (v !== null) {
+        const labels = JSON.parse(v);
+        if (Array.isArray(labels)) {
+          const want = new Set(labels.map((l) => String(l)));
+          wcAll(host, ".c-tree__row").forEach((row) => {
+            if (row.getAttribute("aria-expanded") === "true") return;
+            const label = (row.textContent || "").trim().slice(0, 120);
+            if (!want.has(label)) return;
+            const toggle = row.querySelector(":scope > .c-tree__toggle");
+            if (!toggle) return;
+            const node = row.closest(".c-tree__node");
+            const children = node ? node.querySelector(":scope > .c-tree__children") : null;
+            toggle.setAttribute("aria-expanded", "true");
+            row.setAttribute("aria-expanded", "true");
+            if (node) node.setAttribute("aria-expanded", "true");
+            if (children) children.removeAttribute("hidden");
+          });
+        }
+      }
+    } catch (e) { /* malformed param: keep the authored state */ }
+  }
   const toggleNode = (toggle) => {
     const wasOpen = toggle.getAttribute("aria-expanded") === "true";
     toggle.setAttribute("aria-expanded", String(!wasOpen));
@@ -560,6 +614,26 @@ export function wireTree(host) {
     }
     if (node) node.setAttribute("aria-expanded", String(!wasOpen));
     wcEmit(host, "contour:toggle", { open: !wasOpen, label: (row ? row.textContent : "").trim().slice(0, 120) });
+    // Persist expanded state (BY-49): collect all currently-open rows.
+    if (persist === "storage" && host.id) {
+      try {
+        const open = [];
+        wcAll(host, ".c-tree__row").forEach((r) => {
+          if (r.getAttribute("aria-expanded") === "true") open.push((r.textContent || "").trim().slice(0, 120));
+        });
+        localStorage.setItem("contour-tree:" + host.id, JSON.stringify(open));
+      } catch (e) {}
+    } else if (persist === "url") {
+      try {
+        const open = [];
+        wcAll(host, ".c-tree__row").forEach((r) => {
+          if (r.getAttribute("aria-expanded") === "true") open.push((r.textContent || "").trim().slice(0, 120));
+        });
+        const url = new URL(window.location.href);
+        url.searchParams.set("c-tree", JSON.stringify(open));
+        window.history.replaceState(null, "", url.toString());
+      } catch (e) {}
+    }
   };
   const branchOf = (el) => (el.classList && el.classList.contains("c-tree__toggle") ? el : null);
   const stopsOf = () => visibleStops(host);
