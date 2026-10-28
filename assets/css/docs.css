@@ -203,6 +203,60 @@
     }
   }
 
+  /* Back to top (BY3-D) */
+  .c-back-to-top {
+    position: fixed;
+    inset-block-end: 1.5rem;
+    inset-inline-end: 1.5rem;
+    display: grid;
+    place-items: center;
+    inline-size: 2.5rem;
+    block-size: 2.5rem;
+    border-radius: var(--radius-full);
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    text-decoration: none;
+    z-index: 10;
+  }
+  .c-back-to-top:hover {
+    color: var(--color-text-strong);
+    background: var(--color-surface-3);
+  }
+
+  /* Mobile section menu (BY3-D): visible only below 68rem, where the rail
+     disappears. A <details> so it works without JS. */
+  .c-header__mobile-nav {
+    display: none;
+  }
+  @media (width < 68rem) {
+    .c-header__mobile-nav {
+      display: block;
+    }
+    .c-header__mobile-nav > summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: var(--type-xs);
+    }
+    .c-header__mobile-nav nav {
+      display: grid;
+      gap: 0.25rem;
+      padding: 0.5rem;
+    }
+    .c-header__mobile-nav nav a {
+      padding: 0.5rem;
+      border-radius: var(--radius-sm);
+      color: var(--color-text-muted);
+      text-decoration: none;
+    }
+    .c-header__mobile-nav nav a:hover {
+      color: var(--color-text-strong);
+      background: var(--color-surface-2);
+    }
+  }
+
   .ds-rail__title {
     font-family: var(--font-mono);
     font-size: var(--type-micro);
