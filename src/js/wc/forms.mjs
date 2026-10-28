@@ -570,9 +570,12 @@ class ContourRadioList extends ContourBase {
         if (!radios.length) return;
         const idx = radios.indexOf(e.target);
         if (idx === -1) return;
+        const rtl = (this.getAttribute("dir") || document.documentElement.getAttribute("dir") || "").toLowerCase() === "rtl";
         let next = -1;
-        if (e.key === "ArrowDown" || e.key === "ArrowRight") next = (idx + 1) % radios.length;
-        else if (e.key === "ArrowUp" || e.key === "ArrowLeft") next = (idx - 1 + radios.length) % radios.length;
+        if (e.key === "ArrowDown") next = (idx + 1) % radios.length;
+        else if (e.key === "ArrowUp") next = (idx - 1 + radios.length) % radios.length;
+        else if (e.key === "ArrowRight") next = rtl ? (idx - 1 + radios.length) % radios.length : (idx + 1) % radios.length;
+        else if (e.key === "ArrowLeft") next = rtl ? (idx + 1) % radios.length : (idx - 1 + radios.length) % radios.length;
         else if (e.key === "Home") next = 0;
         else if (e.key === "End") next = radios.length - 1;
         else return;
