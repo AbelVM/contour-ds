@@ -106,6 +106,12 @@ jobs:
       # against src/css: blocks the inventory sees, elements/variants that fold
       # back to their block, states that appear in a real selector, and the split
       # between declared tokens and host inputs the system only reads.
+      - name: Check the web-component fragments and registrations
+        run: node tools/check-wc.mjs
+
+      - name: Run the node gate sweep
+        run: node tools/doctor.mjs
+
       - name: Check the component contract resolves against src/css
         run: node tools/check-components.mjs
 
