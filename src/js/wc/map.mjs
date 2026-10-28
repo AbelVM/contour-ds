@@ -1,4 +1,4 @@
-import { ContourBase, define } from './core.mjs';
+import { ContourBase, define, onDispose } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { compassNeedle, scaleBarTicks } from './svg.mjs';
 class ContourMinimap extends ContourBase {
@@ -147,6 +147,30 @@ class ContourTimeSlider extends ContourBase {
     enhance() {
       if (this._wiredTimeSlider) return;
       this._wiredTimeSlider = true;
+      // Play advances the track one step per second and announces each move as
+      // contour:time-change, so a dashboard can animate a chart in lockstep.
+      // The loop stops at max, or on a second click, or when the host leaves
+      // the page (the disposer is registered once, like the loader's).
+      let timer = undefined;
+      const stop = () => { if (timer !== undefined) { clearInterval(timer); timer = undefined; } };
+      const step = () => {
+        const track = this.querySelector(".c-time-slider__track");
+        if (!track) { stop(); return; }
+        const max = Number(track.max) || 100;
+        const next = Math.min(max, (Number(track.value) || 0) + 1);
+        track.value = String(next);
+        this.dispatchEvent(new CustomEvent("contour:time-change", { detail: { value: String(next) }, bubbles: true, composed: true }));
+        if (next >= max) {
+          stop();
+          const btn = this.querySelector(".c-time-slider__play");
+          if (btn) {
+            btn.setAttribute("data-state", "play");
+            btn.setAttribute("aria-label", "Play");
+            const use = btn.querySelector("use");
+            if (use) use.setAttribute("href", "#i-play");
+          }
+        }
+      };
       this.addEventListener("click", (e) => {
         const btn = e.target && e.target.closest ? e.target.closest(".c-time-slider__play") : null;
         if (!btn) return;
@@ -155,7 +179,14 @@ class ContourTimeSlider extends ContourBase {
         btn.setAttribute("aria-label", playing ? "Pause" : "Play");
         const use = btn.querySelector("use");
         if (use) use.setAttribute("href", playing ? "#i-pause" : "#i-play");
+        if (playing) {
+          stop();
+          timer = setInterval(step, 1000);
+        } else {
+          stop();
+        }
       });
+      onDispose(this, stop);
     }
   }
   define("contour-time-slider", ContourTimeSlider);

@@ -188,11 +188,12 @@ class ContourDropZone extends ContourBase {
   }
   define("contour-drop-zone", ContourDropZone);
 class ContourResizable extends ContourBase {
-    static get observed() { return []; }
-    static get properties() { return {}; }
+    static get observed() { return ["direction"]; }
+    static get properties() { return { direction: { attribute: "direction" } }; }
     render() {
       this.classList.add("c-resizable");
-      this.classList.add("c-resizable--horizontal");
+      const vertical = this.getAttribute("direction") === "vertical";
+      this.classList.add(vertical ? "c-resizable--vertical" : "c-resizable--horizontal");
       if (!this.querySelector(".c-resizable__pane")) {
         const p1 = document.createElement("div");
         p1.className = "c-resizable__pane";
@@ -206,6 +207,48 @@ class ContourResizable extends ContourBase {
         this.appendChild(handle);
         this.appendChild(p2);
       }
+    }
+    enhance() {
+      if (this._wiredResizable) return;
+      this._wiredResizable = true;
+      // Pointer resize (BY-27): the handle is generated on every render, so
+      // the listeners are delegated on the host and re-query per event (rule
+      // 12). Dragging sets the first pane's flex-basis; the second pane's
+      // `flex: 1 1 0` takes the rest, so the split is the drag's own number.
+      const setSplit = (clientX, clientY) => {
+        const rect = this.getBoundingClientRect();
+        const vertical = this.classList.contains("c-resizable--vertical");
+        const span = vertical ? rect.height : rect.width;
+        const pos = vertical ? clientY - rect.top : clientX - rect.left;
+        const frac = span > 0 ? Math.min(0.9, Math.max(0.1, pos / span)) : 0.5;
+        const p1 = this.querySelector(".c-resizable__pane");
+        if (p1) p1.style.flex = `0 0 ${Math.round(frac * 100)}%`;
+      };
+      this.addEventListener("pointerdown", (e) => {
+        const handle = this.querySelector(".c-resize-handle");
+        if (!handle || e.target !== handle) return;
+        this._resizing = true;
+        handle.classList.add("c-resize-handle--dragging");
+        if (handle.setPointerCapture) { try { handle.setPointerCapture(e.pointerId); } catch (err) { /* synthetic pointer: ignore */ } }
+        e.preventDefault();
+      });
+      this.addEventListener("pointermove", (e) => {
+        if (!this._resizing) return;
+        setSplit(e.clientX, e.clientY);
+      });
+      const stopResize = (e) => {
+        if (!this._resizing) return;
+        this._resizing = false;
+        const handle = this.querySelector(".c-resize-handle");
+        if (handle) {
+          handle.classList.remove("c-resize-handle--dragging");
+          if (handle.hasPointerCapture && handle.hasPointerCapture(e.pointerId)) {
+            try { handle.releasePointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+          }
+        }
+      };
+      this.addEventListener("pointerup", stopResize);
+      this.addEventListener("pointercancel", stopResize);
     }
   }
   define("contour-resizable", ContourResizable);

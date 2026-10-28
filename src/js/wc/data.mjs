@@ -1,5 +1,5 @@
-import { ContourBase, define } from './core.mjs';
-import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
+import { ContourBase, define, onDispose } from './core.mjs';
+import { loadRemote, remoteData, renderStates, renderEmpty, wireStates, remoteInvalidate } from './states.mjs';
 import { donutSlices, barRects, smoothPath, polylinePoints } from './svg.mjs';
 class ContourReadout extends ContourBase {
     static get observed() { return ["rows", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
@@ -840,8 +840,8 @@ class ContourComparison extends ContourBase {
   }
   define("contour-comparison", ContourComparison);
 class ContourStreamingChart extends ContourBase {
-    static get observed() { return ["line", "dot", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { line: { attribute: "line" }, dot: { attribute: "dot" } }; }
+    static get observed() { return ["line", "dot", "interval", "pause", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
+    static get properties() { return { line: { attribute: "line" }, dot: { attribute: "dot" }, interval: { attribute: "interval", type: Number }, pause: { attribute: "pause", type: Boolean } }; }
     render() {
       this.classList.add("c-streaming-chart");
       wireStates(this);
@@ -885,6 +885,42 @@ class ContourStreamingChart extends ContourBase {
           }
         }
       }
+    }
+    enhance() {
+      // Stream cadence (BY-40). The layer had no timer at all — the literal
+      // gap the row names — so the chart gets its own `interval` loop rather
+      // than a second clock inside the loader. Each tick emits contour:tick
+      // and, when a src is present, re-validates through the loader's own
+      // cache path (remoteInvalidate + requestRender — the two steps the
+      // loader's refresh tick performs), so the shared cache and abort
+      // semantics stay the loader's. The loader's `refresh` attribute is NOT
+      // written here: an attribute a component writes to itself must never be
+      // observed, or the write re-enters render (measured by the gate).
+      // `pause` stops the loop; `interval` growth is clamped to the loader's
+      // own 1 s floor so the two cannot disagree.
+      const sync = () => {
+        const seconds = parseFloat(this.getAttribute("interval") || "");
+        const want = Number.isFinite(seconds) && seconds > 0 && !this.hasAttribute("pause");
+        if (want === this._streamRunning) return;
+        this._streamRunning = want;
+        if (this._streamTimer !== undefined) { clearInterval(this._streamTimer); this._streamTimer = undefined; }
+        this.dispatchEvent(new CustomEvent("contour:stream-state", { detail: { running: want }, bubbles: true, composed: true }));
+        if (!want) return;
+        this._streamTimer = setInterval(() => {
+          if (!this.isConnected || this.hasAttribute("pause")) return;
+          this._streamFrame += 1;
+          this.dispatchEvent(new CustomEvent("contour:tick", { detail: { frame: this._streamFrame }, bubbles: true, composed: true }));
+          const src = this.getAttribute("src");
+          if (src) { remoteInvalidate(src); this.requestRender(); }
+        }, Math.max(1000, seconds * 1000));
+      };
+      sync();
+      // The base re-runs enhance after every render, so interval/pause changes
+      // are picked up by sync() above; the timer itself is owned exactly once.
+      if (this._wiredStream) return;
+      this._wiredStream = true;
+      this._streamFrame = 0;
+      onDispose(this, () => { if (this._streamTimer !== undefined) { clearInterval(this._streamTimer); this._streamTimer = undefined; } });
     }
   }
 define("contour-streaming-chart", ContourStreamingChart);
@@ -1174,13 +1210,17 @@ class ContourMetricsFull extends ContourBase {
   }
   define("contour-metrics", ContourMetricsFull);
 class ContourLegend extends ContourBase {
-    static get observed() { return ["title", "ramp", "scale", "items", "method", "norm", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { title: { attribute: "title" }, ramp: { attribute: "ramp" }, scale: { attribute: "scale" }, items: { attribute: "items" }, method: { attribute: "method" }, norm: { attribute: "norm" } }; }
+    static get observed() { return ["title", "ramp", "scale", "items", "method", "norm", "selectable", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
+    static get properties() { return { title: { attribute: "title" }, ramp: { attribute: "ramp" }, scale: { attribute: "scale" }, items: { attribute: "items" }, method: { attribute: "method" }, norm: { attribute: "norm" }, selectable: { attribute: "selectable", type: Boolean } }; }
     render() {
       this.classList.add("c-legend");
       wireStates(this);
       loadRemote(this, "items");
       if (renderStates(this, "legend")) return;
+      // Selectable legends (BY-41): items become toggle buttons with
+      // aria-pressed, and the sheet's existing `.c-legend--interactive` rules
+      // (hover, dim when pressed=false) apply.
+      const selectable = this.hasAttribute("selectable");
       const items = remoteData(this, "items");
       const title = this.getAttribute("title");
       if (title) {
@@ -1196,14 +1236,21 @@ class ContourLegend extends ContourBase {
           const list = this.ensure(".c-legend__items", () => { const el = document.createElement("div"); el.className = "c-legend__items"; return el; });
           list.innerHTML = "";
           parsed.forEach((it) => {
-            const item = document.createElement("div");
+            const label = typeof it === "string" ? it : (it.label || String(it));
+            const key = typeof it === "string" ? it : (it.key || it.label || String(it));
+            const item = document.createElement(selectable ? "button" : "div");
             item.className = "c-legend__item";
+            if (selectable) {
+              item.type = "button";
+              item.setAttribute("aria-pressed", "true");
+              item.dataset.key = key;
+            }
             const sw = document.createElement("span");
             sw.className = "c-legend__swatch";
-            if (it.color) sw.style.background = it.color;
+            if (it && it.color) sw.style.background = it.color;
             item.appendChild(sw);
             const lbl = document.createElement("span");
-            lbl.textContent = typeof it === "string" ? it : (it.label || it);
+            lbl.textContent = label;
             item.appendChild(lbl);
             list.appendChild(item);
           });
@@ -1248,6 +1295,25 @@ class ContourLegend extends ContourBase {
         const sc = this.querySelector(".c-legend__scale");
         if (sc) sc.remove();
       }
+    }
+    enhance() {
+      if (this._wiredLegend) return;
+      this._wiredLegend = true;
+      // Host-delegated (rule 12): the item buttons are rebuilt by every
+      // render, so the handler re-queries per click. The gate-visible name is
+      // `contour:legend-toggle` — the plan's `contour:legend:toggle` carries a
+      // colon inside the name, which the check-wc manifest regex cannot see.
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest(".c-legend__item") : null;
+        if (!btn || !this.contains(btn)) return;
+        const pressed = btn.getAttribute("aria-pressed") !== "true";
+        btn.setAttribute("aria-pressed", String(pressed));
+        this.dispatchEvent(new CustomEvent("contour:legend-toggle", {
+          detail: { label: btn.textContent.trim(), key: btn.dataset.key || btn.textContent.trim(), pressed },
+          bubbles: true,
+          composed: true,
+        }));
+      });
     }
   }
 define("contour-legend", ContourLegend);

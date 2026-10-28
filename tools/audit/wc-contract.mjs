@@ -1716,6 +1716,113 @@ try {
     else
       console.log("wc-contract: alert/field/faq ARIA, loader no-cache/cache-key/remoteInvalidate and copy confirmation all measured");
   }
+
+  // ---- 20. streaming chart, legend selector, time-slider, resizable (BY-27/40/41) ----
+  //
+  // Four components, one pass — the rows share the event vocabulary and the
+  // §23 table, so they land together. Every claim is measured on the shipped
+  // bundle: the streaming chart must tick on its cadence and stop on pause,
+  // a selectable legend must render buttons and toggle aria-pressed with an
+  // event, the time-slider must advance the track while playing and announce
+  // each move, and the resizable must honour direction and move a pane on a
+  // drag.
+  {
+    const p = await browser.newPage();
+    const errs = [];
+    p.on("pageerror", (e) => errs.push(String(e.message || e)));
+    await p.goto(`${origin}/unmin.html`, { waitUntil: "load" });
+    await p.waitForFunction(() => !!window.ContourElements, null, { timeout: 20000 });
+    const out = await p.evaluate(async () => {
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+      const results = {};
+      // BY-40: streaming chart ticks on interval and pauses. The startup
+      // stream-state fires synchronously during mount (the first render's
+      // enhance), so a listener attached after appendChild would miss the
+      // running:true it is trying to prove — attach first, as a consumer
+      // who wants the startup event must.
+      const chart = document.createElement("contour-streaming-chart");
+      chart.setAttribute("interval", "0.5");
+      const chartEvents = [];
+      chart.addEventListener("contour:stream-state", (e) => chartEvents.push(["state", e.detail && e.detail.running]));
+      chart.addEventListener("contour:tick", (e) => chartEvents.push(["tick", e.detail && e.detail.frame]));
+      document.body.appendChild(chart);
+      await wait(1250);
+      const chartRunning = chartEvents.slice();
+      chart.setAttribute("pause", "");
+      await wait(1250);
+      const chartPaused = chartEvents.slice();
+      results.ticksWhileRunning = chartRunning.filter((e) => e[0] === "tick").length;
+      results.stateStarted = chartRunning.some((e) => e[0] === "state" && e[1] === true);
+      results.ticksAfterPause = chartPaused.filter((e) => e[0] === "tick").length - results.ticksWhileRunning;
+      // BY-41: a selectable legend renders buttons and toggles with an event.
+      const legend = document.createElement("contour-legend");
+      legend.setAttribute("selectable", "");
+      legend.setAttribute("items", JSON.stringify([{ label: "Routes", color: "#0af" }, { label: "Faces", key: "faces" }]));
+      document.body.appendChild(legend);
+      await wait(50);
+      const buttons = Array.from(legend.querySelectorAll(".c-legend__item"));
+      results.legendButtons = buttons.length;
+      results.legendPressedBefore = buttons[0] ? buttons[0].getAttribute("aria-pressed") : null;
+      const heard = [];
+      legend.addEventListener("contour:legend-toggle", (e) => heard.push(e.detail));
+      if (buttons[0]) buttons[0].click();
+      await wait(20);
+      results.legendPressedAfter = buttons[0] ? buttons[0].getAttribute("aria-pressed") : null;
+      results.legendEvent = heard[0] || null;
+      // BY-27: time-slider play advances the track and announces each move.
+      const slider = document.createElement("contour-time-slider");
+      slider.setAttribute("label", "Sim time");
+      document.body.appendChild(slider);
+      await wait(50);
+      const track = slider.querySelector(".c-time-slider__track");
+      const play = slider.querySelector(".c-time-slider__play");
+      const starts = [];
+      slider.addEventListener("contour:time-change", (e) => starts.push(e.detail && e.detail.value));
+      results.sliderValueBefore = track ? track.value : null;
+      if (play) play.click();
+      await wait(1150);
+      results.sliderValueAfter = track ? track.value : null;
+      results.timeChanges = starts.length;
+      if (play) play.click();
+      // BY-27: resizable honours direction and moves a pane on a drag.
+      const res = document.createElement("contour-resizable");
+      res.setAttribute("direction", "vertical");
+      document.body.appendChild(res);
+      await wait(50);
+      results.resVertical = res.classList.contains("c-resizable--vertical");
+      const handle = res.querySelector(".c-resize-handle");
+      const pane1 = res.querySelector(".c-resizable__pane");
+      results.paneFlexBefore = pane1 ? pane1.style.flex : null;
+      const rect = res.getBoundingClientRect();
+      if (handle && pane1) {
+        // The resizable listens on its host, so the drag sequence must bubble
+        // from inside it — dispatching on `document` would never reach it.
+        const opts = { bubbles: true, clientX: rect.left + rect.width / 2, clientY: rect.top + rect.height / 4, pointerId: 7 };
+        handle.dispatchEvent(new PointerEvent("pointerdown", opts));
+        handle.dispatchEvent(new PointerEvent("pointermove", { ...opts, clientY: rect.top + rect.height / 2 }));
+        handle.dispatchEvent(new PointerEvent("pointerup", { ...opts, clientY: rect.top + rect.height / 2 }));
+        results.paneFlexAfter = pane1.style.flex;
+      }
+      return results;
+    });
+    const bad = [];
+    if (!(out.ticksWhileRunning >= 1)) bad.push(`streaming chart emitted ${out.ticksWhileRunning} tick(s) in 1.25 s (want >= 1)`);
+    if (out.stateStarted !== true) bad.push(`streaming chart never emitted stream-state running:true`);
+    if (out.ticksAfterPause !== 0) bad.push(`streaming chart kept ticking after pause (+${out.ticksAfterPause})`);
+    if (out.legendButtons !== 2) bad.push(`selectable legend rendered ${out.legendButtons} items (want 2 buttons)`);
+    if (out.legendPressedBefore !== "true" || out.legendPressedAfter !== "false") bad.push(`legend aria-pressed ${out.legendPressedBefore} -> ${out.legendPressedAfter} (want true -> false)`);
+    if (!out.legendEvent || out.legendEvent.label !== "Routes" || out.legendEvent.pressed !== false) bad.push(`legend-toggle detail=${JSON.stringify(out.legendEvent)}`);
+    if (!(Number(out.sliderValueAfter) > Number(out.sliderValueBefore))) bad.push(`time-slider value ${out.sliderValueBefore} -> ${out.sliderValueAfter} (want advance on play)`);
+    if (out.timeChanges < 1) bad.push(`time-slider emitted ${out.timeChanges} contour:time-change (want >= 1)`);
+    if (out.resVertical !== true) bad.push(`resizable direction=vertical did not set the vertical class`);
+    if (out.paneFlexBefore !== null && out.paneFlexAfter === out.paneFlexBefore) bad.push(`resizable drag did not move the pane (${out.paneFlexBefore} unchanged)`);
+    if (errs.length) bad.push(`page errors: ${errs.slice(0, 2).join(" | ")}`);
+    compared += 11;
+    if (bad.length)
+      fail(`streaming chart, legend selector, time-slider or resizable broke (BY-27/40/41): ${bad.join(" | ")}`);
+    else
+      console.log("wc-contract: streaming chart ticks/pauses, selectable legend toggles, time-slider plays, resizable wires direction and drag");
+  }
 } finally {
   await browser.close();
   server.close();
