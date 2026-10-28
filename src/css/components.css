@@ -1448,6 +1448,8 @@
     line-height: 1.05;
     color: var(--color-text-strong);
     font-variant-numeric: tabular-nums;
+    max-inline-size: 12ch;
+    overflow-wrap: anywhere;
   }
 
   .c-stat__unit {
@@ -2311,6 +2313,8 @@
     letter-spacing: -0.03em;
     color: var(--color-text-strong);
     font-variant-numeric: tabular-nums;
+    max-inline-size: 8ch;
+    overflow-wrap: anywhere;
   }
 
   .c-meter__label {
