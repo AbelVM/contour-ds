@@ -34,7 +34,7 @@
 // listbox's options, an aria-controls target) takes it from here rather than
 // calling Math.random(), which can hand two instances the same id and then point
 // one control at another's list.
-import { contourId, supportsUntilFound } from './core.mjs';
+import { contourId, supportsUntilFound, onDispose } from './core.mjs';
 
 // A host is wired once per behaviour. Re-entering is normal — the base class
 // calls enhance() after every render — so the guard lives in a WeakMap keyed on
@@ -164,7 +164,12 @@ export function wireTabs(host) {
     // for — and the plain swap is the entire fallback, because the CSS harness
     // (components.css) is enhancement-only too.
     const runActivation = (tab, focus) => {
-      const can = typeof document.startViewTransition === "function"
+      // Keyboard activation must update aria-selected synchronously so assistive
+      // tech and keyboard users see the new state immediately; view transitions
+      // are a visual enhancement and must not defer the state change (a deferred
+      // activation leaves the previous tab marked selected until the transition
+      // callback runs, which breaks keyboard roving and any synchronous test).
+      const can = !focus && typeof document.startViewTransition === "function"
         && !(typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches);
       if (can) {
         try { document.startViewTransition(() => activate(tab, focus)); return; }
@@ -177,7 +182,8 @@ export function wireTabs(host) {
       if (tab && tabsOf().includes(tab)) runActivation(tab, false);
     });
     wcListen(host, "keydown", (e) => {
-      const tab = wcClosest(host, e.target, "[role='tab']");
+      let tab = wcClosest(host, e.target, "[role='tab']");
+      if (!tab && e.target && e.target.getAttribute && e.target.getAttribute("role") === "tab" && wcOwned(host, e.target)) tab = e.target;
       const tabs = tabsOf();
       const index = tabs.indexOf(tab);
       if (index < 0) return;
@@ -187,11 +193,32 @@ export function wireTabs(host) {
       const next = tabs[(move[e.key] + tabs.length) % tabs.length];
       if (next) runActivation(next, true);
     });
-    // Respect an author-marked selected tab; fall back to the first.
+    // Respect an author-marked selected tab; fall back to the first. With
+    // `persist="storage"` (BY-49) the last user choice wins over both, so a
+    // reload lands on the tab the reader left. The key is the host id (a
+    // stable identity the author provides); without one persistence is a
+    // no-op rather than a collision across every unnamed tabs instance.
     const tabs = tabsOf();
+    const persist = host.getAttribute("persist");
+    let restored = null;
+    if (persist === "storage" && host.id) {
+      try { restored = localStorage.getItem("contour-tabs:" + host.id); } catch (e) { restored = null; }
+    }
     const marked = tabs.find((t) => t.getAttribute("aria-selected") === "true");
-    const first = marked || tabs[0];
+    let first = marked || tabs[0];
+    if (restored !== null) {
+      const idx = parseInt(restored, 10);
+      if (Number.isFinite(idx) && tabs[idx]) first = tabs[idx];
+    }
     if (first) activate(first, false);
+    // Persist on every subsequent activation.
+    if (persist === "storage" && host.id) {
+      const origActivate = activate;
+      // Wrap by re-emitting: listen for contour:tab-change and store the index.
+      host.addEventListener("contour:tab-change", (e) => {
+        try { localStorage.setItem("contour-tabs:" + host.id, String(e.detail && e.detail.index)); } catch (err) { /* quota/private mode */ }
+      });
+    }
   }
 }
 
@@ -661,11 +688,13 @@ export function wireCopy(host) {
       if (ok && icon) icon.setAttribute("href", "#i-check");
       btn.setAttribute("aria-label", ok ? "Copied" : "Copy failed");
       btn.dataset.copied = String(ok);
-      setTimeout(() => {
+      const timer = setTimeout(() => {
+        if (!btn.isConnected) return;
         if (icon && originalHref) icon.setAttribute("href", originalHref);
         btn.setAttribute("aria-label", originalLabel);
         delete btn.dataset.copied;
       }, 1600);
+      onDispose(host, () => clearTimeout(timer));
     };
     if (navigator.clipboard) navigator.clipboard.writeText(text).then(() => confirm(true)).catch(() => confirm(false));
     wcEmit(host, "contour:copy", { text });

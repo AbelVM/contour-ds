@@ -72,7 +72,7 @@ class ContourMenu extends ContourBase {
   }
 define("contour-menu", ContourMenu);
 class ContourTabs extends ContourBase {
-    static get observed() { return ["tabs", "autoplay", "pause", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
+    static get observed() { return ["tabs", "autoplay", "pause", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "persist"]; }
     static get properties() { return { tabs: { attribute: "tabs" }, autoplay: { attribute: "autoplay", type: Number }, pause: { attribute: "pause", type: Boolean } }; }
     render() {
       this.classList.add("c-tabs");
@@ -360,7 +360,7 @@ render() {
   }
   define("contour-tree", ContourTree);
 class ContourCodeTabs extends ContourBase {
-    static get observed() { return ["tabs", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
+    static get observed() { return ["tabs", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "persist"]; }
     static get properties() { return { tabs: { attribute: "tabs" } }; }
     render() {
       this.classList.add("c-code-tabs");
