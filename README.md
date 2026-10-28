@@ -455,8 +455,8 @@ Optional bridges into other toolchains. None are required to use the system.
   Lovable to use Contour correctly. The machine-readable contract they point at
   is `dist/agent-rules.json`.
 - **MapLibre / Mapbox** — `contour-ds/map-chrome/maplibre` (or `/mapbox`)
-  re-keys the map controls onto Contour tokens. See `templates/map.html` for a
-  live example.
+  re-keys the map controls onto Contour tokens. `templates/map.html` is a CSS
+  demo of the map chrome; it does not exercise the `contour-map-*` components.
 - **Native (iOS / Android / Flutter)** — `integrations/native/` feeds Style
   Dictionary from `contour.tokens.json` so native companions stay in sync.
 
