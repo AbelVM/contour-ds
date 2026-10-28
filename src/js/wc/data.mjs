@@ -461,7 +461,7 @@ class ContourTable extends ContourBase {
         const retryBtn = e.target && e.target.closest ? e.target.closest('button[data-action="retry"]') : null;
         if (retryBtn && this.contains(retryBtn)) {
           e.preventDefault();
-          this.dispatchEvent(new CustomEvent("contour:retry", { bubbles: true, composed: true }));
+          this.dispatchEvent(new CustomEvent("contour:retry", { detail: { src: this.getAttribute("src") }, bubbles: true, composed: true }));
           return;
         }
         const th = e.target && e.target.closest ? e.target.closest("th[aria-sort]") : null;
@@ -783,7 +783,7 @@ const series = this.getAttribute("series");
         const btn = e.target && e.target.closest ? e.target.closest('button[data-action="retry"]') : null;
         if (btn && this.contains(btn)) {
           e.preventDefault();
-          this.dispatchEvent(new CustomEvent("contour:retry", { bubbles: true, composed: true }));
+          this.dispatchEvent(new CustomEvent("contour:retry", { detail: { src: this.getAttribute("src") }, bubbles: true, composed: true }));
         }
       });
       this.addEventListener("keydown", (e) => {
@@ -1422,7 +1422,7 @@ class ContourTimeline extends ContourBase {
         const btn = e.target && e.target.closest ? e.target.closest('button[data-action="retry"]') : null;
         if (btn && this.contains(btn)) {
           e.preventDefault();
-          this.dispatchEvent(new CustomEvent("contour:retry", { bubbles: true, composed: true }));
+          this.dispatchEvent(new CustomEvent("contour:retry", { detail: { src: this.getAttribute("src") }, bubbles: true, composed: true }));
         }
       });
     }
@@ -1491,8 +1491,12 @@ class ContourHeatmap extends ContourBase {
         const rect = this.getBoundingClientRect();
         const cr = cell.getBoundingClientRect();
         this.style.position = this.style.position || "relative";
-        tip.style.left = (cr.left - rect.left + cr.width / 2) + "px";
-        tip.style.top = (cr.top - rect.top) + "px";
+        // Logical positioning (BY-48): the CSS positions the tip through the
+        // --chart-tip-* tokens, the same contract the chart tooltip uses, so
+        // the block flips with dir="rtl" instead of staying pinned to the
+        // physical left edge of an RTL host.
+        tip.style.setProperty("--chart-tip-inline-start", (cr.left - rect.left + cr.width / 2) + "px");
+        tip.style.setProperty("--chart-tip-block-start", (cr.top - rect.top) + "px");
         tip.removeAttribute("hidden");
       };
       const hideTip = () => {
@@ -1514,7 +1518,7 @@ class ContourHeatmap extends ContourBase {
         const btn = e.target && e.target.closest ? e.target.closest('button[data-action="retry"]') : null;
         if (btn && this.contains(btn)) {
           e.preventDefault();
-          this.dispatchEvent(new CustomEvent("contour:retry", { bubbles: true, composed: true }));
+          this.dispatchEvent(new CustomEvent("contour:retry", { detail: { src: this.getAttribute("src") }, bubbles: true, composed: true }));
         }
       });
       this.addEventListener("keydown", (e) => {
@@ -1662,8 +1666,11 @@ class ContourSparkline extends ContourBase {
         }
         tip.textContent = String(val);
         const tipX = (cx / 100) * rect.width;
-        tip.style.left = tipX + "px";
-        tip.style.top = "0px";
+        // Logical positioning (BY-48): same token contract as the heatmap and
+        // the chart tooltip, so the pointer-tracking tip stays inside the
+        // block in an RTL layout rather than being measured from the left.
+        tip.style.setProperty("--chart-tip-inline-start", tipX + "px");
+        tip.style.setProperty("--chart-tip-block-start", "0px");
         tip.removeAttribute("hidden");
       };
       const hideTip = () => {
@@ -1689,7 +1696,7 @@ class ContourSparkline extends ContourBase {
         const btn = e.target && e.target.closest ? e.target.closest('button[data-action="retry"]') : null;
         if (btn && this.contains(btn)) {
           e.preventDefault();
-          this.dispatchEvent(new CustomEvent("contour:retry", { bubbles: true, composed: true }));
+          this.dispatchEvent(new CustomEvent("contour:retry", { detail: { src: this.getAttribute("src") }, bubbles: true, composed: true }));
         }
       });
       this.addEventListener("keydown", (e) => {
