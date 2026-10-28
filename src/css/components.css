@@ -2596,6 +2596,7 @@
     min-block-size: var(--target-option);
     display: inline-grid;
     place-items: center;
+    transition: color var(--dur-fast) var(--ease-standard), background-color var(--dur-fast) var(--ease-standard);
   }
 
   .c-alert__close:hover {
@@ -2685,6 +2686,7 @@
     cursor: pointer;
     padding: 0.25rem;
     border-radius: var(--radius-xs);
+    transition: color var(--dur-fast) var(--ease-standard), background-color var(--dur-fast) var(--ease-standard);
   }
 
   .c-dialog__close:hover {
@@ -2939,6 +2941,7 @@
     font-size: var(--type-xs);
     color: var(--color-text-muted);
     text-decoration: none;
+    transition: color var(--dur-fast) var(--ease-standard), background-color var(--dur-fast) var(--ease-standard);
   }
 
   .c-pagination__link:hover {
@@ -3194,6 +3197,7 @@
     cursor: pointer;
     padding: 0.25rem;
     border-radius: var(--radius-xs);
+    transition: color var(--dur-fast) var(--ease-standard), background-color var(--dur-fast) var(--ease-standard);
   }
 
   .c-sheet__close:hover {
