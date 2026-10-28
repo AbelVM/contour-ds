@@ -1,5 +1,41 @@
 ## [Unreleased]
 
+### Added
+- The async states contract: a shared loader and four data states, documented in §23. Every
+  component that reads `src` now asks through one loader (`loadRemote`/`remoteData`/
+  `remoteRefresh`/`remoteVisible`/`renderStates`/`renderEmpty`/`wireStates` in `states.mjs`),
+  which deduplicates one request per URL, caches the last result per URL (FIFO-64, with
+  `no-cache`, `cache-key` and the exported `remoteInvalidate` as the policy handles), aborts
+  on disconnect, and treats a failed fetch as an error rather than an empty dataset
+  (`HttpError`/`ParseError`, reported as `contour:error {src, message, name, status}`).
+  The four states are authored attributes (`loading`, `error` + `retry`, `empty`, `skeleton`)
+  painted as per-block `c-<block>__<kind>` nodes with the single `data-contour-state` hook,
+  so a host with no data and no authored content says so instead of painting nothing.
+  `refresh` (visibility-paused polling), `lazy` (IntersectionObserver with an honest
+  fallback) and `timeout` (AbortSignal.timeout with a timer fallback) are the fetching
+  attributes. The §23 "Async states" specimen shows all four states on one component, and
+  the §23 event table documents the vocabulary. Gates: the state-contract arm in
+  `wc-contract` (mounts loading/error/empty/skeleton and src success/404/malformed
+  fixtures, asserts one state node, failure ≠ empty, abort on disconnect) and arm 19's
+  cache-policy measurements — this is the contract F-27 found the guide silent on.
+- The published event vocabulary: a frozen `CONTOUR_EVENTS` manifest in `core.mjs`,
+  published as frozen `window.ContourEvents`, gated in BOTH directions by `check-wc` (a
+  dispatch name with no manifest entry fails, and so does an entry nothing dispatches) and
+  read off the shipped bundle by `wc-contract`. 30 events, each with the payload keys its
+  emission sites pass and the composed flag.
+- `contour-streaming-chart` live contract: `interval` and `pause` attributes drive a tick
+  loop that emits `contour:tick {frame}` and `contour:stream-state {running}`, revalidating
+  through the loader's cache path; a `selectable` legend renders items as toggle buttons
+  with `aria-pressed` and emits `contour:legend-toggle {label, key, pressed}`; the
+  time-slider's play button advances the track and emits `contour:time-change {value}` per
+  step; the resizable reads `direction` and wires pointer drags. Arm 20 of `wc-contract`
+  measures each: PASS.
+- Light-layer ARIA parity with the shadow bootstrap: `contour-alert` carries
+  `role="alert"` + `aria-live="assertive"`, `contour-field` links the inner input to its
+  hint and error via `aria-describedby` and reflects `required` as `aria-required`,
+  `contour-faq` emits native `details`/`summary` items, and the copy trigger paints the
+  system script's own confirmation (`data-copied`, label swap, 1600 ms revert).
+
 ### Fixed (M-WC-08)
 - `check-reflow` (R4-02/R4-03) was failing on `index.html` at the published 390 px
   contract width, in both themes and with JavaScript off. The page's `scrollWidth`
