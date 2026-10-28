@@ -23,7 +23,8 @@ class ContourReadout extends ContourBase {
             key.className = "c-readout__key";
             key.textContent = r.key || r[0];
             const val = document.createElement("span");
-            val.className = "c-readout__value" + (r.primary ? " c-readout__value--primary" : "") + (r.accent ? " c-readout__value--accent" : "") + (r.coord ? " c-readout__value--coord" : "");
+             val.className = "c-readout__value" + (r.primary ? " c-readout__value--primary" : "") + (r.accent ? " c-readout__value--accent" : "") + (r.coord ? " c-readout__value--coord" : "");
+             val.setAttribute("aria-live", "polite");
             val.textContent = formatValue(r.value || r[1], this.getAttribute("format"), this.getAttribute("locale"));
             row.appendChild(key);
             row.appendChild(val);
@@ -59,7 +60,7 @@ class ContourKpi extends ContourBase {
       Array.from(this.classList).forEach((c) => { if (c.startsWith("c-kpi--")) this.classList.remove(c); });
       if (variant) this.classList.add("c-kpi--" + variant);
       if (value) {
-        const v = this.ensure(".c-kpi__value", () => { const el = document.createElement("div"); el.className = "c-kpi__value"; return el; });
+        const v = this.ensure(".c-kpi__value", () => { const el = document.createElement("div"); el.className = "c-kpi__value"; el.setAttribute("aria-live", "polite"); return el; });
         v.textContent = formatValue(value, this.getAttribute("format"), this.getAttribute("locale"));
       } else {
         const v = this.querySelector(".c-kpi__value");
@@ -1049,7 +1050,7 @@ class ContourStat extends ContourBase {
       const label = remoteData(this, "label");
       const delta = this.getAttribute("delta");
       if (value) {
-        const v = this.ensure(".c-stat__value", () => { const el = document.createElement("div"); el.className = "c-stat__value"; return el; });
+        const v = this.ensure(".c-stat__value", () => { const el = document.createElement("div"); el.className = "c-stat__value"; el.setAttribute("aria-live", "polite"); return el; });
         v.textContent = formatValue(value, this.getAttribute("format"), this.getAttribute("locale"));
       } else {
         const v = this.querySelector(".c-stat__value");
