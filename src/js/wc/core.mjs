@@ -76,7 +76,7 @@
   // Adding one of those back to this list makes that component recurse.
   export const OBSERVED = [
     "action", "actions", "after", "anchor", "answer", "area", "article", "attribution", "attribution-mark", "axis", "axis-x", "axis-y", "before", "body", "brand", "canvas", "center", "cols", "columns", "color", "command",
-    "cells", "chrome", "closable", "controls", "copyable", "count", "current", "date", "delta", "demo", "desc", "direction", "divider", "do", "dont", "dot",
+    "cells", "checked", "chrome", "closable", "controls", "copyable", "count", "current", "date", "delta", "demo", "desc", "direction", "divider", "do", "dont", "dot",
     "empty", "error", "hint", "href", "icon", "index", "instrument", "items", "key",
     "label", "lazy", "lede", "legend", "line", "links", "live", "loading", "max", "media", "message", "method", "min", "name", "needle", "next", "no", "nodes", "note", "norm",
     "options", "page", "page-size", "pages", "placeholder", "point", "points", "prev", "prompt", "question", "required",
@@ -177,7 +177,7 @@
     }
 
     connectedCallback() {
-      if (this._contourAuthored) return; // reconnected, not re-specified
+      if (this._contourAuthored) { this._wireFormData(); return; } // reconnected, not re-specified
       this._installProperties();
        this._contourAuthored = {
          nodes: Array.from(this.childNodes),
@@ -192,6 +192,8 @@
          this._contourGenerated = Array.from(this.childNodes).filter((n) => !before.includes(n));
          this._applyParts(this);
          this.enhance();
+         this._detachInnerFormControls();
+         this._wireFormData();
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
@@ -377,6 +379,7 @@
            }
          }
         this.enhance();
+        this._detachInnerFormControls();
       } finally {
         this._contourRendering = false;
       }
@@ -387,6 +390,9 @@
       this._ensureCache = null;
       this._batchDepth = 0;
       this._batchDirty = false;
+      // Form listeners were removed by runDisposers below; clear the guard so
+      // a reconnected host re-attaches them (connectedCallback re-wires).
+      this._wiredFormData = false;
       runDisposers(this);
       // Override in subclasses that attach event listeners or timers.
     }
@@ -398,6 +404,121 @@
 
     // Default no-op: subclasses with behaviour override this.
     enhance() {}
+
+    // Form lifecycle (form-associated components only). The platform calls
+    // these on <form>.reset(), on disable by a fieldset/form, and on bfcache
+    // restore; before this, a reset left the generated control showing its old
+    // value and a disabled fieldset reached nothing. The implementations are
+    // generic over the host's inner control(s), so a subclass overrides only
+    // when its control is not a plain input/textarea/select.
+    //
+    // The inner-value contract mirrors what each form class's enhance() sync
+    // already writes: a boolean control submits its `checked` value (or null),
+    // a text-like control submits its raw value, and `required` sets validity.
+    _syncFormValue() {
+      if (!this._internals) return;
+      // A boolean group (a contour-radio-list) submits the *checked* item's
+      // value, so prefer the checked control over the first one found.
+      const ctl = this.querySelector("input:checked, textarea, select") || this.querySelector("input, textarea, select");
+      if (!ctl) return;
+      const boolean = ctl.type === "checkbox" || ctl.type === "radio";
+      const value = boolean ? (ctl.checked ? (ctl.value || "on") : null) : ctl.value;
+      this._internals.setFormValue(value);
+      if (this.hasAttribute("required") && !value) {
+        this._internals.setValidity({ valueMissing: true }, "This field is required.");
+      } else {
+        this._internals.setValidity({});
+      }
+    }
+    formResetCallback() {
+      // Reset synchronously: re-rendering would restore the base class's
+      // *preserved* typed value, not the authored default. The authored
+      // default is the host's own value/checked attributes, so restore the
+      // inner control from them, then re-sync internals.
+      for (const ctl of this.querySelectorAll("input, textarea, select")) {
+        if (ctl.type === "checkbox" || ctl.type === "radio") {
+          ctl.checked = this.hasAttribute("checked");
+        } else if (ctl.tagName === "SELECT") {
+          const chosen = ctl.querySelector("option[selected], option:first-of-type");
+          ctl.value = chosen ? chosen.value : "";
+        } else {
+          // The authored default lives on the host (`value` attribute), not
+          // necessarily on the generated inner control.
+          ctl.value = this.hasAttribute("value") ? this.getAttribute("value") : (ctl.getAttribute("value") || "");
+        }
+      }
+      this._syncFormValue();
+    }
+    formDisabledCallback(disabled) {
+      for (const ctl of this.querySelectorAll("input, textarea, select, button")) {
+        if (disabled) ctl.setAttribute("disabled", "");
+        else ctl.removeAttribute("disabled");
+      }
+    }
+    formStateRestoreCallback(state) {
+      if (!this._internals || state === null || state === undefined) return;
+      const controls = Array.from(this.querySelectorAll("input, textarea, select"));
+      const str = String(state);
+      // The restore state is the value the host last submitted; for a boolean
+      // group it names which inner control to check.
+      const match = controls.find((c) => (c.type === "checkbox" || c.type === "radio") && c.value === str);
+      if (match) {
+        match.checked = true;
+        for (const other of controls) {
+          if (other !== match && other.type === "radio" && other.name === match.name) other.checked = false;
+        }
+      } else if (controls.length) {
+        controls[0].value = str;
+      }
+      this._syncFormValue();
+    }
+    checkValidity() {
+      return this._internals ? this._internals.checkValidity() : true;
+    }
+    reportValidity() {
+      return this._internals ? this._internals.reportValidity() : true;
+    }
+
+    // Keep internals in step with the group. Checking radio B fires `change` on
+    // B only — the deselected host A hears nothing, so its internals keep the
+    // stale "a" and the entry list collects both ("g=a","g=b"; measured by the
+    // form-lifecycle probe, 2026-10-28). Re-syncing in the `formdata` handler
+    // is too late: the entry list has already copied each host's internals
+    // before that event fires. `change` bubbles through the shared form, so a
+    // same-name host re-derives its value the moment B is checked — before any
+    // collection can read it.
+    _wireFormData() {
+      if (!this._internals || this._wiredFormData) return;
+      const form = this._internals.form;
+      if (!form) return;
+      this._wiredFormData = true;
+      const myName = this.getAttribute("name");
+      const onFormChange = (e) => {
+        const t = e.target;
+        if (t && t.type === "radio" && t.name && t.name === myName) this._syncFormValue();
+      };
+      form.addEventListener("change", onFormChange);
+      const onFormData = () => this._syncFormValue();
+      form.addEventListener("formdata", onFormData);
+      onDispose(this, () => {
+        form.removeEventListener("change", onFormChange);
+        form.removeEventListener("formdata", onFormData);
+      });
+    }
+
+    // The inner native control(s) are scaffolding; the host reports through
+    // ElementInternals. A same-name native control inside a <form> would submit
+    // a second entry with the same name — double submission, measured as
+    // ["g=a","g=a"] in a two-entry FormData (2026-10-27, form-lifecycle probe).
+    // form="" (no matching form element) detaches it from the form owner while
+    // keeping native radio-group semantics: same name, same tree, both
+    // form-ownerless → they still share one checked state.
+    _detachInnerFormControls() {
+      if (!this._internals) return;
+      for (const ctl of this.querySelectorAll("input, textarea, select")) {
+        if (ctl.hasAttribute("name") && ctl.getAttribute("form") !== "") ctl.setAttribute("form", "");
+      }
+    }
 
     // Opt-in batching: coalesce multiple attribute changes into a single
     // render. Usage: el.batch(() => { el.value = 42; el.delta = "+3"; });

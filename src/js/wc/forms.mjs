@@ -167,6 +167,8 @@ class ContourSwitch extends ContourBase {
       // The guide's control is `label.c-switch` wrapping `input.c-switch__input`
       // and a bare span of text; the sheet paints the track on the input itself.
       const input = this.ensure("input.c-switch__input", () => { const el = document.createElement("input"); el.className = "c-switch__input"; el.type = "checkbox"; return el; });
+      input.setAttribute("role", "switch");
+      input.setAttribute("aria-checked", String(input.checked));
       // Ensure track element follows the input (CSS: input + track).
       if (!input.nextElementSibling || !input.nextElementSibling.classList.contains("c-switch__track")) {
         const track = document.createElement("span");
@@ -196,6 +198,7 @@ class ContourSwitch extends ContourBase {
       this.addEventListener("change", (e) => {
         const inp = this.querySelector("input");
         if (!inp || e.target !== inp || !this._internals) return;
+        inp.setAttribute("aria-checked", String(inp.checked));
         this._internals.setFormValue(inp.checked ? (inp.value || "on") : null);
         if (this.hasAttribute("required") && !inp.checked) {
           this._internals.setValidity({ valueMissing: true }, "This field is required.");
@@ -274,10 +277,10 @@ class ContourRadio extends ContourBase {
     enhance() {
       const input = this.querySelector("input");
       if (input && this._internals) {
-        if (input.checked) this._internals.setFormValue(input.value || "on");
+        this._internals.setFormValue(input.checked ? (input.value || "on") : null);
         if (this.hasAttribute("required") && !input.checked) {
           this._internals.setValidity({ valueMissing: true }, "This field is required.");
-        } else if (input.checked) {
+        } else {
           this._internals.setValidity({});
         }
       }
@@ -286,10 +289,12 @@ class ContourRadio extends ContourBase {
       this.addEventListener("change", (e) => {
         const inp = this.querySelector("input");
         if (!inp || e.target !== inp || !this._internals) return;
-        if (inp.checked) this._internals.setFormValue(inp.value || "on");
+        // Unchecking (group movement) must clear the stale FormData entry,
+        // not leave it behind beside the new selection.
+        this._internals.setFormValue(inp.checked ? (inp.value || "on") : null);
         if (this.hasAttribute("required") && !inp.checked) {
           this._internals.setValidity({ valueMissing: true }, "This field is required.");
-        } else if (inp.checked) {
+        } else {
           this._internals.setValidity({});
         }
       });
@@ -443,8 +448,8 @@ class ContourTextarea extends ContourBase {
   }
   define("contour-textarea", ContourTextarea);
 class ContourInputFull extends ContourBase {
-    static get observed() { return ["type", "placeholder", "required"]; }
-    static get properties() { return { type: { attribute: "type" }, placeholder: { attribute: "placeholder" }, required: { attribute: "required", type: Boolean } }; }
+    static get observed() { return ["type", "placeholder", "required", "value"]; }
+    static get properties() { return { type: { attribute: "type" }, placeholder: { attribute: "placeholder" }, required: { attribute: "required", type: Boolean }, value: { attribute: "value" } }; }
     static get formAssociated() { return true; }
     render() {
       this.classList.add("c-input");
@@ -452,6 +457,7 @@ class ContourInputFull extends ContourBase {
       input.className = "c-input";
       input.type = this.getAttribute("type") || "text";
       input.placeholder = this.getAttribute("placeholder") || "";
+      if (this.hasAttribute("value")) input.value = this.getAttribute("value");
       if (this.hasAttribute("required")) input.setAttribute("required", "");
       else input.removeAttribute("required");
     }
@@ -504,8 +510,11 @@ class ContourInputGroup extends ContourBase {
 class ContourRadioList extends ContourBase {
     static get observed() { return ["items", "name", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { items: { attribute: "items" }, name: { attribute: "name" } }; }
+    static get formAssociated() { return true; }
     render() {
       this.classList.add("c-radio-list");
+      this.setAttribute("role", "radiogroup");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("name") || "Options");
       wireStates(this);
       loadRemote(this, "items");
       if (renderStates(this, "radio-list")) return;
@@ -514,22 +523,68 @@ class ContourRadioList extends ContourBase {
       if (items) {
         try {
           const parsed = JSON.parse(items);
-          parsed.forEach((it, i) => {
+          parsed.forEach((it) => {
             const lbl = document.createElement("label");
             lbl.className = "c-radio";
             const input = document.createElement("input");
             input.type = "radio";
             input.className = "c-radio__input";
             input.name = this.getAttribute("name") || "radio-list";
-            if (i === 0) input.checked = true;
+            input.tabIndex = -1;
             if (typeof it === "string") { input.value = it; lbl.appendChild(input); lbl.appendChild(document.createTextNode(" " + it)); }
             else { input.value = it.value || it.label; if (it.checked) input.checked = true; lbl.appendChild(input); const span = document.createElement("span"); span.textContent = it.label || it.value; lbl.appendChild(span); }
             this.appendChild(lbl);
           });
+          // Roving tabindex: only the checked item (or the first) is in the tab
+          // order, exactly like a native radiogroup.
+          const radios = Array.from(this.querySelectorAll("input.c-radio__input"));
+          const checked = radios.find((r) => r.checked) || radios[0];
+          if (checked) checked.tabIndex = 0;
         } catch (e) { /* keep existing */ }
       } else {
         renderEmpty(this, "radio-list");
       }
+    }
+    enhance() {
+      const sync = () => {
+        if (!this._internals) return;
+        const checked = this.querySelector("input.c-radio__input:checked");
+        this._internals.setFormValue(checked ? checked.value : null);
+      };
+      sync();
+      if (this._wiredRadioList) return;
+      this._wiredRadioList = true;
+      // Form life + group semantics, delegated on the host (rule 12): the
+      // inputs are rebuilt on every render, so node-bound listeners would die.
+      this.addEventListener("change", (e) => {
+        const input = e.target && e.target.closest ? e.target.closest("input.c-radio__input") : null;
+        if (!input || !this.contains(input)) return;
+        sync();
+      });
+      this.addEventListener("keydown", (e) => {
+        const radios = Array.from(this.querySelectorAll("input.c-radio__input"));
+        if (!radios.length) return;
+        const idx = radios.indexOf(e.target);
+        if (idx === -1) return;
+        let next = -1;
+        if (e.key === "ArrowDown" || e.key === "ArrowRight") next = (idx + 1) % radios.length;
+        else if (e.key === "ArrowUp" || e.key === "ArrowLeft") next = (idx - 1 + radios.length) % radios.length;
+        else if (e.key === "Home") next = 0;
+        else if (e.key === "End") next = radios.length - 1;
+        else return;
+        e.preventDefault();
+        for (const r of radios) r.tabIndex = -1;
+        radios[next].tabIndex = 0;
+        radios[next].checked = true;
+        radios[next].focus();
+        sync();
+      });
+    }
+    formResetCallback() {
+      // The authored default lives in the `items` payload (`it.checked`), not
+      // in checked attributes on generated radios, so re-render from the data
+      // rather than blanking every selection like the generic base reset.
+      if (this._contourAuthored) this.requestRender();
     }
   }
 define("contour-radio-list", ContourRadioList);
