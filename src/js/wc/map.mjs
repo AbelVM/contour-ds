@@ -148,7 +148,11 @@ class ContourTimeSlider extends ContourBase {
         return el;
       });
       const track = this.ensure(".c-time-slider__track", () => { const el = document.createElement("input"); el.className = "c-time-slider__track"; el.type = "range"; el.min = "0"; el.max = "100"; el.setAttribute("aria-label", "Time"); return el; });
-      track.value = this.getAttribute("value") || "0";
+      const _attrVal = this.getAttribute("value") || "0";
+      if (this._timeSliderAttrLast !== _attrVal) {
+        track.value = _attrVal;
+        this._timeSliderAttrLast = _attrVal;
+      }
       track.setAttribute("aria-label", this.getAttribute("label") || "Time");
       const time = this.ensure(".c-time-slider__time", () => { const el = document.createElement("span"); el.className = "c-time-slider__time"; return el; });
       time.textContent = this.getAttribute("label") || "";

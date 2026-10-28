@@ -230,7 +230,12 @@ export function wireSegmented(host) {
   // below are unaffected because they delegate on the host, which outlives the
   // parse. One retry on a later task is all the missing children need; a group
   // that is genuinely empty just re-runs an idempotent pass once.
-  if (!normalize()) setTimeout(normalize, 0);
+  if (!normalize()) {
+    if (!host._segRetryScheduled) {
+      host._segRetryScheduled = true;
+      setTimeout(() => { host._segRetryScheduled = false; normalize(); }, 0);
+    }
+  }
   if (!wcClaim(host, "segmented")) return;
   const activate = (btn) => {
     const seg = groups.find((g) => wcGroup(host, g, "button").includes(btn));

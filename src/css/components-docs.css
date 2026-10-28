@@ -785,4 +785,10 @@
       0.95rem calc(50% + 1px),
       0.7rem calc(50% + 1px);
   }
+  /* Code blocks in the docs section must scroll, not stretch the page (BR3-1). */
+  pre.hljs {
+    overflow-x: auto;
+    max-inline-size: 100%;
+  }
+
 }

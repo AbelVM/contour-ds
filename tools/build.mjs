@@ -278,6 +278,16 @@ const wcFragNames = [
   "feedback.mjs", "forms.mjs", "interaction.mjs", "layout.mjs", "map.mjs",
   "misc.mjs", "navigation.mjs", "ui.mjs", "registration.mjs", "shadow.mjs",
 ];
+// Assert the fragment list matches the directory (BY2-I7): a new fragment
+// landing in src/js/wc/ must not miss every surface bundle silently.
+const _wcDir = readdirSync(join(root, "src/js/wc")).filter((f) => f.endsWith(".mjs") && f !== "index.mjs").sort();
+const _wcListed = [...wcFragNames].sort();
+if (JSON.stringify(_wcDir) !== JSON.stringify(_wcListed)) {
+  console.error("build: wcFragNames out of sync with src/js/wc/:");
+  console.error("  in dir, not listed:", _wcDir.filter((f) => !_wcListed.includes(f)));
+  console.error("  listed, not in dir:", _wcListed.filter((f) => !_wcDir.includes(f)));
+  process.exit(1);
+}
 const wcFrags = wcFragNames;
 function stripWc(code) {
   code = code.replace(/^\s*import\s+[^;]*;?\s*$/gm, "");
@@ -504,6 +514,9 @@ const manifestSources = [
   // that nobody rebuilds must not certify as current.
   ...readdirSync(join(root, "src/css/fonts")).map((f) => join(root, "src/css/fonts", f)),
   join(root, "src/js/ds.js"),
+  // Web-component fragments are build inputs too (BY2-I6): a wc-only change
+  // must trip the stale-dist guard, not certify as current.
+  ...readdirSync(join(root, "src/js/wc")).filter((f) => f.endsWith(".mjs")).map((f) => join(root, "src/js/wc", f)),
   join(root, "src/svg/contour-mark.svg"),
   // `index.html` is a build input now that `dist/docs/` is derived from it. This
   // list named only `src/`, so the guide could be edited and `check-size` would

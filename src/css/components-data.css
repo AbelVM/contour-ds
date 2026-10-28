@@ -524,6 +524,8 @@
     position: relative;
     aspect-ratio: 16 / 7;
     min-block-size: 8rem;
+    max-inline-size: 100%;
+    overflow: hidden;
     border-block-end: 1px solid var(--chart-axis);
     /* One band per VALUE-axis interval, so a gridline lands on every value tick
        BY CONSTRUCTION: a band is `100% / (ticks - 1)` tall. `--chart-ticks` is
