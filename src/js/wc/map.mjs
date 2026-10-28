@@ -278,10 +278,30 @@ class ContourHexbin extends ContourBase {
         const cell = e.target && e.target.closest ? e.target.closest(".c-hexbin__cell") : null;
         if (cell && this.contains(cell)) showTip({ target: cell });
       });
-      this.addEventListener("focusout", (e) => {
-        if (!this.contains(e.relatedTarget)) hideTip();
-      });
-      // Roving tabindex keyboard nav (B3-16) for hexbin cells.
+       this.addEventListener("focusout", (e) => {
+         if (!this.contains(e.relatedTarget)) hideTip();
+       });
+       // Emit contour:select on click/activation (D-19), parity with heatmap.
+       this.addEventListener("click", (e) => {
+         const cell = e.target && e.target.closest ? e.target.closest(".c-hexbin__cell") : null;
+         if (!cell || !this.contains(cell)) return;
+         const cells = Array.from(this.querySelectorAll(".c-hexbin__cell"));
+         const index = cells.indexOf(cell);
+         if (index < 0) return;
+         this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index, label: cell.getAttribute("title") || cell.textContent.trim() } }));
+       });
+       this.addEventListener("keydown", (e) => {
+         const cell = e.target && e.target.closest ? e.target.closest(".c-hexbin__cell") : null;
+         if (!cell || !this.contains(cell)) return;
+         if (e.key === "Enter" || e.key === " ") {
+           e.preventDefault();
+           const cells = Array.from(this.querySelectorAll(".c-hexbin__cell"));
+           const index = cells.indexOf(cell);
+           if (index < 0) return;
+           this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index, label: cell.getAttribute("title") || cell.textContent.trim() } }));
+         }
+       });
+       // Roving tabindex keyboard nav (B3-16) for hexbin cells.
       this.addEventListener("keydown", (e) => {
         const cell = e.target && e.target.closest ? e.target.closest(".c-hexbin__cell") : null;
         if (!cell || !this.contains(cell)) return;
@@ -374,10 +394,30 @@ class ContourFlowMap extends ContourBase {
         const node = e.target && e.target.closest ? e.target.closest(".c-flow-map__node") : null;
         if (node && this.contains(node)) showTip({ target: node });
       });
-      this.addEventListener("focusout", (e) => {
-        if (!this.contains(e.relatedTarget)) hideTip();
-      });
-      // Roving tabindex keyboard nav (B3-16) for flow-map nodes.
+       this.addEventListener("focusout", (e) => {
+         if (!this.contains(e.relatedTarget)) hideTip();
+       });
+       // Emit contour:select on click/activation (D-19), parity with heatmap.
+       this.addEventListener("click", (e) => {
+         const node = e.target && e.target.closest ? e.target.closest(".c-flow-map__node") : null;
+         if (!node || !this.contains(node)) return;
+         const nodes = Array.from(this.querySelectorAll(".c-flow-map__node"));
+         const index = nodes.indexOf(node);
+         if (index < 0) return;
+         this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index, label: node.getAttribute("title") || node.textContent.trim() } }));
+       });
+       this.addEventListener("keydown", (e) => {
+         const node = e.target && e.target.closest ? e.target.closest(".c-flow-map__node") : null;
+         if (!node || !this.contains(node)) return;
+         if (e.key === "Enter" || e.key === " ") {
+           e.preventDefault();
+           const nodes = Array.from(this.querySelectorAll(".c-flow-map__node"));
+           const index = nodes.indexOf(node);
+           if (index < 0) return;
+           this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index, label: node.getAttribute("title") || node.textContent.trim() } }));
+         }
+       });
+       // Roving tabindex keyboard nav (B3-16) for flow-map nodes.
       this.addEventListener("keydown", (e) => {
         const node = e.target && e.target.closest ? e.target.closest(".c-flow-map__node") : null;
         if (!node || !this.contains(node)) return;
@@ -479,10 +519,30 @@ class ContourIsochrone extends ContourBase {
         const ring = e.target && e.target.closest ? e.target.closest(".c-isochrone__ring") : null;
         if (ring && this.contains(ring)) showTip({ target: ring });
       });
-      this.addEventListener("focusout", (e) => {
-        if (!this.contains(e.relatedTarget)) hideTip();
-      });
-      // Roving tabindex keyboard nav (B3-16) for isochrone rings.
+       this.addEventListener("focusout", (e) => {
+         if (!this.contains(e.relatedTarget)) hideTip();
+       });
+       // Emit contour:select on click/activation (D-19), parity with heatmap.
+       this.addEventListener("click", (e) => {
+         const ring = e.target && e.target.closest ? e.target.closest(".c-isochrone__ring") : null;
+         if (!ring || !this.contains(ring)) return;
+         const rings = Array.from(this.querySelectorAll(".c-isochrone__ring"));
+         const index = rings.indexOf(ring);
+         if (index < 0) return;
+         this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index, label: ring.getAttribute("title") || ring.textContent.trim() } }));
+       });
+       this.addEventListener("keydown", (e) => {
+         const ring = e.target && e.target.closest ? e.target.closest(".c-isochrone__ring") : null;
+         if (!ring || !this.contains(ring)) return;
+         if (e.key === "Enter" || e.key === " ") {
+           e.preventDefault();
+           const rings = Array.from(this.querySelectorAll(".c-isochrone__ring"));
+           const index = rings.indexOf(ring);
+           if (index < 0) return;
+           this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index, label: ring.getAttribute("title") || ring.textContent.trim() } }));
+         }
+       });
+       // Roving tabindex keyboard nav (B3-16) for isochrone rings.
       this.addEventListener("keydown", (e) => {
         const ring = e.target && e.target.closest ? e.target.closest(".c-isochrone__ring") : null;
         if (!ring || !this.contains(ring)) return;
