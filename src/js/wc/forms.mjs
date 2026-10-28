@@ -552,7 +552,7 @@ class ContourRadioList extends ContourBase {
             const input = document.createElement("input");
             input.type = "radio";
             input.className = "c-radio__input";
-            input.name = this.getAttribute("name") || "radio-list";
+            input.name = this.getAttribute("name") || contourId("radio-list");
             input.tabIndex = -1;
             if (typeof it === "string") { input.value = it; lbl.appendChild(input); lbl.appendChild(document.createTextNode(" " + it)); }
             else { input.value = it.value || it.label; if (it.checked) input.checked = true; lbl.appendChild(input); const span = document.createElement("span"); span.textContent = it.label || it.value; lbl.appendChild(span); }
