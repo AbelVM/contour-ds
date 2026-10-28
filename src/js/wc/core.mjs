@@ -116,7 +116,7 @@
   // Adding one of those back to this list makes that component recurse.
   export const OBSERVED = [
     "action", "actions", "after", "anchor", "answer", "area", "article", "attribution", "attribution-mark", "axis", "axis-x", "axis-y", "before", "body", "brand", "cache-key", "canvas", "center", "cols", "columns", "color", "command",
-    "cells", "checked", "chrome", "closable", "controls", "copyable", "count", "current", "date", "delta", "demo", "desc", "direction", "divider", "do", "dont", "dot",
+    "cells", "checked", "chrome", "closable", "controls", "copyable", "count", "current", "date", "delta", "demo", "density", "desc", "direction", "divider", "do", "dont", "dot",
     "empty", "error", "hint", "href", "icon", "index", "instrument", "interval", "items", "key",
     "label", "lazy", "lede", "legend", "line", "links", "live", "loading", "max", "media", "message", "method", "min", "name", "needle", "next", "no", "no-cache", "nodes", "note", "norm",
     "options", "page", "page-size", "pages", "pause", "placeholder", "point", "points", "prev", "prompt", "question", "required",
@@ -231,6 +231,7 @@
           this.render();
          this._contourGenerated = Array.from(this.childNodes).filter((n) => !before.includes(n));
          this._applyParts(this);
+         this._applyDensity();
          this.enhance();
          this._detachInnerFormControls();
          this._wireFormData();
@@ -307,6 +308,7 @@
          this.render();
         this._contourGenerated = Array.from(this.childNodes).filter((n) => !before.includes(n));
         this._applyParts(this);
+        this._applyDensity();
         // Restore preserved form control values. A re-render that adds or
         // removes a control must not wipe the rest: keyed controls (those with
         // a `name` or `id`) are matched by key first, so a new field inserted
@@ -438,8 +440,9 @@
     }
 
     adoptedCallback() {
-      // Re-apply parts when the node is moved to a new document.
-      if (this._contourAuthored) this._applyParts(this);
+      // Re-apply parts and the density mirror when the node is moved to a new
+      // document.
+      if (this._contourAuthored) { this._applyParts(this); this._applyDensity(); }
     }
 
     // Default no-op: subclasses with behaviour override this.
@@ -641,6 +644,17 @@
           if (m) { node.setAttribute("part", m[1]); break; }
         }
       }
+    }
+
+    // Density modifier (BY-48). The sheet hooks on `[data-density]` — the
+    // attribute the token layer ships with (`--density`, `--density-compact`
+    // in tokens.css) — so the wc layer exposes a `density` attribute and
+    // mirrors it to `data-density` on the host. `data-density` is not in
+    // OBSERVED, so the write cannot re-enter the render this runs from.
+    _applyDensity() {
+      const density = this.getAttribute("density");
+      if (density !== null) this.setAttribute("data-density", density);
+      else if (this.hasAttribute("data-density")) this.removeAttribute("data-density");
     }
 
     // The closest host above `node` on the way up to `root`, or null when the

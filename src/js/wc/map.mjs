@@ -245,8 +245,11 @@ class ContourHexbin extends ContourBase {
         if (title) tip.textContent = title;
         const rect = this.getBoundingClientRect();
         const cr = cell.getBoundingClientRect();
-        tip.style.left = (cr.left - rect.left + cr.width / 2) + "px";
-        tip.style.top = (cr.top - rect.top) + "px";
+        // Logical positioning (BY-48): the --chart-tip-* token contract shared
+        // with the chart tooltip, so the tip follows in RTL instead of being
+        // measured from the physical left edge of the host.
+        tip.style.setProperty("--chart-tip-inline-start", (cr.left - rect.left + cr.width / 2) + "px");
+        tip.style.setProperty("--chart-tip-block-start", (cr.top - rect.top) + "px");
         tip.removeAttribute("hidden");
       };
       const hideTip = () => {
@@ -320,8 +323,9 @@ class ContourFlowMap extends ContourBase {
         if (title) tip.textContent = title;
         const rect = this.getBoundingClientRect();
         const nr = node.getBoundingClientRect();
-        tip.style.left = (nr.left - rect.left + nr.width / 2) + "px";
-        tip.style.top = (nr.top - rect.top) + "px";
+        // Logical positioning (BY-48): token contract, RTL-safe like the rest.
+        tip.style.setProperty("--chart-tip-inline-start", (nr.left - rect.left + nr.width / 2) + "px");
+        tip.style.setProperty("--chart-tip-block-start", (nr.top - rect.top) + "px");
         tip.removeAttribute("hidden");
       };
       const hideTip = () => {
@@ -402,8 +406,11 @@ class ContourIsochrone extends ContourBase {
         if (title) tip.textContent = title;
         const rect = this.getBoundingClientRect();
         const rr = ring.getBoundingClientRect();
-        tip.style.left = (rr.left - rect.left + rr.width / 2) + "px";
-        tip.style.top = (rr.top - rect.top) + "px";
+        // Logical positioning (BY-48): the --chart-tip-* token contract shared
+        // with the chart tooltip, so the tip follows in RTL instead of being
+        // measured from the physical left edge of the host.
+        tip.style.setProperty("--chart-tip-inline-start", (rr.left - rect.left + rr.width / 2) + "px");
+        tip.style.setProperty("--chart-tip-block-start", (rr.top - rect.top) + "px");
         tip.removeAttribute("hidden");
       };
       const hideTip = () => {
@@ -788,7 +795,9 @@ class ContourScaleBar extends ContourBase {
         ticks.forEach((tv) => {
           const tick = document.createElement("span");
           tick.className = "c-scale-bar__tick";
-          tick.style.left = ((tv / max) * 100) + "%";
+          // Logical (BY-48): insetInlineStart mirrors the bar in RTL instead of
+          // pinning the tick to the physical left edge.
+          tick.style.insetInlineStart = ((tv / max) * 100) + "%";
           line.appendChild(tick);
         });
     }
