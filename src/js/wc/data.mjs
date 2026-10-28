@@ -1556,7 +1556,7 @@ class ContourHeatmap extends ContourBase {
         else if (e.key === "End") next = list.length - 1;
         else if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index: idx } }));
+          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { series: 1, index: idx } }));
           return;
         }
         if (next >= 0 && next !== idx) {
@@ -1569,7 +1569,7 @@ class ContourHeatmap extends ContourBase {
         const cell = e.target && e.target.closest ? e.target.closest(".c-heatmap__cell") : null;
         if (!cell || !this.contains(cell)) return;
         const idx = cells().indexOf(cell);
-        if (idx >= 0) this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index: idx } }));
+        if (idx >= 0) this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { series: 1, index: idx } }));
       });
     }
   }
@@ -1724,7 +1724,7 @@ class ContourSparkline extends ContourBase {
       this.addEventListener("keydown", (e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: {} }));
+          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { series: 1 } }));
         }
       });
     }
