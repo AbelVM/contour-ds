@@ -68,6 +68,36 @@ if (existsSync(distBundle)) {
   }
 }
 
+// 8. the event manifest, in both directions (BY-45)
+// Every "contour:*" name the fragments emit — however it is dispatched,
+// directly, through wcEmit, _emitForm, emitState or the view emitter —
+// must have a manifest entry, and every manifest entry must be emitted:
+// a name that ships with a spec but is never dispatched is documentation
+// that has already gone stale, and a dispatch without an entry is a page
+// that cannot learn from the component. The manifest is the count, and
+// this gate asserts it owns every number in the event vocabulary.
+const eventsBlock = /CONTOUR_EVENTS\s*=\s*Object\.freeze\(\{([\s\S]*?)\n\s*\}\);/.exec(src);
+if (!eventsBlock) {
+  fail("no `CONTOUR_EVENTS = Object.freeze({...})` in the fragments — the event vocabulary has no manifest to gate");
+} else {
+  const manifestKeys = new Set([...eventsBlock[1].matchAll(/"contour:([a-z-]+)"/g)].map((m) => "contour:" + m[1]));
+  // The vocabulary is read the way the source writes it: every quoted
+  // "contour:*" literal outside the manifest block, which covers direct
+  // CustomEvent constructions, wcEmit/_emitForm/emitState/emit calls, and the
+  // dynamic dispatches (e.g. `newState === "open" ? "contour:show" : "contour:hide"`,
+  // where the name is a literal inside the ternary rather than after `CustomEvent(` —
+  // a narrow regex that only matches the direct shape reports those two as dead,
+  // which the first run of this gate did).
+  const outside = src.replace(eventsBlock[0], "");
+  const referenced = new Set([...outside.matchAll(/"contour:([a-z-]+)"/g)].map((m) => "contour:" + m[1]));
+  const unmanifested = [...referenced].filter((n) => !manifestKeys.has(n)).sort();
+  const dead = [...manifestKeys].filter((n) => !referenced.has(n)).sort();
+  if (unmanifested.length)
+    fail(`references contour: names with no manifest entry: ${unmanifested.slice(0, 10).join(", ")} — add each to CONTOUR_EVENTS or stop naming it`);
+  if (dead.length)
+    fail(`manifest names nothing references: ${dead.slice(0, 10).join(", ")} — the vocabulary drifted from the layer that claims to own it`);
+}
+
 if (errors.length) {
   console.error("check-wc: FAIL\n  " + errors.join("\n  "));
   process.exit(1);

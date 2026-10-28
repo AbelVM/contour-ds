@@ -455,6 +455,12 @@ try {
     const load = await page_.evaluate(() => ({
       registry: Array.from(window.ContourElements || []),
       frozen: Object.isFrozen(window.ContourElements),
+      // The event manifest (BY-45) publishes the same way the registry does:
+      // a page can enumerate what a component may tell it without scraping
+      // quoted strings. Read off the artifact, because the classic bundle is
+      // what consumers load.
+      events: window.ContourEvents ? Object.keys(window.ContourEvents) : null,
+      eventsFrozen: window.ContourEvents ? Object.isFrozen(window.ContourEvents) : null,
       attempted: window.__attempted.length,
       attemptedNames: window.__attempted,
       rejected: window.__rejected,
@@ -468,6 +474,11 @@ try {
 
     if (load.registry.length && !load.frozen)
       fail("window.ContourElements is not frozen — a page that reshapes it makes the next reader's count wrong, which is the failure the array exists to prevent");
+    if (!load.events || !load.events.length)
+      fail("window.ContourEvents was not published by the shipped bundle — a consumer cannot enumerate the event vocabulary without scraping quoted strings");
+    if (load.events && load.events.length && !load.eventsFrozen)
+      fail("window.ContourEvents is not frozen — a page that reshapes it makes the next reader's vocabulary wrong, which is the failure the manifest exists to prevent");
+    compared += load.events ? load.events.length : 0;
 
     // ---- 7. every registration attempt succeeded --------------------------
     if (load.rejected.length)

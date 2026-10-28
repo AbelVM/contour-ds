@@ -66,6 +66,42 @@
   // how the light and shadow halves drifted apart over "color".
   export const MODS = ["variant", "size", "color"];
 
+  // Every event this layer emits, with the payload keys each one carries and
+  // its composed flag. This is the count — a number written anywhere would go
+  // stale silently, so the gate compares the emitted names in the source
+  // against THIS object, and the publish freezes it exactly like ContourElements.
+  // Payload keys are the union of keys every emission site passes, read from
+  // the source rather than invented: contour:select carries {series, index},
+  // {index, label} and {value} across its sites, so all three are listed.
+  export const CONTOUR_EVENTS = Object.freeze({
+    "contour:activate": { payload: [], composed: true },
+    "contour:bearing": { payload: ["direction", "degrees"], composed: true },
+    "contour:change": { payload: ["name", "value", "checked"], composed: true },
+    "contour:close": { payload: [], composed: true },
+    "contour:copy": { payload: ["text"], composed: true },
+    "contour:empty-action": { payload: ["state"], composed: true },
+    "contour:error": { payload: ["src", "message", "name", "status"], composed: true },
+    "contour:hide": { payload: [], composed: true },
+    "contour:input": { payload: ["name", "value", "checked"], composed: true },
+    "contour:layer-opacity": { payload: ["name", "opacity"], composed: true },
+    "contour:layer-toggle": { payload: ["name"], composed: true },
+    "contour:layer-visibility": { payload: ["name", "visible"], composed: true },
+    "contour:load": { payload: ["src", "count"], composed: true },
+    "contour:map-control": { payload: ["control"], composed: true },
+    "contour:open": { payload: [], composed: true },
+    "contour:page": { payload: ["page"], composed: true },
+    "contour:ready": { payload: ["version", "count"], composed: true },
+    "contour:remove": { payload: ["label", "key", "value"], composed: true },
+    "contour:retry": { payload: ["src"], composed: true },
+    "contour:select": { payload: ["series", "index", "label", "value"], composed: true },
+    "contour:show": { payload: [], composed: true },
+    "contour:sort": { payload: ["column", "direction"], composed: true },
+    "contour:theme-change": { payload: ["theme"], composed: true },
+    "contour:toggle": { payload: ["open", "label"], composed: true },
+    "contour:view-enter": { payload: [], composed: true },
+    "contour:view-leave": { payload: [], composed: true },
+  });
+
   // The attributes a component may READ from its host. This list is the render
   // contract: an attribute that is not here cannot ask an element to re-render,
   // and an attribute a component WRITES to itself must never be here, because

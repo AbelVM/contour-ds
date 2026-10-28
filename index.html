@@ -11462,14 +11462,65 @@ means obvious.
               </p>
               <p class="c-section-head__desc">
                 Composition: components never reach into one another. A host composes by nesting or
-                slotted content, and interactive components emit bubbling <code class="c-kbd">contour:*</code>
-                CustomEvents (<code class="c-kbd">contour:change</code>, <code class="c-kbd">contour:select</code>,
-                <code class="c-kbd">contour:copy</code>, <code class="c-kbd">contour:remove</code>,
-                <code class="c-kbd">contour:page</code>, <code class="c-kbd">contour:open</code>/
-                <code class="c-kbd">contour:close</code>) that a parent handles without coupling to
-                internals. Shadow wrappers adopt the document's same-origin sheets once and share one
-                parsed stylesheet across instances.
+                slotted content, and interactive components emit a published vocabulary of bubbling
+                <code class="c-kbd">contour:*</code> CustomEvents — every name, its payload keys and
+                its composed flag are the event table below — that a parent handles without coupling
+                to internals. Shadow wrappers adopt the document's same-origin sheets once and share
+                one parsed stylesheet across instances.
               </p>
+            </div>
+          </div>
+
+          <div class="c-panel">
+            <div class="c-panel__head">
+              <div>
+                <h3 class="c-panel__title">Event vocabulary</h3>
+              </div>
+            </div>
+            <div class="c-panel__body">
+              <div class="c-stack">
+                <p>
+                  Every <code class="c-kbd">contour:*</code> event the layer dispatches, the payload
+                  keys an emission site can carry, and the composed flag. Payload keys are the union
+                  of keys the emission sites pass; an empty payload is an event that carries no
+                  detail object. Composition here is what the flag is for: a component hosted inside
+                  another author's shadow root still surfaces its events to the document, and a
+                  consumer reads the same frozen list from <code class="c-kbd">window.ContourEvents</code>.
+                </p>
+                <div class="c-table-wrap">
+                  <table class="c-table">
+                    <thead><tr><th>Event</th><th>Payload keys</th><th>Composed</th></tr></thead>
+                    <tbody>
+                      <tr><td><code>contour:activate</code></td><td>—</td><td>true</td></tr>
+                      <tr><td><code>contour:bearing</code></td><td><code>direction</code>, <code>degrees</code></td><td>true</td></tr>
+                      <tr><td><code>contour:change</code></td><td><code>name</code>, <code>value</code>, <code>checked</code></td><td>true</td></tr>
+                      <tr><td><code>contour:close</code></td><td>—</td><td>true</td></tr>
+                      <tr><td><code>contour:copy</code></td><td><code>text</code></td><td>true</td></tr>
+                      <tr><td><code>contour:empty-action</code></td><td><code>state</code></td><td>true</td></tr>
+                      <tr><td><code>contour:error</code></td><td><code>src</code>, <code>message</code>, <code>name</code>, <code>status</code></td><td>true</td></tr>
+                      <tr><td><code>contour:hide</code></td><td>—</td><td>true</td></tr>
+                      <tr><td><code>contour:input</code></td><td><code>name</code>, <code>value</code>, <code>checked</code></td><td>true</td></tr>
+                      <tr><td><code>contour:layer-opacity</code></td><td><code>name</code>, <code>opacity</code></td><td>true</td></tr>
+                      <tr><td><code>contour:layer-toggle</code></td><td><code>name</code></td><td>true</td></tr>
+                      <tr><td><code>contour:layer-visibility</code></td><td><code>name</code>, <code>visible</code></td><td>true</td></tr>
+                      <tr><td><code>contour:load</code></td><td><code>src</code>, <code>count</code></td><td>true</td></tr>
+                      <tr><td><code>contour:map-control</code></td><td><code>control</code></td><td>true</td></tr>
+                      <tr><td><code>contour:open</code></td><td>—</td><td>true</td></tr>
+                      <tr><td><code>contour:page</code></td><td><code>page</code></td><td>true</td></tr>
+                      <tr><td><code>contour:ready</code></td><td><code>version</code>, <code>count</code></td><td>true</td></tr>
+                      <tr><td><code>contour:remove</code></td><td><code>label</code>, <code>key</code>, <code>value</code></td><td>true</td></tr>
+                      <tr><td><code>contour:retry</code></td><td><code>src</code></td><td>true</td></tr>
+                      <tr><td><code>contour:select</code></td><td><code>series</code>, <code>index</code>, <code>label</code>, <code>value</code></td><td>true</td></tr>
+                      <tr><td><code>contour:show</code></td><td>—</td><td>true</td></tr>
+                      <tr><td><code>contour:sort</code></td><td><code>column</code>, <code>direction</code></td><td>true</td></tr>
+                      <tr><td><code>contour:theme-change</code></td><td><code>theme</code></td><td>true</td></tr>
+                      <tr><td><code>contour:toggle</code></td><td><code>open</code>, <code>label</code></td><td>true</td></tr>
+                      <tr><td><code>contour:view-enter</code></td><td>—</td><td>true</td></tr>
+                      <tr><td><code>contour:view-leave</code></td><td>—</td><td>true</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </div>
 
