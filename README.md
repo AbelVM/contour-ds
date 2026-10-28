@@ -376,7 +376,7 @@ Optional bridges into other toolchains. None are required to use the system.
 - **Tailwind v4** — `integrations/tailwind/contour-theme.css` exposes Contour
   tokens as Tailwind utilities (`bg-primary`, `text-muted`, `rounded-md`,
   `font-sans`, …). See `integrations/README.md`.
-- **AI assistants** — `integrations/ai/.cursorrules`, `integrations/ai/CLAUDE.md`
+- **AI assistants** — `integrations/ai/CLAUDE.md`, `integrations/ai/v0-prompt.md`
   and `integrations/ai/v0-prompt.md` teach Cursor / Claude Code / v0 / Bolt /
   Lovable to use Contour correctly. The machine-readable contract they point at
   is `dist/agent-rules.json`.
