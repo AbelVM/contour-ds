@@ -18,9 +18,12 @@
   --color-text: var(--color-text);
   --color-text-muted: var(--color-text-muted);
   --color-text-subtle: var(--color-text-subtle);
-  --color-surface: var(--color-surface-1);
+  --color-surface-1: var(--color-surface-1);
+  --color-surface-2: var(--color-surface-2);
+  --color-surface-3: var(--color-surface-3);
   --color-surface-raised: var(--color-surface-raised);
-  --color-surface-sunken: var(--color-canvas-sunken);
+  --color-canvas: var(--color-canvas);
+  --color-canvas-sunken: var(--color-canvas-sunken);
   --color-border: var(--color-border);
   --color-border-strong: var(--color-border-strong);
   --color-canvas: var(--color-canvas);
@@ -41,7 +44,7 @@
   --radius-md: var(--radius-md);
   --radius-lg: var(--radius-lg);
   --radius-xl: var(--radius-xl);
-  --radius-full: var(--radius-pill);
+  --radius-pill: var(--radius-pill);
 
   /* Spacing (Contour's space scale) */
   --spacing-xs: var(--space-xs);
@@ -58,6 +61,4 @@
 
   /* Motion */
   --ease-standard: var(--ease-standard);
-  --duration-fast: var(--dur-fast);
-  --duration-base: var(--dur-base);
 }
