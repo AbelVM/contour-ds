@@ -8,6 +8,22 @@ const inv = inventory();
 const names = inv.components.names;
 const tokens = Object.keys(inv.tokens.census);
 
+// Parse CONTOUR_EVENTS from core.mjs for the event detail-payload interfaces (BY3-I7).
+import { readFileSync } from "node:fs";
+const coreSrc = readFileSync(join(ROOT, "src/js/wc/core.mjs"), "utf-8");
+const evBlock = /CONTOUR_EVENTS\s*=\s*Object\.freeze\(\{([\s\S]*?)\n\s*\}\);/.exec(coreSrc);
+const events = [];
+if (evBlock) {
+  for (const line of evBlock[1].split("\n")) {
+    const m = line.match(/"(contour:[a-z-]+)"\s*:\s*\{\s*payload:\s*\[([^\]]*)\]/);
+    if (!m) continue;
+    const name = m[1];
+    const payload = m[2].trim();
+    const keys = payload ? payload.split(",").map((k) => k.trim().replace(/^"|"$/g, "")).filter(Boolean) : [];
+    events.push({ name, keys });
+  }
+}
+
 const lines = [];
 lines.push("/**");
 lines.push(" * Contour Design System — TypeScript definitions");
@@ -50,6 +66,22 @@ lines.push("  }");
 lines.push("}");
 lines.push("");
 
+// Event detail-payload interfaces (BY3-I7).
+if (events.length) {
+  lines.push("/** Detail payloads for the Contour event vocabulary. */");
+  lines.push("export interface ContourEventDetailMap {");
+  for (const ev of events) {
+    const iface = ev.keys.length
+      ? "{ " + ev.keys.map((k) => k + ": unknown").join("; ") + " }"
+      : "undefined";
+    lines.push(`  "${ev.name}": ${iface};`);
+  }
+  lines.push("}");
+  lines.push("");
+  lines.push("export type ContourEventName = keyof ContourEventDetailMap;");
+  lines.push("");
+}
+
 const out = join(ROOT, "dist", "contour.d.ts");
 writeFileSync(out, lines.join("\n"));
-console.log("Wrote", out, "—", names.length, "components,", tokens.length, "tokens");
+console.log("Wrote", out, "—", names.length, "components,", tokens.length, "tokens,", events.length, "events");
