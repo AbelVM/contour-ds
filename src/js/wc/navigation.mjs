@@ -267,7 +267,7 @@ class ContourHeader extends ContourBase {
   }
   define("contour-header", ContourHeader);
 class ContourTree extends ContourBase {
-    static get observed() { return ["items", "virtual", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
+    static get observed() { return ["items", "virtual", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "persist"]; }
     static get properties() { return { items: { attribute: "items" } }; }
 render() {
        this.classList.add("c-tree");
