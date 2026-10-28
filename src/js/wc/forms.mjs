@@ -34,9 +34,16 @@ class ContourCombobox extends ContourBase {
         renderEmpty(this, "combobox");
       }
     }
-    enhance() {
-      wireCombobox(this);
-    }
+     enhance() {
+       wireCombobox(this);
+       // Form sync (D-02): commit writes the input value; mirror it into the
+       // form association so the host actually submits.
+       if (this._internals && !this._wiredComboboxForm) {
+         this._wiredComboboxForm = true;
+         this._syncFormValue();
+         this.addEventListener("contour:select", () => { this._syncFormValue(); });
+       }
+     }
   }
 define("contour-combobox", ContourCombobox);
 class ContourField extends ContourBase {
@@ -200,16 +207,17 @@ class ContourField extends ContourBase {
   };
   define("contour-range", ContourRange);
 class ContourSwitch extends ContourBase {
-    static get observed() { return ["label", "required"]; }
-    static get properties() { return { label: { attribute: "label" }, required: { attribute: "required", type: Boolean } }; }
+    static get observed() { return ["label", "required", "checked"]; }
+    static get properties() { return { label: { attribute: "label" }, required: { attribute: "required", type: Boolean }, checked: { attribute: "checked", type: Boolean } }; }
     static get formAssociated() { return true; }
     render() {
       this.classList.add("c-switch");
       const label = this.getAttribute("label");
       // The guide's control is `label.c-switch` wrapping `input.c-switch__input`
       // and a bare span of text; the sheet paints the track on the input itself.
-      const input = this.ensure("input.c-switch__input", () => { const el = document.createElement("input"); el.className = "c-switch__input"; el.type = "checkbox"; return el; });
-      input.setAttribute("role", "switch");
+       const input = this.ensure("input.c-switch__input", () => { const el = document.createElement("input"); el.className = "c-switch__input"; el.type = "checkbox"; return el; });
+       input.checked = this.hasAttribute("checked");
+       input.setAttribute("role", "switch");
       input.setAttribute("aria-checked", String(input.checked));
       this._setCustomState("data-checked", input.checked);
       // Ensure track element follows the input (CSS: input + track).
@@ -249,13 +257,14 @@ class ContourSwitch extends ContourBase {
   }
   define("contour-switch", ContourSwitch);
 class ContourCheck extends ContourBase {
-    static get observed() { return ["label", "name", "value", "required", "type"]; }
-    static get properties() { return { label: { attribute: "label" }, name: { attribute: "name" }, value: { attribute: "value" }, required: { attribute: "required", type: Boolean }, type: { attribute: "type" } }; }
+    static get observed() { return ["label", "name", "value", "required", "type", "checked"]; }
+    static get properties() { return { label: { attribute: "label" }, name: { attribute: "name" }, value: { attribute: "value" }, required: { attribute: "required", type: Boolean }, type: { attribute: "type" }, checked: { attribute: "checked", type: Boolean } }; }
     static get formAssociated() { return true; }
     render() {
       this.classList.add("c-check");
       const label = this.getAttribute("label");
-      const input = this.ensure("input.c-check__input", () => { const el = document.createElement("input"); el.className = "c-check__input"; el.type = this.getAttribute("type") === "radio" ? "radio" : "checkbox"; return el; });
+       const input = this.ensure("input.c-check__input", () => { const el = document.createElement("input"); el.className = "c-check__input"; el.type = this.getAttribute("type") === "radio" ? "radio" : "checkbox"; return el; });
+       input.checked = this.hasAttribute("checked");
       // Ensure box element follows the input (CSS: input + box).
       if (!input.nextElementSibling || !input.nextElementSibling.classList.contains("c-check__box")) {
         const box = document.createElement("span");
@@ -293,13 +302,14 @@ class ContourCheck extends ContourBase {
   }
   define("contour-check", ContourCheck);
 class ContourRadio extends ContourBase {
-    static get observed() { return ["label", "name", "value", "required"]; }
-    static get properties() { return { label: { attribute: "label" }, name: { attribute: "name" }, value: { attribute: "value" }, required: { attribute: "required", type: Boolean } }; }
+    static get observed() { return ["label", "name", "value", "required", "checked"]; }
+    static get properties() { return { label: { attribute: "label" }, name: { attribute: "name" }, value: { attribute: "value" }, required: { attribute: "required", type: Boolean }, checked: { attribute: "checked", type: Boolean } }; }
     static get formAssociated() { return true; }
     render() {
       this.classList.add("c-radio");
       const label = this.getAttribute("label");
-      const input = this.ensure("input.c-radio__input", () => { const el = document.createElement("input"); el.className = "c-radio__input"; el.type = "radio"; return el; });
+       const input = this.ensure("input.c-radio__input", () => { const el = document.createElement("input"); el.className = "c-radio__input"; el.type = "radio"; return el; });
+       input.checked = this.hasAttribute("checked");
       if (this.hasAttribute("name")) input.name = this.getAttribute("name");
       if (this.hasAttribute("value")) input.value = this.getAttribute("value");
       if (label) {

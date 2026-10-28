@@ -1,4 +1,4 @@
-import { ContourBase, define, onDispose } from './core.mjs';
+import { ContourBase, define, onDispose, sanitizeHtml } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { wireRemovable, modalContain } from './behaviours.mjs';
 class ContourDialog extends ContourBase {
@@ -44,7 +44,7 @@ class ContourDialog extends ContourBase {
     enhance() {
       if (this._wiredDialog) return;
       this._wiredDialog = true;
-      onDispose(this, () => modalContain(this, false));
+      onDispose(this, () => { if (this.hasAttribute("open")) modalContain(this, false); });
       // The open state is carried by the `open` attribute so CSS can target it
       // and a caller can read host.open; it is written here and never observed,
       // so changing it cannot re-enter the render (the shared list excludes it
@@ -197,9 +197,9 @@ class ContourDisclosure extends ContourBase {
         if (captured.trim()) this._disclosureContent = captured;
         const details = this.ensure("details", () => {
           const d = document.createElement("details");
-          const summ = document.createElement("summary");
-          summ.className = "c-expandable__summary";
-          if (icon) {
+           const summ = document.createElement("summary");
+           summ.className = "c-disclosure__summary";
+           if (icon) {
             const ic = document.createElement("span");
             ic.className = "c-disclosure__icon";
             ic.innerHTML = '<svg aria-hidden="true"><use href="#' + String(icon).replace(/[^a-zA-Z0-9_-]/g, "") + '" /></svg>';
@@ -512,7 +512,7 @@ class ContourDrawer extends ContourBase {
       const authored = b ? Array.from(b.children) : [];
       if (body && !authored.length) {
         const el = this.ensure(".c-drawer__body", () => { const e = document.createElement("div"); e.className = "c-drawer__body"; return e; });
-        el.innerHTML = body;
+        el.innerHTML = sanitizeHtml(body);
       } else if (!body && b && !authored.length) {
         b.remove();
       }
@@ -520,7 +520,7 @@ class ContourDrawer extends ContourBase {
     enhance() {
       if (this._wiredDrawer) return;
       this._wiredDrawer = true;
-      onDispose(this, () => modalContain(this, false));
+      onDispose(this, () => { if (this.hasAttribute("open")) modalContain(this, false); });
       this._drawerLastFocus = null;
       this.show = () => {
         if (this.hasAttribute("open")) return;
@@ -589,7 +589,7 @@ class ContourSheet extends ContourBase {
       const authored = b ? Array.from(b.children) : [];
       if (body && !authored.length) {
         const el = this.ensure(".c-sheet__body", () => { const e = document.createElement("div"); e.className = "c-sheet__body"; return e; });
-        el.innerHTML = body;
+        el.innerHTML = sanitizeHtml(body);
       } else if (!body && b && !authored.length) {
         b.remove();
       }
@@ -597,7 +597,7 @@ class ContourSheet extends ContourBase {
     enhance() {
       if (this._wiredSheet) return;
       this._wiredSheet = true;
-      onDispose(this, () => modalContain(this, false));
+      onDispose(this, () => { if (this.hasAttribute("open")) modalContain(this, false); });
       this._sheetLastFocus = null;
       this.show = () => {
         if (this.hasAttribute("open")) return;

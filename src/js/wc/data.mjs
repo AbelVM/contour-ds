@@ -488,16 +488,14 @@ class ContourTable extends ContourBase {
           if (!Number.isFinite(page) || page < 1) page = 1;
           if (action === "prev" && page > 1) page -= 1;
           if (action === "next") page += 1;
-          this._page = page;
-          this._pageAttrLast = String(page);
-          // Mark the change as internal so the render sync preserves _page
-          // instead of nulling it (B3-01). Trigger the re-render directly
-          // rather than writing the observed `page` attribute, which would
-          // re-enter the attributeChangedCallback and trip the wc-contract
-          // re-entrancy guard.
-          this._pageInternal = true;
-          this.requestRender();
-          this.dispatchEvent(new CustomEvent("contour:page", { bubbles: true, composed: true, detail: { page } }));
+           this._page = page;
+           this._pageAttrLast = String(page);
+           // Reflect the page on the host so consumers can key off the attribute
+           // (D-04). Marked internal so the resulting render preserves _page
+           // instead of nulling it (B3-01).
+           this._pageInternal = true;
+           this.setAttribute("page", String(page));
+           this.dispatchEvent(new CustomEvent("contour:page", { bubbles: true, composed: true, detail: { page } }));
           const persist = this.getAttribute("persist");
           if (persist === "storage" && this.id) { try { localStorage.setItem("contour-table:" + this.id, String(page)); } catch (e) {} }
           else if (persist === "url") { try { const url = new URL(window.location.href); url.searchParams.set("c-table", String(page)); window.history.replaceState(null, "", url.toString()); } catch (e) {} }
@@ -1726,9 +1724,8 @@ class ContourSparkline extends ContourBase {
         if (dot) dot.setAttribute("hidden", "");
       };
       this.addEventListener("mousemove", showTip);
-      this.addEventListener("mouseleave", hideTip);
-      onDispose(this, () => { if (plotRectObserver) { plotRectObserver.disconnect(); plotRectObserver = null; } });
-      // Keyboard path (BY-39): the host carries tabindex; a focused sparkline
+       this.addEventListener("mouseleave", hideTip);
+       // Keyboard path (BY-39): the host carries tabindex; a focused sparkline
       // shows its last value, which is the point a keyboard reader can reach.
       this.addEventListener("focusin", () => {
         const pts = this._sparkPoints || [];

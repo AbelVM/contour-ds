@@ -1,4 +1,4 @@
-import { ContourBase, define, onDispose, supportsUntilFound } from './core.mjs';
+import { ContourBase, define, onDispose, supportsUntilFound, contourId } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { wireMenu, wirePagination, wireTabs, wireTree } from './behaviours.mjs';
 class ContourMenu extends ContourBase {
@@ -87,19 +87,33 @@ class ContourTabs extends ContourBase {
       if (tabs && !authored.length) {
          try {
            const parsed = JSON.parse(tabs);
-           const list = this.ensure(".c-tabs__list", () => { const el = document.createElement("div"); el.className = "c-tabs__list"; el.setAttribute("role", "tablist"); return el; });
-           list.setAttribute("role", "tablist");
-           list.innerHTML = "";
-           parsed.forEach((t, i) => {
-             const btn = document.createElement("button");
-             btn.className = "c-tabs__tab";
-             btn.setAttribute("role", "tab");
-             btn.setAttribute("aria-selected", String(i === 0));
-             btn.tabIndex = i === 0 ? 0 : -1;
-             btn.textContent = typeof t === "string" ? t : t.label;
-             list.appendChild(btn);
-           });
-           if (list.parentNode !== this) this.prepend(list);
+            const list = this.ensure(".c-tabs__list", () => { const el = document.createElement("div"); el.className = "c-tabs__list"; el.setAttribute("role", "tablist"); return el; });
+            list.setAttribute("role", "tablist");
+            list.innerHTML = "";
+            // Remove any previously generated panels so re-render doesn't stack.
+            Array.from(this.querySelectorAll(".c-tabs__panel")).forEach((n) => n.remove());
+            parsed.forEach((t, i) => {
+              const label = typeof t === "string" ? t : (t.label || t.title || "");
+              const panelId = contourId("c-tabs-panel");
+              const btn = document.createElement("button");
+              btn.className = "c-tabs__tab";
+              btn.setAttribute("role", "tab");
+              btn.setAttribute("aria-selected", String(i === 0));
+              btn.setAttribute("aria-controls", panelId);
+              btn.tabIndex = i === 0 ? 0 : -1;
+              btn.textContent = label;
+              list.appendChild(btn);
+              const panel = document.createElement("div");
+              panel.className = "c-tabs__panel";
+              panel.id = panelId;
+              panel.setAttribute("role", "tabpanel");
+              if (typeof t === "object" && t !== null && t.content !== undefined) {
+                panel.textContent = String(t.content);
+              }
+              if (i !== 0) panel.hidden = true;
+              this.appendChild(panel);
+            });
+            if (list.parentNode !== this) this.prepend(list);
          } catch (e) { /* keep existing */ }
         } else if (!tabs && !authored.length) {
           const list = this.querySelector(".c-tabs__list");
@@ -373,19 +387,32 @@ class ContourCodeTabs extends ContourBase {
       if (tabs && !authored.length) {
         try {
           const parsed = JSON.parse(tabs);
-          const l = this.ensure(".c-code-tabs__list", () => { const el = document.createElement("div"); el.className = "c-code-tabs__list"; el.setAttribute("role", "tablist"); return el; });
-          l.setAttribute("role", "tablist");
-          l.innerHTML = "";
-          parsed.forEach((t, i) => {
-            const btn = document.createElement("button");
-            btn.className = "c-code-tabs__tab";
-            btn.setAttribute("role", "tab");
-            btn.setAttribute("aria-selected", String(i === 0));
-            btn.tabIndex = i === 0 ? 0 : -1;
-            btn.textContent = typeof t === "string" ? t : t.label;
-            l.appendChild(btn);
-          });
-          if (l.parentNode !== this) this.prepend(l);
+           const l = this.ensure(".c-code-tabs__list", () => { const el = document.createElement("div"); el.className = "c-code-tabs__list"; el.setAttribute("role", "tablist"); return el; });
+           l.setAttribute("role", "tablist");
+           l.innerHTML = "";
+           Array.from(this.querySelectorAll(".c-code-tabs__panel")).forEach((n) => n.remove());
+           parsed.forEach((t, i) => {
+             const label = typeof t === "string" ? t : (t.label || t.title || "");
+             const panelId = contourId("c-code-tabs-panel");
+             const btn = document.createElement("button");
+             btn.className = "c-code-tabs__tab";
+             btn.setAttribute("role", "tab");
+             btn.setAttribute("aria-selected", String(i === 0));
+             btn.setAttribute("aria-controls", panelId);
+             btn.tabIndex = i === 0 ? 0 : -1;
+             btn.textContent = label;
+             l.appendChild(btn);
+             const panel = document.createElement("div");
+             panel.className = "c-code-tabs__panel";
+             panel.id = panelId;
+             panel.setAttribute("role", "tabpanel");
+             if (typeof t === "object" && t !== null && t.content !== undefined) {
+               panel.textContent = String(t.content);
+             }
+             if (i !== 0) panel.hidden = true;
+             this.appendChild(panel);
+           });
+           if (l.parentNode !== this) this.prepend(l);
         } catch (e) { /* keep existing */ }
       } else if (!tabs && list) {
         list.remove();

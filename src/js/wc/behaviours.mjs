@@ -742,11 +742,12 @@ export function wirePagination(host) {
   const activate = (btn) => {
     const page = parseInt(btn.textContent, 10);
     if (!Number.isFinite(page)) return;
-    wcAll(host, ".c-pagination__link").forEach((b) => {
-      if (parseInt(b.textContent, 10) === page) b.setAttribute("aria-current", "page");
-      else b.removeAttribute("aria-current");
-    });
-    wcEmit(host, "contour:page", { page });
+     wcAll(host, ".c-pagination__link").forEach((b) => {
+       if (parseInt(b.textContent, 10) === page) b.setAttribute("aria-current", "page");
+       else b.removeAttribute("aria-current");
+     });
+     host.setAttribute("page", String(page));
+     wcEmit(host, "contour:page", { page });
     if (host.getAttribute("persist") === "storage" && host.id) {
       try { localStorage.setItem("contour-pagination:" + host.id, String(page)); } catch (e) {}
     } else if (host.getAttribute("persist") === "url") {
