@@ -702,6 +702,13 @@ const series = this.getAttribute("series");
       this._wiredChart = true;
       if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
       // Tooltip: show on hover of a mark.
+      // Cache the plot rect across mousemove events: it only changes on
+      // resize/scroll, so re-measuring it on every pixel of movement is
+      // wasted layout work (B3-22). A ResizeObserver invalidates the cache;
+      // scroll invalidates via the same observer-less fallback (recompute).
+      let plotRectCache = null;
+      let plotRectObserver = null;
+      const invalidatePlotRect = () => { plotRectCache = null; };
       const showTip = (e) => {
         const plot = this.querySelector(".c-chart__plot");
         const tip = this.querySelector(".c-chart__tooltip");
@@ -710,7 +717,14 @@ const series = this.getAttribute("series");
         if (!mark || !plot.contains(mark)) { tip.setAttribute("hidden", ""); return; }
         const title = mark.getAttribute("title");
         if (title) tip.textContent = title;
-        const rect = plot.getBoundingClientRect();
+        if (!plotRectCache) {
+          plotRectCache = plot.getBoundingClientRect();
+          if (!plotRectObserver && typeof ResizeObserver === "function") {
+            plotRectObserver = new ResizeObserver(invalidatePlotRect);
+            plotRectObserver.observe(plot);
+          }
+        }
+        const rect = plotRectCache;
         const mr = mark.getBoundingClientRect();
         const x = mr.left - rect.left + mr.width / 2;
         const y = mr.top - rect.top;
@@ -725,6 +739,7 @@ const series = this.getAttribute("series");
       // Host-delegated so the handlers survive re-renders (rule 12).
       this.addEventListener("mousemove", showTip);
       this.addEventListener("mouseleave", hideTip);
+      onDispose(this, () => { if (plotRectObserver) { plotRectObserver.disconnect(); plotRectObserver = null; } });
       // Keyboard path (BY-39): the marks already carry roving tabindex, so a
       // focused mark shows the same tooltip as a hovered one.
       this.addEventListener("focusin", (e) => {
@@ -1687,6 +1702,7 @@ class ContourSparkline extends ContourBase {
       };
       this.addEventListener("mousemove", showTip);
       this.addEventListener("mouseleave", hideTip);
+      onDispose(this, () => { if (plotRectObserver) { plotRectObserver.disconnect(); plotRectObserver = null; } });
       // Keyboard path (BY-39): the host carries tabindex; a focused sparkline
       // shows its last value, which is the point a keyboard reader can reach.
       this.addEventListener("focusin", () => {
