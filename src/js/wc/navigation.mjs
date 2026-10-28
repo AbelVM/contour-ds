@@ -607,7 +607,6 @@ class ContourFilterBar extends ContourBase {
           e.preventDefault();
           if (cursor >= 0 && its[cursor]) {
             its[cursor].click();
-            this.dispatchEvent(new CustomEvent("contour:select", { detail: { index: cursor, label: its[cursor].textContent.trim() }, bubbles: true, composed: true }));
           }
         } else if (e.key === "Escape") {
           if (typeof this.hidePopover === "function") this.hidePopover();
