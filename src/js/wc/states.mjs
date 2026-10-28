@@ -366,18 +366,38 @@ export function remoteRefresh(host) {
 // the fold must not compete with the forty above it. Where IntersectionObserver
 // is missing the host simply asks, which is the honest fallback rather than never
 // asking at all.
+// One shared IntersectionObserver for every lazy host (B3-22): the previous
+// shape opened a fresh observer per host, so a dashboard with N lazy blocks
+// paid N observers for a single viewport. The shared observer fans entries out
+// to the host that owns each target; a host is unobserved (not the whole
+// observer disconnected) once it enters, so siblings keep watching.
+let _sharedLazyIO = null;
+const _sharedLazyTargets = new Map();
 export function remoteVisible(host) {
   if (!host.hasAttribute("lazy")) return true;
   if (typeof IntersectionObserver !== "function") return true;
   if (host._remoteVisible) return true;
-  const io = new IntersectionObserver((records) => {
-    if (!records.some((r) => r.isIntersecting)) return;
-    io.disconnect();
+  if (!_sharedLazyIO) {
+    _sharedLazyIO = new IntersectionObserver((records) => {
+      for (const r of records) {
+        const activate = _sharedLazyTargets.get(r.target);
+        if (!activate || !r.isIntersecting) continue;
+        _sharedLazyTargets.delete(r.target);
+        _sharedLazyIO.unobserve(r.target);
+        activate();
+      }
+    }, { rootMargin: "200px" });
+  }
+  const activate = () => {
     host._remoteVisible = true;
     host.requestRender();
-  }, { rootMargin: "200px" });
-  io.observe(host);
-  onDispose(host, () => io.disconnect());
+  };
+  _sharedLazyTargets.set(host, activate);
+  _sharedLazyIO.observe(host);
+  onDispose(host, () => {
+    _sharedLazyIO.unobserve(host);
+    _sharedLazyTargets.delete(host);
+  });
   return false;
 }
 
