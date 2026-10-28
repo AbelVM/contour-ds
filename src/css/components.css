@@ -88,6 +88,13 @@
     border-block-end: 1px solid var(--color-border-subtle);
   }
 
+  /* Raised once the page has moved under it (BY-29): the scroll listener on
+     contour-header toggles this class past a small threshold. Shadows are
+     reserved for things that genuinely float — a scrolled header is one. */
+  .c-header--scrolled {
+    box-shadow: var(--shadow-sm);
+  }
+
   .c-header__inner {
     container-type: inline-size;
     display: flex;
@@ -137,9 +144,61 @@
     margin-inline-start: var(--space-2xs);
   }
 
+  /* Mobile toggle (BY-29). The component renders the button only when a nav
+     exists; under 60rem it is the only way to open the nav, and at desktop it
+     stays hidden because the nav is always visible there. Control size comes
+     from --target-control, the same token .c-btn uses, so the touch target
+     holds the 24 px WCAG floor without a bespoke number. */
+  .c-header__toggle {
+    display: none;
+  }
+
   @media (width < 60rem) {
     .c-header__nav {
       display: none;
+    }
+
+    .c-header__nav.is-open {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0;
+      margin-inline-start: 0;
+      flex-basis: 100%;
+      padding-block: var(--space-xs);
+      border-block-start: 1px solid var(--color-border-subtle);
+    }
+
+    .c-header__nav.is-open a {
+      inline-size: 100%;
+      white-space: normal;
+    }
+
+    .c-header__toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-inline-size: var(--target-control);
+      min-block-size: var(--target-control);
+      padding: 0;
+      border: none;
+      background: transparent;
+      color: var(--color-text-muted);
+      cursor: pointer;
+    }
+
+    .c-header__toggle:hover {
+      color: var(--color-text-strong);
+    }
+
+    .c-header__toggle:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+
+    .c-header__toggle svg {
+      inline-size: 1.25rem;
+      block-size: 1.25rem;
     }
   }
 

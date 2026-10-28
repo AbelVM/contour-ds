@@ -1,4 +1,4 @@
-import { ContourBase, define } from './core.mjs';
+import { ContourBase, define, onDispose } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { wireMenu, wirePagination, wireTabs, wireTree } from './behaviours.mjs';
 class ContourMenu extends ContourBase {
@@ -72,8 +72,8 @@ class ContourMenu extends ContourBase {
   }
 define("contour-menu", ContourMenu);
 class ContourTabs extends ContourBase {
-    static get observed() { return ["tabs", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { tabs: { attribute: "tabs" } }; }
+    static get observed() { return ["tabs", "autoplay", "pause", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
+    static get properties() { return { tabs: { attribute: "tabs" }, autoplay: { attribute: "autoplay", type: Number }, pause: { attribute: "pause", type: Boolean } }; }
     render() {
       this.classList.add("c-tabs");
       wireStates(this);
@@ -109,6 +109,44 @@ class ContourTabs extends ContourBase {
      }
     enhance() {
       wireTabs(this);
+      // Tabs autoplay (BY-29). Mirrors the streaming chart's interval contract
+      // (data.mjs): `autoplay` (seconds) advances the selection, `pause` stops
+      // it, the timer is owned once and disposed with the host, and the whole
+      // thing is gated on reduced motion. The advance is a click on the next
+      // tab, so wireTabs' own listener performs the activation and emits the
+      // manifest's contour:tab-change — this component never re-emits what its
+      // wiring already announced. Hover and focus also stop the loop (WCAG
+      // 2.2.2: auto-updating content needs a mechanism to pause, stop or hide;
+      // the pause attribute is the explicit one, hover/focus the implicit two).
+      const sync = () => {
+        const seconds = parseFloat(this.getAttribute("autoplay") || "");
+        const paused = this.hasAttribute("pause") || this._tabsHover || this._tabsFocus;
+        const reduced = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const want = Number.isFinite(seconds) && seconds > 0 && !paused && !reduced;
+        if (want === this._tabsAutoplayRunning) return;
+        this._tabsAutoplayRunning = want;
+        if (this._tabsTimer !== undefined) { clearInterval(this._tabsTimer); this._tabsTimer = undefined; }
+        if (!want) return;
+        this._tabsTimer = setInterval(() => {
+          if (!this.isConnected || this.hasAttribute("pause") || this._tabsHover || this._tabsFocus) return;
+          const list = this.querySelector(".c-tabs__list");
+          const tabs = list ? Array.from(list.querySelectorAll("[role='tab']")) : [];
+          if (!tabs.length) return;
+          const cur = tabs.findIndex((t) => t.getAttribute("aria-selected") === "true");
+          const next = tabs[(cur + 1) % tabs.length];
+          if (next) next.click();
+        }, Math.max(1000, seconds * 1000));
+      };
+      // Re-run on every render so autoplay/pause attribute changes are picked
+      // up; the listeners and the disposer are installed exactly once.
+      sync();
+      if (this._wiredTabsAutoplay) return;
+      this._wiredTabsAutoplay = true;
+      this.addEventListener("pointerenter", () => { this._tabsHover = true; sync(); });
+      this.addEventListener("pointerleave", () => { this._tabsHover = false; sync(); });
+      this.addEventListener("focusin", () => { this._tabsFocus = true; sync(); });
+      this.addEventListener("focusout", () => { this._tabsFocus = false; sync(); });
+      onDispose(this, () => { if (this._tabsTimer !== undefined) { clearInterval(this._tabsTimer); this._tabsTimer = undefined; } });
     }
   }
 define("contour-tabs", ContourTabs);
@@ -170,7 +208,61 @@ class ContourHeader extends ContourBase {
         actions.className = "c-header__actions";
         inner.appendChild(actions);
       }
+      // Mobile toggle (BY-29). Below 60rem the sheet hides .c-header__nav with
+      // no way to open it; the toggle is the way. It is created only when a nav
+      // exists, controls that nav by id, and starts closed so the first paint
+      // matches the closed CSS state. It rides inside .c-header__actions so the
+      // group's margin-inline-start:auto keeps it at the far right under 60rem.
+      // `i-grid` stands in for a hamburger: the sprite ships no i-menu symbol
+      // (index.html is the guide's own, and a dead <use> would be a defect), so
+      // the closest existing menu-like glyph is used with the real label.
+      const navEl = inner.querySelector(".c-header__nav");
+      if (navEl) {
+        if (!navEl.id) navEl.id = "contour-header-nav";
+        const actions = inner.querySelector(".c-header__actions");
+        if (actions && !actions.querySelector(".c-header__toggle")) {
+          const toggle = document.createElement("button");
+          toggle.type = "button";
+          toggle.className = "c-header__toggle";
+          toggle.setAttribute("aria-label", "Toggle navigation");
+          toggle.setAttribute("aria-expanded", "false");
+          toggle.setAttribute("aria-controls", navEl.id);
+          toggle.innerHTML = '<svg aria-hidden="true"><use href="#i-grid" /></svg>';
+          actions.appendChild(toggle);
+        }
+      }
       if (inner.parentNode !== this) this.appendChild(inner);
+    }
+    enhance() {
+      if (this._wiredHeader) return;
+      this._wiredHeader = true;
+      // Scroll state (BY-29): past a small threshold the header gains
+      // c-header--scrolled so the sheet can raise it above the page.
+      const update = () => {
+        const y = window.scrollY || document.documentElement.scrollTop || 0;
+        this.classList.toggle("c-header--scrolled", y > 8);
+      };
+      update();
+      window.addEventListener("scroll", update, { passive: true });
+      onDispose(this, () => window.removeEventListener("scroll", update));
+      // Toggle: the button shows/hides the nav under 60rem and keeps
+      // aria-expanded in step. Close on Escape while open.
+      this.addEventListener("click", (e) => {
+        const toggle = e.target && e.target.closest ? e.target.closest(".c-header__toggle") : null;
+        if (!toggle || !this.contains(toggle)) return;
+        const nav = this.querySelector("#" + CSS.escape(toggle.getAttribute("aria-controls") || ""));
+        if (!nav) return;
+        const open = nav.classList.toggle("is-open");
+        toggle.setAttribute("aria-expanded", String(open));
+      });
+      this.addEventListener("keydown", (e) => {
+        if (e.key !== "Escape") return;
+        const toggle = this.querySelector(".c-header__toggle");
+        const nav = toggle && this.querySelector("#" + CSS.escape(toggle.getAttribute("aria-controls") || ""));
+        if (!toggle || !nav || !nav.classList.contains("is-open")) return;
+        nav.classList.remove("is-open");
+        toggle.setAttribute("aria-expanded", "false");
+      });
     }
   }
   define("contour-header", ContourHeader);
@@ -308,8 +400,8 @@ class ContourCodeTabs extends ContourBase {
   }
 define("contour-code-tabs", ContourCodeTabs);
 class ContourBreadcrumb extends ContourBase {
-    static get observed() { return ["items", "separator", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { items: { attribute: "items" }, separator: { attribute: "separator" } }; }
+    static get observed() { return ["items", "separator", "max", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
+    static get properties() { return { items: { attribute: "items" }, separator: { attribute: "separator" }, max: { attribute: "max", type: Number } } };
     render() {
       this.classList.add("c-breadcrumb");
       wireStates(this);
@@ -327,8 +419,27 @@ class ContourBreadcrumb extends ContourBase {
           n.setAttribute("aria-label", "Breadcrumb");
           n.innerHTML = "";
           const sep = this.getAttribute("separator") || "/";
-          parsed.forEach((item, i) => {
-            if (i < parsed.length - 1) {
+          const max = this._overflowExpanded ? null : this.max;
+          const shown = Number.isFinite(max) && max > 1 && parsed.length > max
+            ? parsed.slice(-max)
+            : parsed;
+          if (Number.isFinite(max) && max > 1 && parsed.length > max) {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "c-breadcrumb__overflow";
+            btn.setAttribute("aria-label", `Show ${parsed.length - shown.length + 1} more items`);
+            btn.textContent = "…";
+            btn.addEventListener("click", () => {
+              // A handler-owned property, not an attribute: flipping a
+              // self-observed attribute from a handler would re-enter render
+              // (the arm-7 trap), so the flag lives outside OBSERVED.
+              this._overflowExpanded = true;
+              this.requestRender();
+            });
+            n.appendChild(btn);
+          }
+          shown.forEach((item, i) => {
+            if (i < shown.length - 1) {
               const a = document.createElement("a");
               a.href = item.href || "#";
               a.textContent = item.label || item;
@@ -467,6 +578,39 @@ class ContourTocFull extends ContourBase {
         renderEmpty(this, "toc");
       }
     }
+    enhance() {
+      // Scroll-spy (BY-29). The toc links point at page sections by href; when
+      // IntersectionObserver exists, the section currently in the reading band
+      // marks its link aria-current="true" and clears the rest. The shipped CSS
+      // already styles .c-toc__link[aria-current="true"], so the hook needs no
+      // new rule. Enhancement-only: without IntersectionObserver the links stay
+      // as rendered, with author-provided aria-current left untouched.
+      if (this._wiredTocSpy) return;
+      this._wiredTocSpy = true;
+      if (typeof IntersectionObserver !== "function") return;
+      const links = () => Array.from(this.querySelectorAll(".c-toc__link"));
+      const targets = links()
+        .map((a) => {
+          const href = a.getAttribute("href") || "";
+          if (!href.startsWith("#") || href.length < 2) return null;
+          return document.getElementById(href.slice(1));
+        })
+        .filter(Boolean);
+      if (!targets.length) return;
+      const spy = new IntersectionObserver((entries) => {
+        const visible = entries.filter((en) => en.isIntersecting).map((en) => en.target.id);
+        if (!visible.length) return;
+        const top = visible[0];
+        links().forEach((a) => {
+          const href = a.getAttribute("href") || "";
+          const isCurrent = href === "#" + top;
+          if (isCurrent && a.getAttribute("aria-current") !== "true") a.setAttribute("aria-current", "true");
+          else if (!isCurrent && a.hasAttribute("aria-current")) a.removeAttribute("aria-current");
+        });
+      }, { rootMargin: "0px 0px -60% 0px", threshold: 0 });
+      targets.forEach((t) => spy.observe(t));
+      onDispose(this, () => spy.disconnect());
+    }
   }
 define("contour-toc", ContourTocFull);
 class ContourFilterBar extends ContourBase {
@@ -591,6 +735,12 @@ class ContourFilterBar extends ContourBase {
         const e = this.querySelector(".c-command__empty");
         if (e) e.remove();
       }
+      // Live filter results (BY-29). The region must exist EMPTY at mount —
+      // the contrast gate refuses a pre-populated live region — and is filled
+      // only when typing starts. The option ids the keydown handler writes are
+      // the "keyed rows" half; this is the aria-live half.
+      const status = this.ensure(".c-command__status", () => { const el = document.createElement("div"); el.className = "c-command__status"; el.setAttribute("role", "status"); return el; });
+      status.textContent = "";
       if (!items && !list) {
         renderEmpty(this, "command");
       }
@@ -640,6 +790,31 @@ class ContourFilterBar extends ContourBase {
           const idx = items().indexOf(item);
           this.dispatchEvent(new CustomEvent("contour:select", { detail: { index: idx, label: item.textContent.trim() }, bubbles: true, composed: true }));
         }
+      });
+      // Filter (BY-29): typing narrows the option set. The region was created
+      // empty at mount; only a real query fills it, so a mount announces
+      // nothing. Hidden items are taken out of the cursor walk, matching the
+      // tree/keydown roving: cursor is reset and aria-activedescendant cleared
+      // so the next mark() cannot point at a hidden option.
+      this.addEventListener("input", (e) => {
+        const inp = input();
+        if (!inp || e.target !== inp) return;
+        const q = inp.value.trim().toLowerCase();
+        const all = items();
+        let visible = 0;
+        all.forEach((it) => {
+          const match = !q || (it.textContent || "").toLowerCase().includes(q);
+          it.hidden = !match;
+          if (match) visible += 1;
+        });
+        this.querySelectorAll(".c-command__group").forEach((g) => {
+          const hasVisible = Array.from(g.querySelectorAll(".c-command__item")).some((it) => !it.hidden);
+          g.hidden = !hasVisible;
+        });
+        cursor = -1;
+        mark();
+        const status = this.querySelector(".c-command__status");
+        if (status) status.textContent = q ? `${visible} of ${all.length}` : "";
       });
     }
   }
