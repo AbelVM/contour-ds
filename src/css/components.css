@@ -1880,7 +1880,18 @@
     transform: scale(1.12);
   }
 
+  .c-range:hover::-moz-range-thumb {
+    transform: scale(1.12);
+  }
+
   .c-range:focus-visible::-webkit-slider-thumb {
+    box-shadow:
+      0 0 0 2px var(--color-focus-ring),
+      0 0 0 4px var(--color-focus-halo),
+      0 2px 8px var(--shadow-color-range);
+  }
+
+  .c-range:focus-visible::-moz-range-thumb {
     box-shadow:
       0 0 0 2px var(--color-focus-ring),
       0 0 0 4px var(--color-focus-halo),
