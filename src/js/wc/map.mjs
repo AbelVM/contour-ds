@@ -289,7 +289,7 @@ class ContourFlowMap extends ContourBase {
       if (effectiveNodes) {
        try {
          const parsed = JSON.parse(effectiveNodes);
-         Array.from(this.querySelectorAll(".c-flow-map__node, .c-flow-map__flow")).forEach((n) => n.remove());
+         Array.from(this.querySelectorAll(".c-flow-map__node")).forEach((n) => n.remove());
            parsed.forEach((n, i) => {
             const node = document.createElement("span");
             node.className = "c-flow-map__node" + (n.source ? " c-flow-map__node--source" : "") + (n.target ? " c-flow-map__node--target" : "");
@@ -302,7 +302,7 @@ class ContourFlowMap extends ContourBase {
           tip.setAttribute("hidden", "");
        } catch (e) { /* keep existing */ }
       } else {
-        Array.from(this.querySelectorAll(".c-flow-map__node, .c-flow-map__flow")).forEach((n) => n.remove());
+        Array.from(this.querySelectorAll(".c-flow-map__node")).forEach((n) => n.remove());
         renderEmpty(this, "flow-map");
       }
      }
