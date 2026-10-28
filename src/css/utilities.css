@@ -295,6 +295,40 @@
     .c-btn--danger {
       forced-color-adjust: none;
     }
+
+    /* Checked/selected states must use system colours in forced-colors mode
+       (BY3-U5): custom fills collapse to environment colours otherwise. */
+    .c-switch__input:checked {
+      background: Highlight;
+      border-color: Highlight;
+    }
+    .c-switch__input:checked::after {
+      background: HighlightText;
+    }
+    .c-check__input:checked {
+      background: Highlight;
+      border-color: Highlight;
+    }
+    .c-check__input:checked::after {
+      background: HighlightText;
+    }
+    .c-radio__input:checked::after {
+      background: HighlightText;
+    }
+    .c-range::-webkit-slider-thumb {
+      background: Highlight;
+    }
+    .c-range::-moz-range-thumb {
+      background: Highlight;
+    }
+    .c-segmented__option[aria-checked="true"] {
+      background: Highlight;
+      color: HighlightText;
+    }
+    .c-tabs__tab[aria-selected="true"] {
+      border-color: Highlight;
+      color: Highlight;
+    }
   }
 
 
