@@ -612,7 +612,6 @@ const series = this.getAttribute("series");
                  svg.setAttribute("viewBox", "0 0 300 120");
                  svg.setAttribute("preserveAspectRatio", "none");
                  svg.style.cssText = "position: absolute; inset: 0; width: 100%; height: 100%";
-                 svg.setAttribute("aria-hidden", "true");
                   barRects(s.values).forEach((r, ri) => {
                     const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
                     rect.setAttribute("class", "c-chart__bar");
@@ -634,7 +633,6 @@ const series = this.getAttribute("series");
                  svg.setAttribute("viewBox", "0 0 300 120");
                  svg.setAttribute("preserveAspectRatio", "none");
                  svg.style.cssText = "position: absolute; inset: 0; width: 100%; height: 100%";
-                 svg.setAttribute("aria-hidden", "true");
                  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
                  path.setAttribute("class", "c-chart__line");
                  path.setAttribute("data-series", String(i + 1));
