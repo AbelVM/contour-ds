@@ -480,8 +480,11 @@ class ContourTable extends ContourBase {
           if (action === "next") page += 1;
           this._page = page;
           this._pageAttrLast = String(page);
+          // Write the observed attribute so the render sync (which nulls _page
+          // when the attribute drifts) sees the new page and does not snap back
+          // to the stale value (B3-01).
+          this.setAttribute("page", String(page));
           this.dispatchEvent(new CustomEvent("contour:page", { bubbles: true, composed: true, detail: { page } }));
-          this.requestRender();
         }
       });
       this.addEventListener("keydown", (e) => {
