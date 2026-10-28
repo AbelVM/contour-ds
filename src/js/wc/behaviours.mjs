@@ -542,6 +542,9 @@ export function wireTree(host) {
 export function wireMenu(host) {
   const items = () => wcAll(host, "[role='menuitem']");
   items().forEach((it) => { if (!it.hasAttribute("tabindex")) it.setAttribute("tabindex", "-1"); });
+  if (!items().some((it) => it.getAttribute("tabindex") === "0") && items().length) {
+    items()[0].setAttribute("tabindex", "0");
+  }
   if (!wcClaim(host, "menu")) return;
   wcListen(host, "keydown", (e) => {
     const its = items();
