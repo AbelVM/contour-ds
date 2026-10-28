@@ -337,6 +337,12 @@ const PLACEMENT_READ = () =>
 // fatal to its own script, the consumer failure this claim exists for is fiction.
 const CANARY = "__wcContractCanary";
 
+// State-contract fixtures (BY-11). The retry arm needs a route that fails once
+// and then succeeds: rows can only appear after the retry click if the click
+// really asked the network again.
+let flakyHits = 0;
+const FX_ROWS = JSON.stringify([{ key: "A", value: "1" }, { key: "B", value: "2" }]);
+
 const server = createServer((req, res) => {
   if (req.url === "/unmin.js") res.writeHead(200, { "content-type": "text/javascript" }).end(bytes.unminified);
   else if (req.url === "/min.js") res.writeHead(200, { "content-type": "text/javascript" }).end(bytes.minified);
@@ -354,6 +360,14 @@ const server = createServer((req, res) => {
 <script src="/canary2.js"></script>
 <script>window.__ranAfter = true;</script>
 </body></html>`);
+  // BY-11 fixtures: a successful payload, a 404, a malformed body, a slow route
+  // (for abort-on-disconnect), and a route that fails once then succeeds (for
+  // the retry-re-fetches arm).
+  else if (req.url === "/fx/ok.json") res.writeHead(200, { "content-type": "application/json" }).end(FX_ROWS);
+  else if (req.url === "/fx/bad.json") res.writeHead(200, { "content-type": "application/json" }).end("{not json");
+  else if (req.url === "/fx/missing") res.writeHead(404, { "content-type": "text/plain" }).end("missing");
+  else if (req.url === "/fx/slow.json") setTimeout(() => res.writeHead(200, { "content-type": "application/json" }).end(FX_ROWS), 150);
+  else if (req.url === "/fx/flaky.json") { flakyHits += 1; if (flakyHits === 1) res.writeHead(404, { "content-type": "text/plain" }).end("flaky"); else res.writeHead(200, { "content-type": "application/json" }).end(FX_ROWS); }
   else res.writeHead(404).end("no");
 });
 await new Promise((r) => server.listen(0, "127.0.0.1", r));
@@ -947,6 +961,126 @@ try {
       fail(`${differ.length} of ${inHead.hosts.length} elements are built differently depending on where the script tag sits: ${differ.map((h) => `${h.tag} head[${h.descendants} nodes, ${h.classes || "no classes"}] vs deferred[${deferred.hosts[inHead.hosts.indexOf(h)].descendants} nodes, ${deferred.hosts[inHead.hosts.indexOf(h)].classes || "no classes"}]`).join(" | ")} — a wire-time pass over the author's children sees an empty host while the parser is still inside it, so the element works in the guide and not in the page`);
     compared += inHead.hosts.length + deferred.hosts.length;
     console.log(`wc-contract: placement parity compared ${inHead.hosts.length} hosts at both moments (classic in <head>, deferred at end of body) on the same bytes`);
+  }
+
+  // ---- 12. the state contract ---------------------------------------------
+  //
+  // The orphan sweep above mounts bare elements, so it cannot see loader
+  // output: a state never reaches a gate arm this way, and four things that
+  // were measured broken in the legacy copies (BY-11; states.mjs header) can
+  // come back without a red lane. Each arm mounts a state on the shipped
+  // bundle's own contour-readout and asserts what the loader contract claims:
+  //   - a state renders exactly one node ("Loading…Loading…" was a double);
+  //   - a failed fetch is an error, never an empty ("No data" on 404 lied);
+  //   - a state node carries no inline style (it killed the CSS rule beside it);
+  //   - leaving the page aborts the ask (a re-mount of the same URL re-fetches,
+  //     and a flaky fixture proves the retry click really asked again).
+  {
+    const p = await browser.newPage();
+    const errs = [];
+    p.on("pageerror", (e) => errs.push(String(e.message || e)));
+    await p.goto(`${origin}/unmin.html`, { waitUntil: "load" });
+    await p.waitForFunction(() => !!window.ContourElements, null, { timeout: 20000 });
+    const out = await p.evaluate(async () => {
+      const mk = (attrs) => {
+        const host = document.createElement("contour-readout");
+        for (const [k, v] of Object.entries(attrs)) host.setAttribute(k, v);
+        document.body.appendChild(host);
+        return host;
+      };
+      const stateNodes = (host) => host.querySelectorAll("[data-contour-state]");
+      const readState = (host) => ({
+        loading: host.querySelectorAll(".c-readout__loading").length,
+        empty: host.querySelectorAll(".c-readout__empty").length,
+        error: host.querySelectorAll(".c-readout__error").length,
+        skeleton: host.querySelectorAll(".c-skeleton").length,
+        rows: host.querySelectorAll(".c-readout__row").length,
+        inline: [...stateNodes(host)].filter((n) => n.hasAttribute("style")).length,
+        all: stateNodes(host).length,
+      });
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+
+      // Attribute states: exactly one node, no inline style.
+      const loadingHost = mk({ loading: "Reading rows" });
+      const emptyHost = mk({ empty: "Nothing yet" });
+      const errorHost = mk({ error: "Down", retry: "Try again" });
+      const skeletonHost = mk({ skeleton: "3" });
+      const byAttr = {
+        loading: readState(loadingHost),
+        empty: readState(emptyHost),
+        error: readState(errorHost),
+        skeleton: readState(skeletonHost),
+        retryButton: !!errorHost.querySelector('[data-action="retry"]'),
+      };
+
+      // src success: rows render, no state node survives.
+      const okHost = mk({ src: "/fx/ok.json" });
+      await wait(120);
+      const ok = readState(okHost);
+
+      // 404 and malformed: an error node, never the empty state.
+      const missHost = mk({ src: "/fx/missing" });
+      await wait(120);
+      const missing = readState(missHost);
+      const badHost = mk({ src: "/fx/bad.json" });
+      await wait(120);
+      const malformed = readState(badHost);
+
+      // Abort on disconnect: a slow source removed mid-flight stops being
+      // written to. A re-mount of the same URL must re-fetch (the aborted
+      // request cannot have fulfilled a cache), so after the wait the fresh
+      // mount shows rows while the detached host shows nothing new.
+      const detachHost = mk({ src: "/fx/slow.json" });
+      const loadingWhileConnected = readState(detachHost).loading;
+      detachHost.remove();
+      await wait(220);
+      const afterDetach = readState(detachHost);
+      const reMount = mk({ src: "/fx/slow.json" });
+      await wait(220);
+      const reMounted = readState(reMount);
+
+      // Retry re-fetches: the fixture fails once then succeeds, so rows can
+      // only appear after the click if the click really asked the network
+      // again.
+      const flakyHost = mk({ src: "/fx/flaky.json", retry: "Try again" });
+      await wait(120);
+      const flakyFirst = readState(flakyHost);
+      const retryBtn = flakyHost.querySelector('[data-action="retry"]');
+      let retried = false;
+      flakyHost.addEventListener("contour:retry", () => { retried = true; });
+      if (retryBtn) retryBtn.click();
+      await wait(120);
+      const flakyAfter = readState(flakyHost);
+
+      return { byAttr, ok, missing, malformed, loadingWhileConnected, afterDetach, reMounted, flakyFirst, flakyAfter, retried };
+    });
+    compared += 14;
+    const bad = [];
+    const b = out.byAttr;
+    // exactly one state node per attribute state; no inline style on any
+    if (b.loading.all !== 1 || b.loading.loading !== 1) bad.push(`loading rendered ${b.loading.all} state nodes (${b.loading.loading} .c-readout__loading) — the "Loading…Loading…" double is back`);
+    if (b.empty.all !== 1 || b.empty.empty !== 1) bad.push(`empty rendered ${b.empty.all} state nodes (${b.empty.empty} .c-readout__empty)`);
+    if (b.error.all !== 1 || b.error.error !== 1) bad.push(`error rendered ${b.error.all} state nodes (${b.error.error} .c-readout__error)`);
+    if (!b.retryButton) bad.push("error state with retry attribute rendered no [data-action=retry] button");
+    if (b.skeleton.all !== 3 || b.skeleton.skeleton !== 3) bad.push(`skeleton="3" rendered ${b.skeleton.all} state nodes (${b.skeleton.skeleton} .c-skeleton)`);
+    if (b.loading.inline + b.empty.inline + b.error.inline + b.skeleton.inline)
+      bad.push("a state node carries an inline style — the CSS rule for it is dead (this was the measured defect before the states migration)");
+    // success vs failure vocabulary
+    if (out.ok.rows < 1 || out.ok.all !== 0) bad.push(`src success left ${out.ok.all} state node(s) and ${out.ok.rows} rows — a loaded host must paint data, not a state`);
+    if (out.missing.error !== 1 || out.missing.empty !== 0) bad.push(`src 404 landed on empty (${out.missing.empty}) instead of error (${out.missing.error}) — "No data" on a failure lied`);
+    if (out.malformed.error !== 1 || out.malformed.empty !== 0) bad.push(`malformed body landed on empty (${out.malformed.empty}) instead of error (${out.malformed.error})`);
+    // abort and retry are falsifications, not presence checks
+    if (out.loadingWhileConnected !== 1) bad.push(`slow src did not paint loading while connected (saw ${out.loadingWhileConnected})`);
+    if (out.afterDetach.all !== 1 || out.afterDetach.error || out.afterDetach.rows)
+      bad.push(`detached host kept being written to (${JSON.stringify(out.afterDetach)}) — leaving the page did not abort the ask`);
+    if (out.reMounted.rows < 1) bad.push(`re-mount of an aborted URL did not re-fetch (rows ${out.reMounted.rows}) — the abort either never happened or poisoned the cache`);
+    if (out.flakyFirst.error !== 1 || out.flakyAfter.error === 1 || out.flakyAfter.rows < 1 || !out.retried)
+      bad.push(`retry did not re-fetch: first ${JSON.stringify(out.flakyFirst)}, after ${JSON.stringify(out.flakyAfter)}, retried=${out.retried} — the fixture turns 200 on the second hit, so rows can only come from a real re-ask`);
+    if (errs.length) bad.push(`page errors: ${errs.slice(0, 2).join(" | ")}`);
+    if (bad.length)
+      fail(`state contract broke: ${bad.join(" | ")}`);
+    else
+      console.log(`wc-contract: state contract holds — one node per state, 404/malformed are errors not empties, no inline style on a state node, disconnect aborts, retry re-fetches (${out.ok.rows} ok rows, ${out.flakyAfter.rows} re-fetched rows)`);
   }
 } finally {
   await browser.close();

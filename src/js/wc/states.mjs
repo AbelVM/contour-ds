@@ -143,7 +143,14 @@ export function loadRemote(host, fields) {
     setStatus(host, "ready");
     return;
   }
-  if (host._remoteSrc === src && host._remoteStatus === "loading") return; // already asked
+  // Already asked: a host still waiting, or one whose last ask settled in
+  // error, must not re-ask on its own. The retry button (wireStates) and the
+  // refresh timer are the only re-askers, and both clear `_remoteSrc` first —
+  // without this guard, an errored host re-fetched on every settle's re-render,
+  // so a permanent 404 looped forever painting `loading`, and a flaky endpoint
+  // "recovered" to rows without the user ever clicking retry (both measured by
+  // the state-contract arm in wc-contract, which is the first lane to mount src).
+  if (host._remoteSrc === src && (host._remoteStatus === "loading" || host._remoteStatus === "error")) return; // already asked
 
   leaveRequest(host);
   host._remoteSrc = src;
@@ -153,7 +160,13 @@ export function loadRemote(host, fields) {
   if (!entry) {
     entry = { hosts: new Set(), controller: new AbortController() };
     remoteInflight.set(src, entry);
-    entry.promise = startFetch(src, entry).then(
+    // All three arguments: `host` carries the timeout attribute and owns the
+    // disposer, `src` is the URL to ask, `entry` holds the shared controller.
+    // Dropping `host` (as the call did between 8cde6ba and 566b85a) shifts
+    // `entry` into its slot, so `host.getAttribute` runs against the URL
+    // string and every fetch throws before it starts — caught by the
+    // state-contract arm in wc-contract, which is the first lane to mount src.
+    entry.promise = startFetch(host, src, entry).then(
       (data) => {
         if (remoteInflight.get(src) === entry) remoteInflight.delete(src);
         cacheResult(src, data);
