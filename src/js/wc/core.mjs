@@ -262,7 +262,8 @@
           this._ensureCache = new Map();
           this._ensureCacheGen = this._contourRenderGen;
           this._countRender();
-          this.render();
+          try { this.render(); }
+          catch (e) { console.error("Contour render error:", e); this.textContent = "Component failed to render."; }
          this._contourGenerated = Array.from(this.childNodes).filter((n) => !before.includes(n));
          this._applyParts(this);
          this._applyDensity();
@@ -351,7 +352,8 @@
          this._ensureCache = new Map();
          this._ensureCacheGen = this._contourRenderGen;
          this._countRender();
-         this.render();
+         try { this.render(); }
+         catch (e) { console.error("Contour render error:", e); this.textContent = "Component failed to render."; }
         this._contourGenerated = Array.from(this.childNodes).filter((n) => !before.includes(n));
         this._applyParts(this);
         this._applyDensity();
