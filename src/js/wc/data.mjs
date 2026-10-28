@@ -675,7 +675,7 @@ const series = this.getAttribute("series");
            }
           } catch (e) { /* keep existing */ }
           // Styled tooltip element (positioned via --chart-tip-*).
-          const tip = this.ensure(".c-chart__tooltip", () => { const el = document.createElement("div"); el.className = "c-chart__tooltip"; el.setAttribute("hidden", ""); return el; });
+          const tip = this.ensure(".c-chart__tooltip", () => { const el = document.createElement("div"); el.className = "c-chart__tooltip"; el.setAttribute("role", "tooltip"); el.setAttribute("hidden", ""); return el; });
           tip.setAttribute("hidden", "");
          } else {
          const plot = this.ensure(".c-chart__plot", () => { const el = document.createElement("div"); el.className = "c-chart__plot"; return el; });
@@ -718,6 +718,15 @@ const series = this.getAttribute("series");
       // Host-delegated so the handlers survive re-renders (rule 12).
       this.addEventListener("mousemove", showTip);
       this.addEventListener("mouseleave", hideTip);
+      // Keyboard path (BY-39): the marks already carry roving tabindex, so a
+      // focused mark shows the same tooltip as a hovered one.
+      this.addEventListener("focusin", (e) => {
+        const mark = e.target && e.target.closest ? e.target.closest(".c-chart__bar, .c-chart__point, .c-chart__line") : null;
+        if (mark && this.contains(mark)) showTip({ target: mark });
+      });
+      this.addEventListener("focusout", (e) => {
+        if (!this.contains(e.relatedTarget)) hideTip();
+      });
       // Per-bar keyboard/click handling for histogram bars (host-delegated).
       this.addEventListener("click", (e) => {
         const plot2 = this.querySelector(".c-chart__plot");
@@ -1544,7 +1553,7 @@ class ContourSparkline extends ContourBase {
            svg.appendChild(dot);
            this.appendChild(svg);
            this._sparkPoints = parsed;
-           const tip = this.ensure(".c-sparkline__tooltip", () => { const el = document.createElement("div"); el.className = "c-sparkline__tooltip"; el.setAttribute("hidden", ""); return el; });
+           const tip = this.ensure(".c-sparkline__tooltip", () => { const el = document.createElement("div"); el.className = "c-sparkline__tooltip"; el.setAttribute("role", "tooltip"); el.setAttribute("hidden", ""); return el; });
            tip.setAttribute("hidden", "");
         } catch (e) {
            Array.from(this.querySelectorAll("svg")).forEach((n) => n.remove());
@@ -1595,6 +1604,17 @@ class ContourSparkline extends ContourBase {
       };
       this.addEventListener("mousemove", showTip);
       this.addEventListener("mouseleave", hideTip);
+      // Keyboard path (BY-39): the host carries tabindex; a focused sparkline
+      // shows its last value, which is the point a keyboard reader can reach.
+      this.addEventListener("focusin", () => {
+        const pts = this._sparkPoints || [];
+        if (!pts.length) return;
+        const svg = this.querySelector("svg");
+        if (!svg) return;
+        const r = svg.getBoundingClientRect();
+        showTip({ clientX: r.left + r.width - 1 });
+      });
+      this.addEventListener("focusout", hideTip);
       this.addEventListener("click", (e) => {
         const btn = e.target && e.target.closest ? e.target.closest('button[data-action="retry"]') : null;
         if (btn && this.contains(btn)) {

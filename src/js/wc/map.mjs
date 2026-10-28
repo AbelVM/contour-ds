@@ -168,14 +168,15 @@ class ContourHexbin extends ContourBase {
          const cols = Math.ceil(Math.sqrt(parsed.length || 1));
          this.style.gridTemplateColumns = "repeat(" + cols + ", 1fr)";
          this.style.inlineSize = "16rem";
-           parsed.forEach((c) => {
+           parsed.forEach((c, i) => {
              const cell = document.createElement("div");
              cell.className = "c-hexbin__cell";
+             cell.setAttribute("tabindex", i === 0 ? "0" : "-1");
              if (typeof c === "object" && c.value != null) { cell.textContent = c.value; cell.setAttribute("title", String(c.value)); }
              else if (typeof c !== "object") { cell.textContent = c; cell.setAttribute("title", String(c)); }
              this.appendChild(cell);
            });
-           const tip = this.ensure(".c-hexbin__tooltip", () => { const el = document.createElement("div"); el.className = "c-hexbin__tooltip"; el.setAttribute("hidden", ""); return el; });
+           const tip = this.ensure(".c-hexbin__tooltip", () => { const el = document.createElement("div"); el.className = "c-hexbin__tooltip"; el.setAttribute("role", "tooltip"); el.setAttribute("hidden", ""); return el; });
            tip.setAttribute("hidden", "");
        } catch (e) { /* keep existing */ }
       } else {
@@ -209,6 +210,14 @@ class ContourHexbin extends ContourBase {
       this.addEventListener("mouseout", (e) => {
         if (!e.relatedTarget || !this.contains(e.relatedTarget)) hideTip();
       });
+      // Keyboard path (BY-39): the cells now carry roving tabindex.
+      this.addEventListener("focusin", (e) => {
+        const cell = e.target && e.target.closest ? e.target.closest(".c-hexbin__cell") : null;
+        if (cell && this.contains(cell)) showTip({ target: cell });
+      });
+      this.addEventListener("focusout", (e) => {
+        if (!this.contains(e.relatedTarget)) hideTip();
+      });
     }
   }
 define("contour-hexbin", ContourHexbin);
@@ -234,14 +243,15 @@ class ContourFlowMap extends ContourBase {
        try {
          const parsed = JSON.parse(effectiveNodes);
          Array.from(this.querySelectorAll(".c-flow-map__node, .c-flow-map__flow")).forEach((n) => n.remove());
-           parsed.forEach((n) => {
+           parsed.forEach((n, i) => {
             const node = document.createElement("span");
             node.className = "c-flow-map__node" + (n.source ? " c-flow-map__node--source" : "") + (n.target ? " c-flow-map__node--target" : "");
+            node.setAttribute("tabindex", i === 0 ? "0" : "-1");
             node.textContent = typeof n === "string" ? n : (n.label || n.name || "");
             if (typeof n === "object" && (n.label || n.name)) node.setAttribute("title", n.label || n.name);
             this.appendChild(node);
           });
-          const tip = this.ensure(".c-flow-map__tooltip", () => { const el = document.createElement("div"); el.className = "c-flow-map__tooltip"; el.setAttribute("hidden", ""); return el; });
+          const tip = this.ensure(".c-flow-map__tooltip", () => { const el = document.createElement("div"); el.className = "c-flow-map__tooltip"; el.setAttribute("role", "tooltip"); el.setAttribute("hidden", ""); return el; });
           tip.setAttribute("hidden", "");
        } catch (e) { /* keep existing */ }
       } else {
@@ -274,6 +284,14 @@ class ContourFlowMap extends ContourBase {
       this.addEventListener("mouseover", showTip);
       this.addEventListener("mouseout", (e) => {
         if (!e.relatedTarget || !this.contains(e.relatedTarget)) hideTip();
+      });
+      // Keyboard path (BY-39): the nodes now carry roving tabindex.
+      this.addEventListener("focusin", (e) => {
+        const node = e.target && e.target.closest ? e.target.closest(".c-flow-map__node") : null;
+        if (node && this.contains(node)) showTip({ target: node });
+      });
+      this.addEventListener("focusout", (e) => {
+        if (!this.contains(e.relatedTarget)) hideTip();
       });
     }
   }
@@ -308,13 +326,14 @@ class ContourIsochrone extends ContourBase {
          try {
            const parsed = JSON.parse(effectiveRings);
            Array.from(this.querySelectorAll(".c-isochrone__ring")).forEach((n) => n.remove());
-           parsed.forEach((r) => {
+           parsed.forEach((r, i) => {
              const ring = document.createElement("span");
              ring.className = "c-isochrone__ring c-isochrone__ring--" + (r.label || r);
+             ring.setAttribute("tabindex", i === 0 ? "0" : "-1");
              if (r.label) ring.setAttribute("title", r.label || r);
              this.appendChild(ring);
            });
-           const tip = this.ensure(".c-isochrone__tooltip", () => { const el = document.createElement("div"); el.className = "c-isochrone__tooltip"; el.setAttribute("hidden", ""); return el; });
+           const tip = this.ensure(".c-isochrone__tooltip", () => { const el = document.createElement("div"); el.className = "c-isochrone__tooltip"; el.setAttribute("role", "tooltip"); el.setAttribute("hidden", ""); return el; });
            tip.setAttribute("hidden", "");
          } catch (e) { /* keep existing */ }
        } else {
@@ -347,6 +366,14 @@ class ContourIsochrone extends ContourBase {
       this.addEventListener("mouseover", showTip);
       this.addEventListener("mouseout", (e) => {
         if (!e.relatedTarget || !this.contains(e.relatedTarget)) hideTip();
+      });
+      // Keyboard path (BY-39): the rings now carry roving tabindex.
+      this.addEventListener("focusin", (e) => {
+        const ring = e.target && e.target.closest ? e.target.closest(".c-isochrone__ring") : null;
+        if (ring && this.contains(ring)) showTip({ target: ring });
+      });
+      this.addEventListener("focusout", (e) => {
+        if (!this.contains(e.relatedTarget)) hideTip();
       });
     }
   }
@@ -390,7 +417,7 @@ class ContourCatchment extends ContourBase {
         renderEmpty(this, "catchment");
         return;
       }
-       const tip = this.ensure(".c-catchment__tooltip", () => { const el = document.createElement("div"); el.className = "c-catchment__tooltip"; el.setAttribute("hidden", ""); return el; });
+       const tip = this.ensure(".c-catchment__tooltip", () => { const el = document.createElement("div"); el.className = "c-catchment__tooltip"; el.setAttribute("role", "tooltip"); el.setAttribute("hidden", ""); return el; });
        tip.setAttribute("hidden", "");
        if (rArea) tip.textContent = rArea;
      }
@@ -409,6 +436,11 @@ class ContourCatchment extends ContourBase {
       };
       this.addEventListener("mouseenter", showTip);
       this.addEventListener("mouseleave", hideTip);
+      // Keyboard path (BY-39): catchment has no per-cell marks to rove, so the
+      // host itself is the focusable surface, exactly like the sparkline.
+      if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
+      this.addEventListener("focusin", showTip);
+      this.addEventListener("focusout", hideTip);
     }
   }
 define("contour-catchment", ContourCatchment);

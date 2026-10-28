@@ -1267,6 +1267,77 @@ try {
     else
       console.log("wc-contract: light dialog/drawer/sheet lock the document and inert the background on open, restore on close (stacked, re-render safe)");
   }
+
+  // ---- 15. focus-exposed mark readout (BY-39) ------------------------------
+  //
+  // A chart/map mark that receives focus must show the same tooltip a hover
+  // shows, and that tip must be labelled `role="tooltip"` — F-23 measured all
+  // tips mouse-only with role=0. The marks carry roving tabindex; this arm
+  // focuses one and asserts the tip appears, exposed and named.
+  {
+    const p = await browser.newPage();
+    const errs = [];
+    p.on("pageerror", (e) => errs.push(String(e.message || e)));
+    await p.goto(`${origin}/unmin.html`, { waitUntil: "load" });
+    await p.waitForFunction(() => !!window.ContourElements, null, { timeout: 20000 });
+    const out = await p.evaluate(async () => {
+      const mk = (name, attrs) => {
+        const host = document.createElement(name);
+        for (const [k, v] of Object.entries(attrs)) host.setAttribute(k, v);
+        document.body.appendChild(host);
+        return host;
+      };
+      const readTip = (host, sel) => {
+        const tip = host.querySelector(sel);
+        return tip ? { visible: !tip.hasAttribute("hidden"), role: tip.getAttribute("role") } : null;
+      };
+      const results = {};
+
+      // chart: focus a point -> the tip shows with role=tooltip; blur hides.
+      const chart = mk("contour-chart", { series: '[{"label":"A","values":[1,2,3]}]', title: "T" });
+      const point = chart.querySelector(".c-chart__point");
+      point?.focus();
+      results.chart = { focused: !!point, ...readTip(chart, ".c-chart__tooltip") };
+      point?.blur();
+      results.chart.afterBlur = readTip(chart, ".c-chart__tooltip");
+
+      // heatmap: focus a cell.
+      const heat = mk("contour-heatmap", { cells: "4", values: "[1,2,3,4]" });
+      heat.querySelector(".c-heatmap__cell")?.focus();
+      results.heatmap = { ...readTip(heat, ".c-heatmap__tooltip") };
+
+      // hexbin: focus a cell.
+      const hex = mk("contour-hexbin", { cells: '[1,2,3,4]' });
+      hex.querySelector(".c-hexbin__cell")?.focus();
+      results.hexbin = { ...readTip(hex, ".c-hexbin__tooltip") };
+
+      // sparkline: the host itself is the focusable surface.
+      const spark = mk("contour-sparkline", { points: "[0.2,0.6,0.9]" });
+      spark.focus();
+      results.sparkline = { ...readTip(spark, ".c-sparkline__tooltip") };
+
+      return results;
+    });
+    const bad = [];
+    const expect = (label, r) => {
+      if (!r || r.visible !== true || r.role !== "tooltip")
+        bad.push(`${label} focus did not expose a role=tooltip tip: ${JSON.stringify(r)}`);
+    };
+    expect("chart", out.chart);
+    expect("heatmap", out.heatmap);
+    expect("hexbin", out.hexbin);
+    expect("sparkline", out.sparkline);
+    if (out.chart.afterBlur && out.chart.afterBlur.visible === true)
+      bad.push(`chart blur left the tip visible (${JSON.stringify(out.chart.afterBlur)})`);
+    const missingFocus = Object.entries(out).filter(([, r]) => r && r.focused === false).map(([k]) => k);
+    if (missingFocus.length) bad.push(`no focusable mark found in: ${missingFocus.join(", ")}`);
+    if (errs.length) bad.push(`page errors: ${errs.slice(0, 2).join(" | ")}`);
+    compared += 12;
+    if (bad.length)
+      fail(`focus-exposed mark readout broke (BY-39): ${bad.join(" | ")}`);
+    else
+      console.log("wc-contract: focusing a chart/map mark exposes its tooltip as a role=tooltip, and blur hides it");
+  }
 } finally {
   await browser.close();
   server.close();
