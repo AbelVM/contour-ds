@@ -1,4 +1,4 @@
-import { ContourBase, define } from './core.mjs';
+import { ContourBase, define, onDispose } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { wireRemovable, modalContain } from './behaviours.mjs';
 class ContourDialog extends ContourBase {
@@ -44,6 +44,7 @@ class ContourDialog extends ContourBase {
     enhance() {
       if (this._wiredDialog) return;
       this._wiredDialog = true;
+      onDispose(this, () => modalContain(this, false));
       // The open state is carried by the `open` attribute so CSS can target it
       // and a caller can read host.open; it is written here and never observed,
       // so changing it cannot re-enter the render (the shared list excludes it
@@ -483,6 +484,7 @@ class ContourDrawer extends ContourBase {
     enhance() {
       if (this._wiredDrawer) return;
       this._wiredDrawer = true;
+      onDispose(this, () => modalContain(this, false));
       // Open state is the `open` attribute; the close button clears it and
       // reports a real close.
       this.show = () => {
@@ -552,6 +554,7 @@ class ContourSheet extends ContourBase {
     enhance() {
       if (this._wiredSheet) return;
       this._wiredSheet = true;
+      onDispose(this, () => modalContain(this, false));
       this.show = () => {
         if (this.hasAttribute("open")) return;
         this.setAttribute("open", "");
