@@ -346,6 +346,10 @@ const FX_ROWS = JSON.stringify([{ key: "A", value: "1" }, { key: "B", value: "2"
 const server = createServer((req, res) => {
   if (req.url === "/unmin.js") res.writeHead(200, { "content-type": "text/javascript" }).end(bytes.unminified);
   else if (req.url === "/min.js") res.writeHead(200, { "content-type": "text/javascript" }).end(bytes.minified);
+  // The ESM bundle: page-side consumers import from it (watchViewport, BY-42),
+  // so the arm that tests exports must read this artifact, not the classic IIFE
+  // where exports were stripped.
+  else if (req.url === "/wc-esm.js") res.writeHead(200, { "content-type": "text/javascript" }).end(readFileSync(join(ROOT, "dist/contour-wc.esm.js"), "utf-8"));
   else if (req.url === "/contour.css") res.writeHead(200, { "content-type": "text/css" }).end(readFileSync(join(ROOT, "dist/contour.css"), "utf-8"));
   else if (req.url === "/unmin.html") res.writeHead(200, { "content-type": "text/html" }).end(shell("/unmin.js"));
   else if (req.url === "/min.html") res.writeHead(200, { "content-type": "text/html" }).end(shell("/min.js"));
@@ -1518,6 +1522,53 @@ try {
       fail(`form value events broke (BY-44): ${bad.join(" | ")}`);
     else
       console.log("wc-contract: the form family emits contour:input/contour:change with {name, value, checked} and composed=true");
+  }
+
+  // ---- 18. viewport visibility events (BY-42) ------------------------------
+  //
+  // watchViewport is a page-side ESM export: a dashboard that does its own
+  // ink work imports it the way this arm does (never a window.* guess). The
+  // loader's remoteVisible is one-shot and internal; enter+leave both halves
+  // must fire, driven by a real boundary crossing.
+  {
+    const p = await browser.newPage();
+    const errs = [];
+    p.on("pageerror", (e) => errs.push(String(e.message || e)));
+    await p.goto(`${origin}/unmin.html`, { waitUntil: "load" });
+    await p.waitForFunction(() => !!window.ContourElements, null, { timeout: 20000 });
+    const out = await p.evaluate(async () => {
+      const { watchViewport } = await import("/wc-esm.js");
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+      const host = document.createElement("div");
+      host.style.position = "absolute";
+      host.style.inlineSize = "120px";
+      host.style.blockSize = "120px";
+      document.body.appendChild(host);
+      const events = [];
+      host.addEventListener("contour:view-enter", () => events.push("enter"));
+      host.addEventListener("contour:view-leave", () => events.push("leave"));
+      watchViewport(host);
+      await wait(100);
+      const afterMount = events.slice();
+      host.style.top = "-5000px";
+      await wait(100);
+      const afterLeave = events.slice();
+      host.style.top = "0px";
+      await wait(100);
+      const afterReenter = events.slice();
+      return { hasExport: typeof watchViewport === "function", afterMount, afterLeave, afterReenter };
+    });
+    const bad = [];
+    if (!out.hasExport) bad.push("watchViewport is not exported from the ESM bundle");
+    if (out.afterMount.join() !== "enter") bad.push(`mount did not fire view-enter alone: ${JSON.stringify(out.afterMount)}`);
+    if (out.afterLeave.join() !== "enter,leave") bad.push(`leaving the viewport did not fire view-leave: ${JSON.stringify(out.afterLeave)}`);
+    if (out.afterReenter.join() !== "enter,leave,enter") bad.push(`re-entering did not fire view-enter again: ${JSON.stringify(out.afterReenter)}`);
+    if (errs.length) bad.push(`page errors: ${errs.slice(0, 2).join(" | ")}`);
+    compared += 8;
+    if (bad.length)
+      fail(`viewport visibility events broke (BY-42): ${bad.join(" | ")}`);
+    else
+      console.log("wc-contract: watchViewport exports and fires contour:view-enter/view-leave across a real boundary crossing");
   }
 } finally {
   await browser.close();

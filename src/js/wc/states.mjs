@@ -339,6 +339,40 @@ export function remoteVisible(host) {
   return false;
 }
 
+/**
+ * Page-side visibility events (BY-42). The loader's `remoteVisible` is one-shot
+ * and loader-internal: it exists to gate a single fetch. A dashboard that does
+ * its own ink work (a non-loader animation, a slow layout) needs the same
+ * signal exported, with both halves — enter AND leave — because "paused until
+ * it enters" is only useful if the pause lifts. Events are the loader's own
+ * convention: bubbles + composed, on the host.
+ *
+ * The returned disposer stops the observer; it is also wired to onDispose so a
+ * host removed from the DOM stops observing without the caller tracking it.
+ * Where IntersectionObserver is missing the honest fallback is to report the
+ * element as entered once and stop: an unobserved element is not "never seen",
+ * and a dashboard that waits for leave that can never come is a dashboard that
+ * never resumes.
+ */
+export function watchViewport(host) {
+  if (host._contourViewWired) return () => {};
+  host._contourViewWired = true;
+  const emit = (type) => host.dispatchEvent(new CustomEvent(type, { bubbles: true, composed: true }));
+  if (typeof IntersectionObserver !== "function") {
+    emit("contour:view-enter");
+    return () => {};
+  }
+  const io = new IntersectionObserver((records) => {
+    for (const r of records) {
+      if (r.isIntersecting) emit("contour:view-enter");
+      else emit("contour:view-leave");
+    }
+  });
+  io.observe(host);
+  onDispose(host, () => io.disconnect());
+  return () => io.disconnect();
+}
+
 // ---------------------------------------------------------------------------
 // The states themselves
 // ---------------------------------------------------------------------------
