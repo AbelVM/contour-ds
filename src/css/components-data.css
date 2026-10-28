@@ -216,6 +216,8 @@
 
    .c-sparkline__tooltip {
      position: absolute;
+     inset-block-start: var(--chart-tip-block-start);
+     inset-inline-start: var(--chart-tip-inline-start);
      z-index: var(--z-tooltip);
      padding: var(--space-2xs) var(--space-xs);
      border-radius: var(--radius-xs);
@@ -437,6 +439,8 @@
 
    .c-heatmap__tooltip {
      position: absolute;
+     inset-block-start: var(--chart-tip-block-start);
+     inset-inline-start: var(--chart-tip-inline-start);
      z-index: var(--z-tooltip);
      padding: var(--space-2xs) var(--space-xs);
      border-radius: var(--radius-xs);
@@ -562,6 +566,7 @@
     container-type: inline-size;
     position: relative;
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     grid-template-rows: 1fr auto;
     gap: var(--space-2xs);
   }
@@ -1568,6 +1573,8 @@
 
    .c-hexbin__tooltip {
      position: absolute;
+     inset-block-start: var(--chart-tip-block-start);
+     inset-inline-start: var(--chart-tip-inline-start);
      z-index: var(--z-tooltip);
      padding: var(--space-2xs) var(--space-xs);
      border-radius: var(--radius-xs);
@@ -1643,6 +1650,8 @@
 
    .c-flow-map__tooltip {
      position: absolute;
+     inset-block-start: var(--chart-tip-block-start);
+     inset-inline-start: var(--chart-tip-inline-start);
      z-index: var(--z-tooltip);
      padding: var(--space-2xs) var(--space-xs);
      border-radius: var(--radius-xs);
@@ -1700,6 +1709,8 @@
 
   .c-isochrone__tooltip {
     position: absolute;
+    inset-block-start: var(--chart-tip-block-start);
+    inset-inline-start: var(--chart-tip-inline-start);
     z-index: var(--z-tooltip);
     padding: var(--space-2xs) var(--space-xs);
     border-radius: var(--radius-xs);
