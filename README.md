@@ -278,6 +278,43 @@ Because the events are `composed: true`, they cross shadow boundaries: a
 `contour-table` nested inside another component's shadow tree still reaches a
 listener on `document`.
 
+## Map engine integration
+
+Contour ships the **interface** (controls, panels, readouts, legends) and
+deliberately stays out of the map engine's turf: it never imports MapLibre,
+Mapbox or Leaflet, never renders GeoJSON, and never projects coordinates.
+The engine owns the canvas; Contour owns the chrome around it.
+
+### Wiring recipe
+
+1. Import the engine's stylesheet and Contour's map-chrome sheet for that
+   engine:
+
+   ```js
+   import "maplibre-gl/dist/maplibre-gl.css";
+   import "contour-ds/map-chrome/maplibre";   // re-keys vendor controls onto Contour tokens
+   import "contour-ds/contour.min.css";
+   ```
+
+2. Create the map in your own code and mount Contour's chrome as siblings of
+   the map container (not inside it):
+
+   ```html
+   <div class="c-map-slot">
+     <div id="map" class="c-map-area"></div>
+     <contour-layer-panel items='[{"name":"Roads","visible":true}]'></contour-layer-panel>
+     <contour-scale-bar value="1000"></contour-scale-bar>
+     <contour-compass bearing="0"></contour-compass>
+   </div>
+   ```
+
+3. Listen for Contour's `contour:*` events (`contour:layer-visibility`,
+   `contour:layer-opacity`, `contour:bearing`, …) and forward them to the
+   engine's API (`map.setLayoutProperty`, `map.setBearing`, …). Contour never
+   calls the engine; the seam is the event.
+
+The full token-to-vendor mapping lives in `dist/map-chrome-contract.json`.
+
 ## Surfaces
 
 | Surface | Guide |
