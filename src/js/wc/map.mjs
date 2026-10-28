@@ -1,4 +1,4 @@
-import { ContourBase, define, onDispose } from './core.mjs';
+import { ContourBase, define, onDispose, formatValue } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { compassNeedle, scaleBarTicks } from './svg.mjs';
 class ContourMinimap extends ContourBase {
@@ -33,8 +33,8 @@ class ContourMinimap extends ContourBase {
   }
 define("contour-minimap", ContourMinimap);
 class ContourCoordinate extends ContourBase {
-    static get observed() { return ["value", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { value: { attribute: "value" } }; }
+    static get observed() { return ["value", "format", "locale", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
+    static get properties() { return { value: { attribute: "value" }, format: { attribute: "format" }, locale: { attribute: "locale" } }; }
     render() {
       this.classList.add("c-coordinate");
       wireStates(this);
@@ -46,7 +46,7 @@ class ContourCoordinate extends ContourBase {
         return;
       }
       const span = this.ensure(".c-coordinate__value", () => { const el = document.createElement("span"); el.className = "c-coordinate__value"; return el; });
-      span.textContent = value;
+      span.textContent = formatValue(value, this.getAttribute("format"), this.getAttribute("locale"));
     }
   }
 define("contour-coordinate", ContourCoordinate);

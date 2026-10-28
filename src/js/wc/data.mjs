@@ -1,9 +1,9 @@
-import { ContourBase, define, onDispose } from './core.mjs';
+import { ContourBase, define, onDispose, formatValue } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates, remoteInvalidate } from './states.mjs';
 import { donutSlices, barRects, smoothPath, polylinePoints } from './svg.mjs';
 class ContourReadout extends ContourBase {
-    static get observed() { return ["rows", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { rows: { attribute: "rows" } }; }
+    static get observed() { return ["rows", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "format", "locale"]; }
+    static get properties() { return { rows: { attribute: "rows" }, format: { attribute: "format" }, locale: { attribute: "locale" } }; }
     render() {
       this.classList.add("c-readout");
       wireStates(this);
@@ -24,7 +24,7 @@ class ContourReadout extends ContourBase {
             key.textContent = r.key || r[0];
             const val = document.createElement("span");
             val.className = "c-readout__value" + (r.primary ? " c-readout__value--primary" : "") + (r.accent ? " c-readout__value--accent" : "") + (r.coord ? " c-readout__value--coord" : "");
-            val.textContent = r.value || r[1];
+            val.textContent = formatValue(r.value || r[1], this.getAttribute("format"), this.getAttribute("locale"));
             row.appendChild(key);
             row.appendChild(val);
             if (r.order) {
@@ -43,9 +43,9 @@ class ContourReadout extends ContourBase {
   }
 define("contour-readout", ContourReadout);
 class ContourKpi extends ContourBase {
-    static get observed() { return ["value", "label", "delta", "direction", "note", "variant", "unit", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
+    static get observed() { return ["value", "label", "delta", "direction", "note", "variant", "unit", "format", "locale", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() {
-      return { value: { attribute: "value" }, label: { attribute: "label" }, delta: { attribute: "delta" }, direction: { attribute: "direction" }, note: { attribute: "note" }, variant: { attribute: "variant" }, unit: { attribute: "unit" } };
+      return { value: { attribute: "value" }, label: { attribute: "label" }, delta: { attribute: "delta" }, direction: { attribute: "direction" }, note: { attribute: "note" }, variant: { attribute: "variant" }, unit: { attribute: "unit" }, format: { attribute: "format" }, locale: { attribute: "locale" } };
     }
     render() {
       this.classList.add("c-kpi");
@@ -60,7 +60,7 @@ class ContourKpi extends ContourBase {
       if (variant) this.classList.add("c-kpi--" + variant);
       if (value) {
         const v = this.ensure(".c-kpi__value", () => { const el = document.createElement("div"); el.className = "c-kpi__value"; return el; });
-        v.textContent = value;
+        v.textContent = formatValue(value, this.getAttribute("format"), this.getAttribute("locale"));
       } else {
         const v = this.querySelector(".c-kpi__value");
         if (v) v.remove();
@@ -1007,8 +1007,8 @@ class ContourDelta extends ContourBase {
   }
 define("contour-delta", ContourDelta);
 class ContourStat extends ContourBase {
-    static get observed() { return ["value", "label", "delta", "unit", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" }, delta: { attribute: "delta" }, unit: { attribute: "unit" } }; }
+    static get observed() { return ["value", "label", "delta", "unit", "format", "locale", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
+    static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" }, delta: { attribute: "delta" }, unit: { attribute: "unit" }, format: { attribute: "format" }, locale: { attribute: "locale" } }; }
     render() {
       this.classList.add("c-stat");
       wireStates(this);
@@ -1019,7 +1019,7 @@ class ContourStat extends ContourBase {
       const delta = this.getAttribute("delta");
       if (value) {
         const v = this.ensure(".c-stat__value", () => { const el = document.createElement("div"); el.className = "c-stat__value"; return el; });
-        v.textContent = value;
+        v.textContent = formatValue(value, this.getAttribute("format"), this.getAttribute("locale"));
       } else {
         const v = this.querySelector(".c-stat__value");
         if (v) v.remove();

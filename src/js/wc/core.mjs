@@ -831,4 +831,28 @@
     "box", "cluster", "container", "row", "scrim", "stack"
   ];
 
+  // Value formatting (BY-31): opt-in Intl formatting for kpi/stat/readout/coordinate.
+  // `format` is a preset ("number","currency","percent","compact","date","time")
+  // or a JSON string of Intl.NumberFormat/DateTimeFormat options. `locale`
+  // defaults to the runtime locale. Returns the raw value when formatting fails.
+  export function formatValue(value, format, locale) {
+    if (!format) return value;
+    const loc = locale || (typeof navigator !== "undefined" && navigator.language) || "en";
+    if (format === "date" || format === "time") {
+      try {
+        const opts = format === "time" ? { timeStyle: "short" } : undefined;
+        return new Intl.DateTimeFormat(loc, opts).format(new Date(value));
+      } catch (e) { return value; }
+    }
+    let opts = {};
+    if (format === "currency") opts = { style: "currency", currency: "USD" };
+    else if (format === "percent") opts = { style: "percent" };
+    else if (format === "compact") opts = { notation: "compact" };
+    else if (format !== "number") {
+      try { opts = JSON.parse(format); } catch (e) { return value; }
+    }
+    try { return new Intl.NumberFormat(loc, opts).format(Number(value)); }
+    catch (e) { return value; }
+  }
+
 
