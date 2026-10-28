@@ -156,9 +156,25 @@ export function wireTabs(host) {
       const name = tab.getAttribute("aria-controls") || tab.textContent || "";
       host.dispatchEvent(new CustomEvent("contour:tab-change", { bubbles: true, composed: true, detail: { index: tabs.indexOf(tab), label: name } }));
     };
+    // Same-document View Transitions (BY-24). A consumer who names elements via
+    // `data-view-transition` / `--view-transition-name` gets a cross-fade on a
+    // tab swap; the morph must run inside startViewTransition so the browser
+    // has an old and a new state to interpolate. The initial mount activation
+    // below stays direct — a transition on load is a page fade nobody asked
+    // for — and the plain swap is the entire fallback, because the CSS harness
+    // (components.css) is enhancement-only too.
+    const runActivation = (tab, focus) => {
+      const can = typeof document.startViewTransition === "function"
+        && !(typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches);
+      if (can) {
+        try { document.startViewTransition(() => activate(tab, focus)); return; }
+        catch (e) { /* an in-flight transition or a private context: plain swap */ }
+      }
+      activate(tab, focus);
+    };
     wcListen(host, "click", (e) => {
       const tab = wcClosest(host, e.target, "[role='tab']");
-      if (tab && tabsOf().includes(tab)) activate(tab, false);
+      if (tab && tabsOf().includes(tab)) runActivation(tab, false);
     });
     wcListen(host, "keydown", (e) => {
       const tab = wcClosest(host, e.target, "[role='tab']");
@@ -169,7 +185,7 @@ export function wireTabs(host) {
       if (!(e.key in move)) return;
       e.preventDefault();
       const next = tabs[(move[e.key] + tabs.length) % tabs.length];
-      if (next) activate(next, true);
+      if (next) runActivation(next, true);
     });
     // Respect an author-marked selected tab; fall back to the first.
     const tabs = tabsOf();
