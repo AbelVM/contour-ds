@@ -505,13 +505,17 @@ class ContourFilterBar extends ContourBase {
       input.type = "text";
       input.placeholder = placeholder;
       input.setAttribute("aria-label", "Command");
+      input.setAttribute("role", "combobox");
+      input.setAttribute("aria-autocomplete", "list");
+      input.setAttribute("aria-expanded", "true");
       const items = remoteData(this, "items");
       const list = this.querySelector(".c-command__list");
       const authored = list ? Array.from(list.children).filter((n) => n.classList && n.classList.contains("c-command__item") || n.classList && n.classList.contains("c-command__group")) : [];
       if (items && !authored.length) {
         try {
           const parsed = JSON.parse(items);
-          const l = this.ensure(".c-command__list", () => { const el = document.createElement("div"); el.className = "c-command__list"; return el; });
+          const l = this.ensure(".c-command__list", () => { const el = document.createElement("div"); el.className = "c-command__list"; el.setAttribute("role", "listbox"); return el; });
+          l.setAttribute("role", "listbox");
           l.innerHTML = "";
           parsed.forEach((it) => {
             if (it.group) {
@@ -523,6 +527,7 @@ class ContourFilterBar extends ContourBase {
               group.appendChild(gt);
               const item = document.createElement("div");
               item.className = "c-command__item";
+              item.setAttribute("role", "option");
               if (it.icon) {
                 const ic = document.createElement("span");
                 ic.className = "c-command__item-icon";
@@ -549,6 +554,7 @@ class ContourFilterBar extends ContourBase {
             } else {
               const item = document.createElement("div");
               item.className = "c-command__item";
+              item.setAttribute("role", "option");
               if (it.icon) {
                 const ic = document.createElement("span");
                 ic.className = "c-command__item-icon";
@@ -595,7 +601,21 @@ class ContourFilterBar extends ContourBase {
       const input = () => this.querySelector(".c-command__input");
       const items = () => Array.from(this.querySelectorAll(".c-command__item"));
       let cursor = -1;
-      const mark = () => items().forEach((it, i) => it.classList.toggle("c-command__item--active", i === cursor));
+      const mark = () => {
+        items().forEach((it, i) => {
+          it.classList.toggle("c-command__item--active", i === cursor);
+          it.setAttribute("aria-selected", String(i === cursor));
+          if (i === cursor) {
+            if (!it.id) it.id = "contour-command-option-" + i;
+            const inp = input();
+            if (inp) inp.setAttribute("aria-activedescendant", it.id);
+          }
+        });
+        if (cursor < 0) {
+          const inp = input();
+          if (inp) inp.removeAttribute("aria-activedescendant");
+        }
+      };
       this.addEventListener("keydown", (e) => {
         const inp = input();
         if (!inp || e.target !== inp) return;
@@ -603,6 +623,8 @@ class ContourFilterBar extends ContourBase {
         if (!its.length) return;
         if (e.key === "ArrowDown") { e.preventDefault(); cursor = Math.min(cursor + 1, its.length - 1); mark(); }
         else if (e.key === "ArrowUp") { e.preventDefault(); cursor = Math.max(cursor - 1, 0); mark(); }
+        else if (e.key === "Home") { e.preventDefault(); cursor = 0; mark(); }
+        else if (e.key === "End") { e.preventDefault(); cursor = its.length - 1; mark(); }
         else if (e.key === "Enter") {
           e.preventDefault();
           if (cursor >= 0 && its[cursor]) {

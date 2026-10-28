@@ -55,7 +55,7 @@ const DIST = join(ROOT, "dist");
  *  which the Format Module has no legal place for (C-43). It states values only —
  *  a token's meaning is published once, in the Format document. */
 const BUDGETS = {
-  "contour.min.css": 174 * 1024,  // raised 2026-10-26 from 169 kB: measured 173,081 B after the §04 segmented shrink fix (R4-02) added `.c-segmented > button, > label { min-width: 0; overflow-wrap: anywhere }` so the colour-vision toggle stops running out of its own section at 390 px. Pre-existing 169 kB line was exactly the measured size with no headroom.
+  "contour.min.css": 180 * 1024,  // raised 2026-10-28: measured 177.4 kB after BY-48/B3-05/06/09/10/12/16/17/18/19; +2.6 kB margin  // raised 2026-10-26 from 169 kB: measured 173,081 B after the §04 segmented shrink fix (R4-02) added `.c-segmented > button, > label { min-width: 0; overflow-wrap: anywhere }` so the colour-vision toggle stops running out of its own section at 390 px. Pre-existing 169 kB line was exactly the measured size with no headroom.
   "contour.min.js": 38 * 1024,  // raised 2026-10-25: comparison slider drag (1.6 kB) added to ds.js
   "contour.d.ts": 27 * 1024,  // raised 2026-10-26 from 26 kB: expanded ContourProps to include all 99 observed attributes (was 8). Measured 26.2 kB. See M-WC-08 WC8-16.
   "contour.tokens.json": 50 * 1024,
@@ -67,7 +67,7 @@ const BUDGETS = {
   // exists to catch a jump nobody intended, not to keep the truth brief. A file
   // absent from this map is not budgeted at all, which is how an artifact can
   // grow without anyone noticing.
-  "contour.components.json": 157 * 1024,  // raised 2026-10-26 from 152 kB
+  "contour.components.json": 165 * 1024,  // raised 2026-10-28: measured 161.5 kB; +3.5 kB margin  // raised 2026-10-26 from 152 kB
   // The docs package (C-45). Measured 2026-10-23 at 43.6 kB: 23 section files
   // (37.4 kB) plus the index (6.2 kB) — figures this gate recomputes and prints on
   // every run, so the numbers above are a dated record, not the thing enforced.
@@ -116,12 +116,12 @@ const BUDGETS = {
   // Measured 2026-10-24 at 3,664 B.
   "hljs.css": 4 * 1024,
   "agent-rules.json": 12 * 1024,
-  "surfaces/contour-core.min.css": 117 * 1024,  // raised 2026-10-25: 0.0 kB overrun, pre-existing
-  "surfaces/contour-docs.min.css": 130 * 1024,  // raised 2026-10-26 from 128 kB
-  "surfaces/contour-data.min.css": 153 * 1024,  // raised 2026-10-27
-  "surfaces/contour-landing.min.css": 124 * 1024,  // raised 2026-10-27 from 123 kB: measured 123.2 kB (126,145 B). See CHANGELOG.md.
+  "surfaces/contour-core.min.css": 120 * 1024,  // raised 2026-10-28: measured 118.3 kB; +1.7 kB margin  // raised 2026-10-25: 0.0 kB overrun, pre-existing
+  "surfaces/contour-docs.min.css": 133 * 1024,  // raised 2026-10-28: measured 131.4 kB; +1.6 kB margin  // raised 2026-10-26 from 128 kB
+  "surfaces/contour-data.min.css": 158 * 1024,  // raised 2026-10-28: measured 156.4 kB; +1.6 kB margin  // raised 2026-10-27
+  "surfaces/contour-landing.min.css": 128 * 1024,  // raised 2026-10-28: measured 126.0 kB; +2.0 kB margin  // raised 2026-10-27 from 123 kB: measured 123.2 kB (126,145 B). See CHANGELOG.md.
   "contour.esm.min.js": 39 * 1024,
-  "contour-wc.esm.min.js": 265 * 1024,  // raised: ... + skeleton/empty/error states
+  "contour-wc.esm.min.js": 285 * 1024,  // raised 2026-10-28: measured 282.9 kB after BY-48/B3-05/06/09/10/12/16/17/18/19; +2.1 kB margin  // raised: ... + skeleton/empty/error states
 };
 
 const kB = (n) => `${(n / 1024).toFixed(1)} kB`;
