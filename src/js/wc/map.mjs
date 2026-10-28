@@ -186,25 +186,29 @@ class ContourHexbin extends ContourBase {
     enhance() {
       if (this._wiredHexbin) return;
       this._wiredHexbin = true;
-      const tip = this.querySelector(".c-hexbin__tooltip");
-      if (tip) {
-        const showTip = (e) => {
-          const cell = e.target && e.target.closest ? e.target.closest(".c-hexbin__cell") : null;
-          if (!cell || !this.contains(cell)) { tip.setAttribute("hidden", ""); return; }
-          const title = cell.getAttribute("title");
-          if (title) tip.textContent = title;
-          const rect = this.getBoundingClientRect();
-          const cr = cell.getBoundingClientRect();
-          tip.style.left = (cr.left - rect.left + cr.width / 2) + "px";
-          tip.style.top = (cr.top - rect.top) + "px";
-          tip.removeAttribute("hidden");
-        };
-        const hideTip = () => tip.setAttribute("hidden", "");
-        this.addEventListener("mouseover", showTip);
-        this.addEventListener("mouseout", (e) => {
-          if (!e.relatedTarget || !this.contains(e.relatedTarget)) hideTip();
-        });
-      }
+      // Per-event re-query (rule 12): the tip is rebuilt on every render, so a
+      // capture at wiring time is a detached node after the first change.
+      const showTip = (e) => {
+        const tip = this.querySelector(".c-hexbin__tooltip");
+        if (!tip) return;
+        const cell = e.target && e.target.closest ? e.target.closest(".c-hexbin__cell") : null;
+        if (!cell || !this.contains(cell)) { tip.setAttribute("hidden", ""); return; }
+        const title = cell.getAttribute("title");
+        if (title) tip.textContent = title;
+        const rect = this.getBoundingClientRect();
+        const cr = cell.getBoundingClientRect();
+        tip.style.left = (cr.left - rect.left + cr.width / 2) + "px";
+        tip.style.top = (cr.top - rect.top) + "px";
+        tip.removeAttribute("hidden");
+      };
+      const hideTip = () => {
+        const tip = this.querySelector(".c-hexbin__tooltip");
+        if (tip) tip.setAttribute("hidden", "");
+      };
+      this.addEventListener("mouseover", showTip);
+      this.addEventListener("mouseout", (e) => {
+        if (!e.relatedTarget || !this.contains(e.relatedTarget)) hideTip();
+      });
     }
   }
 define("contour-hexbin", ContourHexbin);
@@ -248,25 +252,29 @@ class ContourFlowMap extends ContourBase {
     enhance() {
       if (this._wiredFlowMap) return;
       this._wiredFlowMap = true;
-      const tip = this.querySelector(".c-flow-map__tooltip");
-      if (tip) {
-        const showTip = (e) => {
-          const node = e.target && e.target.closest ? e.target.closest(".c-flow-map__node") : null;
-          if (!node || !this.contains(node)) { tip.setAttribute("hidden", ""); return; }
-          const title = node.getAttribute("title");
-          if (title) tip.textContent = title;
-          const rect = this.getBoundingClientRect();
-          const nr = node.getBoundingClientRect();
-          tip.style.left = (nr.left - rect.left + nr.width / 2) + "px";
-          tip.style.top = (nr.top - rect.top) + "px";
-          tip.removeAttribute("hidden");
-        };
-        const hideTip = () => tip.setAttribute("hidden", "");
-        this.addEventListener("mouseover", showTip);
-        this.addEventListener("mouseout", (e) => {
-          if (!e.relatedTarget || !this.contains(e.relatedTarget)) hideTip();
-        });
-      }
+      // Per-event re-query (rule 12): the tip is rebuilt on every render, so a
+      // capture at wiring time is a detached node after the first change.
+      const showTip = (e) => {
+        const tip = this.querySelector(".c-flow-map__tooltip");
+        if (!tip) return;
+        const node = e.target && e.target.closest ? e.target.closest(".c-flow-map__node") : null;
+        if (!node || !this.contains(node)) { tip.setAttribute("hidden", ""); return; }
+        const title = node.getAttribute("title");
+        if (title) tip.textContent = title;
+        const rect = this.getBoundingClientRect();
+        const nr = node.getBoundingClientRect();
+        tip.style.left = (nr.left - rect.left + nr.width / 2) + "px";
+        tip.style.top = (nr.top - rect.top) + "px";
+        tip.removeAttribute("hidden");
+      };
+      const hideTip = () => {
+        const tip = this.querySelector(".c-flow-map__tooltip");
+        if (tip) tip.setAttribute("hidden", "");
+      };
+      this.addEventListener("mouseover", showTip);
+      this.addEventListener("mouseout", (e) => {
+        if (!e.relatedTarget || !this.contains(e.relatedTarget)) hideTip();
+      });
     }
   }
 define("contour-flow-map", ContourFlowMap);
@@ -317,25 +325,29 @@ class ContourIsochrone extends ContourBase {
     enhance() {
       if (this._wiredIsochrone) return;
       this._wiredIsochrone = true;
-      const tip = this.querySelector(".c-isochrone__tooltip");
-      if (tip) {
-        const showTip = (e) => {
-          const ring = e.target && e.target.closest ? e.target.closest(".c-isochrone__ring") : null;
-          if (!ring || !this.contains(ring)) { tip.setAttribute("hidden", ""); return; }
-          const title = ring.getAttribute("title");
-          if (title) tip.textContent = title;
-          const rect = this.getBoundingClientRect();
-          const rr = ring.getBoundingClientRect();
-          tip.style.left = (rr.left - rect.left + rr.width / 2) + "px";
-          tip.style.top = (rr.top - rect.top) + "px";
-          tip.removeAttribute("hidden");
-        };
-        const hideTip = () => tip.setAttribute("hidden", "");
-        this.addEventListener("mouseover", showTip);
-        this.addEventListener("mouseout", (e) => {
-          if (!e.relatedTarget || !this.contains(e.relatedTarget)) hideTip();
-        });
-      }
+      // Per-event re-query (rule 12): the tip is rebuilt on every render, so a
+      // capture at wiring time is a detached node after the first change.
+      const showTip = (e) => {
+        const tip = this.querySelector(".c-isochrone__tooltip");
+        if (!tip) return;
+        const ring = e.target && e.target.closest ? e.target.closest(".c-isochrone__ring") : null;
+        if (!ring || !this.contains(ring)) { tip.setAttribute("hidden", ""); return; }
+        const title = ring.getAttribute("title");
+        if (title) tip.textContent = title;
+        const rect = this.getBoundingClientRect();
+        const rr = ring.getBoundingClientRect();
+        tip.style.left = (rr.left - rect.left + rr.width / 2) + "px";
+        tip.style.top = (rr.top - rect.top) + "px";
+        tip.removeAttribute("hidden");
+      };
+      const hideTip = () => {
+        const tip = this.querySelector(".c-isochrone__tooltip");
+        if (tip) tip.setAttribute("hidden", "");
+      };
+      this.addEventListener("mouseover", showTip);
+      this.addEventListener("mouseout", (e) => {
+        if (!e.relatedTarget || !this.contains(e.relatedTarget)) hideTip();
+      });
     }
   }
 define("contour-isochrone", ContourIsochrone);
@@ -385,13 +397,18 @@ class ContourCatchment extends ContourBase {
     enhance() {
       if (this._wiredCatchment) return;
       this._wiredCatchment = true;
-      const tip = this.querySelector(".c-catchment__tooltip");
-      if (tip) {
-        const showTip = () => tip.removeAttribute("hidden");
-        const hideTip = () => tip.setAttribute("hidden", "");
-        this.addEventListener("mouseenter", showTip);
-        this.addEventListener("mouseleave", hideTip);
-      }
+      // Per-event re-query (rule 12): the tip is rebuilt on every render, so a
+      // capture at wiring time is a detached node after the first change.
+      const showTip = () => {
+        const tip = this.querySelector(".c-catchment__tooltip");
+        if (tip) tip.removeAttribute("hidden");
+      };
+      const hideTip = () => {
+        const tip = this.querySelector(".c-catchment__tooltip");
+        if (tip) tip.setAttribute("hidden", "");
+      };
+      this.addEventListener("mouseenter", showTip);
+      this.addEventListener("mouseleave", hideTip);
     }
   }
 define("contour-catchment", ContourCatchment);

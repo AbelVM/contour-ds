@@ -1375,7 +1375,7 @@ class ContourHeatmap extends ContourBase {
            if (values[i] !== undefined) cell.setAttribute("title", String(values[i]));
            this.appendChild(cell);
          }
-         const tip = this.ensure(".c-heatmap__tooltip", () => { const el = document.createElement("div"); el.className = "c-heatmap__tooltip"; el.setAttribute("hidden", ""); return el; });
+         const tip = this.ensure(".c-heatmap__tooltip", () => { const el = document.createElement("div"); el.className = "c-heatmap__tooltip"; el.setAttribute("role", "tooltip"); el.setAttribute("hidden", ""); return el; });
          tip.setAttribute("hidden", "");
        } else {
          renderEmpty(this, "heatmap");
@@ -1398,35 +1398,39 @@ class ContourHeatmap extends ContourBase {
       if (this._wiredHeatmap) return;
       this._wiredHeatmap = true;
       const cells = () => Array.from(this.querySelectorAll(".c-heatmap__cell"));
-      const tip = this.querySelector(".c-heatmap__tooltip");
-      if (tip) {
-        const showTip = (e) => {
-          const cell = e.target && e.target.closest ? e.target.closest(".c-heatmap__cell") : null;
-          if (!cell || !this.contains(cell)) { tip.setAttribute("hidden", ""); return; }
-          const title = cell.getAttribute("title");
-          if (title) tip.textContent = title;
-          else tip.textContent = "Cell " + (cell.dataset.index || "");
-          const rect = this.getBoundingClientRect();
-          const cr = cell.getBoundingClientRect();
-          this.style.position = this.style.position || "relative";
-          tip.style.left = (cr.left - rect.left + cr.width / 2) + "px";
-          tip.style.top = (cr.top - rect.top) + "px";
-          tip.removeAttribute("hidden");
-        };
-        const hideTip = () => tip.setAttribute("hidden", "");
-        this.addEventListener("mouseover", showTip);
-        this.addEventListener("mouseout", (e) => {
-          if (!e.relatedTarget || !this.contains(e.relatedTarget)) hideTip();
-         });
-        this.addEventListener("focusin", (e) => {
-          const cell = e.target && e.target.closest ? e.target.closest(".c-heatmap__cell") : null;
-          if (cell && this.contains(cell)) showTip({ target: cell });
-        });
-        this.addEventListener("focusout", (e) => {
-          if (!this.contains(e.relatedTarget)) hideTip();
-        });
-        if (tip && !tip.getAttribute("role")) tip.setAttribute("role", "tooltip");
-      }
+      // The tip is rebuilt on every render (the base wipes generated children),
+      // so handlers re-query it per event (rule 12) — a captured node would be
+      // detached after the first re-render and the tooltip would silently die.
+      const showTip = (e) => {
+        const tip = this.querySelector(".c-heatmap__tooltip");
+        if (!tip) return;
+        const cell = e.target && e.target.closest ? e.target.closest(".c-heatmap__cell") : null;
+        if (!cell || !this.contains(cell)) { tip.setAttribute("hidden", ""); return; }
+        const title = cell.getAttribute("title");
+        if (title) tip.textContent = title;
+        else tip.textContent = "Cell " + (cell.dataset.index || "");
+        const rect = this.getBoundingClientRect();
+        const cr = cell.getBoundingClientRect();
+        this.style.position = this.style.position || "relative";
+        tip.style.left = (cr.left - rect.left + cr.width / 2) + "px";
+        tip.style.top = (cr.top - rect.top) + "px";
+        tip.removeAttribute("hidden");
+      };
+      const hideTip = () => {
+        const tip = this.querySelector(".c-heatmap__tooltip");
+        if (tip) tip.setAttribute("hidden", "");
+      };
+      this.addEventListener("mouseover", showTip);
+      this.addEventListener("mouseout", (e) => {
+        if (!e.relatedTarget || !this.contains(e.relatedTarget)) hideTip();
+       });
+      this.addEventListener("focusin", (e) => {
+        const cell = e.target && e.target.closest ? e.target.closest(".c-heatmap__cell") : null;
+        if (cell && this.contains(cell)) showTip({ target: cell });
+      });
+      this.addEventListener("focusout", (e) => {
+        if (!this.contains(e.relatedTarget)) hideTip();
+      });
       this.addEventListener("click", (e) => {
         const btn = e.target && e.target.closest ? e.target.closest('button[data-action="retry"]') : null;
         if (btn && this.contains(btn)) {
@@ -1554,38 +1558,43 @@ class ContourSparkline extends ContourBase {
       if (this._wiredSparkline) return;
       this._wiredSparkline = true;
       if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
-      const tip = this.querySelector(".c-sparkline__tooltip");
-      const svg = this.querySelector("svg");
-      const dot = this.querySelector(".c-sparkline__dot");
-      if (tip && svg) {
-        const showTip = (e) => {
-          const rect = svg.getBoundingClientRect();
-          const x = e.clientX - rect.left;
-          const pct = Math.max(0, Math.min(1, x / rect.width));
-          const pts = this._sparkPoints || [];
-          if (pts.length === 0) return;
-          const idx = Math.round(pct * (pts.length - 1));
-          const val = pts[idx];
-          const cx = (idx * 100 / (pts.length - 1));
-          const cy = 30 - val * 30;
-          if (dot) {
-            dot.setAttribute("cx", String(cx));
-            dot.setAttribute("cy", String(cy));
-            dot.removeAttribute("hidden");
-          }
-          tip.textContent = String(val);
-          const tipX = (cx / 100) * rect.width;
-          tip.style.left = tipX + "px";
-          tip.style.top = "0px";
-          tip.removeAttribute("hidden");
-        };
-        const hideTip = () => {
-          tip.setAttribute("hidden", "");
-          if (dot) dot.setAttribute("hidden", "");
-        };
-        this.addEventListener("mousemove", showTip);
-        this.addEventListener("mouseleave", hideTip);
-      }
+      // The svg, dot and tip are rebuilt on every render (the base wipes
+      // generated children), so the handlers re-query them per event (rule 12);
+      // a capture made at wiring time is a detached node the moment the first
+      // attribute changes, and every tooltip after that writes into limbo.
+      const showTip = (e) => {
+        const svg = this.querySelector("svg");
+        const tip = this.querySelector(".c-sparkline__tooltip");
+        const dot = this.querySelector(".c-sparkline__dot");
+        if (!tip || !svg) return;
+        const rect = svg.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const pct = Math.max(0, Math.min(1, x / rect.width));
+        const pts = this._sparkPoints || [];
+        if (pts.length === 0) return;
+        const idx = Math.round(pct * (pts.length - 1));
+        const val = pts[idx];
+        const cx = (idx * 100 / (pts.length - 1));
+        const cy = 30 - val * 30;
+        if (dot) {
+          dot.setAttribute("cx", String(cx));
+          dot.setAttribute("cy", String(cy));
+          dot.removeAttribute("hidden");
+        }
+        tip.textContent = String(val);
+        const tipX = (cx / 100) * rect.width;
+        tip.style.left = tipX + "px";
+        tip.style.top = "0px";
+        tip.removeAttribute("hidden");
+      };
+      const hideTip = () => {
+        const tip = this.querySelector(".c-sparkline__tooltip");
+        const dot = this.querySelector(".c-sparkline__dot");
+        if (tip) tip.setAttribute("hidden", "");
+        if (dot) dot.setAttribute("hidden", "");
+      };
+      this.addEventListener("mousemove", showTip);
+      this.addEventListener("mouseleave", hideTip);
       this.addEventListener("click", (e) => {
         const btn = e.target && e.target.closest ? e.target.closest('button[data-action="retry"]') : null;
         if (btn && this.contains(btn)) {
