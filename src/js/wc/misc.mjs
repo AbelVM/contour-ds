@@ -67,7 +67,6 @@ class ContourAdvanced extends ContourBase {
     static get properties() { return { title: { attribute: "title" } }; }
     render() {
       this.classList.add("c-advanced");
-      Array.from(this.childNodes).forEach((n) => { if (n.nodeType === Node.TEXT_NODE) n.remove(); else if (n.nodeType === Node.ELEMENT_NODE && n.tagName === "SPAN") n.remove(); });
       const title = this.getAttribute("title");
       if (title) {
         const t = this.ensure(".c-advanced__title", () => { const el = document.createElement("div"); el.className = "c-advanced__title"; return el; });
@@ -113,7 +112,6 @@ class ContourAffordances extends ContourBase {
     static get properties() { return { name: { attribute: "name" }, title: { attribute: "title" } }; }
     render() {
       this.classList.add("c-affordances");
-      Array.from(this.childNodes).forEach((n) => { if (n.nodeType === Node.TEXT_NODE) n.remove(); else if (n.nodeType === Node.ELEMENT_NODE && n.tagName === "SPAN") n.remove(); });
       if (!this.querySelector(".c-affordance")) {
         const aff = document.createElement("div");
         aff.className = "c-affordance";

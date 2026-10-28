@@ -1719,7 +1719,6 @@ class ContourChartGrid extends ContourBase {
     static get properties() { return { title: { attribute: "title" } }; }
     render() {
       this.classList.add("c-chart-grid");
-      Array.from(this.childNodes).forEach((n) => { if (n.nodeType === Node.TEXT_NODE) n.remove(); else if (n.nodeType === Node.ELEMENT_NODE && n.tagName === "SPAN") n.remove(); });
       if (!this.querySelector(".c-chart")) {
         const c = document.createElement("div");
         c.className = "c-chart";

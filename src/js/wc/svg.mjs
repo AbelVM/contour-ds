@@ -90,7 +90,8 @@ export function barRects(values, opts) {
   const width = opts.width != null ? opts.width : 300;
   const height = opts.height != null ? opts.height : 120;
   const gap = opts.gap != null ? opts.gap : 2;
-  const max = opts.max != null ? opts.max : Math.max.apply(null, values.map((v) => Number(v) || 0)) || 1;
+  const max = opts.max != null ? opts.max : (Math.max.apply(null, values.map((v) => Number(v) || 0)) || 1);
+  if (!Number.isFinite(max) || max <= 0) return values.map(() => ({ x: 0, y: height, width: 0, height: 0 }));
   const n = values.length || 1;
   const slot = width / n;
   const barW = Math.max(1, slot - gap);
@@ -116,9 +117,10 @@ export function polylinePoints(values, opts) {
   const width = opts.width != null ? opts.width : 300;
   const height = opts.height != null ? opts.height : 120;
   const nums = values.map((v) => Number(v) || 0);
+  if (!nums.length) return "";
   const max = opts.max != null ? opts.max : Math.max.apply(null, nums);
   const min = opts.min != null ? opts.min : Math.min.apply(null, nums);
-  const range = (max - min) || 1;
+  const range = (Number.isFinite(max - min) && (max - min) !== 0) ? (max - min) : 1;
   const n = nums.length || 1;
   return nums.map((v, i) => {
     const x = (i / Math.max(1, n - 1)) * width;

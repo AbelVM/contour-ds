@@ -30,7 +30,6 @@ class ContourBtnGroup extends ContourBase {
     static get properties() { return { title: { attribute: "title" } }; }
     render() {
       this.classList.add("c-btn-group");
-      Array.from(this.childNodes).forEach((n) => { if (n.nodeType === Node.TEXT_NODE) n.remove(); else if (n.nodeType === Node.ELEMENT_NODE && n.tagName === "SPAN") n.remove(); });
       if (!this.querySelector(".c-btn")) {
         for (const lbl of ["One", "Two", "Three"]) {
           const b = document.createElement("button");
@@ -48,7 +47,6 @@ class ContourRangeScale extends ContourBase {
     static get properties() { return { label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-range-scale");
-      Array.from(this.childNodes).forEach((n) => { if (n.nodeType === Node.TEXT_NODE) n.remove(); else if (n.nodeType === Node.ELEMENT_NODE && n.tagName === "SPAN") n.remove(); });
       const label = this.getAttribute("label");
       if (label) {
         const t = this.ensure(".c-range-scale__label", () => { const el = document.createElement("span"); el.className = "c-range-scale__label"; return el; });
@@ -62,11 +60,6 @@ class ContourTimeRange extends ContourBase {
     static get properties() { return { label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-time-range");
-      // Drop authored placeholder text.
-      Array.from(this.childNodes).forEach((n) => {
-        if (n.nodeType === Node.TEXT_NODE) n.remove();
-        else if (n.nodeType === Node.ELEMENT_NODE && n.tagName === "SPAN" && !n.classList.contains("c-time-range__label")) n.remove();
-      });
       const label = this.getAttribute("label");
       if (label) {
         const t = this.ensure(".c-time-range__label", () => { const el = document.createElement("span"); el.className = "c-time-range__label"; return el; });
