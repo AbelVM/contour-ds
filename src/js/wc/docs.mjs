@@ -8,7 +8,7 @@ class ContourDocsNav extends ContourBase {
       wireStates(this);
       loadRemote(this, "items");
       if (renderStates(this, "docs-nav")) return;
-      const items = remoteData(this, "items") || '[{"title":"Nav","links":["Home","Docs"]}]';
+      const items = remoteData(this, "items") || (this.hasAttribute("items") ? this.getAttribute("items") : null);
       const list = this.querySelector(".c-docs-nav__list");
       const authored = list ? Array.from(list.children).filter((n) => n.classList && n.classList.contains("c-docs-nav__group")) : [];
       if (items && !authored.length) {
