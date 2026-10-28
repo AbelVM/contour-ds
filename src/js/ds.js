@@ -333,7 +333,8 @@
     trigger.setAttribute("aria-label", ok ? "Copied" : "Copy failed");
     trigger.dataset.copied = String(ok);
 
-    setTimeout(() => {
+    const timer = setTimeout(() => {
+      if (!trigger.isConnected) return;
       if (icon && originalHref) icon.setAttribute("href", originalHref);
       trigger.setAttribute("aria-label", originalLabel);
       delete trigger.dataset.copied;
