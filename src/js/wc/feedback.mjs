@@ -255,6 +255,7 @@ class ContourCallout extends ContourBase {
     static get properties() { return { variant: { attribute: "variant" }, title: { attribute: "title" }, icon: { attribute: "icon" } }; }
     render() {
       this.classList.add("c-callout");
+      Array.from(this.classList).forEach((c) => { if (c.startsWith("c-callout--")) this.classList.remove(c); });
       const variant = this.getAttribute("variant");
       if (variant) this.classList.add("c-callout--" + variant);
       const icon = this.getAttribute("icon");

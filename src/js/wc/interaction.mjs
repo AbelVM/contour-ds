@@ -272,6 +272,7 @@ class ContourResizable extends ContourBase {
     static get properties() { return { direction: { attribute: "direction" } }; }
     render() {
       this.classList.add("c-resizable");
+      this.classList.remove("c-resizable--vertical", "c-resizable--horizontal");
       const vertical = this.getAttribute("direction") === "vertical";
       this.classList.add(vertical ? "c-resizable--vertical" : "c-resizable--horizontal");
       if (!this.querySelector(".c-resizable__pane")) {
