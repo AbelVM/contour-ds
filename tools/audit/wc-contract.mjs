@@ -1189,6 +1189,84 @@ try {
     else
       console.log("wc-contract: dialog family exposes the same methods/events in light and shadow, and never reports an unconditional close");
   }
+
+  // ---- 14. modal containment (BY-46) --------------------------------------
+  //
+  // Opening a LIGHT dialog/drawer/sheet must lock the document and make the
+  // background inert (a native <dialog> in showModal gets that from the
+  // platform; the light components have no platform modal). The lock must be
+  // stacked (the second open cannot unlock the first close), survive a
+  // re-render that restores the authored class, and put the scroll position
+  // back on close — plan §7: "open light dialog, assert
+  // document.documentElement.style.overflow flipped and restored on close".
+  {
+    const p = await browser.newPage();
+    const errs = [];
+    p.on("pageerror", (e) => errs.push(String(e.message || e)));
+    await p.goto(`${origin}/unmin.html`, { waitUntil: "load" });
+    await p.waitForFunction(() => !!window.ContourElements, null, { timeout: 20000 });
+    const out = await p.evaluate(async () => {
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+      const lockState = () => document.documentElement.style.overflow;
+      const inerted = () => Array.from(document.body.children).filter((el) => el.inert).length;
+      const results = {};
+
+      // dialog: open locks + inerts the sibling background; close restores.
+      const dlg = document.createElement("contour-dialog");
+      dlg.setAttribute("title", "Move layer");
+      document.body.appendChild(dlg);
+      dlg.show();
+      const dlLocked = lockState();
+      const dlInert = inerted();
+      dlg.close();
+      results.dialog = { dlLocked, dlInert, dlRestored: lockState(), dlInertAfter: inerted() };
+
+      // drawer: same, and a re-render (title change) must not drop the lock or
+      // the open state, because the base restores the authored class on render.
+      const dr = document.createElement("contour-drawer");
+      dr.setAttribute("title", "Drawer");
+      document.body.appendChild(dr);
+      dr.show();
+      dr.setAttribute("title", "Renamed");
+      await wait(30);
+      results.drawer = { locked: lockState(), inert: inerted(), open: dr.hasAttribute("open"), isOpen: dr.classList.contains("is-open") };
+      dr.close();
+      results.drawer.afterClose = { locked: lockState(), inert: inerted(), open: dr.hasAttribute("open") };
+
+      // stacking: two open, close one, the page stays locked until both close.
+      const a = document.createElement("contour-dialog");
+      a.setAttribute("title", "A");
+      const b = document.createElement("contour-dialog");
+      b.setAttribute("title", "B");
+      document.body.appendChild(a);
+      document.body.appendChild(b);
+      a.show();
+      b.show();
+      a.close(); // still one open
+      const stackMid = { locked: lockState(), inert: inerted() };
+      b.close();
+      results.stack = { mid: stackMid, final: { locked: lockState(), inert: inerted() } };
+
+      return results;
+    });
+    const bad = [];
+    if (out.dialog.dlLocked !== "hidden") bad.push(`dialog show() did not lock the document (overflow=${JSON.stringify(out.dialog.dlLocked)})`);
+    if (out.dialog.dlInert < 1) bad.push(`dialog show() inerted ${out.dialog.dlInert} background siblings`);
+    if (out.dialog.dlRestored !== "") bad.push(`dialog close() left overflow=${JSON.stringify(out.dialog.dlRestored)}`);
+    if (out.dialog.dlInertAfter !== 0) bad.push(`dialog close() left ${out.dialog.dlInertAfter} inert siblings`);
+    if (out.drawer.locked !== "hidden" || !out.drawer.open || !out.drawer.isOpen)
+      bad.push(`drawer state after re-render: locked=${JSON.stringify(out.drawer.locked)}, open=${out.drawer.open}, isOpen=${out.drawer.isOpen}`);
+    if (out.drawer.inert < 1) bad.push(`drawer show() inerted ${out.drawer.inert} siblings`);
+    if (out.drawer.afterClose.locked !== "" || out.drawer.afterClose.open) bad.push(`drawer close() left locked=${JSON.stringify(out.drawer.afterClose.locked)}, open=${out.drawer.afterClose.open}`);
+    if (out.stack.mid.locked !== "hidden") bad.push("closing one of two open surfaces unlocked the document");
+    if (out.stack.final.locked !== "" || out.stack.final.inert !== 0) bad.push(`after both closed: locked=${JSON.stringify(out.stack.final.locked)}, inert=${out.stack.final.inert}`);
+    if (errs.length) bad.push(`page errors: ${errs.slice(0, 2).join(" | ")}`);
+    compared += 12;
+    if (bad.length)
+      fail(`modal containment broke (BY-46): ${bad.join(" | ")}`);
+    else
+      console.log("wc-contract: light dialog/drawer/sheet lock the document and inert the background on open, restore on close (stacked, re-render safe)");
+  }
 } finally {
   await browser.close();
   server.close();

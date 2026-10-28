@@ -1,6 +1,6 @@
 import { ContourBase, define } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
-import { wireRemovable } from './behaviours.mjs';
+import { wireRemovable, modalContain } from './behaviours.mjs';
 class ContourDialog extends ContourBase {
     static get observed() { return ["title"]; }
     static get properties() { return { title: { attribute: "title" } }; }
@@ -54,6 +54,7 @@ class ContourDialog extends ContourBase {
         this.setAttribute("open", "");
         const dlg = this.querySelector("dialog") || (this.tagName === "DIALOG" ? this : null);
         if (dlg && typeof dlg.showModal === "function") { try { dlg.showModal(); } catch (e) {} }
+        modalContain(this, true);
         // Focus the close button or the first focusable, like the shadow twin.
         const focusable = this.querySelector("button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])");
         if (focusable) { try { focusable.focus(); } catch (e) {} }
@@ -65,6 +66,7 @@ class ContourDialog extends ContourBase {
         if (dlg && typeof dlg.close === "function") dlg.close();
         if (this.hasAttribute("open")) this.removeAttribute("open");
         if (wasOpen) {
+          modalContain(this, false);
           this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true }));
           const last = this._dialogLastFocus;
           if (last && typeof last.focus === "function") { try { last.focus(); } catch (e) {} }
@@ -458,6 +460,11 @@ class ContourDrawer extends ContourBase {
       } else if (head) {
         head.remove();
       }
+      // Open state is the `open` attribute (written, never observed, so it
+      // cannot re-enter the render — see the dialog); the `.is-open` class the
+      // CSS keys off is re-derived here because the base restores the authored
+      // class on every render and would otherwise drop it mid-lock.
+      if (this.hasAttribute("open")) this.classList.add("is-open");
       const body = this.getAttribute("body");
       const b = this.querySelector(".c-drawer__body");
       const authored = b ? Array.from(b.children) : [];
@@ -471,19 +478,21 @@ class ContourDrawer extends ContourBase {
     enhance() {
       if (this._wiredDrawer) return;
       this._wiredDrawer = true;
-      // Open state is the author's `.is-open` class (the sheet's own CSS keys
-      // off it); the close button removes it and reports a real close.
+      // Open state is the `open` attribute; the close button clears it and
+      // reports a real close.
       this.show = () => {
-        if (!this.classList.contains("is-open")) {
-          this.classList.add("is-open");
-          this.dispatchEvent(new CustomEvent("contour:open", { bubbles: true, composed: true }));
-        }
+        if (this.hasAttribute("open")) return;
+        this.setAttribute("open", "");
+        this.classList.add("is-open");
+        modalContain(this, true);
+        this.dispatchEvent(new CustomEvent("contour:open", { bubbles: true, composed: true }));
       };
       this.close = () => {
-        if (this.classList.contains("is-open")) {
-          this.classList.remove("is-open");
-          this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true }));
-        }
+        if (!this.hasAttribute("open")) return;
+        this.removeAttribute("open");
+        this.classList.remove("is-open");
+        modalContain(this, false);
+        this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true }));
       };
       this.addEventListener("click", (e) => {
         const btn = e.target && e.target.closest ? e.target.closest(".c-drawer__close") : null;
@@ -521,6 +530,10 @@ class ContourSheet extends ContourBase {
       } else if (head) {
         head.remove();
       }
+      // Open state is the `open` attribute (written, never observed, so it
+      // cannot re-enter the render); the `.is-open` class is re-derived because
+      // the base restores the authored class on every render (see the drawer).
+      if (this.hasAttribute("open")) this.classList.add("is-open");
       const body = this.getAttribute("body");
       const b = this.querySelector(".c-sheet__body");
       const authored = b ? Array.from(b.children) : [];
@@ -535,16 +548,18 @@ class ContourSheet extends ContourBase {
       if (this._wiredSheet) return;
       this._wiredSheet = true;
       this.show = () => {
-        if (!this.classList.contains("is-open")) {
-          this.classList.add("is-open");
-          this.dispatchEvent(new CustomEvent("contour:open", { bubbles: true, composed: true }));
-        }
+        if (this.hasAttribute("open")) return;
+        this.setAttribute("open", "");
+        this.classList.add("is-open");
+        modalContain(this, true);
+        this.dispatchEvent(new CustomEvent("contour:open", { bubbles: true, composed: true }));
       };
       this.close = () => {
-        if (this.classList.contains("is-open")) {
-          this.classList.remove("is-open");
-          this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true }));
-        }
+        if (!this.hasAttribute("open")) return;
+        this.removeAttribute("open");
+        this.classList.remove("is-open");
+        modalContain(this, false);
+        this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true }));
       };
       this.addEventListener("click", (e) => {
         const btn = e.target && e.target.closest ? e.target.closest(".c-sheet__close") : null;

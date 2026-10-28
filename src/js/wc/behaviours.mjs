@@ -645,3 +645,51 @@ export function wireRemovable(host) {
     }
   });
 }
+
+// Modal containment for the light dialog family (BY-46). A native <dialog> in
+// showModal() modalises the page for free — top layer, backdrop, background
+// inert — but the light contour-dialog/drawer/sheet have no platform modal, so
+// opening one must lock the document scroll and inert the background or the
+// page behind it stays reachable. Stacked: two open surfaces must not unlock
+// the page on the first close. The guide's own modalise() is the pattern; this
+// is the system's copy, since a rule that only works inside the guide does not
+// ship.
+const modalDepth = { n: 0 };
+let modalSavedOverflow = null;
+let modalSavedX = 0;
+let modalSavedY = 0;
+const modalInerted = new Set();
+
+export function modalContain(host, open) {
+  if (open) {
+    if (modalDepth.n === 0) {
+      // The lock itself clamps the scroll (overflow:hidden on the scroller),
+      // so the position must be captured BEFORE it is applied or the restore
+      // puts a clamped 0 back (measured: open-after-scrollTo read scrollY 0).
+      modalSavedX = window.scrollX;
+      modalSavedY = window.scrollY;
+      modalSavedOverflow = document.documentElement.style.overflow;
+      document.documentElement.style.overflow = "hidden";
+    }
+    modalDepth.n += 1;
+    // An ancestor cannot be inert (it would inert the whole subtree); the
+    // background is therefore each ancestor's SIBLINGS, walked out to the body.
+    for (let el = host; el && el !== document.body; el = el.parentElement) {
+      for (const sib of el.parentElement.children) {
+        if (sib === el || sib.inert || modalInerted.has(sib)) continue;
+        sib.inert = true;
+        modalInerted.add(sib);
+      }
+    }
+  } else {
+    modalDepth.n = Math.max(0, modalDepth.n - 1);
+    if (modalDepth.n === 0) {
+      for (const el of modalInerted) el.inert = false;
+      modalInerted.clear();
+      document.documentElement.style.overflow = modalSavedOverflow || "";
+      // Locking overflow can move the page if a scrollbar disappears; put the
+      // position back so a close never lands the reader elsewhere.
+      window.scrollTo(modalSavedX, modalSavedY);
+    }
+  }
+}
