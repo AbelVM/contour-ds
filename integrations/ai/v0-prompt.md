@@ -26,7 +26,7 @@ Then use the classes directly. No build step, no config.
 Optional progressive enhancement:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/contour-ds/dist/contour-wc.min.js" defer></script>
+<!-- Until publication, install contour-ds and import the wc entry by specifier (see README "From the package"). -->
 <contour-card title="Hello"><p>Slotted content</p></contour-card>
 ```
 
