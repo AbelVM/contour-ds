@@ -16,8 +16,9 @@ The [style guide](index.html) is the specification and the test suite.
 npm install contour-ds
 ```
 
-The tarball ships `dist/` and `src/`: `prepack` runs `node tools/build.mjs`, so the
-bundle beside the source is derived from it, never hand-copied.
+The tarball ships `dist/` and `integrations/`: `prepack` runs `node tools/build.mjs`, so the
+bundle beside the source is derived from it, never hand-copied. (`src/` is not in the
+tarball — a consumer takes `src/` from the repository, not the package.)
 
 ### From the package
 
