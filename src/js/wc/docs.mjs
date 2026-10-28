@@ -1,4 +1,4 @@
-import { ContourBase, define } from './core.mjs';
+import { ContourBase, define, sanitizeHtml } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 class ContourDocsNav extends ContourBase {
     static get observed() { return ["items", "title", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
@@ -99,7 +99,7 @@ class ContourDocsShell extends ContourBase {
       const article = this.getAttribute("article");
       if (article) {
         const a = this.ensure(".c-docs-shell__article", () => { const el = document.createElement("article"); el.className = "c-docs-shell__article"; return el; });
-        a.innerHTML = String(article).replace(/<(script|iframe|object|embed)[\s\S]*?(<\/\1>|\/>)/gi, "");
+        a.innerHTML = sanitizeHtml(article);
       } else {
         const a = this.querySelector(".c-docs-shell__article");
         if (a) a.remove();

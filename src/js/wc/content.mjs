@@ -1,4 +1,4 @@
-import { ContourBase, define } from './core.mjs';
+import { ContourBase, define, sanitizeHtml } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { wireCopy } from './behaviours.mjs';
 class ContourCard extends ContourBase {
@@ -335,7 +335,7 @@ class ContourShowcaseFull extends ContourBase {
       const media = this.getAttribute("media");
       if (media) {
         const m = this.ensure(".c-showcase__media", () => { const el = document.createElement("div"); el.className = "c-showcase__media"; return el; });
-        m.innerHTML = String(media).replace(/<(script|iframe|object|embed)[\s\S]*?(<\/\1>|\/>)/gi, "").replace(/\son\w+\s*=\s*"[^"]*"/gi, "");
+        m.innerHTML = sanitizeHtml(media);
       } else {
         const m = this.querySelector(".c-showcase__media");
         if (m) m.remove();
@@ -408,7 +408,7 @@ class ContourRecipeFull extends ContourBase {
       const canvas = this.getAttribute("canvas");
       if (canvas) {
         const c = this.ensure(".c-recipe__canvas", () => { const el = document.createElement("div"); el.className = "c-recipe__canvas"; return el; });
-        c.innerHTML = String(canvas).replace(/<(script|iframe|object|embed)[\s\S]*?(<\/\1>|\/>)/gi, "");
+        c.innerHTML = sanitizeHtml(canvas);
       } else {
         const c = this.querySelector(".c-recipe__canvas");
         if (c) c.remove();
@@ -495,7 +495,7 @@ class ContourLandingHeroFull extends ContourBase {
       const authored = a ? Array.from(a.children) : [];
       if (actions && !authored.length) {
         const el = this.ensure(".c-landing-hero__actions", () => { const e = document.createElement("div"); e.className = "c-landing-hero__actions"; return e; });
-        el.innerHTML = String(actions).replace(/<(script|iframe|object|embed)[\s\S]*?(<\/\1>|\/>)/gi, "");
+        el.innerHTML = sanitizeHtml(actions);
       } else if (!actions && a && !authored.length) {
         a.remove();
       }

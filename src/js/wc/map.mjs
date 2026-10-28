@@ -70,6 +70,14 @@ class ContourLayerPanel extends ContourBase {
       if (items) {
         try {
           const parsed = JSON.parse(items);
+          // Preserve user-toggled visibility across re-renders (B3-09): a src
+          // reload must not re-check a layer the user un-checked.
+          const savedVisibility = new Map();
+          this.querySelectorAll(".c-layer-panel__item").forEach((el) => {
+            const nm = el.querySelector(".c-layer-panel__name");
+            const tg = el.querySelector(".c-layer-panel__toggle");
+            if (nm && tg) savedVisibility.set(nm.textContent, tg.checked);
+          });
           Array.from(this.querySelectorAll(".c-layer-panel__item")).forEach((el) => el.remove());
           parsed.forEach((it) => {
             const name = typeof it === "string" ? it : (it.name || it.label || "");
@@ -79,7 +87,8 @@ class ContourLayerPanel extends ContourBase {
              toggle.type = "checkbox";
              toggle.className = "c-layer-panel__toggle";
              toggle.setAttribute("aria-label", "Toggle layer");
-             if (typeof it === "object" && it.visible !== false) toggle.checked = true;
+             if (savedVisibility.has(name)) toggle.checked = savedVisibility.get(name);
+             else if (typeof it === "object" && it.visible !== false) toggle.checked = true;
             item.appendChild(toggle);
             const nm = document.createElement("span");
             nm.className = "c-layer-panel__name";
@@ -268,6 +277,23 @@ class ContourHexbin extends ContourBase {
       this.addEventListener("focusout", (e) => {
         if (!this.contains(e.relatedTarget)) hideTip();
       });
+      // Roving tabindex keyboard nav (B3-16) for hexbin cells.
+      this.addEventListener("keydown", (e) => {
+        const cell = e.target && e.target.closest ? e.target.closest(".c-hexbin__cell") : null;
+        if (!cell || !this.contains(cell)) return;
+        const cells = Array.from(this.querySelectorAll(".c-hexbin__cell"));
+        const idx = cells.indexOf(cell);
+        if (idx < 0) return;
+        let next = -1;
+        if (e.key === "ArrowRight" || e.key === "ArrowDown") next = Math.min(idx + 1, cells.length - 1);
+        else if (e.key === "ArrowLeft" || e.key === "ArrowUp") next = Math.max(idx - 1, 0);
+        else if (e.key === "Home") next = 0;
+        else if (e.key === "End") next = cells.length - 1;
+        if (next < 0 || next === idx) return;
+        e.preventDefault();
+        cells.forEach((c, i) => c.setAttribute("tabindex", i === next ? "0" : "-1"));
+        try { cells[next].focus(); } catch (err) {}
+      });
     }
   }
 define("contour-hexbin", ContourHexbin);
@@ -343,6 +369,23 @@ class ContourFlowMap extends ContourBase {
       });
       this.addEventListener("focusout", (e) => {
         if (!this.contains(e.relatedTarget)) hideTip();
+      });
+      // Roving tabindex keyboard nav (B3-16) for flow-map nodes.
+      this.addEventListener("keydown", (e) => {
+        const node = e.target && e.target.closest ? e.target.closest(".c-flow-map__node") : null;
+        if (!node || !this.contains(node)) return;
+        const nodes = Array.from(this.querySelectorAll(".c-flow-map__node"));
+        const idx = nodes.indexOf(node);
+        if (idx < 0) return;
+        let next = -1;
+        if (e.key === "ArrowRight" || e.key === "ArrowDown") next = Math.min(idx + 1, nodes.length - 1);
+        else if (e.key === "ArrowLeft" || e.key === "ArrowUp") next = Math.max(idx - 1, 0);
+        else if (e.key === "Home") next = 0;
+        else if (e.key === "End") next = nodes.length - 1;
+        if (next < 0 || next === idx) return;
+        e.preventDefault();
+        nodes.forEach((n, i) => n.setAttribute("tabindex", i === next ? "0" : "-1"));
+        try { nodes[next].focus(); } catch (err) {}
       });
     }
   }
@@ -428,6 +471,23 @@ class ContourIsochrone extends ContourBase {
       });
       this.addEventListener("focusout", (e) => {
         if (!this.contains(e.relatedTarget)) hideTip();
+      });
+      // Roving tabindex keyboard nav (B3-16) for isochrone rings.
+      this.addEventListener("keydown", (e) => {
+        const ring = e.target && e.target.closest ? e.target.closest(".c-isochrone__ring") : null;
+        if (!ring || !this.contains(ring)) return;
+        const rings = Array.from(this.querySelectorAll(".c-isochrone__ring"));
+        const idx = rings.indexOf(ring);
+        if (idx < 0) return;
+        let next = -1;
+        if (e.key === "ArrowRight" || e.key === "ArrowDown") next = Math.min(idx + 1, rings.length - 1);
+        else if (e.key === "ArrowLeft" || e.key === "ArrowUp") next = Math.max(idx - 1, 0);
+        else if (e.key === "Home") next = 0;
+        else if (e.key === "End") next = rings.length - 1;
+        if (next < 0 || next === idx) return;
+        e.preventDefault();
+        rings.forEach((r, i) => r.setAttribute("tabindex", i === next ? "0" : "-1"));
+        try { rings[next].focus(); } catch (err) {}
       });
     }
   }

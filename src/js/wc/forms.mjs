@@ -127,7 +127,14 @@ class ContourField extends ContourBase {
       input.className = "c-range";
       input.min = this.getAttribute("min") || "0";
       input.max = this.getAttribute("max") || "100";
-      input.value = this.getAttribute("value") || "50";
+      const attrVal = this.getAttribute("value") || "50";
+      if (this._rangeUserValue !== null && this._rangeAttrAtDirty === (this.getAttribute("value") || "50")) {
+        input.value = this._rangeUserValue;
+      } else {
+        input.value = attrVal;
+        this._rangeUserValue = null;
+        this._rangeAttrAtDirty = null;
+      }
       const label = this.getAttribute("label");
       if (label) input.setAttribute("aria-label", label);
       else if (!input.hasAttribute("aria-label")) input.setAttribute("aria-label", "Range");
@@ -148,6 +155,10 @@ class ContourField extends ContourBase {
   }
   // patch enhance onto ContourRange
   const _origRangeRender = ContourRange.prototype.render;
+  ContourRange.prototype.attributeChangedCallback = function(name, oldValue, newValue) {
+    if (name === "value") { this._rangeUserValue = null; this._rangeAttrAtDirty = null; }
+    return ContourBase.prototype.attributeChangedCallback.call(this, name, oldValue, newValue);
+  };
   ContourRange.prototype.enhance = function() {
     if (this._wiredRange) return;
     this._wiredRange = true;
@@ -159,6 +170,8 @@ class ContourField extends ContourBase {
     this.addEventListener("input", (e) => {
       const input = this.querySelector("input");
       if (!input || e.target !== input) return;
+      this._rangeUserValue = input.value;
+      this._rangeAttrAtDirty = this.getAttribute("value") || "50";
       sync();
       this._emitForm("contour:input");
     });
@@ -200,6 +213,7 @@ class ContourSwitch extends ContourBase {
     enhance() {
       const input = this.querySelector("input");
       if (input && this._internals) {
+        input.setAttribute("aria-checked", String(input.checked));
         this._internals.setFormValue(input.checked ? (input.value || "on") : null);
         if (this.hasAttribute("required") && !input.checked) {
           this._internals.setValidity({ valueMissing: true }, "This field is required.");

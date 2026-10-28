@@ -152,6 +152,9 @@ export function wireTabs(host) {
         panels.forEach((p, i) => { p.hidden = i !== index; });
       }
       if (focus) try { tab.focus(); } catch (e) { /* detached mid-key */ }
+      // Emit activation so consumers can observe tab changes (B3-10).
+      const name = tab.getAttribute("aria-controls") || tab.textContent || "";
+      host.dispatchEvent(new CustomEvent("contour:tab-change", { bubbles: true, composed: true, detail: { index: tabs.indexOf(tab), label: name } }));
     };
     wcListen(host, "click", (e) => {
       const tab = wcClosest(host, e.target, "[role='tab']");
@@ -168,7 +171,10 @@ export function wireTabs(host) {
       const next = tabs[(move[e.key] + tabs.length) % tabs.length];
       if (next) activate(next, true);
     });
-    const first = tabsOf()[0];
+    // Respect an author-marked selected tab; fall back to the first.
+    const tabs = tabsOf();
+    const marked = tabs.find((t) => t.getAttribute("aria-selected") === "true");
+    const first = marked || tabs[0];
     if (first) activate(first, false);
   }
 }

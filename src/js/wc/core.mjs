@@ -79,6 +79,9 @@
     "contour:change": { payload: ["name", "value", "checked"], composed: true },
     "contour:close": { payload: [], composed: true },
     "contour:copy": { payload: ["text"], composed: true },
+    "contour:dragend": { payload: ["value"], composed: true },
+    "contour:dragstart": { payload: ["value"], composed: true },
+    "contour:drop": { payload: ["value", "label"], composed: true },
     "contour:empty-action": { payload: ["state"], composed: true },
     "contour:error": { payload: ["src", "message", "name", "status"], composed: true },
     "contour:hide": { payload: [], composed: true },
@@ -89,6 +92,7 @@
     "contour:legend-toggle": { payload: ["label", "key", "pressed"], composed: true },
     "contour:load": { payload: ["src", "count"], composed: true },
     "contour:map-control": { payload: ["control"], composed: true },
+    "contour:move": { payload: ["direction"], composed: true },
     "contour:open": { payload: [], composed: true },
     "contour:page": { payload: ["page"], composed: true },
     "contour:ready": { payload: ["version", "count"], composed: true },
@@ -98,6 +102,7 @@
     "contour:show": { payload: [], composed: true },
     "contour:sort": { payload: ["column", "direction"], composed: true },
     "contour:stream-state": { payload: ["running"], composed: true },
+    "contour:tab-change": { payload: ["index", "label"], composed: true },
     "contour:theme-change": { payload: ["theme"], composed: true },
     "contour:tick": { payload: ["frame"], composed: true },
     "contour:time-change": { payload: ["value"], composed: true },
@@ -106,7 +111,36 @@
     "contour:view-leave": { payload: [], composed: true },
   });
 
-  // The attributes a component may READ from its host. This list is the render
+  // Shared HTML sanitizer (B3-18): allowlist via DOMParser instead of a
+  // blacklist regex, so single-quoted, unquoted and javascript: payloads
+  // cannot slip through.
+  export function sanitizeHtml(input) {
+    const str = String(input == null ? "" : input);
+    if (typeof DOMParser === "undefined") return str;
+    const doc = new DOMParser().parseFromString(str, "text/html");
+    const drop = new Set(["script", "iframe", "object", "embed", "style", "link", "meta", "base", "form", "input", "button"]);
+    const walk = (node) => {
+      const children = Array.from(node.childNodes);
+      for (const c of children) {
+        if (c.nodeType === 1) {
+          const tag = c.tagName.toLowerCase();
+          if (drop.has(tag)) { c.remove(); continue; }
+          // Strip every on-* attribute and javascript: URLs.
+          for (const attr of Array.from(c.attributes)) {
+            const name = attr.name.toLowerCase();
+            if (name.startsWith("on")) { c.removeAttribute(attr.name); continue; }
+            const val = String(attr.value || "").trim().toLowerCase();
+            if ((name === "href" || name === "src" || name === "xlink:href") && (val.startsWith("javascript:") || val.startsWith("data:text/html"))) {
+              c.removeAttribute(attr.name);
+            }
+          }
+          walk(c);
+        }
+      }
+    };
+    walk(doc.body);
+    return doc.body.innerHTML;
+  }
   // contract: an attribute that is not here cannot ask an element to re-render,
   // and an attribute a component WRITES to itself must never be here, because
   // that write would fire the callback that performs the render.
@@ -272,7 +306,7 @@
          // dropped and rebuilt, so without this a host attribute change wipes
          // whatever the user typed.
          const savedControls = Array.from(this.querySelectorAll("input, textarea, select"));
-         const savedValues = savedControls.map((el) => ({ key: el.name || el.id || null, value: el.value }));
+         const savedValues = savedControls.map((el) => ({ key: el.name || el.id || null, value: el.value, checked: el.checked, type: el.type }));
          // Preserve focus, scroll position and <details> open state across the
          // rebuild, so a host attribute change does not yank focus to <body>
          // or collapse an open disclosure.
@@ -287,6 +321,18 @@
           const hadFocusName = hadFocus ? (hadFocus.getAttribute("name") || null) : null;
          const savedScrolls = Array.from(this.querySelectorAll("*")).filter((el) => el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth).map((el) => ({ el, top: el.scrollTop, left: el.scrollLeft }));
          const savedDetails = Array.from(this.querySelectorAll("details")).map((d) => ({ id: d.id || null, open: d.open }));
+         // Unwrap authored content from generated wrappers before dropping them,
+         // so an attribute re-render cannot destroy authored light-DOM children
+         // that render() moved into a body/pre wrapper (B3-05).
+         for (const g of (this._contourGenerated || [])) {
+           if (!g || g.parentNode !== this) continue;
+           let wrapper = null;
+           if (g.classList && (g.classList.contains("c-panel__body") || g.classList.contains("c-dialog__body"))) wrapper = g;
+           else if (g.tagName === "PRE") wrapper = g.querySelector("code") || g;
+           if (wrapper) {
+             while (wrapper.firstChild) this.insertBefore(wrapper.firstChild, g);
+           }
+         }
          // Drop generated nodes from the previous render.
          for (const g of (this._contourGenerated || [])) {
            if (g.parentNode === this) this.removeChild(g);
@@ -329,6 +375,9 @@
           if (el.value === "" && el.getAttribute("value") === null) {
             el.value = match.value;
           }
+          if ((el.type === "checkbox" || el.type === "radio") && typeof match.checked === "boolean") {
+            el.checked = match.checked;
+          }
         }
         let u = 0;
         for (const el of newControls) {
@@ -338,6 +387,9 @@
           if (!saved) continue;
           if (el.value === "" && el.getAttribute("value") === null) {
             el.value = saved.value;
+          }
+          if ((el.type === "checkbox" || el.type === "radio") && typeof saved.checked === "boolean") {
+            el.checked = saved.checked;
           }
         }
         // Restore <details> open state. A disclosure carries an `id` when it is

@@ -24,7 +24,7 @@ class ContourDialog extends ContourBase {
           head.appendChild(closeBtn);
         }
         const h = head.querySelector(".c-dialog__title");
-        if (h) h.textContent = title;
+        if (h) { h.textContent = title; if (!h.id) h.id = "contour-dialog-title-" + (this._dialogTitleId = (this._dialogTitleId || 0) + 1); this.setAttribute("aria-labelledby", h.id); }
       }
       if (head && head.parentNode !== this) this.prepend(head);
       // Wrap authored content in a body so it picks up the dialog's padding.
@@ -461,7 +461,7 @@ class ContourDrawer extends ContourBase {
           head.appendChild(closeBtn);
         }
         const t = head.querySelector(".c-drawer__title");
-        if (t) t.textContent = title;
+        if (t) { t.textContent = title; if (!t.id) t.id = "contour-drawer-title-" + (this._drawerTitleId = (this._drawerTitleId || 0) + 1); this.setAttribute("aria-labelledby", t.id); }
         if (head.parentNode !== this) this.prepend(head);
       } else if (head) {
         head.remove();
@@ -485,13 +485,15 @@ class ContourDrawer extends ContourBase {
       if (this._wiredDrawer) return;
       this._wiredDrawer = true;
       onDispose(this, () => modalContain(this, false));
-      // Open state is the `open` attribute; the close button clears it and
-      // reports a real close.
+      this._drawerLastFocus = null;
       this.show = () => {
         if (this.hasAttribute("open")) return;
+        this._drawerLastFocus = document.activeElement;
         this.setAttribute("open", "");
         this.classList.add("is-open");
         modalContain(this, true);
+        const focusable = this.querySelector("button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])");
+        if (focusable) { try { focusable.focus(); } catch (e) {} }
         this.dispatchEvent(new CustomEvent("contour:open", { bubbles: true, composed: true }));
       };
       this.close = () => {
@@ -500,11 +502,16 @@ class ContourDrawer extends ContourBase {
         this.classList.remove("is-open");
         modalContain(this, false);
         this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true }));
+        const last = this._drawerLastFocus;
+        if (last && typeof last.focus === "function") { try { last.focus(); } catch (e) {} }
       };
       this.addEventListener("click", (e) => {
         const btn = e.target && e.target.closest ? e.target.closest(".c-drawer__close") : null;
         if (!btn || !this.contains(btn)) return;
         this.close();
+      });
+      this.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && this.hasAttribute("open")) this.close();
       });
     }
   }
@@ -532,7 +539,7 @@ class ContourSheet extends ContourBase {
           head.appendChild(closeBtn);
         }
         const t = head.querySelector(".c-sheet__title");
-        if (t) t.textContent = title;
+        if (t) { t.textContent = title; if (!t.id) t.id = "contour-sheet-title-" + (this._sheetTitleId = (this._sheetTitleId || 0) + 1); this.setAttribute("aria-labelledby", t.id); }
         if (head.parentNode !== this) this.prepend(head);
       } else if (head) {
         head.remove();
@@ -555,11 +562,15 @@ class ContourSheet extends ContourBase {
       if (this._wiredSheet) return;
       this._wiredSheet = true;
       onDispose(this, () => modalContain(this, false));
+      this._sheetLastFocus = null;
       this.show = () => {
         if (this.hasAttribute("open")) return;
+        this._sheetLastFocus = document.activeElement;
         this.setAttribute("open", "");
         this.classList.add("is-open");
         modalContain(this, true);
+        const focusable = this.querySelector("button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])");
+        if (focusable) { try { focusable.focus(); } catch (e) {} }
         this.dispatchEvent(new CustomEvent("contour:open", { bubbles: true, composed: true }));
       };
       this.close = () => {
@@ -568,11 +579,16 @@ class ContourSheet extends ContourBase {
         this.classList.remove("is-open");
         modalContain(this, false);
         this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true }));
+        const last = this._sheetLastFocus;
+        if (last && typeof last.focus === "function") { try { last.focus(); } catch (e) {} }
       };
       this.addEventListener("click", (e) => {
         const btn = e.target && e.target.closest ? e.target.closest(".c-sheet__close") : null;
         if (!btn || !this.contains(btn)) return;
         this.close();
+      });
+      this.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && this.hasAttribute("open")) this.close();
       });
     }
   }

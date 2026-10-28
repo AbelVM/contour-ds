@@ -29,9 +29,34 @@ import { join } from "node:path";
 const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
 const CSS = join(ROOT, "src/css");
 
-const SHEETS = readdirSync(CSS)
-  .filter((f) => /^components.*\.css$/.test(f))
-  .sort();
+// Explicit exclusion ledger: every sheet not scanned is named here with a
+// reason. A sheet that is neither scanned nor ledgered is a gate bug, not a
+// pass (BY2-C1). Utilities and tokens are excluded because they are expected
+// to layer; the rest are excluded because they carry no component selectors.
+const EXCLUDED = new Map([
+  ["ds.css", "import manifest only; no selectors"],
+  ["tokens.css", "token definitions, not component selectors"],
+  ["fonts.css", "@font-face declarations only"],
+  ["hljs.css", "third-party syntax-highlighting stylesheet"],
+  ["light-dark-fallback.css", "generated 1:1 derivation of the token layer"],
+  ["utilities.css", "expected to override component selectors by design (forced-colors, prefers-contrast, etc.)"],
+]);
+
+const allSheets = readdirSync(CSS).filter((f) => f.endsWith(".css")).sort();
+const SHEETS = allSheets.filter((f) => !EXCLUDED.has(f));
+
+// Guard: every css file is either scanned or explicitly excluded with a reason.
+const unaccounted = allSheets.filter((f) => !EXCLUDED.has(f) && !SHEETS.includes(f));
+if (unaccounted.length) {
+  console.error(`check-css: unaccounted sheets (neither scanned nor excluded): ${unaccounted.join(", ")}`);
+  process.exit(1);
+}
+for (const [name, reason] of EXCLUDED) {
+  if (!allSheets.includes(name)) {
+    console.error(`check-css: excluded sheet not present: ${name}`);
+    process.exit(1);
+  }
+}
 
 function stripComments(text) {
   return text.replace(/\/\*[\s\S]*?\*\//g, "");
@@ -64,9 +89,13 @@ function selectorsIn(text) {
         const sel = buf.trim();
         const { content, end } = parseBlock(str, i);
         if (sel.startsWith("@")) {
-          // Descend into every at-rule except @keyframes.
-          if (!/^@keyframes\b/i.test(sel)) {
-            walk(content, ctx.concat(sel));
+          // Skip print overrides: they are intentional cascade overrides, not
+          // collisions (base.css flattens surfaces for print).
+          if (!/^@media\s+print\b/i.test(sel)) {
+            // Descend into every at-rule except @keyframes.
+            if (!/^@keyframes\b/i.test(sel)) {
+              walk(content, ctx.concat(sel));
+            }
           }
         } else {
           // Only collect when not inside a @keyframes context.

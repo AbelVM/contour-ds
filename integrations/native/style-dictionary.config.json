@@ -1,20 +1,38 @@
 {
   "source": ["../../dist/contour.tokens.json"],
+  "usesDtcg": true,
   "platforms": {
     "ios": {
       "transformGroup": "ios-swift",
       "buildPath": "build/ios/",
-      "files": [{ "destination": "ContourTokens.swift", "format": "ios-swift/class.swift" }]
+      "files": [
+        {
+          "destination": "ContourTokens.swift",
+          "format": "ios-swift/class.swift",
+          "options": { "className": "ContourTokens" }
+        }
+      ]
     },
     "android": {
       "transformGroup": "android",
       "buildPath": "build/android/",
-      "files": [{ "destination": "colors.xml", "format": "android/colors" }]
+      "files": [
+        {
+          "destination": "colors.xml",
+          "format": "android/colors"
+        }
+      ]
     },
     "flutter": {
       "transformGroup": "flutter",
       "buildPath": "build/flutter/",
-      "files": [{ "destination": "contour_tokens.dart", "format": "flutter/class.dart" }]
+      "files": [
+        {
+          "destination": "contour_tokens.dart",
+          "format": "flutter/class.dart",
+          "options": { "className": "ContourTokens" }
+        }
+      ]
     }
   }
 }

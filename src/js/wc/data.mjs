@@ -298,7 +298,10 @@ class ContourTable extends ContourBase {
           const usePaging = Number.isFinite(pageSize) && pageSize > 0;
           // Sync internal page state with external attribute changes.
           const pageAttr = this.getAttribute("page");
-          if (pageAttr !== this._pageAttrLast) {
+          if (this._pageInternal) {
+            this._pageInternal = false;
+            this._pageAttrLast = pageAttr;
+          } else if (pageAttr !== this._pageAttrLast) {
             this._page = null;
             this._pageAttrLast = pageAttr;
           }
@@ -480,10 +483,13 @@ class ContourTable extends ContourBase {
           if (action === "next") page += 1;
           this._page = page;
           this._pageAttrLast = String(page);
-          // Write the observed attribute so the render sync (which nulls _page
-          // when the attribute drifts) sees the new page and does not snap back
-          // to the stale value (B3-01).
-          this.setAttribute("page", String(page));
+          // Mark the change as internal so the render sync preserves _page
+          // instead of nulling it (B3-01). Trigger the re-render directly
+          // rather than writing the observed `page` attribute, which would
+          // re-enter the attributeChangedCallback and trip the wc-contract
+          // re-entrancy guard.
+          this._pageInternal = true;
+          this.requestRender();
           this.dispatchEvent(new CustomEvent("contour:page", { bubbles: true, composed: true, detail: { page } }));
         }
       });
