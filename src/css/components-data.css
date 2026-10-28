@@ -1100,11 +1100,24 @@
     background: var(--color-surface-1);
     box-shadow: var(--shadow-xl);
     z-index: var(--z-drawer);
+    /* Open/close transition (BY-50). Enhancement-only like the command's: an
+       engine without `transition-behavior: allow-discrete` drops the whole
+       declaration and keeps today's instant open. Fade, not translate: the
+       drawer is anchored inset-inline-end, so a physical slide would go the
+       wrong way in RTL; opacity is direction-neutral. No `overlay` — this is a
+       light host in normal flow, not a top-layer popover. */
+    opacity: 0;
+    transition: opacity var(--dur-base) var(--ease-standard),
+      display var(--dur-base) var(--ease-standard) allow-discrete;
   }
 
   .c-drawer:popover-open,
   .c-drawer.is-open {
     display: flex;
+    opacity: 1;
+    @starting-style {
+      opacity: 0;
+    }
   }
 
   .c-scrim {

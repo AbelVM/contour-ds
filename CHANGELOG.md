@@ -45,6 +45,20 @@
   in flight. Loader hosts are not form-associated, so the base lazily attaches a
   states-only internals object that no form path reads. Gated by wc-contract arm 22,
   which measures all three states against the shipped bundle.
+- Open/close transitions for the command palette and the drawer: the surfaces that
+  actually have a shipped hide state now animate their entry and exit with
+  `@starting-style` and `transition-behavior: allow-discrete` (`--dur-base`, the
+  standard ease) — command fades and rises under its popover, drawer fades on the
+  inline-end edge (fade rather than a physical slide, so RTL cannot flip the
+  direction). Both are enhancement-only: a browser without `allow-discrete` drops
+  the whole declaration and keeps the previous instant open, and
+  `prefers-reduced-motion` collapses the transition through the global kill-switch.
+  Dialog and sheet are intentionally not transitioned: neither has a shipped rule
+  that reacts to its `open` attribute or `.is-open` class, so a close transition
+  would have nothing to animate. Gated by a real-browser probe against the shipped
+  bundle (entry sample mid--`--dur-base` proves the `@starting-style` frame runs;
+  an exit sample after `close()` still shows the open `display`, proving the
+  `allow-discrete` hold); check-css / check-dist / check-reflow all pass.
 
 ### Fixed (M-WC-08)
 - `check-reflow` (R4-02/R4-03) was failing on `index.html` at the published 390 px
