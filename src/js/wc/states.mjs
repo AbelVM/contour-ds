@@ -76,6 +76,12 @@ function setStatus(host, status) {
   // the moment a request is not open.
   if (status === "loading") host.setAttribute("aria-busy", "true");
   else host.removeAttribute("aria-busy");
+  // The same status drives the `:state(data-loading)` custom state (BY-32): a
+  // consumer's CSS can select a mid-request host without an attribute round
+  // trip. Loader hosts are not formAssociated, so the base mirrors internals
+  // lazily (probed legal in the gate's Chromium); a host without internals or
+  // without CustomStateSet simply keeps the attribute path.
+  if (typeof host._setCustomState === "function") host._setCustomState("data-loading", status === "loading");
 }
 
 function emitState(host, name, detail) {

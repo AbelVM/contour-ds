@@ -519,11 +519,44 @@
       const boolean = ctl.type === "checkbox" || ctl.type === "radio";
       const value = boolean ? (ctl.checked ? (ctl.value || "on") : null) : ctl.value;
       this._internals.setFormValue(value);
-      if (this.hasAttribute("required") && !value) {
-        this._internals.setValidity({ valueMissing: true }, "This field is required.");
-      } else {
-        this._internals.setValidity({});
+      this._syncValidity(this.hasAttribute("required") && !value);
+    }
+
+    // The single validity writer (BY-32). Every form class used to repeat the
+    // required-check + setValidity pair; the copies in forms.mjs now call here,
+    // and the call ALSO mirrors the host's `data-invalid` custom state
+    // (ElementInternals.states → `:state(data-invalid)`), so validity and the
+    // state a consumer's CSS can select can never drift apart.
+    _syncValidity(valueMissing) {
+      if (!this._internals) return;
+      if (valueMissing) this._internals.setValidity({ valueMissing: true }, "This field is required.");
+      else this._internals.setValidity({});
+      this._setCustomState("data-invalid", !!valueMissing);
+    }
+
+    // Custom-state mirror (BY-32). `ElementInternals.states` exposes a host's
+    // own boolean to CSS as `:state(name)` — a consumer writes
+    // `contour-switch:state(data-checked)` without the layer inventing a data-*
+    // attribute. Loader hosts are NOT formAssociated, so the states-only
+    // internals are attached lazily into `_stateInternals` — never `_internals`,
+    // which every form path uses as its "form-associated" guard (`_wireFormData`
+    // reads .form on it, which throws on a non-form host; probing lazy attach
+    // into `_internals` broke every src-mounting arm with exactly that error).
+    // Where CustomStateSet is absent the mirror is a silent no-op and the
+    // ARIA/attribute path remains the announcement. Not a write to OBSERVED,
+    // so it can never re-enter render.
+    _setCustomState(name, on) {
+      let internals = this._internals;
+      if (!internals) {
+        if (this._stateInternals) internals = this._stateInternals;
+        else if (typeof this.attachInternals === "function") {
+          try { internals = this._stateInternals = this.attachInternals(); } catch (e) { return; }
+        }
       }
+      const states = internals && internals.states;
+      if (!states) return;
+      if (on) { if (!states.has(name)) states.add(name); }
+      else if (states.has(name)) states.delete(name);
     }
 
     // The form value events (BY-44). §23 promises interactive components emit

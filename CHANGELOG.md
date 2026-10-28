@@ -35,6 +35,16 @@
   hint and error via `aria-describedby` and reflects `required` as `aria-required`,
   `contour-faq` emits native `details`/`summary` items, and the copy trigger paints the
   system script's own confirmation (`data-copied`, label swap, 1600 ms revert).
+- Custom states for the form family and the loader: hosts publish
+  `:state(data-invalid)`, `:state(data-checked)` and `:state(data-loading)` through
+  `ElementInternals.states`, so a consumer's CSS can select a host's own state without
+  an attribute round trip. The duplicate validity writes scattered across the form
+  family now route through one shared `_syncValidity`, which keeps the
+  `:state(data-invalid)` mirror in step with the internals it announces; switch, check
+  and radio mirror `data-checked`; the loader mirrors `data-loading` while a request is
+  in flight. Loader hosts are not form-associated, so the base lazily attaches a
+  states-only internals object that no form path reads. Gated by wc-contract arm 22,
+  which measures all three states against the shipped bundle.
 
 ### Fixed (M-WC-08)
 - `check-reflow` (R4-02/R4-03) was failing on `index.html` at the published 390 px

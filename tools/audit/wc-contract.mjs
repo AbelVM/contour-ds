@@ -1920,6 +1920,70 @@ try {
     else
       console.log("wc-contract: draggable payload + state, drop-zone accept/reject/clear, keyboard move all measured");
   }
+
+  // ---- 22. custom states: :state(data-invalid/checked/loading) (BY-32) ----
+  //
+  // The three custom states are published through ElementInternals.states so a
+  // consumer's CSS (or accessibility tree) can select a host's state without an
+  // attribute round trip: data-invalid on a required-but-empty control,
+  // data-checked on a toggled switch/check/radio, data-loading on a host with
+  // a request in flight. Measured on the shipped bundle with matches(":state")
+  // — the loading half uses the 150 ms slow fixture so the in-flight window is
+  // actually observed, not assumed.
+  {
+    const p = await browser.newPage();
+    const errs = [];
+    p.on("pageerror", (e) => errs.push(String(e.message || e)));
+    await p.goto(`${origin}/unmin.html`, { waitUntil: "load" });
+    await p.waitForFunction(() => !!window.ContourElements, null, { timeout: 20000 });
+    const out = await p.evaluate(async () => {
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+      const results = {};
+      // data-invalid: a required-empty input resolves, filled it clears.
+      const input = document.createElement("contour-input");
+      input.setAttribute("required", "");
+      input.setAttribute("placeholder", "Required");
+      document.body.appendChild(input);
+      await wait(40);
+      results.invalidEmpty = input.matches(":state(data-invalid)");
+      const inner = input.querySelector("input");
+      if (inner) { inner.value = "x"; inner.dispatchEvent(new Event("input", { bubbles: true })); inner.dispatchEvent(new Event("change", { bubbles: true })); }
+      await wait(20);
+      results.invalidFilled = input.matches(":state(data-invalid)");
+      // data-checked: a switch resolves after its inner control is toggled.
+      const sw = document.createElement("contour-switch");
+      sw.setAttribute("label", "S");
+      document.body.appendChild(sw);
+      await wait(40);
+      results.checkedBefore = sw.matches(":state(data-checked)");
+      const si = sw.querySelector("input");
+      if (si) { si.checked = true; si.dispatchEvent(new Event("change", { bubbles: true })); }
+      await wait(20);
+      results.checkedAfter = sw.matches(":state(data-checked)");
+      // data-loading: a src readout matches during the slow fetch, clears after.
+      const rd = document.createElement("contour-readout");
+      rd.setAttribute("src", "/fx/slow.json");
+      document.body.appendChild(rd);
+      await wait(40);
+      results.loadingDuring = rd.matches(":state(data-loading)");
+      await wait(300);
+      results.loadingAfter = rd.matches(":state(data-loading)");
+      return results;
+    });
+    const bad = [];
+    if (out.invalidEmpty !== true) bad.push(`required-empty input did not match :state(data-invalid)`);
+    if (out.invalidFilled !== false) bad.push(`filled input still matches :state(data-invalid)`);
+    if (out.checkedBefore !== false) bad.push(`unchecked switch matches :state(data-checked)`);
+    if (out.checkedAfter !== true) bad.push(`checked switch does not match :state(data-checked)`);
+    if (out.loadingDuring !== true) bad.push(`in-flight readout does not match :state(data-loading)`);
+    if (out.loadingAfter !== false) bad.push(`settled readout still matches :state(data-loading)`);
+    if (errs.length) bad.push(`page errors: ${errs.slice(0, 2).join(" | ")}`);
+    compared += 6;
+    if (bad.length)
+      fail(`custom states broke (BY-32): ${bad.join(" | ")}`);
+    else
+      console.log("wc-contract: :state(data-invalid/checked/loading) all resolve on the shipped bundle");
+  }
 } finally {
   await browser.close();
   server.close();
