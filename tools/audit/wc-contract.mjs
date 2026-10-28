@@ -205,6 +205,50 @@ if (!observedBlock) {
   );
 }
 
+// ---- 6. the exported-part contract (BY-25) --------------------------------
+// The shadow wrappers ship `part="..."` tokens on their template nodes — the
+// consumer styling seam (`contour-shadow-x::part(title)`). §4 refuses closing
+// BY-25 on "wrappers are single-level": that is a fact about today, not a
+// contract. The contract enforced here, off the artifact, is the row's own:
+// refuse an exported token no rule consumes. A token is consumed when the
+// shipped CSS can reach it — a `::part(name)` selector, or a class on the
+// same node that a shipped rule styles (the light layer derives parts from
+// exactly those classes, so a shadow part with no matching rule is the same
+// defect in the other direction). The sweep must prove it compared: a bundle
+// with no part tokens at all cannot certify an empty export surface.
+{
+  const bundle = bytes.unminified;
+  const css = readFileSync(join(ROOT, "dist/contour.css"), "utf-8");
+  const partRules = new Set([...css.matchAll(/::part\(\s*([a-z0-9-_]+)\s*\)/g)].map((m) => m[1]));
+  // Element classes follow `c-<block>__<element>`; the underscore is part of
+  // the name, so a class regex must not stop at it the way the earlier
+  // [a-z0-9-] capture did.
+  const styledClasses = new Set([...css.matchAll(/\.([a-z][a-z0-9_-]*)/g)].map((m) => m[1]));
+  // Template literals use `part="x"`, generated strings use part=\"x\" — the
+  // extractor must see both or it undercounts the surface it certifies.
+  const tagRe = /<([a-z][a-z0-9-]*)((?:[^>]*?part=(?:\\)?"[a-z0-9-]+(?:\s+[a-z0-9-]+)*"(?:\\)?[^>]*?))>/gu;
+  const nodes = [];
+  for (const m of bundle.matchAll(tagRe)) {
+    const attrs = m[2];
+    const parts = [...attrs.matchAll(/part=(?:\\)?"([a-z0-9-]+(?:\s+[a-z0-9-]+)*)"/g)].flatMap((x) => x[1].split(/\s+/));
+    if (!parts.length) continue;
+    const cls = (attrs.match(/class=(?:\\)?"([^"]*)"/) || [])[1] || "";
+    const styleable = cls.split(/\s+/).some((c) => styledClasses.has(c));
+    nodes.push({ tag: m[1], cls: cls.trim(), parts, styleable });
+  }
+  const exportedCount = nodes.reduce((n, e) => n + e.parts.length, 0);
+  const unconsumed = nodes.filter((e) => !e.styleable && !e.parts.some((p) => partRules.has(p)));
+  const names = [...new Set(unconsumed.flatMap((e) => e.parts))].sort();
+  if (nodes.length === 0)
+    fail("the artifact exposes no part= tokens — a sweep that compared nothing cannot certify the exported-part contract");
+  if (unconsumed.length)
+    fail(`${unconsumed.length} of ${nodes.length} shadow nodes export ${exportedCount} part tokens, and ${unconsumed.length} ride nodes no rule can reach (${names.join(", ")}) — give the node a class a shipped rule styles, add a ::part() rule, or stop exporting the token; an export nothing can style is dead API surface`);
+  else
+    console.log(
+      `wc-contract: exported-part contract compared ${exportedCount} part tokens across ${nodes.length} wrapper nodes against ${partRules.size} ::part() rules and ${styledClasses.size} styled classes — every export is consumed`
+    );
+}
+
 // -- serve both artifacts same-origin ---------------------------------------
 // Same-origin because an element defined in a `file:` document is a different
 // security context, and a load error there is not the load error a consumer gets.
