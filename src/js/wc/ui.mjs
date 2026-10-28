@@ -165,6 +165,7 @@ class ContourTooltip extends ContourBase {
     render() {
       this.classList.add("c-tooltip");
       if (!this.hasAttribute("popover")) this.setAttribute("popover", "auto");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "tooltip");
       if (!this.id) this.id = contourId("tip");
       const text = this.getAttribute("text");
       if (text !== null && !this.hasChildNodes()) {
@@ -196,11 +197,21 @@ class ContourTooltip extends ContourBase {
       }
       // Attach hover/focus to the trigger if present, else to host.
       const trigger = anchorSel ? (anchorSel.startsWith("#") ? document.getElementById(anchorSel.slice(1)) : document.querySelector(anchorSel)) : null;
-      const target = trigger || this;
-      target.addEventListener("mouseenter", show);
-      target.addEventListener("mouseleave", hide);
-      target.addEventListener("focus", show);
-      target.addEventListener("blur", hide);
+       const target = trigger || this;
+       const onEnter = () => show();
+       const onLeave = () => hide();
+       const onFocus = () => show();
+       const onBlur = () => hide();
+       target.addEventListener("mouseenter", onEnter);
+       target.addEventListener("mouseleave", onLeave);
+       target.addEventListener("focus", onFocus);
+       target.addEventListener("blur", onBlur);
+       onDispose(this, () => {
+         target.removeEventListener("mouseenter", onEnter);
+         target.removeEventListener("mouseleave", onLeave);
+         target.removeEventListener("focus", onFocus);
+         target.removeEventListener("blur", onBlur);
+       });
       this.addEventListener("toggle", (e) => {
         const t = e.target;
         if (t && t === this) {
