@@ -89,7 +89,14 @@ const MEASURE = () => {
       bare.push({ id: sec || "(none)", right: Math.round(r.right) });
     }
   }
-  wide.sort((a, b) => b.right - a.right);
+  wide.sort((a, b) => {
+    // Unclipped extenders (clip === null) are the real page stretchers and
+    // must be named first; clipped ones are a secondary diagnostic (BR3-2).
+    const aU = a.clip === null ? 0 : 1;
+    const bU = b.clip === null ? 0 : 1;
+    if (aU !== bU) return aU - bU;
+    return b.right - a.right;
+  });
   return {
     overflow: de.scrollWidth - vw,
     scrollW: de.scrollWidth,
