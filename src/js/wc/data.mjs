@@ -499,10 +499,10 @@ class ContourTable extends ContourBase {
           const persist = this.getAttribute("persist");
           if (persist === "storage" && this.id) { try { localStorage.setItem("contour-table:" + this.id, String(page)); } catch (e) {} }
           else if (persist === "url") { try { const url = new URL(window.location.href); url.searchParams.set("c-table", String(page)); window.history.replaceState(null, "", url.toString()); } catch (e) {} }
-        }
-      });
-      this.addEventListener("keydown", (e) => {
-        if (e.key !== "Enter" && e.key !== " ") return;
+       }
+       });
+       this.addEventListener("keydown", (e) => {
+         if (e.key !== "Enter" && e.key !== " ") return;
         const th = e.target && e.target.closest ? e.target.closest("th[aria-sort]") : null;
         if (th && this.contains(th)) {
           e.preventDefault();
@@ -806,15 +806,7 @@ const series = this.getAttribute("series");
               }
             }
           }
-        });
-      // Retry button handling.
-      this.addEventListener("click", (e) => {
-        const btn = e.target && e.target.closest ? e.target.closest('button[data-action="retry"]') : null;
-        if (btn && this.contains(btn)) {
-          e.preventDefault();
-          this.dispatchEvent(new CustomEvent("contour:retry", { detail: { src: this.getAttribute("src") }, bubbles: true, composed: true }));
-        }
-      });
+       });
       this.addEventListener("keydown", (e) => {
         // Only the host itself drives series switching; marks handle their own
         // keys (B3-03). Without this gate one Enter fires contour:select twice.
@@ -1473,17 +1465,10 @@ class ContourTimeline extends ContourBase {
         renderEmpty(this, "timeline");
       }
      }
-    enhance() {
-      if (this._wiredTimeline) return;
-      this._wiredTimeline = true;
-      this.addEventListener("click", (e) => {
-        const btn = e.target && e.target.closest ? e.target.closest('button[data-action="retry"]') : null;
-        if (btn && this.contains(btn)) {
-          e.preventDefault();
-          this.dispatchEvent(new CustomEvent("contour:retry", { detail: { src: this.getAttribute("src") }, bubbles: true, composed: true }));
-        }
-      });
-    }
+     enhance() {
+       if (this._wiredTimeline) return;
+       this._wiredTimeline = true;
+     }
   }
 define("contour-timeline", ContourTimeline);
 class ContourHeatmap extends ContourBase {
@@ -1569,17 +1554,10 @@ class ContourHeatmap extends ContourBase {
         const cell = e.target && e.target.closest ? e.target.closest(".c-heatmap__cell") : null;
         if (cell && this.contains(cell)) showTip({ target: cell });
       });
-      this.addEventListener("focusout", (e) => {
-        if (!this.contains(e.relatedTarget)) hideTip();
-      });
-      this.addEventListener("click", (e) => {
-        const btn = e.target && e.target.closest ? e.target.closest('button[data-action="retry"]') : null;
-        if (btn && this.contains(btn)) {
-          e.preventDefault();
-          this.dispatchEvent(new CustomEvent("contour:retry", { detail: { src: this.getAttribute("src") }, bubbles: true, composed: true }));
-        }
-      });
-      this.addEventListener("keydown", (e) => {
+       this.addEventListener("focusout", (e) => {
+         if (!this.contains(e.relatedTarget)) hideTip();
+        });
+       this.addEventListener("keydown", (e) => {
         const cell = e.target && e.target.closest ? e.target.closest(".c-heatmap__cell") : null;
         if (!cell || !this.contains(cell)) return;
         const list = cells();
@@ -1750,15 +1728,8 @@ class ContourSparkline extends ContourBase {
         const r = svg.getBoundingClientRect();
         showTip({ clientX: r.left + r.width - 1 });
       });
-      this.addEventListener("focusout", hideTip);
-      this.addEventListener("click", (e) => {
-        const btn = e.target && e.target.closest ? e.target.closest('button[data-action="retry"]') : null;
-        if (btn && this.contains(btn)) {
-          e.preventDefault();
-          this.dispatchEvent(new CustomEvent("contour:retry", { detail: { src: this.getAttribute("src") }, bubbles: true, composed: true }));
-        }
-      });
-      this.addEventListener("keydown", (e) => {
+        this.addEventListener("focusout", hideTip);
+       this.addEventListener("keydown", (e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
           this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { series: 1 } }));
