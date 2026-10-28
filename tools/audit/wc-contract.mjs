@@ -994,7 +994,14 @@ try {
   //   - a failed fetch is an error, never an empty ("No data" on 404 lied);
   //   - a state node carries no inline style (it killed the CSS rule beside it);
   //   - leaving the page aborts the ask (a re-mount of the same URL re-fetches,
-  //     and a flaky fixture proves the retry click really asked again).
+  //     and a flaky fixture proves the retry click really asked again);
+  //   - the host says aria-busy while its ask is open and stops when it settles
+  //     (BY-09's announced half — the state is not a live region, so the host
+  //     attribute is the announcement: attribute-only states must not claim
+  //     busy, and a settled host — success or 404 — must have dropped it);
+  //   - no state node carries role/aria-live: the recorded divergence (BY-09)
+  //     is that adopters must not re-add role="alert" to the error node — a
+  //     region that holds its text at load has no change left to announce.
   {
     const p = await browser.newPage();
     const errs = [];
@@ -1016,6 +1023,7 @@ try {
         skeleton: host.querySelectorAll(".c-skeleton").length,
         rows: host.querySelectorAll(".c-readout__row").length,
         inline: [...stateNodes(host)].filter((n) => n.hasAttribute("style")).length,
+        live: [...stateNodes(host)].filter((n) => n.hasAttribute("role") || n.hasAttribute("aria-live")).length,
         all: stateNodes(host).length,
       });
       const wait = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -1031,17 +1039,20 @@ try {
         error: readState(errorHost),
         skeleton: readState(skeletonHost),
         retryButton: !!errorHost.querySelector('[data-action="retry"]'),
+        loadingBusy: loadingHost.getAttribute("aria-busy"),
       };
 
       // src success: rows render, no state node survives.
       const okHost = mk({ src: "/fx/ok.json" });
       await wait(120);
       const ok = readState(okHost);
+      const okBusy = okHost.getAttribute("aria-busy");
 
       // 404 and malformed: an error node, never the empty state.
       const missHost = mk({ src: "/fx/missing" });
       await wait(120);
       const missing = readState(missHost);
+      const missBusy = missHost.getAttribute("aria-busy");
       const badHost = mk({ src: "/fx/bad.json" });
       await wait(120);
       const malformed = readState(badHost);
@@ -1052,6 +1063,7 @@ try {
       // mount shows rows while the detached host shows nothing new.
       const detachHost = mk({ src: "/fx/slow.json" });
       const loadingWhileConnected = readState(detachHost).loading;
+      const slowBusy = detachHost.getAttribute("aria-busy");
       detachHost.remove();
       await wait(220);
       const afterDetach = readState(detachHost);
@@ -1072,9 +1084,9 @@ try {
       await wait(120);
       const flakyAfter = readState(flakyHost);
 
-      return { byAttr, ok, missing, malformed, loadingWhileConnected, afterDetach, reMounted, flakyFirst, flakyAfter, retried };
+      return { byAttr, ok, missing, malformed, loadingWhileConnected, afterDetach, reMounted, flakyFirst, flakyAfter, retried, okBusy, missBusy, slowBusy };
     });
-    compared += 14;
+    compared += 18;
     const bad = [];
     const b = out.byAttr;
     // exactly one state node per attribute state; no inline style on any
@@ -1096,11 +1108,21 @@ try {
     if (out.reMounted.rows < 1) bad.push(`re-mount of an aborted URL did not re-fetch (rows ${out.reMounted.rows}) — the abort either never happened or poisoned the cache`);
     if (out.flakyFirst.error !== 1 || out.flakyAfter.error === 1 || out.flakyAfter.rows < 1 || !out.retried)
       bad.push(`retry did not re-fetch: first ${JSON.stringify(out.flakyFirst)}, after ${JSON.stringify(out.flakyAfter)}, retried=${out.retried} — the fixture turns 200 on the second hit, so rows can only come from a real re-ask`);
+    // BY-09's announced half: the host says aria-busy only while an ask is
+    // open, and no state node borrows a live region — a region that holds its
+    // text at load has no change left to announce, which is why role="alert"
+    // was dropped, and the divergence is recorded here as a refusal, not as
+    // prose an adopter may not read.
+    if (b.loadingBusy !== null) bad.push(`an attribute-only loading state claimed aria-busy (${String(b.loadingBusy)}) — busy belongs to an ask, not to a painted state`);
+    if (out.slowBusy !== "true") bad.push(`slow src did not announce aria-busy while in flight (${String(out.slowBusy)}) — the announced half of the error contract`);
+    if (out.okBusy !== null || out.missBusy !== null) bad.push(`aria-busy survived settle: ok ${String(out.okBusy)}, 404 ${String(out.missBusy)} — a settled host must stop announcing`);
+    if (b.loading.live + b.empty.live + b.error.live + b.skeleton.live)
+      bad.push("a state node carries role/aria-live — the recorded divergence is that the error node must NOT re-add role=alert; a region holding its text at load announces nothing");
     if (errs.length) bad.push(`page errors: ${errs.slice(0, 2).join(" | ")}`);
     if (bad.length)
       fail(`state contract broke: ${bad.join(" | ")}`);
     else
-      console.log(`wc-contract: state contract holds — one node per state, 404/malformed are errors not empties, no inline style on a state node, disconnect aborts, retry re-fetches (${out.ok.rows} ok rows, ${out.flakyAfter.rows} re-fetched rows)`);
+      console.log(`wc-contract: state contract holds — one node per state, 404/malformed are errors not empties, no inline style on a state node, disconnect aborts, retry re-fetches, aria-busy announces an open ask and drops on settle, and no state node is a live region (${out.ok.rows} ok rows, ${out.flakyAfter.rows} re-fetched rows)`);
   }
 
   // ---- 13. dialog-family parity -------------------------------------------

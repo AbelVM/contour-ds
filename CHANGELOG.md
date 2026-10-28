@@ -45,6 +45,18 @@
   in flight. Loader hosts are not form-associated, so the base lazily attaches a
   states-only internals object that no form path reads. Gated by wc-contract arm 22,
   which measures all three states against the shipped bundle.
+- The error state's announced half: while an ask is open the host carries
+  `aria-busy` and drops it the moment the ask settles — a 200 and a 404 drop
+  it alike — and an attribute-only loading state never claims busy, because
+  busy describes an open request, not a painted state. A state node is
+  deliberately not a live region: `role="alert"` on a node inserted already
+  carrying text is a region with no change left to announce, so the error
+  node ships without it, and an adopter who wants the failure spoken routes
+  `contour:error` to the page's own `#toast-host`, which is present and empty
+  for that purpose. Do not re-add `role="alert"` on the error node. Gated by
+  the state-contract arm of `wc-contract`: aria-busy announced while a slow
+  fixture is in flight, dropped on both settle paths, no state node carrying
+  `role` or `aria-live`.
 - Open/close transitions for the command palette and the drawer: the surfaces that
   actually have a shipped hide state now animate their entry and exit with
   `@starting-style` and `transition-behavior: allow-discrete` (`--dur-base`, the

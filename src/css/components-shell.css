@@ -260,6 +260,16 @@
     font-size: var(--type-sm);
   }
 
+  .c-command__status {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--color-text-subtle);
+  }
+
+  .c-command__status:not(:empty) {
+    padding: 0.5rem 0.75rem;
+  }
+
   .c-command__foot {
     display: flex;
     align-items: center;
