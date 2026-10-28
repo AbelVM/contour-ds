@@ -1,5 +1,5 @@
 import { ContourBase, define, onDispose, formatValue } from './core.mjs';
-import { loadRemote, remoteData, renderStates, renderEmpty, wireStates, remoteInvalidate } from './states.mjs';
+import { loadRemote, remoteData, renderStates, renderEmpty, wireStates, remoteInvalidate, watchViewport } from './states.mjs';
 import { donutSlices, barRects, smoothPath, polylinePoints } from './svg.mjs';
 class ContourReadout extends ContourBase {
     static get observed() { return ["rows", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "format", "locale"]; }
@@ -925,7 +925,7 @@ class ContourStreamingChart extends ContourBase {
       // own 1 s floor so the two cannot disagree.
       const sync = () => {
         const seconds = parseFloat(this.getAttribute("interval") || "");
-        const want = Number.isFinite(seconds) && seconds > 0 && !this.hasAttribute("pause");
+        const want = Number.isFinite(seconds) && seconds > 0 && !this.hasAttribute("pause") && this._viewVisible !== false;
         if (want === this._streamRunning) return;
         this._streamRunning = want;
         if (this._streamTimer !== undefined) { clearInterval(this._streamTimer); this._streamTimer = undefined; }
@@ -940,6 +940,17 @@ class ContourStreamingChart extends ContourBase {
         }, Math.max(1000, seconds * 1000));
       };
       sync();
+      // Pause the stream while the chart is off-screen (B3-22): watchViewport
+      // is the loader's own visibility seam, so the stream reuses it instead of
+      // a second observer. A user-set `pause` still wins; this only adds an
+      // off-screen pause on top.
+      if (!this._wiredStreamView) {
+        this._wiredStreamView = true;
+        this._viewVisible = true;
+        watchViewport(this);
+        this.addEventListener("contour:view-enter", () => { this._viewVisible = true; sync(); });
+        this.addEventListener("contour:view-leave", () => { this._viewVisible = false; sync(); });
+      }
       // The base re-runs enhance after every render, so interval/pause changes
       // are picked up by sync() above; the timer itself is owned exactly once.
       if (this._wiredStream) return;
