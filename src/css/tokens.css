@@ -209,6 +209,7 @@
     --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
     --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
     --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+    --ease-linear: linear;
 
     /* ---------------------------------------------------------------------
        12. LAYOUT & STACKING

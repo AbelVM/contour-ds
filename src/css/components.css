@@ -398,7 +398,7 @@
     border: 2px solid currentColor;
     border-block-start-color: transparent;
     color: var(--btn-fg);
-    animation: c-spin var(--dur-spin) linear infinite;
+    animation: c-spin var(--dur-spin) var(--ease-linear) infinite;
   }
 
   @keyframes c-spin {
@@ -2723,7 +2723,7 @@
     border-radius: 50%;
     border: 2px solid var(--color-track);
     border-block-start-color: var(--color-primary);
-    animation: c-spin var(--dur-spin) linear infinite;
+    animation: c-spin var(--dur-spin) var(--ease-linear) infinite;
   }
 
   .c-spinner--lg {

@@ -257,7 +257,7 @@
   }
 
   .u-spin {
-    animation: c-spin var(--dur-spin-slow) linear infinite;
+    animation: c-spin var(--dur-spin-slow) var(--ease-linear) infinite;
   }
 
   /* -- Forced colours -------------------------------------------------- */
