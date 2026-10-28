@@ -1772,6 +1772,7 @@
   .c-input:focus,
   .c-select:focus,
   .c-textarea:focus {
+    outline: none;
     border-color: var(--color-primary);
     box-shadow: 0 0 0 2px var(--color-focus-ring),
       0 0 0 4px var(--color-focus-halo);
@@ -1784,6 +1785,7 @@
 
   .c-input[aria-invalid="true"]:focus,
   .c-textarea[aria-invalid="true"]:focus {
+    outline: none;
     box-shadow: 0 0 0 3px
       color-mix(in oklab, var(--color-danger) 25%, transparent);
   }
