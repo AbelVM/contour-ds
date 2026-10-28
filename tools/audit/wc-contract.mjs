@@ -1823,6 +1823,103 @@ try {
     else
       console.log("wc-contract: streaming chart ticks/pauses, selectable legend toggles, time-slider plays, resizable wires direction and drag");
   }
+
+  // ---- 21. drag-and-drop: native DnD + keyboard move (BY-26) ----
+  //
+  // The drag family was four styled shells with zero wiring. This arm proves
+  // the whole contract on the shipped bundle with constructed DragEvents and
+  // a real DataTransfer (both constructible in this Chromium): a draggable
+  // renders draggable="true" and its dragstart writes text/plain, marks
+  // .c-draggable--dragging and announces contour:dragstart; a drop-zone
+  // accepts a text/plain payload (--active), refuses a foreign one (--reject)
+  // and announces contour:drop on the gesture's end; dragend clears the state;
+  // and the keyboard path (HTML5 DnD has none) announces contour:move on
+  // ArrowUp/ArrowDown without falling back into contour:activate.
+  {
+    const p = await browser.newPage();
+    const errs = [];
+    p.on("pageerror", (e) => errs.push(String(e.message || e)));
+    await p.goto(`${origin}/unmin.html`, { waitUntil: "load" });
+    await p.waitForFunction(() => !!window.ContourElements, null, { timeout: 20000 });
+    const out = await p.evaluate(async () => {
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+      const results = {};
+      const src = document.createElement("contour-draggable");
+      src.textContent = "Drag me";
+      document.body.appendChild(src);
+      const zone = document.createElement("contour-drop-zone");
+      zone.setAttribute("label", "Drop here");
+      document.body.appendChild(zone);
+      await wait(60);
+      results.draggableAttr = src.getAttribute("draggable");
+      // dragstart: the payload a drop partner reads, the visual state, the event.
+      const dt = new DataTransfer();
+      const starts = [];
+      src.addEventListener("contour:dragstart", (e) => starts.push(e.detail));
+      src.dispatchEvent(new DragEvent("dragstart", { bubbles: true, cancelable: true, dataTransfer: dt }));
+      await wait(20);
+      results.payload = dt.getData("text/plain");
+      results.dragging = src.classList.contains("c-draggable--dragging");
+      results.startDetail = starts[0] || null;
+      // dragover accepts the payload; drop reads it and announces contour:drop.
+      const drops = [];
+      zone.addEventListener("contour:drop", (e) => drops.push(e.detail));
+      zone.dispatchEvent(new DragEvent("dragover", { bubbles: true, cancelable: true, dataTransfer: dt }));
+      await wait(20);
+      results.zoneActive = zone.classList.contains("c-drop-zone--active");
+      results.zoneReject = zone.classList.contains("c-drop-zone--reject");
+      zone.dispatchEvent(new DragEvent("drop", { bubbles: true, cancelable: true, dataTransfer: dt }));
+      await wait(20);
+      results.dropDetail = drops[0] || null;
+      results.activeAfterDrop = zone.classList.contains("c-drop-zone--active");
+      // A foreign payload (text/html only) is refused, not accepted.
+      const alien = new DataTransfer();
+      alien.setData("text/html", "<p>x</p>");
+      zone.dispatchEvent(new DragEvent("dragover", { bubbles: true, cancelable: true, dataTransfer: alien }));
+      await wait(20);
+      results.rejectForeign = zone.classList.contains("c-drop-zone--reject");
+      results.activeForeign = zone.classList.contains("c-drop-zone--active");
+      // dragend: state cleared + event.
+      const ends = [];
+      src.addEventListener("contour:dragend", (e) => ends.push(e.detail));
+      src.dispatchEvent(new DragEvent("dragend", { bubbles: true, cancelable: true, dataTransfer: dt }));
+      await wait(20);
+      results.draggingAfterEnd = src.classList.contains("c-draggable--dragging");
+      results.endDetail = ends[0] || null;
+      // Keyboard path + activate regression.
+      const moves = [];
+      const acts = [];
+      src.addEventListener("contour:move", (e) => moves.push(e.detail));
+      src.addEventListener("contour:activate", (e) => acts.push(e.detail));
+      src.focus();
+      src.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
+      await wait(20);
+      src.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+      await wait(20);
+      results.moves = moves;
+      results.activates = acts.length;
+      return results;
+    });
+    const bad = [];
+    if (out.draggableAttr !== "true") bad.push(`draggable attr=${String(out.draggableAttr)} (want "true")`);
+    if (out.payload !== "Drag me") bad.push(`dragstart payload=${JSON.stringify(out.payload)} (want "Drag me")`);
+    if (out.dragging !== true) bad.push(`dragstart did not add .c-draggable--dragging`);
+    if (!out.startDetail || out.startDetail.value !== "Drag me") bad.push(`contour:dragstart detail=${JSON.stringify(out.startDetail)}`);
+    if (out.zoneActive !== true || out.zoneReject !== false) bad.push(`dragover active/reject=${out.zoneActive}/${out.zoneReject} (want accepted)`);
+    if (!out.dropDetail || out.dropDetail.value !== "Drag me" || out.dropDetail.label !== "Drop here") bad.push(`contour:drop detail=${JSON.stringify(out.dropDetail)}`);
+    if (out.activeAfterDrop !== false) bad.push(`drop left the zone active`);
+    if (out.rejectForeign !== true || out.activeForeign !== false) bad.push(`foreign payload reject/active=${out.rejectForeign}/${out.activeForeign} (want refused)`);
+    if (out.draggingAfterEnd !== false) bad.push(`dragend left .c-draggable--dragging`);
+    if (!out.endDetail || out.endDetail.value !== "Drag me") bad.push(`contour:dragend detail=${JSON.stringify(out.endDetail)}`);
+    if (out.moves.length !== 1 || out.moves[0].direction !== "down") bad.push(`contour:move ${JSON.stringify(out.moves)} (want one down)`);
+    if (out.activates !== 1) bad.push(`Enter activate count=${out.activates} (want 1 — no regression)`);
+    if (errs.length) bad.push(`page errors: ${errs.slice(0, 2).join(" | ")}`);
+    compared += 12;
+    if (bad.length)
+      fail(`drag-and-drop contract broke (BY-26): ${bad.join(" | ")}`);
+    else
+      console.log("wc-contract: draggable payload + state, drop-zone accept/reject/clear, keyboard move all measured");
+  }
 } finally {
   await browser.close();
   server.close();

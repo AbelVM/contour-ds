@@ -141,12 +141,47 @@ class ContourDraggable extends ContourBase {
       this.classList.add("c-draggable");
       if (!this.hasAttribute("role")) this.setAttribute("role", "button");
       if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
+      if (!this.hasAttribute("draggable")) this.setAttribute("draggable", "true");
+    }
+    // The value a drop partner receives: the authored `value` attribute, else
+    // the `label`, else the element's own text. One shape, so a consumer's
+    // contour:drop handler sees the same detail a contour:dragstart carried.
+    // `label` and `value` are shared-list attributes (they are not overridden
+    // here), so the inherited full shared list stays the observed contract.
+    _dragValue() {
+      return this.getAttribute("value") || this.getAttribute("label") || (this.textContent || "").trim() || "draggable";
     }
     enhance() {
       if (this._wiredDraggable) return;
       this._wiredDraggable = true;
+      // Native drag-and-drop (BY-26). The platform owns the drag gesture; the
+      // component owns the payload and the visual state. dragstart writes
+      // text/plain (the portable payload nearly every drop partner can read),
+      // marks the item with the shipped .c-draggable--dragging state, and
+      // announces contour:dragstart so a dashboard can react before the drop.
+      this.addEventListener("dragstart", (e) => {
+        if (!e.dataTransfer) return;
+        const value = this._dragValue();
+        try { e.dataTransfer.effectAllowed = "move"; } catch (err) { /* synthetic drag: read-only */ }
+        e.dataTransfer.setData("text/plain", value);
+        this.classList.add("c-draggable--dragging");
+        this.dispatchEvent(new CustomEvent("contour:dragstart", { bubbles: true, composed: true, detail: { value } }));
+      });
+      this.addEventListener("dragend", () => {
+        this.classList.remove("c-draggable--dragging");
+        this.dispatchEvent(new CustomEvent("contour:dragend", { bubbles: true, composed: true, detail: { value: this._dragValue() } }));
+      });
+      // Keyboard alternative: HTML5 DnD has no keyboard story, so the focused
+      // draggable offers ArrowUp/ArrowDown as a move action the consumer
+      // handles exactly like a drop (the accessible reorder pattern). It rides
+      // the same event vocabulary — contour:move {direction} — and never fakes
+      // a drag it cannot perform.
       this.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); this.dispatchEvent(new CustomEvent("contour:activate", { bubbles: true, composed: true })); }
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); this.dispatchEvent(new CustomEvent("contour:activate", { bubbles: true, composed: true })); return; }
+        if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+          e.preventDefault();
+          this.dispatchEvent(new CustomEvent("contour:move", { bubbles: true, composed: true, detail: { direction: e.key === "ArrowUp" ? "up" : "down" } }));
+        }
       });
     }
   }
@@ -184,6 +219,37 @@ class ContourDropZone extends ContourBase {
         const t = this.ensure(".c-drop-zone__label", () => { const el = document.createElement("p"); el.className = "c-drop-zone__label"; return el; });
         t.textContent = label;
       }
+    }
+    enhance() {
+      if (this._wiredDropZone) return;
+      this._wiredDropZone = true;
+      // Native drop target (BY-26), delegated on the host (rule 12). dragover
+      // is where the platform asks "may it land here?": a text/plain payload
+      // is allowed (preventDefault + the shipped --active state), anything
+      // else is refused (--reject, no preventDefault so the drop never lands).
+      const accepts = (e) => e.dataTransfer && Array.from(e.dataTransfer.types).includes("text/plain");
+      const clear = () => { this.classList.remove("c-drop-zone--active", "c-drop-zone--reject"); };
+      this.addEventListener("dragenter", (e) => {
+        if (!e.dataTransfer) return;
+        this.classList.toggle("c-drop-zone--reject", !accepts(e));
+        if (accepts(e)) { e.preventDefault(); this.classList.add("c-drop-zone--active"); }
+      });
+      this.addEventListener("dragover", (e) => {
+        if (!e.dataTransfer) return;
+        this.classList.toggle("c-drop-zone--reject", !accepts(e));
+        if (accepts(e)) { e.preventDefault(); this.classList.add("c-drop-zone--active"); }
+      });
+      this.addEventListener("dragleave", clear);
+      this.addEventListener("drop", (e) => {
+        if (!accepts(e)) return;
+        e.preventDefault();
+        clear();
+        const value = e.dataTransfer.getData("text/plain") || "";
+        this.dispatchEvent(new CustomEvent("contour:drop", { bubbles: true, composed: true, detail: { value, label: this.getAttribute("label") } }));
+      });
+      // The keyboard path lives on the draggable (contour:move, BY-26):
+      // HTML5 DnD has no keyboard story, and a target that only receives a
+      // pointer gesture does not get a focus role it cannot act on alone.
     }
   }
   define("contour-drop-zone", ContourDropZone);
