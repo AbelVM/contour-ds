@@ -6317,6 +6317,13 @@ means obvious.
                   </p>
                 </div>
               </div>
+              <p class="muted" style="font-size: var(--type-xs); margin-block-start: var(--space-sm)">
+                <strong>Map-engine seam:</strong> Contour never imports a map library. Attach a live engine via
+                <code>el.attachMap(map)</code> (or set <code>el.map = map</code>); read viewport bounds via
+                <code>el.getViewport()</code>. Events (<code>contour:map-control</code>, <code>contour:map-attach</code>,
+                <code>contour:map-detach</code>) are composed and bubble through shadow hosts. See
+                <code>templates/map.html</code> for a working MapLibre example.
+              </p>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
