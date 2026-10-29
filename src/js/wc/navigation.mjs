@@ -1,6 +1,6 @@
 import { ContourBase, define, onDispose, supportsUntilFound, contourId } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
-import { wireMenu, wirePagination, wireTabs, wireTree } from './behaviours.mjs';
+import { wireMenu, wirePagination, wireTabs, wireTree, wireRemovable } from './behaviours.mjs';
 class ContourMenu extends ContourBase {
     static get observed() { return ["items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { items: { attribute: "items" } }; }
@@ -647,10 +647,13 @@ class ContourTocFull extends ContourBase {
   }
 define("contour-toc", ContourTocFull);
 class ContourFilterBar extends ContourBase {
-    static get observed() { return ["label", "divider"]; }
-    static get properties() { return { label: { attribute: "label" }, divider: { attribute: "divider" } }; }
+    static get observed() { return ["label", "divider", "items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
+    static get properties() { return { label: { attribute: "label" }, divider: { attribute: "divider" }, items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-filter-bar");
+      wireStates(this);
+      loadRemote(this, "items");
+      if (renderStates(this, "filter-bar")) return;
       const label = this.getAttribute("label");
       if (label) {
         const l = this.ensure(".c-filter-bar__label", () => { const el = document.createElement("span"); el.className = "c-filter-bar__label"; return el; });
@@ -665,6 +668,32 @@ class ContourFilterBar extends ContourBase {
         const d = this.querySelector(".c-filter-bar__divider");
         if (d) d.remove();
       }
+      // Render filter pills from items.
+      Array.from(this.querySelectorAll(".c-filter-pill")).forEach((n) => n.remove());
+      const items = remoteData(this, "items");
+      let parsed = null;
+      if (items) { try { parsed = JSON.parse(items); } catch (e) { parsed = null; } }
+      if (Array.isArray(parsed)) {
+        parsed.forEach((it) => {
+          const pill = document.createElement("span");
+          pill.className = "c-filter-pill";
+          const txt = typeof it === "string" ? it : (it.label || it.value || "");
+          pill.textContent = txt;
+          if (typeof it === "object" && it !== null && it.removable !== false) {
+            const btn = document.createElement("button");
+            btn.className = "c-filter-pill__remove";
+            btn.type = "button";
+            btn.setAttribute("aria-label", "Remove " + txt);
+            btn.textContent = "×";
+            pill.appendChild(btn);
+          }
+          this.appendChild(pill);
+        });
+      }
+      if (!parsed && !label) renderEmpty(this, "filter-bar");
+    }
+    enhance() {
+      wireRemovable(this);
     }
   }
   define("contour-filter-bar", ContourFilterBar);
