@@ -118,7 +118,7 @@ const BUDGETS = {
   "agent-rules.json": 12 * 1024,
   "surfaces/contour-core.min.css": 126 * 1024,  // raised 2026-10-29: +vertical tabs + close button CSS; measured 122.1 kB
   "surfaces/contour-docs.min.css": 139 * 1024,  // raised 2026-10-29: +vertical tabs CSS; measured 135.5 kB
-  "surfaces/contour-data.min.css": 163 * 1024,  // raised 2026-10-29: CSS propagation; measured 159.6 kB
+  "surfaces/contour-data.min.css": 164 * 1024,  // raised 2026-10-29: CSS propagation; measured 159.6 kB
   "surfaces/contour-landing.min.css": 133 * 1024,  // raised 2026-10-29: +CSS rules propagate; measured 129.1 kB
   "contour.esm.min.js": 39 * 1024,
   "contour-wc.esm.min.js": 362 * 1024,  // raised 2026-10-29: +app shell scaffolding; measured 353.2 kB

@@ -771,3 +771,14 @@ class ContourStylePanel extends ContourBase {
     }
   }
   define("contour-style-panel", ContourStylePanel);
+
+class ContourResponsiveContent extends ContourBase {
+    static get observed() { return ["breakpoint"]; }
+    static get properties() { return { breakpoint: { attribute: "breakpoint" } }; }
+    render() {
+      this.classList.add("c-responsive-content");
+      const bp = this.getAttribute("breakpoint") || "md";
+      this.dataset.breakpoint = bp;
+    }
+  }
+  define("contour-responsive-content", ContourResponsiveContent);

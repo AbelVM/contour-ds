@@ -3453,7 +3453,15 @@
     background: var(--color-primary-soft);
     color: var(--color-primary-text);
   }
-  /* -- Style panel ------------------------------------------------------- */
+  /* -- Responsive content ------------------------------------------------ */
+  .c-responsive-content {
+    display: block;
+  }
+  @container (inline-size < 40rem) {
+    .c-responsive-content[data-breakpoint="md"] {
+      font-size: var(--type-sm);
+    }
+  }
   .c-style-panel {
     display: flex;
     flex-direction: column;

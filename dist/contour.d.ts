@@ -124,6 +124,7 @@ export type ContourComponent =
   | "c-reserved"
   | "c-resizable"
   | "c-resize-handle"
+  | "c-responsive-content"
   | "c-row"
   | "c-row-action"
   | "c-scale-bar"
@@ -723,6 +724,7 @@ declare global {
     "contour-reserved": ContourElement;
     "contour-resizable": ContourElement;
     "contour-resize-handle": ContourElement;
+    "contour-responsive-content": ContourElement;
     "contour-row": ContourElement;
     "contour-row-action": ContourElement;
     "contour-scale-bar": ContourElement;
