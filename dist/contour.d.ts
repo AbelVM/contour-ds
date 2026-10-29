@@ -39,6 +39,7 @@ export type ContourComponent =
   | "c-comparison"
   | "c-compass"
   | "c-container"
+  | "c-context-menu"
   | "c-contour-plot"
   | "c-coordinate"
   | "c-cta"
@@ -653,6 +654,7 @@ declare global {
     "contour-comparison": ContourElement;
     "contour-compass": ContourElement;
     "contour-container": ContourElement;
+    "contour-context-menu": ContourElement;
     "contour-contour-plot": ContourElement;
     "contour-coordinate": ContourElement;
     "contour-cta": ContourElement;

@@ -1182,3 +1182,43 @@ class ContourHoverCard extends ContourBase {
     }
   }
   define("contour-hover-card", ContourHoverCard);
+
+class ContourContextMenu extends ContourBase {
+    static get observed() { return ["items"]; }
+    static get properties() { return { items: { attribute: "items" } }; }
+    render() {
+      this.classList.add("c-context-menu");
+      if (!this.hasAttribute("popover")) this.setAttribute("popover", "auto");
+      if (!this.id) this.id = contourId("context-menu");
+      const items = this.getAttribute("items");
+      if (items) {
+        try {
+          const parsed = JSON.parse(items);
+          this.innerHTML = "";
+          parsed.forEach((it) => {
+            const btn = document.createElement("button");
+            btn.className = "c-menu__item";
+            btn.setAttribute("role", "menuitem");
+            btn.textContent = typeof it === "string" ? it : (it.label || it.title || "");
+            this.appendChild(btn);
+          });
+        } catch (e) { /* keep existing */ }
+      }
+    }
+    enhance() {
+      if (this._wiredContextMenu) return;
+      this._wiredContextMenu = true;
+      this.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+        try { this.showPopover(); } catch (err) {}
+      });
+      this.addEventListener("click", (e) => {
+        const item = e.target && e.target.closest ? e.target.closest(".c-menu__item") : null;
+        if (item && this.contains(item)) {
+          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { label: item.textContent.trim() } }));
+          try { this.hidePopover(); } catch (err) {}
+        }
+      });
+    }
+  }
+  define("contour-context-menu", ContourContextMenu);
