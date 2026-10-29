@@ -869,21 +869,24 @@ class ContourMapArea extends ContourBase {
 class ContourMapPanel extends ContourBase {
     static get observed() { return ["title"]; }
     static get properties() { return { title: { attribute: "title" } }; }
-    render() {
+     render() {
       this.classList.add("c-map-panel");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "region");
       const title = this.getAttribute("title");
-      // `.c-map-panel` defines placement variants and no title element, so the
-      // title names the region — a node carrying an invented class styled nothing.
-      if (title) this.setAttribute("aria-label", title);
-      else this.removeAttribute("aria-label");
+      if (title) {
+        if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", title);
+      } else {
+        if (this.getAttribute("aria-label") === this.getAttribute("title")) this.removeAttribute("aria-label");
+      }
     }
   }
   define("contour-map-panel", ContourMapPanel);
 class ContourMapFooter extends ContourBase {
     static get observed() { return ["brand"]; }
     static get properties() { return { brand: { attribute: "brand" } }; }
-    render() {
+     render() {
       this.classList.add("c-map-footer");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "contentinfo");
       const brand = this.getAttribute("brand");
       // The footer's own rule is `.c-map-footer > *`, which reaches any direct
       // child, so the brand is a plain span: visible, and inventing no name.
