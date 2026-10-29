@@ -846,3 +846,51 @@ class ContourStatusLight extends ContourBase {
     }
   }
   define("contour-status-light", ContourStatusLight);
+
+class ContourSplitButton extends ContourBase {
+    static get observed() { return ["label", "menu"]; }
+    static get properties() { return { label: { attribute: "label" }, menu: { attribute: "menu" } }; }
+    render() {
+      this.classList.add("c-split-button");
+      const main = this.ensure(".c-split-button__main", () => { const el = document.createElement("button"); el.className = "c-btn c-split-button__main"; el.type = "button"; return el; });
+      main.textContent = this.getAttribute("label") || "Action";
+      const toggle = this.ensure(".c-split-button__toggle", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--icon c-split-button__toggle"; el.type = "button"; el.setAttribute("aria-label", "More options"); el.textContent = "▾"; return el; });
+      const menu = this.ensure(".c-split-button__menu", () => { const el = document.createElement("div"); el.className = "c-menu c-split-button__menu"; el.setAttribute("role", "menu"); el.hidden = true; return el; });
+      const items = this.getAttribute("menu");
+      if (items) {
+        try {
+          const parsed = JSON.parse(items);
+          menu.innerHTML = "";
+          parsed.forEach((it) => {
+            const li = document.createElement("button");
+            li.className = "c-menu__item";
+            li.setAttribute("role", "menuitem");
+            li.textContent = typeof it === "string" ? it : (it.label || it.title || "");
+            menu.appendChild(li);
+          });
+        } catch (e) { /* keep existing */ }
+      }
+      if (main.parentNode !== this) this.appendChild(main);
+      if (toggle.parentNode !== this) this.appendChild(toggle);
+      if (menu.parentNode !== this) this.appendChild(menu);
+    }
+    enhance() {
+      if (this._wiredSplitButton) return;
+      this._wiredSplitButton = true;
+      const toggle = () => this.querySelector(".c-split-button__toggle");
+      const menu = () => this.querySelector(".c-split-button__menu");
+      this.addEventListener("click", (e) => {
+        const t = toggle();
+        if (e.target === t || (t && t.contains(e.target))) {
+          const m = menu();
+          if (m) { m.hidden = !m.hidden; t.setAttribute("aria-expanded", String(!m.hidden)); }
+        }
+      });
+      document.addEventListener("click", (e) => {
+        const m = menu();
+        const t = toggle();
+        if (m && !m.hidden && !this.contains(e.target)) { m.hidden = true; if (t) t.setAttribute("aria-expanded", "false"); }
+      });
+    }
+  }
+  define("contour-split-button", ContourSplitButton);

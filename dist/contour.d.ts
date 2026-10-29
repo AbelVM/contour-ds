@@ -148,6 +148,7 @@ export type ContourComponent =
   | "c-skeleton-group"
   | "c-sparkline"
   | "c-spinner"
+  | "c-split-button"
   | "c-stack"
   | "c-stat"
   | "c-status-light"
@@ -913,6 +914,7 @@ declare global {
     "contour-skeleton-group": ContourElement;
     "contour-sparkline": ContourElement;
     "contour-spinner": ContourElement;
+    "contour-split-button": ContourElement;
     "contour-stack": ContourElement;
     "contour-stat": ContourElement;
     "contour-status-light": ContourElement;

@@ -3453,7 +3453,26 @@
     background: var(--color-primary-soft);
     color: var(--color-primary-text);
   }
-  /* -- Status light ------------------------------------------------------ */
+  /* -- Split button ------------------------------------------------------ */
+  .c-split-button {
+    display: inline-flex;
+  }
+  .c-split-button__main {
+    border-end-end-radius: 0;
+    border-start-end-radius: 0;
+  }
+  .c-split-button__toggle {
+    border-end-start-radius: 0;
+    border-start-start-radius: 0;
+    border-inline-start: 1px solid var(--color-border);
+  }
+  .c-split-button__menu {
+    position: absolute;
+    inset-block-start: 100%;
+    inset-inline-end: 0;
+    z-index: var(--z-tooltip);
+    margin-block-start: var(--space-2xs);
+  }
   .c-status-light {
     display: inline-flex;
     align-items: center;
