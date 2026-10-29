@@ -3473,7 +3473,19 @@
     z-index: var(--z-tooltip);
     margin-block-start: var(--space-2xs);
   }
-  /* -- Rating ------------------------------------------------------------ */
+  /* -- Time picker ------------------------------------------------------- */
+  .c-time-picker {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+  }
+  .c-time-picker__label {
+    font-size: var(--type-xs);
+    color: var(--color-text-muted);
+  }
+  .c-time-picker__input {
+    /* inherits c-input */
+  }
   .c-rating {
     display: inline-flex;
     gap: var(--space-2xs);

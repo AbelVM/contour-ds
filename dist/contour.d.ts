@@ -172,6 +172,7 @@ export type ContourComponent =
   | "c-textarea"
   | "c-theme-scope"
   | "c-threshold"
+  | "c-time-picker"
   | "c-time-range"
   | "c-time-slider"
   | "c-timeline"
@@ -944,6 +945,7 @@ declare global {
     "contour-textarea": ContourElement;
     "contour-theme-scope": ContourElement;
     "contour-threshold": ContourElement;
+    "contour-time-picker": ContourElement;
     "contour-time-range": ContourElement;
     "contour-time-slider": ContourElement;
     "contour-timeline": ContourElement;

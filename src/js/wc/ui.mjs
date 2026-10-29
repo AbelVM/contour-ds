@@ -1066,3 +1066,29 @@ class ContourRating extends ContourBase {
     }
   }
   define("contour-rating", ContourRating);
+
+class ContourTimePicker extends ContourBase {
+    static get observed() { return ["value", "label"]; }
+    static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" } }; }
+    render() {
+      this.classList.add("c-time-picker");
+      const label = this.getAttribute("label");
+      if (label) {
+        const l = this.ensure(".c-time-picker__label", () => { const el = document.createElement("label"); el.className = "c-time-picker__label"; return el; });
+        l.textContent = label;
+      }
+      const input = this.ensure(".c-time-picker__input", () => { const el = document.createElement("input"); el.className = "c-input c-time-picker__input"; el.type = "time"; return el; });
+      input.value = this.getAttribute("value") || "";
+    }
+    enhance() {
+      if (this._wiredTimePicker) return;
+      this._wiredTimePicker = true;
+      this.addEventListener("change", (e) => {
+        const t = e.target;
+        if (t && t.classList.contains("c-time-picker__input")) {
+          this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: t.value } }));
+        }
+      });
+    }
+  }
+  define("contour-time-picker", ContourTimePicker);
