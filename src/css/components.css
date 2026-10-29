@@ -2155,6 +2155,7 @@
     inline-size: 100%;
     border-collapse: collapse;
     font-size: var(--type-sm);
+    table-layout: fixed;
   }
 
   .c-table th,
