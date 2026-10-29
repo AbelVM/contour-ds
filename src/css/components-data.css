@@ -2055,11 +2055,36 @@
     color: var(--color-text);
   }
 
+  .c-app__header {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-md);
+    border-block-end: var(--hairline);
+  }
+
+  .c-app__main {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scroll-padding: 0.5rem;
+  }
+
   .c-app-body {
     display: flex;
     flex: 1 1 auto;
     min-block-size: 0;
     overflow: hidden;
+  }
+
+  .c-app-body__main {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scroll-padding: 0.5rem;
   }
 
   .c-app-body > .c-sidebar {

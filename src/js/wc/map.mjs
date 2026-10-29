@@ -155,7 +155,7 @@ class ContourLayerPanel extends ContourBase {
              const toggle = document.createElement("input");
              toggle.type = "checkbox";
              toggle.className = "c-layer-panel__toggle";
-             toggle.setAttribute("aria-label", "Toggle layer");
+              toggle.setAttribute("aria-label", "Toggle " + (name || "layer"));
              if (savedVisibility.has(name)) toggle.checked = savedVisibility.get(name);
              else if (typeof it === "object" && it.visible !== false) toggle.checked = true;
             item.appendChild(toggle);
@@ -168,7 +168,7 @@ class ContourLayerPanel extends ContourBase {
              opacity.className = "c-layer-panel__opacity";
              opacity.min = "0";
              opacity.max = "100";
-             opacity.setAttribute("aria-label", "Opacity");
+              opacity.setAttribute("aria-label", "Opacity of " + (name || "layer"));
              opacity.value = (typeof it === "object" && it.opacity != null) ? it.opacity : "100";
             item.appendChild(opacity);
             this.appendChild(item);
@@ -603,7 +603,7 @@ class ContourLayerSwitch extends ContourBase {
             const toggle = document.createElement("button");
             toggle.className = "c-layer-switch__toggle";
             toggle.type = "button";
-            toggle.setAttribute("aria-label", "Toggle layer");
+             toggle.setAttribute("aria-label", "Toggle " + (typeof it === "string" ? it : (it.name || it.label || "layer")));
             toggle.innerHTML = '<svg aria-hidden="true"><use href="#i-check" /></svg>';
             item.appendChild(toggle);
             this.appendChild(item);

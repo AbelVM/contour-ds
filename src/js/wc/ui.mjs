@@ -425,6 +425,21 @@ class ContourVersionBannerFull extends ContourBase {
     }
   }
   define("contour-version-banner", ContourVersionBannerFull);
+class ContourBanner extends ContourBase {
+    static get observed() { return ["message", "variant"]; }
+    static get properties() { return { message: { attribute: "message" }, variant: { attribute: "variant" } }; }
+    render() {
+      this.classList.add("c-banner");
+      const variant = this.getAttribute("variant");
+      if (variant) this.classList.add("c-banner--" + variant);
+      const message = this.getAttribute("message");
+      if (message) {
+        const span = this.ensure(".c-banner__message", () => { const el = document.createElement("span"); el.className = "c-banner__message"; return el; });
+        span.textContent = message;
+      }
+    }
+  }
+  define("contour-banner", ContourBanner);
 class ContourFilterPill extends ContourBase {
     static get observed() { return ["key", "value", "removable"]; }
     static get properties() { return { key: { attribute: "key" }, value: { attribute: "value" }, removable: { attribute: "removable", type: Boolean } }; }
@@ -553,3 +568,170 @@ class ContourLiveBadge extends ContourBase {
     }
   }
   define("contour-live-badge", ContourLiveBadge);
+
+class ContourSkeletonGroup extends ContourBase {
+    static get observed() { return ["count"]; }
+    static get properties() { return { count: { attribute: "count", type: Number } }; }
+    render() {
+      this.classList.add("c-skeleton-group");
+      const count = Math.max(1, parseInt(this.getAttribute("count") || "3", 10) || 3);
+      Array.from(this.querySelectorAll(".c-skeleton")).forEach((n) => n.remove());
+      for (let i = 0; i < count; i++) {
+        const sk = document.createElement("div");
+        sk.className = "c-skeleton";
+        this.appendChild(sk);
+      }
+    }
+  }
+  define("contour-skeleton-group", ContourSkeletonGroup);
+
+class ContourMapPopup extends ContourBase {
+    static get observed() { return ["title", "content"]; }
+    static get properties() { return { title: { attribute: "title" }, content: { attribute: "content" } }; }
+    render() {
+      this.classList.add("c-map-popup");
+      if (!this.hasAttribute("popover")) this.setAttribute("popover", "auto");
+      if (!this.id) this.id = contourId("map-popup");
+      const title = this.getAttribute("title");
+      if (title) {
+        const t = this.ensure(".c-map-popup__title", () => { const el = document.createElement("div"); el.className = "c-map-popup__title"; return el; });
+        t.textContent = title;
+      }
+      const content = this.getAttribute("content");
+      if (content) {
+        const c = this.ensure(".c-map-popup__body", () => { const el = document.createElement("div"); el.className = "c-map-popup__body"; return el; });
+        c.textContent = content;
+      }
+    }
+  }
+  define("contour-map-popup", ContourMapPopup);
+
+class ContourAnimationControls extends ContourBase {
+    static get observed() { return ["playing", "speed"]; }
+    static get properties() { return { playing: { attribute: "playing", type: Boolean }, speed: { attribute: "speed" } }; }
+    render() {
+      this.classList.add("c-animation-controls");
+      const playBtn = this.ensure(".c-animation-controls__play", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-animation-controls__play"; el.type = "button"; return el; });
+      playBtn.textContent = this.hasAttribute("playing") ? "Pause" : "Play";
+      playBtn.setAttribute("aria-label", this.hasAttribute("playing") ? "Pause" : "Play");
+      const speed = this.getAttribute("speed") || "1x";
+      const speedBtn = this.ensure(".c-animation-controls__speed", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-animation-controls__speed"; el.type = "button"; return el; });
+      speedBtn.textContent = speed;
+    }
+    enhance() {
+      if (this._wiredAnimControls) return;
+      this._wiredAnimControls = true;
+      this.addEventListener("click", (e) => {
+        const play = e.target && e.target.closest ? e.target.closest(".c-animation-controls__play") : null;
+        const speed = e.target && e.target.closest ? e.target.closest(".c-animation-controls__speed") : null;
+        if (play && this.contains(play)) {
+          this.dispatchEvent(new CustomEvent("contour:toggle", { bubbles: true, composed: true, detail: { playing: !this.hasAttribute("playing") } }));
+        }
+        if (speed && this.contains(speed)) {
+          this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { speed: speed.textContent } }));
+        }
+      });
+    }
+  }
+  define("contour-animation-controls", ContourAnimationControls);
+
+class ContourDropdown extends ContourBase {
+    static get observed() { return ["label", "items"]; }
+    static get properties() { return { label: { attribute: "label" }, items: { attribute: "items" } }; }
+    render() {
+      this.classList.add("c-dropdown");
+      const btn = this.ensure(".c-dropdown__trigger", () => { const el = document.createElement("button"); el.className = "c-dropdown__trigger c-btn c-btn--sm"; el.type = "button"; return el; });
+      btn.textContent = this.getAttribute("label") || "Menu";
+      const menu = this.ensure(".c-dropdown__menu", () => { const el = document.createElement("div"); el.className = "c-dropdown__menu c-menu"; el.setAttribute("role", "menu"); el.hidden = true; return el; });
+      const items = this.getAttribute("items");
+      if (items) {
+        try {
+          const parsed = JSON.parse(items);
+          menu.innerHTML = "";
+          parsed.forEach((it) => {
+            const li = document.createElement("button");
+            li.className = "c-menu__item";
+            li.setAttribute("role", "menuitem");
+            li.textContent = typeof it === "string" ? it : (it.label || it.title || "");
+            menu.appendChild(li);
+          });
+        } catch (e) { /* keep existing */ }
+      }
+      if (menu.parentNode !== this) this.appendChild(menu);
+      if (btn.parentNode !== this) this.insertBefore(btn, menu);
+    }
+    enhance() {
+      if (this._wiredDropdown) return;
+      this._wiredDropdown = true;
+      const btn = () => this.querySelector(".c-dropdown__trigger");
+      const menu = () => this.querySelector(".c-dropdown__menu");
+      this.addEventListener("click", (e) => {
+        const b = btn();
+        if (e.target === b || (b && b.contains(e.target))) {
+          const m = menu();
+          if (m) { m.hidden = !m.hidden; b.setAttribute("aria-expanded", String(!m.hidden)); }
+        }
+      });
+      document.addEventListener("click", (e) => {
+        const m = menu();
+        const b = btn();
+        if (m && !m.hidden && !this.contains(e.target)) { m.hidden = true; if (b) b.setAttribute("aria-expanded", "false"); }
+      });
+    }
+  }
+  define("contour-dropdown", ContourDropdown);
+
+class ContourAnnotation extends ContourBase {
+    static get observed() { return ["label", "x", "y"]; }
+    static get properties() { return { label: { attribute: "label" }, x: { attribute: "x" }, y: { attribute: "y" } }; }
+    render() {
+      this.classList.add("c-annotation");
+      const label = this.getAttribute("label");
+      if (label) {
+        const l = this.ensure(".c-annotation__label", () => { const el = document.createElement("span"); el.className = "c-annotation__label"; return el; });
+        l.textContent = label;
+      }
+      const x = this.getAttribute("x");
+      const y = this.getAttribute("y");
+      if (x !== null) this.style.setProperty("--annotation-x", x);
+      if (y !== null) this.style.setProperty("--annotation-y", y);
+    }
+  }
+  define("contour-annotation", ContourAnnotation);
+
+class ContourStyleSwitcher extends ContourBase {
+    static get observed() { return ["items", "value"]; }
+    static get properties() { return { items: { attribute: "items" }, value: { attribute: "value" } }; }
+    render() {
+      this.classList.add("c-style-switcher");
+      const items = this.getAttribute("items");
+      const value = this.getAttribute("value");
+      Array.from(this.querySelectorAll(".c-style-switcher__option")).forEach((n) => n.remove());
+      if (items) {
+        try {
+          const parsed = JSON.parse(items);
+          parsed.forEach((it) => {
+            const name = typeof it === "string" ? it : (it.name || it.label || "");
+            const btn = document.createElement("button");
+            btn.className = "c-style-switcher__option c-btn c-btn--sm";
+            btn.type = "button";
+            btn.textContent = name;
+            if (name === value) btn.classList.add("c-style-switcher__option--active");
+            btn.dataset.value = name;
+            this.appendChild(btn);
+          });
+        } catch (e) { /* keep existing */ }
+      }
+    }
+    enhance() {
+      if (this._wiredStyleSwitcher) return;
+      this._wiredStyleSwitcher = true;
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest(".c-style-switcher__option") : null;
+        if (btn && this.contains(btn)) {
+          this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: btn.dataset.value } }));
+        }
+      });
+    }
+  }
+  define("contour-style-switcher", ContourStyleSwitcher);

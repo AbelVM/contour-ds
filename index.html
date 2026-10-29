@@ -11511,9 +11511,24 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                 slotted content, and interactive components emit a published vocabulary of bubbling
                 <code class="c-kbd">contour:*</code> CustomEvents — every name, its payload keys and
                 its composed flag are the event table below — that a parent handles without coupling
-                to internals. Shadow wrappers adopt the document's same-origin sheets once and share
-                one parsed stylesheet across instances.
-              </p>
+                 to internals. Shadow wrappers adopt the document's same-origin sheets once and share
+                 one parsed stylesheet across instances.
+               </p>
+               <p class="c-section-head__desc">
+                 Shadow layer parity: the <code class="c-kbd">contour-shadow-*</code> wrappers are a
+                 styling shell. They adopt the document's sheets and wire a small set of behaviours
+                 (tabs, segmented, combobox, tree, menu, pagination, copy, removable); the remaining
+                 wrappers provide ARIA setup only. Shadow tabs and code-tabs use a slot template and
+                 expect authored panels, unlike the light-DOM tabs which generate panels from the
+                 <code class="c-kbd">tabs</code> attribute. Consumers who need full widget behaviour
+                 should use the light-DOM <code class="c-kbd">contour-*</code> elements.
+               </p>
+               <p class="c-section-head__desc">
+                 Token-name compatibility: consumers migrating from libreship may keep their
+                 <code class="c-kbd">--ls-*</code> names by aliasing them onto the corresponding
+                 <code class="c-kbd">--color-*</code> / <code class="c-kbd">--chart-*</code> tokens on
+                 <code class="c-kbd">:root</code>; the system publishes only the Contour names.
+               </p>
             </div>
           </div>
 

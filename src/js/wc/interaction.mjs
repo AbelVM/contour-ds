@@ -228,6 +228,22 @@ class ContourDragHandle extends ContourBase {
     render() {
       this.classList.add("c-drag-handle");
       if (!this.hasAttribute("role")) this.setAttribute("role", "separator");
+      if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
+      if (!this.hasAttribute("aria-orientation")) this.setAttribute("aria-orientation", "horizontal");
+    }
+    enhance() {
+      if (this._wiredDragHandle) return;
+      this._wiredDragHandle = true;
+      this.addEventListener("keydown", (e) => {
+        let delta = 0;
+        if (e.key === "ArrowLeft" || e.key === "ArrowDown") delta = -1;
+        else if (e.key === "ArrowRight" || e.key === "ArrowUp") delta = 1;
+        else if (e.key === "Home") delta = -Infinity;
+        else if (e.key === "End") delta = Infinity;
+        else return;
+        e.preventDefault();
+        this.dispatchEvent(new CustomEvent("contour:drag", { bubbles: true, composed: true, detail: { key: e.key, delta } }));
+      });
     }
   }
   define("contour-drag-handle", ContourDragHandle);

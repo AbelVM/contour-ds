@@ -589,7 +589,7 @@
   }
 
   .c-pressable:active {
-    transform: translateY(1px) scale(0.995);
+    transform: translateY(1px);
   }
 
   /* Anything that navigates looks like a link. */

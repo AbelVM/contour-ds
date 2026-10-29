@@ -166,13 +166,13 @@
   // Adding one of those back to this list makes that component recurse.
   export const OBSERVED = [
     "action", "actions", "after", "anchor", "answer", "area", "article", "attribution", "attribution-mark", "autoplay", "axis", "axis-x", "axis-y", "before", "body", "brand", "cache-key", "canvas", "center", "clearable", "cols", "columns", "color", "command",
-    "cells", "checked", "chrome", "closable", "controls", "copyable", "count", "current", "date", "delta", "demo", "density", "desc", "dir", "direction", "disabled", "dismissible", "divider", "do", "dont", "dot",
+    "cells", "checked", "chrome", "closable", "content", "controls", "copyable", "count", "current", "date", "delta", "demo", "density", "desc", "dir", "direction", "disabled", "dismissible", "divider", "do", "dont", "dot",
     "empty", "error", "exclusive", "format", "heading", "hint", "href", "icon", "illustration", "index", "instrument", "interval", "items", "key",
     "label", "lazy", "lede", "legend", "line", "link", "links", "live", "loading", "locale", "max", "media", "message", "method", "min", "multiple", "name", "needle", "next", "no", "no-cache", "nodes", "note", "norm",
-    "options", "orientation", "page-size", "pages", "pause", "paused", "pausable", "persist", "placeholder", "point", "points", "prev", "prompt", "question", "recent", "required",
-    "quote", "ramp", "refresh", "removable", "reverse", "rings", "retry", "rows", "scale", "selectable", "selected", "separator", "series", "shortcut", "size", "skeleton", "sort", "sort-dir", "status", "submit", "timeout", "trigger", "virtual",
-    "state", "steps", "subtitle", "summary", "src", "tabs", "tag", "text", "title", "type", "unit",
-    "variant", "values", "viewport", "yes", "zoomable",
+    "options", "orientation", "page-size", "pages", "pause", "paused", "pausable", "persist", "placeholder", "playing", "point", "points", "prev", "prompt", "question", "recent", "required",
+    "quote", "ramp", "refresh", "removable", "reverse", "rings", "retry", "rows", "scale", "selectable", "selected", "separator", "series", "shortcut", "size", "skeleton", "sort", "sort-dir", "speed", "status", "submit", "timeout", "trigger", "virtual",
+    "state", "steps", "subtitle", "summary", "src", "tabs", "tag", "text", "ticks", "title", "type", "unit",
+    "variant", "values", "viewport", "yes", "zoomable", "x", "y",
   ];
 
   export function headingTag(host, fallback = "h3") {

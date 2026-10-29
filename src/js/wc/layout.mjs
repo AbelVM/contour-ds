@@ -1,27 +1,35 @@
 import { ContourBase, define } from './core.mjs';
-class ContourApp extends ContourBase {
+  class ContourApp extends ContourBase {
     static get observed() { return ["title"]; }
     static get properties() { return { title: { attribute: "title" } }; }
     render() {
       this.classList.add("c-app");
+      const header = this.ensure(".c-app__header", () => { const el = document.createElement("header"); el.className = "c-app__header"; return el; });
       const title = this.getAttribute("title");
       if (title) {
         const t = this.ensure(".c-app__title", () => { const el = document.createElement("div"); el.className = "c-app__title"; el.style.padding = "var(--space-md)"; el.style.fontWeight = "var(--weight-semibold)"; return el; });
         t.textContent = title;
+        if (t.parentNode !== header) header.appendChild(t);
       }
+      const main = this.ensure(".c-app__main", () => { const el = document.createElement("main"); el.className = "c-app__main"; return el; });
+      if (main.parentNode !== this) this.appendChild(main);
+      if (header.parentNode !== this) this.insertBefore(header, main);
     }
   }
   define("contour-app", ContourApp);
-class ContourAppBody extends ContourBase {
+  class ContourAppBody extends ContourBase {
     static get observed() { return ["title"]; }
     static get properties() { return { title: { attribute: "title" } }; }
     render() {
       this.classList.add("c-app-body");
+      const main = this.ensure(".c-app-body__main", () => { const el = document.createElement("main"); el.className = "c-app-body__main"; return el; });
       const title = this.getAttribute("title");
       if (title) {
         const t = this.ensure(".c-app-body__title", () => { const el = document.createElement("div"); el.className = "c-app-body__title"; el.style.padding = "var(--space-md)"; return el; });
         t.textContent = title;
+        if (t.parentNode !== main) main.appendChild(t);
       }
+      if (main.parentNode !== this) this.appendChild(main);
     }
   }
   define("contour-app-body", ContourAppBody);
@@ -74,9 +82,9 @@ class ContourBtnGroup extends ContourBase {
     }
   }
   define("contour-btn-group", ContourBtnGroup);
-class ContourRangeScale extends ContourBase {
-    static get observed() { return ["label", "value"]; }
-    static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" } }; }
+  class ContourRangeScale extends ContourBase {
+    static get observed() { return ["label", "value", "ticks"]; }
+    static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" }, ticks: { attribute: "ticks" } }; }
     render() {
       this.classList.add("c-range-scale");
       this.setAttribute("role", "group");
@@ -85,6 +93,17 @@ class ContourRangeScale extends ContourBase {
       if (label) {
         const t = this.ensure(".c-range-scale__label", () => { const el = document.createElement("span"); el.className = "c-range-scale__label"; return el; });
         t.textContent = label;
+      }
+      // Tick marks (G-10): render a tick for each comma-separated value.
+      const ticksAttr = this.getAttribute("ticks");
+      Array.from(this.querySelectorAll(".c-range-scale__tick")).forEach((n) => n.remove());
+      if (ticksAttr) {
+        ticksAttr.split(",").map((s) => s.trim()).filter(Boolean).forEach((tk) => {
+          const t = document.createElement("span");
+          t.className = "c-range-scale__tick";
+          t.textContent = tk;
+          this.appendChild(t);
+        });
       }
     }
     enhance() {
@@ -105,9 +124,9 @@ class ContourRangeScale extends ContourBase {
     }
   }
   define("contour-range-scale", ContourRangeScale);
-class ContourTimeRange extends ContourBase {
-    static get observed() { return ["label", "value"]; }
-    static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" } }; }
+  class ContourTimeRange extends ContourBase {
+    static get observed() { return ["label", "value", "ticks"]; }
+    static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" }, ticks: { attribute: "ticks" } }; }
     render() {
       this.classList.add("c-time-range");
       this.setAttribute("role", "group");
@@ -116,6 +135,16 @@ class ContourTimeRange extends ContourBase {
       if (label) {
         const t = this.ensure(".c-time-range__label", () => { const el = document.createElement("span"); el.className = "c-time-range__label"; return el; });
         t.textContent = label;
+      }
+      const ticksAttr = this.getAttribute("ticks");
+      Array.from(this.querySelectorAll(".c-time-range__tick")).forEach((n) => n.remove());
+      if (ticksAttr) {
+        ticksAttr.split(",").map((s) => s.trim()).filter(Boolean).forEach((tk) => {
+          const t = document.createElement("span");
+          t.className = "c-time-range__tick";
+          t.textContent = tk;
+          this.appendChild(t);
+        });
       }
     }
     enhance() {

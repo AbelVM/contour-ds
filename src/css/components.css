@@ -677,6 +677,7 @@
     border-radius: var(--radius-sm);
     cursor: pointer;
     font-size: var(--type-sm);
+    transition: background-color var(--dur-fast) var(--ease-standard), color var(--dur-fast) var(--ease-standard);
   }
 
   .c-combobox__option:hover,
@@ -1015,6 +1016,8 @@
     contain: strict;
     content-visibility: auto;
     contain-intrinsic-size: auto 500px;
+    mask-image: linear-gradient(to bottom, transparent, #000 1rem, #000 calc(100% - 1rem), transparent);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 1rem, #000 calc(100% - 1rem), transparent);
   }
 
   .c-dot {
@@ -2777,6 +2780,12 @@
   /* =======================================================================
      21. SKELETON & SPINNER & EMPTY STATE
      ======================================================================= */
+  .c-skeleton-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+  }
+
   .c-skeleton {
     block-size: 0.85rem;
     border-radius: var(--radius-xs);
@@ -3388,9 +3397,92 @@
   gap: var(--space-2xs);
   pointer-events: none;
 }
-.c-toast-host > * { pointer-events: auto; }
+  /* -- Dropdown ----------------------------------------------------------- */
+  .c-dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  .c-dropdown__trigger {
+    /* inherits c-btn */
+  }
+  .c-dropdown__menu {
+    position: absolute;
+    inset-block-start: 100%;
+    inset-inline-start: 0;
+    z-index: var(--z-tooltip);
+    margin-block-start: var(--space-2xs);
+  }
+  .c-banner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    border-inline-start: 3px solid var(--color-primary);
+    background: var(--color-surface-2);
+    color: var(--color-text);
+    font-size: var(--type-sm);
+    border-radius: var(--radius-sm);
+  }
+
+  .c-banner--info { border-inline-start-color: var(--color-info); }
+  .c-banner--success { border-inline-start-color: var(--color-success); }
+  .c-banner--warning { border-inline-start-color: var(--color-warning); }
+  .c-banner--danger { border-inline-start-color: var(--color-danger); }
+
+  .c-toast-host > * { pointer-events: auto; }
 
 
+
+  /* -- Animation controls ------------------------------------------------- */
+  .c-animation-controls {
+    display: inline-flex;
+    gap: var(--space-2xs);
+    align-items: center;
+  }
+  .c-animation-controls__play,
+  .c-animation-controls__speed {
+    /* inherits c-btn */
+  }
+  /* -- Style switcher ---------------------------------------------------- */
+  .c-style-switcher {
+    display: inline-flex;
+    gap: var(--space-2xs);
+    flex-wrap: wrap;
+  }
+  .c-style-switcher__option--active {
+    background: var(--color-primary-soft);
+    color: var(--color-primary-text);
+  }
+  .c-annotation {
+    position: absolute;
+    left: var(--annotation-x, 50%);
+    top: var(--annotation-y, 50%);
+    transform: translate(-50%, -100%);
+    padding: var(--space-2xs) var(--space-xs);
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-size: var(--type-xs);
+    box-shadow: var(--shadow-sm);
+    white-space: nowrap;
+  }
+
+  .c-map-popup {
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-md);
+    max-inline-size: 16rem;
+  }
+  .c-map-popup__title {
+    font-weight: var(--weight-semibold);
+    margin-block-end: var(--space-2xs);
+  }
+  .c-map-popup__body {
+    font-size: var(--type-sm);
+    color: var(--color-text-muted);
+  }
 
   /* Per-component disabled treatment (T-154). */
   .c-radio:has(input:disabled),
@@ -3405,7 +3497,6 @@
     cursor: not-allowed;
   }
 
-  /* -- Layout primitives (moved from base layer, T-155) ---------------- */
   .c-row {
     display: flex;
     align-items: center;

@@ -71,14 +71,16 @@ export function donutSlices(values, opts) {
   const total = values.reduce((a, b) => a + (Number(b) || 0), 0) || 1;
   let angle = -Math.PI / 2;
   const out = [];
-  values.forEach((v, i) => {
-    const frac = (Number(v) || 0) / total;
-    const sweep = frac * Math.PI * 2 - gap;
-    const start = angle + gap / 2;
-    const end = start + Math.max(0, sweep);
-    out.push({ path: arcPath(cx, cy, r, inner, start, end), value: Number(v) || 0, index: i });
-    angle += frac * Math.PI * 2;
-  });
+   values.forEach((v, i) => {
+     const num = Number(v) || 0;
+     const frac = num / total;
+     if (!(num > 0)) { angle += frac * Math.PI * 2; return; }
+     const sweep = frac * Math.PI * 2 - gap;
+     const start = angle + gap / 2;
+     const end = start + Math.max(0, sweep);
+     out.push({ path: arcPath(cx, cy, r, inner, start, end), value: num, index: i });
+     angle += frac * Math.PI * 2;
+   });
   return out;
 }
 

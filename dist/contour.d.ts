@@ -8,10 +8,13 @@ export type ContourComponent =
   | "c-affordances"
   | "c-alert"
   | "c-anchor"
+  | "c-animation-controls"
+  | "c-annotation"
   | "c-app"
   | "c-app-body"
   | "c-avatar"
   | "c-badge"
+  | "c-banner"
   | "c-bivariate"
   | "c-box"
   | "c-brand"
@@ -56,6 +59,7 @@ export type ContourComponent =
   | "c-drawer"
   | "c-drop-indicator"
   | "c-drop-zone"
+  | "c-dropdown"
   | "c-elevation"
   | "c-empty"
   | "c-expandable"
@@ -92,6 +96,7 @@ export type ContourComponent =
   | "c-map-area"
   | "c-map-footer"
   | "c-map-panel"
+  | "c-map-popup"
   | "c-map-slot"
   | "c-mark"
   | "c-measure"
@@ -137,12 +142,14 @@ export type ContourComponent =
   | "c-showcase"
   | "c-sidebar"
   | "c-skeleton"
+  | "c-skeleton-group"
   | "c-sparkline"
   | "c-spinner"
   | "c-stack"
   | "c-stat"
   | "c-steps"
   | "c-streaming-chart"
+  | "c-style-switcher"
   | "c-survey"
   | "c-switch"
   | "c-table"
@@ -378,6 +385,8 @@ export type ContourToken =
   | "--color-focus-halo"
   | "--color-selection"
   | "--focus-width"
+  | "--color-tooltip-bg"
+  | "--color-tooltip-fg"
   | "--color-link"
   | "--color-link-hover"
   | "--color-code-bg"
@@ -597,10 +606,13 @@ declare global {
     "contour-affordances": ContourElement;
     "contour-alert": ContourElement;
     "contour-anchor": ContourElement;
+    "contour-animation-controls": ContourElement;
+    "contour-annotation": ContourElement;
     "contour-app": ContourElement;
     "contour-app-body": ContourElement;
     "contour-avatar": ContourElement;
     "contour-badge": ContourElement;
+    "contour-banner": ContourElement;
     "contour-bivariate": ContourElement;
     "contour-box": ContourElement;
     "contour-brand": ContourElement;
@@ -645,6 +657,7 @@ declare global {
     "contour-drawer": ContourElement;
     "contour-drop-indicator": ContourElement;
     "contour-drop-zone": ContourElement;
+    "contour-dropdown": ContourElement;
     "contour-elevation": ContourElement;
     "contour-empty": ContourElement;
     "contour-expandable": ContourElement;
@@ -681,6 +694,7 @@ declare global {
     "contour-map-area": ContourElement;
     "contour-map-footer": ContourElement;
     "contour-map-panel": ContourElement;
+    "contour-map-popup": ContourElement;
     "contour-map-slot": ContourElement;
     "contour-mark": ContourElement;
     "contour-measure": ContourElement;
@@ -888,12 +902,14 @@ declare global {
     "contour-showcase": ContourElement;
     "contour-sidebar": ContourElement;
     "contour-skeleton": ContourElement;
+    "contour-skeleton-group": ContourElement;
     "contour-sparkline": ContourElement;
     "contour-spinner": ContourElement;
     "contour-stack": ContourElement;
     "contour-stat": ContourElement;
     "contour-steps": ContourElement;
     "contour-streaming-chart": ContourElement;
+    "contour-style-switcher": ContourElement;
     "contour-survey": ContourElement;
     "contour-switch": ContourElement;
     "contour-table": ContourElement;

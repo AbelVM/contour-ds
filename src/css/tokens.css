@@ -358,6 +358,10 @@
     --color-selection: light-dark(oklch(92% 0.04 var(--brand-hue)), oklch(28% 0.05 var(--brand-hue)));
     --focus-width: 2px;
 
+    /* -- Tooltip ------------------------------------------------------ */
+    --color-tooltip-bg: light-dark(oklch(26% 0.02 230), oklch(88% 0.014 230));
+    --color-tooltip-fg: light-dark(oklch(97% 0.004 230), oklch(20% 0.018 230));
+
     /* -- Links -------------------------------------------------------- */
     --color-link: light-dark(var(--brand-700), var(--brand-300));
     --color-link-hover: light-dark(var(--brand-800), var(--brand-200));
