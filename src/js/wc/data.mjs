@@ -579,8 +579,8 @@ class ContourTable extends ContourBase {
   }
   define("contour-table", ContourTable);
 class ContourChart extends ContourBase {
-    static get observed() { return ["series", "axis", "empty", "loading", "error", "retry", "skeleton"]; }
-    static get properties() { return { series: { attribute: "series" }, axis: { attribute: "axis" } }; }
+    static get observed() { return ["series", "axis", "empty", "loading", "error", "retry", "skeleton", "zoomable"]; }
+    static get properties() { return { series: { attribute: "series" }, axis: { attribute: "axis" }, zoomable: { attribute: "zoomable", type: Boolean } }; }
     render() {
       this.classList.add("c-chart");
       if (!this.hasAttribute("role")) this.setAttribute("role", "img");
@@ -791,6 +791,36 @@ const series = this.getAttribute("series");
           }
         });
       });
+      // Zoom/pan (F-10 deferred): wheel to zoom, drag to pan, double-click to reset.
+      if (this.hasAttribute("zoomable")) {
+        let zoom = 1, panX = 0, panY = 0;
+        const plot = this.querySelector(".c-chart__plot");
+        const apply = () => {
+          if (!plot) return;
+          plot.style.transform = `translate(${panX}px, ${panY}px) scale(${zoom})`;
+          plot.style.transformOrigin = "center center";
+        };
+        this.addEventListener("wheel", (e) => {
+          e.preventDefault();
+          const factor = e.deltaY < 0 ? 1.1 : 0.9;
+          zoom = Math.min(5, Math.max(0.5, zoom * factor));
+          apply();
+        }, { passive: false });
+        let dragging = false, startX = 0, startY = 0, startPanX = 0, startPanY = 0;
+        this.addEventListener("mousedown", (e) => {
+          if (e.button !== 0) return;
+          dragging = true; startX = e.clientX; startY = e.clientY; startPanX = panX; startPanY = panY;
+          this.style.cursor = "grabbing";
+        });
+        window.addEventListener("mousemove", (e) => {
+          if (!dragging) return;
+          panX = startPanX + (e.clientX - startX);
+          panY = startPanY + (e.clientY - startY);
+          apply();
+        });
+        window.addEventListener("mouseup", () => { if (dragging) { dragging = false; this.style.cursor = ""; } });
+        this.addEventListener("dblclick", () => { zoom = 1; panX = 0; panY = 0; apply(); });
+      }
       // Tooltip: show on hover of a mark.
       // Cache the plot rect across mousemove events: it only changes on
       // resize/scroll, so re-measuring it on every pixel of movement is

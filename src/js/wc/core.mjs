@@ -170,7 +170,7 @@
     "options", "orientation", "page-size", "pages", "pause", "paused", "pausable", "persist", "placeholder", "point", "points", "prev", "prompt", "question", "recent", "required",
     "quote", "ramp", "refresh", "removable", "reverse", "rings", "retry", "rows", "scale", "selectable", "selected", "separator", "series", "shortcut", "size", "skeleton", "sort", "sort-dir", "status", "submit", "timeout", "trigger", "virtual",
     "state", "steps", "subtitle", "summary", "src", "tabs", "tag", "text", "title", "type", "unit",
-    "variant", "values", "viewport", "yes",
+    "variant", "values", "viewport", "yes", "zoomable",
   ];
 
   export function headingTag(host, fallback = "h3") {
