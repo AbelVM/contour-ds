@@ -1,8 +1,8 @@
 import { ContourBase, define, contourId } from './core.mjs';
 import { wireRemovable } from './behaviours.mjs';
 class ContourAvatar extends ContourBase {
-    static get observed() { return ["name", "size", "variant"]; }
-    static get properties() { return { name: { attribute: "name" }, size: { attribute: "size" }, variant: { attribute: "variant" } }; }
+    static get observed() { return ["name", "size", "variant", "src", "status"]; }
+    static get properties() { return { name: { attribute: "name" }, size: { attribute: "size" }, variant: { attribute: "variant" }, src: { attribute: "src" }, status: { attribute: "status" } }; }
     render() {
       this.classList.add("c-avatar");
       Array.from(this.classList).forEach((c) => { if (c.startsWith("c-avatar--")) this.classList.remove(c); });
@@ -11,9 +11,33 @@ class ContourAvatar extends ContourBase {
       if (size) this.classList.add("c-avatar--" + size);
       const variant = this.getAttribute("variant");
       if (variant) this.classList.add("c-avatar--" + variant);
-      if (name) {
+      // Drop previously generated img/status so re-render doesn't stack.
+      const oldImg = this.querySelector("img.c-avatar__img");
+      if (oldImg) oldImg.remove();
+      const oldDot = this.querySelector(".c-avatar__status");
+      if (oldDot) oldDot.remove();
+      const src = this.getAttribute("src");
+      if (src) {
+        this.textContent = "";
+        const img = document.createElement("img");
+        img.className = "c-avatar__img";
+        img.src = src;
+        img.alt = name || "";
+        this.appendChild(img);
+      } else if (name) {
         const initials = name.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2);
+        // Keep initials as text only when no img.
+        if (!this.querySelector("img.c-avatar__img")) {
+          // Remove any stray text nodes? Keep simple: set textContent if no img.
+        }
         this.textContent = initials;
+      }
+      const status = this.getAttribute("status");
+      if (status) {
+        const dot = document.createElement("span");
+        dot.className = "c-avatar__status c-avatar__status--" + status;
+        dot.setAttribute("aria-hidden", "true");
+        this.appendChild(dot);
       }
     }
   }
