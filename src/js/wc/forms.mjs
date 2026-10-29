@@ -390,8 +390,8 @@ class ContourRadio extends ContourBase {
   }
   define("contour-radio", ContourRadio);
   class ContourSelect extends ContourBase {
-    static get observed() { return ["options", "required", "label"]; }
-    static get properties() { return { options: { attribute: "options" }, required: { attribute: "required", type: Boolean }, label: { attribute: "label" } }; }
+    static get observed() { return ["options", "required", "label", "placeholder"]; }
+    static get properties() { return { options: { attribute: "options" }, required: { attribute: "required", type: Boolean }, label: { attribute: "label" }, placeholder: { attribute: "placeholder" } }; }
     static get formAssociated() { return true; }
     render() {
       this.classList.add("c-select");
@@ -405,14 +405,39 @@ class ContourRadio extends ContourBase {
            const select = this.ensure("select.c-select", () => { const el = document.createElement("select"); el.className = "c-select"; return el; });
            select.innerHTML = "";
            const label = this.getAttribute("label");
-           if (label) select.setAttribute("aria-label", label);
-           else if (!select.hasAttribute("aria-label")) select.setAttribute("aria-label", "Select");
-          parsed.forEach((opt) => {
-            const option = document.createElement("option");
-            option.value = typeof opt === "string" ? opt : opt.value;
-            option.textContent = typeof opt === "string" ? opt : opt.label;
-            select.appendChild(option);
-          });
+           if (label) {
+             select.setAttribute("aria-label", label);
+             // Associated label element.
+             let lbl = this.querySelector("label.c-select__label");
+             if (!lbl) { lbl = document.createElement("label"); lbl.className = "c-select__label"; lbl.textContent = label; this.insertBefore(lbl, select); }
+             else lbl.textContent = label;
+           }
+           const placeholder = this.getAttribute("placeholder");
+           if (placeholder) {
+             const ph = document.createElement("option");
+             ph.value = "";
+             ph.textContent = placeholder;
+             ph.disabled = true;
+             ph.selected = true;
+             select.appendChild(ph);
+           }
+           // Group support.
+           const groups = {};
+           parsed.forEach((opt) => {
+             const g = (typeof opt === "object" && opt !== null) ? opt.group : null;
+             if (g) {
+               if (!groups[g]) { groups[g] = document.createElement("optgroup"); groups[g].label = g; select.appendChild(groups[g]); }
+               const option = document.createElement("option");
+               option.value = typeof opt === "string" ? opt : opt.value;
+               option.textContent = typeof opt === "string" ? opt : opt.label;
+               groups[g].appendChild(option);
+             } else {
+               const option = document.createElement("option");
+               option.value = typeof opt === "string" ? opt : opt.value;
+               option.textContent = typeof opt === "string" ? opt : opt.label;
+               select.appendChild(option);
+             }
+           });
           if (select.parentNode !== this) this.appendChild(select);
           this.classList.remove("c-select");
           select.classList.add("c-select");
