@@ -735,3 +735,39 @@ class ContourStyleSwitcher extends ContourBase {
     }
   }
   define("contour-style-switcher", ContourStyleSwitcher);
+
+class ContourStylePanel extends ContourBase {
+    static get observed() { return ["title", "layers"]; }
+    static get properties() { return { title: { attribute: "title" }, layers: { attribute: "layers" } }; }
+    render() {
+      this.classList.add("c-style-panel");
+      const title = this.getAttribute("title");
+      if (title) {
+        const t = this.ensure(".c-style-panel__title", () => { const el = document.createElement("div"); el.className = "c-style-panel__title"; return el; });
+        t.textContent = title;
+      }
+      const layers = this.getAttribute("layers");
+      const body = this.ensure(".c-style-panel__body", () => { const el = document.createElement("div"); el.className = "c-style-panel__body"; return el; });
+      if (layers) {
+        try {
+          const parsed = JSON.parse(layers);
+          body.innerHTML = "";
+          parsed.forEach((l) => {
+            const row = document.createElement("div");
+            row.className = "c-style-panel__row";
+            const name = document.createElement("span");
+            name.className = "c-style-panel__name";
+            name.textContent = typeof l === "string" ? l : (l.name || l.label || "");
+            row.appendChild(name);
+            const input = document.createElement("input");
+            input.type = "color";
+            input.className = "c-style-panel__color";
+            if (typeof l === "object" && l.color) input.value = l.color;
+            row.appendChild(input);
+            body.appendChild(row);
+          });
+        } catch (e) { /* keep existing */ }
+      }
+    }
+  }
+  define("contour-style-panel", ContourStylePanel);

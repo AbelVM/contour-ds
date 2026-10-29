@@ -149,6 +149,7 @@ export type ContourComponent =
   | "c-stat"
   | "c-steps"
   | "c-streaming-chart"
+  | "c-style-panel"
   | "c-style-switcher"
   | "c-survey"
   | "c-switch"
@@ -909,6 +910,7 @@ declare global {
     "contour-stat": ContourElement;
     "contour-steps": ContourElement;
     "contour-streaming-chart": ContourElement;
+    "contour-style-panel": ContourElement;
     "contour-style-switcher": ContourElement;
     "contour-survey": ContourElement;
     "contour-switch": ContourElement;
