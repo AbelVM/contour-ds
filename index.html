@@ -6324,6 +6324,21 @@ means obvious.
                 <code>contour:map-detach</code>) are composed and bubble through shadow hosts. See
                 <code>templates/map.html</code> for a working MapLibre example.
               </p>
+              <pre class="ds-code__pre" style="margin-block-start: var(--space-sm)"><code>// Plain JS — mount Contour chrome on a live MapLibre instance
+const map = new maplibregl.Map({ container: "map", style, center, zoom });
+const area = document.querySelector("contour-map-area");
+area.attachMap(map);                 // store the engine reference
+map.on("moveend", () =&gt; {
+  const vp = area.getViewport();    // { west, south, east, north } or { zoom, center }
+  console.log("viewport", vp);
+});
+area.addEventListener("contour:map-control", (e) =&gt; {
+  console.log("control clicked:", e.detail.control);
+});
+// React — use a ref and attach on mount
+// const ref = useRef(null);
+// useEffect(() =&gt; { if (ref.current) ref.current.attachMap(map); return () =&gt; ref.current?.detachMap(); }, [map]);
+// &lt;contour-map-area ref={ref} /&gt;</code></pre>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -6338,7 +6353,12 @@ means obvious.
                       <div class="ds-code__body">
                         <pre class="ds-code__pre"><code id="ds-code-94">&lt;div class="c-map-area" style="min-block-size: 8rem; border: 1px solid var(--color-border); border-radius: var(--radius-md)"&gt;
   &lt;div data-map role="img" aria-label="Map canvas placeholder"&gt;&lt;/div&gt;
-&lt;/div&gt;</code></pre>
+&lt;/div&gt;
+&lt;pre class="ds-code__pre" style="margin-block-start: var(--space-sm)"&gt;
+  &lt;code&gt;
+    // Plain JS — mount Contour chrome on a live MapLibre instance const map = new maplibregl.Map({ container: "map", style, center, zoom }); const area = document.querySelector("contour-map-area"); area.attachMap(map); // store the engine reference map.on("moveend", () =&gt; { const vp = area.getViewport(); // { west, south, east, north } or { zoom, center } console.log("viewport", vp); }); area.addEventListener("contour:map-control", (e) =&gt; { console.log("control clicked:", e.detail.control); }); // React — use a ref and attach on mount // const ref = useRef(null); // useEffect(() =&gt; { if (ref.current) ref.current.attachMap(map); return () =&gt; ref.current?.detachMap(); }, [map]); // &lt;contour-map-area ref={ref} /&gt;
+  &lt;/code&gt;
+&lt;/pre&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
