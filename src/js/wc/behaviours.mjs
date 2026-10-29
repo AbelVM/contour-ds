@@ -754,12 +754,29 @@ export function wirePagination(host) {
       try { const url = new URL(window.location.href); url.searchParams.set("c-pagination", String(page)); window.history.replaceState(null, "", url.toString()); } catch (e) {}
     }
   };
-  wcListen(host, "click", (e) => {
-    const btn = wcClosest(host, e.target, ".c-pagination__link");
-    if (!btn) return;
-    e.preventDefault();
-    activate(btn);
-  });
+   wcListen(host, "click", (e) => {
+     const btn = wcClosest(host, e.target, ".c-pagination__link");
+     if (!btn) return;
+     e.preventDefault();
+     const action = btn.getAttribute("data-action");
+     if (action === "prev" || action === "next") {
+       const links = wcAll(host, ".c-pagination__link").filter((b) => !b.getAttribute("data-action"));
+       const cur = links.find((b) => b.getAttribute("aria-current") === "page");
+       const curPage = cur ? (parseInt(cur.textContent, 10) || 1) : 1;
+       const page = action === "prev" ? Math.max(1, curPage - 1) : Math.min(links.length, curPage + 1);
+       const target = links.find((b) => parseInt(b.textContent, 10) === page);
+       if (target) { activate(target); return; }
+     }
+     activate(btn);
+   });
+       wcEmit(host, "contour:page", { page });
+       if (host.getAttribute("persist") === "storage" && host.id) {
+         try { localStorage.setItem("contour-pagination:" + host.id, String(page)); } catch (e) {}
+       } else if (host.getAttribute("persist") === "url") {
+         try { const url = new URL(window.location.href); url.searchParams.set("c-pagination", String(page)); window.history.replaceState(null, "", url.toString()); } catch (e) {}
+       }
+     }
+   });
   wcListen(host, "keydown", (e) => {
     const btn = wcClosest(host, e.target, ".c-pagination__link");
     if (!btn) return;

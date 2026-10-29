@@ -515,6 +515,14 @@ class ContourPagination extends ContourBase {
         if (!Number.isFinite(count) || count < 1) {
           try { const p = JSON.parse(pages); if (Array.isArray(p)) count = p.length; } catch (e) {}
         }
+        // Prev button.
+        const prev = document.createElement("button");
+        prev.type = "button";
+        prev.className = "c-pagination__link c-pagination__prev";
+        prev.setAttribute("data-action", "prev");
+        prev.textContent = "‹";
+        prev.setAttribute("aria-label", "Previous page");
+        this.appendChild(prev);
         for (let i = 1; i <= count; i++) {
           const btn = document.createElement("button");
           btn.type = "button";
@@ -525,6 +533,14 @@ class ContourPagination extends ContourBase {
           }
           this.appendChild(btn);
         }
+        // Next button.
+        const next = document.createElement("button");
+        next.type = "button";
+        next.className = "c-pagination__link c-pagination__next";
+        next.setAttribute("data-action", "next");
+        next.textContent = "›";
+        next.setAttribute("aria-label", "Next page");
+        this.appendChild(next);
       } else {
         renderEmpty(this, "pagination");
       }
