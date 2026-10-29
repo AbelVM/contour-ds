@@ -166,7 +166,7 @@
   // Adding one of those back to this list makes that component recurse.
   export const OBSERVED = [
     "action", "actions", "after", "anchor", "answer", "area", "article", "attribution", "attribution-mark", "autoplay", "axis", "axis-x", "axis-y",     "before", "body", "brand", "breakpoint", "cache-key", "canvas", "center", "clearable", "cols", "columns", "color", "command",
-    "cells", "checked", "chrome", "closable", "content", "controls", "copyable", "count", "current", "date", "delta", "demo", "density", "desc", "dir", "direction", "disabled", "dismissible", "divider", "do", "dont", "dot",
+    "cells", "checked", "chrome", "closable", "colors", "content", "controls", "copyable", "count", "current", "date", "delta", "demo", "density", "desc", "dir", "direction", "disabled", "dismissible", "divider", "do", "dont", "dot",
     "empty", "error", "exclusive", "format", "heading", "hint", "href", "icon", "illustration", "index", "instrument", "interval", "items", "key", "layers",
     "label", "lazy", "lede", "legend", "line", "link", "links", "live", "loading", "locale",     "max", "media", "message", "method", "menu", "min", "multiple", "name", "needle", "next", "no", "no-cache", "nodes", "note", "norm",
     "options", "orientation", "page-size", "pages", "pause", "paused", "pausable", "persist", "placeholder", "playing", "point", "points", "prev", "prompt", "question", "recent", "required",

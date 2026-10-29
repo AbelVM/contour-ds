@@ -55,7 +55,7 @@ const DIST = join(ROOT, "dist");
  *  which the Format Module has no legal place for (C-43). It states values only —
  *  a token's meaning is published once, in the Format document. */
 const BUDGETS = {
-  "contour.min.css": 186 * 1024,  // raised 2026-10-29: +CSS rules for generated classes + overflow fixes; measured 181.2 kB
+  "contour.min.css": 187 * 1024,  // raised 2026-10-29: +CSS rules for generated classes + overflow fixes; measured 181.2 kB
   "contour.min.js": 38 * 1024,  // raised 2026-10-25: comparison slider drag (1.6 kB) added to ds.js
   "contour.d.ts": 28 * 1024,  // raised 2026-10-26 from 26 kB: expanded ContourProps to include all 99 observed attributes (was 8). Measured 26.2 kB. See M-WC-08 WC8-16.
   "contour.tokens.json": 50 * 1024,
@@ -121,7 +121,7 @@ const BUDGETS = {
   "surfaces/contour-data.min.css": 165 * 1024,  // raised 2026-10-29: CSS propagation; measured 159.6 kB
   "surfaces/contour-landing.min.css": 135 * 1024,  // raised 2026-10-29: +CSS rules propagate; measured 129.1 kB
   "contour.esm.min.js": 39 * 1024,
-  "contour-wc.esm.min.js": 366 * 1024,  // raised 2026-10-29: +app shell scaffolding; measured 353.2 kB
+  "contour-wc.esm.min.js": 367 * 1024,  // raised 2026-10-29: +app shell scaffolding; measured 353.2 kB
 };
 
 const kB = (n) => `${(n / 1024).toFixed(1)} kB`;

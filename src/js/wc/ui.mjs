@@ -894,3 +894,37 @@ class ContourSplitButton extends ContourBase {
     }
   }
   define("contour-split-button", ContourSplitButton);
+
+class ContourPaletteEditor extends ContourBase {
+    static get observed() { return ["colors"]; }
+    static get properties() { return { colors: { attribute: "colors" } }; }
+    render() {
+      this.classList.add("c-palette-editor");
+      const colors = this.getAttribute("colors");
+      Array.from(this.querySelectorAll(".c-palette-editor__swatch")).forEach((n) => n.remove());
+      if (colors) {
+        try {
+          const parsed = JSON.parse(colors);
+          parsed.forEach((c) => {
+            const sw = document.createElement("button");
+            sw.className = "c-palette-editor__swatch c-swatch";
+            sw.type = "button";
+            sw.style.background = typeof c === "string" ? c : (c.color || c.value || "");
+            sw.setAttribute("aria-label", typeof c === "string" ? c : (c.name || c.label || "color"));
+            this.appendChild(sw);
+          });
+        } catch (e) { /* keep existing */ }
+      }
+    }
+    enhance() {
+      if (this._wiredPaletteEditor) return;
+      this._wiredPaletteEditor = true;
+      this.addEventListener("click", (e) => {
+        const sw = e.target && e.target.closest ? e.target.closest(".c-palette-editor__swatch") : null;
+        if (sw && this.contains(sw)) {
+          this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { color: sw.style.background } }));
+        }
+      });
+    }
+  }
+  define("contour-palette-editor", ContourPaletteEditor);

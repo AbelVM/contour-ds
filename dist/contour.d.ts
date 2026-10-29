@@ -108,6 +108,7 @@ export type ContourComponent =
   | "c-minimap"
   | "c-pager"
   | "c-pagination"
+  | "c-palette-editor"
   | "c-panel"
   | "c-pill"
   | "c-plate"
@@ -712,6 +713,7 @@ declare global {
     "contour-minimap": ContourElement;
     "contour-pager": ContourElement;
     "contour-pagination": ContourElement;
+    "contour-palette-editor": ContourElement;
     "contour-panel": ContourElement;
     "contour-pill": ContourElement;
     "contour-plate": ContourElement;
