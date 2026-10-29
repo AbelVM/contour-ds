@@ -2,7 +2,7 @@ import { ContourBase, define, sanitizeHtml } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 class ContourDocsNav extends ContourBase {
     static get observed() { return ["items", "title", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { items: { attribute: "items" }, title: { attribute: "title" } }; }
+    static get properties() { return { items: { attribute: "items" }, title: { attribute: "title" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-docs-nav");
       this.setAttribute("role", "navigation");

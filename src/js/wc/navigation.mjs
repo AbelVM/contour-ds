@@ -3,7 +3,7 @@ import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from '.
 import { wireMenu, wirePagination, wireTabs, wireTree, wireRemovable } from './behaviours.mjs';
 class ContourMenu extends ContourBase {
     static get observed() { return ["items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { items: { attribute: "items" } }; }
+    static get properties() { return { items: { attribute: "items" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-menu");
       if (!this.hasAttribute("role")) this.setAttribute("role", "menu");
@@ -107,7 +107,7 @@ class ContourMenu extends ContourBase {
 define("contour-menu", ContourMenu);
 class ContourTabs extends ContourBase {
     static get observed() { return ["tabs", "autoplay", "pause", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "persist"]; }
-    static get properties() { return { tabs: { attribute: "tabs" }, autoplay: { attribute: "autoplay", type: Number }, pause: { attribute: "pause", type: Boolean } }; }
+    static get properties() { return { tabs: { attribute: "tabs" }, autoplay: { attribute: "autoplay", type: Number }, pause: { attribute: "pause", type: Boolean }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-tabs");
       wireStates(this);
@@ -318,7 +318,7 @@ class ContourHeader extends ContourBase {
   define("contour-header", ContourHeader);
 class ContourTree extends ContourBase {
     static get observed() { return ["items", "virtual", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "persist"]; }
-    static get properties() { return { items: { attribute: "items" } }; }
+    static get properties() { return { items: { attribute: "items" }, src: { attribute: "src" } }; }
 render() {
        this.classList.add("c-tree");
        // Slot composition wins over the JSON attribute, same as ContourMenu:
@@ -377,7 +377,14 @@ render() {
                   ind.style.inlineSize = (node.indent * 1) + "rem";
                   leaf.appendChild(ind);
                 }
-                leaf.appendChild(document.createTextNode(node.label || node));
+                if (this.hasAttribute("selectable")) {
+                   const cb = document.createElement("input");
+                   cb.type = "checkbox";
+                   cb.className = "c-tree__select";
+                   cb.setAttribute("aria-label", "Select " + (node.label || node));
+                   leaf.insertBefore(cb, leaf.firstChild);
+                 }
+                 leaf.appendChild(document.createTextNode(node.label || node));
                 li.appendChild(leaf);
               }
               ul.appendChild(li);
@@ -411,7 +418,7 @@ render() {
   define("contour-tree", ContourTree);
 class ContourCodeTabs extends ContourBase {
     static get observed() { return ["tabs", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "persist"]; }
-    static get properties() { return { tabs: { attribute: "tabs" } }; }
+    static get properties() { return { tabs: { attribute: "tabs" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-code-tabs");
       wireStates(this);
@@ -464,7 +471,7 @@ class ContourCodeTabs extends ContourBase {
 define("contour-code-tabs", ContourCodeTabs);
 class ContourBreadcrumb extends ContourBase {
     static get observed() { return ["items", "separator", "max", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { items: { attribute: "items" }, separator: { attribute: "separator" }, max: { attribute: "max", type: Number } } };
+    static get properties() { return { items: { attribute: "items" }, separator: { attribute: "separator" }, max: { attribute: "max", type: Number }, src: { attribute: "src" } } };
     render() {
       this.classList.add("c-breadcrumb");
       wireStates(this);
@@ -533,7 +540,7 @@ class ContourBreadcrumb extends ContourBase {
 define("contour-breadcrumb", ContourBreadcrumb);
 class ContourPagination extends ContourBase {
     static get observed() { return ["pages", "current", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "persist"]; }
-    static get properties() { return { pages: { attribute: "pages" }, current: { attribute: "current" } }; }
+    static get properties() { return { pages: { attribute: "pages" }, current: { attribute: "current" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-pagination");
       wireStates(this);
@@ -631,7 +638,7 @@ class ContourPagerFull extends ContourBase {
   define("contour-pager", ContourPagerFull);
 class ContourTocFull extends ContourBase {
     static get observed() { return ["title", "items", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { title: { attribute: "title" }, items: { attribute: "items" } }; }
+    static get properties() { return { title: { attribute: "title" }, items: { attribute: "items" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-toc");
       wireStates(this);
@@ -717,7 +724,7 @@ class ContourTocFull extends ContourBase {
 define("contour-toc", ContourTocFull);
 class ContourFilterBar extends ContourBase {
     static get observed() { return ["label", "divider", "items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { label: { attribute: "label" }, divider: { attribute: "divider" }, items: { attribute: "items" } }; }
+    static get properties() { return { label: { attribute: "label" }, divider: { attribute: "divider" }, items: { attribute: "items" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-filter-bar");
       wireStates(this);
@@ -768,7 +775,7 @@ class ContourFilterBar extends ContourBase {
   define("contour-filter-bar", ContourFilterBar);
   class ContourCommand extends ContourBase {
     static get observed() { return ["placeholder", "items", "recent", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { placeholder: { attribute: "placeholder" }, items: { attribute: "items" }, recent: { attribute: "recent" }, empty: { attribute: "empty" } }; }
+    static get properties() { return { placeholder: { attribute: "placeholder" }, items: { attribute: "items" }, recent: { attribute: "recent" }, empty: { attribute: "empty" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-command");
       if (!this.hasAttribute("popover")) this.setAttribute("popover", "auto");

@@ -4,7 +4,7 @@ import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from '.
 class ContourCombobox extends ContourBase {
     static get observed() { return ["options", "placeholder", "label", "value", "multiple", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "empty", "skeleton"]; }
     static get formAssociated() { return true; }
-    static get properties() { return { options: { attribute: "options" }, placeholder: { attribute: "placeholder" }, label: { attribute: "label" }, value: { attribute: "value" }, multiple: { attribute: "multiple", type: Boolean } }; }
+    static get properties() { return { options: { attribute: "options" }, placeholder: { attribute: "placeholder" }, label: { attribute: "label" }, value: { attribute: "value" }, multiple: { attribute: "multiple", type: Boolean }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-combobox");
       wireStates(this);
@@ -634,7 +634,7 @@ class ContourInputGroup extends ContourBase {
   define("contour-input-group", ContourInputGroup);
 class ContourRadioList extends ContourBase {
     static get observed() { return ["items", "name", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { items: { attribute: "items" }, name: { attribute: "name" } }; }
+    static get properties() { return { items: { attribute: "items" }, name: { attribute: "name" }, src: { attribute: "src" } }; }
     static get formAssociated() { return true; }
     render() {
       this.classList.add("c-radio-list");

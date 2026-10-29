@@ -57,7 +57,7 @@ class ContourFeature extends ContourBase {
   define("contour-feature", ContourFeature);
 class ContourSteps extends ContourBase {
     static get observed() { return ["steps", "current", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { steps: { attribute: "steps" }, current: { attribute: "current", type: Number } }; }
+    static get properties() { return { steps: { attribute: "steps" }, current: { attribute: "current", type: Number }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-steps");
       this.setAttribute("role", "list");
@@ -419,7 +419,7 @@ class ContourTestimonialFull extends ContourBase {
   define("contour-testimonial", ContourTestimonialFull);
 class ContourShowcaseFull extends ContourBase {
     static get observed() { return ["title", "text", "media", "reverse", "items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { title: { attribute: "title" }, text: { attribute: "text" }, media: { attribute: "media" }, reverse: { attribute: "reverse" }, items: { attribute: "items" } }; }
+    static get properties() { return { title: { attribute: "title" }, text: { attribute: "text" }, media: { attribute: "media" }, reverse: { attribute: "reverse" }, items: { attribute: "items" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-showcase");
       if (this.hasAttribute("reverse")) this.classList.add("c-showcase--reverse");
@@ -545,7 +545,7 @@ class ContourLogosFull extends ContourBase {
   define("contour-logos", ContourLogosFull);
 class ContourLandingFeaturesFull extends ContourBase {
     static get observed() { return ["items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { items: { attribute: "items" } }; }
+    static get properties() { return { items: { attribute: "items" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-landing-features");
       wireStates(this);

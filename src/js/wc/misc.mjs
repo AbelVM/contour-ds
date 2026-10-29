@@ -26,7 +26,7 @@ class ContourThemeScopeFull extends ContourBase {
   define("contour-theme-scope", ContourThemeScopeFull);
 class ContourActivity extends ContourBase {
     static get observed() { return ["items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { items: { attribute: "items" } }; }
+    static get properties() { return { items: { attribute: "items" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-activity");
       this.setAttribute("role", "list");

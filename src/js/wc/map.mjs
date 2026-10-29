@@ -1,9 +1,78 @@
 import { ContourBase, define, onDispose, formatValue } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { compassNeedle, scaleBarTicks } from './svg.mjs';
+
+// Shared tooltip + roving + select wiring for the map components that render a
+// grid of items (hexbin cells, flow-map nodes, isochrone rings). Extracted from
+// three near-identical copies (D-13) so the behaviour cannot drift apart again.
+function wireMapItems(host, itemSelector, tooltipClass) {
+  if (host._wiredMapItems) return;
+  host._wiredMapItems = true;
+  const items = () => Array.from(host.querySelectorAll(itemSelector));
+  const showTip = (e) => {
+    const tip = host.querySelector(tooltipClass);
+    if (!tip) return;
+    const item = e && e.target && typeof e.target.closest === "function" ? e.target.closest(itemSelector) : null;
+    if (!item || !host.contains(item)) { tip.setAttribute("hidden", ""); return; }
+    const title = item.getAttribute("title");
+    if (title) tip.textContent = title;
+    const rect = host.getBoundingClientRect();
+    const ir = item.getBoundingClientRect();
+    tip.style.setProperty("--chart-tip-inline-start", (ir.left - rect.left + ir.width / 2) + "px");
+    tip.style.setProperty("--chart-tip-block-start", (ir.top - rect.top) + "px");
+    tip.removeAttribute("hidden");
+  };
+  const hideTip = () => {
+    const tip = host.querySelector(tooltipClass);
+    if (tip) tip.setAttribute("hidden", "");
+  };
+  host.addEventListener("mouseover", showTip);
+  host.addEventListener("mouseout", (e) => { if (!e.relatedTarget || !host.contains(e.relatedTarget)) hideTip(); });
+  host.addEventListener("focusin", (e) => {
+    const item = e && e.target && typeof e.target.closest === "function" ? e.target.closest(itemSelector) : null;
+    if (item && host.contains(item)) showTip({ target: item });
+  });
+  host.addEventListener("focusout", (e) => { if (!host.contains(e.relatedTarget)) hideTip(); });
+  host.addEventListener("click", (e) => {
+    const item = e && e.target && typeof e.target.closest === "function" ? e.target.closest(itemSelector) : null;
+    if (!item || !host.contains(item)) return;
+    const all = items();
+    const index = all.indexOf(item);
+    if (index < 0) return;
+    host.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index, label: item.getAttribute("title") || item.textContent.trim() } }));
+  });
+  host.addEventListener("keydown", (e) => {
+    const item = e && e.target && typeof e.target.closest === "function" ? e.target.closest(itemSelector) : null;
+    if (!item || !host.contains(item)) return;
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      const all = items();
+      const index = all.indexOf(item);
+      if (index < 0) return;
+      host.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index, label: item.getAttribute("title") || item.textContent.trim() } }));
+    }
+    // Roving tabindex keyboard nav.
+    const all = items();
+    const idx = all.indexOf(item);
+    if (idx < 0) return;
+    let next = -1;
+    const rtl = (host.getAttribute("dir") || document.documentElement.getAttribute("dir") || "").toLowerCase() === "rtl";
+    if (e.key === "ArrowDown") next = Math.min(idx + 1, all.length - 1);
+    else if (e.key === "ArrowUp") next = Math.max(idx - 1, 0);
+    else if (e.key === "ArrowRight") next = rtl ? Math.max(idx - 1, 0) : Math.min(idx + 1, all.length - 1);
+    else if (e.key === "ArrowLeft") next = rtl ? Math.min(idx + 1, all.length - 1) : Math.max(idx - 1, 0);
+    else if (e.key === "Home") next = 0;
+    else if (e.key === "End") next = all.length - 1;
+    if (next < 0 || next === idx) return;
+    e.preventDefault();
+    all.forEach((c, i) => c.setAttribute("tabindex", i === next ? "0" : "-1"));
+    try { all[next].focus(); } catch (err) {}
+  });
+}
+
 class ContourMinimap extends ContourBase {
     static get observed() { return ["label", "viewport", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { label: { attribute: "label" }, viewport: { attribute: "viewport" } }; }
+    static get properties() { return { label: { attribute: "label" }, viewport: { attribute: "viewport" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-minimap");
       wireStates(this);
@@ -34,7 +103,7 @@ class ContourMinimap extends ContourBase {
 define("contour-minimap", ContourMinimap);
 class ContourCoordinate extends ContourBase {
     static get observed() { return ["value", "format", "locale", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { value: { attribute: "value" }, format: { attribute: "format" }, locale: { attribute: "locale" } }; }
+    static get properties() { return { value: { attribute: "value" }, format: { attribute: "format" }, locale: { attribute: "locale" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-coordinate");
       wireStates(this);
@@ -52,7 +121,7 @@ class ContourCoordinate extends ContourBase {
 define("contour-coordinate", ContourCoordinate);
 class ContourLayerPanel extends ContourBase {
     static get observed() { return ["label", "items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { label: { attribute: "label" }, items: { attribute: "items" } }; }
+    static get properties() { return { label: { attribute: "label" }, items: { attribute: "items" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-layer-panel");
       wireStates(this);
@@ -130,7 +199,7 @@ class ContourLayerPanel extends ContourBase {
 define("contour-layer-panel", ContourLayerPanel);
 class ContourTimeSlider extends ContourBase {
     static get observed() { return ["label", "value"]; }
-    static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" } }; }
+    static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-time-slider");
       const play = this.ensure(".c-time-slider__play", () => {
@@ -205,7 +274,7 @@ class ContourTimeSlider extends ContourBase {
   define("contour-time-slider", ContourTimeSlider);
 class ContourHexbin extends ContourBase {
     static get observed() { return ["label", "cells", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { label: { attribute: "label" }, cells: { attribute: "cells" } }; }
+    static get properties() { return { label: { attribute: "label" }, cells: { attribute: "cells" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-hexbin");
       const label = this.getAttribute("label") || (this._remoteData && this._remoteData.label);
@@ -244,89 +313,16 @@ class ContourHexbin extends ContourBase {
         renderEmpty(this, "hexbin");
       }
      }
-    enhance() {
-      if (this._wiredHexbin) return;
-      this._wiredHexbin = true;
-      // Per-event re-query (rule 12): the tip is rebuilt on every render, so a
-      // capture at wiring time is a detached node after the first change.
-      const showTip = (e) => {
-        const tip = this.querySelector(".c-hexbin__tooltip");
-        if (!tip) return;
-        const cell = e.target && e.target.closest ? e.target.closest(".c-hexbin__cell") : null;
-        if (!cell || !this.contains(cell)) { tip.setAttribute("hidden", ""); return; }
-        const title = cell.getAttribute("title");
-        if (title) tip.textContent = title;
-        const rect = this.getBoundingClientRect();
-        const cr = cell.getBoundingClientRect();
-        // Logical positioning (BY-48): the --chart-tip-* token contract shared
-        // with the chart tooltip, so the tip follows in RTL instead of being
-        // measured from the physical left edge of the host.
-        tip.style.setProperty("--chart-tip-inline-start", (cr.left - rect.left + cr.width / 2) + "px");
-        tip.style.setProperty("--chart-tip-block-start", (cr.top - rect.top) + "px");
-        tip.removeAttribute("hidden");
-      };
-      const hideTip = () => {
-        const tip = this.querySelector(".c-hexbin__tooltip");
-        if (tip) tip.setAttribute("hidden", "");
-      };
-      this.addEventListener("mouseover", showTip);
-      this.addEventListener("mouseout", (e) => {
-        if (!e.relatedTarget || !this.contains(e.relatedTarget)) hideTip();
-      });
-      // Keyboard path (BY-39): the cells now carry roving tabindex.
-      this.addEventListener("focusin", (e) => {
-        const cell = e.target && e.target.closest ? e.target.closest(".c-hexbin__cell") : null;
-        if (cell && this.contains(cell)) showTip({ target: cell });
-      });
-       this.addEventListener("focusout", (e) => {
-         if (!this.contains(e.relatedTarget)) hideTip();
-       });
-       // Emit contour:select on click/activation (D-19), parity with heatmap.
-       this.addEventListener("click", (e) => {
-         const cell = e.target && e.target.closest ? e.target.closest(".c-hexbin__cell") : null;
-         if (!cell || !this.contains(cell)) return;
-         const cells = Array.from(this.querySelectorAll(".c-hexbin__cell"));
-         const index = cells.indexOf(cell);
-         if (index < 0) return;
-         this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index, label: cell.getAttribute("title") || cell.textContent.trim() } }));
-       });
-       this.addEventListener("keydown", (e) => {
-         const cell = e.target && e.target.closest ? e.target.closest(".c-hexbin__cell") : null;
-         if (!cell || !this.contains(cell)) return;
-         if (e.key === "Enter" || e.key === " ") {
-           e.preventDefault();
-           const cells = Array.from(this.querySelectorAll(".c-hexbin__cell"));
-           const index = cells.indexOf(cell);
-           if (index < 0) return;
-           this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index, label: cell.getAttribute("title") || cell.textContent.trim() } }));
-         }
-       });
-       // Roving tabindex keyboard nav (B3-16) for hexbin cells.
-      this.addEventListener("keydown", (e) => {
-        const cell = e.target && e.target.closest ? e.target.closest(".c-hexbin__cell") : null;
-        if (!cell || !this.contains(cell)) return;
-        const cells = Array.from(this.querySelectorAll(".c-hexbin__cell"));
-        const idx = cells.indexOf(cell);
-        if (idx < 0) return;
-        let next = -1;
-        const rtl = (this.getAttribute("dir") || document.documentElement.getAttribute("dir") || "").toLowerCase() === "rtl";
-        if (e.key === "ArrowDown") next = Math.min(idx + 1, cells.length - 1);
-        else if (e.key === "ArrowUp") next = Math.max(idx - 1, 0);
-        else if (e.key === "ArrowRight") next = rtl ? Math.max(idx - 1, 0) : Math.min(idx + 1, cells.length - 1);
-        else if (e.key === "ArrowLeft") next = rtl ? Math.min(idx + 1, cells.length - 1) : Math.max(idx - 1, 0);
-        else if (e.key === "Home") next = 0;
-        else if (e.key === "End") next = cells.length - 1;
-        if (next < 0 || next === idx) return;
-        e.preventDefault();
-        cells.forEach((c, i) => c.setAttribute("tabindex", i === next ? "0" : "-1"));
-        try { cells[next].focus(); } catch (err) {}
-      });
-    }
+     enhance() {
+       if (this._wiredHexbin) return;
+       this._wiredHexbin = true;
+       wireMapItems(this, ".c-hexbin__cell", ".c-hexbin__tooltip");
+     }
   }
 define("contour-hexbin", ContourHexbin);
 class ContourFlowMap extends ContourBase {
     static get observed() { return ["label", "nodes", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { label: { attribute: "label" }, nodes: { attribute: "nodes" } }; }
+    static get properties() { return { label: { attribute: "label" }, nodes: { attribute: "nodes" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-flow-map");
       const label = this.getAttribute("label") || (this._remoteData && this._remoteData.label);
@@ -362,87 +358,16 @@ class ContourFlowMap extends ContourBase {
         renderEmpty(this, "flow-map");
       }
      }
-    enhance() {
-      if (this._wiredFlowMap) return;
-      this._wiredFlowMap = true;
-      // Per-event re-query (rule 12): the tip is rebuilt on every render, so a
-      // capture at wiring time is a detached node after the first change.
-      const showTip = (e) => {
-        const tip = this.querySelector(".c-flow-map__tooltip");
-        if (!tip) return;
-        const node = e.target && e.target.closest ? e.target.closest(".c-flow-map__node") : null;
-        if (!node || !this.contains(node)) { tip.setAttribute("hidden", ""); return; }
-        const title = node.getAttribute("title");
-        if (title) tip.textContent = title;
-        const rect = this.getBoundingClientRect();
-        const nr = node.getBoundingClientRect();
-        // Logical positioning (BY-48): token contract, RTL-safe like the rest.
-        tip.style.setProperty("--chart-tip-inline-start", (nr.left - rect.left + nr.width / 2) + "px");
-        tip.style.setProperty("--chart-tip-block-start", (nr.top - rect.top) + "px");
-        tip.removeAttribute("hidden");
-      };
-      const hideTip = () => {
-        const tip = this.querySelector(".c-flow-map__tooltip");
-        if (tip) tip.setAttribute("hidden", "");
-      };
-      this.addEventListener("mouseover", showTip);
-      this.addEventListener("mouseout", (e) => {
-        if (!e.relatedTarget || !this.contains(e.relatedTarget)) hideTip();
-      });
-      // Keyboard path (BY-39): the nodes now carry roving tabindex.
-      this.addEventListener("focusin", (e) => {
-        const node = e.target && e.target.closest ? e.target.closest(".c-flow-map__node") : null;
-        if (node && this.contains(node)) showTip({ target: node });
-      });
-       this.addEventListener("focusout", (e) => {
-         if (!this.contains(e.relatedTarget)) hideTip();
-       });
-       // Emit contour:select on click/activation (D-19), parity with heatmap.
-       this.addEventListener("click", (e) => {
-         const node = e.target && e.target.closest ? e.target.closest(".c-flow-map__node") : null;
-         if (!node || !this.contains(node)) return;
-         const nodes = Array.from(this.querySelectorAll(".c-flow-map__node"));
-         const index = nodes.indexOf(node);
-         if (index < 0) return;
-         this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index, label: node.getAttribute("title") || node.textContent.trim() } }));
-       });
-       this.addEventListener("keydown", (e) => {
-         const node = e.target && e.target.closest ? e.target.closest(".c-flow-map__node") : null;
-         if (!node || !this.contains(node)) return;
-         if (e.key === "Enter" || e.key === " ") {
-           e.preventDefault();
-           const nodes = Array.from(this.querySelectorAll(".c-flow-map__node"));
-           const index = nodes.indexOf(node);
-           if (index < 0) return;
-           this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index, label: node.getAttribute("title") || node.textContent.trim() } }));
-         }
-       });
-       // Roving tabindex keyboard nav (B3-16) for flow-map nodes.
-      this.addEventListener("keydown", (e) => {
-        const node = e.target && e.target.closest ? e.target.closest(".c-flow-map__node") : null;
-        if (!node || !this.contains(node)) return;
-        const nodes = Array.from(this.querySelectorAll(".c-flow-map__node"));
-        const idx = nodes.indexOf(node);
-        if (idx < 0) return;
-        let next = -1;
-        const rtl = (this.getAttribute("dir") || document.documentElement.getAttribute("dir") || "").toLowerCase() === "rtl";
-        if (e.key === "ArrowDown") next = Math.min(idx + 1, nodes.length - 1);
-        else if (e.key === "ArrowUp") next = Math.max(idx - 1, 0);
-        else if (e.key === "ArrowRight") next = rtl ? Math.max(idx - 1, 0) : Math.min(idx + 1, nodes.length - 1);
-        else if (e.key === "ArrowLeft") next = rtl ? Math.min(idx + 1, nodes.length - 1) : Math.max(idx - 1, 0);
-        else if (e.key === "Home") next = 0;
-        else if (e.key === "End") next = nodes.length - 1;
-        if (next < 0 || next === idx) return;
-        e.preventDefault();
-        nodes.forEach((n, i) => n.setAttribute("tabindex", i === next ? "0" : "-1"));
-        try { nodes[next].focus(); } catch (err) {}
-      });
-    }
-  }
+     enhance() {
+       if (this._wiredFlowMap) return;
+       this._wiredFlowMap = true;
+       wireMapItems(this, ".c-flow-map__node", ".c-flow-map__tooltip");
+     }
+   }
 define("contour-flow-map", ContourFlowMap);
 class ContourIsochrone extends ContourBase {
     static get observed() { return ["label", "center", "rings", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { label: { attribute: "label" }, center: { attribute: "center" }, rings: { attribute: "rings" } }; }
+    static get properties() { return { label: { attribute: "label" }, center: { attribute: "center" }, rings: { attribute: "rings" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-isochrone");
       const label = this.getAttribute("label") || (this._remoteData && this._remoteData.label);
@@ -485,89 +410,16 @@ class ContourIsochrone extends ContourBase {
          renderEmpty(this, "isochrone");
        }
      }
-    enhance() {
-      if (this._wiredIsochrone) return;
-      this._wiredIsochrone = true;
-      // Per-event re-query (rule 12): the tip is rebuilt on every render, so a
-      // capture at wiring time is a detached node after the first change.
-      const showTip = (e) => {
-        const tip = this.querySelector(".c-isochrone__tooltip");
-        if (!tip) return;
-        const ring = e.target && e.target.closest ? e.target.closest(".c-isochrone__ring") : null;
-        if (!ring || !this.contains(ring)) { tip.setAttribute("hidden", ""); return; }
-        const title = ring.getAttribute("title");
-        if (title) tip.textContent = title;
-        const rect = this.getBoundingClientRect();
-        const rr = ring.getBoundingClientRect();
-        // Logical positioning (BY-48): the --chart-tip-* token contract shared
-        // with the chart tooltip, so the tip follows in RTL instead of being
-        // measured from the physical left edge of the host.
-        tip.style.setProperty("--chart-tip-inline-start", (rr.left - rect.left + rr.width / 2) + "px");
-        tip.style.setProperty("--chart-tip-block-start", (rr.top - rect.top) + "px");
-        tip.removeAttribute("hidden");
-      };
-      const hideTip = () => {
-        const tip = this.querySelector(".c-isochrone__tooltip");
-        if (tip) tip.setAttribute("hidden", "");
-      };
-      this.addEventListener("mouseover", showTip);
-      this.addEventListener("mouseout", (e) => {
-        if (!e.relatedTarget || !this.contains(e.relatedTarget)) hideTip();
-      });
-      // Keyboard path (BY-39): the rings now carry roving tabindex.
-      this.addEventListener("focusin", (e) => {
-        const ring = e.target && e.target.closest ? e.target.closest(".c-isochrone__ring") : null;
-        if (ring && this.contains(ring)) showTip({ target: ring });
-      });
-       this.addEventListener("focusout", (e) => {
-         if (!this.contains(e.relatedTarget)) hideTip();
-       });
-       // Emit contour:select on click/activation (D-19), parity with heatmap.
-       this.addEventListener("click", (e) => {
-         const ring = e.target && e.target.closest ? e.target.closest(".c-isochrone__ring") : null;
-         if (!ring || !this.contains(ring)) return;
-         const rings = Array.from(this.querySelectorAll(".c-isochrone__ring"));
-         const index = rings.indexOf(ring);
-         if (index < 0) return;
-         this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index, label: ring.getAttribute("title") || ring.textContent.trim() } }));
-       });
-       this.addEventListener("keydown", (e) => {
-         const ring = e.target && e.target.closest ? e.target.closest(".c-isochrone__ring") : null;
-         if (!ring || !this.contains(ring)) return;
-         if (e.key === "Enter" || e.key === " ") {
-           e.preventDefault();
-           const rings = Array.from(this.querySelectorAll(".c-isochrone__ring"));
-           const index = rings.indexOf(ring);
-           if (index < 0) return;
-           this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index, label: ring.getAttribute("title") || ring.textContent.trim() } }));
-         }
-       });
-       // Roving tabindex keyboard nav (B3-16) for isochrone rings.
-      this.addEventListener("keydown", (e) => {
-        const ring = e.target && e.target.closest ? e.target.closest(".c-isochrone__ring") : null;
-        if (!ring || !this.contains(ring)) return;
-        const rings = Array.from(this.querySelectorAll(".c-isochrone__ring"));
-        const idx = rings.indexOf(ring);
-        if (idx < 0) return;
-        let next = -1;
-        const rtl = (this.getAttribute("dir") || document.documentElement.getAttribute("dir") || "").toLowerCase() === "rtl";
-        if (e.key === "ArrowDown") next = Math.min(idx + 1, rings.length - 1);
-        else if (e.key === "ArrowUp") next = Math.max(idx - 1, 0);
-        else if (e.key === "ArrowRight") next = rtl ? Math.max(idx - 1, 0) : Math.min(idx + 1, rings.length - 1);
-        else if (e.key === "ArrowLeft") next = rtl ? Math.min(idx + 1, rings.length - 1) : Math.max(idx - 1, 0);
-        else if (e.key === "Home") next = 0;
-        else if (e.key === "End") next = rings.length - 1;
-        if (next < 0 || next === idx) return;
-        e.preventDefault();
-        rings.forEach((r, i) => r.setAttribute("tabindex", i === next ? "0" : "-1"));
-        try { rings[next].focus(); } catch (err) {}
-      });
-    }
-  }
+     enhance() {
+       if (this._wiredIsochrone) return;
+       this._wiredIsochrone = true;
+       wireMapItems(this, ".c-isochrone__ring", ".c-isochrone__tooltip");
+     }
+   }
 define("contour-isochrone", ContourIsochrone);
 class ContourCatchment extends ContourBase {
     static get observed() { return ["label", "area", "center", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { label: { attribute: "label" }, area: { attribute: "area" }, center: { attribute: "center" } }; }
+    static get properties() { return { label: { attribute: "label" }, area: { attribute: "area" }, center: { attribute: "center" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-catchment");
       const label = this.getAttribute("label") || (this._remoteData && this._remoteData.label);
@@ -633,7 +485,7 @@ class ContourCatchment extends ContourBase {
 define("contour-catchment", ContourCatchment);
 class ContourCompassFull extends ContourBase {
     static get observed() { return ["label", "needle", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { label: { attribute: "label" }, needle: { attribute: "needle" } }; }
+    static get properties() { return { label: { attribute: "label" }, needle: { attribute: "needle" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-compass");
       const label = this.getAttribute("label") || (this._remoteData && this._remoteData.label);
@@ -718,7 +570,7 @@ class ContourCompassFull extends ContourBase {
 define("contour-compass", ContourCompassFull);
 class ContourLayerSwitch extends ContourBase {
     static get observed() { return ["items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { items: { attribute: "items" } }; }
+    static get properties() { return { items: { attribute: "items" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-layer-switch");
       wireStates(this);
@@ -902,7 +754,7 @@ class ContourMapFooter extends ContourBase {
   define("contour-map-footer", ContourMapFooter);
 class ContourScaleBar extends ContourBase {
     static get observed() { return ["label", "value", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" } }; }
+    static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-scale-bar");
       wireStates(this);

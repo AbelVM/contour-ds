@@ -554,6 +554,66 @@ export function wireTree(host) {
   });
 
   if (!wcClaim(host, "tree")) return;
+  // Checkbox selection (F-08): track checked nodes and emit contour:select.
+  host._selectedTree = host._selectedTree || new Set();
+  let lastTreeIndex = -1;
+  wcListen(host, "change", (e) => {
+    const cb = e.target && e.target.closest ? e.target.closest(".c-tree__select") : null;
+    if (!cb || !host.contains(cb)) return;
+    const cbs = Array.from(host.querySelectorAll(".c-tree__select"));
+    const idx = cbs.indexOf(cb);
+    const label = (cb.parentElement && cb.parentElement.textContent || "").trim().slice(0, 120);
+    if (e.shiftKey && lastTreeIndex >= 0) {
+      const from = Math.min(lastTreeIndex, idx);
+      const to = Math.max(lastTreeIndex, idx);
+      for (let i = from; i <= to; i++) {
+        cbs[i].checked = cb.checked;
+        const lbl = (cbs[i].parentElement && cbs[i].parentElement.textContent || "").trim().slice(0, 120);
+        if (cb.checked) host._selectedTree.add(lbl); else host._selectedTree.delete(lbl);
+      }
+    } else if (!e.ctrlKey && !e.metaKey) {
+      // single select: clear others unless ctrl
+      if (cb.checked) {
+        cbs.forEach((c, i) => {
+          if (i !== idx && c.checked) {
+            c.checked = false;
+            const lbl = (c.parentElement && c.parentElement.textContent || "").trim().slice(0, 120);
+            host._selectedTree.delete(lbl);
+          }
+        });
+      }
+      if (cb.checked) host._selectedTree.add(label); else host._selectedTree.delete(label);
+    } else {
+      if (cb.checked) host._selectedTree.add(label); else host._selectedTree.delete(label);
+    }
+    lastTreeIndex = idx;
+    wcEmit(host, "contour:select", { labels: Array.from(host._selectedTree) });
+  });
+  // Drag-and-drop (F-08): nodes are draggable; drop emits contour:move.
+  wcAll(host, ".c-tree__node, .c-tree__leaf").forEach((n) => { if (!n.hasAttribute("draggable")) n.setAttribute("draggable", "true"); });
+  let dragLabel = null;
+  wcListen(host, "dragstart", (e) => {
+    const node = wcClosest(host, e.target, ".c-tree__node, .c-tree__leaf");
+    if (!node) return;
+    dragLabel = (node.textContent || "").trim().slice(0, 120);
+    if (e.dataTransfer) { e.dataTransfer.effectAllowed = "move"; try { e.dataTransfer.setData("text/plain", dragLabel); } catch (err) {} }
+  });
+  wcListen(host, "dragover", (e) => {
+    const node = wcClosest(host, e.target, ".c-tree__node, .c-tree__leaf");
+    if (!node) return;
+    e.preventDefault();
+    if (e.dataTransfer) e.dataTransfer.dropEffect = "move";
+  });
+  wcListen(host, "drop", (e) => {
+    const node = wcClosest(host, e.target, ".c-tree__node, .c-tree__leaf");
+    if (!node || !dragLabel) return;
+    e.preventDefault();
+    const toLabel = (node.textContent || "").trim().slice(0, 120);
+    if (toLabel && toLabel !== dragLabel) {
+      wcEmit(host, "contour:move", { from: dragLabel, to: toLabel });
+    }
+    dragLabel = null;
+  });
   // Expanded-state persistence (BY-49), one path per component like tabs:
   // restore runs once at connect, the write fires from the same handler that
   // emits contour:toggle. Identity is the emitted label — the row's text
@@ -724,19 +784,65 @@ export function wireMenu(host) {
     if (first) first.setAttribute("tabindex", "0");
   }
   if (!wcClaim(host, "menu")) return;
+
+  const submenusOf = (item) => item.querySelector(":scope > ul.c-menu, :scope > .c-menu");
+  const closeAllSubmenus = () => {
+    wcAll(host, "[aria-haspopup='menu']").forEach((it) => it.setAttribute("aria-expanded", "false"));
+  };
+
   wcListen(host, "keydown", (e) => {
     const its = all().filter((it) => it.getAttribute("aria-disabled") !== "true");
     if (!its.length) return;
     const index = its.indexOf(e.target);
+    const target = index >= 0 ? its[index] : null;
+    const sub = target ? submenusOf(target) : null;
+
+    // Submenu open (F-02): ArrowRight / Enter on a haspopup item opens it.
+    if (target && target.getAttribute("aria-haspopup") === "menu" && (e.key === "ArrowRight" || e.key === "Enter" || e.key === " ")) {
+      if (sub) {
+        e.preventDefault();
+        closeAllSubmenus();
+        target.setAttribute("aria-expanded", "true");
+        const firstSub = sub.querySelector("[role='menuitem']");
+        if (firstSub) { firstSub.setAttribute("tabindex", "0"); try { firstSub.focus(); } catch (err) {} }
+        return;
+      }
+    }
+    // Submenu close: ArrowLeft / Escape.
+    if (e.key === "ArrowLeft" || e.key === "Escape") {
+      const parent = target ? target.closest("ul.c-menu") : null;
+      // find the haspopup ancestor item
+      let ancestor = null;
+      if (target) {
+        const ul = target.parentElement && target.parentElement.tagName === "UL" ? target.parentElement : null;
+        // walk up to find a li with aria-haspopup whose submenu contains target
+        let node = target.parentElement;
+        while (node && node !== host) {
+          if (node.getAttribute && node.getAttribute("aria-haspopup") === "menu" && node.contains(target) && node !== target) { ancestor = node; break; }
+          node = node.parentElement;
+        }
+      }
+      if (ancestor) {
+        e.preventDefault();
+        ancestor.setAttribute("aria-expanded", "false");
+        try { ancestor.focus(); } catch (err) {}
+        return;
+      }
+      if (e.key === "Escape") {
+        closeAllSubmenus();
+      }
+    }
+
     let next = -1;
     if (e.key === "ArrowDown") next = index < 0 ? 0 : Math.min(index + 1, its.length - 1);
     else if (e.key === "ArrowUp") next = index < 0 ? its.length - 1 : Math.max(index - 1, 0);
     else if (e.key === "Home") next = 0;
     else if (e.key === "End") next = its.length - 1;
     if (next >= 0) { e.preventDefault(); its[next].focus(); return; }
-    if ((e.key === "Enter" || e.key === " ") && index >= 0) {
+    if ((e.key === "Enter" || e.key === " ") && index >= 0 && !(target && target.getAttribute("aria-haspopup") === "menu")) {
       e.preventDefault();
       wcEmit(host, "contour:select", { index, label: its[index].textContent.trim() });
+      closeAllSubmenus();
     }
     // Typeahead (F-21): printable char jumps to the first item whose label
     // starts with the typed character.
@@ -750,9 +856,20 @@ export function wireMenu(host) {
     const item = wcClosest(host, e.target, "[role='menuitem']");
     if (!item) return;
     if (item.getAttribute("aria-disabled") === "true") return;
+    // Toggle submenu on click for haspopup items.
+    if (item.getAttribute("aria-haspopup") === "menu") {
+      const sub = submenusOf(item);
+      if (sub) {
+        const open = item.getAttribute("aria-expanded") === "true";
+        closeAllSubmenus();
+        item.setAttribute("aria-expanded", open ? "false" : "true");
+        return;
+      }
+    }
     const index = all().indexOf(item);
     if (index >= 0) {
       wcEmit(host, "contour:select", { index, label: item.textContent.trim() });
+      closeAllSubmenus();
       // close-on-select: if the menu is a popover, hide it.
       if (typeof host.hidePopover === "function") { try { host.hidePopover(); } catch (e) {} }
     }
@@ -873,6 +990,22 @@ export function wireRemovable(host) {
     }
     if (wcClosest(host, e.target, "[data-empty-action]")) {
       wcEmit(host, "contour:empty-action", { state: host.getAttribute("state") || "empty" });
+    }
+    const alertClose = wcClosest(host, e.target, ".c-alert__close");
+    if (alertClose) {
+      e.preventDefault();
+      wcEmit(host, "contour:close", {});
+      if (host.shadowRoot ? host.shadowRoot.contains(alertClose) : true) {
+        try { host.remove(); } catch (err) {}
+      }
+      return;
+    }
+    const calloutClose = wcClosest(host, e.target, ".c-callout__close");
+    if (calloutClose) {
+      e.preventDefault();
+      wcEmit(host, "contour:close", {});
+      try { host.remove(); } catch (err) {}
+      return;
     }
   });
 }

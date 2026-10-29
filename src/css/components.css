@@ -2118,6 +2118,18 @@
   /* =======================================================================
      13. DATA TABLE
      ======================================================================= */
+  /* Sticky header (F-09): keep the header visible while scrolling a tall table. */
+  .c-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--color-surface-1);
+  }
+  .c-table--virtual thead th {
+    position: sticky;
+    top: 0;
+  }
+
   .c-table-wrap {
     position: relative;
     overflow-x: auto;

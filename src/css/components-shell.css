@@ -378,6 +378,25 @@
     background: var(--color-border-subtle);
   }
 
+  /* Submenu (F-02): a nested .c-menu inside a haspopup item flies out to the
+     inline-end side and is hidden until aria-expanded="true". */
+  .c-menu__item[aria-haspopup="menu"] {
+    position: relative;
+  }
+  .c-menu__item[aria-haspopup="menu"] > .c-menu,
+  li[aria-haspopup="menu"] > .c-menu {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 100%;
+    margin-inline-start: 0.25rem;
+    display: none;
+    z-index: 10;
+  }
+  .c-menu__item[aria-haspopup="menu"][aria-expanded="true"] > .c-menu,
+  li[aria-haspopup="menu"][aria-expanded="true"] > .c-menu {
+    display: grid;
+  }
+
   .c-menu__label {
     padding: 0.35rem 0.55rem 0.2rem;
     font-family: var(--font-mono);

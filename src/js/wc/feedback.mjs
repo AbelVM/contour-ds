@@ -99,9 +99,9 @@ class ContourDialog extends ContourBase {
   }
   define("contour-dialog", ContourDialog);
 class ContourAlert extends ContourBase {
-    static get observed() { return ["title", "body", "variant", "icon", "closable", "action", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
+    static get observed() { return ["title", "body", "variant", "icon", "closable", "action", "actions", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() {
-      return { title: { attribute: "title" }, body: { attribute: "body" }, variant: { attribute: "variant" }, icon: { attribute: "icon" }, closable: { attribute: "closable", type: Boolean }, action: { attribute: "action" } };
+      return { title: { attribute: "title" }, body: { attribute: "body" }, variant: { attribute: "variant" }, icon: { attribute: "icon" }, closable: { attribute: "closable", type: Boolean }, action: { attribute: "action" }, actions: { attribute: "actions" } };
     }
     render() {
       this.classList.add("c-alert");
@@ -142,20 +142,25 @@ class ContourAlert extends ContourBase {
         const b = this.querySelector(".c-alert__body");
         if (b) b.remove();
       }
-      const action = this.getAttribute("action");
-      if (action) {
-        const a = this.ensure(".c-alert__action", () => {
-          const btn = document.createElement("button");
-          btn.className = "c-btn c-btn--sm c-alert__action";
-          btn.type = "button";
-          btn.setAttribute("data-alert-action", "");
-          return btn;
-        });
-        a.textContent = action;
+      // Remove any previously rendered action buttons so a re-render with a
+      // different `action`/`actions` value does not leave stale buttons behind.
+      Array.from(this.querySelectorAll(".c-alert__action")).forEach((n) => n.remove());
+      const actionsAttr = this.getAttribute("actions");
+      let actionList = [];
+      if (actionsAttr) {
+        try { const parsed = JSON.parse(actionsAttr); if (Array.isArray(parsed)) actionList = parsed.map((x) => String(x)); } catch (e) { actionList = [actionsAttr]; }
       } else {
-        const a = this.querySelector(".c-alert__action");
-        if (a) a.remove();
+        const single = this.getAttribute("action");
+        if (single) actionList = [single];
       }
+      actionList.forEach((label) => {
+        const a = document.createElement("button");
+        a.className = "c-btn c-btn--sm c-alert__action";
+        a.type = "button";
+        a.setAttribute("data-alert-action", "");
+        a.textContent = label;
+        this.appendChild(a);
+      });
       if (this.hasAttribute("closable")) {
         this.ensure(".c-alert__close", () => {
           const btn = document.createElement("button");
@@ -181,7 +186,7 @@ class ContourAlert extends ContourBase {
       const actionBtn = e.target && e.target.closest ? e.target.closest(".c-alert__action") : null;
       if (actionBtn && this.contains(actionBtn)) {
         e.preventDefault();
-        this.dispatchEvent(new CustomEvent("contour:empty-action", { bubbles: true, composed: true, detail: { state: this.getAttribute("action") || "" } }));
+        this.dispatchEvent(new CustomEvent("contour:empty-action", { bubbles: true, composed: true, detail: { state: actionBtn.textContent.trim() } }));
         return;
       }
       const btn = e.target && e.target.closest ? e.target.closest(".c-alert__close") : null;
@@ -396,7 +401,7 @@ class ContourEmpty extends ContourBase {
   define("contour-empty", ContourEmpty);
 class ContourFaq extends ContourBase {
     static get observed() { return ["question", "answer", "items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { question: { attribute: "question" }, answer: { attribute: "answer" }, items: { attribute: "items" } }; }
+    static get properties() { return { question: { attribute: "question" }, answer: { attribute: "answer" }, items: { attribute: "items" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-faq");
       wireStates(this);
@@ -453,7 +458,7 @@ class ContourFaq extends ContourBase {
 define("contour-faq", ContourFaq);
 class ContourAccordion extends ContourBase {
     static get observed() { return ["items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "persist", "exclusive"]; }
-    static get properties() { return { items: { attribute: "items" }, exclusive: { attribute: "exclusive", type: Boolean } }; }
+    static get properties() { return { items: { attribute: "items" }, exclusive: { attribute: "exclusive", type: Boolean }, src: { attribute: "src" } }; }
     render() {
       // The host is a plain container; the children carry .c-disclosure, which
       // is the block that owns the styling. No .c-accordion rule exists, so the

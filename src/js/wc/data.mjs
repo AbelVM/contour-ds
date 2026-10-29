@@ -3,7 +3,7 @@ import { loadRemote, remoteData, renderStates, renderEmpty, wireStates, remoteIn
 import { donutSlices, barRects, smoothPath, polylinePoints } from './svg.mjs';
 class ContourReadout extends ContourBase {
     static get observed() { return ["rows", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "format", "locale"]; }
-    static get properties() { return { rows: { attribute: "rows" }, format: { attribute: "format" }, locale: { attribute: "locale" } }; }
+    static get properties() { return { rows: { attribute: "rows" }, format: { attribute: "format" }, locale: { attribute: "locale" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-readout");
       wireStates(this);
@@ -293,6 +293,17 @@ class ContourTable extends ContourBase {
             const type = (typeof colSpec === "object" && colSpec && colSpec.sortType) ? colSpec.sortType : "text";
             working.sort((a, b) => this._compare(a && a[col], b && b[col], type) * dir);
           }
+          // Column filters (F-09): narrow `working` by each active filter.
+          if (!this._filters) this._filters = {};
+          const activeFilters = Object.keys(this._filters).filter((k) => this._filters[k]);
+          if (activeFilters.length) {
+            working = working.filter((row) => activeFilters.every((k) => {
+              const ci = Number(k);
+              const q = String(this._filters[ci] || "").toLowerCase();
+              if (!q) return true;
+              return String(this._cellValue(row[ci])).toLowerCase().includes(q);
+            }));
+          }
           // Pagination.
           const pageSizeRaw = this.getAttribute("page-size");
           const pageSize = pageSizeRaw !== null ? parseInt(pageSizeRaw, 10) : NaN;
@@ -342,7 +353,25 @@ class ContourTable extends ContourBase {
                   const colLabel = typeof c === "string" ? c : (c.label || c.title || c);
                   const th = document.createElement("th");
                   const sortable = (typeof c === "object" && c !== null && c.sort);
-                  if (sortable) {
+                  const isSelect = (typeof c === "object" && c !== null && c.select);
+                  const isFilter = (typeof c === "object" && c !== null && c.filter);
+                  if (isFilter) {
+                    th.className = (th.className + " c-table__filter").trim();
+                    const inp = document.createElement("input");
+                    inp.type = "search";
+                    inp.className = "c-table__filter-input";
+                    inp.placeholder = colLabel;
+                    inp.dataset.filterIndex = String(i);
+                    if (this._filters && this._filters[i]) inp.value = this._filters[i];
+                    th.appendChild(inp);
+                  } else if (isSelect) {
+                    th.className = (th.className + " c-table__select").trim();
+                    const cb = document.createElement("input");
+                    cb.type = "checkbox";
+                    cb.className = "c-table__select-all";
+                    cb.setAttribute("aria-label", "Select all rows");
+                    th.appendChild(cb);
+                  } else if (sortable) {
                     th.setAttribute("aria-sort", (this._sortCol === i)
                       ? (this._sortDir === -1 ? "descending" : "ascending")
                       : "none");
@@ -359,9 +388,6 @@ class ContourTable extends ContourBase {
                     th.textContent = colLabel;
                   } else {
                     th.textContent = colLabel;
-                  }
-                  if (typeof c === "object" && c !== null && c.select) {
-                    th.className = (th.className + " c-table__select").trim();
                   }
                   if (sortable) {
                     th.setAttribute("tabindex", "0");
@@ -395,11 +421,21 @@ class ContourTable extends ContourBase {
             tr.appendChild(td);
             tbody.appendChild(tr);
           } else {
-            pageData.forEach((row) => {
+            pageData.forEach((row, ri) => {
               const tr = document.createElement("tr");
-              row.forEach((cell) => {
+              cols.forEach((c, ci) => {
+                const isSelect = (typeof c === "object" && c !== null && c.select);
                 const td = document.createElement("td");
-                td.textContent = this._cellValue(cell);
+                if (isSelect) {
+                  const cb = document.createElement("input");
+                  cb.type = "checkbox";
+                  cb.className = "c-table__row-select";
+                  cb.dataset.rowIndex = String(ri);
+                  if (this._selectedRows && this._selectedRows.has(ri)) cb.checked = true;
+                  td.appendChild(cb);
+                } else {
+                  td.textContent = this._cellValue(row[ci]);
+                }
                 tr.appendChild(td);
               });
               tbody.appendChild(tr);
@@ -508,6 +544,35 @@ class ContourTable extends ContourBase {
         if (th && this.contains(th)) {
           e.preventDefault();
           handleSort(th);
+        }
+      });
+      // Column filter (F-09): re-render on filter input change.
+      this.addEventListener("input", (e) => {
+        const inp = e.target && e.target.closest ? e.target.closest(".c-table__filter-input") : null;
+        if (!inp || !this.contains(inp)) return;
+        const idx = Number(inp.dataset.filterIndex);
+        if (!Number.isFinite(idx)) return;
+        if (!this._filters) this._filters = {};
+        this._filters[idx] = inp.value;
+        this.requestRender();
+      });
+      // Row selection (F-09): track checked rows and emit contour:select.
+      this._selectedRows = this._selectedRows || new Set();
+      this.addEventListener("change", (e) => {
+        const cb = e.target && e.target.closest ? e.target.closest(".c-table__row-select") : null;
+        if (cb && this.contains(cb)) {
+          const idx = Number(cb.dataset.rowIndex);
+          if (!Number.isFinite(idx)) return;
+          if (cb.checked) this._selectedRows.add(idx); else this._selectedRows.delete(idx);
+          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { rows: Array.from(this._selectedRows) } }));
+          return;
+        }
+        const all = e.target && e.target.closest ? e.target.closest(".c-table__select-all") : null;
+        if (all && this.contains(all)) {
+          const cbs = Array.from(this.querySelectorAll(".c-table__row-select"));
+          cbs.forEach((c) => { c.checked = all.checked; });
+          this._selectedRows = new Set(all.checked ? cbs.map((c) => Number(c.dataset.rowIndex)) : []);
+          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { rows: Array.from(this._selectedRows) } }));
         }
       });
     }
@@ -921,7 +986,7 @@ class ContourComparison extends ContourBase {
   define("contour-comparison", ContourComparison);
 class ContourStreamingChart extends ContourBase {
     static get observed() { return ["line", "dot", "interval", "pause", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { line: { attribute: "line" }, dot: { attribute: "dot" }, interval: { attribute: "interval", type: Number }, pause: { attribute: "pause", type: Boolean } }; }
+    static get properties() { return { line: { attribute: "line" }, dot: { attribute: "dot" }, interval: { attribute: "interval", type: Number }, pause: { attribute: "pause", type: Boolean }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-streaming-chart");
       wireStates(this);
@@ -1017,7 +1082,7 @@ class ContourStreamingChart extends ContourBase {
 define("contour-streaming-chart", ContourStreamingChart);
 class ContourMeter extends ContourBase {
     static get observed() { return ["value", "label", "variant", "min", "max", "low", "high", "optimum", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" }, variant: { attribute: "variant" }, min: { attribute: "min" }, max: { attribute: "max" }, low: { attribute: "low" }, high: { attribute: "high" }, optimum: { attribute: "optimum" } }; }
+    static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" }, variant: { attribute: "variant" }, min: { attribute: "min" }, max: { attribute: "max" }, low: { attribute: "low" }, high: { attribute: "high" }, optimum: { attribute: "optimum" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-meter");
       wireStates(this);
@@ -1070,7 +1135,7 @@ class ContourMeter extends ContourBase {
 define("contour-meter", ContourMeter);
 class ContourDelta extends ContourBase {
     static get observed() { return ["value", "direction", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { value: { attribute: "value" }, direction: { attribute: "direction" } }; }
+    static get properties() { return { value: { attribute: "value" }, direction: { attribute: "direction" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-delta");
       wireStates(this);
@@ -1098,7 +1163,7 @@ class ContourDelta extends ContourBase {
 define("contour-delta", ContourDelta);
 class ContourStat extends ContourBase {
     static get observed() { return ["value", "label", "delta", "unit", "format", "locale", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" }, delta: { attribute: "delta" }, unit: { attribute: "unit" }, format: { attribute: "format" }, locale: { attribute: "locale" } }; }
+    static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" }, delta: { attribute: "delta" }, unit: { attribute: "unit" }, format: { attribute: "format" }, locale: { attribute: "locale" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-stat");
       wireStates(this);
@@ -1148,7 +1213,7 @@ class ContourStat extends ContourBase {
 define("contour-stat", ContourStat);
 class ContourInstrument extends ContourBase {
     static get observed() { return ["rows", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { rows: { attribute: "rows" } }; }
+    static get properties() { return { rows: { attribute: "rows" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-instrument");
       wireStates(this);
@@ -1218,7 +1283,7 @@ class ContourBivariate extends ContourBase {
   define("contour-bivariate", ContourBivariate);
 class ContourSurvey extends ContourBase {
     static get observed() { return ["date", "instrument", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { date: { attribute: "date" }, instrument: { attribute: "instrument" } }; }
+    static get properties() { return { date: { attribute: "date" }, instrument: { attribute: "instrument" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-survey");
       wireStates(this);
@@ -1255,7 +1320,7 @@ class ContourSurvey extends ContourBase {
 define("contour-survey", ContourSurvey);
 class ContourThreshold extends ContourBase {
     static get observed() { return ["label", "norm", "state", "value", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { label: { attribute: "label" }, norm: { attribute: "norm" }, state: { attribute: "state" }, value: { attribute: "value" } }; }
+    static get properties() { return { label: { attribute: "label" }, norm: { attribute: "norm" }, state: { attribute: "state" }, value: { attribute: "value" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-threshold");
       wireStates(this);
@@ -1292,7 +1357,7 @@ class ContourThreshold extends ContourBase {
 define("contour-threshold", ContourThreshold);
 class ContourMetricsFull extends ContourBase {
     static get observed() { return ["items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { items: { attribute: "items" } }; }
+    static get properties() { return { items: { attribute: "items" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-metrics");
       wireStates(this);
@@ -1326,7 +1391,7 @@ class ContourMetricsFull extends ContourBase {
   define("contour-metrics", ContourMetricsFull);
 class ContourLegend extends ContourBase {
     static get observed() { return ["title", "ramp", "scale", "items", "method", "norm", "selectable", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { title: { attribute: "title" }, ramp: { attribute: "ramp" }, scale: { attribute: "scale" }, items: { attribute: "items" }, method: { attribute: "method" }, norm: { attribute: "norm" }, selectable: { attribute: "selectable", type: Boolean } }; }
+    static get properties() { return { title: { attribute: "title" }, ramp: { attribute: "ramp" }, scale: { attribute: "scale" }, items: { attribute: "items" }, method: { attribute: "method" }, norm: { attribute: "norm" }, selectable: { attribute: "selectable", type: Boolean }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-legend");
       wireStates(this);
@@ -1434,7 +1499,7 @@ class ContourLegend extends ContourBase {
 define("contour-legend", ContourLegend);
 class ContourMeasure extends ContourBase {
     static get observed() { return ["label", "value", "point", "line", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" }, point: { attribute: "point" }, line: { attribute: "line" } }; }
+    static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" }, point: { attribute: "point" }, line: { attribute: "line" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-measure");
       wireStates(this);
@@ -1486,7 +1551,7 @@ class ContourMeasure extends ContourBase {
 define("contour-measure", ContourMeasure);
 class ContourTimeline extends ContourBase {
     static get observed() { return ["items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { items: { attribute: "items" } }; }
+    static get properties() { return { items: { attribute: "items" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-timeline");
       wireStates(this);
@@ -1534,7 +1599,7 @@ class ContourTimeline extends ContourBase {
 define("contour-timeline", ContourTimeline);
 class ContourHeatmap extends ContourBase {
     static get observed() { return ["cells", "count", "legend", "empty", "loading", "values", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { cells: { attribute: "cells" }, count: { attribute: "count" }, legend: { attribute: "legend" } }; }
+    static get properties() { return { cells: { attribute: "cells" }, count: { attribute: "count" }, legend: { attribute: "legend" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-heatmap");
       if (!this.hasAttribute("role")) this.setAttribute("role", "grid");
@@ -1653,7 +1718,7 @@ class ContourHeatmap extends ContourBase {
 define("contour-heatmap", ContourHeatmap);
 class ContourCompare extends ContourBase {
     static get observed() { return ["no", "text", "yes", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { no: { attribute: "no" }, text: { attribute: "text" }, yes: { attribute: "yes" } }; }
+    static get properties() { return { no: { attribute: "no" }, text: { attribute: "text" }, yes: { attribute: "yes" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-compare");
       this.style.padding = "var(--space-md)";
@@ -1690,7 +1755,7 @@ class ContourCompare extends ContourBase {
 define("contour-compare", ContourCompare);
 class ContourSparkline extends ContourBase {
     static get observed() { return ["points", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { points: { attribute: "points" } }; }
+    static get properties() { return { points: { attribute: "points" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-sparkline");
       if (!this.hasAttribute("role")) this.setAttribute("role", "img");
@@ -1801,7 +1866,7 @@ class ContourSparkline extends ContourBase {
 define("contour-sparkline", ContourSparkline);
 class ContourChartGrid extends ContourBase {
     static get observed() { return ["title", "series", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { title: { attribute: "title" }, series: { attribute: "series" } }; }
+    static get properties() { return { title: { attribute: "title" }, series: { attribute: "series" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-chart-grid");
       wireStates(this);
