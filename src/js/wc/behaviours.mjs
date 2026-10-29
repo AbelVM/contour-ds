@@ -767,16 +767,8 @@ export function wirePagination(host) {
        const target = links.find((b) => parseInt(b.textContent, 10) === page);
        if (target) { activate(target); return; }
      }
-     activate(btn);
-   });
-       wcEmit(host, "contour:page", { page });
-       if (host.getAttribute("persist") === "storage" && host.id) {
-         try { localStorage.setItem("contour-pagination:" + host.id, String(page)); } catch (e) {}
-       } else if (host.getAttribute("persist") === "url") {
-         try { const url = new URL(window.location.href); url.searchParams.set("c-pagination", String(page)); window.history.replaceState(null, "", url.toString()); } catch (e) {}
-       }
-     }
-   });
+      activate(btn);
+    });
   wcListen(host, "keydown", (e) => {
     const btn = wcClosest(host, e.target, ".c-pagination__link");
     if (!btn) return;
@@ -789,11 +781,11 @@ export function wirePagination(host) {
     else if (e.key === "Home") next = 0;
     else if (e.key === "End") next = links.length - 1;
     else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); activate(btn); return; }
-    if (next >= 0 && next !== idx) { e.preventDefault(); links[next].focus(); }
-  });
-  }
-
-/**
+     if (next >= 0 && next !== idx) { e.preventDefault(); links[next].focus(); }
+   });
+ }
+ 
+ /**
  * Copy. `.c-code__copy` copies its block, `.c-install__copy` its command — one
  * handler because both need the same three things: the text, the clipboard, and
  * a `contour:copy` a page can toast from when the clipboard is denied.
