@@ -29,12 +29,18 @@
         <contour-map-area id="map" attribution="© OpenStreetMap" controls='[{"label":"+"},{"label":"−"}]' style="position: absolute; inset: 0;"></contour-map-area>
       </div>
       <aside class="map-panel">
-        <div class="c-section-head">
-          <div>
-            <span class="label">Layers</span>
-            <h2 class="c-section-head__title">Contour chrome</h2>
-          </div>
+      <div class="c-section-head">
+        <div>
+          <span class="label">Layers</span>
+          <h2 class="c-section-head__title">Contour chrome</h2>
         </div>
+        <button class="c-btn c-btn--icon c-btn--secondary c-scheme-toggle" type="button" data-scheme-toggle aria-label="Switch to dark theme" style="margin-inline-start: auto;">
+          <span class="c-scheme-toggle__icons" aria-hidden="true">
+            <svg class="c-scheme-toggle__sun"><use href="#i-sun" /></svg>
+            <svg class="c-scheme-toggle__moon"><use href="#i-moon" /></svg>
+          </span>
+        </button>
+      </div>
         <contour-layer-panel label="Layers" items='[{"name":"Routing graph","visible":true,"opacity":100},{"name":"Catchment","visible":false,"opacity":60},{"name":"Isochrones","visible":true,"opacity":80}]'></contour-layer-panel>
         <div class="c-kpi">
           <div class="c-kpi__value">12</div>
@@ -48,12 +54,6 @@
         <contour-scale-bar label="Scale" value="4rem"></contour-scale-bar>
         <contour-readout></contour-readout>
       <div class="c-stack">
-        <button class="c-btn c-btn--icon c-btn--secondary c-scheme-toggle" type="button" data-scheme-toggle aria-label="Switch to dark theme">
-          <span class="c-scheme-toggle__icons" aria-hidden="true">
-            <svg class="c-scheme-toggle__sun"><use href="#i-sun" /></svg>
-            <svg class="c-scheme-toggle__moon"><use href="#i-moon" /></svg>
-          </span>
-        </button>
         <button class="c-btn c-btn--primary c-btn--block" type="button">Compute route</button>
         <button class="c-btn c-btn--ghost c-btn--block" type="button">Export GeoJSON</button>
       </div>
@@ -86,13 +86,21 @@
       area.attachMap(map);
       map.addControl(new NavigationControl(), "top-right");
 
-      // Hover popup to verify Contour chrome on popups
-      const popup = new Popup({ closeButton: true, closeOnClick: false, offset: 12 });
+      // Hover popup to verify Contour chrome on popups. Content uses the
+      // feature under the cursor when one is present, otherwise coordinates.
+      const popup = new Popup({ closeButton: true, closeOnClick: false, offset: 12, anchor: "bottom" });
       map.on("mousemove", (e) => {
-        popup.setLngLat(e.lngLat).setHTML(
-          "<strong>Berlin</strong><br/>lat " + e.lngLat.lat.toFixed(3) + ", lng " + e.lngLat.lng.toFixed(3)
-        ).addTo(map);
+        const features = map.queryRenderedFeatures(e.point);
+        if (!features || !features.length) { popup.remove(); return; }
+        const f = features[0];
+        const props = (f && f.properties) ? f.properties : {};
+        const name = props.name || props.NAME || props.title || "Feature";
+        const html = "<strong>" + name + "</strong><br/>" +
+          Object.keys(props).slice(0, 4).map((k) => k + ": " + props[k]).join("<br/>");
+        if (!popup.isOpen()) popup.addTo(map);
+        popup.setLngLat(e.lngLat).setHTML(html);
       });
+      map.on("mouseout", () => popup.remove());
     </script>
   </body>
 </html>
