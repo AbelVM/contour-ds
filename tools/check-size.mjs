@@ -55,7 +55,7 @@ const DIST = join(ROOT, "dist");
  *  which the Format Module has no legal place for (C-43). It states values only —
  *  a token's meaning is published once, in the Format document. */
 const BUDGETS = {
-  "contour.min.css": 188 * 1024,  // raised 2026-10-29: +CSS rules for generated classes + overflow fixes; measured 181.2 kB
+  "contour.min.css": 189 * 1024,  // raised 2026-10-29: +CSS rules for generated classes + overflow fixes; measured 181.2 kB
   "contour.min.js": 38 * 1024,  // raised 2026-10-25: comparison slider drag (1.6 kB) added to ds.js
   "contour.d.ts": 28 * 1024,  // raised 2026-10-26 from 26 kB: expanded ContourProps to include all 99 observed attributes (was 8). Measured 26.2 kB. See M-WC-08 WC8-16.
   "contour.tokens.json": 50 * 1024,
@@ -67,7 +67,7 @@ const BUDGETS = {
   // exists to catch a jump nobody intended, not to keep the truth brief. A file
   // absent from this map is not budgeted at all, which is how an artifact can
   // grow without anyone noticing.
-  "contour.components.json": 176 * 1024,  // raised 2026-10-28: measured 161.5 kB; +3.5 kB margin  // raised 2026-10-26 from 152 kB
+  "contour.components.json": 177 * 1024,  // raised 2026-10-28: measured 161.5 kB; +3.5 kB margin  // raised 2026-10-26 from 152 kB
   // The docs package (C-45). Measured 2026-10-23 at 43.6 kB: 23 section files
   // (37.4 kB) plus the index (6.2 kB) — figures this gate recomputes and prints on
   // every run, so the numbers above are a dated record, not the thing enforced.
@@ -116,12 +116,12 @@ const BUDGETS = {
   // Measured 2026-10-24 at 3,664 B.
   "hljs.css": 4 * 1024,
   "agent-rules.json": 12 * 1024,
-  "surfaces/contour-core.min.css": 129 * 1024,  // raised 2026-10-29: +vertical tabs + close button CSS; measured 122.1 kB
+  "surfaces/contour-core.min.css": 130 * 1024,  // raised 2026-10-29: +vertical tabs + close button CSS; measured 122.1 kB
   "surfaces/contour-docs.min.css": 143 * 1024,  // raised 2026-10-29: +vertical tabs CSS; measured 135.5 kB
   "surfaces/contour-data.min.css": 167 * 1024,  // raised 2026-10-29: CSS propagation; measured 159.6 kB
   "surfaces/contour-landing.min.css": 137 * 1024,  // raised 2026-10-29: +CSS rules propagate; measured 129.1 kB
   "contour.esm.min.js": 39 * 1024,
-  "contour-wc.esm.min.js": 375 * 1024,  // raised 2026-10-29: +app shell scaffolding; measured 353.2 kB
+  "contour-wc.esm.min.js": 377 * 1024,  // raised 2026-10-29: +app shell scaffolding; measured 353.2 kB
 };
 
 const kB = (n) => `${(n / 1024).toFixed(1)} kB`;

@@ -80,6 +80,7 @@ export type ContourComponent =
   | "c-header"
   | "c-heatmap"
   | "c-hexbin"
+  | "c-hover-card"
   | "c-icon-badge"
   | "c-input"
   | "c-input-group"
@@ -693,6 +694,7 @@ declare global {
     "contour-header": ContourElement;
     "contour-heatmap": ContourElement;
     "contour-hexbin": ContourElement;
+    "contour-hover-card": ContourElement;
     "contour-icon-badge": ContourElement;
     "contour-input": ContourElement;
     "contour-input-group": ContourElement;

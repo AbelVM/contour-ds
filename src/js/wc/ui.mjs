@@ -1147,3 +1147,38 @@ class ContourNumberField extends ContourBase {
     }
   }
   define("contour-number-field", ContourNumberField);
+
+class ContourHoverCard extends ContourBase {
+    static get observed() { return ["title", "content", "anchor"]; }
+    static get properties() { return { title: { attribute: "title" }, content: { attribute: "content" }, anchor: { attribute: "anchor" } }; }
+    render() {
+      this.classList.add("c-hover-card");
+      if (!this.hasAttribute("popover")) this.setAttribute("popover", "auto");
+      if (!this.id) this.id = contourId("hover-card");
+      const title = this.getAttribute("title");
+      if (title) {
+        const t = this.ensure(".c-hover-card__title", () => { const el = document.createElement("div"); el.className = "c-hover-card__title"; return el; });
+        t.textContent = title;
+      }
+      const content = this.getAttribute("content");
+      if (content) {
+        const c = this.ensure(".c-hover-card__body", () => { const el = document.createElement("div"); el.className = "c-hover-card__body"; return el; });
+        c.textContent = content;
+      }
+    }
+    enhance() {
+      if (this._wiredHoverCard) return;
+      this._wiredHoverCard = true;
+      const anchorSel = this.getAttribute("anchor");
+      if (anchorSel) {
+        const trigger = anchorSel.startsWith("#") ? document.getElementById(anchorSel.slice(1)) : document.querySelector(anchorSel);
+        if (trigger) {
+          trigger.setAttribute("popovertarget", this.id);
+          let showTimer = null;
+          trigger.addEventListener("mouseenter", () => { showTimer = setTimeout(() => { try { this.showPopover(); } catch (e) {} }, 300); });
+          trigger.addEventListener("mouseleave", () => { if (showTimer) clearTimeout(showTimer); try { this.hidePopover(); } catch (e) {} });
+        }
+      }
+    }
+  }
+  define("contour-hover-card", ContourHoverCard);

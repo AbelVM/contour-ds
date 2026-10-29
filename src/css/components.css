@@ -3473,7 +3473,23 @@
     z-index: var(--z-tooltip);
     margin-block-start: var(--space-2xs);
   }
-  /* -- Number field ------------------------------------------------------ */
+  /* -- Hover card -------------------------------------------------------- */
+  .c-hover-card {
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-md);
+    max-inline-size: 20rem;
+  }
+  .c-hover-card__title {
+    font-weight: var(--weight-semibold);
+    margin-block-end: var(--space-2xs);
+  }
+  .c-hover-card__body {
+    font-size: var(--type-sm);
+    color: var(--color-text-muted);
+  }
   .c-number-field {
     display: inline-flex;
     align-items: center;
