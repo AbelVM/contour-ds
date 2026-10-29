@@ -113,6 +113,7 @@ export type ContourComponent =
   | "c-panel"
   | "c-pill"
   | "c-plate"
+  | "c-popover"
   | "c-pressable"
   | "c-price"
   | "c-pricing"
@@ -720,6 +721,7 @@ declare global {
     "contour-panel": ContourElement;
     "contour-pill": ContourElement;
     "contour-plate": ContourElement;
+    "contour-popover": ContourElement;
     "contour-pressable": ContourElement;
     "contour-price": ContourElement;
     "contour-pricing": ContourElement;

@@ -988,3 +988,24 @@ class ContourShortcut extends ContourBase {
     }
   }
   define("contour-shortcut", ContourShortcut);
+
+class ContourPopover extends ContourBase {
+    static get observed() { return ["title", "content"]; }
+    static get properties() { return { title: { attribute: "title" }, content: { attribute: "content" } }; }
+    render() {
+      this.classList.add("c-popover");
+      if (!this.hasAttribute("popover")) this.setAttribute("popover", "auto");
+      if (!this.id) this.id = contourId("popover");
+      const title = this.getAttribute("title");
+      if (title) {
+        const t = this.ensure(".c-popover__title", () => { const el = document.createElement("div"); el.className = "c-popover__title"; return el; });
+        t.textContent = title;
+      }
+      const content = this.getAttribute("content");
+      if (content) {
+        const c = this.ensure(".c-popover__body", () => { const el = document.createElement("div"); el.className = "c-popover__body"; return el; });
+        c.textContent = content;
+      }
+    }
+  }
+  define("contour-popover", ContourPopover);
