@@ -623,6 +623,21 @@ class ContourDrawer extends ContourBase {
       this.addEventListener("keydown", (e) => {
         if (e.key === "Escape" && this.hasAttribute("open")) this.close();
       });
+      // Swipe-to-close (deferred P3): horizontal swipe past threshold closes.
+      let touchStartX = 0, touchStartY = 0;
+      this.addEventListener("touchstart", (e) => {
+        if (!this.hasAttribute("open")) return;
+        const t = e.touches && e.touches[0];
+        if (t) { touchStartX = t.clientX; touchStartY = t.clientY; }
+      }, { passive: true });
+      this.addEventListener("touchend", (e) => {
+        if (!this.hasAttribute("open")) return;
+        const t = e.changedTouches && e.changedTouches[0];
+        if (!t) return;
+        const dx = t.clientX - touchStartX;
+        const dy = t.clientY - touchStartY;
+        if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) this.close();
+      }, { passive: true });
     }
   }
   define("contour-drawer", ContourDrawer);
@@ -705,6 +720,21 @@ class ContourSheet extends ContourBase {
       this.addEventListener("keydown", (e) => {
         if (e.key === "Escape" && this.hasAttribute("open")) this.close();
       });
+      // Swipe-to-close (deferred P3): vertical swipe down past threshold closes.
+      let touchStartY = 0, touchStartX = 0;
+      this.addEventListener("touchstart", (e) => {
+        if (!this.hasAttribute("open")) return;
+        const t = e.touches && e.touches[0];
+        if (t) { touchStartX = t.clientX; touchStartY = t.clientY; }
+      }, { passive: true });
+      this.addEventListener("touchend", (e) => {
+        if (!this.hasAttribute("open")) return;
+        const t = e.changedTouches && e.changedTouches[0];
+        if (!t) return;
+        const dy = t.clientY - touchStartY;
+        const dx = t.clientX - touchStartX;
+        if (dy > 60 && Math.abs(dy) > Math.abs(dx) * 1.5) this.close();
+      }, { passive: true });
     }
   }
   define("contour-sheet", ContourSheet);
