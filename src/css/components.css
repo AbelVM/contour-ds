@@ -1228,7 +1228,7 @@
   /* Plate: a raised, gradient-backed specimen surface */
   .c-plate {
     position: relative;
-    overflow: hidden;
+    overflow: clip;
     padding: var(--space-xl);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-2xl);
@@ -1239,8 +1239,9 @@
     content: "";
     position: absolute;
     inset-block-start: -30%;
-    inset-inline-end: -20%;
+    inset-inline-start: 0;
     inline-size: 22rem;
+    max-inline-size: 100%;
     block-size: 22rem;
     border-radius: 50%;
     background: radial-gradient(
@@ -2755,8 +2756,8 @@
     padding: 0.5rem 0.7rem;
     border: 1px solid var(--color-border-strong);
     border-radius: var(--radius-sm);
-    background: var(--color-surface-3);
-    color: var(--color-text);
+    background: var(--color-tooltip-bg);
+    color: var(--color-tooltip-fg);
     font-size: var(--type-xs);
     line-height: 1.45;
     box-shadow: var(--shadow-md);
@@ -3001,6 +3002,7 @@
     display: flex;
     align-items: center;
     gap: 0.25rem;
+    flex-wrap: wrap;
   }
 
   .c-pagination__empty,
@@ -3814,5 +3816,82 @@
   @media (width < 48rem) {
     .c-sidebar { grid-template-columns: 1fr; }
   }
+  /* -- File upload -------------------------------------------------------- */
+  .c-file-upload { display: block; }
+  .c-file-upload__dropzone { border: 2px dashed var(--color-border-strong); border-radius: var(--radius-md); padding: var(--space-lg); text-align: center; cursor: pointer; color: var(--color-text-muted); }
+  .c-file-upload__dropzone.is-dragover { border-color: var(--color-primary); background: var(--color-primary-soft); }
+  .c-file-upload__input { display: none; }
+  .c-file-upload__progress { inline-size: 100%; margin-block-start: var(--space-xs); }
+  /* -- Notification center ----------------------------------------------- */
+  .c-notification-center { position: relative; display: inline-block; }
+  .c-notification-center__panel { position: absolute; inset-block-start: 100%; inset-inline-end: 0; z-index: var(--z-tooltip); margin-block-start: var(--space-2xs); min-inline-size: 16rem; background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-xs); box-shadow: var(--shadow-md); }
+  .c-notification-center__item { padding: var(--space-2xs) var(--space-xs); font-size: var(--type-sm); }
+  .c-notification-center__badge { position: absolute; inset-block-start: -0.25rem; inset-inline-end: -0.25rem; }
+  /* -- Stepper (form) ---------------------------------------------------- */
+  .c-stepper { display: block; }
+  .c-stepper__list { display: flex; gap: var(--space-sm); list-style: none; padding: 0; margin: 0 0 var(--space-sm); }
+  .c-stepper__step { font-size: var(--type-sm); color: var(--color-text-muted); }
+  .c-stepper__step.is-current { color: var(--color-primary); font-weight: 600; }
+  .c-stepper__step.is-done { color: var(--color-success); }
+  .c-stepper__nav { display: flex; gap: var(--space-xs); }
+  /* -- Virtual list ------------------------------------------------------ */
+  .c-virtual-list { display: block; }
+  .c-virtual-list__scroller { max-block-size: 20rem; overflow: auto; border: 1px solid var(--color-border); border-radius: var(--radius-md); }
+  .c-virtual-list__item { padding: var(--space-2xs) var(--space-sm); border-block-end: 1px solid var(--color-border); font-size: var(--type-sm); }
+  /* -- Command palette --------------------------------------------------- */
+  .c-command-palette { display: block; }
+  .c-command-palette__search { inline-size: 100%; margin-block-end: var(--space-xs); }
+  .c-command-palette__list { max-block-size: 16rem; overflow: auto; }
+  .c-command-palette__item { padding: var(--space-2xs) var(--space-xs); cursor: pointer; font-size: var(--type-sm); }
+  .c-command-palette__item.is-active { background: var(--color-primary-soft); color: var(--color-primary-text); }
+  /* -- Badge overflow ---------------------------------------------------- */
+  .c-badge-overflow { display: inline-flex; }
+  /* -- Side sheet -------------------------------------------------------- */
+  .c-side-sheet { position: fixed; inset-block: 0; z-index: var(--z-drawer); background: var(--color-surface-1); box-shadow: var(--shadow-lg); padding: var(--space-md); transform: translateX(100%); transition: transform var(--dur-base) var(--ease-standard); }
+  .c-side-sheet--start { inset-inline-start: 0; transform: translateX(-100%); }
+  .c-side-sheet--end { inset-inline-end: 0; }
+  .c-side-sheet.is-open { transform: translateX(0); }
+  .c-side-sheet__title { font-size: var(--type-h4); font-weight: 600; margin-block-end: var(--space-sm); }
+  /* -- Tour -------------------------------------------------------------- */
+  .c-tour { position: fixed; z-index: var(--z-tooltip); background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-sm); box-shadow: var(--shadow-md); max-inline-size: 18rem; }
+  .c-tour__tip { font-size: var(--type-sm); margin-block-end: var(--space-xs); }
+  .c-tour__nav { display: flex; justify-content: flex-end; }
+  /* -- Tags input -------------------------------------------------------- */
+  .c-tags-input { display: flex; flex-wrap: wrap; gap: var(--space-2xs); align-items: center; border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-2xs); }
+  .c-tags-input__input { border: none; outline: none; flex: 1; min-inline-size: 6rem; font-size: var(--type-sm); background: transparent; color: var(--color-text); }
+  .c-tags-input__tag { display: inline-flex; align-items: center; gap: var(--space-2xs); }
+  .c-tags-input__remove { background: none; border: none; cursor: pointer; color: var(--color-text-muted); }
+  /* -- Sortable list ----------------------------------------------------- */
+  .c-sortable-list { display: block; }
+  .c-sortable-list__list { list-style: none; padding: 0; margin: 0; }
+  .c-sortable-list__item { display: flex; align-items: center; gap: var(--space-xs); padding: var(--space-2xs) var(--space-xs); border-block-end: 1px solid var(--color-border); }
+  .c-sortable-list__handle { cursor: grab; color: var(--color-text-muted); }
+  /* -- Swatch ------------------------------------------------------------ */
+  .c-swatch { display: inline-block; inline-size: 1.5rem; block-size: 1.5rem; border-radius: var(--radius-sm); border: 1px solid var(--color-border); background: var(--swatch-color, #000); cursor: pointer; }
+  .c-swatch.is-selected { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+  .c-swatch__btn { inline-size: 100%; block-size: 100%; border: none; background: transparent; cursor: pointer; }
+  /* -- Calendar ---------------------------------------------------------- */
+  .c-calendar { display: block; }
+  .c-calendar__grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: var(--space-2xs); }
+  .c-calendar__day { aspect-ratio: 1; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-1); color: var(--color-text); cursor: pointer; font-size: var(--type-xs); }
+  .c-calendar__day.is-selected { background: var(--color-primary); color: var(--color-on-primary); }
+  .c-calendar__day--empty { border: none; background: transparent; }
+  /* -- Carousel ---------------------------------------------------------- */
+  .c-carousel { display: block; position: relative; }
+  .c-carousel__track { display: flex; overflow: hidden; gap: var(--space-sm); }
+  .c-carousel__slide { flex: 0 0 100%; }
+  .c-carousel__prev, .c-carousel__next { position: absolute; inset-block-start: 50%; transform: translateY(-50%); }
+  .c-carousel__prev { inset-inline-start: var(--space-xs); }
+  .c-carousel__next { inset-inline-end: var(--space-xs); }
+  /* -- Data grid --------------------------------------------------------- */
+  .c-data-grid { display: block; overflow: auto; }
+  .c-data-grid__table { inline-size: 100%; }
+  /* -- Tree grid --------------------------------------------------------- */
+  .c-tree-grid { display: block; overflow: auto; }
+  .c-tree-grid__table { inline-size: 100%; }
 
+
+  .c-notification-center__trigger { /* inherits c-btn */ }
+  .c-stepper__prev, .c-stepper__next { /* inherits c-btn */ }
+  .c-tour__next { /* inherits c-btn */ }
 }

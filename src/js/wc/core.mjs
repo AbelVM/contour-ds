@@ -75,6 +75,7 @@
   // {index, label} and {value} across its sites, so all three are listed.
   export const CONTOUR_EVENTS = Object.freeze({
     "contour:activate": { payload: [], composed: true },
+    "contour:add": { payload: ["value"], composed: true },
     "contour:activity-select": { payload: ["index", "text"], composed: true },
     "contour:advanced-toggle": { payload: ["title"], composed: true },
     "contour:affordance-activate": { payload: ["name"], composed: true },
@@ -165,12 +166,12 @@
   //   role, open, aria-label, aria-valuenow, aria-valuemin, aria-valuemax, tabindex
   // Adding one of those back to this list makes that component recurse.
   export const OBSERVED = [
-    "action", "actions", "after", "anchor", "answer", "area", "article", "attribution", "attribution-mark", "autoplay", "axis", "axis-x", "axis-y",     "before", "body", "brand", "breakpoint", "cache-key", "canvas", "center", "clearable", "cols", "columns", "color", "command",
+    "accept", "action", "actions", "after", "anchor", "answer", "area", "article", "attribution", "attribution-mark", "autoplay", "axis", "axis-x", "axis-y",     "before", "body", "brand", "breakpoint", "cache-key", "canvas", "center", "clearable", "cols", "columns", "color", "command",
     "cells", "checked", "chrome", "closable", "colors", "content", "controls", "copyable", "count", "current", "date", "delta", "demo", "density", "desc", "dir", "direction", "disabled", "dismissible", "divider", "do", "dont", "dot",
     "empty", "error", "exclusive", "format", "heading", "hint", "href", "icon", "illustration", "index", "instrument", "interval", "items", "key", "layers",
-    "label", "lazy", "lede", "legend", "line", "link", "links", "live", "loading", "locale",     "max", "media", "message", "method", "menu", "min", "multiple", "name", "needle", "next", "no", "no-cache", "nodes", "note", "norm",
-    "options", "orientation", "page-size", "pages", "pause", "paused", "pausable", "persist", "placeholder", "playing", "point", "points", "prev", "prompt", "question", "recent", "required",
-    "quote", "ramp", "refresh", "removable", "reverse", "rings", "retry", "rows", "scale", "selectable", "start", "end", "selected", "separator", "series", "shortcut", "size", "skeleton", "sort", "sort-dir", "speed", "status", "step", "submit", "timeout", "trigger", "virtual",
+    "label", "lazy", "lede", "legend", "line", "link", "links", "live", "loading", "locale",     "max", "media", "message", "method", "month", "menu", "min", "multiple", "name", "needle", "next", "no", "no-cache", "nodes", "note", "norm",
+    "options", "orientation", "page-size", "pages", "pause", "paused", "pausable", "persist", "placeholder", "playing", "point", "points", "prev", "progress", "prompt", "question", "recent", "required",
+    "quote", "ramp", "refresh", "removable", "reverse", "rings", "retry", "rows", "scale", "selectable", "start", "end", "selected", "separator", "series", "shortcut", "side", "size", "skeleton", "sort", "sort-dir", "speed", "status", "step", "submit", "timeout", "trigger", "virtual",
     "state", "steps", "subtitle", "summary", "src", "tabs", "tag", "text", "ticks", "title", "type", "unit",
     "variant", "values", "viewport", "yes", "zoomable", "x", "y",
   ];

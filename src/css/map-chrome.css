@@ -51,23 +51,78 @@
    itself out and this profile does not move anything.
    ========================================================================= */
 
+/* Cluster surface + edge. The wrapper and the group both carry a background in
+   the vendor sheet, so both are re-keyed; the group's ring shadow is re-keyed
+   to the border token rather than removed, keeping the engine's depth cue. */
 .maplibregl-ctrl,
-.mapboxgl-ctrl {
+.mapboxgl-ctrl,
+.maplibregl-ctrl-group,
+.mapboxgl-ctrl-group {
   background: var(--color-surface-1);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border-color: var(--color-border-strong);
   color: var(--color-text);
+  overflow: hidden;
 }
 
+.maplibregl-ctrl,
+.mapboxgl-ctrl {
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+}
+
+.maplibregl-ctrl-group,
+.mapboxgl-ctrl-group {
+  border-radius: var(--radius-md);
+}
+
+.maplibregl-ctrl-group:not(:empty),
+.mapboxgl-ctrl-group:not(:empty) {
+  box-shadow: var(--shadow-xs);
+}
+
+/* Button separators */
+.maplibregl-ctrl-group button + button,
+.mapboxgl-ctrl-group button + button {
+  border-top-color: var(--color-border);
+}
+
+/* Pressed state */
+.maplibregl-ctrl button:not(:disabled):active,
+.mapboxgl-ctrl button:not(:disabled):active {
+  background: var(--color-surface-2);
+}
+
+/* Buttons */
 .maplibregl-ctrl button,
 .mapboxgl-ctrl button {
   color: var(--color-text-muted);
+  transition: background var(--dur-fast) var(--ease-standard),
+              color var(--dur-fast) var(--ease-standard);
 }
 
-.maplibregl-ctrl button:hover,
-.mapboxgl-ctrl button:hover {
+/* Mirror the vendor's :not(:disabled) compound so this rule wins by link order
+   rather than losing to the more specific vendor selector. */
+.maplibregl-ctrl button:not(:disabled):hover,
+.mapboxgl-ctrl button:not(:disabled):hover {
   color: var(--color-text-strong);
-  background: var(--color-surface-2);
+  background: var(--color-surface-3);
+  box-shadow: inset 0 0 0 1px var(--color-border-strong);
+}
+
+.maplibregl-ctrl button:disabled,
+.mapboxgl-ctrl button:disabled {
+  color: var(--color-text-subtle);
+}
+
+/* Focus ring — re-keyed to Contour's focus token, matching the vendor's
+   compound selector so the override actually applies. */
+.maplibregl-ctrl-attrib-button:focus,
+.maplibregl-ctrl-group button:focus,
+.mapboxgl-ctrl-attrib-button:focus,
+.mapboxgl-ctrl-group button:focus {
+  box-shadow: 0 0 0 2px var(--color-focus-ring),
+              0 0 0 4px var(--color-focus-halo);
+  outline: none;
 }
 
 /* Popups */
@@ -75,7 +130,7 @@
 .mapboxgl-popup-content {
   background: var(--color-surface-1);
   color: var(--color-text);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-md);
   font-family: var(--font-sans);
@@ -83,14 +138,59 @@
 }
 
 .maplibregl-popup-tip,
-.mapboxgl-popup-tip {
+.mapboxgl-popup-tip,
+.maplibregl-popup-anchor-top .maplibregl-popup-tip,
+.maplibregl-popup-anchor-top-left .maplibregl-popup-tip,
+.maplibregl-popup-anchor-top-right .maplibregl-popup-tip,
+.maplibregl-popup-anchor-bottom .maplibregl-popup-tip,
+.maplibregl-popup-anchor-bottom-left .maplibregl-popup-tip,
+.maplibregl-popup-anchor-bottom-right .maplibregl-popup-tip,
+.maplibregl-popup-anchor-left .maplibregl-popup-tip,
+.maplibregl-popup-anchor-right .maplibregl-popup-tip,
+.mapboxgl-popup-anchor-top .mapboxgl-popup-tip,
+.mapboxgl-popup-anchor-top-left .mapboxgl-popup-tip,
+.mapboxgl-popup-anchor-top-right .mapboxgl-popup-tip,
+.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip,
+.mapboxgl-popup-anchor-bottom-left .mapboxgl-popup-tip,
+.mapboxgl-popup-anchor-bottom-right .mapboxgl-popup-tip,
+.mapboxgl-popup-anchor-left .mapboxgl-popup-tip,
+.mapboxgl-popup-anchor-right .mapboxgl-popup-tip {
   border-top-color: var(--color-surface-1);
+  border-bottom-color: var(--color-surface-1);
+  border-left-color: var(--color-surface-1);
+  border-right-color: var(--color-surface-1);
 }
 
-/* Attribution */
+.maplibregl-popup-close-button,
+.mapboxgl-popup-close-button {
+  color: var(--color-text-muted);
+}
+
+.maplibregl-popup-close-button:hover,
+.mapboxgl-popup-close-button:hover {
+  color: var(--color-text-strong);
+  background: var(--color-surface-2);
+}
+
+/* Attribution info button (compact mode) */
+.maplibregl-ctrl-attrib-button,
+.mapboxgl-ctrl-attrib-button {
+  background-color: var(--color-surface-2);
+  color: var(--color-text-muted);
+}
+
+.maplibregl-ctrl-attrib-button:hover,
+.mapboxgl-ctrl-attrib-button:hover {
+  background-color: var(--color-surface-3, var(--color-surface-2));
+  color: var(--color-text-strong);
+}
 .maplibregl-ctrl-attrib,
-.mapboxgl-ctrl-attrib {
-  background: var(--color-surface-1);
+.mapboxgl-ctrl-attrib,
+.maplibregl-ctrl-attrib.maplibregl-compact,
+.mapboxgl-ctrl-attrib.mapboxgl-compact,
+.maplibregl-ctrl-attrib.maplibregl-compact-show,
+.mapboxgl-ctrl-attrib.mapboxgl-compact-show {
+  background: var(--color-surface-1) !important;
   color: var(--color-text-muted);
   font-size: var(--type-micro);
 }
@@ -100,11 +200,16 @@
   color: var(--color-link);
 }
 
-/* Scale bar */
+.maplibregl-ctrl-attrib a:hover,
+.mapboxgl-ctrl-attrib a:hover {
+  color: var(--color-link-hover);
+}
+
+/* Scale bar — only colour, keep the vendor's border geometry. */
 .maplibregl-ctrl-scale,
 .mapboxgl-ctrl-scale {
   background: var(--color-surface-1);
-  border: 1px solid var(--color-border);
+  border-color: var(--color-text-muted);
   color: var(--color-text);
   font-size: var(--type-micro);
 }
@@ -115,11 +220,47 @@
   color: var(--color-primary);
 }
 
+/* User location dot stays the engine's accent; nothing to re-key. */
+
+/* Icons: the engine paints them as background-image SVGs with hardcoded fills,
+   so colour cannot be re-keyed directly. In Contour's forced themes the OS
+   preference no longer matches, so nudge them with a filter. Only the forced
+   cases are handled here; the OS-follows case is already handled by the
+   engine's own prefers-color-scheme rules. */
+@media (prefers-color-scheme: light) {
+  :root:has(> head > meta[name="color-scheme"][content="dark"]) .maplibregl-ctrl-icon,
+  :root:has(> head > meta[name="color-scheme"][content="dark"]) .mapboxgl-ctrl-icon {
+    filter: invert(1) brightness(2.5);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:has(> head > meta[name="color-scheme"][content="light"]) .maplibregl-ctrl-icon,
+  :root:has(> head > meta[name="color-scheme"][content="light"]) .mapboxgl-ctrl-icon {
+    filter: invert(1) brightness(0.3);
+  }
+}
+
+/* Attribution info button icon (compact mode) follows the same forced-theme rule. */
+@media (prefers-color-scheme: light) {
+  :root:has(> head > meta[name="color-scheme"][content="dark"]) .maplibregl-ctrl-attrib-button,
+  :root:has(> head > meta[name="color-scheme"][content="dark"]) .mapboxgl-ctrl-attrib-button {
+    filter: invert(1) brightness(2.5);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:has(> head > meta[name="color-scheme"][content="light"]) .maplibregl-ctrl-attrib-button,
+  :root:has(> head > meta[name="color-scheme"][content="light"]) .mapboxgl-ctrl-attrib-button {
+    filter: invert(1) brightness(0.3);
+  }
+}
+
 /* Layer switcher (common control name across engines) */
 .maplibregl-ctrl-layers,
 .mapboxgl-ctrl-layers {
   background: var(--color-surface-1);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-md);
   color: var(--color-text);
   font-family: var(--font-sans);

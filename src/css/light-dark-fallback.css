@@ -16,7 +16,7 @@
    is deferred to `var(--x)` substitution, which makes the real declaration
    invalid at computed-value time and drops it to its initial value.
 
-   116 two-theme token(s) and 5 composition(s) rewritten, from tokens.css, utilities.css.
+   118 two-theme token(s) and 5 composition(s) rewritten, from tokens.css, utilities.css.
 
    A composition is substituted, not split: `0 1px 2px light-dark(A, B)` is not
    a colour a tool can publish as two themes, but replacing the call with one
@@ -88,6 +88,8 @@
       --color-focus-ring: var(--brand-700);
       --color-focus-halo: oklch(94% 0.05 var(--brand-hue) / 0.9);
       --color-selection: oklch(92% 0.04 var(--brand-hue));
+      --color-tooltip-bg: oklch(26% 0.02 230);
+      --color-tooltip-fg: oklch(97% 0.004 230);
       --color-link: var(--brand-700);
       --color-link-hover: var(--brand-800);
       --color-code-bg: oklch(96% 0.008 230);
@@ -214,6 +216,8 @@
         --color-focus-ring: var(--brand-400);
         --color-focus-halo: oklch(78% 0.12 var(--brand-hue) / 0.24);
         --color-selection: oklch(28% 0.05 var(--brand-hue));
+        --color-tooltip-bg: oklch(88% 0.014 230);
+        --color-tooltip-fg: oklch(20% 0.018 230);
         --color-link: var(--brand-300);
         --color-link-hover: var(--brand-200);
         --color-code-bg: oklch(14% 0.018 230);
@@ -344,6 +348,8 @@
       --color-focus-ring: var(--brand-400);
       --color-focus-halo: oklch(78% 0.12 var(--brand-hue) / 0.24);
       --color-selection: oklch(28% 0.05 var(--brand-hue));
+      --color-tooltip-bg: oklch(88% 0.014 230);
+      --color-tooltip-fg: oklch(20% 0.018 230);
       --color-link: var(--brand-300);
       --color-link-hover: var(--brand-200);
       --color-code-bg: oklch(14% 0.018 230);
@@ -468,6 +474,8 @@
       --color-focus-ring: var(--brand-700);
       --color-focus-halo: oklch(94% 0.05 var(--brand-hue) / 0.9);
       --color-selection: oklch(92% 0.04 var(--brand-hue));
+      --color-tooltip-bg: oklch(26% 0.02 230);
+      --color-tooltip-fg: oklch(97% 0.004 230);
       --color-link: var(--brand-700);
       --color-link-hover: var(--brand-800);
       --color-code-bg: oklch(96% 0.008 230);

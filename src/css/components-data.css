@@ -511,7 +511,7 @@
   .c-chart__plot {
     position: relative;
     aspect-ratio: 16 / 7;
-    min-block-size: 8rem;
+    min-block-size: 0;
     min-inline-size: 0;
     max-inline-size: 100%;
     overflow: hidden;
@@ -541,7 +541,7 @@
   }
   .c-chart--donut .c-chart__plot {
     aspect-ratio: 1 / 1;
-    min-block-size: 10rem;
+    min-block-size: 0;
     border-block-end: none;
   }
   .c-chart--histogram .c-chart__plot {

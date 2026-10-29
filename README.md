@@ -6,7 +6,7 @@
 A token-driven design system for **spatial interfaces** — routing engines, pedestrian
 simulators, map tooling and geospatial dashboards.
 
-<!-- ds:components-line -->163 components, 291 design tokens<!-- /ds:components-line -->, dark and light themes, zero runtime dependencies, no build step.
+<!-- ds:components-line -->203 components, 294 design tokens<!-- /ds:components-line -->, dark and light themes, zero runtime dependencies, no build step.
 
 The [style guide](index.html) is the specification and the test suite.
 

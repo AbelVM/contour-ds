@@ -1,58 +1,71 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Contour · Map demo</title>
+    <meta name="color-scheme" content="light dark" />
     <link rel="stylesheet" href="../src/css/ds.css" />
-    <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.css" />
+    <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.css" />
+    <link rel="stylesheet" href="../src/css/map-chrome.css" />
+    <script>
+      try {
+        document
+          .querySelector('meta[name="color-scheme"]')
+          .content = localStorage.getItem("contour-scheme") ?? "light dark";
+      } catch (e) {
+        /* storage blocked */
+      }
+    </script>
     <style>
-      .map-shell { display: grid; grid-template-columns: 1fr 320px; height: 100vh; }
+      .map-shell { display: grid; grid-template-columns: 1fr 360px; height: 100vh; }
       .map-canvas { position: relative; }
-      #map { position: absolute; inset: 0; }
-      .map-panel { overflow: auto; border-inline-start: 1px solid var(--color-border); background: var(--color-surface); }
+      .map-panel { overflow: auto; border-inline-start: 1px solid var(--color-border); background: var(--color-surface); display: flex; flex-direction: column; gap: var(--space-md); padding: var(--space-md); }
     </style>
   </head>
   <body>
     <div class="map-shell">
-      <div class="map-canvas"><div id="map"></div></div>
+      <div class="map-canvas">
+        <contour-map-area id="map" attribution="© OpenStreetMap" controls='[{"label":"+"},{"label":"−"}]' style="position: absolute; inset: 0;"></contour-map-area>
+      </div>
       <aside class="map-panel">
-        <div class="c-section-head" style="padding: var(--space-md);">
+        <div class="c-section-head">
           <div>
             <span class="label">Layers</span>
             <h2 class="c-section-head__title">Contour chrome</h2>
           </div>
         </div>
-        <div class="c-stack" style="padding: var(--space-md);">
-          <div class="c-kpi">
-            <div class="c-kpi__value">12</div>
-            <div class="c-kpi__label">Active layers</div>
-          </div>
-          <div class="c-kpi">
-            <div class="c-kpi__value">3.4 km</div>
-            <div class="c-kpi__label">Route length</div>
-          </div>
+        <contour-layer-panel label="Layers" items='[{"name":"Routing graph","visible":true,"opacity":100},{"name":"Catchment","visible":false,"opacity":60},{"name":"Isochrones","visible":true,"opacity":80}]'></contour-layer-panel>
+        <div class="c-kpi">
+          <div class="c-kpi__value">12</div>
+          <div class="c-kpi__label">Active layers</div>
+        </div>
+        <div class="c-kpi">
+          <div class="c-kpi__value">3.4 km</div>
+          <div class="c-kpi__label">Route length</div>
+        </div>
+        <contour-compass needle="42"></contour-compass>
+        <contour-scale-bar label="Scale" value="4rem"></contour-scale-bar>
+        <contour-readout></contour-readout>
+        <div class="c-stack">
           <button class="c-btn c-btn--primary c-btn--block" type="button">Compute route</button>
           <button class="c-btn c-btn--ghost c-btn--block" type="button">Export GeoJSON</button>
         </div>
       </aside>
     </div>
-    <script src="https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.js"></script>
-    <script>
-      const map = new maplibregl.Map({
-        container: "map",
+    <script src="../src/js/ds.js" defer></script>
+    <script type="module" src="../src/js/wc/index.mjs"></script>
+<script type="module">
+      import { Map, NavigationControl } from "https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.mjs";
+      const area = document.getElementById("map");
+      const map = new Map({
+        container: area,
         style: "https://demotiles.maplibre.org/style.json",
         center: [13.4, 52.5],
-        zoom: 11,
+        zoom: 0,
       });
-      map.addControl(new maplibregl.NavigationControl(), "top-right");
-
-      // Contour map-engine seam (BY3-I3): Contour never imports a map library.
-      // Attach the live engine to a Contour component via attachMap(); read
-      // viewport bounds through getViewport() (duck-typed, no engine coupling).
-      // const area = document.querySelector("contour-map-area");
-      // area.attachMap(map);
-      // map.on("moveend", () => console.log(area.getViewport()));
+      area.attachMap(map);
+      map.addControl(new NavigationControl(), "top-right");
     </script>
   </body>
 </html>

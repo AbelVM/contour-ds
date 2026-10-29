@@ -1,6 +1,6 @@
 # Contour
 
-> A token-driven design system for spatial interfaces — routing engines, pedestrian simulators, map tooling and geospatial dashboards. Dark and light themes, 163 components, 291 design tokens (291 read, 0 unread), zero runtime dependencies, no build step.
+> A token-driven design system for spatial interfaces — routing engines, pedestrian simulators, map tooling and geospatial dashboards. Dark and light themes, 203 components, 294 design tokens (294 read, 0 unread), zero runtime dependencies, no build step.
 
 Contour covers three kinds of page: a **landing page** that has to persuade, a **documentation site** that has to explain, and a **technical dashboard** that has to be read at speed. All three share one token layer, one type scale and one set of affordance rules.
 
@@ -17,7 +17,7 @@ Contour covers three kinds of page: a **landing page** that has to persuade, a *
 - Technical dashboard (index.html#data): KPI tiles, panels, chart frame, interactive legend, filter bar, dense sortable table, activity feed, drawer.
 - Recipes (index.html#recipes): all three surfaces composed live.
 
-## Components (163 blocks in src/css/)
+## Components (203 blocks in src/css/)
 
 Actions: button (primary, secondary, outline, ghost, accent, danger, quiet-danger), sizes, icon, block, groups, loading, text link.
 Forms: field, input, select, textarea, search group, range, switch, checkbox, radio.
@@ -91,7 +91,7 @@ Optional progressive-enhancement layer: `src/js/wc/index.mjs` (also `dist/contou
 
 ## Tokens
 
-- 291 custom properties in the token layer, in four layers: primitives, semantic, component, utility.
+- 294 custom properties in the token layer, in four layers: primitives, semantic, component, utility.
 - Primitives never change between themes; only the semantic layer does, so a theme swap is a one-line change.
 - Two values retheme and reshape everything: `--brand-hue` and `--radius-scale`.
 - `.c-theme-scope` re-derives the whole brand layer for a subtree, because a custom property containing `var()` is resolved eagerly.

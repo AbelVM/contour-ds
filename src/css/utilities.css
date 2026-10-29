@@ -289,7 +289,12 @@
     .c-toolbar,
     .c-pagination,
     .c-combobox,
-    .c-tree {
+    .c-tree,
+    .c-alert__close,
+    .c-dialog__close,
+    .c-sheet__close,
+    .c-tabs__close,
+    .c-map-panel {
       border: 1px solid CanvasText;
     }
 

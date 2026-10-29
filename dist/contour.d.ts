@@ -15,6 +15,7 @@ export type ContourComponent =
   | "c-avatar"
   | "c-avatar-group"
   | "c-badge"
+  | "c-badge-overflow"
   | "c-banner"
   | "c-bivariate"
   | "c-box"
@@ -22,8 +23,10 @@ export type ContourComponent =
   | "c-breadcrumb"
   | "c-btn"
   | "c-btn-group"
+  | "c-calendar"
   | "c-callout"
   | "c-card"
+  | "c-carousel"
   | "c-catchment"
   | "c-chart"
   | "c-chart-grid"
@@ -35,6 +38,7 @@ export type ContourComponent =
   | "c-color-picker"
   | "c-combobox"
   | "c-command"
+  | "c-command-palette"
   | "c-compare"
   | "c-comparison"
   | "c-compass"
@@ -47,6 +51,7 @@ export type ContourComponent =
   | "c-dash-kpi-row"
   | "c-dash-shell"
   | "c-dash-toolbar"
+  | "c-data-grid"
   | "c-datamark"
   | "c-date-picker"
   | "c-date-range"
@@ -74,6 +79,7 @@ export type ContourComponent =
   | "c-feature"
   | "c-field"
   | "c-file-tree"
+  | "c-file-upload"
   | "c-filter-bar"
   | "c-filter-pill"
   | "c-flag"
@@ -112,6 +118,7 @@ export type ContourComponent =
   | "c-meter"
   | "c-metrics"
   | "c-minimap"
+  | "c-notification-center"
   | "c-number-field"
   | "c-pager"
   | "c-pagination"
@@ -154,25 +161,30 @@ export type ContourComponent =
   | "c-shortcut-panel"
   | "c-shortcut-row"
   | "c-showcase"
+  | "c-side-sheet"
   | "c-sidebar"
   | "c-skeleton"
   | "c-skeleton-group"
+  | "c-sortable-list"
   | "c-sparkline"
   | "c-spinner"
   | "c-split-button"
   | "c-stack"
   | "c-stat"
   | "c-status-light"
+  | "c-stepper"
   | "c-steps"
   | "c-streaming-chart"
   | "c-style-panel"
   | "c-style-switcher"
   | "c-survey"
+  | "c-swatch"
   | "c-switch"
   | "c-table"
   | "c-table-wrap"
   | "c-tabs"
   | "c-tag"
+  | "c-tags-input"
   | "c-testimonial"
   | "c-textarea"
   | "c-theme-scope"
@@ -186,9 +198,12 @@ export type ContourComponent =
   | "c-toc"
   | "c-toolbar"
   | "c-tooltip"
+  | "c-tour"
   | "c-tree"
+  | "c-tree-grid"
   | "c-version"
   | "c-version-banner"
+  | "c-virtual-list"
 ;
 
 export type ContourToken =
@@ -255,6 +270,7 @@ export type ContourToken =
   | "--type-h3"
   | "--type-h4"
   | "--type-lead"
+  | "--type-lg"
   | "--type-body"
   | "--type-sm"
   | "--type-xs"
@@ -631,6 +647,7 @@ declare global {
     "contour-avatar": ContourElement;
     "contour-avatar-group": ContourElement;
     "contour-badge": ContourElement;
+    "contour-badge-overflow": ContourElement;
     "contour-banner": ContourElement;
     "contour-bivariate": ContourElement;
     "contour-box": ContourElement;
@@ -638,8 +655,10 @@ declare global {
     "contour-breadcrumb": ContourElement;
     "contour-btn": ContourElement;
     "contour-btn-group": ContourElement;
+    "contour-calendar": ContourElement;
     "contour-callout": ContourElement;
     "contour-card": ContourElement;
+    "contour-carousel": ContourElement;
     "contour-catchment": ContourElement;
     "contour-chart": ContourElement;
     "contour-chart-grid": ContourElement;
@@ -651,6 +670,7 @@ declare global {
     "contour-color-picker": ContourElement;
     "contour-combobox": ContourElement;
     "contour-command": ContourElement;
+    "contour-command-palette": ContourElement;
     "contour-compare": ContourElement;
     "contour-comparison": ContourElement;
     "contour-compass": ContourElement;
@@ -663,6 +683,7 @@ declare global {
     "contour-dash-kpi-row": ContourElement;
     "contour-dash-shell": ContourElement;
     "contour-dash-toolbar": ContourElement;
+    "contour-data-grid": ContourElement;
     "contour-datamark": ContourElement;
     "contour-date-picker": ContourElement;
     "contour-date-range": ContourElement;
@@ -690,6 +711,7 @@ declare global {
     "contour-feature": ContourElement;
     "contour-field": ContourElement;
     "contour-file-tree": ContourElement;
+    "contour-file-upload": ContourElement;
     "contour-filter-bar": ContourElement;
     "contour-filter-pill": ContourElement;
     "contour-flag": ContourElement;
@@ -728,6 +750,7 @@ declare global {
     "contour-meter": ContourElement;
     "contour-metrics": ContourElement;
     "contour-minimap": ContourElement;
+    "contour-notification-center": ContourElement;
     "contour-number-field": ContourElement;
     "contour-pager": ContourElement;
     "contour-pagination": ContourElement;
@@ -932,25 +955,30 @@ declare global {
     "contour-shortcut-panel": ContourElement;
     "contour-shortcut-row": ContourElement;
     "contour-showcase": ContourElement;
+    "contour-side-sheet": ContourElement;
     "contour-sidebar": ContourElement;
     "contour-skeleton": ContourElement;
     "contour-skeleton-group": ContourElement;
+    "contour-sortable-list": ContourElement;
     "contour-sparkline": ContourElement;
     "contour-spinner": ContourElement;
     "contour-split-button": ContourElement;
     "contour-stack": ContourElement;
     "contour-stat": ContourElement;
     "contour-status-light": ContourElement;
+    "contour-stepper": ContourElement;
     "contour-steps": ContourElement;
     "contour-streaming-chart": ContourElement;
     "contour-style-panel": ContourElement;
     "contour-style-switcher": ContourElement;
     "contour-survey": ContourElement;
+    "contour-swatch": ContourElement;
     "contour-switch": ContourElement;
     "contour-table": ContourElement;
     "contour-table-wrap": ContourElement;
     "contour-tabs": ContourElement;
     "contour-tag": ContourElement;
+    "contour-tags-input": ContourElement;
     "contour-testimonial": ContourElement;
     "contour-textarea": ContourElement;
     "contour-theme-scope": ContourElement;
@@ -964,8 +992,11 @@ declare global {
     "contour-toc": ContourElement;
     "contour-toolbar": ContourElement;
     "contour-tooltip": ContourElement;
+    "contour-tour": ContourElement;
     "contour-tree": ContourElement;
+    "contour-tree-grid": ContourElement;
     "contour-version": ContourElement;
     "contour-version-banner": ContourElement;
+    "contour-virtual-list": ContourElement;
   }
 }

@@ -56,6 +56,8 @@ const LEDGER = {
 // purpose; they are documented hooks, not dead tokens.
 const HOOK_LEDGER = new Set([
   "--bleed-left", "--bleed-right",
+  "--annotation-x", "--annotation-y",
+  "--swatch-color",
   "--bv-cell", "--bv-cols", "--bv-rows",
   "--c", "--fill", "--h", "--w", "--x", "--value", "--progress", "--target",
   "--graticule-pitch", "--field-line",

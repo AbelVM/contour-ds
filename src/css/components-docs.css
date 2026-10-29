@@ -523,6 +523,7 @@
     display: grid;
     grid-template-columns: 2.5rem 2.5rem minmax(0, 1fr);
     white-space: pre;
+    overflow: hidden;
   }
 
    .c-diff__line--add {
