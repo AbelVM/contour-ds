@@ -46,6 +46,13 @@
         zoom: 11,
       });
       map.addControl(new maplibregl.NavigationControl(), "top-right");
+
+      // Contour map-engine seam (BY3-I3): Contour never imports a map library.
+      // Attach the live engine to a Contour component via attachMap(); read
+      // viewport bounds through getViewport() (duck-typed, no engine coupling).
+      // const area = document.querySelector("contour-map-area");
+      // area.attachMap(map);
+      // map.on("moveend", () => console.log(area.getViewport()));
     </script>
   </body>
 </html>
