@@ -830,3 +830,19 @@ class ContourDivider extends ContourBase {
     }
   }
   define("contour-divider", ContourDivider);
+
+class ContourStatusLight extends ContourBase {
+    static get observed() { return ["status", "label"]; }
+    static get properties() { return { status: { attribute: "status" }, label: { attribute: "label" } }; }
+    render() {
+      this.classList.add("c-status-light");
+      const status = this.getAttribute("status") || "neutral";
+      this.classList.add("c-status-light--" + status);
+      const label = this.getAttribute("label");
+      if (label) {
+        const l = this.ensure(".c-status-light__label", () => { const el = document.createElement("span"); el.className = "c-status-light__label"; return el; });
+        l.textContent = label;
+      }
+    }
+  }
+  define("contour-status-light", ContourStatusLight);

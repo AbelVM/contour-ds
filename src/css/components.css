@@ -3453,7 +3453,25 @@
     background: var(--color-primary-soft);
     color: var(--color-primary-text);
   }
-  /* -- Divider ----------------------------------------------------------- */
+  /* -- Status light ------------------------------------------------------ */
+  .c-status-light {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    font-size: var(--type-xs);
+  }
+  .c-status-light::before {
+    content: "";
+    inline-size: 0.5rem;
+    block-size: 0.5rem;
+    border-radius: 50%;
+    background: var(--color-text-subtle);
+  }
+  .c-status-light--success::before { background: var(--color-success); }
+  .c-status-light--warning::before { background: var(--color-warning); }
+  .c-status-light--danger::before { background: var(--color-danger); }
+  .c-status-light--info::before { background: var(--color-info); }
+  .c-status-light--neutral::before { background: var(--color-text-subtle); }
   .c-divider {
     display: flex;
     align-items: center;

@@ -150,6 +150,7 @@ export type ContourComponent =
   | "c-spinner"
   | "c-stack"
   | "c-stat"
+  | "c-status-light"
   | "c-steps"
   | "c-streaming-chart"
   | "c-style-panel"
@@ -914,6 +915,7 @@ declare global {
     "contour-spinner": ContourElement;
     "contour-stack": ContourElement;
     "contour-stat": ContourElement;
+    "contour-status-light": ContourElement;
     "contour-steps": ContourElement;
     "contour-streaming-chart": ContourElement;
     "contour-style-panel": ContourElement;
