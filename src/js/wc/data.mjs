@@ -712,6 +712,20 @@ const series = this.getAttribute("series");
       if (this._wiredChart) return;
       this._wiredChart = true;
       if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
+      // Series toggle responding to legend (F-10): hide/show series when a
+      // legend item is toggled.
+      this.addEventListener("contour:legend-toggle", (e) => {
+        const key = e && e.detail && (e.detail.key || e.detail.label);
+        const pressed = e && e.detail && e.detail.pressed;
+        if (key == null) return;
+        const nodes = this.querySelectorAll("[data-series]");
+        nodes.forEach((n) => {
+          const s = n.getAttribute("data-series");
+          if (String(s) === String(key) || n.getAttribute("data-key") === String(key)) {
+            n.style.display = pressed === false ? "none" : "";
+          }
+        });
+      });
       // Tooltip: show on hover of a mark.
       // Cache the plot rect across mousemove events: it only changes on
       // resize/scroll, so re-measuring it on every pixel of movement is
