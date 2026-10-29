@@ -657,7 +657,7 @@ class ContourCompassFull extends ContourBase {
         }
       }
       if (label && label.toLowerCase() !== "compass") {
-        const l = this.ensure(".c-compass__label", () => { const el = document.createElement("span"); el.className = "c-compass__label"; return el; });
+        const l = this.ensure(".c-compass__label:not([class*='--'])", () => { const el = document.createElement("span"); el.className = "c-compass__label"; return el; });
         l.textContent = label;
       }
       if (needle) {
