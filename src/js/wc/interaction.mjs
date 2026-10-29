@@ -141,11 +141,35 @@ class ContourRowActionFull extends ContourBase {
   }
   define("contour-row-action", ContourRowActionFull);
 class ContourSegmented extends ContourBase {
-    render() { this.classList.add("c-segmented"); }
+    static get observed() { return ["options", "selected", "label", "value"]; }
+    static get properties() { return { options: { attribute: "options" }, selected: { attribute: "selected" }, label: { attribute: "label" }, value: { attribute: "value" } }; }
+    render() {
+      this.classList.add("c-segmented");
+      const options = this.getAttribute("options");
+      if (options) {
+        let parsed = null;
+        try { parsed = JSON.parse(options); } catch (e) { parsed = null; }
+        if (Array.isArray(parsed)) {
+          // Drop previously generated buttons.
+          Array.from(this.querySelectorAll("button.c-segmented__option")).forEach((n) => n.remove());
+          const selected = this.getAttribute("selected") || this.getAttribute("value");
+          parsed.forEach((opt, i) => {
+            const label = typeof opt === "string" ? opt : (opt.label || opt.value || "");
+            const val = typeof opt === "string" ? opt : (opt.value || opt.label || "");
+            const btn = document.createElement("button");
+            btn.className = "c-segmented__option";
+            btn.type = "button";
+            btn.textContent = label;
+            btn.dataset.value = val;
+            if (selected !== null && String(val) === String(selected)) btn.setAttribute("aria-pressed", "true");
+            else if (selected === null && i === 0) btn.setAttribute("aria-pressed", "true");
+            else btn.setAttribute("aria-pressed", "false");
+            this.appendChild(btn);
+          });
+        }
+      }
+    }
     enhance() {
-      // Interaction lives in behaviours.mjs, which the shadow wrappers call too.
-      // One implementation, so the two layers cannot drift apart again: the shadow
-      // copy queried its root for slotted nodes, found none, and wired nothing.
       wireSegmented(this);
     }
   }
