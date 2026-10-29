@@ -1035,3 +1035,34 @@ class ContourDatePicker extends ContourBase {
     }
   }
   define("contour-date-picker", ContourDatePicker);
+
+class ContourRating extends ContourBase {
+    static get observed() { return ["value", "max"]; }
+    static get properties() { return { value: { attribute: "value", type: Number }, max: { attribute: "max", type: Number } }; }
+    render() {
+      this.classList.add("c-rating");
+      const max = parseInt(this.getAttribute("max") || "5", 10) || 5;
+      const value = parseInt(this.getAttribute("value") || "0", 10) || 0;
+      Array.from(this.querySelectorAll(".c-rating__star")).forEach((n) => n.remove());
+      for (let i = 1; i <= max; i++) {
+        const star = document.createElement("button");
+        star.className = "c-rating__star" + (i <= value ? " c-rating__star--filled" : "");
+        star.type = "button";
+        star.textContent = "★";
+        star.dataset.value = String(i);
+        star.setAttribute("aria-label", i + " star" + (i > 1 ? "s" : ""));
+        this.appendChild(star);
+      }
+    }
+    enhance() {
+      if (this._wiredRating) return;
+      this._wiredRating = true;
+      this.addEventListener("click", (e) => {
+        const star = e.target && e.target.closest ? e.target.closest(".c-rating__star") : null;
+        if (star && this.contains(star)) {
+          this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: parseInt(star.dataset.value, 10) } }));
+        }
+      });
+    }
+  }
+  define("contour-rating", ContourRating);

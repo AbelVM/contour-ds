@@ -125,6 +125,7 @@ export type ContourComponent =
   | "c-radio-list"
   | "c-range"
   | "c-range-scale"
+  | "c-rating"
   | "c-readout"
   | "c-recipe"
   | "c-reserved"
@@ -734,6 +735,7 @@ declare global {
     "contour-radio-list": ContourElement;
     "contour-range": ContourElement;
     "contour-range-scale": ContourElement;
+    "contour-rating": ContourElement;
     "contour-readout": ContourElement;
     "contour-recipe": ContourElement;
     "contour-reserved": ContourElement;

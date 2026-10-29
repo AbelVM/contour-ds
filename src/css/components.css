@@ -3473,7 +3473,23 @@
     z-index: var(--z-tooltip);
     margin-block-start: var(--space-2xs);
   }
-  /* -- Date picker ------------------------------------------------------- */
+  /* -- Rating ------------------------------------------------------------ */
+  .c-rating {
+    display: inline-flex;
+    gap: var(--space-2xs);
+  }
+  .c-rating__star {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: var(--type-lg);
+    color: var(--color-text-subtle);
+    padding: 0;
+    line-height: 1;
+  }
+  .c-rating__star--filled {
+    color: var(--color-warning);
+  }
   .c-date-picker {
     display: inline-flex;
     align-items: center;
