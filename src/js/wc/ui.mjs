@@ -956,3 +956,35 @@ class ContourDateRange extends ContourBase {
     }
   }
   define("contour-date-range", ContourDateRange);
+
+class ContourShortcut extends ContourBase {
+    static get observed() { return ["key", "label"]; }
+    static get properties() { return { key: { attribute: "key" }, label: { attribute: "label" } }; }
+    render() {
+      this.classList.add("c-shortcut");
+      const key = this.getAttribute("key") || "";
+      const label = this.getAttribute("label") || "";
+      if (key) {
+        const k = this.ensure(".c-shortcut__key", () => { const el = document.createElement("kbd"); el.className = "c-shortcut__key"; return el; });
+        k.textContent = key;
+      }
+      if (label) {
+        const l = this.ensure(".c-shortcut__label", () => { const el = document.createElement("span"); el.className = "c-shortcut__label"; return el; });
+        l.textContent = label;
+      }
+    }
+    enhance() {
+      if (this._wiredShortcut) return;
+      this._wiredShortcut = true;
+      const key = this.getAttribute("key");
+      if (key) {
+        document.addEventListener("keydown", (e) => {
+          if (e.key === key && (e.metaKey || e.ctrlKey)) {
+            e.preventDefault();
+            this.dispatchEvent(new CustomEvent("contour:activate", { bubbles: true, composed: true }));
+          }
+        });
+      }
+    }
+  }
+  define("contour-shortcut", ContourShortcut);

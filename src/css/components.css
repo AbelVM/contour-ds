@@ -3473,7 +3473,20 @@
     z-index: var(--z-tooltip);
     margin-block-start: var(--space-2xs);
   }
-  /* -- Date range -------------------------------------------------------- */
+  /* -- Shortcut ---------------------------------------------------------- */
+  .c-shortcut {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    font-size: var(--type-xs);
+  }
+  .c-shortcut__key {
+    padding: 0.1rem 0.35rem;
+    border-radius: var(--radius-xs);
+    background: var(--color-surface-3);
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+  }
   .c-date-range {
     display: inline-flex;
     align-items: center;

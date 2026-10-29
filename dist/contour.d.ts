@@ -140,6 +140,7 @@ export type ContourComponent =
   | "c-segmented"
   | "c-select"
   | "c-sheet"
+  | "c-shortcut"
   | "c-shortcut-list"
   | "c-shortcut-overlay"
   | "c-shortcut-panel"
@@ -908,6 +909,7 @@ declare global {
     "contour-shadow-version": ContourElement;
     "contour-shadow-version-banner": ContourElement;
     "contour-sheet": ContourElement;
+    "contour-shortcut": ContourElement;
     "contour-shortcut-list": ContourElement;
     "contour-shortcut-overlay": ContourElement;
     "contour-shortcut-panel": ContourElement;
