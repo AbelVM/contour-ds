@@ -222,11 +222,7 @@
 
 /* User location dot stays the engine's accent; nothing to re-key. */
 
-/* Icons: the engine paints them as background-image SVGs with hardcoded fills,
-   so colour cannot be re-keyed directly. In Contour's forced themes the OS
-   preference no longer matches, so nudge them with a filter. Only the forced
-   cases are handled here; the OS-follows case is already handled by the
-   engine's own prefers-color-scheme rules. */
+/* Base forced-theme icon filters (non-hover). */
 @media (prefers-color-scheme: light) {
   :root:has(> head > meta[name="color-scheme"][content="dark"]) .maplibregl-ctrl-icon,
   :root:has(> head > meta[name="color-scheme"][content="dark"]) .mapboxgl-ctrl-icon {
@@ -238,6 +234,38 @@
   :root:has(> head > meta[name="color-scheme"][content="light"]) .maplibregl-ctrl-icon,
   :root:has(> head > meta[name="color-scheme"][content="light"]) .mapboxgl-ctrl-icon {
     filter: invert(1) brightness(0.3);
+  }
+}
+
+/* Hover: darken/dim the glyph so the press reads, mirroring Contour's
+   text-strong hover on buttons. State-coloured icons (geolocate, globe,
+   terrain) keep their hue; only luminance shifts. */
+.maplibregl-ctrl button:hover .maplibregl-ctrl-icon,
+.mapboxgl-ctrl button:hover .mapboxgl-ctrl-icon {
+  filter: brightness(0.6);
+}
+
+/* Dark OS, no forced theme: icons are light; dim on hover. */
+@media (prefers-color-scheme: dark) {
+  :root:not(:has(> head > meta[name="color-scheme"][content="light"])) .maplibregl-ctrl button:hover .maplibregl-ctrl-icon,
+  :root:not(:has(> head > meta[name="color-scheme"][content="light"])) .mapboxgl-ctrl button:hover .mapboxgl-ctrl-icon {
+    filter: brightness(0.75);
+  }
+}
+
+/* Forced dark on light OS: base filter inverts; hover slightly dimmer. */
+@media (prefers-color-scheme: light) {
+  :root:has(> head > meta[name="color-scheme"][content="dark"]) .maplibregl-ctrl button:hover .maplibregl-ctrl-icon,
+  :root:has(> head > meta[name="color-scheme"][content="dark"]) .mapboxgl-ctrl button:hover .mapboxgl-ctrl-icon {
+    filter: invert(1) brightness(2.0);
+  }
+}
+
+/* Forced light on dark OS: base filter inverts; hover slightly darker. */
+@media (prefers-color-scheme: dark) {
+  :root:has(> head > meta[name="color-scheme"][content="light"]) .maplibregl-ctrl button:hover .mapboxgl-ctrl-icon,
+  :root:has(> head > meta[name="color-scheme"][content="light"]) .mapboxgl-ctrl button:hover .mapboxgl-ctrl-icon {
+    filter: invert(1) brightness(0.2);
   }
 }
 

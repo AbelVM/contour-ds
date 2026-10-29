@@ -2746,6 +2746,10 @@
     background: var(--color-surface-3);
   }
 
+  .c-dialog__close:focus-visible {
+    outline-offset: -2px;
+  }
+
   /* =======================================================================
      20. TOOLTIP (popover hint)
      ======================================================================= */
@@ -3285,6 +3289,10 @@
   .c-sheet__close:hover {
     color: var(--color-text-strong);
     background: var(--color-surface-3);
+  }
+
+  .c-sheet__close:focus-visible {
+    outline-offset: -2px;
   }
 
   .c-sheet__body {

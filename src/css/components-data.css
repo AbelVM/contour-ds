@@ -1159,6 +1159,10 @@
     background: var(--color-surface-3);
   }
 
+  .c-drawer__close:focus-visible {
+    outline-offset: -2px;
+  }
+
   .c-drawer__body {
     flex: 1;
     overflow-y: auto;
