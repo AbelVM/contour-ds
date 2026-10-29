@@ -9,7 +9,7 @@ Generated from dist/docs/. See llms.txt for the index.
 
 # overview
 
-Section `overview` — marker `00`, position 1 of 24 in the guide.
+Section `overview` — marker `00`, position 1 of 25 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -27,7 +27,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `6278703678267720` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -36,7 +36,7 @@ Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+0
 
 # Six rules that break every tie.
 
-Section `principles` — marker `01`, position 2 of 24 in the guide.
+Section `principles` — marker `01`, position 2 of 25 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -78,7 +78,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `6278703678267720` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -87,7 +87,7 @@ Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+0
 
 # Colour, in five families and a neutral ramp.
 
-Section `colour` — marker `02`, position 3 of 24 in the guide.
+Section `colour` — marker `02`, position 3 of 25 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -128,7 +128,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `6278703678267720` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -137,7 +137,7 @@ Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+0
 
 # Two families, one superfamily.
 
-Section `type` — marker `03`, position 4 of 24 in the guide.
+Section `type` — marker `03`, position 4 of 25 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -165,7 +165,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `6278703678267720` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -174,7 +174,7 @@ Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+0
 
 # A 4px base, and shapes that stay soft.
 
-Section `space` — marker `04`, position 5 of 24 in the guide.
+Section `space` — marker `04`, position 5 of 25 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -209,7 +209,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `6278703678267720` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -218,7 +218,7 @@ Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+0
 
 # Motion that decelerates, never bounces.
 
-Section `motion` — marker `05`, position 6 of 24 in the guide.
+Section `motion` — marker `05`, position 6 of 25 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -262,7 +262,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `6278703678267720` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -271,7 +271,7 @@ Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+0
 
 # Actions
 
-Section `actions` — marker `06`, position 7 of 24 in the guide.
+Section `actions` — marker `06`, position 7 of 25 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -298,7 +298,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `6278703678267720` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -307,7 +307,7 @@ Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+0
 
 # Forms
 
-Section `forms` — marker `07`, position 8 of 24 in the guide.
+Section `forms` — marker `07`, position 8 of 25 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -344,7 +344,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `6278703678267720` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -353,7 +353,7 @@ Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+0
 
 # Status & labels
 
-Section `status` — marker `08`, position 9 of 24 in the guide.
+Section `status` — marker `08`, position 9 of 25 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -380,7 +380,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `6278703678267720` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -389,7 +389,7 @@ Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+0
 
 # Surfaces
 
-Section `surfaces` — marker `09`, position 10 of 24 in the guide.
+Section `surfaces` — marker `09`, position 10 of 25 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -454,7 +454,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `6278703678267720` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -463,7 +463,7 @@ Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+0
 
 # Navigation
 
-Section `navigation` — marker `10`, position 11 of 24 in the guide.
+Section `navigation` — marker `10`, position 11 of 25 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -513,7 +513,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `6278703678267720` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -522,7 +522,7 @@ Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+0
 
 # Feedback
 
-Section `feedback` — marker `11`, position 12 of 24 in the guide.
+Section `feedback` — marker `11`, position 12 of 25 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -584,7 +584,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `6278703678267720` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -593,7 +593,7 @@ Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+0
 
 # Overlays
 
-Section `overlays` — marker `12`, position 13 of 24 in the guide.
+Section `overlays` — marker `12`, position 13 of 25 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -650,7 +650,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `6278703678267720` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -659,7 +659,7 @@ Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+0
 
 # Data display
 
-Section `data` — marker `13`, position 14 of 24 in the guide.
+Section `data` — marker `13`, position 14 of 25 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -762,7 +762,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `6278703678267720` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -771,7 +771,7 @@ Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+0
 
 # Field
 
-Section `field` — marker `14`, position 15 of 24 in the guide.
+Section `field` — marker `14`, position 15 of 25 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -828,7 +828,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `6278703678267720` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -837,7 +837,7 @@ Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+0
 
 # Documentation
 
-Section `docs` — marker `15`, position 16 of 24 in the guide.
+Section `docs` — marker `15`, position 16 of 25 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -936,7 +936,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `6278703678267720` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -945,7 +945,7 @@ Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+0
 
 # Landing
 
-Section `landing` — marker `16`, position 17 of 24 in the guide.
+Section `landing` — marker `16`, position 17 of 25 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -1011,7 +1011,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `6278703678267720` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1020,7 +1020,7 @@ Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+0
 
 # Patterns
 
-Section `patterns` — marker `17`, position 18 of 24 in the guide.
+Section `patterns` — marker `17`, position 18 of 25 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -1052,7 +1052,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `6278703678267720` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1061,7 +1061,7 @@ Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+0
 
 # Affordances, made visible.
 
-Section `affordances` — marker `18`, position 19 of 24 in the guide.
+Section `affordances` — marker `18`, position 19 of 25 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -1229,7 +1229,7 @@ part of the component contract and nothing in an installed package defines them:
 
 ---
 
-Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `6278703678267720` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1238,7 +1238,7 @@ Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+0
 
 # Three shells, one system.
 
-Section `recipes` — marker `19`, position 20 of 24 in the guide.
+Section `recipes` — marker `19`, position 20 of 25 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -1341,7 +1341,7 @@ part of the component contract and nothing in an installed package defines them:
 
 ---
 
-Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `6278703678267720` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1350,7 +1350,7 @@ Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+0
 
 # Playground
 
-Section `playground` — marker `20`, position 21 of 24 in the guide.
+Section `playground` — marker `20`, position 21 of 25 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -1385,7 +1385,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `6278703678267720` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1394,7 +1394,7 @@ Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+0
 
 # Two themes, one cascade.
 
-Section `theming` — marker `21`, position 22 of 24 in the guide.
+Section `theming` — marker `21`, position 22 of 25 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -1459,7 +1459,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `6278703678267720` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1468,7 +1468,7 @@ Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+0
 
 # Install
 
-Section `install` — marker `22`, position 23 of 24 in the guide.
+Section `install` — marker `22`, position 23 of 25 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -1495,7 +1495,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `6278703678267720` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1504,7 +1504,7 @@ Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+0
 
 # Web components
 
-Section `webcomponents` — marker `23`, position 24 of 24 in the guide.
+Section `webcomponents` — marker `23`, position 24 of 25 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -1578,5 +1578,41 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `a590df6215d8aa0d` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `6278703678267720` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
+
+
+---
+
+# Map engine integration.
+
+# Map engine integration.
+
+Section `mapengine` — marker `24`, position 25 of 25 in the guide.
+Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
+private until v1.0). See `index.json` for the whole set and the shared statement.
+
+## What the guide says
+
+Contour ships the interface and deliberately stays out of the map engine's turf. It never imports MapLibre, Mapbox or Leaflet, never renders GeoJSON, and never projects coordinates. The engine owns the canvas; Contour owns the chrome around it.
+
+The seam is duck-typed and event-driven: a consumer attaches a live engine instance to a Contour component, reads viewport bounds back through a neutral accessor, and forwards Contour's bubbling events to the engine's own API. No engine symbol leaks into the system, and a page can drop the engine without touching Contour.
+
+The consumer owns this canvas; the system themes the chrome around it.
+
+Map-engine seam: Contour never imports a map library. Attach a live engine via el.attachMap(map) (or set el.map = map); read viewport bounds via el.getViewport(). Events (contour:map-control, contour:map-attach, contour:map-detach) are composed and bubble through shadow hosts. See templates/map.html for a working MapLibre example.
+
+## Blocks documented here
+
+4 block(s). Their facts live in `../contour.components.json`;
+only the names are here, because the same figure in two files is how a document
+starts disagreeing with itself.
+
+- `.c-btn`
+- `.c-icon-badge`
+- `.c-map-area`
+- `.c-section-head`
+
+---
+
+Source `index.html` @ `6278703678267720` · last committed 2026-10-29T13:17:46+01:00 · no URL: the project is private until v1.0.
 

@@ -394,7 +394,7 @@
 
         <details class="c-header__mobile-nav">
           <summary aria-label="Sections">§</summary>
-          <nav aria-label="Sections">
+          <nav aria-label="Mobile sections">
             <a href="#colour">Colour</a>
             <a href="#type">Type</a>
             <a href="#actions">Actions</a>
@@ -456,6 +456,7 @@
           <a href="#theming"><span class="ds-rail__num">21</span> Theming</a>
           <a href="#install"><span class="ds-rail__num">22</span> Install</a>
           <a href="#webcomponents"><span class="ds-rail__num">23</span> Web components</a>
+          <a href="#mapengine"><span class="ds-rail__num">24</span> Map engine</a>
         </nav>
       </aside>
 
@@ -6308,7 +6309,7 @@ means obvious.
               <span class="ds-spec__name">Map area</span>
               <span class="ds-spec__token">.c-map-area</span>
             </div>
-            <div class="ds-example" data-generated="wrap"><div class="ds-panel">
+            <div class="ds-panel">
 
               <div class="c-map-area" style="min-block-size: 8rem; border: 1px solid var(--color-border); border-radius: var(--radius-md)">
                 <div data-map role="img" aria-label="Map canvas placeholder">
@@ -6324,7 +6325,7 @@ means obvious.
                 <code>contour:map-detach</code>) are composed and bubble through shadow hosts. See
                 <code>templates/map.html</code> for a working MapLibre example.
               </p>
-              <pre class="ds-code__pre" style="margin-block-start: var(--space-sm)"><code>// Plain JS — mount Contour chrome on a live MapLibre instance
+              <div class="ds-example" data-generated="wrap"><div class="ds-panel ds-panel--sunken" style="margin-block-start: var(--space-sm)"><pre class="hljs"><code class="language-javascript">// Plain JS — mount Contour chrome on a live MapLibre instance
 const map = new maplibregl.Map({ container: "map", style, center, zoom });
 const area = document.querySelector("contour-map-area");
 area.attachMap(map);                 // store the engine reference
@@ -6338,8 +6339,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
 // React — use a ref and attach on mount
 // const ref = useRef(null);
 // useEffect(() =&gt; { if (ref.current) ref.current.attachMap(map); return () =&gt; ref.current?.detachMap(); }, [map]);
-// &lt;contour-map-area ref={ref} /&gt;</code></pre>
-            </div><details class="ds-code" data-generated="code">
+// &lt;contour-map-area ref="{ref}"&gt;&lt;/contour-map-area&gt;</code></pre></div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
@@ -6351,16 +6351,14 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-94">&lt;div class="c-map-area" style="min-block-size: 8rem; border: 1px solid var(--color-border); border-radius: var(--radius-md)"&gt;
-  &lt;div data-map role="img" aria-label="Map canvas placeholder"&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;pre class="ds-code__pre" style="margin-block-start: var(--space-sm)"&gt;
-  &lt;code&gt;
-    // Plain JS — mount Contour chrome on a live MapLibre instance const map = new maplibregl.Map({ container: "map", style, center, zoom }); const area = document.querySelector("contour-map-area"); area.attachMap(map); // store the engine reference map.on("moveend", () =&gt; { const vp = area.getViewport(); // { west, south, east, north } or { zoom, center } console.log("viewport", vp); }); area.addEventListener("contour:map-control", (e) =&gt; { console.log("control clicked:", e.detail.control); }); // React — use a ref and attach on mount // const ref = useRef(null); // useEffect(() =&gt; { if (ref.current) ref.current.attachMap(map); return () =&gt; ref.current?.detachMap(); }, [map]); // &lt;contour-map-area ref={ref} /&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-94">&lt;pre class="hljs"&gt;
+  &lt;code class="language-javascript"&gt;
+    // Plain JS — mount Contour chrome on a live MapLibre instance const map = new maplibregl.Map({ container: "map", style, center, zoom }); const area = document.querySelector("contour-map-area"); area.attachMap(map); // store the engine reference map.on("moveend", () =&gt; { const vp = area.getViewport(); // { west, south, east, north } or { zoom, center } console.log("viewport", vp); }); area.addEventListener("contour:map-control", (e) =&gt; { console.log("control clicked:", e.detail.control); }); // React — use a ref and attach on mount // const ref = useRef(null); // useEffect(() =&gt; { if (ref.current) ref.current.attachMap(map); return () =&gt; ref.current?.detachMap(); }, [map]); // &lt;contour-map-area ref="{ref}"&gt;&lt;/contour-map-area&gt;
   &lt;/code&gt;
 &lt;/pre&gt;</code></pre>
                       </div>
                     </details></div>
+            </div>
           </div>
 
           <div class="ds-spec">
@@ -11211,7 +11209,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                   <h3 class="c-card__title">Card</h3>
                   <p class="c-card__body">Compact surface that expands into a dialog.</p>
                 </div>
-                <dialog class="c-dialog" data-view-transition style="--view-transition-name: surface-hero; inline-size: min(20rem, 100%)" open>
+                <dialog class="c-dialog" data-view-transition style="--view-transition-name: surface-hero" open>
                   <div class="c-dialog__head">
                     <h2 class="c-dialog__title">Dialog</h2>
                   </div>
@@ -11237,7 +11235,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
     &lt;h3 class="c-card__title"&gt;Card&lt;/h3&gt;
     &lt;p class="c-card__body"&gt;Compact surface that expands into a dialog.&lt;/p&gt;
   &lt;/div&gt;
-  &lt;dialog class="c-dialog" data-view-transition style="--view-transition-name: surface-hero; inline-size: min(20rem, 100%)" open&gt;
+  &lt;dialog class="c-dialog" data-view-transition style="--view-transition-name: surface-hero" open&gt;
     &lt;div class="c-dialog__head"&gt;
       &lt;h2 class="c-dialog__title"&gt;Dialog&lt;/h2&gt;
     &lt;/div&gt;
@@ -14787,7 +14785,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
               <span class="ds-spec__token">contour-dialog</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <button class="c-btn" onclick="document.getElementById('dlg-demo').show()">Open dialog</button>
+              <button class="c-btn" type="button" onclick="document.getElementById('dlg-demo').show()">Open dialog</button>
               <contour-dialog id="dlg-demo" title="Move layer">
                 <p>Dialog body content.</p>
               </contour-dialog>
@@ -14803,7 +14801,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-210">&lt;button class="c-btn" onclick="document.getElementById('dlg-demo').show()"&gt;Open dialog&lt;/button&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-210">&lt;button class="c-btn" type="button" onclick="document.getElementById('dlg-demo').show()"&gt;Open dialog&lt;/button&gt;
 &lt;contour-dialog id="dlg-demo" title="Move layer"&gt;
   &lt;p&gt;Dialog body content.&lt;/p&gt;
 &lt;/contour-dialog&gt;</code></pre>
@@ -15921,7 +15919,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
               <span class="ds-spec__token">contour-command</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <button class="c-btn" popovertarget="cmd-demo">Open command</button>
+              <button class="c-btn" type="button" popovertarget="cmd-demo">Open command</button>
               <contour-command id="cmd-demo" popover placeholder="Search" items="[{&quot;label&quot;:&quot;Cmd&quot;}]"></contour-command>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
@@ -15935,7 +15933,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-257">&lt;button class="c-btn" popovertarget="cmd-demo"&gt;Open command&lt;/button&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-257">&lt;button class="c-btn" type="button" popovertarget="cmd-demo"&gt;Open command&lt;/button&gt;
 &lt;contour-command id="cmd-demo" popover placeholder="Search" items="[{&amp;quot;label&amp;quot;:&amp;quot;Cmd&amp;quot;}]"&gt;&lt;/contour-command&gt;</code></pre>
                       </div>
                     </details></div>
@@ -17300,7 +17298,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
               <span class="ds-spec__token">contour-toast</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <button class="c-btn" onclick="this.nextElementSibling.show('Saved', {variant:'success',duration:3000})">Show toast</button>
+              <button class="c-btn" type="button" onclick="this.nextElementSibling.show('Saved', {variant:'success',duration:3000})">Show toast</button>
               <contour-toast></contour-toast>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
@@ -17314,7 +17312,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-314">&lt;button class="c-btn" onclick="this.nextElementSibling.show('Saved', {variant:'success',duration:3000})"&gt;Show toast&lt;/button&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-314">&lt;button class="c-btn" type="button" onclick="this.nextElementSibling.show('Saved', {variant:'success',duration:3000})"&gt;Show toast&lt;/button&gt;
 &lt;contour-toast&gt;&lt;/contour-toast&gt;</code></pre>
                       </div>
                     </details></div>
@@ -18421,7 +18419,90 @@ area.addEventListener("contour:map-control", (e) =&gt; {
           <!-- Guide-only shortcut overlay chrome (named here so the docs package counts it) -->
           <div class="c-shortcut-overlay c-shortcut-panel c-shortcut-list c-shortcut-row" hidden aria-hidden="true"></div>
 
+          </section>
+
+         <!-- ===================== 24 · MAP ENGINE ===================== -->
+         <section class="section section--sunken" id="mapengine">
+           <div class="c-section-head">
+             <div class="c-icon-badge">
+               <svg aria-hidden="true"><use href="#i-pin" /></svg>
+             </div>
+             <div>
+               <span class="label">Integration · 24</span>
+               <h2 class="c-section-head__title">Map engine integration.</h2>
+               <p class="c-section-head__desc">
+                 Contour ships the interface and deliberately stays out of the map engine's turf. It
+                 never imports MapLibre, Mapbox or Leaflet, never renders GeoJSON, and never projects
+                 coordinates. The engine owns the canvas; Contour owns the chrome around it.
+               </p>
+               <p class="c-section-head__desc">
+                 The seam is duck-typed and event-driven: a consumer attaches a live engine instance to
+                 a Contour component, reads viewport bounds back through a neutral accessor, and forwards
+                 Contour's bubbling events to the engine's own API. No engine symbol leaks into the
+                 system, and a page can drop the engine without touching Contour.
+               </p>
+             </div>
+           </div>
+
+           <div class="ds-spec">
+             <div class="ds-spec__head">
+               <span class="ds-spec__name">Map area</span>
+               <span class="ds-spec__token">.c-map-area</span>
+             </div>
+             <div class="ds-panel">
+
+               <div class="c-map-area" style="min-block-size: 8rem; border: 1px solid var(--color-border); border-radius: var(--radius-md)">
+                 <div data-map role="img" aria-label="Map canvas placeholder">
+                   <p class="muted" style="font-size: var(--type-micro); padding: var(--space-sm)">
+                     The consumer owns this canvas; the system themes the chrome around it.
+                   </p>
+                 </div>
+               </div>
+               <p class="muted" style="font-size: var(--type-xs); margin-block-start: var(--space-sm)">
+                 <strong>Map-engine seam:</strong> Contour never imports a map library. Attach a live
+                 engine via <code>el.attachMap(map)</code> (or set <code>el.map = map</code>); read
+                 viewport bounds via <code>el.getViewport()</code>. Events
+                 (<code>contour:map-control</code>, <code>contour:map-attach</code>,
+                 <code>contour:map-detach</code>) are composed and bubble through shadow hosts. See
+                 <code>templates/map.html</code> for a working MapLibre example.
+               </p>
+               <div class="ds-example" data-generated="wrap"><div class="ds-panel ds-panel--sunken" style="margin-block-start: var(--space-sm)"><pre class="hljs"><code class="language-javascript">// Plain JS — mount Contour chrome on a live MapLibre instance
+const map = new maplibregl.Map({ container: "map", style, center, zoom });
+const area = document.querySelector("contour-map-area");
+area.attachMap(map);                 // store the engine reference
+map.on("moveend", () =&gt; {
+  const vp = area.getViewport();    // { west, south, east, north } or { zoom, center }
+  console.log("viewport", vp);
+});
+area.addEventListener("contour:map-control", (e) =&gt; {
+  console.log("control clicked:", e.detail.control);
+});
+// React — use a ref and attach on mount
+// const ref = useRef(null);
+// useEffect(() =&gt; { if (ref.current) ref.current.attachMap(map); return () =&gt; ref.current?.detachMap(); }, [map]);
+// &lt;contour-map-area ref="{ref}"&gt;&lt;/contour-map-area&gt;</code></pre></div><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-360" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-360">&lt;pre class="hljs"&gt;
+  &lt;code class="language-javascript"&gt;
+    // Plain JS — mount Contour chrome on a live MapLibre instance const map = new maplibregl.Map({ container: "map", style, center, zoom }); const area = document.querySelector("contour-map-area"); area.attachMap(map); // store the engine reference map.on("moveend", () =&gt; { const vp = area.getViewport(); // { west, south, east, north } or { zoom, center } console.log("viewport", vp); }); area.addEventListener("contour:map-control", (e) =&gt; { console.log("control clicked:", e.detail.control); }); // React — use a ref and attach on mount // const ref = useRef(null); // useEffect(() =&gt; { if (ref.current) ref.current.attachMap(map); return () =&gt; ref.current?.detachMap(); }, [map]); // &lt;contour-map-area ref="{ref}"&gt;&lt;/contour-map-area&gt;
+  &lt;/code&gt;
+&lt;/pre&gt;</code></pre>
+                      </div>
+                    </details></div>
+             </div>
+           </div>
          </section>
+
             <a class="c-back-to-top" href="#overview" aria-label="Back to top">↑</a>
             </main></div>
 
@@ -18475,6 +18556,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
             <a href="#playground">Playground</a>
             <a href="#install">Install</a>
             <a href="#webcomponents">Web components</a>
+            <a href="#mapengine">Map engine</a>
           </div>
         </div>
       </div>

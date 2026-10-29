@@ -322,7 +322,8 @@
         }
         return;
       }
-       this._contourRendering = true;
+       if (name === "checked") this._checkedAttrChanged = true;
+        this._contourRendering = true;
        try {
          // Preserve form control values across a re-render: generated inputs are
          // dropped and rebuilt, so without this a host attribute change wipes
@@ -398,9 +399,9 @@
           if (el.value === "" && el.getAttribute("value") === null) {
             el.value = match.value;
           }
-          if ((el.type === "checkbox" || el.type === "radio") && typeof match.checked === "boolean") {
-            el.checked = match.checked;
-          }
+           if ((el.type === "checkbox" || el.type === "radio") && typeof match.checked === "boolean" && !this._checkedAttrChanged) {
+             el.checked = match.checked;
+           }
         }
         let u = 0;
         for (const el of newControls) {
@@ -411,9 +412,9 @@
           if (el.value === "" && el.getAttribute("value") === null) {
             el.value = saved.value;
           }
-          if ((el.type === "checkbox" || el.type === "radio") && typeof saved.checked === "boolean") {
-            el.checked = saved.checked;
-          }
+           if ((el.type === "checkbox" || el.type === "radio") && typeof saved.checked === "boolean" && !this._checkedAttrChanged) {
+             el.checked = saved.checked;
+           }
         }
         // Restore <details> open state. A disclosure carries an `id` when it is
         // stable across renders (a faq item, a doc section); match those by id
@@ -495,9 +496,10 @@
              else try { this.focus(); } catch (e) {}
            }
          }
-        this.enhance();
-        this._detachInnerFormControls();
-      } finally {
+         this.enhance();
+         this._detachInnerFormControls();
+         this._checkedAttrChanged = false;
+       } finally {
         this._contourRendering = false;
       }
     }

@@ -512,6 +512,7 @@
     position: relative;
     aspect-ratio: 16 / 7;
     min-block-size: 8rem;
+    min-inline-size: 0;
     max-inline-size: 100%;
     overflow: hidden;
     border-block-end: 1px solid var(--chart-axis);

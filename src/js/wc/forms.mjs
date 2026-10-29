@@ -643,18 +643,19 @@ class ContourRadioList extends ContourBase {
       wireStates(this);
       loadRemote(this, "items");
       if (renderStates(this, "radio-list")) return;
-      const items = remoteData(this, "items");
-      Array.from(this.querySelectorAll("label.c-radio")).forEach((l) => l.remove());
-      if (items) {
-        try {
-          const parsed = JSON.parse(items);
-          parsed.forEach((it) => {
-            const lbl = document.createElement("label");
-            lbl.className = "c-radio";
-            const input = document.createElement("input");
-            input.type = "radio";
-            input.className = "c-radio__input";
-            input.name = this.getAttribute("name") || contourId("radio-list");
+       const items = remoteData(this, "items");
+       Array.from(this.querySelectorAll("label.c-radio")).forEach((l) => l.remove());
+       if (items) {
+         try {
+           const parsed = JSON.parse(items);
+           const groupName = this.getAttribute("name") || contourId("radio-list");
+           parsed.forEach((it) => {
+             const lbl = document.createElement("label");
+             lbl.className = "c-radio";
+             const input = document.createElement("input");
+             input.type = "radio";
+             input.className = "c-radio__input";
+             input.name = groupName;
             input.tabIndex = -1;
             if (typeof it === "string") { input.value = it; lbl.appendChild(input); lbl.appendChild(document.createTextNode(" " + it)); }
             else { input.value = it.value || it.label; if (it.checked) input.checked = true; lbl.appendChild(input); const span = document.createElement("span"); span.textContent = it.label || it.value; lbl.appendChild(span); }

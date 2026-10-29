@@ -445,6 +445,8 @@
     font-weight: var(--weight-medium);
     letter-spacing: 0.04em;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .c-badge--primary {
@@ -2517,6 +2519,8 @@
     gap: 0.55rem;
     color: var(--color-text-muted);
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .c-legend__swatch {

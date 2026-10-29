@@ -701,6 +701,7 @@
     text-decoration: underline;
     text-decoration-color: color-mix(in oklab, var(--color-link) 40%, transparent);
     text-underline-offset: 0.2em;
+    overflow-wrap: break-word;
   }
 
   .c-prose a:hover {
@@ -723,6 +724,7 @@
     background: var(--color-surface-3);
     color: var(--color-text-strong);
     font-size: 0.875em;
+    overflow-wrap: break-word;
   }
 
   .c-prose blockquote {

@@ -126,18 +126,23 @@ class ContourTabs extends ContourBase {
             const orientation = this.getAttribute("orientation") === "vertical" ? "vertical" : "horizontal";
             list.setAttribute("aria-orientation", orientation);
             if (orientation === "vertical") this.classList.add("c-tabs--vertical"); else this.classList.remove("c-tabs--vertical");
-            list.innerHTML = "";
-            // Remove any previously generated panels so re-render doesn't stack.
-            Array.from(this.querySelectorAll(".c-tabs__panel")).forEach((n) => n.remove());
-            parsed.forEach((t, i) => {
-              const label = typeof t === "string" ? t : (t.label || t.title || "");
-              const panelId = contourId("c-tabs-panel");
-              const btn = document.createElement("button");
-              btn.className = "c-tabs__tab";
-              btn.setAttribute("role", "tab");
-              btn.setAttribute("aria-selected", String(i === 0));
-              btn.setAttribute("aria-controls", panelId);
-              btn.tabIndex = i === 0 ? 0 : -1;
+             // Preserve the selected tab across rebuilds (G-31): read the
+             // pre-drop selection before clearing, then re-apply it.
+             const _prevTabs = Array.from(list.querySelectorAll("[role='tab']"));
+             const _prevSel = _prevTabs.findIndex((t) => t.getAttribute("aria-selected") === "true");
+             const _keepIdx = _prevSel >= 0 ? _prevSel : 0;
+             list.innerHTML = "";
+             // Remove any previously generated panels so re-render doesn't stack.
+             Array.from(this.querySelectorAll(".c-tabs__panel")).forEach((n) => n.remove());
+             parsed.forEach((t, i) => {
+               const label = typeof t === "string" ? t : (t.label || t.title || "");
+               const panelId = contourId("c-tabs-panel");
+               const btn = document.createElement("button");
+               btn.className = "c-tabs__tab";
+               btn.setAttribute("role", "tab");
+               btn.setAttribute("aria-selected", String(i === _keepIdx));
+               btn.setAttribute("aria-controls", panelId);
+               btn.tabIndex = i === _keepIdx ? 0 : -1;
               btn.textContent = label;
               if (this.hasAttribute("closable")) {
                 const closeBtn = document.createElement("button");
@@ -168,7 +173,7 @@ class ContourTabs extends ContourBase {
               if (typeof t === "object" && t !== null && t.content !== undefined) {
                 panel.textContent = String(t.content);
               }
-              if (i !== 0) panel.hidden = true;
+               if (i !== _keepIdx) panel.hidden = true;
               this.appendChild(panel);
             });
             if (list.parentNode !== this) this.prepend(list);
@@ -456,17 +461,20 @@ class ContourCodeTabs extends ContourBase {
           const parsed = JSON.parse(tabs);
            const l = this.ensure(".c-code-tabs__list", () => { const el = document.createElement("div"); el.className = "c-code-tabs__list"; el.setAttribute("role", "tablist"); return el; });
            l.setAttribute("role", "tablist");
-           l.innerHTML = "";
-           Array.from(this.querySelectorAll(".c-code-tabs__panel")).forEach((n) => n.remove());
-           parsed.forEach((t, i) => {
-             const label = typeof t === "string" ? t : (t.label || t.title || "");
-             const panelId = contourId("c-code-tabs-panel");
-             const btn = document.createElement("button");
-             btn.className = "c-code-tabs__tab";
-             btn.setAttribute("role", "tab");
-             btn.setAttribute("aria-selected", String(i === 0));
-             btn.setAttribute("aria-controls", panelId);
-             btn.tabIndex = i === 0 ? 0 : -1;
+            const _prevCodeTabs = Array.from(l.querySelectorAll("[role='tab']"));
+            const _prevCodeSel = _prevCodeTabs.findIndex((t) => t.getAttribute("aria-selected") === "true");
+            const _keepCodeIdx = _prevCodeSel >= 0 ? _prevCodeSel : 0;
+            l.innerHTML = "";
+            Array.from(this.querySelectorAll(".c-code-tabs__panel")).forEach((n) => n.remove());
+            parsed.forEach((t, i) => {
+              const label = typeof t === "string" ? t : (t.label || t.title || "");
+              const panelId = contourId("c-code-tabs-panel");
+              const btn = document.createElement("button");
+              btn.className = "c-code-tabs__tab";
+              btn.setAttribute("role", "tab");
+              btn.setAttribute("aria-selected", String(i === _keepCodeIdx));
+              btn.setAttribute("aria-controls", panelId);
+              btn.tabIndex = i === _keepCodeIdx ? 0 : -1;
              btn.textContent = label;
              l.appendChild(btn);
              const panel = document.createElement("div");
@@ -476,7 +484,7 @@ class ContourCodeTabs extends ContourBase {
              if (typeof t === "object" && t !== null && t.content !== undefined) {
                panel.textContent = String(t.content);
              }
-             if (i !== 0) panel.hidden = true;
+              if (i !== _keepCodeIdx) panel.hidden = true;
              this.appendChild(panel);
            });
            if (l.parentNode !== this) this.prepend(l);

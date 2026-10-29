@@ -286,7 +286,10 @@
     .c-segmented,
     .c-command,
     .c-menu,
-    .c-toolbar {
+    .c-toolbar,
+    .c-pagination,
+    .c-combobox,
+    .c-tree {
       border: 1px solid CanvasText;
     }
 

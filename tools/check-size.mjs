@@ -55,7 +55,7 @@ const DIST = join(ROOT, "dist");
  *  which the Format Module has no legal place for (C-43). It states values only —
  *  a token's meaning is published once, in the Format document. */
 const BUDGETS = {
-  "contour.min.css": 181 * 1024,  // raised 2026-10-29: +CSS rules for generated classes; measured 180.3 kB
+  "contour.min.css": 182 * 1024,  // raised 2026-10-29: +CSS rules for generated classes + overflow fixes; measured 181.2 kB
   "contour.min.js": 38 * 1024,  // raised 2026-10-25: comparison slider drag (1.6 kB) added to ds.js
   "contour.d.ts": 27 * 1024,  // raised 2026-10-26 from 26 kB: expanded ContourProps to include all 99 observed attributes (was 8). Measured 26.2 kB. See M-WC-08 WC8-16.
   "contour.tokens.json": 50 * 1024,
@@ -92,7 +92,7 @@ const BUDGETS = {
   // partition — and a directory key is measured by summing the files under it,
   // because `statSync` on a directory reports the inode's size, which would make
   // this budget a pass at 4 kB over a 42 kB package.
-  "docs/": 53 * 1024,
+  "docs/": 55 * 1024,
   "docs/index.json": 7 * 1024,
   // The registry (C-46). Measured 2026-10-24 at 16,443 bytes across 5 files:
   // registry.json 8,952 B plus four item files of 1,869–1,884 B — figures this gate
