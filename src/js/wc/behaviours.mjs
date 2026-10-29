@@ -727,6 +727,13 @@ export function wireMenu(host) {
       e.preventDefault();
       wcEmit(host, "contour:select", { index, label: its[index].textContent.trim() });
     }
+    // Typeahead (F-21): printable char jumps to the first item whose label
+    // starts with the typed character.
+    if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      const ch = e.key.toLowerCase();
+      const match = its.findIndex((it) => (it.textContent || "").trim().toLowerCase().startsWith(ch));
+      if (match >= 0) { e.preventDefault(); its[match].focus(); }
+    }
   });
   wcListen(host, "click", (e) => {
     const item = wcClosest(host, e.target, "[role='menuitem']");
