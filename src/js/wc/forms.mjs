@@ -510,13 +510,48 @@ class ContourInputFull extends ContourBase {
   }
   define("contour-input", ContourInputFull);
 class ContourInputGroup extends ContourBase {
-    static get observed() { return ["label", "placeholder"]; }
-    static get properties() { return { label: { attribute: "label" }, placeholder: { attribute: "placeholder" } }; }
+    static get observed() { return ["label", "placeholder", "clearable", "submit"]; }
+    static get properties() { return { label: { attribute: "label" }, placeholder: { attribute: "placeholder" }, clearable: { attribute: "clearable", type: Boolean }, submit: { attribute: "submit", type: Boolean } }; }
     render() {
       this.classList.add("c-input-group");
       const icon = this.ensure("svg", () => { const el = document.createElementNS("http://www.w3.org/2000/svg", "svg"); el.setAttribute("aria-hidden", "true"); const use = document.createElementNS("http://www.w3.org/2000/svg", "use"); use.setAttribute("href", "#i-search"); el.appendChild(use); return el; });
       const input = this.ensure("input.c-input", () => { const el = document.createElement("input"); el.className = "c-input"; el.type = "text"; return el; });
       input.placeholder = this.getAttribute("placeholder") || this.getAttribute("label") || "";
+      // Clear affordance.
+      const oldClear = this.querySelector(".c-input-group__clear");
+      if (oldClear) oldClear.remove();
+      if (this.hasAttribute("clearable")) {
+        const btn = document.createElement("button");
+        btn.className = "c-input-group__clear";
+        btn.type = "button";
+        btn.setAttribute("aria-label", "Clear");
+        btn.textContent = "×";
+        this.appendChild(btn);
+      }
+      // Submit affordance.
+      const oldSubmit = this.querySelector(".c-input-group__submit");
+      if (oldSubmit) oldSubmit.remove();
+      if (this.hasAttribute("submit")) {
+        const btn = document.createElement("button");
+        btn.className = "c-input-group__submit";
+        btn.type = "submit";
+        btn.setAttribute("aria-label", "Submit");
+        btn.textContent = "→";
+        this.appendChild(btn);
+      }
+    }
+    enhance() {
+      if (this._wiredInputGroup) return;
+      this._wiredInputGroup = true;
+      this.addEventListener("click", (e) => {
+        const clear = e.target && e.target.closest ? e.target.closest(".c-input-group__clear") : null;
+        if (clear && this.contains(clear)) {
+          e.preventDefault();
+          const input = this.querySelector("input.c-input");
+          if (input) { input.value = ""; input.focus(); }
+          this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: "" } }));
+        }
+      });
     }
   }
   define("contour-input-group", ContourInputGroup);
