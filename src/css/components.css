@@ -3453,7 +3453,18 @@
     background: var(--color-primary-soft);
     color: var(--color-primary-text);
   }
-  /* -- Responsive content ------------------------------------------------ */
+  /* -- Avatar group ------------------------------------------------------ */
+  .c-avatar-group {
+    display: inline-flex;
+    align-items: center;
+  }
+  .c-avatar-group .c-avatar {
+    margin-inline-start: -0.5rem;
+    border: 2px solid var(--color-surface-1);
+  }
+  .c-avatar-group .c-avatar:first-child {
+    margin-inline-start: 0;
+  }
   .c-responsive-content {
     display: block;
   }

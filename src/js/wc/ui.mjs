@@ -782,3 +782,35 @@ class ContourResponsiveContent extends ContourBase {
     }
   }
   define("contour-responsive-content", ContourResponsiveContent);
+
+class ContourAvatarGroup extends ContourBase {
+    static get observed() { return ["items", "max"]; }
+    static get properties() { return { items: { attribute: "items" }, max: { attribute: "max", type: Number } }; }
+    render() {
+      this.classList.add("c-avatar-group");
+      const items = this.getAttribute("items");
+      const max = parseInt(this.getAttribute("max") || "4", 10) || 4;
+      Array.from(this.querySelectorAll(".c-avatar, .c-avatar-group__overflow")).forEach((n) => n.remove());
+      if (items) {
+        try {
+          const parsed = JSON.parse(items);
+          const shown = parsed.slice(0, max);
+          shown.forEach((it) => {
+            const av = document.createElement("span");
+            av.className = "c-avatar";
+            const name = typeof it === "string" ? it : (it.name || it.label || "");
+            av.textContent = name.slice(0, 2).toUpperCase();
+            if (typeof it === "object" && it.color) av.style.background = it.color;
+            this.appendChild(av);
+          });
+          if (parsed.length > max) {
+            const overflow = document.createElement("span");
+            overflow.className = "c-avatar c-avatar-group__overflow";
+            overflow.textContent = "+" + (parsed.length - max);
+            this.appendChild(overflow);
+          }
+        } catch (e) { /* keep existing */ }
+      }
+    }
+  }
+  define("contour-avatar-group", ContourAvatarGroup);

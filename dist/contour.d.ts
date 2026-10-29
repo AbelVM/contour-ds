@@ -13,6 +13,7 @@ export type ContourComponent =
   | "c-app"
   | "c-app-body"
   | "c-avatar"
+  | "c-avatar-group"
   | "c-badge"
   | "c-banner"
   | "c-bivariate"
@@ -613,6 +614,7 @@ declare global {
     "contour-app": ContourElement;
     "contour-app-body": ContourElement;
     "contour-avatar": ContourElement;
+    "contour-avatar-group": ContourElement;
     "contour-badge": ContourElement;
     "contour-banner": ContourElement;
     "contour-bivariate": ContourElement;
