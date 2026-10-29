@@ -55,7 +55,7 @@ const DIST = join(ROOT, "dist");
  *  which the Format Module has no legal place for (C-43). It states values only —
  *  a token's meaning is published once, in the Format document. */
 const BUDGETS = {
-  "contour.min.css": 180 * 1024,  // raised 2026-10-28: measured 177.4 kB after BY-48/B3-05/06/09/10/12/16/17/18/19; +2.6 kB margin  // raised 2026-10-26 from 169 kB: measured 173,081 B after the §04 segmented shrink fix (R4-02) added `.c-segmented > button, > label { min-width: 0; overflow-wrap: anywhere }` so the colour-vision toggle stops running out of its own section at 390 px. Pre-existing 169 kB line was exactly the measured size with no headroom.
+  "contour.min.css": 181 * 1024,  // raised 2026-10-29: +CSS rules for generated classes; measured 180.3 kB
   "contour.min.js": 38 * 1024,  // raised 2026-10-25: comparison slider drag (1.6 kB) added to ds.js
   "contour.d.ts": 27 * 1024,  // raised 2026-10-26 from 26 kB: expanded ContourProps to include all 99 observed attributes (was 8). Measured 26.2 kB. See M-WC-08 WC8-16.
   "contour.tokens.json": 50 * 1024,
@@ -116,10 +116,10 @@ const BUDGETS = {
   // Measured 2026-10-24 at 3,664 B.
   "hljs.css": 4 * 1024,
   "agent-rules.json": 12 * 1024,
-  "surfaces/contour-core.min.css": 121 * 1024,  // raised 2026-10-28: measured 120.5 kB after BY2-C12; +0.5 kB margin
-  "surfaces/contour-docs.min.css": 134 * 1024,  // raised 2026-10-28: measured 133.7 kB after BY2-C12; +0.3 kB margin
+  "surfaces/contour-core.min.css": 122 * 1024,  // raised 2026-10-29: +3 CSS rules for generated classes (c-tree__indent, c-breadcrumb__overflow, c-sidebar__title); measured 121.2 kB
+  "surfaces/contour-docs.min.css": 135 * 1024,  // raised 2026-10-29: same CSS additions propagate to docs surface; measured 134.4 kB
   "surfaces/contour-data.min.css": 159 * 1024,  // raised 2026-10-28: measured 158.8 kB after BY2-C12; +0.2 kB margin
-  "surfaces/contour-landing.min.css": 129 * 1024,  // raised 2026-10-28: measured 128.2 kB after BY2-C12; +0.8 kB margin
+  "surfaces/contour-landing.min.css": 130 * 1024,  // raised 2026-10-29: +CSS rules propagate; measured 129.1 kB
   "contour.esm.min.js": 39 * 1024,
   "contour-wc.esm.min.js": 350 * 1024,  // raised 2026-10-29: measured 346.9 kB after wc-completeness batch (F-02/F-04/F-11..F-27/D-27); +3.1 kB margin
 };

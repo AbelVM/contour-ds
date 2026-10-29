@@ -709,6 +709,13 @@
     position: relative;
   }
 
+  .c-tree__indent {
+    display: inline-block;
+    vertical-align: middle;
+    flex: none;
+    inline-size: 1rem;
+  }
+
   .c-tree__row {
     display: flex;
     align-items: center;
@@ -2526,6 +2533,12 @@
     color: var(--color-text-muted);
   }
 
+  .c-alert__actions {
+    display: flex;
+    gap: var(--space-xs);
+    align-items: center;
+  }
+
   .c-alert--info {
     border-inline-start-color: var(--color-info);
     background: var(--color-info-soft);
@@ -2847,6 +2860,12 @@
     max-inline-size: 30ch;
   }
 
+  .c-empty__illustration {
+    display: grid;
+    place-items: center;
+    margin-block-end: var(--space-sm);
+  }
+
   /* =======================================================================
      22. MISC ATOMS
      ======================================================================= */
@@ -2896,6 +2915,23 @@
 
   .c-breadcrumb__sep {
     opacity: 0.5;
+  }
+
+  .c-breadcrumb__overflow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--color-text-muted);
+    font: inherit;
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  .c-breadcrumb__overflow:hover {
+    color: var(--color-text-strong);
   }
 
   .c-breadcrumb__empty,
@@ -3346,6 +3382,15 @@
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(16rem, 24rem);
     gap: var(--space-lg);
+  }
+
+  .c-sidebar__title {
+    font-family: var(--font-display);
+    font-size: var(--type-h4);
+    font-weight: var(--weight-semibold);
+    letter-spacing: -0.012em;
+    color: var(--color-text-strong);
+    margin-block-end: var(--space-sm);
   }
 
   @media (width < 48rem) {

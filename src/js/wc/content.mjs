@@ -1,8 +1,8 @@
-import { ContourBase, define, sanitizeHtml } from './core.mjs';
+import { ContourBase, define, sanitizeHtml, headingTag } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { wireCopy } from './behaviours.mjs';
 class ContourCard extends ContourBase {
-    static get observed() { return ["title", "variant"]; }
+    static get observed() { return ["title", "variant", "heading"]; }
     static get properties() { return { title: { attribute: "title" }, variant: { attribute: "variant" } }; }
     render() {
       this.classList.add("c-card");
@@ -11,7 +11,7 @@ class ContourCard extends ContourBase {
       if (variant) this.classList.add("c-card--" + variant);
       const title = this.getAttribute("title");
       if (title) {
-        const h = this.ensure(".c-card__title", () => { const el = document.createElement("h3"); el.className = "c-card__title"; return el; });
+        const h = this.ensure(".c-card__title", () => { const el = document.createElement(headingTag(this, "h3")); el.className = "c-card__title"; return el; });
         if (h.parentNode === this && this.firstChild !== h) this.prepend(h);
         h.textContent = title;
       } else {
@@ -22,7 +22,7 @@ class ContourCard extends ContourBase {
   }
   define("contour-card", ContourCard);
 class ContourFeature extends ContourBase {
-    static get observed() { return ["index", "title", "body"]; }
+    static get observed() { return ["index", "title", "body", "heading"]; }
     static get properties() { return { index: { attribute: "index" }, title: { attribute: "title" }, body: { attribute: "body" } }; }
     render() {
       this.classList.add("c-feature");
@@ -39,7 +39,7 @@ class ContourFeature extends ContourBase {
         if (x) x.remove();
       }
       if (title) {
-        const t = this.ensure(".c-feature__title", () => { const el = document.createElement("h3"); el.className = "c-feature__title"; return el; });
+        const t = this.ensure(".c-feature__title", () => { const el = document.createElement(headingTag(this, "h3")); el.className = "c-feature__title"; return el; });
         t.textContent = title;
       } else {
         const t = this.querySelector(".c-feature__title");
@@ -56,7 +56,7 @@ class ContourFeature extends ContourBase {
   }
   define("contour-feature", ContourFeature);
 class ContourSteps extends ContourBase {
-    static get observed() { return ["steps", "current", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
+    static get observed() { return ["steps", "current", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "heading"]; }
     static get properties() { return { steps: { attribute: "steps" }, current: { attribute: "current", type: Number }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-steps");
@@ -79,7 +79,7 @@ class ContourSteps extends ContourBase {
             const title = typeof st === "string" ? st : st.title;
             const body = typeof st === "string" ? "" : st.body;
             if (title) {
-              const h = document.createElement("h3");
+              const h = document.createElement(headingTag(this, "h3"));
               h.className = "c-steps__title";
               h.textContent = title;
               item.appendChild(h);
@@ -208,7 +208,7 @@ class ContourBrand extends ContourBase {
   }
   define("contour-brand", ContourBrand);
 class ContourSectionHead extends ContourBase {
-    static get observed() { return ["title", "desc"]; }
+    static get observed() { return ["title", "desc", "heading"]; }
     static get properties() { return { title: { attribute: "title" }, desc: { attribute: "desc" } }; }
     render() {
       this.classList.add("c-section-head");
@@ -228,7 +228,7 @@ class ContourSectionHead extends ContourBase {
         this.appendChild(content);
       }
       if (title) {
-        const t = this.ensure(".c-section-head__title", () => { const el = document.createElement("h2"); el.className = "c-section-head__title"; return el; });
+        const t = this.ensure(".c-section-head__title", () => { const el = document.createElement(headingTag(this, "h2")); el.className = "c-section-head__title"; return el; });
         t.textContent = title;
         if (t.parentNode !== content) content.appendChild(t);
       } else {
@@ -418,7 +418,7 @@ class ContourTestimonialFull extends ContourBase {
   }
   define("contour-testimonial", ContourTestimonialFull);
 class ContourShowcaseFull extends ContourBase {
-    static get observed() { return ["title", "text", "media", "reverse", "items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
+    static get observed() { return ["title", "text", "media", "reverse", "items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "heading"]; }
     static get properties() { return { title: { attribute: "title" }, text: { attribute: "text" }, media: { attribute: "media" }, reverse: { attribute: "reverse" }, items: { attribute: "items" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-showcase");
@@ -443,7 +443,7 @@ class ContourShowcaseFull extends ContourBase {
         if (m) m.remove();
       }
       if (title) {
-        const t = this.ensure(".c-showcase__title", () => { const el = document.createElement("h3"); el.className = "c-showcase__title"; return el; });
+        const t = this.ensure(".c-showcase__title", () => { const el = document.createElement(headingTag(this, "h3")); el.className = "c-showcase__title"; return el; });
         t.textContent = title;
       } else {
         const t = this.querySelector(".c-showcase__title");
@@ -489,6 +489,7 @@ class ContourShowcaseFull extends ContourBase {
   }
 define("contour-showcase", ContourShowcaseFull);
 class ContourPricingFull extends ContourBase {
+    static get observed() { return []; }
     render() {
       // `.c-pricing` is the grid; every part the guide shows lives on `.c-price`.
       // A pricing element that scaffolded its own label invented a name no rule
@@ -498,13 +499,13 @@ class ContourPricingFull extends ContourBase {
   }
   define("contour-pricing", ContourPricingFull);
 class ContourRecipeFull extends ContourBase {
-    static get observed() { return ["title", "body", "canvas"]; }
+    static get observed() { return ["title", "body", "canvas", "heading"]; }
     static get properties() { return { title: { attribute: "title" }, body: { attribute: "body" }, canvas: { attribute: "canvas" } }; }
     render() {
       this.classList.add("c-recipe");
       const title = this.getAttribute("title");
       if (title) {
-        const t = this.ensure(".c-recipe__title", () => { const el = document.createElement("h3"); el.className = "c-recipe__title"; return el; });
+        const t = this.ensure(".c-recipe__title", () => { const el = document.createElement(headingTag(this, "h3")); el.className = "c-recipe__title"; return el; });
         t.textContent = title;
       } else {
         const t = this.querySelector(".c-recipe__title");
@@ -530,6 +531,7 @@ class ContourRecipeFull extends ContourBase {
   }
   define("contour-recipe", ContourRecipeFull);
 class ContourLogosFull extends ContourBase {
+    static get observed() { return []; }
     render() {
       this.classList.add("c-logos");
       if (!this.querySelector(".c-logos__item")) {
@@ -589,13 +591,13 @@ class ContourLandingFeaturesFull extends ContourBase {
   }
 define("contour-landing-features", ContourLandingFeaturesFull);
 class ContourLandingHeroFull extends ContourBase {
-    static get observed() { return ["actions", "title", "text"]; }
+    static get observed() { return ["actions", "title", "text", "heading"]; }
     static get properties() { return { actions: { attribute: "actions" }, title: { attribute: "title" }, text: { attribute: "text" } }; }
     render() {
       this.classList.add("c-landing-hero");
       const title = this.getAttribute("title");
       if (title) {
-        const t = this.ensure(".c-landing-hero__title", () => { const el = document.createElement("h1"); el.className = "c-landing-hero__title"; return el; });
+        const t = this.ensure(".c-landing-hero__title", () => { const el = document.createElement(headingTag(this, "h1")); el.className = "c-landing-hero__title"; return el; });
         t.textContent = title;
       }
       const text = this.getAttribute("text");
@@ -616,6 +618,7 @@ class ContourLandingHeroFull extends ContourBase {
   }
   define("contour-landing-hero", ContourLandingHeroFull);
 class ContourLinkishFull extends ContourBase {
+    static get observed() { return []; }
     render() { this.classList.add("c-linkish"); }
   }
   define("contour-linkish", ContourLinkishFull);
@@ -630,11 +633,12 @@ class ContourPriceFull extends ContourBase {
   }
   define("contour-price", ContourPriceFull);
 class ContourProseFull extends ContourBase {
+    static get observed() { return []; }
     render() { this.classList.add("c-prose"); }
   }
   define("contour-prose", ContourProseFull);
 class ContourPanel extends ContourBase {
-    static get observed() { return ["title", "subtitle", "status"]; }
+    static get observed() { return ["title", "subtitle", "status", "heading"]; }
     static get properties() { return { title: { attribute: "title" }, subtitle: { attribute: "subtitle" }, status: { attribute: "status" } }; }
     render() {
       this.classList.add("c-panel");
@@ -642,7 +646,7 @@ class ContourPanel extends ContourBase {
       const subtitle = this.getAttribute("subtitle");
       const status = this.getAttribute("status");
       if (title) {
-        const h = this.ensure(".c-panel__title", () => { const el = document.createElement("h3"); el.className = "c-panel__title"; return el; });
+        const h = this.ensure(".c-panel__title", () => { const el = document.createElement(headingTag(this, "h3")); el.className = "c-panel__title"; return el; });
         if (h.parentNode === this && this.firstChild !== h) this.prepend(h);
         h.textContent = title;
       } else {
@@ -680,14 +684,14 @@ class ContourPanel extends ContourBase {
   }
   define("contour-panel", ContourPanel);
 class ContourCta extends ContourBase {
-    static get observed() { return ["title", "text", "actions"]; }
+    static get observed() { return ["title", "text", "actions", "heading"]; }
     static get properties() { return { title: { attribute: "title" }, text: { attribute: "text" }, actions: { attribute: "actions" } }; }
     render() {
       this.classList.add("c-cta");
       const title = this.getAttribute("title");
       const text = this.getAttribute("text");
       if (title) {
-        const t = this.ensure(".c-cta__title", () => { const el = document.createElement("h3"); el.className = "c-cta__title"; return el; });
+        const t = this.ensure(".c-cta__title", () => { const el = document.createElement(headingTag(this, "h3")); el.className = "c-cta__title"; return el; });
         t.textContent = title;
       } else {
         const t = this.querySelector(".c-cta__title");
@@ -778,6 +782,7 @@ class ContourCode extends ContourBase {
   }
   define("contour-code", ContourCode);
 class ContourPlate extends ContourBase {
+    static get observed() { return []; }
     render() { this.classList.add("c-plate"); }
   }
   define("contour-plate", ContourPlate);

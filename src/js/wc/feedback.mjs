@@ -1,8 +1,8 @@
-import { ContourBase, define, onDispose, sanitizeHtml } from './core.mjs';
+import { ContourBase, define, onDispose, sanitizeHtml, headingTag } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { wireRemovable, modalContain } from './behaviours.mjs';
 class ContourDialog extends ContourBase {
-    static get observed() { return ["title", "size"]; }
+    static get observed() { return ["title", "size", "heading"]; }
     static get properties() { return { title: { attribute: "title" }, size: { attribute: "size" } }; }
     render() {
       this.classList.add("c-dialog");
@@ -16,7 +16,7 @@ class ContourDialog extends ContourBase {
         if (!head) {
           head = document.createElement("div");
           head.className = "c-dialog__head";
-          const h = document.createElement("h2");
+          const h = document.createElement(headingTag(this, "h2"));
           h.className = "c-dialog__title";
           head.appendChild(h);
           const closeBtn = document.createElement("button");
@@ -335,7 +335,7 @@ class ContourCallout extends ContourBase {
   };
   define("contour-callout", ContourCallout);
 class ContourEmpty extends ContourBase {
-    static get observed() { return ["state", "title", "body", "action", "icon", "illustration"]; }
+    static get observed() { return ["state", "title", "body", "action", "icon", "illustration", "heading"]; }
     static get properties() { return { state: { attribute: "state" }, title: { attribute: "title" }, body: { attribute: "body" }, action: { attribute: "action" }, icon: { attribute: "icon" }, illustration: { attribute: "illustration" } }; }
     render() {
       this.classList.add("c-empty");
@@ -360,7 +360,7 @@ class ContourEmpty extends ContourBase {
         if (il) il.remove();
       }
       if (title) {
-        const t = this.ensure(".c-empty__title", () => { const el = document.createElement("h3"); el.className = "c-empty__title"; return el; });
+        const t = this.ensure(".c-empty__title", () => { const el = document.createElement(headingTag(this, "h3")); el.className = "c-empty__title"; return el; });
         t.textContent = title;
       } else {
         const t = this.querySelector(".c-empty__title");
@@ -798,6 +798,7 @@ class ContourExpandable extends ContourBase {
   }
   define("contour-expandable", ContourExpandable);
 class ContourToastHost extends ContourBase {
+    static get observed() { return []; }
     render() {
       this.classList.add("c-toast-host");
       if (!this.hasAttribute("role")) this.setAttribute("role", "status");

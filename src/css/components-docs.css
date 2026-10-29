@@ -224,6 +224,20 @@
     margin-block-start: 0.6rem;
   }
 
+  .c-callout__close {
+    color: var(--color-text-subtle);
+    cursor: pointer;
+    padding: 0.25rem;
+    border: none;
+    background: transparent;
+    border-radius: var(--radius-xs);
+  }
+
+  .c-callout__close:hover {
+    color: var(--color-text-strong);
+    background: var(--color-surface-3);
+  }
+
   .c-callout--note {
     border-inline-start-color: var(--color-info);
     background: var(--color-info-soft);

@@ -1,4 +1,4 @@
-import { ContourBase, define, onDispose, supportsUntilFound, contourId } from './core.mjs';
+import { ContourBase, define, onDispose, supportsUntilFound, contourId, headingTag } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { wireMenu, wirePagination, wireTabs, wireTree, wireRemovable } from './behaviours.mjs';
 class ContourMenu extends ContourBase {
@@ -1001,7 +1001,7 @@ class ContourFilterBar extends ContourBase {
   }
 define("contour-command", ContourCommand);
 class ContourFooter extends ContourBase {
-    static get observed() { return ["brand", "note", "links", "cols"]; }
+    static get observed() { return ["brand", "note", "links", "cols", "heading"]; }
     static get properties() { return { brand: { attribute: "brand" }, note: { attribute: "note" }, links: { attribute: "links" }, cols: { attribute: "cols" } }; }
     render() {
       this.classList.add("c-footer");
@@ -1048,7 +1048,7 @@ class ContourFooter extends ContourBase {
             const c = document.createElement("div");
             c.className = "c-footer__col";
             if (col.title) {
-              const h = document.createElement("h3");
+              const h = document.createElement(headingTag(this, "h3"));
               h.textContent = col.title;
               c.appendChild(h);
             }
@@ -1068,6 +1068,7 @@ class ContourFooter extends ContourBase {
   }
   define("contour-footer", ContourFooter);
 class ContourSchemeToggle extends ContourBase {
+    static get observed() { return []; }
     render() { this.classList.add("c-scheme-toggle"); }
     enhance() {
       if (this._wiredScheme) return;

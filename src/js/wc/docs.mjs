@@ -1,4 +1,4 @@
-import { ContourBase, define, sanitizeHtml } from './core.mjs';
+import { ContourBase, define, sanitizeHtml, headingTag } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 class ContourDocsNav extends ContourBase {
     static get observed() { return ["items", "title", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
@@ -92,14 +92,14 @@ class ContourDocsNav extends ContourBase {
   }
   define("contour-docs-nav", ContourDocsNav);
 class ContourDocsShell extends ContourBase {
-    static get observed() { return ["title", "lede", "article"]; }
+    static get observed() { return ["title", "lede", "article", "heading"]; }
     static get properties() { return { title: { attribute: "title" }, lede: { attribute: "lede" }, article: { attribute: "article" } }; }
     render() {
       this.classList.add("c-docs-shell");
       this.setAttribute("role", "region");
       const title = this.getAttribute("title");
       if (title) {
-        const h = this.ensure(".c-docs-shell__title", () => { const el = document.createElement("h1"); el.className = "c-docs-shell__title"; return el; });
+        const h = this.ensure(".c-docs-shell__title", () => { const el = document.createElement(headingTag(this, "h1")); el.className = "c-docs-shell__title"; return el; });
         h.textContent = title;
         this.setAttribute("aria-label", title);
       } else {

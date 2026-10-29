@@ -651,6 +651,7 @@ declare global {
     "contour-faq": ContourElement;
     "contour-feature": ContourElement;
     "contour-field": ContourElement;
+    "contour-file-tree": ContourElement;
     "contour-filter-bar": ContourElement;
     "contour-filter-pill": ContourElement;
     "contour-flag": ContourElement;
