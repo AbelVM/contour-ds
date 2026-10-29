@@ -51,6 +51,7 @@ export type ContourComponent =
   | "c-dialog"
   | "c-diff"
   | "c-disclosure"
+  | "c-divider"
   | "c-do-dont"
   | "c-docs-nav"
   | "c-docs-shell"
@@ -652,6 +653,7 @@ declare global {
     "contour-dialog": ContourElement;
     "contour-diff": ContourElement;
     "contour-disclosure": ContourElement;
+    "contour-divider": ContourElement;
     "contour-do-dont": ContourElement;
     "contour-docs-nav": ContourElement;
     "contour-docs-shell": ContourElement;

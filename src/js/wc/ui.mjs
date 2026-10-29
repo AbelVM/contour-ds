@@ -814,3 +814,19 @@ class ContourAvatarGroup extends ContourBase {
     }
   }
   define("contour-avatar-group", ContourAvatarGroup);
+
+class ContourDivider extends ContourBase {
+    static get observed() { return ["label", "orientation"]; }
+    static get properties() { return { label: { attribute: "label" }, orientation: { attribute: "orientation" } }; }
+    render() {
+      this.classList.add("c-divider");
+      const orientation = this.getAttribute("orientation") || "horizontal";
+      this.classList.add("c-divider--" + orientation);
+      const label = this.getAttribute("label");
+      if (label) {
+        const l = this.ensure(".c-divider__label", () => { const el = document.createElement("span"); el.className = "c-divider__label"; return el; });
+        l.textContent = label;
+      }
+    }
+  }
+  define("contour-divider", ContourDivider);

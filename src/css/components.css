@@ -3453,7 +3453,30 @@
     background: var(--color-primary-soft);
     color: var(--color-primary-text);
   }
-  /* -- Avatar group ------------------------------------------------------ */
+  /* -- Divider ----------------------------------------------------------- */
+  .c-divider {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    color: var(--color-text-subtle);
+    font-size: var(--type-xs);
+  }
+  .c-divider::before,
+  .c-divider::after {
+    content: "";
+    flex: 1 1 auto;
+    block-size: 1px;
+    background: var(--color-border);
+  }
+  .c-divider--horizontal {
+    flex-direction: row;
+  }
+  .c-divider--vertical::before,
+  .c-divider--vertical::after {
+    inline-size: 1px;
+    block-size: auto;
+    flex: 1 1 auto;
+  }
   .c-avatar-group {
     display: inline-flex;
     align-items: center;
