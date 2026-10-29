@@ -394,8 +394,8 @@ class ContourFaq extends ContourBase {
   }
 define("contour-faq", ContourFaq);
 class ContourAccordion extends ContourBase {
-    static get observed() { return ["items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "persist"]; }
-    static get properties() { return { items: { attribute: "items" } }; }
+    static get observed() { return ["items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "persist", "exclusive"]; }
+    static get properties() { return { items: { attribute: "items" }, exclusive: { attribute: "exclusive", type: Boolean } }; }
     render() {
       // The host is a plain container; the children carry .c-disclosure, which
       // is the block that owns the styling. No .c-accordion rule exists, so the
@@ -450,11 +450,16 @@ class ContourAccordion extends ContourBase {
     enhance() {
       if (this._wiredAccordion) return;
       this._wiredAccordion = true;
-      this.addEventListener("toggle", (e) => {
-        const t = e.target;
-        if (t && t.tagName === "DETAILS") {
-          this.dispatchEvent(new CustomEvent("contour:toggle", { detail: { open: t.open }, bubbles: true, composed: true }));
-          const persist = this.getAttribute("persist");
+       this.addEventListener("toggle", (e) => {
+         const t = e.target;
+         if (t && t.tagName === "DETAILS") {
+           if (t.open && this.hasAttribute("exclusive")) {
+             Array.from(this.querySelectorAll("details.c-disclosure")).forEach((d) => {
+               if (d !== t) d.open = false;
+             });
+           }
+           this.dispatchEvent(new CustomEvent("contour:toggle", { detail: { open: t.open }, bubbles: true, composed: true }));
+           const persist = this.getAttribute("persist");
           if (persist === "storage" && this.id) {
             try {
               const open = [];
