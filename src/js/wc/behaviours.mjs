@@ -918,5 +918,4 @@ export function modalContain(host, open) {
       window.scrollTo(modalSavedX, modalSavedY);
     }
   }
-  }
 }
