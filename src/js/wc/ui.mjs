@@ -1118,3 +1118,32 @@ class ContourColorPicker extends ContourBase {
     }
   }
   define("contour-color-picker", ContourColorPicker);
+
+class ContourNumberField extends ContourBase {
+    static get observed() { return ["value", "min", "max", "step", "label"]; }
+    static get properties() { return { value: { attribute: "value" }, min: { attribute: "min" }, max: { attribute: "max" }, step: { attribute: "step" }, label: { attribute: "label" } }; }
+    render() {
+      this.classList.add("c-number-field");
+      const label = this.getAttribute("label");
+      if (label) {
+        const l = this.ensure(".c-number-field__label", () => { const el = document.createElement("label"); el.className = "c-number-field__label"; return el; });
+        l.textContent = label;
+      }
+      const input = this.ensure(".c-number-field__input", () => { const el = document.createElement("input"); el.className = "c-input c-number-field__input"; el.type = "number"; return el; });
+      if (this.getAttribute("value") !== null) input.value = this.getAttribute("value");
+      if (this.getAttribute("min") !== null) input.min = this.getAttribute("min");
+      if (this.getAttribute("max") !== null) input.max = this.getAttribute("max");
+      if (this.getAttribute("step") !== null) input.step = this.getAttribute("step");
+    }
+    enhance() {
+      if (this._wiredNumberField) return;
+      this._wiredNumberField = true;
+      this.addEventListener("change", (e) => {
+        const t = e.target;
+        if (t && t.classList.contains("c-number-field__input")) {
+          this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: t.value } }));
+        }
+      });
+    }
+  }
+  define("contour-number-field", ContourNumberField);

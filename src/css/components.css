@@ -3473,7 +3473,19 @@
     z-index: var(--z-tooltip);
     margin-block-start: var(--space-2xs);
   }
-  /* -- Color picker ------------------------------------------------------ */
+  /* -- Number field ------------------------------------------------------ */
+  .c-number-field {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+  }
+  .c-number-field__label {
+    font-size: var(--type-xs);
+    color: var(--color-text-muted);
+  }
+  .c-number-field__input {
+    /* inherits c-input */
+  }
   .c-color-picker {
     display: inline-flex;
     align-items: center;

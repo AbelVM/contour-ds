@@ -109,6 +109,7 @@ export type ContourComponent =
   | "c-meter"
   | "c-metrics"
   | "c-minimap"
+  | "c-number-field"
   | "c-pager"
   | "c-pagination"
   | "c-palette-editor"
@@ -721,6 +722,7 @@ declare global {
     "contour-meter": ContourElement;
     "contour-metrics": ContourElement;
     "contour-minimap": ContourElement;
+    "contour-number-field": ContourElement;
     "contour-pager": ContourElement;
     "contour-pagination": ContourElement;
     "contour-palette-editor": ContourElement;
