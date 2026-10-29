@@ -928,3 +928,31 @@ class ContourPaletteEditor extends ContourBase {
     }
   }
   define("contour-palette-editor", ContourPaletteEditor);
+
+class ContourDateRange extends ContourBase {
+    static get observed() { return ["start", "end", "label"]; }
+    static get properties() { return { start: { attribute: "start" }, end: { attribute: "end" }, label: { attribute: "label" } }; }
+    render() {
+      this.classList.add("c-date-range");
+      const label = this.getAttribute("label");
+      if (label) {
+        const l = this.ensure(".c-date-range__label", () => { const el = document.createElement("span"); el.className = "c-date-range__label"; return el; });
+        l.textContent = label;
+      }
+      const start = this.ensure(".c-date-range__start", () => { const el = document.createElement("input"); el.className = "c-input c-date-range__start"; el.type = "date"; return el; });
+      start.value = this.getAttribute("start") || "";
+      const end = this.ensure(".c-date-range__end", () => { const el = document.createElement("input"); el.className = "c-input c-date-range__end"; el.type = "date"; return el; });
+      end.value = this.getAttribute("end") || "";
+    }
+    enhance() {
+      if (this._wiredDateRange) return;
+      this._wiredDateRange = true;
+      this.addEventListener("change", (e) => {
+        const t = e.target;
+        if (t && (t.classList.contains("c-date-range__start") || t.classList.contains("c-date-range__end"))) {
+          this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { start: this.querySelector(".c-date-range__start")?.value, end: this.querySelector(".c-date-range__end")?.value } }));
+        }
+      });
+    }
+  }
+  define("contour-date-range", ContourDateRange);

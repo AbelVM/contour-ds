@@ -3473,7 +3473,20 @@
     z-index: var(--z-tooltip);
     margin-block-start: var(--space-2xs);
   }
-  /* -- Palette editor ---------------------------------------------------- */
+  /* -- Date range -------------------------------------------------------- */
+  .c-date-range {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+  }
+  .c-date-range__label {
+    font-size: var(--type-xs);
+    color: var(--color-text-muted);
+  }
+  .c-date-range__start,
+  .c-date-range__end {
+    /* inherits c-input */
+  }
   .c-palette-editor {
     display: inline-flex;
     gap: var(--space-2xs);

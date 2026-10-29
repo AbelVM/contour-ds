@@ -46,6 +46,7 @@ export type ContourComponent =
   | "c-dash-shell"
   | "c-dash-toolbar"
   | "c-datamark"
+  | "c-date-range"
   | "c-delta"
   | "c-destructive-hint"
   | "c-dialog"
@@ -651,6 +652,7 @@ declare global {
     "contour-dash-shell": ContourElement;
     "contour-dash-toolbar": ContourElement;
     "contour-datamark": ContourElement;
+    "contour-date-range": ContourElement;
     "contour-delta": ContourElement;
     "contour-destructive-hint": ContourElement;
     "contour-dialog": ContourElement;

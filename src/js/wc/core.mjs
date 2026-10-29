@@ -170,7 +170,7 @@
     "empty", "error", "exclusive", "format", "heading", "hint", "href", "icon", "illustration", "index", "instrument", "interval", "items", "key", "layers",
     "label", "lazy", "lede", "legend", "line", "link", "links", "live", "loading", "locale",     "max", "media", "message", "method", "menu", "min", "multiple", "name", "needle", "next", "no", "no-cache", "nodes", "note", "norm",
     "options", "orientation", "page-size", "pages", "pause", "paused", "pausable", "persist", "placeholder", "playing", "point", "points", "prev", "prompt", "question", "recent", "required",
-    "quote", "ramp", "refresh", "removable", "reverse", "rings", "retry", "rows", "scale", "selectable", "selected", "separator", "series", "shortcut", "size", "skeleton", "sort", "sort-dir", "speed", "status", "submit", "timeout", "trigger", "virtual",
+    "quote", "ramp", "refresh", "removable", "reverse", "rings", "retry", "rows", "scale", "selectable", "start", "end", "selected", "separator", "series", "shortcut", "size", "skeleton", "sort", "sort-dir", "speed", "status", "submit", "timeout", "trigger", "virtual",
     "state", "steps", "subtitle", "summary", "src", "tabs", "tag", "text", "ticks", "title", "type", "unit",
     "variant", "values", "viewport", "yes", "zoomable", "x", "y",
   ];
