@@ -841,11 +841,12 @@ const series = this.getAttribute("series");
   }
   define("contour-chart", ContourChart);
 class ContourComparison extends ContourBase {
-    static get observed() { return ["divider"]; }
-    static get properties() { return { divider: { attribute: "divider" } }; }
+    static get observed() { return ["divider", "value"]; }
+    static get properties() { return { divider: { attribute: "divider" }, value: { attribute: "value" } }; }
     render() {
       this.classList.add("c-comparison");
       this.style.blockSize = "12rem";
+      this.style.setProperty("--comparison-pos", (this.getAttribute("value") || "50") + "%");
       // Ensure two panes exist.
       if (!this.querySelector(".c-comparison__pane--before")) {
         const p = document.createElement("div");
@@ -861,12 +862,46 @@ class ContourComparison extends ContourBase {
       }
       const divider = this.getAttribute("divider");
       if (divider !== null) {
-        const d = this.ensure(".c-comparison__divider", () => { const el = document.createElement("div"); el.className = "c-comparison__divider"; return el; });
+        const d = this.ensure(".c-comparison__divider", () => { const el = document.createElement("div"); el.className = "c-comparison__divider"; el.setAttribute("role", "separator"); el.setAttribute("aria-orientation", "vertical"); el.setAttribute("tabindex", "0"); return el; });
         if (divider) d.textContent = divider;
       } else {
         const d = this.querySelector(".c-comparison__divider");
         if (d) d.remove();
       }
+    }
+    enhance() {
+      if (this._wiredComparison) return;
+      this._wiredComparison = true;
+      const divider = () => this.querySelector(".c-comparison__divider");
+      const setPos = (pct) => {
+        const clamped = Math.max(0, Math.min(100, pct));
+        this.style.setProperty("--comparison-pos", clamped + "%");
+        this.setAttribute("value", String(Math.round(clamped)));
+        this.dispatchEvent(new CustomEvent("contour:drag", { bubbles: true, composed: true, detail: { value: clamped } }));
+      };
+      let dragging = false;
+      const onMove = (e) => {
+        if (!dragging) return;
+        const rect = this.getBoundingClientRect();
+        const pct = ((e.clientX - rect.left) / rect.width) * 100;
+        setPos(pct);
+      };
+      const onUp = () => { dragging = false; window.removeEventListener("mousemove", onMove); window.removeEventListener("mouseup", onUp); };
+      this.addEventListener("mousedown", (e) => {
+        const d = divider();
+        if (!d || !d.contains(e.target)) return;
+        dragging = true;
+        window.addEventListener("mousemove", onMove);
+        window.addEventListener("mouseup", onUp);
+        e.preventDefault();
+      });
+      this.addEventListener("keydown", (e) => {
+        const d = divider();
+        if (!d || document.activeElement !== d) return;
+        const cur = parseFloat(this.style.getPropertyValue("--comparison-pos")) || 50;
+        if (e.key === "ArrowLeft") { e.preventDefault(); setPos(cur - 5); }
+        else if (e.key === "ArrowRight") { e.preventDefault(); setPos(cur + 5); }
+      });
     }
   }
   define("contour-comparison", ContourComparison);

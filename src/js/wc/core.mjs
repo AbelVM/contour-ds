@@ -85,6 +85,7 @@
     "contour:copy": { payload: ["text"], composed: true },
     "contour:dash-action": { payload: ["label"], composed: true },
     "contour:diff-activate": { payload: ["kind", "text"], composed: true },
+    "contour:drag": { payload: ["value"], composed: true },
     "contour:do-dont-activate": { payload: ["kind", "text"], composed: true },
     "contour:docs-nav-select": { payload: ["label", "href"], composed: true },
     "contour:dragend": { payload: ["value"], composed: true },
