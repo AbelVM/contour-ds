@@ -678,20 +678,23 @@ class ContourFilterBar extends ContourBase {
       loadRemote(this, "items");
       if (renderStates(this, "command")) return;
       const placeholder = this.getAttribute("placeholder") || "Search…";
-      const input = this.ensure(".c-command__input", () => { const el = document.createElement("input"); el.className = "c-command__input"; el.type = "text"; return el; });
-      input.type = "text";
-      input.placeholder = placeholder;
-      input.setAttribute("aria-label", "Command");
-      input.setAttribute("role", "combobox");
-      input.setAttribute("aria-autocomplete", "list");
-      input.setAttribute("aria-expanded", "true");
+       const input = this.ensure(".c-command__input", () => { const el = document.createElement("input"); el.className = "c-command__input"; el.type = "text"; return el; });
+       input.type = "text";
+       input.placeholder = placeholder;
+       input.setAttribute("aria-label", "Command");
+       input.setAttribute("role", "combobox");
+       input.setAttribute("aria-autocomplete", "list");
+       input.setAttribute("aria-expanded", "true");
+       const list = this.querySelector(".c-command__list");
+       if (list && !list.id) list.id = contourId("c-command-list");
+       if (list && list.id) input.setAttribute("aria-controls", list.id);
       const items = remoteData(this, "items");
       const list = this.querySelector(".c-command__list");
       const authored = list ? Array.from(list.children).filter((n) => n.classList && n.classList.contains("c-command__item") || n.classList && n.classList.contains("c-command__group")) : [];
       if (items && !authored.length) {
         try {
           const parsed = JSON.parse(items);
-          const l = this.ensure(".c-command__list", () => { const el = document.createElement("div"); el.className = "c-command__list"; el.setAttribute("role", "listbox"); return el; });
+           const l = this.ensure(".c-command__list", () => { const el = document.createElement("div"); el.className = "c-command__list"; el.setAttribute("role", "listbox"); el.id = contourId("c-command-list"); return el; });
           l.setAttribute("role", "listbox");
           l.innerHTML = "";
           parsed.forEach((it) => {
@@ -808,12 +811,14 @@ class ContourFilterBar extends ContourBase {
         else if (e.key === "ArrowUp") { e.preventDefault(); cursor = Math.max(cursor - 1, 0); mark(); }
         else if (e.key === "Home") { e.preventDefault(); cursor = 0; mark(); }
         else if (e.key === "End") { e.preventDefault(); cursor = its.length - 1; mark(); }
-        else if (e.key === "Enter") {
-          e.preventDefault();
-          if (cursor >= 0 && its[cursor]) {
-            its[cursor].click();
-          }
-        } else if (e.key === "Escape") {
+         else if (e.key === "Enter") {
+           e.preventDefault();
+           if (cursor >= 0 && its[cursor]) {
+             const item = its[cursor];
+             const idx = items().indexOf(item);
+             this.dispatchEvent(new CustomEvent("contour:select", { detail: { index: idx, label: item.textContent.trim() }, bubbles: true, composed: true }));
+           }
+         } else if (e.key === "Escape") {
           if (typeof this.hidePopover === "function") this.hidePopover();
         }
       });
