@@ -43,17 +43,39 @@ class ContourAvatar extends ContourBase {
   }
   define("contour-avatar", ContourAvatar);
 class ContourBadgeFull extends ContourBase {
-    static get observed() { return ["variant", "label"]; }
-    static get properties() { return { variant: { attribute: "variant" }, label: { attribute: "label" } }; }
+    static get observed() { return ["variant", "label", "size", "removable"]; }
+    static get properties() { return { variant: { attribute: "variant" }, label: { attribute: "label" }, size: { attribute: "size" }, removable: { attribute: "removable", type: Boolean } }; }
     render() {
       this.classList.add("c-badge");
       Array.from(this.classList).forEach((c) => { if (c.startsWith("c-badge--")) this.classList.remove(c); });
       const variant = this.getAttribute("variant");
       if (variant) this.classList.add("c-badge--" + variant);
+      const size = this.getAttribute("size");
+      if (size) this.classList.add("c-badge--" + size);
       const label = this.getAttribute("label");
       if (label) {
-        this.textContent = label;
+        // Preserve remove button if present.
+        let textNode = null;
+        for (const n of this.childNodes) { if (n.nodeType === 3) { textNode = n; break; } }
+        if (textNode) textNode.nodeValue = label;
+        else this.insertBefore(document.createTextNode(label), this.firstChild);
       }
+      if (this.hasAttribute("removable")) {
+        this.ensure(".c-badge__remove", () => {
+          const btn = document.createElement("button");
+          btn.className = "c-badge__remove";
+          btn.type = "button";
+          btn.setAttribute("aria-label", "Remove");
+          btn.textContent = "×";
+          return btn;
+        });
+      } else {
+        const btn = this.querySelector(".c-badge__remove");
+        if (btn) btn.remove();
+      }
+    }
+    enhance() {
+      wireRemovable(this);
     }
   }
   define("contour-badge", ContourBadgeFull);
@@ -170,22 +192,32 @@ class ContourKbd extends ContourBase {
   }
   define("contour-kbd", ContourKbd);
 class ContourSpinner extends ContourBase {
+    static get observed() { return ["size"]; }
+    static get properties() { return { size: { attribute: "size" } }; }
     render() {
       this.classList.add("c-spinner");
+      Array.from(this.classList).forEach((c) => { if (c.startsWith("c-spinner--")) this.classList.remove(c); });
+      const size = this.getAttribute("size");
+      if (size) this.classList.add("c-spinner--" + size);
       if (!this.hasAttribute("role")) this.setAttribute("role", "status");
       if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Loading");
     }
   }
   define("contour-spinner", ContourSpinner);
 class ContourSkeleton extends ContourBase {
+    static get observed() { return ["size"]; }
+    static get properties() { return { size: { attribute: "size" } }; }
     render() {
       this.classList.add("c-skeleton");
+      Array.from(this.classList).forEach((c) => { if (c.startsWith("c-skeleton--")) this.classList.remove(c); });
+      const size = this.getAttribute("size");
+      if (size) this.classList.add("c-skeleton--" + size);
     }
   }
   define("contour-skeleton", ContourSkeleton);
 class ContourTooltip extends ContourBase {
-    static get observed() { return ["text", "anchor"]; }
-    static get properties() { return { text: { attribute: "text" }, anchor: { attribute: "anchor" } }; }
+    static get observed() { return ["text", "anchor", "delay", "trigger"]; }
+    static get properties() { return { text: { attribute: "text" }, anchor: { attribute: "anchor" }, delay: { attribute: "delay", type: Number }, trigger: { attribute: "trigger" } }; }
     render() {
       this.classList.add("c-tooltip");
       if (!this.hasAttribute("popover")) this.setAttribute("popover", "auto");
@@ -213,28 +245,41 @@ class ContourTooltip extends ContourBase {
           trigger.setAttribute("aria-describedby", this.id);
         }
       }
-      // Show on hover/focus rather than only on click.
-      const show = () => { try { this.showPopover(); } catch (e) {} };
-      const hide = () => { try { this.hidePopover(); } catch (e) {} };
-      if (anchorSel) {
-        // anchorSel already resolved above; re-resolve for listeners
-      }
-      // Attach hover/focus to the trigger if present, else to host.
+      const delayMs = (this.delay && this.delay > 0) ? this.delay : 0;
+      let showTimer = null;
+      const show = () => {
+        if (showTimer) clearTimeout(showTimer);
+        if (delayMs > 0) showTimer = setTimeout(() => { try { this.showPopover(); } catch (e) {} }, delayMs);
+        else { try { this.showPopover(); } catch (e) {} }
+      };
+      const hide = () => {
+        if (showTimer) { clearTimeout(showTimer); showTimer = null; }
+        try { this.hidePopover(); } catch (e) {}
+      };
+      const triggerMode = this.getAttribute("trigger") || "hover";
       const trigger = anchorSel ? (anchorSel.startsWith("#") ? document.getElementById(anchorSel.slice(1)) : document.querySelector(anchorSel)) : null;
        const target = trigger || this;
-       const onEnter = () => show();
-       const onLeave = () => hide();
-       const onFocus = () => show();
-       const onBlur = () => hide();
+       const onEnter = () => { if (triggerMode !== "click") show(); };
+       const onLeave = () => { if (triggerMode !== "click") hide(); };
+       const onFocus = () => { if (triggerMode !== "click") show(); };
+       const onBlur = () => { if (triggerMode !== "click") hide(); };
+       const onClick = () => {
+         if (triggerMode === "click" || triggerMode === "hover") {
+           if (this.matches(":popover-open")) hide(); else show();
+         }
+       };
        target.addEventListener("mouseenter", onEnter);
        target.addEventListener("mouseleave", onLeave);
        target.addEventListener("focus", onFocus);
        target.addEventListener("blur", onBlur);
+       target.addEventListener("click", onClick);
        onDispose(this, () => {
          target.removeEventListener("mouseenter", onEnter);
          target.removeEventListener("mouseleave", onLeave);
          target.removeEventListener("focus", onFocus);
          target.removeEventListener("blur", onBlur);
+         target.removeEventListener("click", onClick);
+         if (showTimer) clearTimeout(showTimer);
        });
       this.addEventListener("toggle", (e) => {
         const t = e.target;
@@ -249,8 +294,8 @@ class ContourTooltip extends ContourBase {
   }
   define("contour-tooltip", ContourTooltip);
 class ContourProgress extends ContourBase {
-    static get observed() { return ["value", "label"]; }
-    static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" } }; }
+    static get observed() { return ["value", "label", "min", "max", "paused", "pausable"]; }
+    static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" }, min: { attribute: "min" }, max: { attribute: "max" }, paused: { attribute: "paused", type: Boolean }, pausable: { attribute: "pausable", type: Boolean } }; }
     render() {
       this.classList.add("c-progress");
       const value = this.getAttribute("value");
@@ -284,8 +329,27 @@ class ContourProgress extends ContourBase {
        if (!this.hasAttribute("role")) this.setAttribute("role", "progressbar");
        const label = this.getAttribute("label");
        if (label && !this.hasAttribute("aria-label")) this.setAttribute("aria-label", label);
-      if (!this.hasAttribute("aria-valuemin")) this.setAttribute("aria-valuemin", "0");
-      if (!this.hasAttribute("aria-valuemax")) this.setAttribute("aria-valuemax", "100");
+      const min = this.getAttribute("min");
+      const max = this.getAttribute("max");
+      if (min !== null) this.setAttribute("aria-valuemin", min);
+      else if (!this.hasAttribute("aria-valuemin")) this.setAttribute("aria-valuemin", "0");
+      if (max !== null) this.setAttribute("aria-valuemax", max);
+      else if (!this.hasAttribute("aria-valuemax")) this.setAttribute("aria-valuemax", "100");
+      if (this.hasAttribute("paused")) this.classList.add("c-progress--paused");
+      else Array.from(this.classList).forEach((c) => { if (c === "c-progress--paused") this.classList.remove(c); });
+      if (this.hasAttribute("pausable")) {
+        this.ensure(".c-progress__pause", () => {
+          const btn = document.createElement("button");
+          btn.className = "c-progress__pause";
+          btn.type = "button";
+          btn.setAttribute("aria-label", "Pause");
+          btn.textContent = "⏸";
+          return btn;
+        });
+      } else {
+        const btn = this.querySelector(".c-progress__pause");
+        if (btn) btn.remove();
+      }
     }
   }
   define("contour-progress", ContourProgress);

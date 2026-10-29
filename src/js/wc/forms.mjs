@@ -2,9 +2,9 @@ import { ContourBase, define, contourId } from './core.mjs';
 import { wireCombobox } from './behaviours.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 class ContourCombobox extends ContourBase {
-    static get observed() { return ["options", "placeholder", "label", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "empty", "skeleton"]; }
+    static get observed() { return ["options", "placeholder", "label", "value", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "empty", "skeleton"]; }
     static get formAssociated() { return true; }
-    static get properties() { return { options: { attribute: "options" }, placeholder: { attribute: "placeholder" }, label: { attribute: "label" } }; }
+    static get properties() { return { options: { attribute: "options" }, placeholder: { attribute: "placeholder" }, label: { attribute: "label" }, value: { attribute: "value" } }; }
     render() {
       this.classList.add("c-combobox");
       wireStates(this);
@@ -20,6 +20,8 @@ class ContourCombobox extends ContourBase {
           input.type = "text";
           input.placeholder = this.getAttribute("placeholder") || "Search…";
           input.setAttribute("aria-label", this.getAttribute("label") || "Search");
+          const val = this.getAttribute("value");
+          if (val !== null) input.value = val;
           const list = this.ensure(".c-combobox__list", () => { const el = document.createElement("ul"); el.className = "c-combobox__list"; el.setAttribute("hidden", ""); return el; });
           list.innerHTML = "";
           list.setAttribute("hidden", "");
@@ -33,6 +35,20 @@ class ContourCombobox extends ContourBase {
       } else if (!authored.length && !options) {
         renderEmpty(this, "combobox");
       }
+      // Clear button (F-11).
+      if (this.getAttribute("value")) {
+        this.ensure(".c-combobox__clear", () => {
+          const btn = document.createElement("button");
+          btn.className = "c-combobox__clear";
+          btn.type = "button";
+          btn.setAttribute("aria-label", "Clear");
+          btn.textContent = "×";
+          return btn;
+        });
+      } else {
+        const btn = this.querySelector(".c-combobox__clear");
+        if (btn) btn.remove();
+      }
     }
      enhance() {
        wireCombobox(this);
@@ -41,7 +57,24 @@ class ContourCombobox extends ContourBase {
        if (this._internals && !this._wiredComboboxForm) {
          this._wiredComboboxForm = true;
          this._syncFormValue();
-         this.addEventListener("contour:select", () => { this._syncFormValue(); });
+         this.addEventListener("contour:select", (e) => {
+           const v = e && e.detail && (e.detail.value || e.detail.label);
+           if (v != null) this.setAttribute("value", String(v));
+           this._syncFormValue();
+         });
+       }
+       if (!this._wiredComboboxClear) {
+         this._wiredComboboxClear = true;
+         this.addEventListener("click", (e) => {
+           const btn = e.target && e.target.closest ? e.target.closest(".c-combobox__clear") : null;
+           if (!btn || !this.contains(btn)) return;
+           e.preventDefault();
+           this.removeAttribute("value");
+           const input = this.querySelector(".c-combobox__input");
+           if (input) input.value = "";
+           this._syncFormValue();
+           this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { name: this.getAttribute("name"), value: null, checked: null } }));
+         });
        }
      }
   }
@@ -128,10 +161,26 @@ class ContourField extends ContourBase {
       if (!input || e.target !== input) return;
       const valid = input.checkValidity();
       if (valid) {
-        input.removeAttribute("aria-invalid");
         input.setAttribute("aria-invalid", "false");
+        this.classList.remove("is-invalid");
+        this.removeAttribute("data-invalid");
       } else {
         input.setAttribute("aria-invalid", "true");
+        this.classList.add("is-invalid");
+        this.setAttribute("data-invalid", "");
+        // Surface the browser's validation message when no explicit error attr.
+        if (!this.getAttribute("error")) {
+          const msg = input.validationMessage || "Invalid value";
+          let errEl = this.querySelector(".c-field__error");
+          if (!errEl) {
+            errEl = document.createElement("span");
+            errEl.className = "c-field__error";
+            this.appendChild(errEl);
+          }
+          errEl.textContent = msg;
+          if (!errEl.id) errEl.id = contourId("err");
+          input.setAttribute("aria-describedby", (input.getAttribute("aria-describedby") || "").split(" ").filter((x) => x && x !== errEl.id).concat(errEl.id).join(" "));
+        }
       }
       sync();
     }, true);

@@ -39,10 +39,44 @@ class ContourMenu extends ContourBase {
                li.setAttribute("role", "menuitem");
                li.textContent = item;
                ul.appendChild(li);
+             } else if (item.group) {
+               const li = document.createElement("li");
+               li.className = "c-menu__group";
+               li.setAttribute("role", "group");
+               if (item.group) li.setAttribute("aria-label", String(item.group));
+               const hdr = document.createElement("div");
+               hdr.className = "c-menu__group-label";
+               hdr.textContent = String(item.group);
+               li.appendChild(hdr);
+               if (Array.isArray(item.items)) {
+                 const sub = document.createElement("ul");
+                 sub.className = "c-menu";
+                 sub.setAttribute("role", "menu");
+                 item.items.forEach((subItem) => {
+                   const sli = document.createElement("li");
+                   sli.className = "c-menu__item" + (subItem.danger ? " c-menu__item--danger" : "") + (subItem.disabled ? " c-menu__item--disabled" : "");
+                   sli.setAttribute("role", "menuitem");
+                   if (subItem.disabled) sli.setAttribute("aria-disabled", "true");
+                   if (subItem.label || subItem.title) {
+                     const lbl = document.createElement("span");
+                     lbl.className = "c-menu__label";
+                     lbl.textContent = subItem.label || subItem.title || "";
+                     sli.appendChild(lbl);
+                   }
+                   sub.appendChild(sli);
+                 });
+                 li.appendChild(sub);
+               }
+               ul.appendChild(li);
              } else {
                const li = document.createElement("li");
-               li.className = "c-menu__item" + (item.danger ? " c-menu__item--danger" : "");
+               li.className = "c-menu__item" + (item.danger ? " c-menu__item--danger" : "") + (item.disabled ? " c-menu__item--disabled" : "");
                li.setAttribute("role", "menuitem");
+               if (item.disabled) li.setAttribute("aria-disabled", "true");
+               if (item.items && Array.isArray(item.items)) {
+                 li.setAttribute("aria-haspopup", "menu");
+                 li.setAttribute("aria-expanded", "false");
+               }
                if (item.label || item.title) {
                  const lbl = document.createElement("span");
                  lbl.className = "c-menu__label";
@@ -179,6 +213,7 @@ class ContourHeader extends ContourBase {
         if (!brandEl) {
           brandEl = document.createElement("a");
           brandEl.className = "c-brand";
+          brandEl.setAttribute("data-contour-generated", "");
           brandEl.href = "#";
           brandEl.innerHTML = `<span class="c-mark"><svg aria-hidden="true"><use href="#i-mark" /></svg></span>`;
           const brandName = document.createElement("span");
@@ -188,7 +223,7 @@ class ContourHeader extends ContourBase {
         }
         const brandName = brandEl.querySelector(".c-brand__name");
         if (brandName) brandName.textContent = brand;
-      } else if (brandEl) {
+      } else if (brandEl && brandEl.hasAttribute("data-contour-generated")) {
         brandEl.remove();
       }
       // Nav
@@ -201,6 +236,7 @@ class ContourHeader extends ContourBase {
             nav = document.createElement("nav");
             nav.className = "c-header__nav";
             nav.setAttribute("aria-label", "Main");
+            nav.setAttribute("data-contour-generated", "");
             inner.appendChild(nav);
           }
           nav.innerHTML = "";
@@ -213,7 +249,7 @@ class ContourHeader extends ContourBase {
         } catch (e) { /* skip */ }
       } else if (links && authoredNav.length) {
         // authored nav wins; keep it
-      } else if (nav && !links) {
+      } else if (nav && !links && !authoredNav.length && nav.hasAttribute("data-contour-generated")) {
         nav.remove();
       }
       // Actions container
@@ -442,8 +478,9 @@ class ContourBreadcrumb extends ContourBase {
       if (items && !authored.length) {
         try {
           const parsed = JSON.parse(items);
-          const n = this.ensure("nav", () => { const el = document.createElement("nav"); el.setAttribute("aria-label", "Breadcrumb"); return el; });
+          const n = this.ensure("nav", () => { const el = document.createElement("nav"); el.setAttribute("aria-label", "Breadcrumb"); el.id = "contour-breadcrumb-list"; return el; });
           n.setAttribute("aria-label", "Breadcrumb");
+          n.id = "contour-breadcrumb-list";
           n.innerHTML = "";
           const sep = this.getAttribute("separator") || "/";
           const max = this._overflowExpanded ? null : this.max;
@@ -455,6 +492,8 @@ class ContourBreadcrumb extends ContourBase {
             btn.type = "button";
             btn.className = "c-breadcrumb__overflow";
             btn.setAttribute("aria-label", `Show ${parsed.length - shown.length + 1} more items`);
+            btn.setAttribute("aria-expanded", "false");
+            btn.setAttribute("aria-controls", "contour-breadcrumb-list");
             btn.textContent = "…";
             btn.addEventListener("click", () => {
               // A handler-owned property, not an attribute: flipping a
@@ -635,7 +674,6 @@ class ContourTocFull extends ContourBase {
       // new rule. Enhancement-only: without IntersectionObserver the links stay
       // as rendered, with author-provided aria-current left untouched.
       if (this._wiredTocSpy) return;
-      this._wiredTocSpy = true;
       if (typeof IntersectionObserver !== "function") return;
       const links = () => Array.from(this.querySelectorAll(".c-toc__link"));
       const targets = links()
@@ -646,6 +684,7 @@ class ContourTocFull extends ContourBase {
         })
         .filter(Boolean);
       if (!targets.length) return;
+      this._wiredTocSpy = true;
       const spy = new IntersectionObserver((entries) => {
         const visible = entries.filter((en) => en.isIntersecting).map((en) => en.target.id);
         if (!visible.length) return;
@@ -659,6 +698,20 @@ class ContourTocFull extends ContourBase {
       }, { rootMargin: "0px 0px -60% 0px", threshold: 0 });
       targets.forEach((t) => spy.observe(t));
       onDispose(this, () => spy.disconnect());
+      // Smooth scroll on link click (F-23).
+      if (!this._wiredTocScroll) {
+        this._wiredTocScroll = true;
+        this.addEventListener("click", (e) => {
+          const a = e.target && e.target.closest ? e.target.closest(".c-toc__link") : null;
+          if (!a || !this.contains(a)) return;
+          const href = a.getAttribute("href") || "";
+          if (!href.startsWith("#") || href.length < 2) return;
+          const target = document.getElementById(href.slice(1));
+          if (!target) return;
+          e.preventDefault();
+          try { target.scrollIntoView({ behavior: "smooth", block: "start" }); } catch (err) { target.scrollIntoView(); }
+        });
+      }
     }
   }
 define("contour-toc", ContourTocFull);
@@ -714,8 +767,8 @@ class ContourFilterBar extends ContourBase {
   }
   define("contour-filter-bar", ContourFilterBar);
   class ContourCommand extends ContourBase {
-    static get observed() { return ["placeholder", "items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { placeholder: { attribute: "placeholder" }, items: { attribute: "items" }, empty: { attribute: "empty" } }; }
+    static get observed() { return ["placeholder", "items", "recent", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
+    static get properties() { return { placeholder: { attribute: "placeholder" }, items: { attribute: "items" }, recent: { attribute: "recent" }, empty: { attribute: "empty" } }; }
     render() {
       this.classList.add("c-command");
       if (!this.hasAttribute("popover")) this.setAttribute("popover", "auto");
@@ -742,6 +795,32 @@ class ContourFilterBar extends ContourBase {
            const l = this.ensure(".c-command__list", () => { const el = document.createElement("div"); el.className = "c-command__list"; el.setAttribute("role", "listbox"); el.id = contourId("c-command-list"); return el; });
           l.setAttribute("role", "listbox");
           l.innerHTML = "";
+          const recentRaw = this.getAttribute("recent");
+          if (recentRaw) {
+            try {
+              const recentParsed = JSON.parse(recentRaw);
+              const group = document.createElement("div");
+              group.className = "c-command__group";
+              const gt = document.createElement("div");
+              gt.className = "c-command__group-title";
+              gt.textContent = "Recent";
+              group.appendChild(gt);
+              recentParsed.forEach((it) => {
+                const item = document.createElement("div");
+                item.className = "c-command__item";
+                item.setAttribute("role", "option");
+                const body = document.createElement("div");
+                body.className = "c-command__item-body";
+                const t = document.createElement("div");
+                t.className = "c-command__item-title";
+                t.textContent = typeof it === "string" ? it : (it.title || it.label || "");
+                body.appendChild(t);
+                item.appendChild(body);
+                group.appendChild(item);
+              });
+              l.appendChild(group);
+            } catch (e) { /* skip */ }
+          }
           parsed.forEach((it) => {
             if (it.group) {
               const group = document.createElement("div");
@@ -773,6 +852,12 @@ class ContourFilterBar extends ContourBase {
                 h.textContent = it.hint;
                 body.appendChild(h);
               }
+              if (it.shortcut) {
+                const sc = document.createElement("kbd");
+                sc.className = "c-command__item-shortcut";
+                sc.textContent = it.shortcut;
+                item.appendChild(sc);
+              }
               item.appendChild(body);
               group.appendChild(item);
               l.appendChild(group);
@@ -799,6 +884,12 @@ class ContourFilterBar extends ContourBase {
                 h.className = "c-command__item-hint";
                 h.textContent = it.hint;
                 body.appendChild(h);
+              }
+              if (it.shortcut) {
+                const sc = document.createElement("kbd");
+                sc.className = "c-command__item-shortcut";
+                sc.textContent = it.shortcut;
+                item.appendChild(sc);
               }
               item.appendChild(body);
               l.appendChild(item);
@@ -993,41 +1084,110 @@ class ContourSchemeToggle extends ContourBase {
   }
   define("contour-scheme-toggle", ContourSchemeToggle);
 class ContourSidebar extends ContourBase {
-    static get observed() { return ["title"]; }
-    static get properties() { return { title: { attribute: "title" } }; }
+    static get observed() { return ["title", "items", "collapsed"]; }
+    static get properties() { return { title: { attribute: "title" }, items: { attribute: "items" }, collapsed: { attribute: "collapsed", type: Boolean } }; }
     render() {
       this.classList.add("c-sidebar");
+      if (this.hasAttribute("collapsed")) this.classList.add("c-sidebar--collapsed");
+      else Array.from(this.classList).forEach((c) => { if (c === "c-sidebar--collapsed") this.classList.remove(c); });
       const title = this.getAttribute("title");
       if (title) {
-        const t = this.ensure(".c-sidebar__title", () => { const el = document.createElement("div"); el.className = "c-sidebar__title"; el.style.padding = "var(--space-sm)"; el.style.fontWeight = "var(--weight-semibold)"; return el; });
+        const t = this.ensure(".c-sidebar__title", () => { const el = document.createElement("div"); el.className = "c-sidebar__title"; return el; });
         t.textContent = title;
+      } else {
+        const t = this.querySelector(".c-sidebar__title");
+        if (t) t.remove();
       }
+      const items = this.getAttribute("items");
+      if (items) {
+        try {
+          const parsed = JSON.parse(items);
+          const nav = this.ensure("nav.c-sidebar__nav", () => { const el = document.createElement("nav"); el.className = "c-sidebar__nav"; return el; });
+          nav.innerHTML = "";
+          parsed.forEach((it) => {
+            const a = document.createElement("a");
+            a.className = "c-sidebar__link";
+            a.href = (it && it.href) || "#";
+            a.textContent = (it && (it.label || it)) || "";
+            nav.appendChild(a);
+          });
+        } catch (e) { /* keep existing */ }
+      }
+    }
+    enhance() {
+      if (this._wiredSidebar) return;
+      this._wiredSidebar = true;
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest(".c-sidebar__toggle") : null;
+        if (!btn || !this.contains(btn)) return;
+        if (this.hasAttribute("collapsed")) this.removeAttribute("collapsed");
+        else this.setAttribute("collapsed", "");
+      });
     }
   }
   define("contour-sidebar", ContourSidebar);
 class ContourToolbar extends ContourBase {
-    static get observed() { return ["title", "actions"]; }
-    static get properties() { return { title: { attribute: "title" }, actions: { attribute: "actions" } }; }
+    static get observed() { return ["title", "actions", "overflow"]; }
+    static get properties() { return { title: { attribute: "title" }, actions: { attribute: "actions" }, overflow: { attribute: "overflow", type: Number } }; }
     render() {
       this.classList.add("c-toolbar");
       const title = this.getAttribute("title");
-      // `.c-toolbar` defines exactly one part, `__btn`, and the guide names the
-      // container through ARIA. A title node carried a class the sheet never had.
       this.setAttribute("role", "toolbar");
       if (title) this.setAttribute("aria-label", title);
       const actions = this.getAttribute("actions");
       if (actions) {
         try {
           const parsed = JSON.parse(actions);
-          parsed.forEach((a) => {
+          const limit = this.overflow && this.overflow > 0 ? this.overflow : parsed.length;
+          const visible = parsed.slice(0, limit);
+          const excess = parsed.slice(limit);
+          visible.forEach((a) => {
             const btn = document.createElement("button");
             btn.className = "c-toolbar__btn";
             btn.type = "button";
             btn.textContent = typeof a === "string" ? a : (a.label || a);
             this.appendChild(btn);
           });
+          if (excess.length) {
+            const wrap = document.createElement("div");
+            wrap.className = "c-toolbar__overflow";
+            const btn = document.createElement("button");
+            btn.className = "c-toolbar__btn c-toolbar__overflow-btn";
+            btn.type = "button";
+            btn.setAttribute("aria-haspopup", "menu");
+            btn.setAttribute("aria-expanded", "false");
+            btn.textContent = "…";
+            wrap.appendChild(btn);
+            const menu = document.createElement("div");
+            menu.className = "c-toolbar__overflow-menu";
+            menu.setAttribute("role", "menu");
+            menu.setAttribute("hidden", "");
+            excess.forEach((a) => {
+              const mbtn = document.createElement("button");
+              mbtn.className = "c-toolbar__btn";
+              mbtn.type = "button";
+              mbtn.setAttribute("role", "menuitem");
+              mbtn.textContent = typeof a === "string" ? a : (a.label || a);
+              menu.appendChild(mbtn);
+            });
+            wrap.appendChild(menu);
+            this.appendChild(wrap);
+          }
         } catch (e) { /* keep existing */ }
       }
+    }
+    enhance() {
+      if (this._wiredToolbar) return;
+      this._wiredToolbar = true;
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest(".c-toolbar__overflow-btn") : null;
+        if (!btn || !this.contains(btn)) return;
+        const menu = btn.parentElement && btn.parentElement.querySelector(".c-toolbar__overflow-menu");
+        if (!menu) return;
+        const open = menu.hasAttribute("hidden");
+        if (open) menu.removeAttribute("hidden"); else menu.setAttribute("hidden", "");
+        btn.setAttribute("aria-expanded", String(open));
+      });
     }
   }
   define("contour-toolbar", ContourToolbar);

@@ -1,5 +1,12 @@
 ## [Unreleased]
 
+### Changed
+- Raised the `contour-wc.esm.min.js` size budget from 291 kB to 350 kB: the wc-completeness
+  batch (F-02/F-04/F-11..F-27/D-27) added menu submenus/groups/disabled, tooltip delay/click,
+  combobox value reflection/clear, toast-host API, dialog/drawer/sheet size+aria-modal+backdrop,
+  sidebar nav/collapse, toolbar overflow, progress/meter min/max, file-tree wrapper, command
+  recent/shortcuts, field validation UX, and empty illustration. Measured 346.9 kB.
+
 ### Added
 - The async states contract: a shared loader and four data states, documented in §23. Every
   component that reads `src` now asks through one loader (`loadRemote`/`remoteData`/

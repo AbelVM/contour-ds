@@ -125,3 +125,34 @@ class ContourDocsShell extends ContourBase {
     }
   }
   define("contour-docs-shell", ContourDocsShell);
+
+
+class ContourFileTree extends ContourBase {
+    static get observed() { return ["items"]; }
+    static get properties() { return { items: { attribute: "items" } }; }
+    render() {
+      this.classList.add("c-file-tree");
+      const items = this.getAttribute("items");
+      if (items) {
+        try {
+          const parsed = JSON.parse(items);
+          const renderNode = (node, depth) => {
+            const row = document.createElement("div");
+            row.className = "c-file-tree__row" + (node.dir ? " c-file-tree__row--dir" : "") + (node.active ? " c-file-tree__row--active" : "");
+            row.style.paddingInlineStart = (depth * 1) + "rem";
+            const label = document.createElement("span");
+            label.textContent = node.label || node.name || "";
+            row.appendChild(label);
+            this.appendChild(row);
+            if (Array.isArray(node.children)) {
+              node.children.forEach((c) => renderNode(c, depth + 1));
+            }
+          };
+          // clear generated
+          Array.from(this.querySelectorAll(".c-file-tree__row")).forEach((n) => n.remove());
+          parsed.forEach((n) => renderNode(n, 0));
+        } catch (e) { /* keep existing */ }
+      }
+    }
+  }
+  define("contour-file-tree", ContourFileTree);

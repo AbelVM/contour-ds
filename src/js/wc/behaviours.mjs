@@ -706,14 +706,15 @@ export function wireTree(host) {
 
 /** Menu: roving focus over items, `contour:select` from key or pointer. */
 export function wireMenu(host) {
-  const items = () => wcAll(host, "[role='menuitem']");
-  items().forEach((it) => { if (!it.hasAttribute("tabindex")) it.setAttribute("tabindex", "-1"); });
-  if (!items().some((it) => it.getAttribute("tabindex") === "0") && items().length) {
-    items()[0].setAttribute("tabindex", "0");
+  wcAll(host, "[role='menuitem']").forEach((it) => { if (!it.hasAttribute("tabindex")) it.setAttribute("tabindex", it.getAttribute("aria-disabled") === "true" ? "-1" : "-1"); });
+  const all = () => wcAll(host, "[role='menuitem']");
+  if (!all().some((it) => it.getAttribute("tabindex") === "0") && all().length) {
+    const first = all().find((it) => it.getAttribute("aria-disabled") !== "true");
+    if (first) first.setAttribute("tabindex", "0");
   }
   if (!wcClaim(host, "menu")) return;
   wcListen(host, "keydown", (e) => {
-    const its = items();
+    const its = all().filter((it) => it.getAttribute("aria-disabled") !== "true");
     if (!its.length) return;
     const index = its.indexOf(e.target);
     let next = -1;
@@ -730,8 +731,13 @@ export function wireMenu(host) {
   wcListen(host, "click", (e) => {
     const item = wcClosest(host, e.target, "[role='menuitem']");
     if (!item) return;
-    const index = items().indexOf(item);
-    if (index >= 0) wcEmit(host, "contour:select", { index, label: item.textContent.trim() });
+    if (item.getAttribute("aria-disabled") === "true") return;
+    const index = all().indexOf(item);
+    if (index >= 0) {
+      wcEmit(host, "contour:select", { index, label: item.textContent.trim() });
+      // close-on-select: if the menu is a popover, hide it.
+      if (typeof host.hidePopover === "function") { try { host.hidePopover(); } catch (e) {} }
+    }
   });
 }
 

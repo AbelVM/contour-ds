@@ -967,8 +967,8 @@ class ContourStreamingChart extends ContourBase {
   }
 define("contour-streaming-chart", ContourStreamingChart);
 class ContourMeter extends ContourBase {
-    static get observed() { return ["value", "label", "variant", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" }, variant: { attribute: "variant" } }; }
+    static get observed() { return ["value", "label", "variant", "min", "max", "low", "high", "optimum", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
+    static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" }, variant: { attribute: "variant" }, min: { attribute: "min" }, max: { attribute: "max" }, low: { attribute: "low" }, high: { attribute: "high" }, optimum: { attribute: "optimum" } }; }
     render() {
       this.classList.add("c-meter");
       wireStates(this);
@@ -1005,8 +1005,17 @@ class ContourMeter extends ContourBase {
         this.setAttribute("aria-valuenow", ariaValue);
         this._meterAriaValue = ariaValue;
       }
-      if (!this.hasAttribute("aria-valuemin")) this.setAttribute("aria-valuemin", "0");
-      if (!this.hasAttribute("aria-valuemax")) this.setAttribute("aria-valuemax", "1");
+      const min = this.getAttribute("min");
+      const max = this.getAttribute("max");
+      if (min !== null) this.setAttribute("aria-valuemin", min);
+      else if (!this.hasAttribute("aria-valuemin")) this.setAttribute("aria-valuemin", "0");
+      if (max !== null) this.setAttribute("aria-valuemax", max);
+      else if (!this.hasAttribute("aria-valuemax")) this.setAttribute("aria-valuemax", "1");
+      for (const a of ["low", "high", "optimum"]) {
+        const v = this.getAttribute(a);
+        if (v !== null) this.setAttribute("data-" + a, v);
+        else this.removeAttribute("data-" + a);
+      }
     }
   }
 define("contour-meter", ContourMeter);

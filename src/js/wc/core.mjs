@@ -162,13 +162,13 @@
   //   role, open, aria-label, aria-valuenow, aria-valuemin, aria-valuemax, tabindex
   // Adding one of those back to this list makes that component recurse.
   export const OBSERVED = [
-    "action", "actions", "after", "anchor", "answer", "area", "article", "attribution", "attribution-mark", "autoplay", "axis", "axis-x", "axis-y", "before", "body", "brand", "cache-key", "canvas", "center", "cols", "columns", "color", "command",
-    "cells", "checked", "chrome", "closable", "controls", "copyable", "count", "current", "date", "delta", "demo", "density", "desc", "dir", "direction", "divider", "do", "dont", "dot",
-    "empty", "error", "format", "hint", "href", "icon", "index", "instrument", "interval", "items", "key",
-    "label", "lazy", "lede", "legend", "line", "links", "live", "loading", "locale", "max", "media", "message", "method", "min", "name", "needle", "next", "no", "no-cache", "nodes", "note", "norm",
-    "options", "page", "page-size", "pages", "pause", "persist", "placeholder", "point", "points", "prev", "prompt", "question", "required",
-    "quote", "ramp", "refresh", "removable", "reverse", "rings", "retry", "rows", "scale", "selectable", "separator", "series", "shortcut", "size", "skeleton", "sort", "sort-dir", "status", "timeout", "virtual",
-    "state", "steps", "subtitle", "summary", "src", "tabs", "tag", "text", "title", "type", "unit", "value",
+    "action", "actions", "after", "anchor", "answer", "area", "article", "attribution", "attribution-mark", "autoplay", "axis", "axis-x", "axis-y", "before", "body", "brand", "cache-key", "canvas", "center", "clearable", "cols", "columns", "color", "command",
+    "cells", "checked", "chrome", "closable", "controls", "copyable", "count", "current", "date", "delta", "demo", "density", "desc", "dir", "direction", "disabled", "dismissible", "divider", "do", "dont", "dot",
+    "empty", "error", "exclusive", "format", "hint", "href", "icon", "illustration", "index", "instrument", "interval", "items", "key",
+    "label", "lazy", "lede", "legend", "line", "link", "links", "live", "loading", "locale", "max", "media", "message", "method", "min", "name", "needle", "next", "no", "no-cache", "nodes", "note", "norm",
+    "options", "page-size", "pages", "pause", "paused", "pausable", "persist", "placeholder", "point", "points", "prev", "prompt", "question", "recent", "required",
+    "quote", "ramp", "refresh", "removable", "reverse", "rings", "retry", "rows", "scale", "selectable", "selected", "separator", "series", "shortcut", "size", "skeleton", "sort", "sort-dir", "status", "submit", "timeout", "trigger", "virtual",
+    "state", "steps", "subtitle", "summary", "src", "tabs", "tag", "text", "title", "type", "unit",
     "variant", "values", "viewport", "yes",
   ];
 

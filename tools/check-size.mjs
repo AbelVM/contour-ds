@@ -121,7 +121,7 @@ const BUDGETS = {
   "surfaces/contour-data.min.css": 159 * 1024,  // raised 2026-10-28: measured 158.8 kB after BY2-C12; +0.2 kB margin
   "surfaces/contour-landing.min.css": 129 * 1024,  // raised 2026-10-28: measured 128.2 kB after BY2-C12; +0.8 kB margin
   "contour.esm.min.js": 39 * 1024,
-  "contour-wc.esm.min.js": 291 * 1024,  // raised 2026-10-28: measured 290.1 kB after B3-22 live-roles opt-in; +0.9 kB margin
+  "contour-wc.esm.min.js": 350 * 1024,  // raised 2026-10-29: measured 346.9 kB after wc-completeness batch (F-02/F-04/F-11..F-27/D-27); +3.1 kB margin
 };
 
 const kB = (n) => `${(n / 1024).toFixed(1)} kB`;

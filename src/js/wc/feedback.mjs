@@ -2,10 +2,13 @@ import { ContourBase, define, onDispose, sanitizeHtml } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { wireRemovable, modalContain } from './behaviours.mjs';
 class ContourDialog extends ContourBase {
-    static get observed() { return ["title"]; }
-    static get properties() { return { title: { attribute: "title" } }; }
+    static get observed() { return ["title", "size"]; }
+    static get properties() { return { title: { attribute: "title" }, size: { attribute: "size" } }; }
     render() {
       this.classList.add("c-dialog");
+      Array.from(this.classList).forEach((c) => { if (c.startsWith("c-dialog--")) this.classList.remove(c); });
+      const size = this.getAttribute("size");
+      if (size) this.classList.add("c-dialog--" + size);
       if (!this.hasAttribute("role")) this.setAttribute("role", "dialog");
       const title = this.getAttribute("title");
       let head = this.querySelector(".c-dialog__head");
@@ -53,6 +56,7 @@ class ContourDialog extends ContourBase {
         if (this.hasAttribute("open")) return;
         this._dialogLastFocus = document.activeElement;
         this.setAttribute("open", "");
+        this.setAttribute("aria-modal", "true");
         const dlg = this.querySelector("dialog") || (this.tagName === "DIALOG" ? this : null);
         if (dlg && typeof dlg.showModal === "function") { try { dlg.showModal(); } catch (e) {} }
         modalContain(this, true);
@@ -66,6 +70,7 @@ class ContourDialog extends ContourBase {
         const dlg = this.querySelector("dialog") || (this.tagName === "DIALOG" ? this : null);
         if (dlg && typeof dlg.close === "function") dlg.close();
         if (this.hasAttribute("open")) this.removeAttribute("open");
+        this.removeAttribute("aria-modal");
         if (wasOpen) {
           modalContain(this, false);
           this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true }));
@@ -80,8 +85,9 @@ class ContourDialog extends ContourBase {
       };
       this.addEventListener("click", (e) => {
         const btn = e.target && e.target.closest ? e.target.closest(".c-dialog__close") : null;
-        if (!btn || !this.contains(btn)) return;
-        this.close();
+        if (btn && this.contains(btn)) { this.close(); return; }
+        // Backdrop click: clicking the host surface (not its content) closes.
+        if (e.target === this) this.close();
       });
       // Close on Escape, only while open: a dialog that is not open has no
       // close to report, and an unconditional event is a claim the component
@@ -93,9 +99,9 @@ class ContourDialog extends ContourBase {
   }
   define("contour-dialog", ContourDialog);
 class ContourAlert extends ContourBase {
-    static get observed() { return ["title", "body", "variant", "icon", "closable", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
+    static get observed() { return ["title", "body", "variant", "icon", "closable", "action", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() {
-      return { title: { attribute: "title" }, body: { attribute: "body" }, variant: { attribute: "variant" }, icon: { attribute: "icon" }, closable: { attribute: "closable", type: Boolean } };
+      return { title: { attribute: "title" }, body: { attribute: "body" }, variant: { attribute: "variant" }, icon: { attribute: "icon" }, closable: { attribute: "closable", type: Boolean }, action: { attribute: "action" } };
     }
     render() {
       this.classList.add("c-alert");
@@ -136,6 +142,20 @@ class ContourAlert extends ContourBase {
         const b = this.querySelector(".c-alert__body");
         if (b) b.remove();
       }
+      const action = this.getAttribute("action");
+      if (action) {
+        const a = this.ensure(".c-alert__action", () => {
+          const btn = document.createElement("button");
+          btn.className = "c-btn c-btn--sm c-alert__action";
+          btn.type = "button";
+          btn.setAttribute("data-alert-action", "");
+          return btn;
+        });
+        a.textContent = action;
+      } else {
+        const a = this.querySelector(".c-alert__action");
+        if (a) a.remove();
+      }
       if (this.hasAttribute("closable")) {
         this.ensure(".c-alert__close", () => {
           const btn = document.createElement("button");
@@ -158,6 +178,12 @@ class ContourAlert extends ContourBase {
     if (this._wiredAlert) return;
     this._wiredAlert = true;
     this.addEventListener("click", (e) => {
+      const actionBtn = e.target && e.target.closest ? e.target.closest(".c-alert__action") : null;
+      if (actionBtn && this.contains(actionBtn)) {
+        e.preventDefault();
+        this.dispatchEvent(new CustomEvent("contour:empty-action", { bubbles: true, composed: true, detail: { state: this.getAttribute("action") || "" } }));
+        return;
+      }
       const btn = e.target && e.target.closest ? e.target.closest(".c-alert__close") : null;
       if (!btn || !this.contains(btn)) return;
       e.preventDefault();
@@ -251,8 +277,8 @@ class ContourDisclosure extends ContourBase {
   }
   define("contour-disclosure", ContourDisclosure);
 class ContourCallout extends ContourBase {
-    static get observed() { return ["variant", "title", "icon"]; }
-    static get properties() { return { variant: { attribute: "variant" }, title: { attribute: "title" }, icon: { attribute: "icon" } }; }
+    static get observed() { return ["variant", "title", "icon", "closable"]; }
+    static get properties() { return { variant: { attribute: "variant" }, title: { attribute: "title" }, icon: { attribute: "icon" }, closable: { attribute: "closable", type: Boolean } }; }
     render() {
       this.classList.add("c-callout");
       Array.from(this.classList).forEach((c) => { if (c.startsWith("c-callout--")) this.classList.remove(c); });
@@ -276,12 +302,36 @@ class ContourCallout extends ContourBase {
         const t = this.querySelector(".c-callout__title");
         if (t) t.remove();
       }
+      if (this.hasAttribute("closable")) {
+        this.ensure(".c-callout__close", () => {
+          const btn = document.createElement("button");
+          btn.className = "c-callout__close";
+          btn.type = "button";
+          btn.setAttribute("aria-label", "Close");
+          btn.textContent = "×";
+          return btn;
+        });
+      } else {
+        const btn = this.querySelector(".c-callout__close");
+        if (btn) btn.remove();
+      }
     }
   }
+  ContourCallout.prototype.enhance = function() {
+    if (this._wiredCallout) return;
+    this._wiredCallout = true;
+    this.addEventListener("click", (e) => {
+      const btn = e.target && e.target.closest ? e.target.closest(".c-callout__close") : null;
+      if (!btn || !this.contains(btn)) return;
+      e.preventDefault();
+      this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true }));
+      this.remove();
+    });
+  };
   define("contour-callout", ContourCallout);
 class ContourEmpty extends ContourBase {
-    static get observed() { return ["state", "title", "body", "action", "icon"]; }
-    static get properties() { return { state: { attribute: "state" }, title: { attribute: "title" }, body: { attribute: "body" }, action: { attribute: "action" }, icon: { attribute: "icon" } }; }
+    static get observed() { return ["state", "title", "body", "action", "icon", "illustration"]; }
+    static get properties() { return { state: { attribute: "state" }, title: { attribute: "title" }, body: { attribute: "body" }, action: { attribute: "action" }, icon: { attribute: "icon" }, illustration: { attribute: "illustration" } }; }
     render() {
       this.classList.add("c-empty");
       const state = this.getAttribute("state") || "empty";
@@ -295,6 +345,14 @@ class ContourEmpty extends ContourBase {
       } else {
         const ic = this.querySelector(".c-empty__icon");
         if (ic) ic.remove();
+      }
+      const illustration = this.getAttribute("illustration");
+      if (illustration) {
+        const il = this.ensure(".c-empty__illustration", () => { const el = document.createElement("div"); el.className = "c-empty__illustration"; return el; });
+        il.innerHTML = sanitizeHtml(illustration);
+      } else {
+        const il = this.querySelector(".c-empty__illustration");
+        if (il) il.remove();
       }
       if (title) {
         const t = this.ensure(".c-empty__title", () => { const el = document.createElement("h3"); el.className = "c-empty__title"; return el; });
@@ -481,10 +539,13 @@ class ContourAccordion extends ContourBase {
   }
 define("contour-accordion", ContourAccordion);
 class ContourDrawer extends ContourBase {
-    static get observed() { return ["title", "body"]; }
-    static get properties() { return { title: { attribute: "title" }, body: { attribute: "body" } }; }
+    static get observed() { return ["title", "body", "size"]; }
+    static get properties() { return { title: { attribute: "title" }, body: { attribute: "body" }, size: { attribute: "size" } }; }
     render() {
       this.classList.add("c-drawer");
+      Array.from(this.classList).forEach((c) => { if (c.startsWith("c-drawer--")) this.classList.remove(c); });
+      const size = this.getAttribute("size");
+      if (size) this.classList.add("c-drawer--" + size);
       if (!this.hasAttribute("role")) this.setAttribute("role", "dialog");
       const title = this.getAttribute("title");
       let head = this.querySelector(".c-drawer__head");
@@ -532,6 +593,7 @@ class ContourDrawer extends ContourBase {
         if (this.hasAttribute("open")) return;
         this._drawerLastFocus = document.activeElement;
         this.setAttribute("open", "");
+        this.setAttribute("aria-modal", "true");
         this.classList.add("is-open");
         modalContain(this, true);
         const focusable = this.querySelector("button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])");
@@ -541,6 +603,7 @@ class ContourDrawer extends ContourBase {
       this.close = () => {
         if (!this.hasAttribute("open")) return;
         this.removeAttribute("open");
+        this.removeAttribute("aria-modal");
         this.classList.remove("is-open");
         modalContain(this, false);
         this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true }));
@@ -549,8 +612,8 @@ class ContourDrawer extends ContourBase {
       };
       this.addEventListener("click", (e) => {
         const btn = e.target && e.target.closest ? e.target.closest(".c-drawer__close") : null;
-        if (!btn || !this.contains(btn)) return;
-        this.close();
+        if (btn && this.contains(btn)) { this.close(); return; }
+        if (e.target === this) this.close();
       });
       this.addEventListener("keydown", (e) => {
         if (e.key === "Escape" && this.hasAttribute("open")) this.close();
@@ -559,10 +622,13 @@ class ContourDrawer extends ContourBase {
   }
   define("contour-drawer", ContourDrawer);
 class ContourSheet extends ContourBase {
-    static get observed() { return ["title", "body"]; }
-    static get properties() { return { title: { attribute: "title" }, body: { attribute: "body" } }; }
+    static get observed() { return ["title", "body", "size"]; }
+    static get properties() { return { title: { attribute: "title" }, body: { attribute: "body" }, size: { attribute: "size" } }; }
     render() {
       this.classList.add("c-sheet");
+      Array.from(this.classList).forEach((c) => { if (c.startsWith("c-sheet--")) this.classList.remove(c); });
+      const size = this.getAttribute("size");
+      if (size) this.classList.add("c-sheet--" + size);
       if (!this.hasAttribute("role")) this.setAttribute("role", "dialog");
       const title = this.getAttribute("title");
       let head = this.querySelector(".c-sheet__head");
@@ -609,6 +675,7 @@ class ContourSheet extends ContourBase {
         if (this.hasAttribute("open")) return;
         this._sheetLastFocus = document.activeElement;
         this.setAttribute("open", "");
+        this.setAttribute("aria-modal", "true");
         this.classList.add("is-open");
         modalContain(this, true);
         const focusable = this.querySelector("button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])");
@@ -618,6 +685,7 @@ class ContourSheet extends ContourBase {
       this.close = () => {
         if (!this.hasAttribute("open")) return;
         this.removeAttribute("open");
+        this.removeAttribute("aria-modal");
         this.classList.remove("is-open");
         modalContain(this, false);
         this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true }));
@@ -626,8 +694,8 @@ class ContourSheet extends ContourBase {
       };
       this.addEventListener("click", (e) => {
         const btn = e.target && e.target.closest ? e.target.closest(".c-sheet__close") : null;
-        if (!btn || !this.contains(btn)) return;
-        this.close();
+        if (btn && this.contains(btn)) { this.close(); return; }
+        if (e.target === this) this.close();
       });
       this.addEventListener("keydown", (e) => {
         if (e.key === "Escape" && this.hasAttribute("open")) this.close();
@@ -648,7 +716,8 @@ class ContourToast extends ContourBase {
         this.textContent = message;
       }
       const variant = this.getAttribute("variant");
-      void variant;
+      Array.from(this.classList).forEach((c) => { if (c.startsWith("c-toast--")) this.classList.remove(c); });
+      if (variant) this.classList.add("c-toast--" + variant);
     }
     enhance() {
       if (this._wiredToast) return;
@@ -729,6 +798,36 @@ class ContourToastHost extends ContourBase {
       if (!this.hasAttribute("role")) this.setAttribute("role", "status");
       if (!this.hasAttribute("aria-live")) this.setAttribute("aria-live", "polite");
       if (!this.hasAttribute("aria-atomic")) this.setAttribute("aria-atomic", "true");
+    }
+    enhance() {
+      if (this._wiredToastHost) return;
+      this._wiredToastHost = true;
+      this._toastQueue = [];
+      const showOne = (message, opts) => {
+        opts = opts || {};
+        const toast = document.createElement("div");
+        toast.className = "c-toast";
+        toast.setAttribute("role", "status");
+        toast.setAttribute("aria-live", "polite");
+        toast.setAttribute("aria-atomic", "true");
+        if (opts.variant) toast.classList.add("c-toast--" + opts.variant);
+        toast.textContent = message == null ? "" : String(message);
+        this.appendChild(toast);
+        const ms = (opts.duration && opts.duration > 0) ? opts.duration : 3000;
+        const timer = setTimeout(() => {
+          if (toast.parentNode) toast.parentNode.removeChild(toast);
+          this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true }));
+        }, ms);
+        toast._timer = timer;
+        return toast;
+      };
+      this.show = (message, opts) => showOne(message, opts);
+      this.hide = () => {
+        Array.from(this.querySelectorAll(".c-toast")).forEach((t) => {
+          if (t._timer) clearTimeout(t._timer);
+          if (t.parentNode) t.parentNode.removeChild(t);
+        });
+      };
     }
   }
   define("contour-toast-host", ContourToastHost);
