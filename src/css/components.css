@@ -3473,7 +3473,24 @@
     z-index: var(--z-tooltip);
     margin-block-start: var(--space-2xs);
   }
-  /* -- Context menu ------------------------------------------------------ */
+  /* -- FAB --------------------------------------------------------------- */
+  .c-fab {
+    position: fixed;
+    inset-block-end: var(--space-lg);
+    inset-inline-end: var(--space-lg);
+    inline-size: 3.5rem;
+    block-size: 3.5rem;
+    border-radius: 50%;
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+    border: none;
+    box-shadow: var(--shadow-lg);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    font-size: var(--type-lg);
+    z-index: var(--z-toast);
+  }
   .c-context-menu {
     padding: var(--space-2xs);
     border-radius: var(--radius-md);

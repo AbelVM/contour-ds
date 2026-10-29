@@ -69,6 +69,7 @@ export type ContourComponent =
   | "c-elevation"
   | "c-empty"
   | "c-expandable"
+  | "c-fab"
   | "c-faq"
   | "c-feature"
   | "c-field"
@@ -684,6 +685,7 @@ declare global {
     "contour-elevation": ContourElement;
     "contour-empty": ContourElement;
     "contour-expandable": ContourElement;
+    "contour-fab": ContourElement;
     "contour-faq": ContourElement;
     "contour-feature": ContourElement;
     "contour-field": ContourElement;

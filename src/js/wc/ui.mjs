@@ -1222,3 +1222,23 @@ class ContourContextMenu extends ContourBase {
     }
   }
   define("contour-context-menu", ContourContextMenu);
+
+class ContourFab extends ContourBase {
+    static get observed() { return ["label", "icon"]; }
+    static get properties() { return { label: { attribute: "label" }, icon: { attribute: "icon" } }; }
+    render() {
+      this.classList.add("c-fab");
+      const label = this.getAttribute("label");
+      if (label) this.setAttribute("aria-label", label);
+      const icon = this.getAttribute("icon");
+      if (icon && !this.hasChildNodes()) this.textContent = icon;
+    }
+    enhance() {
+      if (this._wiredFab) return;
+      this._wiredFab = true;
+      this.addEventListener("click", () => {
+        this.dispatchEvent(new CustomEvent("contour:activate", { bubbles: true, composed: true }));
+      });
+    }
+  }
+  define("contour-fab", ContourFab);
