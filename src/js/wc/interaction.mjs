@@ -102,8 +102,8 @@ class ContourShortcutPanelFull extends ContourBase {
   }
   define("contour-shortcut-panel", ContourShortcutPanelFull);
   class ContourShortcutOverlayFull extends ContourBase {
-    static get observed() { return ["title"]; }
-    static get properties() { return { title: { attribute: "title" } }; }
+    static get observed() { return ["title", "open"]; }
+    static get properties() { return { title: { attribute: "title" }, open: { attribute: "open", type: Boolean } }; }
     render() {
       this.classList.add("c-shortcut-overlay");
       const title = this.getAttribute("title");
@@ -111,7 +111,29 @@ class ContourShortcutPanelFull extends ContourBase {
         const t = this.ensure(".c-shortcut-overlay__title", () => { const el = document.createElement("div"); el.className = "c-shortcut-overlay__title"; el.style.padding = "var(--space-sm)"; return el; });
         t.textContent = title;
       }
-      if (!this.hasAttribute("hidden")) this.setAttribute("hidden", "");
+      if (this.hasAttribute("open")) this.removeAttribute("hidden");
+      else if (!this.hasAttribute("hidden")) this.setAttribute("hidden", "");
+    }
+    show() { this.setAttribute("open", ""); this.removeAttribute("hidden"); this.dispatchEvent(new CustomEvent("contour:open", { bubbles: true, composed: true })); }
+    hide() { this.removeAttribute("open"); this.setAttribute("hidden", ""); this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true })); }
+    toggle() { if (this.hasAttribute("open")) this.hide(); else this.show(); }
+    enhance() {
+      if (this._wiredShortcutOverlay) return;
+      this._wiredShortcutOverlay = true;
+      // Global registry: "?" (Shift+/) toggles the overlay; Escape closes.
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "?" && !e.metaKey && !e.ctrlKey && !e.altKey) {
+          const tag = (e.target && e.target.tagName) || "";
+          if (tag === "INPUT" || tag === "TEXTAREA" || (e.target && e.target.isContentEditable)) return;
+          e.preventDefault();
+          this.toggle();
+        } else if (e.key === "Escape" && this.hasAttribute("open")) {
+          this.hide();
+        }
+      });
+      this.addEventListener("click", (e) => {
+        if (e.target === this) this.hide();
+      });
     }
   }
   define("contour-shortcut-overlay", ContourShortcutOverlayFull);

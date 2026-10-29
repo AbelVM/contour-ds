@@ -1609,6 +1609,11 @@
     min-inline-size: 0;
   }
 
+  .c-tabs__panels,
+  .c-code-tabs__panels {
+    min-inline-size: 0;
+  }
+
   /* Segmented control — a pill-shaped radio group */
   .c-segmented {
     display: inline-flex;
