@@ -688,9 +688,9 @@ class ContourFilterBar extends ContourBase {
        const list = this.querySelector(".c-command__list");
        if (list && !list.id) list.id = contourId("c-command-list");
        if (list && list.id) input.setAttribute("aria-controls", list.id);
-      const items = remoteData(this, "items");
-      const list = this.querySelector(".c-command__list");
-      const authored = list ? Array.from(list.children).filter((n) => n.classList && n.classList.contains("c-command__item") || n.classList && n.classList.contains("c-command__group")) : [];
+       const items = remoteData(this, "items");
+       const list2 = this.querySelector(".c-command__list");
+       const authored = list2 ? Array.from(list2.children).filter((n) => n.classList && n.classList.contains("c-command__item") || n.classList && n.classList.contains("c-command__group")) : [];
       if (items && !authored.length) {
         try {
           const parsed = JSON.parse(items);
