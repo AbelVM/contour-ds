@@ -710,6 +710,28 @@ class ContourMapArea extends ContourBase {
     enhance() {
       if (this._wiredMapArea) return;
       this._wiredMapArea = true;
+      // Map-engine seam (BY3-I3): Contour never imports a map library. A
+      // consumer attaches a live engine instance via attachMap(); the component
+      // stores the reference and reads viewport bounds through duck-typing so
+      // the boundary (no engine imports, no GeoJSON) holds. detachMap() clears it.
+      this._map = null;
+      this.attachMap = (map) => { this._map = map || null; this.dispatchEvent(new CustomEvent("contour:map-attach", { bubbles: true, composed: true })); };
+      this.detachMap = () => { this._map = null; this.dispatchEvent(new CustomEvent("contour:map-detach", { bubbles: true, composed: true })); };
+      Object.defineProperty(this, "map", { get: () => this._map, set: (m) => this.attachMap(m) });
+      this.getViewport = () => {
+        const m = this._map;
+        if (!m) return null;
+        try {
+          if (typeof m.getBounds === "function") {
+            const b = m.getBounds();
+            return { west: b.getWest(), south: b.getSouth(), east: b.getEast(), north: b.getNorth() };
+          }
+          if (m.transform && typeof m.transform === "object") {
+            return { zoom: m.transform.zoom, center: m.transform.center };
+          }
+        } catch (e) { /* engine API mismatch */ }
+        return null;
+      };
       this.addEventListener("click", (e) => {
         const btn = e.target && e.target.closest ? e.target.closest(".c-map-slot__control") : null;
         if (!btn || !this.contains(btn)) return;

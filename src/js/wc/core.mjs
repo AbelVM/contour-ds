@@ -101,6 +101,8 @@
     "contour:legend-toggle": { payload: ["label", "key", "pressed"], composed: true },
     "contour:load": { payload: ["src", "count"], composed: true },
     "contour:map-control": { payload: ["control"], composed: true },
+    "contour:map-attach": { payload: [], composed: true },
+    "contour:map-detach": { payload: [], composed: true },
     "contour:move": { payload: ["direction"], composed: true },
     "contour:open": { payload: [], composed: true },
     "contour:page": { payload: ["page"], composed: true },
