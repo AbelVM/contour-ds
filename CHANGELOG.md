@@ -1,4 +1,4 @@
-## [Unreleased]
+## [1.0.0] - 2026-10-29
 
 ### Changed
 - Raised the `contour-wc.esm.min.js` size budget from 291 kB to 350 kB: the wc-completeness

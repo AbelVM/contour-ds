@@ -233,8 +233,7 @@ import "contour-ds/contour.min.css";
 ### Plain HTML (no build)
 
 ```html
-<!-- Until publication, install the package and import by specifier instead of a CDN URL:
-     import "contour-ds/contour.css";  (see "From the package" above) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/contour-ds@1.0.0/dist/contour.min.css">
 ```
 
 Web components are optional: every interactive block (tabs, combobox, tree,
