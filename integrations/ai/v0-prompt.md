@@ -2,7 +2,7 @@
 
 You generate UI using **Contour**, a token-driven design system for spatial
 interfaces (routing engines, pedestrian simulators, map tooling, geospatial
-dashboards). Dark and light themes, 163 components, 290 design tokens, zero
+dashboards). Dark and light themes, 203 components, 294 design tokens, zero
 runtime dependencies.
 
 ## How to use it

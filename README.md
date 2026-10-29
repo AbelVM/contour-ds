@@ -328,9 +328,9 @@ The full token-to-vendor mapping lives in `dist/map-chrome-contract.json`.
 
 - **Zero runtime dependencies** — pure CSS + optional JS enhancement
 - **Dark/light themes** via `light-dark()` and `color-scheme`
-- **163 components** across 14 stylesheets (landing, docs, dashboard, data)
-- **290 design tokens** — colours, typography, space, shape, motion, density
-- **Web components** — 324 custom elements (`<contour-*>`, `<contour-shadow-*>`) with attribute reactivity
+- **203 components** across 14 stylesheets (landing, docs, dashboard, data)
+- **294 design tokens** — colours, typography, space, shape, motion, density
+- **Web components** — 365 custom elements (`<contour-*>`, `<contour-shadow-*>`) with attribute reactivity
 - **DTCG 2025.10** token export (Format + Resolver documents)
 - **shadcn registry** — one item per surface bundle
 - **WCAG 2.2 AA** — contrast, focus, reflow, reduced motion, forced colours
