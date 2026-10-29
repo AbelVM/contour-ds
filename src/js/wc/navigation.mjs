@@ -106,8 +106,8 @@ class ContourMenu extends ContourBase {
   }
 define("contour-menu", ContourMenu);
 class ContourTabs extends ContourBase {
-    static get observed() { return ["tabs", "autoplay", "pause", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "persist"]; }
-    static get properties() { return { tabs: { attribute: "tabs" }, autoplay: { attribute: "autoplay", type: Number }, pause: { attribute: "pause", type: Boolean }, src: { attribute: "src" } }; }
+    static get observed() { return ["tabs", "autoplay", "pause", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "persist", "orientation", "closable"]; }
+    static get properties() { return { tabs: { attribute: "tabs" }, autoplay: { attribute: "autoplay", type: Number }, pause: { attribute: "pause", type: Boolean }, src: { attribute: "src" }, orientation: { attribute: "orientation" }, closable: { attribute: "closable", type: Boolean } }; }
     render() {
       this.classList.add("c-tabs");
       wireStates(this);
@@ -123,6 +123,9 @@ class ContourTabs extends ContourBase {
            const parsed = JSON.parse(tabs);
             const list = this.ensure(".c-tabs__list", () => { const el = document.createElement("div"); el.className = "c-tabs__list"; el.setAttribute("role", "tablist"); return el; });
             list.setAttribute("role", "tablist");
+            const orientation = this.getAttribute("orientation") === "vertical" ? "vertical" : "horizontal";
+            list.setAttribute("aria-orientation", orientation);
+            if (orientation === "vertical") this.classList.add("c-tabs--vertical"); else this.classList.remove("c-tabs--vertical");
             list.innerHTML = "";
             // Remove any previously generated panels so re-render doesn't stack.
             Array.from(this.querySelectorAll(".c-tabs__panel")).forEach((n) => n.remove());
@@ -136,6 +139,27 @@ class ContourTabs extends ContourBase {
               btn.setAttribute("aria-controls", panelId);
               btn.tabIndex = i === 0 ? 0 : -1;
               btn.textContent = label;
+              if (this.hasAttribute("closable")) {
+                const closeBtn = document.createElement("button");
+                closeBtn.type = "button";
+                closeBtn.className = "c-tabs__close";
+                closeBtn.setAttribute("aria-label", "Close " + label);
+                closeBtn.textContent = "×";
+                closeBtn.addEventListener("click", (e) => {
+                  e.stopPropagation();
+                  const idx = Array.from(list.querySelectorAll("[role='tab']")).indexOf(btn);
+                  // remove tab + panel
+                  const ctrl = btn.getAttribute("aria-controls");
+                  const panel = ctrl ? document.getElementById(ctrl) : null;
+                  btn.remove();
+                  if (panel) panel.remove();
+                  this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true, detail: { index: idx, label } }));
+                  // activate first remaining tab
+                  const remaining = list.querySelectorAll("[role='tab']");
+                  if (remaining.length) remaining[0].click();
+                });
+                btn.appendChild(closeBtn);
+              }
               list.appendChild(btn);
               const panel = document.createElement("div");
               panel.className = "c-tabs__panel";

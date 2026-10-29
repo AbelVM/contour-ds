@@ -202,10 +202,15 @@ export function wireTabs(host) {
       const tabs = tabsOf();
       const index = tabs.indexOf(tab);
       if (index < 0) return;
+      const vertical = host.getAttribute("orientation") === "vertical";
       const rtl = isRtl(host);
-      const move = rtl
-        ? { ArrowRight: index - 1, ArrowLeft: index + 1, Home: tabs.length - 1, End: 0 }
-        : { ArrowRight: index + 1, ArrowLeft: index - 1, Home: 0, End: tabs.length - 1 };
+      const move = vertical
+        ? (rtl
+            ? { ArrowDown: index - 1, ArrowUp: index + 1, Home: tabs.length - 1, End: 0 }
+            : { ArrowDown: index + 1, ArrowUp: index - 1, Home: 0, End: tabs.length - 1 })
+        : (rtl
+            ? { ArrowRight: index - 1, ArrowLeft: index + 1, Home: tabs.length - 1, End: 0 }
+            : { ArrowRight: index + 1, ArrowLeft: index - 1, Home: 0, End: tabs.length - 1 });
       if (!(e.key in move)) return;
       e.preventDefault();
       const next = tabs[(move[e.key] + tabs.length) % tabs.length];
