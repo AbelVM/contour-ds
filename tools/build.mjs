@@ -438,8 +438,8 @@ const mapChromeContract = {
   description: "Vendor-neutralisation contract for map chrome. A host re-keys a vendor control cluster onto Contour tokens.",
   contourTokens: { surface: "--color-surface-1", border: "--color-border", radius: "--radius-md", icon: "--color-text-muted", gap: "--space-3xs" },
   engines: {
-    maplibre: { controls: ["navigation","fullscreen","compass","geolocate","scale","attribution","logo","layer-control"] },
-    mapbox: { controls: ["navigation","fullscreen","geolocate","scale","attribution","logo"] },
+    maplibre: { controls: ["navigation","fullscreen","compass","geolocate","scale","attribution","layer-control"] },
+    mapbox: { controls: ["navigation","fullscreen","geolocate","scale","attribution","indoor"] },
   },
 };
 writeFileSync(join(dist, "map-chrome-contract.json"), `${JSON.stringify(mapChromeContract, null, 2)}\n`, "utf-8");

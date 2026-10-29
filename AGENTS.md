@@ -73,6 +73,7 @@ Anything that matches is either a leak or a false positive you must justify.
 | `node tools/doctor.mjs` | Dispatches the node gates in one sweep for a human or an agent, and prints what it skipped: a gate absent from the artifact is reported as absent, and a sweep that dispatched nothing exits non-zero rather than going green on an empty run |
 | `node tools/gen-llms.mjs` | Regenerates `llms-full.txt` and `.well-known/llms.txt` from `dist/docs/` and `llms.txt`. Not a gate yet: the build does not emit those files and no lane runs this, so the copies it should keep current can drift; wiring it into the build is the open item |
 | `node tools/check-layout.mjs` | The layout ratchet: frozen primitive set, the `@deprecated` ledger, and the two gap tokens that make `.stack`/`.c-stack` different values | 
+| `node tools/check-map-chrome.mjs` | Map chrome: no raw colours/geometry, contract controls covered, tokens only |
 | `node tools/snippets.mjs` | Regenerates the code snippets in `index.html` — **run after editing any specimen**. Also the spacing guard: it reads the **emitted** snippets and fails the build when one leads with guide spacing, so a warning is not a pass |
 | `node tools/build.mjs` | Bundles and minifies the **design system only** into `dist/` (no guide markup, no templates), and exports the token layer as two DTCG 2025.10 documents: `contour.tokens.json` (Format) and `contour.themes.json` (Resolver). Its per-surface file list is **derived from `ds.css`** and asserted, so a new sheet cannot land in `contour.css` and miss every surface bundle. The one guide-derived thing that ships is `dist/docs/` — prose and pointers, never specimen markup, and `check-docs.mjs` asserts that rather than asserting the sentence |
 | `node tools/build.mjs --single` | Additionally emits `dist/contour.single.min.css`: the minified CSS with the self-hosted fonts inlined as data URIs, so a consumer can ship one file. Off by default (~260 kB larger, defeats font caching) |
@@ -414,6 +415,7 @@ node tools/check-components.mjs # the component contract resolves against src/cs
 node tools/check-docs.mjs      # dist/docs/ is the guide's own prose re-derived byte for byte: no URL, no markup, census rows reconcile
 node tools/check-registry.mjs  # dist/registry/ points at files that exist, says nothing about a host it does not have, and equals a fresh derivation
 node tools/check-css.mjs      # cross-sheet CSS selector collisions
+node tools/check-map-chrome.mjs # map chrome: no raw colours/geometry, contract controls covered, tokens only
 node tools/check-agent-rules.mjs # the agent-rules artifact cites only gates that exist and run in CI
 node tools/check-layout.mjs     # layout primitives are a ratchet; @deprecated must match the ledger
 node tools/gen-light-dark.mjs --check  # the light-dark() fallback matches src/css

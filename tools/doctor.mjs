@@ -22,6 +22,7 @@ const gates = [
   ["check-registry", "node", ["tools/check-registry.mjs"]],
   ["check-ownership", "node", ["tools/check-ownership.mjs"]],
   ["check-css", "node", ["tools/check-css.mjs"]],
+  ["check-map-chrome", "node", ["tools/check-map-chrome.mjs"]],
   ["check-layout", "node", ["tools/check-layout.mjs"]],
   ["check-motion", "node", ["tools/check-motion.mjs"]],
   ["check-defs", "node", ["tools/check-defs.mjs"]],
