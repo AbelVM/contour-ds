@@ -2,9 +2,9 @@ import { ContourBase, define, contourId } from './core.mjs';
 import { wireCombobox } from './behaviours.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 class ContourCombobox extends ContourBase {
-    static get observed() { return ["options", "placeholder", "label", "value", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "empty", "skeleton"]; }
+    static get observed() { return ["options", "placeholder", "label", "value", "multiple", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "empty", "skeleton"]; }
     static get formAssociated() { return true; }
-    static get properties() { return { options: { attribute: "options" }, placeholder: { attribute: "placeholder" }, label: { attribute: "label" }, value: { attribute: "value" } }; }
+    static get properties() { return { options: { attribute: "options" }, placeholder: { attribute: "placeholder" }, label: { attribute: "label" }, value: { attribute: "value" }, multiple: { attribute: "multiple", type: Boolean } }; }
     render() {
       this.classList.add("c-combobox");
       wireStates(this);
@@ -25,10 +25,13 @@ class ContourCombobox extends ContourBase {
           const list = this.ensure(".c-combobox__list", () => { const el = document.createElement("ul"); el.className = "c-combobox__list"; el.setAttribute("hidden", ""); return el; });
           list.innerHTML = "";
           list.setAttribute("hidden", "");
+          const selectedVals = (this.getAttribute("value") || "").split(",").map((v) => v.trim()).filter(Boolean);
           parsed.forEach((opt) => {
             const li = document.createElement("li");
             li.className = "c-combobox__option";
+            const v = typeof opt === "string" ? opt : opt.value;
             li.textContent = typeof opt === "string" ? opt : opt.label;
+            if (this.hasAttribute("multiple") && selectedVals.includes(String(v))) li.setAttribute("aria-selected", "true");
             list.appendChild(li);
           });
         } catch (e) { /* keep existing */ }

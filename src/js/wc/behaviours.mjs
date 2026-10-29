@@ -433,6 +433,17 @@ export function wireCombobox(host) {
   const commit = (opt) => {
     const field = liveInput();
     if (!field) return;
+    if (host.hasAttribute("multiple")) {
+      const now = opt.getAttribute("aria-selected") === "true";
+      opt.setAttribute("aria-selected", String(!now));
+      opt.classList.toggle("c-combobox__option--selected", !now);
+      const selected = optionList().filter((o) => o.getAttribute("aria-selected") === "true").map((o) => o.textContent.trim());
+      host.setAttribute("value", selected.join(","));
+      if (typeof host._syncFormValue === "function") host._syncFormValue();
+      wcEmit(host, "contour:select", { value: selected });
+      field.focus();
+      return;
+    }
     field.value = opt.textContent;
     wcEmit(host, "contour:select", { value: field.value });
     close();
