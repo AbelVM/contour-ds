@@ -292,8 +292,8 @@ class ContourDropZone extends ContourBase {
   }
   define("contour-drop-zone", ContourDropZone);
 class ContourResizable extends ContourBase {
-    static get observed() { return ["direction"]; }
-    static get properties() { return { direction: { attribute: "direction" } }; }
+    static get observed() { return ["direction", "value"]; }
+    static get properties() { return { direction: { attribute: "direction" }, value: { attribute: "value" } }; }
     render() {
       this.classList.add("c-resizable");
       this.classList.remove("c-resizable--vertical", "c-resizable--horizontal");
@@ -305,12 +305,19 @@ class ContourResizable extends ContourBase {
         p1.textContent = "Pane A";
         const handle = document.createElement("div");
         handle.className = "c-resize-handle";
+        handle.setAttribute("tabindex", "0");
+        handle.setAttribute("role", "separator");
         const p2 = document.createElement("div");
         p2.className = "c-resizable__pane";
         p2.textContent = "Pane B";
         this.appendChild(p1);
         this.appendChild(handle);
         this.appendChild(p2);
+      }
+      const v = this.getAttribute("value");
+      if (v) {
+        const p1 = this.querySelector(".c-resizable__pane");
+        if (p1) p1.style.flex = `0 0 ${v}%`;
       }
     }
     enhance() {
@@ -328,6 +335,7 @@ class ContourResizable extends ContourBase {
         const frac = span > 0 ? Math.min(0.9, Math.max(0.1, pos / span)) : 0.5;
         const p1 = this.querySelector(".c-resizable__pane");
         if (p1) p1.style.flex = `0 0 ${Math.round(frac * 100)}%`;
+        this.setAttribute("value", String(Math.round(frac * 100)));
       };
       this.addEventListener("pointerdown", (e) => {
         const handle = this.querySelector(".c-resize-handle");
@@ -354,6 +362,14 @@ class ContourResizable extends ContourBase {
       };
       this.addEventListener("pointerup", stopResize);
       this.addEventListener("pointercancel", stopResize);
+      this.addEventListener("keydown", (e) => {
+        const handle = this.querySelector(".c-resize-handle");
+        if (!handle || document.activeElement !== handle) return;
+        const vertical = this.classList.contains("c-resizable--vertical");
+        const cur = parseFloat(this.getAttribute("value")) || 50;
+        if (e.key === "ArrowLeft" || e.key === "ArrowDown") { e.preventDefault(); setSplit && setSplit; const p1 = this.querySelector(".c-resizable__pane"); if (p1) { const nv = Math.max(10, cur - 5); p1.style.flex = `0 0 ${nv}%`; this.setAttribute("value", String(nv)); } }
+        else if (e.key === "ArrowRight" || e.key === "ArrowUp") { e.preventDefault(); const p1 = this.querySelector(".c-resizable__pane"); if (p1) { const nv = Math.min(90, cur + 5); p1.style.flex = `0 0 ${nv}%`; this.setAttribute("value", String(nv)); } }
+      });
     }
   }
   define("contour-resizable", ContourResizable);
