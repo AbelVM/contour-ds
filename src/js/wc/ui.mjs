@@ -1009,3 +1009,29 @@ class ContourPopover extends ContourBase {
     }
   }
   define("contour-popover", ContourPopover);
+
+class ContourDatePicker extends ContourBase {
+    static get observed() { return ["value", "label"]; }
+    static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" } }; }
+    render() {
+      this.classList.add("c-date-picker");
+      const label = this.getAttribute("label");
+      if (label) {
+        const l = this.ensure(".c-date-picker__label", () => { const el = document.createElement("label"); el.className = "c-date-picker__label"; return el; });
+        l.textContent = label;
+      }
+      const input = this.ensure(".c-date-picker__input", () => { const el = document.createElement("input"); el.className = "c-input c-date-picker__input"; el.type = "date"; return el; });
+      input.value = this.getAttribute("value") || "";
+    }
+    enhance() {
+      if (this._wiredDatePicker) return;
+      this._wiredDatePicker = true;
+      this.addEventListener("change", (e) => {
+        const t = e.target;
+        if (t && t.classList.contains("c-date-picker__input")) {
+          this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: t.value } }));
+        }
+      });
+    }
+  }
+  define("contour-date-picker", ContourDatePicker);

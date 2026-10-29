@@ -3473,7 +3473,19 @@
     z-index: var(--z-tooltip);
     margin-block-start: var(--space-2xs);
   }
-  /* -- Popover ----------------------------------------------------------- */
+  /* -- Date picker ------------------------------------------------------- */
+  .c-date-picker {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+  }
+  .c-date-picker__label {
+    font-size: var(--type-xs);
+    color: var(--color-text-muted);
+  }
+  .c-date-picker__input {
+    /* inherits c-input */
+  }
   .c-popover {
     padding: var(--space-sm) var(--space-md);
     border-radius: var(--radius-md);
