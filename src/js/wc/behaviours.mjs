@@ -857,6 +857,29 @@ let modalSavedOverflow = null;
 let modalSavedX = 0;
 let modalSavedY = 0;
 const modalInerted = new Set();
+const modalStack = [];
+let modalTrapWired = false;
+
+function modalFocusables(host) {
+  return Array.from(host.querySelectorAll("button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])"))
+    .filter((el) => !el.hasAttribute("disabled") && el.getAttribute("aria-hidden") !== "true");
+}
+
+function modalTrapHandler(e) {
+  if (e.key !== "Tab") return;
+  const host = modalStack[modalStack.length - 1];
+  if (!host) return;
+  const f = modalFocusables(host);
+  if (!f.length) { e.preventDefault(); return; }
+  const first = f[0];
+  const last = f[f.length - 1];
+  const active = document.activeElement;
+  if (e.shiftKey) {
+    if (active === first || !host.contains(active)) { e.preventDefault(); last.focus(); }
+  } else {
+    if (active === last) { e.preventDefault(); first.focus(); }
+  }
+}
 
 export function modalContain(host, open) {
   if (open) {
@@ -870,6 +893,11 @@ export function modalContain(host, open) {
       document.documentElement.style.overflow = "hidden";
     }
     modalDepth.n += 1;
+    modalStack.push(host);
+    if (modalDepth.n === 1 && !modalTrapWired) {
+      modalTrapWired = true;
+      document.addEventListener("keydown", modalTrapHandler);
+    }
     // An ancestor cannot be inert (it would inert the whole subtree); the
     // background is therefore each ancestor's SIBLINGS, walked out to the body.
     for (let el = host; el && el !== document.body; el = el.parentElement) {
@@ -880,14 +908,15 @@ export function modalContain(host, open) {
       }
     }
   } else {
+    const idx = modalStack.lastIndexOf(host);
+    if (idx >= 0) modalStack.splice(idx, 1);
     modalDepth.n = Math.max(0, modalDepth.n - 1);
     if (modalDepth.n === 0) {
       for (const el of modalInerted) el.inert = false;
       modalInerted.clear();
       document.documentElement.style.overflow = modalSavedOverflow || "";
-      // Locking overflow can move the page if a scrollbar disappears; put the
-      // position back so a close never lands the reader elsewhere.
       window.scrollTo(modalSavedX, modalSavedY);
     }
+  }
   }
 }
