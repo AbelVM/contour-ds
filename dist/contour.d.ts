@@ -32,6 +32,7 @@ export type ContourComponent =
   | "c-cluster"
   | "c-code"
   | "c-code-tabs"
+  | "c-color-picker"
   | "c-combobox"
   | "c-command"
   | "c-compare"
@@ -643,6 +644,7 @@ declare global {
     "contour-cluster": ContourElement;
     "contour-code": ContourElement;
     "contour-code-tabs": ContourElement;
+    "contour-color-picker": ContourElement;
     "contour-combobox": ContourElement;
     "contour-command": ContourElement;
     "contour-compare": ContourElement;

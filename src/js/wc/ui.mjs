@@ -1092,3 +1092,29 @@ class ContourTimePicker extends ContourBase {
     }
   }
   define("contour-time-picker", ContourTimePicker);
+
+class ContourColorPicker extends ContourBase {
+    static get observed() { return ["value", "label"]; }
+    static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" } }; }
+    render() {
+      this.classList.add("c-color-picker");
+      const label = this.getAttribute("label");
+      if (label) {
+        const l = this.ensure(".c-color-picker__label", () => { const el = document.createElement("label"); el.className = "c-color-picker__label"; return el; });
+        l.textContent = label;
+      }
+      const input = this.ensure(".c-color-picker__input", () => { const el = document.createElement("input"); el.className = "c-color-picker__input"; el.type = "color"; return el; });
+      input.value = this.getAttribute("value") || "#000000";
+    }
+    enhance() {
+      if (this._wiredColorPicker) return;
+      this._wiredColorPicker = true;
+      this.addEventListener("change", (e) => {
+        const t = e.target;
+        if (t && t.classList.contains("c-color-picker__input")) {
+          this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: t.value } }));
+        }
+      });
+    }
+  }
+  define("contour-color-picker", ContourColorPicker);

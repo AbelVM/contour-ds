@@ -3473,7 +3473,24 @@
     z-index: var(--z-tooltip);
     margin-block-start: var(--space-2xs);
   }
-  /* -- Time picker ------------------------------------------------------- */
+  /* -- Color picker ------------------------------------------------------ */
+  .c-color-picker {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+  }
+  .c-color-picker__label {
+    font-size: var(--type-xs);
+    color: var(--color-text-muted);
+  }
+  .c-color-picker__input {
+    inline-size: 2rem;
+    block-size: 1.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xs);
+    cursor: pointer;
+    padding: 0;
+  }
   .c-time-picker {
     display: inline-flex;
     align-items: center;
