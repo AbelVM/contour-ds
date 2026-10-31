@@ -1,4 +1,4 @@
-import { ContourBase, define, contourId } from './core.mjs';
+import { ContourBase, define, contourId, onDispose } from './core.mjs';
 import { wireRemovable } from './behaviours.mjs';
 class ContourAvatar extends ContourBase {
     static get observed() { return ["name", "size", "variant", "src", "status"]; }

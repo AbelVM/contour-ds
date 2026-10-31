@@ -1,4 +1,4 @@
-import { ContourBase, define, onDispose, formatValue } from './core.mjs';
+import { ContourBase, define, onDispose, formatValue, contourId } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates, remoteInvalidate, watchViewport } from './states.mjs';
 import { donutSlices, barRects, smoothPath, polylinePoints } from './svg.mjs';
 class ContourReadout extends ContourBase {
