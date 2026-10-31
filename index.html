@@ -19515,6 +19515,88 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                     </details></div>
           </div>
 
+          <div class="ds-spec">
+            <div class="ds-spec__head">
+              <span class="ds-spec__name">Reactivity demo — isochrone (rings)</span>
+              <span class="ds-spec__token">contour-isochrone</span>
+            </div>
+            <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
+              <contour-isochrone id="reactivity-demo-iso2" rings="[&quot;5min&quot;,&quot;10min&quot;]" center="40.7,-74.0"></contour-isochrone>
+            </div><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-411" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-411">&lt;contour-isochrone id="reactivity-demo-iso2" rings="[&amp;quot;5min&amp;quot;,&amp;quot;10min&amp;quot;]" center="40.7,-74.0"&gt;&lt;/contour-isochrone&gt;</code></pre>
+                      </div>
+                    </details></div>
+            <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
+              <button class="c-btn c-btn--sm" type="button" onclick="document.getElementById('reactivity-demo-iso2').setAttribute('rings', JSON.stringify(['3min','6min','9min','12min']))">Add rings</button>
+            </div><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-412" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-412">&lt;button class="c-btn c-btn--sm" type="button" onclick="document.getElementById('reactivity-demo-iso2').setAttribute('rings', JSON.stringify(['3min','6min','9min','12min']))"&gt;Add rings&lt;/button&gt;</code></pre>
+                      </div>
+                    </details></div>
+          </div>
+
+          <div class="ds-spec">
+            <div class="ds-spec__head">
+              <span class="ds-spec__name">Reactivity demo — hexbin</span>
+              <span class="ds-spec__token">contour-hexbin</span>
+            </div>
+            <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
+              <contour-hexbin id="reactivity-demo-hb2" cells="[1,2,3,4,5,6,7]"></contour-hexbin>
+            </div><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-413" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-413">&lt;contour-hexbin id="reactivity-demo-hb2" cells="[1,2,3,4,5,6,7]"&gt;&lt;/contour-hexbin&gt;</code></pre>
+                      </div>
+                    </details></div>
+            <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
+              <button class="c-btn c-btn--sm" type="button" onclick="var c=[];for(var i=0;i<12;i++)c.push(Math.round(Math.random()*9+1));document.getElementById('reactivity-demo-hb2').setAttribute('cells', JSON.stringify(c))">Randomise cells</button>
+            </div><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-414" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-414">&lt;button class="c-btn c-btn--sm" type="button" onclick="var c=[];for(var i=0;i&lt;12;i++)c.push(Math.round(Math.random()*9+1));document.getElementById('reactivity-demo-hb2').setAttribute('cells', JSON.stringify(c))"&gt;Randomise cells&lt;/button&gt;</code></pre>
+                      </div>
+                    </details></div>
+          </div>
+
           <!-- Guide-only shortcut overlay chrome (named here so the docs package counts it) -->
           <div class="c-shortcut-overlay c-shortcut-panel c-shortcut-list c-shortcut-row" hidden aria-hidden="true"></div>
 
@@ -19585,13 +19667,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-411" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-415" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-411">&lt;pre class="hljs"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-415">&lt;pre class="hljs"&gt;
   &lt;code class="language-javascript"&gt;
     // Plain JS — mount Contour chrome on a live MapLibre instance const map = new maplibregl.Map({ container: "map", style, center, zoom }); const area = document.querySelector("contour-map-area"); area.attachMap(map); // store the engine reference map.on("moveend", () =&gt; { const vp = area.getViewport(); // { west, south, east, north } or { zoom, center } console.log("viewport", vp); }); area.addEventListener("contour:map-control", (e) =&gt; { console.log("control clicked:", e.detail.control); }); // React — use a ref and attach on mount // const ref = useRef(null); // useEffect(() =&gt; { if (ref.current) ref.current.attachMap(map); return () =&gt; ref.current?.detachMap(); }, [map]); // &lt;contour-map-area ref="{ref}"&gt;&lt;/contour-map-area&gt;
   &lt;/code&gt;
