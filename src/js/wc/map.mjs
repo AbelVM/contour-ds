@@ -482,9 +482,18 @@ class ContourFlowMap extends ContourBase {
       if (renderStates(this, "flow-map")) return;
       const nodes = remoteData(this, "nodes");
       const effectiveNodes = nodes || (this._remoteData && this._remoteData.nodes ? JSON.stringify(this._remoteData.nodes) : null);
-      if (effectiveNodes) {
+      // Slotted content support: authored .c-flow-map__node children take
+      // precedence over the JSON `nodes` attribute.
+      const authoredNodes = Array.from(this.querySelectorAll(":scope > .c-flow-map__node"));
+      let parsed = null;
+      if (authoredNodes.length) {
+        parsed = authoredNodes.map((el) => el.textContent || el.getAttribute("title") || "");
+        authoredNodes.forEach((el) => el.remove());
+      } else if (effectiveNodes) {
+        try { parsed = JSON.parse(effectiveNodes); } catch (e) { parsed = null; }
+      }
+      if (parsed) {
        try {
-         const parsed = JSON.parse(effectiveNodes);
          Array.from(this.querySelectorAll(".c-flow-map__node")).forEach((n) => n.remove());
            parsed.forEach((n, i) => {
             const node = document.createElement("span");
@@ -497,7 +506,7 @@ class ContourFlowMap extends ContourBase {
           const tip = this.ensure(".c-flow-map__tooltip", () => { const el = document.createElement("div"); el.className = "c-flow-map__tooltip"; el.setAttribute("role", "tooltip"); el.setAttribute("hidden", ""); return el; });
           tip.setAttribute("hidden", "");
        } catch (e) { /* keep existing */ }
-      } else {
+      } else if (!parsed) {
         Array.from(this.querySelectorAll(".c-flow-map__node")).forEach((n) => n.remove());
         renderEmpty(this, "flow-map");
       }
