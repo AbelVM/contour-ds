@@ -755,7 +755,7 @@ class ContourTocFull extends ContourBase {
   }
 define("contour-toc", ContourTocFull);
 class ContourFilterBar extends ContourBase {
-    static get observed() { return ["label", "divider", "items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
+    static get observed() { return ["label", "divider", "items", "input", "placeholder", "mode", "modes", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { label: { attribute: "label" }, divider: { attribute: "divider" }, items: { attribute: "items" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-filter-bar");
@@ -770,13 +770,48 @@ class ContourFilterBar extends ContourBase {
         const l = this.querySelector(".c-filter-bar__label");
         if (l) l.remove();
       }
-      if (this.hasAttribute("divider")) {
-        this.ensure(".c-filter-bar__divider", () => { const el = document.createElement("span"); el.className = "c-filter-bar__divider"; return el; });
-      } else {
-        const d = this.querySelector(".c-filter-bar__divider");
-        if (d) d.remove();
-      }
-      // Render filter pills from items.
+       if (this.hasAttribute("divider")) {
+         this.ensure(".c-filter-bar__divider", () => { const el = document.createElement("span"); el.className = "c-filter-bar__divider"; return el; });
+       } else {
+         const d = this.querySelector(".c-filter-bar__divider");
+         if (d) d.remove();
+       }
+       // Text input support
+       if (this.hasAttribute("input") || this.hasAttribute("placeholder")) {
+         let inp = this.querySelector(".c-filter-bar__input");
+         if (!inp) { inp = document.createElement("input"); inp.type = "search"; inp.className = "c-filter-bar__input"; this.appendChild(inp); }
+         const ph = this.getAttribute("placeholder");
+         if (ph) inp.setAttribute("placeholder", ph);
+       } else {
+         const inp = this.querySelector(".c-filter-bar__input");
+         if (inp) inp.remove();
+       }
+       // Mode toolbar
+       const modesAttr = this.getAttribute("modes");
+       let modes = null;
+       if (modesAttr) { try { modes = JSON.parse(modesAttr); } catch (e) { modes = modesAttr.split(",").map((s) => s.trim()); } }
+       if (modes || this.hasAttribute("mode")) {
+         let bar = this.querySelector(".c-filter-bar__modes");
+         if (!bar) { bar = document.createElement("div"); bar.className = "c-filter-bar__modes"; this.appendChild(bar); }
+         bar.innerHTML = "";
+         const current = this.getAttribute("mode");
+         const list = Array.isArray(modes) ? modes : ["draw", "erase", "select"];
+         list.forEach((m) => {
+           const name = typeof m === "string" ? m : (m.label || m.value || m);
+           const val = typeof m === "string" ? m : (m.value || m.label || m);
+           const btn = document.createElement("button");
+           btn.type = "button";
+           btn.className = "c-filter-bar__mode";
+           btn.textContent = name;
+           btn.dataset.mode = val;
+           if (current && current === val) btn.setAttribute("aria-pressed", "true");
+           bar.appendChild(btn);
+         });
+       } else {
+         const bar = this.querySelector(".c-filter-bar__modes");
+         if (bar) bar.remove();
+       }
+       // Render filter pills from items.
       Array.from(this.querySelectorAll(".c-filter-pill")).forEach((n) => n.remove());
       const items = remoteData(this, "items");
       let parsed = null;
@@ -800,9 +835,29 @@ class ContourFilterBar extends ContourBase {
       }
       if (!parsed && !label) renderEmpty(this, "filter-bar");
     }
-    enhance() {
-      wireRemovable(this);
-    }
+     enhance() {
+       wireRemovable(this);
+       if (this._wiredFilterBar) return;
+       this._wiredFilterBar = true;
+       this.addEventListener("click", (e) => {
+         const btn = e.target && e.target.closest ? e.target.closest(".c-filter-bar__mode") : null;
+         if (!btn || !this.contains(btn)) return;
+         const mode = btn.dataset.mode || btn.textContent.trim();
+         Array.from(this.querySelectorAll(".c-filter-bar__mode")).forEach((b) => b.setAttribute("aria-pressed", String(b === btn)));
+         this.dispatchEvent(new CustomEvent("contour:mode-change", { bubbles: true, composed: true, detail: { mode } }));
+       });
+       // text input
+       const inp = this.querySelector(".c-filter-bar__input");
+       if (inp && !inp._wiredFilterInput) {
+         inp._wiredFilterInput = true;
+         inp.addEventListener("input", () => {
+           this.dispatchEvent(new CustomEvent("contour:input", { bubbles: true, composed: true, detail: { value: inp.value } }));
+         });
+         inp.addEventListener("change", () => {
+           this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: inp.value } }));
+         });
+       }
+     }
   }
   define("contour-filter-bar", ContourFilterBar);
   class ContourCommand extends ContourBase {

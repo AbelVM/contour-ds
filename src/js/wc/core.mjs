@@ -105,6 +105,8 @@
     "contour:layer-duplicate": { payload: ["name"], composed: true },
     "contour:layer-zoom": { payload: ["name"], composed: true },
     "contour:layer-projection": { payload: ["name", "projection"], composed: true },
+    "contour:layer-remove": { payload: ["name"], composed: true },
+    "contour:layer-reorder": { payload: ["layerIds"], composed: true },
     "contour:layer-toggle": { payload: ["name"], composed: true },
     "contour:layer-visibility": { payload: ["name", "visible"], composed: true },
     "contour:legend-toggle": { payload: ["label", "key", "layers", "pressed"], composed: true },
@@ -112,6 +114,7 @@
     "contour:map-control": { payload: ["control"], composed: true },
     "contour:map-attach": { payload: [], composed: true },
     "contour:map-detach": { payload: [], composed: true },
+    "contour:mode-change": { payload: ["mode"], composed: true },
     "contour:move": { payload: ["direction"], composed: true },
     "contour:open": { payload: [], composed: true },
     "contour:page": { payload: ["page"], composed: true },
@@ -174,13 +177,13 @@
   //   role, open, aria-label, aria-valuenow, aria-valuemin, aria-valuemax, tabindex
   // Adding one of those back to this list makes that component recurse.
   export const OBSERVED = [
-    "accept", "action", "actions", "after", "anchor", "answer", "area", "article", "attribution", "attribution-mark", "autoplay", "axis", "axis-x", "axis-y", "brownout", "brownout-level", "before", "body", "brand", "breakpoint", "cache-key", "canvas", "center", "clearable", "cols", "columns", "color", "command",
-    "cells", "checked", "chrome", "closable", "colors", "content", "controls", "copyable", "count", "current", "data", "date", "delta", "description", "glyphs", "demo", "density", "desc", "dir", "direction", "disabled", "dismissible", "divider", "do", "dont", "dot",
+    "accept", "action", "actions", "after", "allow-duplicate", "allow-remove", "allow-rename", "allow-zoom", "anchor", "answer", "area", "article", "attribution", "attribution-mark", "audit", "autoplay", "axis", "axis-x", "axis-y", "brownout", "brownout-level", "before", "body", "brand", "breakpoint", "breaks", "cache-key", "canvas", "center", "clearable", "cols", "columns", "color", "command",
+    "cells", "checked", "chrome", "closable", "classification", "colors", "continuous", "content", "controls", "copyable", "count", "current", "data", "date", "delta", "description", "glyphs", "demo", "density", "desc", "dir", "direction", "disabled", "dismissible", "divider", "do", "dont", "dot", "ends", "high", "input", "layer", "low", "mode", "modes", "n", "opacity", "palette", "polarity", "range", "single",
     "empty", "error", "exclusive", "format", "heading", "hint", "href", "icon", "illustration", "index", "instrument", "interval", "items", "key", "layers", "level",
     "label", "lazy", "lede", "legend", "line", "link", "links", "live", "loading", "locale", "loop", "max", "media", "message", "method", "month", "menu", "min", "multiple", "name", "needle", "next", "no", "no-cache", "no-data-message", "nodes", "note", "norm", "normalize",
     "options", "orientation", "page-size", "pages", "pause", "paused", "pausable", "persist", "placeholder", "playing", "point", "points", "prev", "progress", "prompt", "question", "recent", "required",
     "quote", "ramp", "refresh", "removable", "reverse", "rings", "retry", "rows", "scale", "selectable", "segments", "show-header", "sparkline", "start", "end", "threshold", "thresholds", "selected", "separator", "series", "shortcut", "side", "size", "skeleton", "sort", "sort-dir", "speed", "status", "step", "submit", "timeout", "trigger", "virtual",
-    "state", "steps", "subtitle", "summary", "src", "tabs", "tag", "text", "ticks", "title", "type", "unit",
+    "state", "steps", "subtitle", "summary", "src", "table", "tabs", "tag", "text", "ticks", "title", "type", "unit",
     "variant", "values", "viewport", "yes", "zoomable", "x", "y",
   ];
 

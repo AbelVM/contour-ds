@@ -737,7 +737,7 @@ class ContourStyleSwitcher extends ContourBase {
   define("contour-style-switcher", ContourStyleSwitcher);
 
 class ContourStylePanel extends ContourBase {
-    static get observed() { return ["title", "layers", "classification", "palette", "breaks", "opacity"]; }
+    static get observed() { return ["title", "layers", "layer", "single", "classification", "palette", "breaks", "opacity", "n", "colors"]; }
     static get properties() { return { title: { attribute: "title" }, layers: { attribute: "layers" }, classification: { attribute: "classification" }, palette: { attribute: "palette" }, breaks: { attribute: "breaks" }, opacity: { attribute: "opacity" } }; }
     render() {
       this.classList.add("c-style-panel");
@@ -746,7 +746,46 @@ class ContourStylePanel extends ContourBase {
         const t = this.ensure(".c-style-panel__title", () => { const el = document.createElement("div"); el.className = "c-style-panel__title"; return el; });
         t.textContent = title;
       }
-      const layers = this.getAttribute("layers");
+       const singleMode = this.hasAttribute("single") || !!this.getAttribute("layer");
+       if (singleMode) {
+         const body = this.ensure(".c-style-panel__body", () => { const el = document.createElement("div"); el.className = "c-style-panel__body"; return el; });
+         body.innerHTML = "";
+         // classification method selector
+         const clsLabel = document.createElement("label"); clsLabel.textContent = "Classification"; body.appendChild(clsLabel);
+         const clsSel = document.createElement("select"); clsSel.className = "c-style-panel__classification";
+         ["equal","quantile","jenks","manual"].forEach((m) => { const o = document.createElement("option"); o.value = m; o.textContent = m; clsSel.appendChild(o); });
+         const cls = this.getAttribute("classification"); if (cls) clsSel.value = cls;
+         body.appendChild(clsSel);
+         // palette picker
+         const pal = document.createElement("input"); pal.type = "text"; pal.className = "c-style-panel__palette"; pal.placeholder = "palette";
+         const palv = this.getAttribute("palette"); if (palv) pal.value = palv;
+         body.appendChild(pal);
+         // n (class count)
+         const nIn = document.createElement("input"); nIn.type = "number"; nIn.className = "c-style-panel__n"; nIn.min = "2"; nIn.max = "12";
+         const nv = this.getAttribute("n"); if (nv) nIn.value = nv; else nIn.value = "5";
+         body.appendChild(nIn);
+         // opacity slider
+         const op = document.createElement("input"); op.type = "range"; op.className = "c-style-panel__opacity"; op.min = "0"; op.max = "100";
+         const ov = this.getAttribute("opacity"); op.value = ov != null ? ov : "100";
+         body.appendChild(op);
+         // breaks editor
+         const breaks = document.createElement("input"); breaks.type = "text"; breaks.className = "c-style-panel__breaks"; breaks.placeholder = "breaks";
+         const bv = this.getAttribute("breaks"); if (bv) breaks.value = bv;
+         body.appendChild(breaks);
+         // color list
+         const colorsAttr = this.getAttribute("colors");
+         let colors = null;
+         if (colorsAttr) { try { colors = JSON.parse(colorsAttr); } catch (e) { colors = colorsAttr.split(",").map((s) => s.trim()); } }
+         if (Array.isArray(colors)) {
+           const list = document.createElement("div"); list.className = "c-style-panel__colors";
+           colors.forEach((c) => {
+             const sw = document.createElement("span"); sw.className = "c-style-panel__color"; sw.style.background = c; list.appendChild(sw);
+           });
+           body.appendChild(list);
+         }
+         return;
+       }
+       const layers = this.getAttribute("layers");
       const body = this.ensure(".c-style-panel__body", () => { const el = document.createElement("div"); el.className = "c-style-panel__body"; return el; });
       // Slotted content support: authored .c-style-panel__row children take
       // precedence over the JSON `layers` attribute.

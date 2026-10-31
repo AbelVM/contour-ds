@@ -76,13 +76,18 @@ class ContourKpi extends ContourBase {
         const h = this.querySelector(".c-kpi__head");
         if (h) h.remove();
       }
-      if (delta) {
-        const f = this.ensure(".c-kpi__foot", () => { const el = document.createElement("div"); el.className = "c-kpi__foot"; return el; });
-        const d = f.querySelector(".c-delta") || document.createElement("span");
-        if (!d.parentNode) f.insertBefore(d, f.firstChild);
-        d.className = "c-delta c-delta--" + (this.getAttribute("direction") || "up");
-        d.textContent = delta;
-      } else {
+       if (delta) {
+         const f = this.ensure(".c-kpi__foot", () => { const el = document.createElement("div"); el.className = "c-kpi__foot"; return el; });
+         const d = f.querySelector(".c-delta") || document.createElement("span");
+         if (!d.parentNode) f.insertBefore(d, f.firstChild);
+         const dir = this.getAttribute("direction") || "up";
+         const polarity = this.getAttribute("polarity") || "neutral";
+         let tone = "neutral";
+         if (polarity === "good") tone = (dir === "up") ? "good" : "bad";
+         else if (polarity === "bad") tone = (dir === "up") ? "bad" : "good";
+         d.className = "c-delta c-delta--" + dir + " c-delta--" + tone;
+         d.textContent = delta;
+       } else {
         const d = this.querySelector(".c-kpi__foot .c-delta");
         if (d) d.remove();
       }
@@ -2016,7 +2021,7 @@ class ContourMetricsFull extends ContourBase {
   }
   define("contour-metrics", ContourMetricsFull);
 class ContourLegend extends ContourBase {
-    static get observed() { return ["title", "ramp", "scale", "items", "method", "norm", "selectable", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "glyphs", "thresholds", "breaks", "no-data-color"]; }
+    static get observed() { return ["title", "ramp", "scale", "items", "method", "norm", "selectable", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "glyphs", "thresholds", "breaks", "no-data-color", "size", "table", "classification", "audit", "continuous", "ends", "caption"]; }
     static get properties() { return { title: { attribute: "title" }, ramp: { attribute: "ramp" }, scale: { attribute: "scale" }, items: { attribute: "items" }, method: { attribute: "method" }, norm: { attribute: "norm" }, selectable: { attribute: "selectable", type: Boolean }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-legend");
@@ -2056,14 +2061,15 @@ class ContourLegend extends ContourBase {
             if (it && it.color) sw.style.background = it.color;
             item.appendChild(sw);
             // geometry glyph
-            const glyphShape = (it && (it.shape || it.marker || it.glyph)) || this.getAttribute("glyphs");
-            if (glyphShape) {
-              const g = document.createElement("span");
-              g.className = "c-legend__glyph";
-              g.setAttribute("part", "glyph");
-              g.textContent = glyphShape === "circle" ? "●" : glyphShape === "square" ? "■" : glyphShape === "triangle" ? "▲" : glyphShape === "diamond" ? "◆" : glyphShape === "star" ? "★" : String(glyphShape);
-              item.appendChild(g);
-            }
+             const glyphShape = (it && (it.shape || it.marker || it.glyph)) || this.getAttribute("glyphs");
+             if (glyphShape) {
+               const g = document.createElement("span");
+               g.className = "c-legend__glyph";
+               g.setAttribute("part", "glyph");
+               g.textContent = glyphShape === "circle" ? "●" : glyphShape === "square" ? "■" : glyphShape === "triangle" ? "▲" : glyphShape === "diamond" ? "◆" : glyphShape === "star" ? "★" : String(glyphShape);
+               if (it && it.size != null) g.style.fontSize = (typeof it.size === "number" ? it.size + "px" : String(it.size));
+               item.appendChild(g);
+             }
             // threshold break marker
             if (it && it.break != null) {
               const b = document.createElement("span");
@@ -2071,9 +2077,21 @@ class ContourLegend extends ContourBase {
               b.textContent = String(it.break);
               item.appendChild(b);
             }
-            const lbl = document.createElement("span");
-            lbl.textContent = label;
-            item.appendChild(lbl);
+             const lbl = document.createElement("span");
+             lbl.textContent = label;
+             item.appendChild(lbl);
+             // caption (source-and-method line)
+             const caption = (typeof it === "object" && it) ? (it.caption || it.note || "") : "";
+             if (caption) {
+               const cap = document.createElement("span");
+               cap.className = "c-legend__caption";
+               cap.textContent = caption;
+               item.appendChild(cap);
+             }
+             // threshold mark: outline on swatches that begin at a threshold
+             if (it && (it.threshold || it.break != null)) {
+               sw.style.outline = "2px solid var(--color-border-strong)";
+             }
             list.appendChild(item);
           });
         } catch (e) { /* keep existing */ }
@@ -2085,7 +2103,79 @@ class ContourLegend extends ContourBase {
           renderEmpty(this, "legend");
         }
       }
-      const method = this.getAttribute("method");
+       // audit notice
+       const audit = this.getAttribute("audit");
+       if (audit) {
+         const a = this.ensure(".c-legend__audit", () => { const el = document.createElement("div"); el.className = "c-legend__audit"; return el; });
+         a.textContent = audit;
+       } else {
+         const a = this.querySelector(".c-legend__audit");
+         if (a) a.remove();
+       }
+       // continuous variant: ramp with two ends labelled
+       if (this.hasAttribute("continuous")) {
+         const ends = this.getAttribute("ends");
+         let parsedEnds = null;
+         if (ends) { try { parsedEnds = JSON.parse(ends); } catch (e) { parsedEnds = ends.split(","); } }
+         if (Array.isArray(parsedEnds) && parsedEnds.length >= 2) {
+           const r = this.ensure(".c-legend__ramp", () => { const el = document.createElement("div"); el.className = "c-legend__ramp"; return el; });
+           // labels
+           let left = this.querySelector(".c-legend__ramp-label--start");
+           if (!left) { left = document.createElement("span"); left.className = "c-legend__ramp-label c-legend__ramp-label--start"; r.appendChild(left); }
+           left.textContent = parsedEnds[0];
+           let right = this.querySelector(".c-legend__ramp-label--end");
+           if (!right) { right = document.createElement("span"); right.className = "c-legend__ramp-label c-legend__ramp-label--end"; r.appendChild(right); }
+           right.textContent = parsedEnds[parsedEnds.length - 1];
+         }
+       }
+       // size variant: differently-sized glyphs
+       const sizeAttr = this.getAttribute("size");
+       if (sizeAttr) {
+         const sc = this.ensure(".c-legend__size", () => { const el = document.createElement("div"); el.className = "c-legend__size"; return el; });
+         sc.textContent = sizeAttr;
+       } else {
+         const sc = this.querySelector(".c-legend__size");
+         if (sc) sc.remove();
+       }
+       // classification line
+       const classification = this.getAttribute("classification");
+       if (classification) {
+         const c = this.ensure(".c-legend__classification", () => { const el = document.createElement("div"); el.className = "c-legend__classification"; return el; });
+         c.textContent = classification;
+       } else {
+         const c = this.querySelector(".c-legend__classification");
+         if (c) c.remove();
+       }
+       // data table (collapsible)
+       const tableAttr = this.getAttribute("table");
+       if (tableAttr) {
+         let parsed = null;
+         try { parsed = JSON.parse(tableAttr); } catch (e) { parsed = null; }
+         if (Array.isArray(parsed)) {
+           let det = this.querySelector(".c-legend__table-wrap");
+           if (!det) { det = document.createElement("details"); det.className = "c-legend__table-wrap"; this.appendChild(det); }
+           det.innerHTML = "";
+           const sum = document.createElement("summary"); sum.textContent = "Data table"; det.appendChild(sum);
+           const tbl = document.createElement("table"); tbl.className = "c-legend__table";
+           const tbody = document.createElement("tbody");
+           parsed.forEach((row) => {
+             const tr = document.createElement("tr");
+             const cells = Array.isArray(row) ? row : [row.label ?? row.key ?? "", row.value ?? ""];
+             cells.forEach((cell) => { const td = document.createElement("td"); td.textContent = cell; tr.appendChild(td); });
+             tbody.appendChild(tr);
+           });
+           tbl.appendChild(tbody);
+           det.appendChild(tbl);
+         }
+       } else {
+         const det = this.querySelector(".c-legend__table-wrap");
+         if (det) det.remove();
+       }
+       // size variant on glyphs
+       if (items) {
+         // apply size to glyphs already rendered? handled below via re-render not needed
+       }
+       const method = this.getAttribute("method");
       if (method) {
         const m = this.ensure(".c-legend__method", () => { const el = document.createElement("div"); el.className = "c-legend__method"; return el; });
         m.textContent = method;
@@ -2101,14 +2191,34 @@ class ContourLegend extends ContourBase {
         const n = this.querySelector(".c-legend__norm");
         if (n) n.remove();
       }
-      const ramp = this.getAttribute("ramp");
-      if (ramp) {
-        const r = this.ensure(".c-legend__ramp", () => { const el = document.createElement("div"); el.className = "c-legend__ramp"; return el; });
-        r.style.background = ramp;
-      } else {
-        const r = this.querySelector(".c-legend__ramp");
-        if (r) r.remove();
-      }
+       const ramp = this.getAttribute("ramp");
+       if (ramp) {
+         const r = this.ensure(".c-legend__ramp", () => { const el = document.createElement("div"); el.className = "c-legend__ramp"; return el; });
+         r.style.background = ramp;
+         // ramp routing: equal-width segments with break labels
+         const breaksAttr = this.getAttribute("breaks");
+         if (breaksAttr) {
+           let breaks = null;
+           try { breaks = JSON.parse(breaksAttr); } catch (e) { breaks = breaksAttr.split(",").map((s) => s.trim()); }
+           if (Array.isArray(breaks)) {
+             // remove old segments
+             Array.from(r.querySelectorAll(".c-legend__ramp-segment")).forEach((n) => n.remove());
+             breaks.forEach((b, i) => {
+               const seg = document.createElement("span");
+               seg.className = "c-legend__ramp-segment";
+               seg.style.flex = "1";
+               const lbl = document.createElement("span");
+               lbl.className = "c-legend__ramp-break";
+               lbl.textContent = String(b);
+               seg.appendChild(lbl);
+               r.appendChild(seg);
+             });
+           }
+         }
+       } else {
+         const r = this.querySelector(".c-legend__ramp");
+         if (r) r.remove();
+       }
       const scale = this.getAttribute("scale");
       if (scale) {
         const sc = this.ensure(".c-legend__scale", () => { const el = document.createElement("div"); el.className = "c-legend__scale"; return el; });

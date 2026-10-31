@@ -185,7 +185,7 @@ class ContourCoordinate extends ContourBase {
   }
 define("contour-coordinate", ContourCoordinate);
 class ContourLayerPanel extends ContourBase {
-    static get observed() { return ["label", "items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
+    static get observed() { return ["label", "items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "allow-rename", "allow-remove", "allow-duplicate", "allow-zoom"]; }
     static get properties() { return { label: { attribute: "label" }, items: { attribute: "items" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-layer-panel");
@@ -206,19 +206,24 @@ class ContourLayerPanel extends ContourBase {
       const authoredLayerItems = Array.from(this.querySelectorAll(":scope > .c-layer-panel__item"));
       // Preserve user-toggled visibility across re-renders (B3-09): a src
       // reload must not re-check a layer the user un-checked.
-      const savedVisibility = new Map();
-      this.querySelectorAll(".c-layer-panel__item").forEach((el) => {
-        const nm = el.querySelector(".c-layer-panel__name");
-        const tg = el.querySelector(".c-layer-panel__toggle");
-        if (nm && tg) savedVisibility.set(nm.textContent, tg.checked);
-      });
+       const savedVisibility = new Map();
+       this.querySelectorAll(".c-layer-panel__item").forEach((el) => {
+         const nm = el.querySelector(".c-layer-panel__name");
+         const tg = el.querySelector(".c-layer-panel__toggle");
+         if (nm && tg) {
+           const v = tg.hasAttribute("aria-pressed") ? tg.getAttribute("aria-pressed") === "true" : !!tg.checked;
+           savedVisibility.set(nm.textContent, v);
+         }
+       });
       let parsed = null;
       if (authoredLayerItems.length) {
-        parsed = authoredLayerItems.map((el) => {
-          const nm = el.querySelector(".c-layer-panel__name");
-          const tg = el.querySelector(".c-layer-panel__toggle");
-          return { name: nm ? nm.textContent : "", visible: tg ? tg.checked : true };
-        });
+         parsed = authoredLayerItems.map((el) => {
+           const nm = el.querySelector(".c-layer-panel__name");
+           const tg = el.querySelector(".c-layer-panel__toggle");
+           const visible = tg ? (tg.hasAttribute("aria-pressed") ? tg.getAttribute("aria-pressed") === "true" : !!tg.checked) : true;
+           const cap = el.querySelector(".c-layer-panel__caption");
+           return { name: nm ? nm.textContent : "", visible, caption: cap ? cap.textContent : (el.dataset.caption || undefined) };
+         });
         authoredLayerItems.forEach((el) => el.remove());
       } else if (items) {
         try {
@@ -227,21 +232,31 @@ class ContourLayerPanel extends ContourBase {
         } catch (e) { /* keep existing */ }
       }
       if (parsed) { parsed.forEach((it) => {
-            const name = typeof it === "string" ? it : (it.name || it.label || "");
-            const item = document.createElement("div");
-            item.className = "c-layer-panel__item" + (it.dragging ? " c-layer-panel__item--dragging" : "");
-             const toggle = document.createElement("input");
-             toggle.type = "checkbox";
-             toggle.className = "c-layer-panel__toggle";
-              toggle.setAttribute("aria-label", "Toggle " + (name || "layer"));
-             if (savedVisibility.has(name)) toggle.checked = savedVisibility.get(name);
-             else if (typeof it === "object" && it.visible !== false) toggle.checked = true;
+           const name = typeof it === "string" ? it : (it.name || it.label || "");
+           const caption = (typeof it === "object" && it) ? (it.caption || it.subtitle || "") : "";
+           const item = document.createElement("div");
+           item.className = "c-layer-panel__item" + (it.dragging ? " c-layer-panel__item--dragging" : "");
+            const toggle = document.createElement("button");
+            toggle.type = "button";
+            toggle.className = "c-layer-panel__toggle";
+            toggle.setAttribute("part", "visibility-toggle");
+            toggle.setAttribute("aria-label", "Toggle " + (name || "layer"));
+            const isVisible = savedVisibility.has(name) ? savedVisibility.get(name) : (typeof it === "object" && it.visible !== false);
+            toggle.setAttribute("aria-pressed", String(!!isVisible));
+            toggle.checked = !!isVisible;
+            toggle.textContent = isVisible ? "●" : "○";
             item.appendChild(toggle);
             const nm = document.createElement("span");
             nm.className = "c-layer-panel__name";
             nm.textContent = name;
             item.appendChild(nm);
-             const opacity = document.createElement("input");
+            if (caption) {
+              const cap = document.createElement("span");
+              cap.className = "c-layer-panel__caption";
+              cap.textContent = caption;
+              item.appendChild(cap);
+            }
+            const opacity = document.createElement("input");
              opacity.type = "range";
              opacity.className = "c-layer-panel__opacity";
              opacity.min = "0";
@@ -250,24 +265,38 @@ class ContourLayerPanel extends ContourBase {
              opacity.value = (typeof it === "object" && it.opacity != null) ? it.opacity : "100";
             item.appendChild(opacity);
             // rename input (hidden by default, toggled via button)
+            if (this.getAttribute("allow-rename") !== "false") {
             const renameBtn = document.createElement("button");
             renameBtn.type = "button";
             renameBtn.className = "c-layer-panel__rename";
             renameBtn.textContent = "Rename";
             renameBtn.setAttribute("aria-label", "Rename " + (name || "layer"));
             item.appendChild(renameBtn);
+            }
+            if (this.getAttribute("allow-duplicate") !== "false") {
             const dupBtn = document.createElement("button");
             dupBtn.type = "button";
             dupBtn.className = "c-layer-panel__duplicate";
             dupBtn.textContent = "Duplicate";
             dupBtn.setAttribute("aria-label", "Duplicate " + (name || "layer"));
             item.appendChild(dupBtn);
+            }
+            if (this.getAttribute("allow-zoom") !== "false") {
             const zoomBtn = document.createElement("button");
             zoomBtn.type = "button";
             zoomBtn.className = "c-layer-panel__zoom";
             zoomBtn.textContent = "Zoom";
             zoomBtn.setAttribute("aria-label", "Zoom to " + (name || "layer"));
             item.appendChild(zoomBtn);
+            }
+            if (this.getAttribute("allow-remove") !== "false") {
+            const removeBtn = document.createElement("button");
+            removeBtn.type = "button";
+            removeBtn.className = "c-layer-panel__remove";
+            removeBtn.textContent = "✕";
+            removeBtn.setAttribute("aria-label", "Remove " + (name || "layer"));
+            item.appendChild(removeBtn);
+            }
             const projSel = document.createElement("select");
             projSel.className = "c-layer-panel__projection";
             projSel.setAttribute("aria-label", "Projection of " + (name || "layer"));
@@ -286,39 +315,79 @@ class ContourLayerPanel extends ContourBase {
       this._wiredLayerPanel = true;
       // The panel's two controls (visibility toggle, opacity range) are rebuilt
       // on every render, so both keep the host-delegated pattern (rule 12).
-      this.addEventListener("change", (e) => {
-        const item = e.target && e.target.closest ? e.target.closest(".c-layer-panel__item") : null;
-        if (!item || !this.contains(item)) return;
-        const name = item.querySelector(".c-layer-panel__name")?.textContent || "";
-        if (e.target.classList.contains("c-layer-panel__toggle")) {
-          this.dispatchEvent(new CustomEvent("contour:layer-visibility", { bubbles: true, composed: true, detail: { name, visible: e.target.checked } }));
-        } else if (e.target.classList.contains("c-layer-panel__opacity")) {
-          this.dispatchEvent(new CustomEvent("contour:layer-opacity", { bubbles: true, composed: true, detail: { name, opacity: Number(e.target.value) } }));
-        } else if (e.target.classList.contains("c-layer-panel__projection")) {
-          this.dispatchEvent(new CustomEvent("contour:layer-projection", { bubbles: true, composed: true, detail: { name, projection: e.target.value } }));
-        }
-      });
-      this.addEventListener("click", (e) => {
-        const btn = e.target && e.target.closest ? e.target.closest("button") : null;
-        if (!btn || !this.contains(btn)) return;
-        const item = btn.closest(".c-layer-panel__item");
-        if (!item) return;
-        const name = item.querySelector(".c-layer-panel__name")?.textContent || "";
-        if (btn.classList.contains("c-layer-panel__rename")) {
-          const newName = prompt("Rename layer", name);
-          const trimmed = newName ? newName.trim() : "";
-          if (trimmed && trimmed !== name) {
-            const nm = item.querySelector(".c-layer-panel__name");
-            if (nm) nm.textContent = trimmed;
-            this.dispatchEvent(new CustomEvent("contour:layer-rename", { bubbles: true, composed: true, detail: { name, newName: trimmed } }));
+       this.addEventListener("change", (e) => {
+         const item = e.target && e.target.closest ? e.target.closest(".c-layer-panel__item") : null;
+         if (!item || !this.contains(item)) return;
+         const name = item.querySelector(".c-layer-panel__name")?.textContent || "";
+         if (e.target.classList.contains("c-layer-panel__toggle")) {
+           const now = (typeof e.target.checked === "boolean") ? e.target.checked : (e.target.getAttribute("aria-pressed") !== "true");
+           e.target.checked = now;
+           e.target.setAttribute("aria-pressed", String(now));
+           e.target.textContent = now ? "●" : "○";
+           this.dispatchEvent(new CustomEvent("contour:layer-visibility", { bubbles: true, composed: true, detail: { name, visible: now } }));
+         } else if (e.target.classList.contains("c-layer-panel__opacity")) {
+           this.dispatchEvent(new CustomEvent("contour:layer-opacity", { bubbles: true, composed: true, detail: { name, opacity: Number(e.target.value) } }));
+         } else if (e.target.classList.contains("c-layer-panel__projection")) {
+           this.dispatchEvent(new CustomEvent("contour:layer-projection", { bubbles: true, composed: true, detail: { name, projection: e.target.value } }));
+         }
+       });
+       this.addEventListener("click", (e) => {
+         const btn = e.target && e.target.closest ? e.target.closest("button") : null;
+         if (!btn || !this.contains(btn)) return;
+         const item = btn.closest(".c-layer-panel__item");
+         if (btn.classList.contains("c-layer-panel__toggle")) {
+           if (!item) return;
+           const name = item.querySelector(".c-layer-panel__name")?.textContent || "";
+           const now = btn.getAttribute("aria-pressed") !== "true";
+           btn.setAttribute("aria-pressed", String(now));
+           btn.checked = now;
+           btn.textContent = now ? "●" : "○";
+           this.dispatchEvent(new CustomEvent("contour:layer-visibility", { bubbles: true, composed: true, detail: { name, visible: now } }));
+           return;
+         }
+         if (!item) return;
+         const name = item.querySelector(".c-layer-panel__name")?.textContent || "";
+         if (btn.classList.contains("c-layer-panel__rename")) {
+           const newName = prompt("Rename layer", name);
+           const trimmed = newName ? newName.trim() : "";
+           if (trimmed && trimmed !== name) {
+             const nm = item.querySelector(".c-layer-panel__name");
+             if (nm) nm.textContent = trimmed;
+             this.dispatchEvent(new CustomEvent("contour:layer-rename", { bubbles: true, composed: true, detail: { name, newName: trimmed } }));
+           }
+         } else if (btn.classList.contains("c-layer-panel__duplicate")) {
+           this.dispatchEvent(new CustomEvent("contour:layer-duplicate", { bubbles: true, composed: true, detail: { name } }));
+         } else if (btn.classList.contains("c-layer-panel__zoom")) {
+           this.dispatchEvent(new CustomEvent("contour:layer-zoom", { bubbles: true, composed: true, detail: { name } }));
+         } else if (btn.classList.contains("c-layer-panel__remove")) {
+           this.dispatchEvent(new CustomEvent("contour:layer-remove", { bubbles: true, composed: true, detail: { name } }));
+         }
+       });
+        this.addEventListener("keydown", (e) => {
+          if (e.target && e.target.classList && e.target.classList.contains("c-layer-panel__toggle") && (e.key === "Enter" || e.key === " ")) {
+            e.preventDefault();
+            e.target.click();
+            return;
           }
-        } else if (btn.classList.contains("c-layer-panel__duplicate")) {
-          this.dispatchEvent(new CustomEvent("contour:layer-duplicate", { bubbles: true, composed: true, detail: { name } }));
-        } else if (btn.classList.contains("c-layer-panel__zoom")) {
-          this.dispatchEvent(new CustomEvent("contour:layer-zoom", { bubbles: true, composed: true, detail: { name } }));
-        }
-      });
-    }
+          const item = e.target && e.target.closest ? e.target.closest(".c-layer-panel__item") : null;
+          if (!item || !this.contains(item)) return;
+         if (!(e.altKey) || (e.key !== "ArrowUp" && e.key !== "ArrowDown")) return;
+         e.preventDefault();
+         const items = Array.from(this.querySelectorAll(".c-layer-panel__item"));
+         const idx = items.indexOf(item);
+         if (idx < 0) return;
+         const dir = e.key === "ArrowUp" ? -1 : 1;
+         const newIdx = idx + dir;
+         if (newIdx < 0 || newIdx >= items.length) return;
+         item.classList.add("c-layer-panel__item--dragging");
+         if (dir < 0) this.insertBefore(item, items[newIdx]);
+         else this.insertBefore(items[newIdx], item);
+         item.focus();
+         setTimeout(() => item.classList.remove("c-layer-panel__item--dragging"), 200);
+         const layerIds = Array.from(this.querySelectorAll(".c-layer-panel__item")).map((el) => el.querySelector(".c-layer-panel__name")?.textContent || "");
+         this.dispatchEvent(new CustomEvent("contour:layer-reorder", { bubbles: true, composed: true, detail: { layerIds } }));
+       });
+     }
   }
 define("contour-layer-panel", ContourLayerPanel);
 class ContourTimeSlider extends ContourBase {

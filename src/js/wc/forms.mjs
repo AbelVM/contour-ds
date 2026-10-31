@@ -191,72 +191,130 @@ class ContourField extends ContourBase {
   };
   define("contour-field", ContourField);
   class ContourRange extends ContourBase {
-    static get observed() { return ["min", "max", "value", "label"]; }
+    static get observed() { return ["min", "max", "value", "low", "high", "range", "sparkline", "label"]; }
     static get formAssociated() { return true; }
     static get properties() { return { min: { attribute: "min" }, max: { attribute: "max" }, value: { attribute: "value" }, label: { attribute: "label" } }; }
-    render() {
-      this.classList.add("c-range");
-      const input = this.ensure("input", () => { const el = document.createElement("input"); el.type = "range"; return el; });
-      input.type = "range";
-      input.className = "c-range";
-      input.min = this.getAttribute("min") || "0";
-      input.max = this.getAttribute("max") || "100";
-      const attrVal = this.getAttribute("value") || "50";
-      if (this._rangeUserValue !== null && this._rangeAttrAtDirty === (this.getAttribute("value") || "50")) {
-        input.value = this._rangeUserValue;
-      } else {
-        input.value = attrVal;
-        this._rangeUserValue = null;
-        this._rangeAttrAtDirty = null;
-      }
-      const label = this.getAttribute("label");
-      if (label) input.setAttribute("aria-label", label);
-      else if (!input.hasAttribute("aria-label")) input.setAttribute("aria-label", "Range");
-      // Fill the track to the left of the thumb.
-      const updateFill = () => {
-        const min = Number(input.min) || 0;
-        const max = Number(input.max) || 100;
-        const val = Number(input.value) || 0;
-        const pct = max > min ? ((val - min) / (max - min)) * 100 : 0;
-        input.style.setProperty("--fill", pct + "%");
-      };
-      updateFill();
-      if (!input._fillWired) {
-        input._fillWired = true;
-        input.addEventListener("input", updateFill);
-      }
-    }
+     render() {
+       this.classList.add("c-range");
+       const min = this.getAttribute("min") || "0";
+       const max = this.getAttribute("max") || "100";
+       const rangeMode = this.hasAttribute("range") || this.hasAttribute("low") || this.hasAttribute("high");
+       // sparkline canvas
+       const spark = this.getAttribute("sparkline");
+       if (spark) {
+         let canvas = this.querySelector(".c-range__sparkline");
+         if (!canvas) { canvas = document.createElement("canvas"); canvas.className = "c-range__sparkline"; canvas.setAttribute("part", "sparkline-canvas"); this.insertBefore(canvas, this.firstChild); }
+       } else {
+         const c = this.querySelector(".c-range__sparkline");
+         if (c) c.remove();
+       }
+       if (rangeMode) {
+         // remove single input if present
+         const single = this.querySelector("input.c-range:not(.c-range__low):not(.c-range__high)");
+         // keep generic input? We'll use two named inputs
+         let lowInput = this.querySelector("input.c-range__low");
+         if (!lowInput) { lowInput = document.createElement("input"); lowInput.type = "range"; lowInput.className = "c-range c-range__low"; this.appendChild(lowInput); }
+         let highInput = this.querySelector("input.c-range__high");
+         if (!highInput) { highInput = document.createElement("input"); highInput.type = "range"; highInput.className = "c-range c-range__high"; this.appendChild(highInput); }
+         lowInput.min = min; lowInput.max = max;
+         highInput.min = min; highInput.max = max;
+         const lowVal = this.getAttribute("low") || min;
+         const highVal = this.getAttribute("high") || max;
+         if (this._rangeUserLow !== null && this._rangeAttrLowAtDirty === (this.getAttribute("low") || min)) lowInput.value = this._rangeUserLow;
+         else { lowInput.value = lowVal; this._rangeUserLow = null; this._rangeAttrLowAtDirty = null; }
+         if (this._rangeUserHigh !== null && this._rangeAttrHighAtDirty === (this.getAttribute("high") || max)) highInput.value = this._rangeUserHigh;
+         else { highInput.value = highVal; this._rangeUserHigh = null; this._rangeAttrHighAtDirty = null; }
+         const label = this.getAttribute("label");
+         if (label) { lowInput.setAttribute("aria-label", label + " low"); highInput.setAttribute("aria-label", label + " high"); }
+       } else {
+         // remove dual inputs
+         Array.from(this.querySelectorAll("input.c-range__low, input.c-range__high")).forEach((n) => n.remove());
+         const input = this.ensure("input.c-range", () => { const el = document.createElement("input"); el.type = "range"; return el; });
+         // ensure class
+         input.className = "c-range";
+         input.type = "range";
+         input.min = min;
+         input.max = max;
+         const attrVal = this.getAttribute("value") || "50";
+         if (this._rangeUserValue !== null && this._rangeAttrAtDirty === (this.getAttribute("value") || "50")) {
+           input.value = this._rangeUserValue;
+         } else {
+           input.value = attrVal;
+           this._rangeUserValue = null;
+           this._rangeAttrAtDirty = null;
+         }
+         const label = this.getAttribute("label");
+         if (label) input.setAttribute("aria-label", label);
+         else if (!input.hasAttribute("aria-label")) input.setAttribute("aria-label", "Range");
+         const updateFill = () => {
+           const mn = Number(input.min) || 0;
+           const mx = Number(input.max) || 100;
+           const val = Number(input.value) || 0;
+           const pct = mx > mn ? ((val - mn) / (mx - mn)) * 100 : 0;
+           input.style.setProperty("--fill", pct + "%");
+         };
+         updateFill();
+         if (!input._fillWired) {
+           input._fillWired = true;
+           input.addEventListener("input", updateFill);
+         }
+       }
+     }
   }
   // patch enhance onto ContourRange
   const _origRangeRender = ContourRange.prototype.render;
-  ContourRange.prototype.attributeChangedCallback = function(name, oldValue, newValue) {
-    if (name === "value") { this._rangeUserValue = null; this._rangeAttrAtDirty = null; }
-    return ContourBase.prototype.attributeChangedCallback.call(this, name, oldValue, newValue);
-  };
-  ContourRange.prototype.enhance = function() {
-    if (this._wiredRange) return;
-    this._wiredRange = true;
-    const sync = () => {
-      const input = this.querySelector("input");
-      if (!input || !this._internals) return;
-      this._internals.setFormValue(input.value);
-    };
-    this.addEventListener("input", (e) => {
-      const input = this.querySelector("input");
-      if (!input || e.target !== input) return;
-      this._rangeUserValue = input.value;
-      this._rangeAttrAtDirty = this.getAttribute("value") || "50";
-      sync();
-      this._emitForm("contour:input");
-    });
-    this.addEventListener("change", (e) => {
-      const input = this.querySelector("input");
-      if (!input || e.target !== input) return;
-      sync();
-      this._emitForm("contour:change");
-    });
-    sync();
-  };
+   ContourRange.prototype.attributeChangedCallback = function(name, oldValue, newValue) {
+     if (name === "value") { this._rangeUserValue = null; this._rangeAttrAtDirty = null; }
+     if (name === "low") { this._rangeUserLow = null; this._rangeAttrLowAtDirty = null; }
+     if (name === "high") { this._rangeUserHigh = null; this._rangeAttrHighAtDirty = null; }
+     return ContourBase.prototype.attributeChangedCallback.call(this, name, oldValue, newValue);
+   };
+   ContourRange.prototype.enhance = function() {
+     if (this._wiredRange) return;
+     this._wiredRange = true;
+     const sync = () => {
+       const low = this.querySelector("input.c-range__low");
+       const high = this.querySelector("input.c-range__high");
+       const single = this.querySelector("input.c-range:not(.c-range__low):not(.c-range__high)");
+       if (this._internals) {
+         if (low && high) this._internals.setFormValue(low.value + "," + high.value);
+         else if (single) this._internals.setFormValue(single.value);
+       }
+     };
+     this.addEventListener("input", (e) => {
+       const low = this.querySelector("input.c-range__low");
+       const high = this.querySelector("input.c-range__high");
+       const single = this.querySelector("input.c-range:not(.c-range__low):not(.c-range__high)");
+       if (low && high && (e.target === low || e.target === high)) {
+         this._rangeUserLow = low.value;
+         this._rangeUserHigh = high.value;
+         this._rangeAttrLowAtDirty = this.getAttribute("low") || (this.getAttribute("min") || "0");
+         this._rangeAttrHighAtDirty = this.getAttribute("high") || (this.getAttribute("max") || "100");
+         sync();
+         this._emitForm("contour:input", { low: Number(low.value), high: Number(high.value) });
+         this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { low: Number(low.value), high: Number(high.value) } }));
+       } else if (single && e.target === single) {
+         this._rangeUserValue = single.value;
+         this._rangeAttrAtDirty = this.getAttribute("value") || "50";
+         sync();
+         this._emitForm("contour:input");
+       }
+     });
+     this.addEventListener("change", (e) => {
+       const low = this.querySelector("input.c-range__low");
+       const high = this.querySelector("input.c-range__high");
+       const single = this.querySelector("input.c-range:not(.c-range__low):not(.c-range__high)");
+       if (low && high && (e.target === low || e.target === high)) {
+         sync();
+         this._emitForm("contour:change", { low: Number(low.value), high: Number(high.value) });
+         this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { low: Number(low.value), high: Number(high.value) } }));
+       } else if (single && e.target === single) {
+         sync();
+         this._emitForm("contour:change");
+       }
+     });
+     sync();
+   };
   define("contour-range", ContourRange);
 class ContourSwitch extends ContourBase {
     static get observed() { return ["label", "required", "checked"]; }
