@@ -1,3 +1,37 @@
+## [1.0.1] - 2026-10-31
+
+### Added
+- 21 new web components filling gaps from the libreship to_do (G-01..G-21): gauge, donut,
+  brush, bivariate-legend, style-panel, layer-panel (extended), layer-switch, minimap,
+  scale-bar, streaming-chart, time-slider (extended), catchment, flow-map, hexbin, isochrone,
+  contour-plot, heatmap, annotation, measure, coordinate, compass, axis, category, stacked-bar.
+  Each ships with CSS (including `__empty`/`__loading`/`__error` state classes), ARIA roles,
+  brownout shedding where applicable, and published event types.
+- 8 new event types in the published vocabulary: `contour:break-change`, `contour:style-resolved`,
+  `contour:brush-start`, `contour:brush-end`, `contour:layer-rename`, `contour:layer-duplicate`,
+  `contour:layer-zoom`, `contour:layer-projection`.
+- `contour-coordinate` DMS and web-mercator format conversions.
+- `contour-time-slider` loop and speed attributes.
+- `contour-layer-panel` rename/duplicate/zoom/projection controls.
+- `contour-style-panel` classification/palette/breaks/opacity controls.
+- `contour-kpi` threshold badge and sparkline canvas.
+
+### Fixed
+- Gauge zones were decorative (all used the same full semicircle path, stacking on top of
+  each other). Now parameterized by threshold value range.
+- Donut did not clear stale empty state on re-render.
+- Comparison component overrode consumer-set height unconditionally.
+- Brush handles were not positioned (no `insetInlineStart` set).
+- Minimap used node-level listeners that were lost on re-render (now host-delegated per
+  AGENTS.md rule 12).
+- TimeSlider interval was not cleaned up on disconnect.
+- Bivariate-legend axis elements persisted when attributes were removed.
+- KPI left orphaned `.c-kpi__foot` container when badge was removed.
+
+### Changed
+- Raised the `contour-wc.esm.min.js` size budget from 350 kB to 435 kB (measured 432.3 kB).
+- Bumped version to 1.0.1.
+
 ## [1.0.0] - 2026-10-29
 
 ### Changed

@@ -2436,7 +2436,7 @@
   .c-gauge__zone {
     fill: none;
     stroke-width: 8;
-    stroke-linecap: butt;
+    stroke-linecap: round;
   }
   .c-gauge__needle {
     stroke: var(--color-text-strong);
@@ -2584,6 +2584,10 @@
   .c-donut__ring {
     inline-size: 8rem;
     block-size: 8rem;
+    --donut-stroke-width: 6;
+  }
+  .c-donut__ring circle {
+    stroke-width: var(--donut-stroke-width);
   }
   .c-donut__center {
     font-family: var(--font-display);

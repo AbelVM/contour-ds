@@ -748,11 +748,28 @@ class ContourStylePanel extends ContourBase {
       }
       const layers = this.getAttribute("layers");
       const body = this.ensure(".c-style-panel__body", () => { const el = document.createElement("div"); el.className = "c-style-panel__body"; return el; });
-      if (layers) {
+      // Slotted content support: authored .c-style-panel__row children take
+      // precedence over the JSON `layers` attribute.
+      const authoredRows = Array.from(this.querySelectorAll(":scope > .c-style-panel__row"));
+      let parsed = null;
+      if (authoredRows.length) {
+        parsed = authoredRows.map((row) => ({
+          name: row.querySelector(".c-style-panel__name")?.textContent || "",
+          color: row.querySelector(".c-style-panel__color")?.value,
+          classification: row.querySelector(".c-style-panel__classification")?.value,
+          palette: row.querySelector(".c-style-panel__palette")?.value,
+          breaks: row.querySelector(".c-style-panel__breaks")?.value,
+          opacity: row.querySelector(".c-style-panel__opacity")?.value,
+        }));
+        authoredRows.forEach((row) => row.remove());
+      } else if (layers) {
         try {
-          const parsed = JSON.parse(layers);
-          body.innerHTML = "";
-          parsed.forEach((l) => {
+          parsed = JSON.parse(layers);
+        } catch (e) { parsed = null; }
+      }
+      if (parsed) {
+        body.innerHTML = "";
+        parsed.forEach((l) => {
             const row = document.createElement("div");
             row.className = "c-style-panel__row";
             const name = document.createElement("span");
@@ -793,8 +810,33 @@ class ContourStylePanel extends ContourBase {
             row.appendChild(op);
             body.appendChild(row);
           });
-        } catch (e) { /* keep existing */ }
       }
+    }
+    enhance() {
+      if (this._wiredStylePanel) return;
+      this._wiredStylePanel = true;
+      this.addEventListener("change", (e) => {
+        const t = e.target;
+        if (!t || !this.contains(t)) return;
+        const row = t.closest(".c-style-panel__row");
+        const name = row ? (row.querySelector(".c-style-panel__name")?.textContent || "") : "";
+        if (t.classList.contains("c-style-panel__color")) {
+          this.dispatchEvent(new CustomEvent("contour:style-resolved", { detail: { value: t.value, layer: name, property: "color" }, bubbles: true, composed: true }));
+        } else if (t.classList.contains("c-style-panel__classification")) {
+          this.dispatchEvent(new CustomEvent("contour:break-change", { detail: { value: t.value, layer: name }, bubbles: true, composed: true }));
+        } else if (t.classList.contains("c-style-panel__opacity")) {
+          this.dispatchEvent(new CustomEvent("contour:layer-opacity", { detail: { name, opacity: Number(t.value) }, bubbles: true, composed: true }));
+        }
+      });
+      this.addEventListener("input", (e) => {
+        const t = e.target;
+        if (!t || !this.contains(t)) return;
+        if (t.classList.contains("c-style-panel__palette") || t.classList.contains("c-style-panel__breaks")) {
+          const row = t.closest(".c-style-panel__row");
+          const name = row ? (row.querySelector(".c-style-panel__name")?.textContent || "") : "";
+          this.dispatchEvent(new CustomEvent("contour:style-resolved", { detail: { value: t.value, layer: name, property: t.classList.contains("c-style-panel__palette") ? "palette" : "breaks" }, bubbles: true, composed: true }));
+        }
+      });
     }
   }
   define("contour-style-panel", ContourStylePanel);

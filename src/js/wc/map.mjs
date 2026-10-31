@@ -102,15 +102,18 @@ class ContourMinimap extends ContourBase {
     enhance() {
       if (this._wiredMinimap) return;
       this._wiredMinimap = true;
-      const vp = this.querySelector(".c-minimap__viewport");
-      if (!vp) return;
       let dragging = false;
-      vp.addEventListener("pointerdown", (e) => { dragging = true; vp.setPointerCapture(e.pointerId); });
-      vp.addEventListener("pointermove", (e) => {
+      this.addEventListener("pointerdown", (e) => {
+        const vp = this.querySelector(".c-minimap__viewport");
+        if (!vp || !vp.contains(e.target)) return;
+        dragging = true;
+        try { vp.setPointerCapture(e.pointerId); } catch (err) {}
+      });
+      this.addEventListener("pointermove", (e) => {
         if (!dragging) return;
         this.dispatchEvent(new CustomEvent("contour:move", { detail: { direction: "drag" }, bubbles: true, composed: true }));
       });
-      vp.addEventListener("pointerup", () => { dragging = false; });
+      this.addEventListener("pointerup", () => { dragging = false; });
     }
   }
 define("contour-minimap", ContourMinimap);
@@ -156,7 +159,28 @@ class ContourCoordinate extends ContourBase {
       // copy button
       let btn = this.querySelector(".c-coordinate__copy");
       if (!btn) { btn = document.createElement("button"); btn.type = "button"; btn.className = "c-coordinate__copy"; btn.textContent = "Copy"; btn.setAttribute("aria-label", "Copy coordinate"); this.appendChild(btn); }
-      btn.onclick = () => { try { navigator.clipboard.writeText(text); } catch (e) {} this.dispatchEvent(new CustomEvent("contour:copy", { detail: { text }, bubbles: true, composed: true })); };
+      btn.onclick = () => {
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).catch(() => { fallbackCopy(text); });
+          } else {
+            fallbackCopy(text);
+          }
+        } catch (e) { fallbackCopy(text); }
+        this.dispatchEvent(new CustomEvent("contour:copy", { detail: { text }, bubbles: true, composed: true }));
+      };
+      function fallbackCopy(t) {
+        try {
+          const ta = document.createElement("textarea");
+          ta.value = t;
+          ta.style.position = "fixed";
+          ta.style.opacity = "0";
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          document.body.removeChild(ta);
+        } catch (e) {}
+      }
     }
   }
 define("contour-coordinate", ContourCoordinate);
@@ -177,19 +201,32 @@ class ContourLayerPanel extends ContourBase {
         const l = this.querySelector(".c-layer-panel__label");
         if (l) l.remove();
       }
-      if (items) {
+      // Slotted content support: authored .c-layer-panel__item children take
+      // precedence over the JSON `items` attribute.
+      const authoredLayerItems = Array.from(this.querySelectorAll(":scope > .c-layer-panel__item"));
+      // Preserve user-toggled visibility across re-renders (B3-09): a src
+      // reload must not re-check a layer the user un-checked.
+      const savedVisibility = new Map();
+      this.querySelectorAll(".c-layer-panel__item").forEach((el) => {
+        const nm = el.querySelector(".c-layer-panel__name");
+        const tg = el.querySelector(".c-layer-panel__toggle");
+        if (nm && tg) savedVisibility.set(nm.textContent, tg.checked);
+      });
+      let parsed = null;
+      if (authoredLayerItems.length) {
+        parsed = authoredLayerItems.map((el) => {
+          const nm = el.querySelector(".c-layer-panel__name");
+          const tg = el.querySelector(".c-layer-panel__toggle");
+          return { name: nm ? nm.textContent : "", visible: tg ? tg.checked : true };
+        });
+        authoredLayerItems.forEach((el) => el.remove());
+      } else if (items) {
         try {
-          const parsed = JSON.parse(items);
-          // Preserve user-toggled visibility across re-renders (B3-09): a src
-          // reload must not re-check a layer the user un-checked.
-          const savedVisibility = new Map();
-          this.querySelectorAll(".c-layer-panel__item").forEach((el) => {
-            const nm = el.querySelector(".c-layer-panel__name");
-            const tg = el.querySelector(".c-layer-panel__toggle");
-            if (nm && tg) savedVisibility.set(nm.textContent, tg.checked);
-          });
+          parsed = JSON.parse(items);
           Array.from(this.querySelectorAll(".c-layer-panel__item")).forEach((el) => el.remove());
-          parsed.forEach((it) => {
+        } catch (e) { /* keep existing */ }
+      }
+      if (parsed) { parsed.forEach((it) => {
             const name = typeof it === "string" ? it : (it.name || it.label || "");
             const item = document.createElement("div");
             item.className = "c-layer-panel__item" + (it.dragging ? " c-layer-panel__item--dragging" : "");
@@ -238,8 +275,8 @@ class ContourLayerPanel extends ContourBase {
             item.appendChild(projSel);
             this.appendChild(item);
           });
-        } catch (e) { /* keep existing */ }
-      } else {
+      }
+      if (!parsed && !authoredLayerItems.length && !items) {
         Array.from(this.querySelectorAll(".c-layer-panel__item")).forEach((el) => el.remove());
         renderEmpty(this, "layer-panel");
       }
@@ -269,10 +306,11 @@ class ContourLayerPanel extends ContourBase {
         const name = item.querySelector(".c-layer-panel__name")?.textContent || "";
         if (btn.classList.contains("c-layer-panel__rename")) {
           const newName = prompt("Rename layer", name);
-          if (newName && newName !== name) {
+          const trimmed = newName ? newName.trim() : "";
+          if (trimmed && trimmed !== name) {
             const nm = item.querySelector(".c-layer-panel__name");
-            if (nm) nm.textContent = newName;
-            this.dispatchEvent(new CustomEvent("contour:layer-rename", { bubbles: true, composed: true, detail: { name, newName } }));
+            if (nm) nm.textContent = trimmed;
+            this.dispatchEvent(new CustomEvent("contour:layer-rename", { bubbles: true, composed: true, detail: { name, newName: trimmed } }));
           }
         } else if (btn.classList.contains("c-layer-panel__duplicate")) {
           this.dispatchEvent(new CustomEvent("contour:layer-duplicate", { bubbles: true, composed: true, detail: { name } }));
@@ -362,6 +400,10 @@ class ContourTimeSlider extends ContourBase {
         }
       });
       onDispose(this, stop);
+    }
+    disconnectedCallback() {
+      super.disconnectedCallback();
+      this._wiredTimeSlider = false;
     }
   }
   define("contour-time-slider", ContourTimeSlider);

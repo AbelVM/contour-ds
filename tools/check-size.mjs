@@ -121,7 +121,7 @@ const BUDGETS = {
   "surfaces/contour-data.min.css": 180 * 1024,  // raised 2026-10-31: +gauge/axis/brush/stacked-bar/category/donut/time-series/pivot; measured 177.0 kB
   "surfaces/contour-landing.min.css": 145 * 1024,  // raised 2026-10-29: +CSS rules propagate; measured 129.1 kB
   "contour.esm.min.js": 39 * 1024,
-  "contour-wc.esm.min.js": 435 * 1024,  // raised 2026-10-31: +more components; measured 430.6 kB
+  "contour-wc.esm.min.js": 440 * 1024,  // raised 2026-10-31: +gap-fill components; measured 432.3 kB
 };
 
 const kB = (n) => `${(n / 1024).toFixed(1)} kB`;

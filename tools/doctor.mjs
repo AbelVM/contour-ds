@@ -28,6 +28,7 @@ const gates = [
   ["check-defs", "node", ["tools/check-defs.mjs"]],
   ["check-markup", "node", ["tools/check-markup.mjs"]],
   ["check-claims", "node", ["tools/check-claims.mjs"]],
+  ["check-llms", "node", ["tools/check-llms.mjs"]],
   ["stamp", "node", ["tools/stamp.mjs", "--check"]],
   ["gen-light-dark", "node", ["tools/gen-light-dark.mjs", "--check"]],
   ["check-size", "node", ["tools/check-size.mjs"]],

@@ -22,7 +22,7 @@ import "./shadow.mjs";
 
 // Published version + readiness signal. Fires after every fragment has run, so
 // a consumer listening for `contour:ready` can assume the full registry exists.
-export const CONTOUR_VERSION = "1.0.0";
+export const CONTOUR_VERSION = "1.1.0";
 if (typeof window !== "undefined") {
   window.ContourVersion = CONTOUR_VERSION;
   queueMicrotask(() => {
