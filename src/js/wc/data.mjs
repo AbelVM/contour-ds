@@ -1440,18 +1440,29 @@ class ContourAxis extends ContourBase {
       const vAttr = this.getAttribute("values");
       if (vAttr) { try { values = JSON.parse(vAttr); } catch (e) { values = vAttr.split(",").map((x) => x.trim()); } }
       const ticks = parseInt(this.getAttribute("ticks") || "0", 10) || values.length;
-      // clear
-      Array.from(this.querySelectorAll(".c-axis__tick")).forEach((n) => n.remove());
-      const list = values.length ? values : Array.from({ length: ticks }, (_, i) => i);
-      list.forEach((v) => {
-        const tick = document.createElement("span");
-        tick.className = "c-axis__tick";
-        const label = document.createElement("span");
-        label.className = "c-axis__label";
-        label.textContent = formatValue(String(v), this.getAttribute("format"), this.getAttribute("locale"));
-        tick.appendChild(label);
-        this.appendChild(tick);
-      });
+      // Slotted content support: authored .c-axis__tick children take
+      // precedence over the JSON `values` attribute.
+      const authoredTicks = Array.from(this.querySelectorAll(":scope > .c-axis__tick"));
+      if (authoredTicks.length) {
+        // keep authored ticks, just ensure labels are formatted
+        authoredTicks.forEach((tick) => {
+          const label = tick.querySelector(".c-axis__label");
+          if (label && !label.textContent) label.textContent = tick.textContent;
+        });
+      } else {
+        // clear
+        Array.from(this.querySelectorAll(".c-axis__tick")).forEach((n) => n.remove());
+        const list = values.length ? values : Array.from({ length: ticks }, (_, i) => i);
+        list.forEach((v) => {
+          const tick = document.createElement("span");
+          tick.className = "c-axis__tick";
+          const label = document.createElement("span");
+          label.className = "c-axis__label";
+          label.textContent = formatValue(String(v), this.getAttribute("format"), this.getAttribute("locale"));
+          tick.appendChild(label);
+          this.appendChild(tick);
+        });
+      }
     }
     enhance() {}
   }
@@ -1861,16 +1872,20 @@ class ContourBivariateLegend extends ContourBase {
       const size = Math.min(8, Math.max(1, parseInt(this.getAttribute("size") || "3", 10) || 3));
       const matrix = this.ensure(".c-bivariate-legend__matrix", () => { const el = document.createElement("div"); el.className = "c-bivariate-legend__matrix"; return el; });
       matrix.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
-      matrix.innerHTML = "";
-      let colors = [];
-      const cAttr = this.getAttribute("colors");
-      if (cAttr) { try { colors = JSON.parse(cAttr); } catch (e) { colors = []; } }
-      for (let i = 0; i < size * size; i++) {
-        const cell = document.createElement("div");
-        cell.className = "c-bivariate-legend__cell";
-        if (colors[i]) cell.style.background = colors[i];
-        else cell.style.background = "var(--chart-" + ((i % 8) + 1) + ")";
-        matrix.appendChild(cell);
+      // Slotted content support: authored cells win over the generated grid.
+      const authored = Array.from(matrix.children).filter((n) => n.classList && n.classList.contains("c-bivariate-legend__cell"));
+      if (!authored.length) {
+        matrix.innerHTML = "";
+        let colors = [];
+        const cAttr = this.getAttribute("colors");
+        if (cAttr) { try { colors = JSON.parse(cAttr); } catch (e) { colors = []; } }
+        for (let i = 0; i < size * size; i++) {
+          const cell = document.createElement("div");
+          cell.className = "c-bivariate-legend__cell";
+          if (colors[i]) cell.style.background = colors[i];
+          else cell.style.background = "var(--chart-" + ((i % 8) + 1) + ")";
+          matrix.appendChild(cell);
+        }
       }
       const axisX = this.getAttribute("axis-x");
       const ax = this.querySelector(".c-bivariate-legend__axis--x");
@@ -2273,12 +2288,20 @@ class ContourHeatmap extends ContourBase {
       wireStates(this);
       loadRemote(this, "cells");
       if (renderStates(this, "heatmap")) return;
-      Array.from(this.querySelectorAll(".c-heatmap__cell")).forEach((n) => n.remove());
-      const count = Math.min(200, Math.max(0, parseInt(this.getAttribute("cells") || this.getAttribute("count") || "0", 10) || 0));
-      const cols = count > 0 ? Math.ceil(Math.sqrt(count)) : 1;
-      this.style.gridTemplateColumns = "repeat(" + cols + ", 1fr)";
-      this.style.inlineSize = "16rem";
-       if (count > 0) {
+      // Slotted content support: authored .c-heatmap__cell children take
+      // precedence over the generated grid.
+      const authoredCells = Array.from(this.querySelectorAll(":scope > .c-heatmap__cell"));
+      if (authoredCells.length) {
+        const cols = Math.ceil(Math.sqrt(authoredCells.length));
+        this.style.gridTemplateColumns = "repeat(" + cols + ", 1fr)";
+        this.style.inlineSize = "16rem";
+      } else {
+        Array.from(this.querySelectorAll(".c-heatmap__cell")).forEach((n) => n.remove());
+        const count = Math.min(200, Math.max(0, parseInt(this.getAttribute("cells") || this.getAttribute("count") || "0", 10) || 0));
+        const cols = count > 0 ? Math.ceil(Math.sqrt(count)) : 1;
+        this.style.gridTemplateColumns = "repeat(" + cols + ", 1fr)";
+        this.style.inlineSize = "16rem";
+        if (count > 0) {
          let values = [];
          try { values = JSON.parse(this.getAttribute("values") || "[]"); } catch (e) { values = []; }
          for (let i = 0; i < count; i++) {
@@ -2292,9 +2315,10 @@ class ContourHeatmap extends ContourBase {
          }
          const tip = this.ensure(".c-heatmap__tooltip", () => { const el = document.createElement("div"); el.className = "c-heatmap__tooltip"; el.setAttribute("role", "tooltip"); el.setAttribute("hidden", ""); return el; });
          tip.setAttribute("hidden", "");
-       } else {
+       } else if (!authoredCells.length) {
          renderEmpty(this, "heatmap");
        }
+      }
        if (this.hasAttribute("legend")) {
         const leg = this.ensure(".c-heatmap__legend", () => {
           const el = document.createElement("div");
