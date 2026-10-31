@@ -19023,6 +19023,88 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                     </details></div>
           </div>
 
+          <div class="ds-spec">
+            <div class="ds-spec__head">
+              <span class="ds-spec__name">Reactivity demo — style panel</span>
+              <span class="ds-spec__token">contour-style-panel</span>
+            </div>
+            <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
+              <contour-style-panel id="reactivity-demo-sp" title="Style" layers="[{&quot;name&quot;:&quot;Layer 1&quot;,&quot;color&quot;:&quot;#3b82f6&quot;}]"></contour-style-panel>
+            </div><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-387" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-387">&lt;contour-style-panel id="reactivity-demo-sp" title="Style" layers="[{&amp;quot;name&amp;quot;:&amp;quot;Layer 1&amp;quot;,&amp;quot;color&amp;quot;:&amp;quot;#3b82f6&amp;quot;}]"&gt;&lt;/contour-style-panel&gt;</code></pre>
+                      </div>
+                    </details></div>
+            <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
+              <button class="c-btn c-btn--sm" type="button" onclick="document.getElementById('reactivity-demo-sp').setAttribute('layers', JSON.stringify([{name:'Layer '+Math.round(Math.random()*9+1),color:'#'+Math.floor(Math.random()*16777215).toString(16)}]))">Randomise layers</button>
+            </div><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-388" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-388">&lt;button class="c-btn c-btn--sm" type="button" onclick="document.getElementById('reactivity-demo-sp').setAttribute('layers', JSON.stringify([{name:'Layer '+Math.round(Math.random()*9+1),color:'#'+Math.floor(Math.random()*16777215).toString(16)}]))"&gt;Randomise layers&lt;/button&gt;</code></pre>
+                      </div>
+                    </details></div>
+          </div>
+
+          <div class="ds-spec">
+            <div class="ds-spec__head">
+              <span class="ds-spec__name">Reactivity demo — annotation</span>
+              <span class="ds-spec__token">contour-annotation</span>
+            </div>
+            <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
+              <contour-annotation id="reactivity-demo-ann" label="Note" x="50%" y="50%"></contour-annotation>
+            </div><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-389" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-389">&lt;contour-annotation id="reactivity-demo-ann" label="Note" x="50%" y="50%"&gt;&lt;/contour-annotation&gt;</code></pre>
+                      </div>
+                    </details></div>
+            <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
+              <button class="c-btn c-btn--sm" type="button" onclick="var a=document.getElementById('reactivity-demo-ann'); a.setAttribute('x', Math.round(Math.random()*100)+'%'); a.setAttribute('y', Math.round(Math.random()*100)+'%'); a.setAttribute('label', 'Note '+Math.round(Math.random()*9+1))">Randomise position</button>
+            </div><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-390" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-390">&lt;button class="c-btn c-btn--sm" type="button" onclick="var a=document.getElementById('reactivity-demo-ann'); a.setAttribute('x', Math.round(Math.random()*100)+'%'); a.setAttribute('y', Math.round(Math.random()*100)+'%'); a.setAttribute('label', 'Note '+Math.round(Math.random()*9+1))"&gt;Randomise position&lt;/button&gt;</code></pre>
+                      </div>
+                    </details></div>
+          </div>
+
           <!-- Guide-only shortcut overlay chrome (named here so the docs package counts it) -->
           <div class="c-shortcut-overlay c-shortcut-panel c-shortcut-list c-shortcut-row" hidden aria-hidden="true"></div>
 
@@ -19093,13 +19175,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-387" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-391" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-387">&lt;pre class="hljs"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-391">&lt;pre class="hljs"&gt;
   &lt;code class="language-javascript"&gt;
     // Plain JS — mount Contour chrome on a live MapLibre instance const map = new maplibregl.Map({ container: "map", style, center, zoom }); const area = document.querySelector("contour-map-area"); area.attachMap(map); // store the engine reference map.on("moveend", () =&gt; { const vp = area.getViewport(); // { west, south, east, north } or { zoom, center } console.log("viewport", vp); }); area.addEventListener("contour:map-control", (e) =&gt; { console.log("control clicked:", e.detail.control); }); // React — use a ref and attach on mount // const ref = useRef(null); // useEffect(() =&gt; { if (ref.current) ref.current.attachMap(map); return () =&gt; ref.current?.detachMap(); }, [map]); // &lt;contour-map-area ref="{ref}"&gt;&lt;/contour-map-area&gt;
   &lt;/code&gt;
