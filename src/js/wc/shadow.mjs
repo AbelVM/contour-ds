@@ -30,11 +30,30 @@ import { define, MODS, REGISTERED, CONTOUR_EVENTS, contourId } from './core.mjs'
     if (ADOPTED && key === ADOPTED_KEY) return ADOPTED;
     ADOPTED_KEY = key;
     ADOPTED = [];
+    // Collect every rule a sheet carries, descending into @imported sheets,
+    // because adoptedStyleSheets cannot hold @import rules (the platform
+    // rejects them) and the imported sheets are not separate top-level entries
+    // in document.styleSheets. Skipping them would hand the shadow root an
+    // empty sheet.
+    const collect = (sheet, out) => {
+      let rules;
+      try { rules = sheet.cssRules; } catch (e) { return; }
+      if (!rules) return;
+      for (const r of rules) {
+        if (r instanceof CSSImportRule) {
+          if (r.styleSheet) collect(r.styleSheet, out);
+        } else {
+          try { out.push(r.cssText); } catch (e) { /* unreadable */ }
+        }
+      }
+    };
     for (const sheet of document.styleSheets) {
       try {
         if (sheet.href && new URL(sheet.href).origin === location.origin) {
+          const collected = [];
+          collect(sheet, collected);
           const built = new CSSStyleSheet();
-          built.replaceSync(Array.from(sheet.cssRules, (r) => r.cssText).join("\n"));
+          if (collected.length) built.replaceSync(collected.join("\n"));
           ADOPTED.push(built);
         }
       } catch (e) { /* cross-origin or unreadable */ }

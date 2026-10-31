@@ -1,0 +1,7 @@
+[
+  { "key": "Latitude", "value": "51.5074", "coord": true, "order": "lat" },
+  { "key": "Longitude", "value": "-0.1278", "coord": true, "order": "lon" },
+  { "key": "Elevation", "value": "11", "unit": "m" },
+  { "key": "Population", "value": "8982000", "primary": true },
+  { "key": "Area", "value": "1572", "unit": "km²" }
+]

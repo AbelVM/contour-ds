@@ -64,6 +64,7 @@ const HOOK_LEDGER = new Set([
   "--btn-border", "--btn-bg", "--btn-fg", "--btn-shadow",
   "--map-ctrl-gap", "--map-ctrl-size", "--map-ctrl-surface", "--map-ctrl-border", "--map-ctrl-radius", "--map-ctrl-icon",
   "--meter-size", "--meter-value", "--meter-color",
+  "--donut-stroke-width",
   "--kbd-padding", "--kbd-font-size",
   "--flow-space",
   "--dot-color", "--live-color", "--live-text", "--view-transition-name",
