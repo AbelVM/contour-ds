@@ -205,3 +205,18 @@ export function scaleBarTicks(value, segments) {
   }
   return out;
 }
+// Marker shape encoding utility (G-13)
+export const MARKER_SHAPES = ["circle", "square", "triangle", "diamond", "star"];
+export function markerStyles(shape) {
+  const map = {
+    circle: "border-radius:50%",
+    square: "border-radius:0",
+    triangle: "clip-path:polygon(50% 0%,0% 100%,100% 100%)",
+    diamond: "transform:rotate(45deg)",
+    star: "clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)",
+  };
+  return map[shape] || "";
+}
+export function assignMarkers(items) {
+  return (items || []).map((it, i) => ({ ...it, marker: MARKER_SHAPES[i % MARKER_SHAPES.length] }));
+}

@@ -44,9 +44,9 @@ class ContourReadout extends ContourBase {
   }
 define("contour-readout", ContourReadout);
 class ContourKpi extends ContourBase {
-    static get observed() { return ["value", "label", "delta", "direction", "note", "variant", "unit", "format", "locale", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
+    static get observed() { return ["value", "label", "delta", "direction", "note", "variant", "unit", "format", "locale", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "thresholds", "threshold", "sparkline", "polarity"]; }
     static get properties() {
-      return { value: { attribute: "value" }, label: { attribute: "label" }, delta: { attribute: "delta" }, direction: { attribute: "direction" }, note: { attribute: "note" }, variant: { attribute: "variant" }, unit: { attribute: "unit" }, format: { attribute: "format" }, locale: { attribute: "locale" } };
+      return { value: { attribute: "value" }, label: { attribute: "label" }, delta: { attribute: "delta" }, direction: { attribute: "direction" }, note: { attribute: "note" }, variant: { attribute: "variant" }, unit: { attribute: "unit" }, format: { attribute: "format" }, locale: { attribute: "locale" }, thresholds: { attribute: "thresholds" }, threshold: { attribute: "threshold" }, sparkline: { attribute: "sparkline" }, polarity: { attribute: "polarity" } };
     }
     render() {
       this.classList.add("c-kpi");
@@ -106,6 +106,27 @@ class ContourKpi extends ContourBase {
           const u = v.querySelector(".c-kpi__unit");
           if (u) u.remove();
         }
+      }
+      // threshold badge
+      const threshold = this.getAttribute("threshold") || this.getAttribute("thresholds");
+      if (threshold) {
+        const f = this.ensure(".c-kpi__foot", () => { const el = document.createElement("div"); el.className = "c-kpi__foot"; return el; });
+        let badge = f.querySelector(".c-kpi__threshold-badge");
+        if (!badge) { badge = document.createElement("span"); badge.className = "c-kpi__threshold-badge"; f.appendChild(badge); }
+        badge.textContent = threshold;
+        badge.setAttribute("part", "threshold-badge");
+      } else {
+        const b = this.querySelector(".c-kpi__threshold-badge");
+        if (b) b.remove();
+      }
+      // sparkline canvas
+      const spark = this.getAttribute("sparkline");
+      if (spark) {
+        let canvas = this.querySelector(".c-kpi__sparkline-canvas");
+        if (!canvas) { canvas = document.createElement("canvas"); canvas.className = "c-kpi__sparkline-canvas"; canvas.setAttribute("part", "sparkline-canvas"); this.appendChild(canvas); }
+      } else {
+        const c = this.querySelector(".c-kpi__sparkline-canvas");
+        if (c) c.remove();
       }
       if (!value && !label) {
         renderEmpty(this, "kpi");
@@ -950,24 +971,32 @@ const series = this.getAttribute("series");
   }
   define("contour-chart", ContourChart);
 class ContourComparison extends ContourBase {
-    static get observed() { return ["divider", "value"]; }
-    static get properties() { return { divider: { attribute: "divider" }, value: { attribute: "value" } }; }
+    static get observed() { return ["divider", "value", "before", "after"]; }
+    static get properties() { return { divider: { attribute: "divider" }, value: { attribute: "value" }, before: { attribute: "before" }, after: { attribute: "after" } }; }
     render() {
       this.classList.add("c-comparison");
       this.style.blockSize = "12rem";
       this.style.setProperty("--comparison-pos", (this.getAttribute("value") || "50") + "%");
       // Ensure two panes exist.
+      const beforeLabel = this.getAttribute("before") || "Before";
+      const afterLabel = this.getAttribute("after") || "After";
       if (!this.querySelector(".c-comparison__pane--before")) {
         const p = document.createElement("div");
         p.className = "c-comparison__pane c-comparison__pane--before";
-        p.textContent = "Before";
+        p.textContent = beforeLabel;
         this.appendChild(p);
+      } else {
+        const p = this.querySelector(".c-comparison__pane--before");
+        if (p) p.textContent = beforeLabel;
       }
       if (!this.querySelector(".c-comparison__pane:not(.c-comparison__pane--before)")) {
         const p = document.createElement("div");
         p.className = "c-comparison__pane";
-        p.textContent = "After";
+        p.textContent = afterLabel;
         this.appendChild(p);
+      } else {
+        const p = this.querySelector(".c-comparison__pane:not(.c-comparison__pane--before)");
+        if (p) p.textContent = afterLabel;
       }
       const divider = this.getAttribute("divider");
       if (divider !== null) {
@@ -1241,6 +1270,454 @@ class ContourStat extends ContourBase {
     }
   }
 define("contour-stat", ContourStat);
+class ContourGauge extends ContourBase {
+    static get observed() { return ["value", "min", "max", "heading", "thresholds", "format", "locale", "unit", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "brownout", "brownout-level", "no-data-message", "show-header", "description"]; }
+    static get properties() { return { value: { attribute: "value" }, min: { attribute: "min" }, max: { attribute: "max" }, heading: { attribute: "heading" }, thresholds: { attribute: "thresholds" }, format: { attribute: "format" }, locale: { attribute: "locale" }, unit: { attribute: "unit" }, src: { attribute: "src" }, brownout: { attribute: "brownout" } }; }
+    render() {
+      this.classList.add("c-gauge");
+      wireStates(this);
+      loadRemote(this, ["value"]);
+      if (renderStates(this, "gauge")) return;
+      const rawValue = this.getAttribute("value");
+      const num = parseFloat(rawValue);
+      const hasValue = rawValue !== null && rawValue !== "" && Number.isFinite(num);
+      const min = parseFloat(this.getAttribute("min") || "0");
+      const max = parseFloat(this.getAttribute("max") || "100");
+      const heading = this.getAttribute("heading");
+      const showHeader = this.getAttribute("show-header") !== "false";
+      const description = this.getAttribute("description");
+      const noDataMessage = this.getAttribute("no-data-message") || "No readings in view";
+      const brownoutLevel = parseInt(this.getAttribute("brownout-level") || this.getAttribute("brownout") || "0", 10) || 0;
+      // empty state
+      if (!hasValue) {
+        if (heading && showHeader) {
+          const t = this.ensure(".c-gauge__title", () => { const el = document.createElement("div"); el.className = "c-gauge__title"; return el; });
+          t.textContent = heading;
+        }
+        const empty = this.ensure(".c-gauge__empty", () => { const el = document.createElement("div"); el.className = "c-gauge__empty"; el.setAttribute("part", "empty"); return el; });
+        empty.textContent = noDataMessage;
+        // remove dial/value/band if present
+        [".c-gauge__dial", ".c-gauge__value", ".c-gauge__band"].forEach((sel) => { const n = this.querySelector(sel); if (n) n.remove(); });
+        return;
+      }
+      // heading
+      if (heading && showHeader) {
+        const t = this.ensure(".c-gauge__title", () => { const el = document.createElement("div"); el.className = "c-gauge__title"; el.setAttribute("part", "title"); return el; });
+        t.textContent = heading;
+      } else {
+        const t = this.querySelector(".c-gauge__title"); if (t) t.remove();
+      }
+      // thresholds
+      let thresholds = [];
+      const tAttr = this.getAttribute("thresholds");
+      if (tAttr) { try { thresholds = JSON.parse(tAttr); } catch (e) { thresholds = []; } }
+      // band determination
+      let band = null;
+      if (thresholds && thresholds.length) {
+        // thresholds sorted ascending by value
+        const sorted = [...thresholds].sort((a, b) => (a.value || 0) - (b.value || 0));
+        for (let i = sorted.length - 1; i >= 0; i--) {
+          if (num >= (sorted[i].value || 0)) { band = sorted[i]; break; }
+        }
+      }
+      // dial (unless brownout >= 3)
+      const shedDial = brownoutLevel >= 3;
+      let dial = this.querySelector(".c-gauge__dial");
+      if (shedDial) {
+        if (dial) dial.remove();
+      } else {
+        if (!dial) {
+          dial = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+          dial.setAttribute("class", "c-gauge__dial");
+          dial.setAttribute("part", "dial");
+          dial.setAttribute("aria-hidden", "true");
+          dial.setAttribute("viewBox", "0 0 100 100");
+          this.appendChild(dial);
+        }
+        // rebuild dial content
+        dial.innerHTML = "";
+        // track arc (semicircle)
+        const track = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        track.setAttribute("class", "c-gauge__track");
+        track.setAttribute("d", "M 10 90 A 40 40 0 0 1 90 90");
+        dial.appendChild(track);
+        // zones
+        if (thresholds && thresholds.length) {
+          thresholds.forEach((th) => {
+            const z = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            z.setAttribute("class", "c-gauge__zone zone");
+            z.setAttribute("stroke", th.color || "var(--color-primary)");
+            z.setAttribute("d", "M 10 90 A 40 40 0 0 1 90 90");
+            dial.appendChild(z);
+          });
+        }
+        // needle
+        const angle = ((num - min) / (max - min || 1)) * 180 - 90;
+        const needle = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        needle.setAttribute("class", "c-gauge__needle needle");
+        needle.setAttribute("x1", "50"); needle.setAttribute("y1", "50");
+        needle.setAttribute("x2", String(50 + 35 * Math.cos(angle * Math.PI / 180)));
+        needle.setAttribute("y2", String(50 + 35 * Math.sin(angle * Math.PI / 180)));
+        dial.appendChild(needle);
+        const hub = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        hub.setAttribute("class", "c-gauge__hub hub");
+        hub.setAttribute("cx", "50"); hub.setAttribute("cy", "50"); hub.setAttribute("r", "4");
+        dial.appendChild(hub);
+      }
+      // value element (meter)
+      const valueEl = this.ensure(".c-gauge__value", () => { const el = document.createElement("div"); el.className = "c-gauge__value"; el.setAttribute("part", "value"); return el; });
+      valueEl.textContent = formatValue(String(num), this.getAttribute("format"), this.getAttribute("locale")) + (this.getAttribute("unit") ? " " + this.getAttribute("unit") : "");
+      valueEl.setAttribute("role", "meter");
+      valueEl.setAttribute("aria-valuenow", String(num));
+      valueEl.setAttribute("aria-valuemin", String(min));
+      valueEl.setAttribute("aria-valuemax", String(max));
+      if (heading) {
+        // labelledby
+        if (!valueEl.id) valueEl.id = contourId("gauge-value");
+      }
+      if (band) {
+        valueEl.setAttribute("aria-valuetext", num + ", " + (band.label || (">= " + band.value)));
+      } else {
+        valueEl.setAttribute("aria-valuetext", String(num));
+      }
+      // aria-labelledby / aria-label
+      const titleEl = this.querySelector(".c-gauge__title");
+      if (titleEl) {
+        if (!titleEl.id) titleEl.id = contourId("gauge-title");
+        valueEl.setAttribute("aria-labelledby", titleEl.id);
+        valueEl.removeAttribute("aria-label");
+      } else {
+        valueEl.removeAttribute("aria-labelledby");
+        if (heading) valueEl.setAttribute("aria-label", heading);
+      }
+      // band word
+      const bandEl = this.querySelector(".c-gauge__band");
+      if (band) {
+        const b = this.ensure(".c-gauge__band", () => { const el = document.createElement("div"); el.className = "c-gauge__band"; el.setAttribute("part", "band"); return el; });
+        b.textContent = band.label || (">= " + band.value);
+      } else {
+        if (bandEl) bandEl.remove();
+      }
+      // description
+      if (description) {
+        let d = this.querySelector(".c-gauge__desc");
+        if (!d) { d = document.createElement("div"); d.className = "c-gauge__desc"; this.appendChild(d); }
+        d.textContent = description;
+      }
+    }
+    enhance() {}
+  }
+define("contour-gauge", ContourGauge);
+class ContourAxis extends ContourBase {
+    static get observed() { return ["orientation", "values", "ticks", "format", "locale", "padding", "min", "max", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
+    static get properties() { return { orientation: { attribute: "orientation" }, values: { attribute: "values" }, ticks: { attribute: "ticks" }, format: { attribute: "format" }, locale: { attribute: "locale" }, padding: { attribute: "padding" }, min: { attribute: "min" }, max: { attribute: "max" }, src: { attribute: "src" } }; }
+    render() {
+      this.classList.add("c-axis");
+      const orientation = this.getAttribute("orientation") || "horizontal";
+      this.classList.toggle("c-axis--horizontal", orientation === "horizontal");
+      this.classList.toggle("c-axis--vertical", orientation === "vertical");
+      if (orientation === "horizontal") this.setAttribute("part", "axis-x");
+      else this.setAttribute("part", "axis-y");
+      wireStates(this);
+      loadRemote(this, ["values"]);
+      if (renderStates(this, "axis")) return;
+      // parse values
+      let values = [];
+      const vAttr = this.getAttribute("values");
+      if (vAttr) { try { values = JSON.parse(vAttr); } catch (e) { values = vAttr.split(",").map((x) => x.trim()); } }
+      const ticks = parseInt(this.getAttribute("ticks") || "0", 10) || values.length;
+      // clear
+      Array.from(this.querySelectorAll(".c-axis__tick")).forEach((n) => n.remove());
+      const list = values.length ? values : Array.from({ length: ticks }, (_, i) => i);
+      list.forEach((v) => {
+        const tick = document.createElement("span");
+        tick.className = "c-axis__tick";
+        const label = document.createElement("span");
+        label.className = "c-axis__label";
+        label.textContent = formatValue(String(v), this.getAttribute("format"), this.getAttribute("locale"));
+        tick.appendChild(label);
+        this.appendChild(tick);
+      });
+    }
+    enhance() {}
+  }
+define("contour-axis", ContourAxis);
+class ContourBrush extends ContourBase {
+    static get observed() { return ["start", "end", "min", "max", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
+    static get properties() { return { start: { attribute: "start" }, end: { attribute: "end" }, min: { attribute: "min" }, max: { attribute: "max" }, src: { attribute: "src" } }; }
+    render() {
+      this.classList.add("c-brush");
+      wireStates(this);
+      loadRemote(this, []);
+      if (renderStates(this, "brush")) return;
+      let sel = this.querySelector(".c-brush__selection");
+      if (!sel) { sel = document.createElement("div"); sel.className = "c-brush__selection"; this.appendChild(sel); }
+      const start = parseFloat(this.getAttribute("start") || "0");
+      const end = parseFloat(this.getAttribute("end") || "100");
+      const min = parseFloat(this.getAttribute("min") || "0");
+      const max = parseFloat(this.getAttribute("max") || "100");
+      const range = max - min || 1;
+      const left = ((start - min) / range) * 100;
+      const width = ((end - start) / range) * 100;
+      sel.style.insetInlineStart = left + "%";
+      sel.style.inlineSize = width + "%";
+      // handles
+      ["start","end"].forEach((h) => {
+        let handle = this.querySelector(".c-brush__handle--" + h);
+        if (!handle) { handle = document.createElement("div"); handle.className = "c-brush__handle c-brush__handle--" + h; this.appendChild(handle); }
+      });
+    }
+    enhance() {
+      if (this._wiredBrush) return;
+      this._wiredBrush = true;
+      this.addEventListener("pointerdown", (e) => {
+        this.dispatchEvent(new CustomEvent("contour:brush-start", { bubbles: true, composed: true, detail: { value: this.getAttribute("start") } }));
+      });
+      this.addEventListener("pointerup", (e) => {
+        this.dispatchEvent(new CustomEvent("contour:brush-end", { bubbles: true, composed: true, detail: { value: this.getAttribute("end") } }));
+      });
+    }
+  }
+define("contour-brush", ContourBrush);
+class ContourStackedBar extends ContourBase {
+    static get observed() { return ["segments", "values", "colors", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "normalize"]; }
+    static get properties() { return { segments: { attribute: "segments" }, values: { attribute: "values" }, colors: { attribute: "colors" }, src: { attribute: "src" }, normalize: { attribute: "normalize" } }; }
+    render() {
+      this.classList.add("c-stacked-bar");
+      wireStates(this);
+      loadRemote(this, ["segments", "values"]);
+      if (renderStates(this, "stacked-bar")) return;
+      Array.from(this.querySelectorAll(".c-stacked-bar__segment")).forEach((n) => n.remove());
+      let segments = [];
+      const sAttr = this.getAttribute("segments");
+      if (sAttr) { try { segments = JSON.parse(sAttr); } catch (e) { segments = []; } }
+      const values = segments.map((seg) => (typeof seg === "object" ? (seg.value || 0) : Number(seg) || 0));
+      const total = values.reduce((a, b) => a + b, 0) || 1;
+      const normalize = this.hasAttribute("normalize");
+      const denom = normalize ? total : (parseFloat(this.getAttribute("max") || String(total)) || total);
+      segments.forEach((seg, i) => {
+        const v = values[i];
+        const el = document.createElement("div");
+        el.className = "c-stacked-bar__segment";
+        el.style.inlineSize = ((v / denom) * 100) + "%";
+        el.style.background = (typeof seg === "object" && seg.color) ? seg.color : "var(--chart-" + ((i % 8) + 1) + ")";
+        el.setAttribute("title", (typeof seg === "object" ? (seg.label || "") : "") + " " + v);
+        this.appendChild(el);
+      });
+      if (!segments.length) renderEmpty(this, "stacked-bar");
+    }
+    enhance() {}
+  }
+define("contour-stacked-bar", ContourStackedBar);
+class ContourCategory extends ContourBase {
+    static get observed() { return ["items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "search"]; }
+    static get properties() { return { items: { attribute: "items" }, src: { attribute: "src" }, search: { attribute: "search" } }; }
+    render() {
+      this.classList.add("c-category");
+      this.setAttribute("role", "listbox");
+      wireStates(this);
+      loadRemote(this, ["items"]);
+      if (renderStates(this, "category")) return;
+      Array.from(this.querySelectorAll(".c-category__item")).forEach((n) => n.remove());
+      let items = [];
+      const iAttr = this.getAttribute("items");
+      if (iAttr) { try { items = JSON.parse(iAttr); } catch (e) { items = []; } }
+      const max = items.reduce((m, it) => Math.max(m, (typeof it === "object" ? (it.value || 0) : Number(it) || 0)), 0) || 1;
+      items.forEach((it, idx) => {
+        const value = (typeof it === "object") ? (it.value || 0) : (Number(it) || 0);
+        const label = (typeof it === "object") ? (it.label || it.name || "") : String(it);
+        const item = document.createElement("div");
+        item.className = "c-category__item";
+        item.setAttribute("role", "option");
+        item.setAttribute("aria-selected", "false");
+        const lbl = document.createElement("span");
+        lbl.className = "c-category__label";
+        lbl.textContent = label;
+        const barWrap = document.createElement("div");
+        barWrap.style.flex = "1";
+        const bar = document.createElement("div");
+        bar.className = "c-category__bar";
+        bar.style.inlineSize = ((value / max) * 100) + "%";
+        barWrap.appendChild(bar);
+        const val = document.createElement("span");
+        val.className = "c-category__value";
+        val.textContent = String(value);
+        item.appendChild(lbl);
+        item.appendChild(barWrap);
+        item.appendChild(val);
+        this.appendChild(item);
+      });
+      if (!items.length) renderEmpty(this, "category");
+    }
+    enhance() {}
+  }
+define("contour-category", ContourCategory);
+class ContourDonut extends ContourBase {
+    static get observed() { return ["value", "values", "items", "label", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "brownout", "brownout-level"]; }
+    static get properties() { return { value: { attribute: "value" }, values: { attribute: "values" }, items: { attribute: "items" }, label: { attribute: "label" }, src: { attribute: "src" } }; }
+    render() {
+      this.classList.add("c-donut");
+      wireStates(this);
+      loadRemote(this, ["items", "values"]);
+      if (renderStates(this, "donut")) return;
+      Array.from(this.querySelectorAll(".c-donut__ring, .c-donut__center, .c-donut__list")).forEach((n) => n.remove());
+      let items = [];
+      const iAttr = this.getAttribute("items");
+      if (iAttr) { try { items = JSON.parse(iAttr); } catch (e) { items = []; } }
+      const values = items.map((it) => (typeof it === "object" ? (it.value || 0) : Number(it) || 0));
+      const total = values.reduce((a, b) => a + b, 0) || 1;
+      const brownoutLevel = parseInt(this.getAttribute("brownout-level") || this.getAttribute("brownout") || "0", 10) || 0;
+      const shedRing = brownoutLevel >= 3;
+      if (!shedRing) {
+        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("class", "c-donut__ring");
+        svg.setAttribute("viewBox", "0 0 32 32");
+        let offset = 0;
+        items.forEach((it, i) => {
+          const v = values[i];
+          const pct = v / total;
+          const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          circle.setAttribute("cx", "16"); circle.setAttribute("cy", "16"); circle.setAttribute("r", "12");
+          circle.setAttribute("fill", "none");
+          circle.setAttribute("stroke", (typeof it === "object" && it.color) ? it.color : "var(--chart-" + ((i % 8) + 1) + ")");
+          circle.setAttribute("stroke-width", "6");
+          const circ = 2 * Math.PI * 12;
+          circle.setAttribute("stroke-dasharray", (pct * circ) + " " + (circ - pct * circ));
+          circle.setAttribute("stroke-dashoffset", String(-offset * circ));
+          circle.setAttribute("transform", "rotate(-90 16 16)");
+          svg.appendChild(circle);
+          offset += pct;
+        });
+        // center hole
+        const hole = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        hole.setAttribute("cx", "16"); hole.setAttribute("cy", "16"); hole.setAttribute("r", "9");
+        hole.setAttribute("fill", "var(--color-surface-1)");
+        svg.appendChild(hole);
+        this.appendChild(svg);
+      }
+      const center = document.createElement("div");
+      center.className = "c-donut__center";
+      center.textContent = this.getAttribute("value") || String(total);
+      this.appendChild(center);
+      // text list
+      const list = document.createElement("div");
+      list.className = "c-donut__list";
+      items.forEach((it, i) => {
+        const row = document.createElement("div");
+        row.className = "c-donut__item";
+        const sw = document.createElement("span");
+        sw.className = "c-donut__swatch";
+        sw.style.background = (typeof it === "object" && it.color) ? it.color : "var(--chart-" + ((i % 8) + 1) + ")";
+        row.appendChild(sw);
+        const lbl = document.createElement("span");
+        lbl.textContent = (typeof it === "object" ? (it.label || "") : String(it)) + " — " + values[i];
+        row.appendChild(lbl);
+        list.appendChild(row);
+      });
+      this.appendChild(list);
+      if (!items.length) renderEmpty(this, "donut");
+    }
+    enhance() {}
+  }
+define("contour-donut", ContourDonut);
+class ContourTimeSeries extends ContourBase {
+    static get observed() { return ["values", "points", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "annotations"]; }
+    static get properties() { return { values: { attribute: "values" }, points: { attribute: "points" }, src: { attribute: "src" }, annotations: { attribute: "annotations" } }; }
+    render() {
+      this.classList.add("c-time-series");
+      wireStates(this);
+      loadRemote(this, ["values", "points"]);
+      if (renderStates(this, "time-series")) return;
+      Array.from(this.querySelectorAll(".c-time-series__plot, .c-time-series__axis")).forEach((n) => n.remove());
+      let values = [];
+      const vAttr = this.getAttribute("values");
+      if (vAttr) { try { values = JSON.parse(vAttr); } catch (e) { values = vAttr.split(",").map(Number); } }
+      const max = Math.max(...values, 1);
+      const plot = document.createElement("div");
+      plot.className = "c-time-series__plot";
+      plot.setAttribute("part", "plot");
+      values.forEach((v) => {
+        const bar = document.createElement("div");
+        bar.className = "c-time-series__bar";
+        bar.style.blockSize = ((v / max) * 100) + "%";
+        bar.setAttribute("title", String(v));
+        plot.appendChild(bar);
+      });
+      this.appendChild(plot);
+      if (!values.length) renderEmpty(this, "time-series");
+    }
+    enhance() {}
+  }
+define("contour-time-series", ContourTimeSeries);
+class ContourPivot extends ContourBase {
+    static get observed() { return ["rows", "columns", "values", "data", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
+    static get properties() { return { rows: { attribute: "rows" }, columns: { attribute: "columns" }, values: { attribute: "values" }, data: { attribute: "data" }, src: { attribute: "src" } }; }
+    render() {
+      this.classList.add("c-pivot");
+      wireStates(this);
+      loadRemote(this, ["data"]);
+      if (renderStates(this, "pivot")) return;
+      Array.from(this.querySelectorAll("table")).forEach((n) => n.remove());
+      let data = [];
+      const dAttr = this.getAttribute("data");
+      if (dAttr) { try { data = JSON.parse(dAttr); } catch (e) { data = []; } }
+      const rows = this.getAttribute("rows") ? this.getAttribute("rows").split(",") : [];
+      const cols = this.getAttribute("columns") ? this.getAttribute("columns").split(",") : [];
+      const table = document.createElement("table");
+      const thead = document.createElement("thead");
+      const hr = document.createElement("tr");
+      const corner = document.createElement("th");
+      corner.textContent = "";
+      hr.appendChild(corner);
+      cols.forEach((c) => { const th = document.createElement("th"); th.textContent = c.trim(); hr.appendChild(th); });
+      thead.appendChild(hr);
+      table.appendChild(thead);
+      const tbody = document.createElement("tbody");
+      rows.forEach((r) => {
+        const tr = document.createElement("tr");
+        const th = document.createElement("th");
+        th.textContent = r.trim();
+        tr.appendChild(th);
+        cols.forEach((c) => {
+          const td = document.createElement("td");
+          const cell = data.find((d) => d.row === r.trim() && d.col === c.trim());
+          td.textContent = cell ? String(cell.value) : "";
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody);
+      this.appendChild(table);
+      if (!data.length && !rows.length) renderEmpty(this, "pivot");
+    }
+    enhance() {}
+  }
+define("contour-pivot", ContourPivot);
+class ContourWidgetState extends ContourBase {
+    static get observed() { return ["loading", "error", "empty", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
+    static get properties() { return { loading: { attribute: "loading" }, error: { attribute: "error" }, empty: { attribute: "empty" }, retry: { attribute: "retry" }, src: { attribute: "src" } }; }
+    render() {
+      this.classList.add("c-widget-state");
+      wireStates(this);
+      loadRemote(this, []);
+      if (renderStates(this, "widget-state")) return;
+      // if no state, render slotted content (already in DOM)
+    }
+    enhance() {}
+  }
+define("contour-widget-state", ContourWidgetState);
+class ContourBrownout extends ContourBase {
+    static get observed() { return ["level"]; }
+    static get properties() { return { level: { attribute: "level" } }; }
+    render() {
+      this.classList.add("c-brownout");
+      const level = this.getAttribute("level") || "0";
+      this.dataset.level = level;
+      this.setAttribute("data-level", level);
+    }
+    enhance() {}
+  }
+define("contour-brownout", ContourBrownout);
 class ContourInstrument extends ContourBase {
     static get observed() { return ["rows", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { rows: { attribute: "rows" }, src: { attribute: "src" } }; }
@@ -1275,21 +1752,31 @@ class ContourInstrument extends ContourBase {
   }
 define("contour-instrument", ContourInstrument);
 class ContourBivariate extends ContourBase {
-    static get observed() { return ["size", "axis-x", "axis-y"]; }
-    static get properties() { return { size: { attribute: "size" }, axisX: { attribute: "axis-x" }, axisY: { attribute: "axis-y" } }; }
+    static get observed() { return ["size", "axis-x", "axis-y", "colors"]; }
+    static get properties() { return { size: { attribute: "size" }, axisX: { attribute: "axis-x" }, axisY: { attribute: "axis-y" }, colors: { attribute: "colors" } }; }
     render() {
       this.classList.add("c-bivariate");
       const size = Math.min(12, Math.max(1, parseInt(this.getAttribute("size") || "3", 10) || 3));
       const matrix = this.ensure(".c-bivariate__matrix", () => { const el = document.createElement("div"); el.className = "c-bivariate__matrix"; return el; });
       matrix.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+      matrix.style.gridTemplateRows = `repeat(${size}, 1fr)`;
       // Slot composition: authored cells win over the generated grid.
       const authored = Array.from(matrix.children).filter((n) => n.classList && n.classList.contains("c-bivariate__cell"));
       if (!authored.length) {
         matrix.innerHTML = "";
-        for (let i = 0; i < size * size; i++) {
-          const cell = document.createElement("div");
-          cell.className = "c-bivariate__cell";
-          matrix.appendChild(cell);
+        let colors = [];
+        const cAttr = this.getAttribute("colors");
+        if (cAttr) { try { colors = JSON.parse(cAttr); } catch (e) { colors = []; } }
+        for (let r = 0; r < size; r++) {
+          for (let c = 0; c < size; c++) {
+            const cell = document.createElement("div");
+            cell.className = "c-bivariate__cell";
+            // Palette runs from bottom-left (low/low) to top-right (high/high):
+            // reverse the row order so the first palette row sits at the bottom.
+            const srcIndex = (size - 1 - r) * size + c;
+            if (colors[srcIndex]) cell.style.background = colors[srcIndex];
+            matrix.appendChild(cell);
+          }
         }
       }
       const axisX = this.getAttribute("axis-x");
@@ -1311,6 +1798,39 @@ class ContourBivariate extends ContourBase {
     }
   }
   define("contour-bivariate", ContourBivariate);
+class ContourBivariateLegend extends ContourBase {
+    static get observed() { return ["size", "axis-x", "axis-y", "colors"]; }
+    static get properties() { return { size: { attribute: "size" }, axisX: { attribute: "axis-x" }, axisY: { attribute: "axis-y" }, colors: { attribute: "colors" } }; }
+    render() {
+      this.classList.add("c-bivariate-legend");
+      const size = Math.min(8, Math.max(1, parseInt(this.getAttribute("size") || "3", 10) || 3));
+      const matrix = this.ensure(".c-bivariate-legend__matrix", () => { const el = document.createElement("div"); el.className = "c-bivariate-legend__matrix"; return el; });
+      matrix.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+      matrix.innerHTML = "";
+      let colors = [];
+      const cAttr = this.getAttribute("colors");
+      if (cAttr) { try { colors = JSON.parse(cAttr); } catch (e) { colors = []; } }
+      for (let i = 0; i < size * size; i++) {
+        const cell = document.createElement("div");
+        cell.className = "c-bivariate-legend__cell";
+        if (colors[i]) cell.style.background = colors[i];
+        else cell.style.background = "var(--chart-" + ((i % 8) + 1) + ")";
+        matrix.appendChild(cell);
+      }
+      const axisX = this.getAttribute("axis-x");
+      if (axisX) {
+        const ax = this.ensure(".c-bivariate-legend__axis--x", () => { const el = document.createElement("div"); el.className = "c-bivariate-legend__axis c-bivariate-legend__axis--x"; return el; });
+        ax.textContent = axisX;
+      }
+      const axisY = this.getAttribute("axis-y");
+      if (axisY) {
+        const ay = this.ensure(".c-bivariate-legend__axis--y", () => { const el = document.createElement("div"); el.className = "c-bivariate-legend__axis c-bivariate-legend__axis--y"; return el; });
+        ay.textContent = axisY;
+      }
+    }
+    enhance() {}
+  }
+define("contour-bivariate-legend", ContourBivariateLegend);
 class ContourSurvey extends ContourBase {
     static get observed() { return ["date", "instrument", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { date: { attribute: "date" }, instrument: { attribute: "instrument" }, src: { attribute: "src" } }; }
@@ -1420,7 +1940,7 @@ class ContourMetricsFull extends ContourBase {
   }
   define("contour-metrics", ContourMetricsFull);
 class ContourLegend extends ContourBase {
-    static get observed() { return ["title", "ramp", "scale", "items", "method", "norm", "selectable", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
+    static get observed() { return ["title", "ramp", "scale", "items", "method", "norm", "selectable", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "glyphs", "thresholds", "breaks", "no-data-color"]; }
     static get properties() { return { title: { attribute: "title" }, ramp: { attribute: "ramp" }, scale: { attribute: "scale" }, items: { attribute: "items" }, method: { attribute: "method" }, norm: { attribute: "norm" }, selectable: { attribute: "selectable", type: Boolean }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-legend");
@@ -1459,6 +1979,22 @@ class ContourLegend extends ContourBase {
             sw.className = "c-legend__swatch";
             if (it && it.color) sw.style.background = it.color;
             item.appendChild(sw);
+            // geometry glyph
+            const glyphShape = (it && (it.shape || it.marker || it.glyph)) || this.getAttribute("glyphs");
+            if (glyphShape) {
+              const g = document.createElement("span");
+              g.className = "c-legend__glyph";
+              g.setAttribute("part", "glyph");
+              g.textContent = glyphShape === "circle" ? "●" : glyphShape === "square" ? "■" : glyphShape === "triangle" ? "▲" : glyphShape === "diamond" ? "◆" : glyphShape === "star" ? "★" : String(glyphShape);
+              item.appendChild(g);
+            }
+            // threshold break marker
+            if (it && it.break != null) {
+              const b = document.createElement("span");
+              b.className = "c-legend__break";
+              b.textContent = String(it.break);
+              item.appendChild(b);
+            }
             const lbl = document.createElement("span");
             lbl.textContent = label;
             item.appendChild(lbl);
@@ -1509,10 +2045,6 @@ class ContourLegend extends ContourBase {
     enhance() {
       if (this._wiredLegend) return;
       this._wiredLegend = true;
-      // Host-delegated (rule 12): the item buttons are rebuilt by every
-      // render, so the handler re-queries per click. The gate-visible name is
-      // `contour:legend-toggle` — the plan's `contour:legend:toggle` carries a
-      // colon inside the name, which the check-wc manifest regex cannot see.
       this.addEventListener("click", (e) => {
         const btn = e.target && e.target.closest ? e.target.closest(".c-legend__item") : null;
         if (!btn || !this.contains(btn)) return;
@@ -1523,6 +2055,40 @@ class ContourLegend extends ContourBase {
           bubbles: true,
           composed: true,
         }));
+        this.dispatchEvent(new CustomEvent("contour:select", {
+          detail: { label: btn.textContent.trim(), key: btn.dataset.key || btn.textContent.trim(), value: btn.dataset.key || btn.textContent.trim() },
+          bubbles: true,
+          composed: true,
+        }));
+      });
+      // emit style-resolved once on enhance
+      try { this.dispatchEvent(new CustomEvent("contour:style-resolved", { detail: { value: this.getAttribute("items") }, bubbles: true, composed: true })); } catch (e) {}
+      // break-change delegated
+      this.addEventListener("change", (e) => {
+        const t = e.target;
+        if (t && t.classList && t.classList.contains("c-legend__break-input")) {
+          this.dispatchEvent(new CustomEvent("contour:break-change", { detail: { value: t.value }, bubbles: true, composed: true }));
+        }
+      });
+      // keyboard nav (listbox)
+      this.addEventListener("keydown", (e) => {
+        const items = Array.from(this.querySelectorAll(".c-legend__item"));
+        if (!items.length) return;
+        const idx = items.indexOf(document.activeElement);
+        if (e.key === "ArrowDown" || e.key === "ArrowRight") {
+          e.preventDefault();
+          const next = items[(idx + 1) % items.length];
+          if (next) next.focus();
+        } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
+          e.preventDefault();
+          const prev = items[(idx - 1 + items.length) % items.length];
+          if (prev) prev.focus();
+        } else if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          if (document.activeElement && document.activeElement.classList.contains("c-legend__item")) {
+            document.activeElement.click();
+          }
+        }
       });
     }
   }
@@ -1557,6 +2123,12 @@ class ContourMeasure extends ContourBase {
         const r = this.querySelector(".c-measure__readout");
         if (r) r.remove();
       }
+      // unit selector
+      let sel = this.querySelector(".c-measure__unit-select");
+      if (!sel) { sel = document.createElement("select"); sel.className = "c-measure__unit-select"; this.appendChild(sel); }
+      ["m","km","mi","ft"].forEach((u) => {
+        if (!sel.querySelector('option[value="' + u + '"]')) { const o = document.createElement("option"); o.value = u; o.textContent = u; sel.appendChild(o); }
+      });
       if (rPoint) {
         const p = this.ensure(".c-measure__point", () => { const el = document.createElement("span"); el.className = "c-measure__point"; return el; });
         p.textContent = rPoint;

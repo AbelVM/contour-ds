@@ -12,9 +12,8 @@
      Feature matrices. The "yes" column must be unambiguous.
      ======================================================================= */
   .c-compare {
-    inline-size: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
+    display: grid;
+    gap: var(--space-sm);
     font-size: var(--type-sm);
   }
 

@@ -99,6 +99,19 @@ class ContourMinimap extends ContourBase {
         if (v) v.remove();
       }
     }
+    enhance() {
+      if (this._wiredMinimap) return;
+      this._wiredMinimap = true;
+      const vp = this.querySelector(".c-minimap__viewport");
+      if (!vp) return;
+      let dragging = false;
+      vp.addEventListener("pointerdown", (e) => { dragging = true; vp.setPointerCapture(e.pointerId); });
+      vp.addEventListener("pointermove", (e) => {
+        if (!dragging) return;
+        this.dispatchEvent(new CustomEvent("contour:move", { detail: { direction: "drag" }, bubbles: true, composed: true }));
+      });
+      vp.addEventListener("pointerup", () => { dragging = false; });
+    }
   }
 define("contour-minimap", ContourMinimap);
 class ContourCoordinate extends ContourBase {
@@ -114,8 +127,36 @@ class ContourCoordinate extends ContourBase {
         renderEmpty(this, "coordinate");
         return;
       }
+      const format = this.getAttribute("format") || "decimal";
+      let text = String(value);
+      if (format === "dms") {
+        // simple DMS conversion assuming decimal degrees "lat,lon"
+        const parts = String(value).split(/[,\s]+/).map(Number);
+        if (parts.length >= 2 && Number.isFinite(parts[0]) && Number.isFinite(parts[1])) {
+          const toDMS = (d) => {
+            const deg = Math.floor(Math.abs(d));
+            const min = Math.floor((Math.abs(d) - deg) * 60);
+            const sec = (((Math.abs(d) - deg) * 60) - min) * 60;
+            return deg + "°" + min + "'" + sec.toFixed(1) + '"' + (d < 0 ? "S" : "N");
+          };
+          text = toDMS(parts[0]) + " " + toDMS(parts[1]);
+        }
+      } else if (format === "web-mercator") {
+        const parts = String(value).split(/[,\s]+/).map(Number);
+        if (parts.length >= 2 && Number.isFinite(parts[0]) && Number.isFinite(parts[1])) {
+          const x = parts[1] * 20037508.34 / 180;
+          const y = Math.log(Math.tan((90 + parts[0]) * Math.PI / 360)) / (Math.PI / 180) * 20037508.34 / 180;
+          text = x.toFixed(2) + ", " + y.toFixed(2);
+        }
+      } else {
+        text = formatValue(value, this.getAttribute("format"), this.getAttribute("locale"));
+      }
       const span = this.ensure(".c-coordinate__value", () => { const el = document.createElement("span"); el.className = "c-coordinate__value"; return el; });
-      span.textContent = formatValue(value, this.getAttribute("format"), this.getAttribute("locale"));
+      span.textContent = text;
+      // copy button
+      let btn = this.querySelector(".c-coordinate__copy");
+      if (!btn) { btn = document.createElement("button"); btn.type = "button"; btn.className = "c-coordinate__copy"; btn.textContent = "Copy"; btn.setAttribute("aria-label", "Copy coordinate"); this.appendChild(btn); }
+      btn.onclick = () => { try { navigator.clipboard.writeText(text); } catch (e) {} this.dispatchEvent(new CustomEvent("contour:copy", { detail: { text }, bubbles: true, composed: true })); };
     }
   }
 define("contour-coordinate", ContourCoordinate);
@@ -171,6 +212,30 @@ class ContourLayerPanel extends ContourBase {
               opacity.setAttribute("aria-label", "Opacity of " + (name || "layer"));
              opacity.value = (typeof it === "object" && it.opacity != null) ? it.opacity : "100";
             item.appendChild(opacity);
+            // rename input (hidden by default, toggled via button)
+            const renameBtn = document.createElement("button");
+            renameBtn.type = "button";
+            renameBtn.className = "c-layer-panel__rename";
+            renameBtn.textContent = "Rename";
+            renameBtn.setAttribute("aria-label", "Rename " + (name || "layer"));
+            item.appendChild(renameBtn);
+            const dupBtn = document.createElement("button");
+            dupBtn.type = "button";
+            dupBtn.className = "c-layer-panel__duplicate";
+            dupBtn.textContent = "Duplicate";
+            dupBtn.setAttribute("aria-label", "Duplicate " + (name || "layer"));
+            item.appendChild(dupBtn);
+            const zoomBtn = document.createElement("button");
+            zoomBtn.type = "button";
+            zoomBtn.className = "c-layer-panel__zoom";
+            zoomBtn.textContent = "Zoom";
+            zoomBtn.setAttribute("aria-label", "Zoom to " + (name || "layer"));
+            item.appendChild(zoomBtn);
+            const projSel = document.createElement("select");
+            projSel.className = "c-layer-panel__projection";
+            projSel.setAttribute("aria-label", "Projection of " + (name || "layer"));
+            ["EPSG:4326","EPSG:3857"].forEach((p) => { const o = document.createElement("option"); o.value = p; o.textContent = p; projSel.appendChild(o); });
+            item.appendChild(projSel);
             this.appendChild(item);
           });
         } catch (e) { /* keep existing */ }
@@ -192,13 +257,34 @@ class ContourLayerPanel extends ContourBase {
           this.dispatchEvent(new CustomEvent("contour:layer-visibility", { bubbles: true, composed: true, detail: { name, visible: e.target.checked } }));
         } else if (e.target.classList.contains("c-layer-panel__opacity")) {
           this.dispatchEvent(new CustomEvent("contour:layer-opacity", { bubbles: true, composed: true, detail: { name, opacity: Number(e.target.value) } }));
+        } else if (e.target.classList.contains("c-layer-panel__projection")) {
+          this.dispatchEvent(new CustomEvent("contour:layer-projection", { bubbles: true, composed: true, detail: { name, projection: e.target.value } }));
+        }
+      });
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest("button") : null;
+        if (!btn || !this.contains(btn)) return;
+        const item = btn.closest(".c-layer-panel__item");
+        if (!item) return;
+        const name = item.querySelector(".c-layer-panel__name")?.textContent || "";
+        if (btn.classList.contains("c-layer-panel__rename")) {
+          const newName = prompt("Rename layer", name);
+          if (newName && newName !== name) {
+            const nm = item.querySelector(".c-layer-panel__name");
+            if (nm) nm.textContent = newName;
+            this.dispatchEvent(new CustomEvent("contour:layer-rename", { bubbles: true, composed: true, detail: { name, newName } }));
+          }
+        } else if (btn.classList.contains("c-layer-panel__duplicate")) {
+          this.dispatchEvent(new CustomEvent("contour:layer-duplicate", { bubbles: true, composed: true, detail: { name } }));
+        } else if (btn.classList.contains("c-layer-panel__zoom")) {
+          this.dispatchEvent(new CustomEvent("contour:layer-zoom", { bubbles: true, composed: true, detail: { name } }));
         }
       });
     }
   }
 define("contour-layer-panel", ContourLayerPanel);
 class ContourTimeSlider extends ContourBase {
-    static get observed() { return ["label", "value"]; }
+    static get observed() { return ["label", "value", "loop", "speed"]; }
     static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-time-slider");
@@ -239,10 +325,15 @@ class ContourTimeSlider extends ContourBase {
         const track = this.querySelector(".c-time-slider__track");
         if (!track) { stop(); return; }
         const max = Number(track.max) || 100;
-        const next = Math.min(max, (Number(track.value) || 0) + 1);
+        const loop = this.hasAttribute("loop");
+        let next = (Number(track.value) || 0) + 1;
+        if (next > max) {
+          if (loop) next = 0;
+          else next = max;
+        }
         track.value = String(next);
         this.dispatchEvent(new CustomEvent("contour:time-change", { detail: { value: String(next) }, bubbles: true, composed: true }));
-        if (next >= max) {
+        if (!loop && next >= max) {
           stop();
           const btn = this.querySelector(".c-time-slider__play");
           if (btn) {
@@ -263,7 +354,9 @@ class ContourTimeSlider extends ContourBase {
         if (use) use.setAttribute("href", playing ? "#i-pause" : "#i-play");
         if (playing) {
           stop();
-          timer = setInterval(step, 1000);
+          const speed = parseFloat(this.getAttribute("speed") || "1") || 1;
+          const delay = Math.max(100, 1000 / speed);
+          timer = setInterval(step, delay);
         } else {
           stop();
         }

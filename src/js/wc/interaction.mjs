@@ -352,7 +352,7 @@ class ContourResizable extends ContourBase {
         this.appendChild(handle);
         this.appendChild(p2);
       }
-      const v = this.getAttribute("value");
+      const v = this._splitValue || this.getAttribute("value");
       if (v) {
         const p1 = this.querySelector(".c-resizable__pane");
         if (p1) p1.style.flex = `0 0 ${v}%`;
@@ -373,7 +373,7 @@ class ContourResizable extends ContourBase {
         const frac = span > 0 ? Math.min(0.9, Math.max(0.1, pos / span)) : 0.5;
         const p1 = this.querySelector(".c-resizable__pane");
         if (p1) p1.style.flex = `0 0 ${Math.round(frac * 100)}%`;
-        this.setAttribute("value", String(Math.round(frac * 100)));
+        this._splitValue = String(Math.round(frac * 100));
       };
       this.addEventListener("pointerdown", (e) => {
         const handle = this.querySelector(".c-resize-handle");
@@ -390,6 +390,7 @@ class ContourResizable extends ContourBase {
       const stopResize = (e) => {
         if (!this._resizing) return;
         this._resizing = false;
+        if (this._splitValue) { this.setAttribute("value", this._splitValue); this._splitValue = null; }
         const handle = this.querySelector(".c-resize-handle");
         if (handle) {
           handle.classList.remove("c-resize-handle--dragging");

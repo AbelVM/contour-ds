@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Contour — a design system for spatial interfaces</title>
-    <meta name="description" content="Contour is a token-driven design system for spatial interfaces. Dark and light themes, 203 components, 294 design tokens, zero runtime dependencies." />
+    <meta name="description" content="Contour is a token-driven design system for spatial interfaces. Dark and light themes, 214 components, 294 design tokens, zero runtime dependencies." />
     <!-- One sentence, two readers: stamp.mjs generates BOTH descriptions from
          the same computed string, so the crawler copy can never fall a whole
          component count behind the search copy. `twitter:description` is
@@ -15,7 +15,7 @@
          that resolves — a card pointing at a dead image is a claim, not a
          fallback. -->
     <meta property="og:title" content="Contour — a design system for spatial interfaces" />
-    <meta property="og:description" content="Contour is a token-driven design system for spatial interfaces. Dark and light themes, 203 components, 294 design tokens, zero runtime dependencies." />
+    <meta property="og:description" content="Contour is a token-driven design system for spatial interfaces. Dark and light themes, 214 components, 294 design tokens, zero runtime dependencies." />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="Contour — a design system for spatial interfaces" />
@@ -491,7 +491,7 @@
                 <span>GRID 0.88 m</span>
                 <span>H3 · RES 15</span>
                 <span><!-- ds:tokens -->294<!-- /ds:tokens --> tokens</span>
-                <span><!-- ds:components -->203<!-- /ds:components --> components</span>
+                <span><!-- ds:components -->214<!-- /ds:components --> components</span>
                 <span>0 runtime deps</span>
                 <span>2 + system themes</span>
               </div>
@@ -11566,6 +11566,10 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                       <tr><td><code>contour:hide</code></td><td>—</td><td>true</td></tr>
                       <tr><td><code>contour:input</code></td><td><code>name</code>, <code>value</code>, <code>checked</code></td><td>true</td></tr>
                       <tr><td><code>contour:layer-opacity</code></td><td><code>name</code>, <code>opacity</code></td><td>true</td></tr>
+                      <tr><td><code>contour:layer-duplicate</code></td><td><code>name</code></td><td>true</td></tr>
+                      <tr><td><code>contour:layer-projection</code></td><td><code>name</code>, <code>projection</code></td><td>true</td></tr>
+                      <tr><td><code>contour:layer-rename</code></td><td><code>name</code>, <code>newName</code></td><td>true</td></tr>
+                      <tr><td><code>contour:layer-zoom</code></td><td><code>name</code></td><td>true</td></tr>
                       <tr><td><code>contour:layer-toggle</code></td><td><code>name</code></td><td>true</td></tr>
                       <tr><td><code>contour:layer-visibility</code></td><td><code>name</code>, <code>visible</code></td><td>true</td></tr>
                       <tr><td><code>contour:legend-toggle</code></td><td><code>label</code>, <code>key</code>, <code>pressed</code></td><td>true</td></tr>
@@ -11591,8 +11595,12 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                       <tr><td><code>contour:view-enter</code></td><td>—</td><td>true</td></tr>
                       <tr><td><code>contour:view-leave</code></td><td>—</td><td>true</td></tr>
                       <tr><td><code>contour:activity-select</code></td><td><code>index</code>, <code>text</code></td><td>true</td></tr>
+                      <tr><td><code>contour:break-change</code></td><td><code>value</code></td><td>true</td></tr>
+                      <tr><td><code>contour:style-resolved</code></td><td><code>value</code></td><td>true</td></tr>
                       <tr><td><code>contour:advanced-toggle</code></td><td><code>title</code></td><td>true</td></tr>
                       <tr><td><code>contour:affordance-activate</code></td><td><code>name</code></td><td>true</td></tr>
+                      <tr><td><code>contour:brush-end</code></td><td><code>value</code></td><td>true</td></tr>
+                      <tr><td><code>contour:brush-start</code></td><td><code>value</code></td><td>true</td></tr>
                       <tr><td><code>contour:btn-group-change</code></td><td><code>index</code>, <code>label</code></td><td>true</td></tr>
                       <tr><td><code>contour:dash-action</code></td><td><code>label</code></td><td>true</td></tr>
                       <tr><td><code>contour:diff-activate</code></td><td><code>kind</code>, <code>text</code></td><td>true</td></tr>
@@ -17340,7 +17348,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
               <span class="ds-spec__token">contour-toast-host</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-toast-host title="Toasts"><span>Toast host</span></contour-toast-host>
+              <contour-toast-host title="Toasts"></contour-toast-host>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -17353,9 +17361,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-315">&lt;contour-toast-host title="Toasts"&gt;
-  &lt;span&gt;Toast host&lt;/span&gt;
-&lt;/contour-toast-host&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-315">&lt;contour-toast-host title="Toasts"&gt;&lt;/contour-toast-host&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -17558,7 +17564,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
               <span class="ds-spec__token">contour-bivariate</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-bivariate size="3" axis-x="X" axis-y="Y"></contour-bivariate>
+              <contour-bivariate size="4" axis-x="X" axis-y="Y" colors="[&quot;#e8e8e8&quot;,&quot;#b5c0da&quot;,&quot;#6c83b5&quot;,&quot;#2a5a99&quot;,&quot;#e4acac&quot;,&quot;#b07f99&quot;,&quot;#6c5a8a&quot;,&quot;#2d3a6b&quot;,&quot;#c85a5a&quot;,&quot;#994d6e&quot;,&quot;#6b3a5e&quot;,&quot;#2d2a4e&quot;,&quot;#a02020&quot;,&quot;#7a2848&quot;,&quot;#5a2040&quot;,&quot;#2a1a30&quot;]"></contour-bivariate>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -17571,7 +17577,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-324">&lt;contour-bivariate size="3" axis-x="X" axis-y="Y"&gt;&lt;/contour-bivariate&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-324">&lt;contour-bivariate size="4" axis-x="X" axis-y="Y" colors="[&amp;quot;#e8e8e8&amp;quot;,&amp;quot;#b5c0da&amp;quot;,&amp;quot;#6c83b5&amp;quot;,&amp;quot;#2a5a99&amp;quot;,&amp;quot;#e4acac&amp;quot;,&amp;quot;#b07f99&amp;quot;,&amp;quot;#6c5a8a&amp;quot;,&amp;quot;#2d3a6b&amp;quot;,&amp;quot;#c85a5a&amp;quot;,&amp;quot;#994d6e&amp;quot;,&amp;quot;#6b3a5e&amp;quot;,&amp;quot;#2d2a4e&amp;quot;,&amp;quot;#a02020&amp;quot;,&amp;quot;#7a2848&amp;quot;,&amp;quot;#5a2040&amp;quot;,&amp;quot;#2a1a30&amp;quot;]"&gt;&lt;/contour-bivariate&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -17606,7 +17612,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
               <span class="ds-spec__token">contour-compare</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-compare yes="Yes" no="No" text="Compare"></contour-compare>
+              <contour-compare yes="Included" no="Not included" text="SSO support"></contour-compare>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -17619,7 +17625,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-326">&lt;contour-compare yes="Yes" no="No" text="Compare"&gt;&lt;/contour-compare&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-326">&lt;contour-compare yes="Included" no="Not included" text="SSO support"&gt;&lt;/contour-compare&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -17630,7 +17636,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
               <span class="ds-spec__token">contour-comparison</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-comparison divider="vs"></contour-comparison>
+              <contour-comparison divider></contour-comparison>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -17643,7 +17649,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-327">&lt;contour-comparison divider="vs"&gt;&lt;/contour-comparison&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-327">&lt;contour-comparison divider&gt;&lt;/contour-comparison&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -18184,7 +18190,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
               <span class="ds-spec__token">contour-range-scale</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-range-scale label="Scale"></contour-range-scale>
+              <contour-range-scale label="Scale" ticks="0,25,50,75,100"></contour-range-scale>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -18197,7 +18203,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-350">&lt;contour-range-scale label="Scale"&gt;&lt;/contour-range-scale&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-350">&lt;contour-range-scale label="Scale" ticks="0,25,50,75,100"&gt;&lt;/contour-range-scale&gt;</code></pre>
                       </div>
                     </details></div>
           </div>

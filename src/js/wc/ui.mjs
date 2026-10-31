@@ -737,8 +737,8 @@ class ContourStyleSwitcher extends ContourBase {
   define("contour-style-switcher", ContourStyleSwitcher);
 
 class ContourStylePanel extends ContourBase {
-    static get observed() { return ["title", "layers"]; }
-    static get properties() { return { title: { attribute: "title" }, layers: { attribute: "layers" } }; }
+    static get observed() { return ["title", "layers", "classification", "palette", "breaks", "opacity"]; }
+    static get properties() { return { title: { attribute: "title" }, layers: { attribute: "layers" }, classification: { attribute: "classification" }, palette: { attribute: "palette" }, breaks: { attribute: "breaks" }, opacity: { attribute: "opacity" } }; }
     render() {
       this.classList.add("c-style-panel");
       const title = this.getAttribute("title");
@@ -764,6 +764,33 @@ class ContourStylePanel extends ContourBase {
             input.className = "c-style-panel__color";
             if (typeof l === "object" && l.color) input.value = l.color;
             row.appendChild(input);
+            // classification method selector
+            const clsSel = document.createElement("select");
+            clsSel.className = "c-style-panel__classification";
+            ["equal","quantile","jenks","manual"].forEach((m) => { const o = document.createElement("option"); o.value = m; o.textContent = m; clsSel.appendChild(o); });
+            if (typeof l === "object" && l.classification) clsSel.value = l.classification;
+            row.appendChild(clsSel);
+            // palette picker
+            const pal = document.createElement("input");
+            pal.type = "text";
+            pal.className = "c-style-panel__palette";
+            pal.placeholder = "palette";
+            if (typeof l === "object" && l.palette) pal.value = l.palette;
+            row.appendChild(pal);
+            // breaks editor
+            const breaks = document.createElement("input");
+            breaks.type = "text";
+            breaks.className = "c-style-panel__breaks";
+            breaks.placeholder = "breaks";
+            if (typeof l === "object" && l.breaks) breaks.value = (Array.isArray(l.breaks) ? l.breaks.join(",") : l.breaks);
+            row.appendChild(breaks);
+            // opacity control
+            const op = document.createElement("input");
+            op.type = "range";
+            op.className = "c-style-panel__opacity";
+            op.min = "0"; op.max = "100";
+            op.value = (typeof l === "object" && l.opacity != null) ? l.opacity : "100";
+            row.appendChild(op);
             body.appendChild(row);
           });
         } catch (e) { /* keep existing */ }

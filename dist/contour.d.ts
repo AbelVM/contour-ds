@@ -14,13 +14,17 @@ export type ContourComponent =
   | "c-app-body"
   | "c-avatar"
   | "c-avatar-group"
+  | "c-axis"
   | "c-badge"
   | "c-badge-overflow"
   | "c-banner"
   | "c-bivariate"
+  | "c-bivariate-legend"
   | "c-box"
   | "c-brand"
   | "c-breadcrumb"
+  | "c-brownout"
+  | "c-brush"
   | "c-btn"
   | "c-btn-group"
   | "c-calendar"
@@ -28,6 +32,7 @@ export type ContourComponent =
   | "c-card"
   | "c-carousel"
   | "c-catchment"
+  | "c-category"
   | "c-chart"
   | "c-chart-grid"
   | "c-check"
@@ -64,6 +69,7 @@ export type ContourComponent =
   | "c-do-dont"
   | "c-docs-nav"
   | "c-docs-shell"
+  | "c-donut"
   | "c-dot"
   | "c-drag-handle"
   | "c-draggable"
@@ -85,6 +91,7 @@ export type ContourComponent =
   | "c-flag"
   | "c-flow-map"
   | "c-footer"
+  | "c-gauge"
   | "c-header"
   | "c-heatmap"
   | "c-hexbin"
@@ -125,6 +132,7 @@ export type ContourComponent =
   | "c-palette-editor"
   | "c-panel"
   | "c-pill"
+  | "c-pivot"
   | "c-plate"
   | "c-popover"
   | "c-pressable"
@@ -170,6 +178,7 @@ export type ContourComponent =
   | "c-spinner"
   | "c-split-button"
   | "c-stack"
+  | "c-stacked-bar"
   | "c-stat"
   | "c-status-light"
   | "c-stepper"
@@ -191,6 +200,7 @@ export type ContourComponent =
   | "c-threshold"
   | "c-time-picker"
   | "c-time-range"
+  | "c-time-series"
   | "c-time-slider"
   | "c-timeline"
   | "c-toast"
@@ -204,6 +214,7 @@ export type ContourComponent =
   | "c-version"
   | "c-version-banner"
   | "c-virtual-list"
+  | "c-widget-state"
 ;
 
 export type ContourToken =
@@ -646,13 +657,17 @@ declare global {
     "contour-app-body": ContourElement;
     "contour-avatar": ContourElement;
     "contour-avatar-group": ContourElement;
+    "contour-axis": ContourElement;
     "contour-badge": ContourElement;
     "contour-badge-overflow": ContourElement;
     "contour-banner": ContourElement;
     "contour-bivariate": ContourElement;
+    "contour-bivariate-legend": ContourElement;
     "contour-box": ContourElement;
     "contour-brand": ContourElement;
     "contour-breadcrumb": ContourElement;
+    "contour-brownout": ContourElement;
+    "contour-brush": ContourElement;
     "contour-btn": ContourElement;
     "contour-btn-group": ContourElement;
     "contour-calendar": ContourElement;
@@ -660,6 +675,7 @@ declare global {
     "contour-card": ContourElement;
     "contour-carousel": ContourElement;
     "contour-catchment": ContourElement;
+    "contour-category": ContourElement;
     "contour-chart": ContourElement;
     "contour-chart-grid": ContourElement;
     "contour-check": ContourElement;
@@ -696,6 +712,7 @@ declare global {
     "contour-do-dont": ContourElement;
     "contour-docs-nav": ContourElement;
     "contour-docs-shell": ContourElement;
+    "contour-donut": ContourElement;
     "contour-dot": ContourElement;
     "contour-drag-handle": ContourElement;
     "contour-draggable": ContourElement;
@@ -717,6 +734,7 @@ declare global {
     "contour-flag": ContourElement;
     "contour-flow-map": ContourElement;
     "contour-footer": ContourElement;
+    "contour-gauge": ContourElement;
     "contour-header": ContourElement;
     "contour-heatmap": ContourElement;
     "contour-hexbin": ContourElement;
@@ -757,6 +775,7 @@ declare global {
     "contour-palette-editor": ContourElement;
     "contour-panel": ContourElement;
     "contour-pill": ContourElement;
+    "contour-pivot": ContourElement;
     "contour-plate": ContourElement;
     "contour-popover": ContourElement;
     "contour-pressable": ContourElement;
@@ -796,16 +815,21 @@ declare global {
     "contour-shadow-app": ContourElement;
     "contour-shadow-app-body": ContourElement;
     "contour-shadow-avatar": ContourElement;
+    "contour-shadow-axis": ContourElement;
     "contour-shadow-badge": ContourElement;
     "contour-shadow-bivariate": ContourElement;
+    "contour-shadow-bivariate-legend": ContourElement;
     "contour-shadow-box": ContourElement;
     "contour-shadow-brand": ContourElement;
     "contour-shadow-breadcrumb": ContourElement;
+    "contour-shadow-brownout": ContourElement;
+    "contour-shadow-brush": ContourElement;
     "contour-shadow-btn": ContourElement;
     "contour-shadow-btn-group": ContourElement;
     "contour-shadow-callout": ContourElement;
     "contour-shadow-card": ContourElement;
     "contour-shadow-catchment": ContourElement;
+    "contour-shadow-category": ContourElement;
     "contour-shadow-chart": ContourElement;
     "contour-shadow-chart-grid": ContourElement;
     "contour-shadow-check": ContourElement;
@@ -835,6 +859,7 @@ declare global {
     "contour-shadow-do-dont": ContourElement;
     "contour-shadow-docs-nav": ContourElement;
     "contour-shadow-docs-shell": ContourElement;
+    "contour-shadow-donut": ContourElement;
     "contour-shadow-dot": ContourElement;
     "contour-shadow-drag-handle": ContourElement;
     "contour-shadow-draggable": ContourElement;
@@ -852,6 +877,7 @@ declare global {
     "contour-shadow-flag": ContourElement;
     "contour-shadow-flow-map": ContourElement;
     "contour-shadow-footer": ContourElement;
+    "contour-shadow-gauge": ContourElement;
     "contour-shadow-header": ContourElement;
     "contour-shadow-heatmap": ContourElement;
     "contour-shadow-hexbin": ContourElement;
@@ -924,6 +950,7 @@ declare global {
     "contour-shadow-sparkline": ContourElement;
     "contour-shadow-spinner": ContourElement;
     "contour-shadow-stack": ContourElement;
+    "contour-shadow-stacked-bar": ContourElement;
     "contour-shadow-stat": ContourElement;
     "contour-shadow-steps": ContourElement;
     "contour-shadow-streaming-chart": ContourElement;
@@ -948,6 +975,7 @@ declare global {
     "contour-shadow-tree": ContourElement;
     "contour-shadow-version": ContourElement;
     "contour-shadow-version-banner": ContourElement;
+    "contour-shadow-widget-state": ContourElement;
     "contour-sheet": ContourElement;
     "contour-shortcut": ContourElement;
     "contour-shortcut-list": ContourElement;
@@ -964,6 +992,7 @@ declare global {
     "contour-spinner": ContourElement;
     "contour-split-button": ContourElement;
     "contour-stack": ContourElement;
+    "contour-stacked-bar": ContourElement;
     "contour-stat": ContourElement;
     "contour-status-light": ContourElement;
     "contour-stepper": ContourElement;
@@ -985,6 +1014,7 @@ declare global {
     "contour-threshold": ContourElement;
     "contour-time-picker": ContourElement;
     "contour-time-range": ContourElement;
+    "contour-time-series": ContourElement;
     "contour-time-slider": ContourElement;
     "contour-timeline": ContourElement;
     "contour-toast": ContourElement;
@@ -998,5 +1028,6 @@ declare global {
     "contour-version": ContourElement;
     "contour-version-banner": ContourElement;
     "contour-virtual-list": ContourElement;
+    "contour-widget-state": ContourElement;
   }
 }

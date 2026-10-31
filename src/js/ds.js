@@ -1641,6 +1641,18 @@
       if (el) goTo(el);
     },
     copy: async (text) => copyText(text),
+    format: {
+      number: (value, format, locale) => {
+        const n = Number(value);
+        if (!Number.isFinite(n)) return String(value);
+        if (format === "percent") return (n * 100).toFixed(0) + "%";
+        try { return new Intl.NumberFormat(locale || undefined).format(n); } catch (e) { return String(n); }
+      },
+      time: (value, locale) => {
+        try { return new Intl.DateTimeFormat(locale || undefined).format(new Date(value)); } catch (e) { return String(value); }
+      },
+      locale: (locale) => locale || (typeof navigator !== "undefined" ? navigator.language : "en"),
+    },
     chart: { scale: linearScale, ticks: niceTicks, datum: datum },
     commands: { register: registerCommand, list: listCommands },
   });
