@@ -425,9 +425,18 @@ class ContourHexbin extends ContourBase {
       if (renderStates(this, "hexbin")) return;
       const cells = remoteData(this, "cells");
       const effectiveCells = cells || (this._remoteData && this._remoteData.cells ? JSON.stringify(this._remoteData.cells) : null);
-      if (effectiveCells) {
+      // Slotted content support: authored .c-hexbin__cell children take
+      // precedence over the JSON `cells` attribute.
+      const authoredCells = Array.from(this.querySelectorAll(":scope > .c-hexbin__cell"));
+      let parsed = null;
+      if (authoredCells.length) {
+        parsed = authoredCells.map((el) => el.textContent || el.getAttribute("title") || "");
+        authoredCells.forEach((el) => el.remove());
+      } else if (effectiveCells) {
+        try { parsed = JSON.parse(effectiveCells); } catch (e) { parsed = null; }
+      }
+      if (parsed) {
        try {
-         const parsed = JSON.parse(effectiveCells);
          Array.from(this.querySelectorAll(".c-hexbin__cell")).forEach((n) => n.remove());
          const cols = Math.ceil(Math.sqrt(parsed.length || 1));
          this.style.gridTemplateColumns = "repeat(" + cols + ", 1fr)";
@@ -443,7 +452,7 @@ class ContourHexbin extends ContourBase {
            const tip = this.ensure(".c-hexbin__tooltip", () => { const el = document.createElement("div"); el.className = "c-hexbin__tooltip"; el.setAttribute("role", "tooltip"); el.setAttribute("hidden", ""); return el; });
            tip.setAttribute("hidden", "");
        } catch (e) { /* keep existing */ }
-      } else {
+      } else if (!parsed) {
         Array.from(this.querySelectorAll(".c-hexbin__cell")).forEach((n) => n.remove());
         renderEmpty(this, "hexbin");
       }
@@ -526,9 +535,18 @@ class ContourIsochrone extends ContourBase {
       if (renderStates(this, "isochrone")) return;
       const rings = remoteData(this, "rings");
       const effectiveRings = rings || (this._remoteData && this._remoteData.rings ? JSON.stringify(this._remoteData.rings) : null);
-      if (effectiveRings) {
+      // Slotted content support: authored .c-isochrone__ring children take
+      // precedence over the JSON `rings` attribute.
+      const authoredRings = Array.from(this.querySelectorAll(":scope > .c-isochrone__ring"));
+      let parsed = null;
+      if (authoredRings.length) {
+        parsed = authoredRings.map((el) => el.textContent || el.getAttribute("title") || "");
+        authoredRings.forEach((el) => el.remove());
+      } else if (effectiveRings) {
+        try { parsed = JSON.parse(effectiveRings); } catch (e) { parsed = null; }
+      }
+      if (parsed) {
          try {
-           const parsed = JSON.parse(effectiveRings);
            Array.from(this.querySelectorAll(".c-isochrone__ring")).forEach((n) => n.remove());
            parsed.forEach((r, i) => {
              const ring = document.createElement("span");
@@ -540,7 +558,7 @@ class ContourIsochrone extends ContourBase {
            const tip = this.ensure(".c-isochrone__tooltip", () => { const el = document.createElement("div"); el.className = "c-isochrone__tooltip"; el.setAttribute("role", "tooltip"); el.setAttribute("hidden", ""); return el; });
            tip.setAttribute("hidden", "");
          } catch (e) { /* keep existing */ }
-       } else {
+       } else if (!parsed) {
          Array.from(this.querySelectorAll(".c-isochrone__ring")).forEach((n) => n.remove());
          renderEmpty(this, "isochrone");
        }
