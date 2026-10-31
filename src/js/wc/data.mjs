@@ -1547,20 +1547,15 @@ class ContourCategory extends ContourBase {
       loadRemote(this, ["items"]);
       if (renderStates(this, "category")) return;
       Array.from(this.querySelectorAll(".c-category__item")).forEach((n) => n.remove());
-      // Slotted content support: authored .c-donut__item children take precedence
-      // over the JSON `items` attribute, so consumers can compose legend rows
-      // by hand instead of serialising them into an attribute.
-      const authoredItems = Array.from(this.querySelectorAll(":scope > .c-donut__item"));
+      // Slotted content support: authored .c-category__item children take
+      // precedence over the JSON `items` attribute.
+      const authoredItems = Array.from(this.querySelectorAll(":scope > .c-category__item"));
       let items = [];
       if (authoredItems.length) {
         authoredItems.forEach((el) => {
-          const sw = el.querySelector(".c-donut__swatch");
-          const lbl = el.querySelector("span:last-child");
-          const text = lbl ? lbl.textContent : el.textContent;
-          const match = text.match(/—\s*(\d+(?:\.\d+)?)$/);
-          items.push({ label: text.replace(/—\s*\d+(?:\.\d+)?$/, "").trim(), value: match ? Number(match[1]) : 0, color: sw ? sw.style.background : undefined });
+          const lbl = el.querySelector(".c-category__label");
+          items.push({ label: lbl ? lbl.textContent : el.textContent, value: 0 });
         });
-        // remove authored items from DOM (they will be regenerated below)
         authoredItems.forEach((el) => el.remove());
       } else {
         const iAttr = this.getAttribute("items");
