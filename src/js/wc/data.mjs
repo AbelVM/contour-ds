@@ -1438,6 +1438,8 @@ class ContourAxis extends ContourBase {
     static get properties() { return { orientation: { attribute: "orientation" }, values: { attribute: "values" }, ticks: { attribute: "ticks" }, format: { attribute: "format" }, locale: { attribute: "locale" }, padding: { attribute: "padding" }, min: { attribute: "min" }, max: { attribute: "max" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-axis");
+      this.setAttribute("role", "img");
+      this.setAttribute("aria-label", "Axis");
       const orientation = this.getAttribute("orientation") || "horizontal";
       this.classList.toggle("c-axis--horizontal", orientation === "horizontal");
       this.classList.toggle("c-axis--vertical", orientation === "vertical");
@@ -1483,6 +1485,8 @@ class ContourBrush extends ContourBase {
     static get properties() { return { start: { attribute: "start" }, end: { attribute: "end" }, min: { attribute: "min" }, max: { attribute: "max" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-brush");
+      this.setAttribute("role", "group");
+      this.setAttribute("aria-label", "Brush selection");
       wireStates(this);
       loadRemote(this, []);
       if (renderStates(this, "brush")) return;
