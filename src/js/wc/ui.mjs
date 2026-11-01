@@ -2408,11 +2408,15 @@ class ContourDataGrid extends ContourBase {
         parsedCols.forEach((c) => {
           const th = document.createElement("th");
           th.setAttribute("role", "columnheader");
+          th.setAttribute("aria-sort", "none");
+          th.setAttribute("tabindex", "0");
           th.textContent = typeof c === "string" ? c : (c.label || c.key || "");
           tr.appendChild(th);
         });
         thead.appendChild(tr);
       }
+      table.setAttribute("aria-rowcount", String(parsedRows.length));
+      table.setAttribute("aria-colcount", String(parsedCols.length));
       const rows = this.getAttribute("rows");
       let parsedRows = [];
       try { parsedRows = rows ? JSON.parse(rows) : []; } catch (e) { parsedRows = []; }
@@ -2497,6 +2501,10 @@ class ContourDataGrid extends ContourBase {
               tbody.appendChild(tr);
             });
           }
+          // Update aria-sort on headers.
+          Array.from(thead.querySelectorAll("th")).forEach((h, i) => {
+            h.setAttribute("aria-sort", i === idx ? (sortDir === "asc" ? "ascending" : "descending") : "none");
+          });
           this.dispatchEvent(new CustomEvent("contour:sort", { bubbles: true, composed: true, detail: { column: idx, direction: sortDir } }));
         }
       });
