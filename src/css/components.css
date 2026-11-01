@@ -2530,10 +2530,6 @@
     gap: 0.55rem;
     color: var(--color-text-muted);
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    flex-shrink: 0;
-    min-inline-size: max-content;
   }
 
   .c-legend__swatch {
