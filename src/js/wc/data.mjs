@@ -1953,6 +1953,8 @@ class ContourBivariate extends ContourBase {
     static get properties() { return { size: { attribute: "size" }, axisX: { attribute: "axis-x" }, axisY: { attribute: "axis-y" }, colors: { attribute: "colors" }, selected: { attribute: "selected" } }; }
     render() {
       this.classList.add("c-bivariate");
+      this.setAttribute("role", "img");
+      this.setAttribute("aria-label", "Bivariate legend");
       const size = Math.min(12, Math.max(1, parseInt(this.getAttribute("size") || "3", 10) || 3));
       const matrix = this.ensure(".c-bivariate__matrix", () => { const el = document.createElement("div"); el.className = "c-bivariate__matrix"; return el; });
       matrix.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
@@ -2057,8 +2059,10 @@ class ContourBivariateLegend extends ContourBase {
     static get properties() { return { size: { attribute: "size" }, axisX: { attribute: "axis-x" }, axisY: { attribute: "axis-y" }, colors: { attribute: "colors" }, selected: { attribute: "selected" } }; }
     render() {
       this.classList.add("c-bivariate-legend");
+      this.setAttribute("role", "group");
+      this.setAttribute("aria-label", "Bivariate legend");
       const size = Math.min(8, Math.max(1, parseInt(this.getAttribute("size") || "3", 10) || 3));
-      const matrix = this.ensure(".c-bivariate-legend__matrix", () => { const el = document.createElement("div"); el.className = "c-bivariate-legend__matrix"; return el; });
+      const matrix = this.ensure(".c-bivariate-legend__matrix", () => { const el = document.createElement("div"); el.className = "c-bivariate-legend__matrix"; el.setAttribute("role", "grid"); return el; });
       matrix.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
       // Slotted content support: authored cells win over the generated grid.
       const authored = Array.from(matrix.children).filter((n) => n.classList && n.classList.contains("c-bivariate-legend__cell"));
