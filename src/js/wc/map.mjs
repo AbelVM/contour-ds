@@ -664,6 +664,8 @@ class ContourIsochrone extends ContourBase {
     static get properties() { return { label: { attribute: "label" }, center: { attribute: "center" }, rings: { attribute: "rings" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-isochrone");
+      this.setAttribute("role", "img");
+      this.setAttribute("aria-label", "Isochrone");
       const label = this.getAttribute("label") || (this._remoteData && this._remoteData.label);
       if (label) {
         const l = this.ensure(".c-isochrone__label", () => { const el = document.createElement("span"); el.className = "c-isochrone__label"; return el; });
