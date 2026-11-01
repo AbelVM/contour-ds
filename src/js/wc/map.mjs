@@ -120,8 +120,8 @@ class ContourMinimap extends ContourBase {
   }
 define("contour-minimap", ContourMinimap);
 class ContourCoordinate extends ContourBase {
-    static get observed() { return ["value", "format", "locale", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { value: { attribute: "value" }, format: { attribute: "format" }, locale: { attribute: "locale" }, src: { attribute: "src" } }; }
+    static get observed() { return ["value", "format", "locale", "precision", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
+    static get properties() { return { value: { attribute: "value" }, format: { attribute: "format" }, locale: { attribute: "locale" }, precision: { attribute: "precision" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-coordinate");
       wireStates(this);
@@ -138,12 +138,14 @@ class ContourCoordinate extends ContourBase {
         // simple DMS conversion assuming decimal degrees "lat,lon"
         const parts = String(value).split(/[,\s]+/).map(Number);
         if (parts.length >= 2 && Number.isFinite(parts[0]) && Number.isFinite(parts[1])) {
+          const prec = parseInt(this.getAttribute("precision") || "1", 10);
+          const secDigits = Number.isFinite(prec) && prec >= 0 ? prec : 1;
           const toDMS = (d, axis) => {
             const deg = Math.floor(Math.abs(d));
             const min = Math.floor((Math.abs(d) - deg) * 60);
             const sec = (((Math.abs(d) - deg) * 60) - min) * 60;
             const hemi = axis === "lat" ? (d < 0 ? "S" : "N") : (d < 0 ? "W" : "E");
-            return deg + "°" + min + "'" + sec.toFixed(1) + '"' + hemi;
+            return deg + "°" + min + "'" + sec.toFixed(secDigits) + '"' + hemi;
           };
           text = toDMS(parts[0], "lat") + " " + toDMS(parts[1], "lon");
         }
