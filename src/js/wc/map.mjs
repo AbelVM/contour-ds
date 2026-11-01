@@ -608,6 +608,8 @@ class ContourFlowMap extends ContourBase {
     static get properties() { return { label: { attribute: "label" }, nodes: { attribute: "nodes" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-flow-map");
+      this.setAttribute("role", "img");
+      this.setAttribute("aria-label", "Flow map");
       const label = this.getAttribute("label") || (this._remoteData && this._remoteData.label);
       if (label) {
         const l = this.ensure(".c-flow-map__label", () => { const el = document.createElement("span"); el.className = "c-flow-map__label"; return el; });
