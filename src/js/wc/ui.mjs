@@ -1820,14 +1820,36 @@ class ContourSideSheet extends ContourBase {
     enhance() {
       if (this._wiredSideSheet) return;
       this._wiredSideSheet = true;
+      let lastFocus = null;
       const close = () => this.removeAttribute("open");
-      const keyHandler = (e) => { if (e.key === "Escape" && this.hasAttribute("open")) { e.preventDefault(); close(); } };
+      const keyHandler = (e) => {
+        if (e.key === "Escape" && this.hasAttribute("open")) { e.preventDefault(); close(); return; }
+        if (e.key === "Tab" && this.hasAttribute("open")) {
+          const focusables = Array.from(this.querySelectorAll("button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])")).filter((el) => !el.hasAttribute("disabled"));
+          if (!focusables.length) { e.preventDefault(); return; }
+          const first = focusables[0], last = focusables[focusables.length - 1];
+          if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+          else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+        }
+      };
       document.addEventListener("keydown", keyHandler);
       onDispose(this, () => document.removeEventListener("keydown", keyHandler));
       this.addEventListener("click", (e) => {
-        // backdrop click: clicking the sheet's own backdrop (the element itself) closes
         if (e.target === this) close();
       });
+      // Focus management: capture focus on open, restore on close.
+      const obs = new MutationObserver(() => {
+        if (this.hasAttribute("open")) {
+          lastFocus = document.activeElement;
+          const first = this.querySelector("button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])");
+          if (first) try { first.focus(); } catch (err) {}
+        } else if (lastFocus) {
+          try { lastFocus.focus(); } catch (err) {}
+          lastFocus = null;
+        }
+      });
+      obs.observe(this, { attributes: true, attributeFilter: ["open"] });
+      onDispose(this, () => obs.disconnect());
     }
   }
   define("contour-side-sheet", ContourSideSheet);
