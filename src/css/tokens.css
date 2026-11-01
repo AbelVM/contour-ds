@@ -205,8 +205,12 @@
     --dur-copy-tick: 220ms;
     --dur-ping: 2.4s;
     --dur-sweep: 1.6s;
+    --dur-reveal: 320ms;
 
     --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-reveal: cubic-bezier(0.16, 1, 0.3, 1);
+
+    --reveal-distance: 1.5rem;
     --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
     --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
     --ease-exit: cubic-bezier(0.4, 0, 1, 1);
