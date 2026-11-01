@@ -364,7 +364,7 @@ render() {
             const rootUl = this.ensure("div.c-tree", () => { const el = document.createElement("div"); el.className = "c-tree"; el.setAttribute("role", "tree"); return el; });
            rootUl.innerHTML = "";
            rootUl.className = "c-tree";
-           const render = (nodes, parent) => {
+           const render = (nodes, parent, depth) => {
               const ul = parent ? document.createElement("div") : rootUl;
               if (parent) {
                 ul.className = "c-tree__children";
@@ -375,6 +375,7 @@ render() {
               const li = document.createElement("div");
               li.className = "c-tree__node";
               li.setAttribute("role", "treeitem");
+              li.setAttribute("aria-level", String(depth));
                if (node.children) {
                   li.setAttribute("aria-expanded", "false");
                   const row = document.createElement("div");
@@ -396,7 +397,7 @@ render() {
                 span.textContent = node.label;
                 row.appendChild(span);
                 li.appendChild(row);
-                render(node.children, li);
+                render(node.children, li, depth + 1);
               } else {
                 const leaf = document.createElement("div");
                 leaf.className = "c-tree__leaf" + (node.active ? " c-tree__row--active" : "") + (node.dir ? " c-tree__row--dir" : "");
@@ -420,7 +421,7 @@ render() {
             });
             if (parent) parent.appendChild(ul);
           };
-          render(parsed, null);
+          render(parsed, null, 1);
            this.classList.remove("c-tree");
            rootUl.classList.add("c-tree");
            if (this.hasAttribute("virtual")) {
