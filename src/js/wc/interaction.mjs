@@ -27,6 +27,9 @@ class ContourResizeHandleFull extends ContourBase {
     render() {
       this.classList.add("c-resize-handle");
       if (!this.hasAttribute("role")) this.setAttribute("role", "separator");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Resize handle");
+      if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
+      if (!this.hasAttribute("aria-orientation")) this.setAttribute("aria-orientation", "horizontal");
     }
   }
   define("contour-resize-handle", ContourResizeHandleFull);
