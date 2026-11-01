@@ -1181,6 +1181,14 @@ class ContourPaletteEditor extends ContourBase {
           this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { color: sw.style.background } }));
         }
       });
+      this.addEventListener("keydown", (e) => {
+        const swatches = Array.from(this.querySelectorAll(".c-palette-editor__swatch"));
+        const active = document.activeElement;
+        const idx = swatches.indexOf(active);
+        if (e.key === "ArrowRight") { e.preventDefault(); const next = swatches[Math.min(swatches.length - 1, idx + 1)] || swatches[0]; if (next) try { next.focus(); } catch (err) {} }
+        else if (e.key === "ArrowLeft") { e.preventDefault(); const prev = swatches[Math.max(0, idx - 1)] || swatches[swatches.length - 1]; if (prev) try { prev.focus(); } catch (err) {} }
+        else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); if (active && active.classList.contains("c-palette-editor__swatch")) active.click(); }
+      });
     }
   }
   define("contour-palette-editor", ContourPaletteEditor);
