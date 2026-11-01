@@ -888,7 +888,7 @@ class ContourStylePanel extends ContourBase {
          let breaksArr = null;
          if (breaksAttr) { try { breaksArr = JSON.parse(breaksAttr); } catch (e) { breaksArr = breaksAttr.split(",").map((s) => s.trim()); } }
          if (Array.isArray(breaksArr) && breaksArr.length) {
-           const breaksWrap = document.createElement("div"); breaksWrap.className = "c-style-panel__breaks breaks";
+           const breaksWrap = document.createElement("div"); breaksWrap.className = "c-style-panel__breaks";
            breaksArr.forEach((b, i) => {
              const br = document.createElement("div"); br.className = "break";
              br.textContent = String(b);
@@ -901,7 +901,7 @@ class ContourStylePanel extends ContourBase {
          let colors = null;
          if (colorsAttr) { try { colors = JSON.parse(colorsAttr); } catch (e) { colors = colorsAttr.split(",").map((s) => s.trim()); } }
          if (Array.isArray(colors)) {
-           const list = document.createElement("div"); list.className = "c-style-panel__colors colours";
+           const list = document.createElement("div"); list.className = "c-style-panel__colors";
            colors.forEach((c, i) => {
              const sw = document.createElement("input"); sw.type = "color"; sw.className = "c-style-panel__color c-input"; sw.setAttribute("aria-label", "Colour for class " + (i + 1));
              sw.value = c;
@@ -911,7 +911,7 @@ class ContourStylePanel extends ContourBase {
            body.appendChild(list);
          }
          // Apply/Revert buttons
-         const actions = document.createElement("div"); actions.className = "c-style-panel__actions actions";
+         const actions = document.createElement("div"); actions.className = "c-style-panel__actions";
          const applyBtn = document.createElement("button"); applyBtn.type = "button"; applyBtn.className = "c-btn primary"; applyBtn.textContent = "Apply";
          const revertBtn = document.createElement("button"); revertBtn.type = "button"; revertBtn.className = "c-btn"; revertBtn.textContent = "Revert";
          actions.appendChild(applyBtn); actions.appendChild(revertBtn);
@@ -1321,6 +1321,25 @@ class ContourRating extends ContourBase {
           this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: parseInt(star.dataset.value, 10) } }));
         }
       });
+      this.addEventListener("keydown", (e) => {
+        const stars = Array.from(this.querySelectorAll(".c-rating__star"));
+        const active = document.activeElement;
+        const idx = stars.indexOf(active);
+        if (e.key === "ArrowRight" || e.key === "ArrowUp") {
+          e.preventDefault();
+          const next = stars[Math.min(stars.length - 1, idx + 1)] || stars[0];
+          if (next) { try { next.focus(); } catch (err) {} }
+        } else if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
+          e.preventDefault();
+          const prev = stars[Math.max(0, idx - 1)] || stars[stars.length - 1];
+          if (prev) { try { prev.focus(); } catch (err) {} }
+        } else if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          if (active && active.classList.contains("c-rating__star")) {
+            this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: parseInt(active.dataset.value, 10) } }));
+          }
+        }
+      });
     }
   }
   define("contour-rating", ContourRating);
@@ -1480,6 +1499,15 @@ class ContourContextMenu extends ContourBase {
           this.classList.remove("is-open");
         }
       });
+      this.addEventListener("keydown", (e) => {
+        const items = Array.from(this.querySelectorAll(".c-menu__item"));
+        const active = document.activeElement;
+        const idx = items.indexOf(active);
+        if (e.key === "ArrowDown") { e.preventDefault(); const next = items[Math.min(items.length - 1, idx + 1)] || items[0]; if (next) try { next.focus(); } catch (err) {} }
+        else if (e.key === "ArrowUp") { e.preventDefault(); const prev = items[Math.max(0, idx - 1)] || items[items.length - 1]; if (prev) try { prev.focus(); } catch (err) {} }
+        else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); if (active && active.classList.contains("c-menu__item")) active.click(); }
+        else if (e.key === "Escape") { e.preventDefault(); if (typeof this.hidePopover === "function") { try { this.hidePopover(); } catch (err) {} } this.classList.remove("is-open"); }
+      });
     }
   }
   define("contour-context-menu", ContourContextMenu);
@@ -1607,6 +1635,7 @@ class ContourStepper extends ContourBase {
       parsed.forEach((s, i) => {
         const li = document.createElement("li");
         li.className = "c-stepper__step" + (i === current ? " is-current" : "") + (i < current ? " is-done" : "");
+        if (i === current) li.setAttribute("aria-current", "step");
         li.textContent = typeof s === "string" ? s : (s.title || s.label || "");
         list.appendChild(li);
       });
@@ -2111,16 +2140,26 @@ class ContourSwatch extends ContourBase {
   define("contour-swatch", ContourSwatch);
 
 class ContourCalendar extends ContourBase {
-    static get observed() { return ["value", "month"]; }
-    static get properties() { return { value: { attribute: "value" }, month: { attribute: "month" } }; }
+    static get observed() { return ["value"]; }
+    static get properties() { return { value: { attribute: "value" }, month: { attribute: "month" }, year: { attribute: "year" } }; }
     render() {
       this.classList.add("c-calendar");
-      const grid = this.ensure(".c-calendar__grid", () => { const el = document.createElement("div"); el.className = "c-calendar__grid"; el.setAttribute("role", "grid"); return el; });
-      grid.setAttribute("aria-label", "Calendar");
-      grid.innerHTML = "";
       const now = new Date();
-      const year = now.getFullYear();
+      const year = Number(this.getAttribute("year")) || now.getFullYear();
       const month = Number(this.getAttribute("month")) || now.getMonth();
+      const header = this.ensure(".c-calendar__header", () => { const el = document.createElement("div"); el.className = "c-calendar__header"; return el; });
+      header.innerHTML = "";
+      const prev = document.createElement("button");
+      prev.type = "button"; prev.className = "c-btn c-btn--sm c-calendar__prev"; prev.textContent = "‹"; prev.setAttribute("aria-label", "Previous month");
+      const title = document.createElement("span");
+      title.className = "c-calendar__title";
+      title.textContent = new Date(year, month, 1).toLocaleString(undefined, { month: "long", year: "numeric" });
+      const next = document.createElement("button");
+      next.type = "button"; next.className = "c-btn c-btn--sm c-calendar__next"; next.textContent = "›"; next.setAttribute("aria-label", "Next month");
+      header.appendChild(prev); header.appendChild(title); header.appendChild(next);
+      const grid = this.ensure(".c-calendar__grid", () => { const el = document.createElement("div"); el.className = "c-calendar__grid"; el.setAttribute("role", "grid"); return el; });
+      grid.setAttribute("aria-label", title.textContent);
+      grid.innerHTML = "";
       const first = new Date(year, month, 1);
       const startDay = first.getDay();
       const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -2142,11 +2181,36 @@ class ContourCalendar extends ContourBase {
         cell.dataset.value = iso;
         grid.appendChild(cell);
       }
+      if (header.parentNode !== this) this.insertBefore(header, grid);
     }
     enhance() {
       if (this._wiredCalendar) return;
       this._wiredCalendar = true;
       this.addEventListener("click", (e) => {
+        const prev = e.target && e.target.closest ? e.target.closest(".c-calendar__prev") : null;
+        const next = e.target && e.target.closest ? e.target.closest(".c-calendar__next") : null;
+        if (prev && this.contains(prev)) {
+          let m = Number(this.getAttribute("month")) || new Date().getMonth();
+          let y = Number(this.getAttribute("year")) || new Date().getFullYear();
+          m -= 1;
+          if (m < 0) { m = 11; y -= 1; }
+          this.setAttribute("month", String(m));
+          this.setAttribute("year", String(y));
+          this.render();
+          this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { month: m, year: y } }));
+          return;
+        }
+        if (next && this.contains(next)) {
+          let m = Number(this.getAttribute("month")) || new Date().getMonth();
+          let y = Number(this.getAttribute("year")) || new Date().getFullYear();
+          m += 1;
+          if (m > 11) { m = 0; y += 1; }
+          this.setAttribute("month", String(m));
+          this.setAttribute("year", String(y));
+          this.render();
+          this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { month: m, year: y } }));
+          return;
+        }
         const cell = e.target && e.target.closest ? e.target.closest(".c-calendar__day") : null;
         if (cell && this.contains(cell) && cell.dataset.value) {
           this.setAttribute("value", cell.dataset.value);
@@ -2175,7 +2239,9 @@ class ContourCarousel extends ContourBase {
     static get properties() { return { items: { attribute: "items" }, index: { attribute: "index" } }; }
     render() {
       this.classList.add("c-carousel");
-      const track = this.ensure(".c-carousel__track", () => { const el = document.createElement("div"); el.className = "c-carousel__track"; return el; });
+      this.setAttribute("role", "region");
+      this.setAttribute("aria-roledescription", "carousel");
+      const track = this.ensure(".c-carousel__track", () => { const el = document.createElement("div"); el.className = "c-carousel__track"; el.setAttribute("role", "group"); el.setAttribute("aria-roledescription", "slide container"); return el; });
       const items = this.getAttribute("items");
       let parsed = [];
       try { parsed = items ? JSON.parse(items) : []; } catch (e) { parsed = []; }
@@ -2183,6 +2249,9 @@ class ContourCarousel extends ContourBase {
       parsed.forEach((it, i) => {
         const slide = document.createElement("div");
         slide.className = "c-carousel__slide";
+        slide.setAttribute("role", "group");
+        slide.setAttribute("aria-roledescription", "slide");
+        slide.setAttribute("aria-label", (i + 1) + " of " + parsed.length);
         slide.textContent = typeof it === "string" ? it : (it.label || it.text || "");
         slide.dataset.index = String(i);
         track.appendChild(slide);
@@ -2208,6 +2277,28 @@ class ContourDataGrid extends ContourBase {
     static get properties() { return { columns: { attribute: "columns" }, rows: { attribute: "rows" }, page: { attribute: "page" }, filter: { attribute: "filter" }, "page-size": { attribute: "page-size" } }; }
     render() {
       this.classList.add("c-data-grid");
+      if (this.hasAttribute("loading") || this.hasAttribute("error") || this.hasAttribute("empty")) {
+        const table = this.ensure(".c-data-grid__table", () => { const el = document.createElement("table"); el.className = "c-table c-data-grid__table"; el.setAttribute("role", "grid"); return el; });
+        const tbody = this.ensure("tbody", () => { const el = document.createElement("tbody"); return el; });
+        if (tbody.parentNode !== table) table.appendChild(tbody);
+        tbody.innerHTML = "";
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = 1;
+        td.style.textAlign = "center";
+        td.style.color = "var(--color-text-muted)";
+        if (this.hasAttribute("loading")) td.textContent = this.getAttribute("loading") || "Loading…";
+        else if (this.hasAttribute("error")) td.textContent = this.getAttribute("error") || "Error";
+        else td.textContent = this.getAttribute("empty") || "No data";
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+        // Wrap in a scroll container for virtualization of large datasets.
+      let wrap = this.querySelector(".c-data-grid__wrap");
+      if (!wrap) { wrap = document.createElement("div"); wrap.className = "c-data-grid__wrap"; wrap.style.maxHeight = "400px"; wrap.style.overflow = "auto"; }
+      if (table.parentNode !== wrap) wrap.appendChild(table);
+      if (wrap.parentNode !== this) this.appendChild(wrap);
+        return;
+      }
       const table = this.ensure(".c-data-grid__table", () => { const el = document.createElement("table"); el.className = "c-table c-data-grid__table"; el.setAttribute("role", "grid"); return el; });
       const thead = this.ensure("thead", () => { const el = document.createElement("thead"); return el; });
       const tbody = this.ensure("tbody", () => { const el = document.createElement("tbody"); return el; });
@@ -2253,7 +2344,11 @@ class ContourDataGrid extends ContourBase {
         });
         tbody.appendChild(tr);
       });
-      if (table.parentNode !== this) this.appendChild(table);
+      // Wrap in a scroll container for virtualization of large datasets.
+      let wrap = this.querySelector(".c-data-grid__wrap");
+      if (!wrap) { wrap = document.createElement("div"); wrap.className = "c-data-grid__wrap"; wrap.style.maxHeight = "400px"; wrap.style.overflow = "auto"; }
+      if (table.parentNode !== wrap) wrap.appendChild(table);
+      if (wrap.parentNode !== this) this.appendChild(wrap);
     }
     enhance() {
       if (this._wiredDataGrid) return;
@@ -2276,7 +2371,12 @@ class ContourDataGrid extends ContourBase {
         if (target) { e.preventDefault(); try { target.focus(); } catch (err) {} }
       });
       this.addEventListener("click", (e) => {
+        const tr = e.target && e.target.closest ? e.target.closest("tr") : null;
         const th = e.target && e.target.closest ? e.target.closest("th") : null;
+        if (tr && this.contains(tr) && !th) {
+          const idx = Array.from(tr.parentElement.children).indexOf(tr);
+          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { row: idx } }));
+        }
         if (th && this.contains(th)) {
           const idx = Array.from(th.parentElement.children).indexOf(th);
           if (sortCol === idx) sortDir = sortDir === "asc" ? "desc" : "asc";
@@ -2309,8 +2409,13 @@ class ContourDataGrid extends ContourBase {
   define("contour-data-grid", ContourDataGrid);
 
 class ContourTreeGrid extends ContourBase {
-    static get observed() { return ["items"]; }
-    static get properties() { return { items: { attribute: "items" } }; }
+    static get observed() { return ["items", "expanded"]; }
+    static get properties() { return { items: { attribute: "items" }, expanded: { attribute: "expanded" } }; }
+    _expandedSet() {
+      const raw = this.getAttribute("expanded");
+      if (!raw) return new Set();
+      try { return new Set(JSON.parse(raw)); } catch (e) { return new Set([raw]); }
+    }
     render() {
       this.classList.add("c-tree-grid");
       const table = this.ensure(".c-tree-grid__table", () => { const el = document.createElement("table"); el.className = "c-table c-tree-grid__table"; el.setAttribute("role", "treegrid"); return el; });
@@ -2319,29 +2424,91 @@ class ContourTreeGrid extends ContourBase {
       const items = this.getAttribute("items");
       let parsed = [];
       try { parsed = items ? JSON.parse(items) : []; } catch (e) { parsed = []; }
+      const expanded = this._expandedSet();
       tbody.innerHTML = "";
-      const renderNode = (node, depth) => {
+      const rows = [];
+      const renderNode = (node, depth, path) => {
         const tr = document.createElement("tr");
         tr.setAttribute("role", "row");
         tr.setAttribute("tabindex", "0");
+        tr.dataset.path = path;
+        const hasChildren = !!(node && Array.isArray(node.children) && node.children.length);
+        if (hasChildren) {
+          tr.setAttribute("aria-expanded", expanded.has(path) ? "true" : "false");
+        }
         const td = document.createElement("td");
         td.setAttribute("role", "gridcell");
         td.style.paddingInlineStart = (depth * 1.25) + "rem";
-        td.textContent = (node && (node.label || node.text || node.name)) || "";
+        const label = (node && (node.label || node.text || node.name)) || "";
+        if (hasChildren) {
+          const toggle = document.createElement("button");
+          toggle.type = "button";
+          toggle.className = "c-tree-grid__toggle";
+          toggle.textContent = expanded.has(path) ? "▾" : "▸";
+          toggle.setAttribute("aria-label", (expanded.has(path) ? "Collapse" : "Expand") + " " + label);
+          td.appendChild(toggle);
+        }
+        const span = document.createElement("span");
+        span.className = "c-tree-grid__label";
+        span.textContent = label;
+        td.appendChild(span);
         tr.appendChild(td);
         tbody.appendChild(tr);
-        if (node && Array.isArray(node.children)) node.children.forEach((c) => renderNode(c, depth + 1));
+        rows.push(tr);
+        if (hasChildren && expanded.has(path)) {
+          node.children.forEach((c, i) => renderNode(c, depth + 1, path + "." + i));
+        }
       };
-      parsed.forEach((n) => renderNode(n, 0));
+      parsed.forEach((n, i) => renderNode(n, 0, String(i)));
       if (table.parentNode !== this) this.appendChild(table);
     }
     enhance() {
       if (this._wiredTreeGrid) return;
       this._wiredTreeGrid = true;
+      const rows = () => Array.from(this.querySelectorAll("tr[role='row']"));
       this.addEventListener("click", (e) => {
-        const tr = e.target && e.target.closest ? e.target.closest("tr") : null;
-        if (tr && this.contains(tr)) {
-          this.dispatchEvent(new CustomEvent("contour:toggle", { bubbles: true, composed: true, detail: { row: Array.from(tr.parentElement.children).indexOf(tr) } }));
+        const toggle = e.target && e.target.closest ? e.target.closest(".c-tree-grid__toggle") : null;
+        const tr = e.target && e.target.closest ? e.target.closest("tr[role='row']") : null;
+        if (!tr || !this.contains(tr)) return;
+        const path = tr.dataset.path;
+        if (toggle) {
+          e.preventDefault();
+          const expanded = this._expandedSet();
+          if (expanded.has(path)) expanded.delete(path); else expanded.add(path);
+          this.setAttribute("expanded", JSON.stringify([...expanded]));
+          this.dispatchEvent(new CustomEvent("contour:toggle", { bubbles: true, composed: true, detail: { path, expanded: expanded.has(path) } }));
+        } else {
+          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { path } }));
+        }
+      });
+      this.addEventListener("keydown", (e) => {
+        const tr = e.target && e.target.closest ? e.target.closest("tr[role='row']") : null;
+        if (!tr || !this.contains(tr)) return;
+        const all = rows();
+        const idx = all.indexOf(tr);
+        const path = tr.dataset.path;
+        const hasChildren = tr.getAttribute("aria-expanded") !== null;
+        const expanded = this._expandedSet();
+        if (e.key === "ArrowRight" && hasChildren && !expanded.has(path)) {
+          e.preventDefault();
+          expanded.add(path);
+          this.setAttribute("expanded", JSON.stringify([...expanded]));
+          this.dispatchEvent(new CustomEvent("contour:toggle", { bubbles: true, composed: true, detail: { path, expanded: true } }));
+        } else if (e.key === "ArrowLeft" && hasChildren && expanded.has(path)) {
+          e.preventDefault();
+          expanded.delete(path);
+          this.setAttribute("expanded", JSON.stringify([...expanded]));
+          this.dispatchEvent(new CustomEvent("contour:toggle", { bubbles: true, composed: true, detail: { path, expanded: false } }));
+        } else if (e.key === "ArrowDown") {
+          e.preventDefault();
+          if (all[idx + 1]) try { all[idx + 1].focus(); } catch (err) {}
+        } else if (e.key === "ArrowUp") {
+          e.preventDefault();
+          if (all[idx - 1]) try { all[idx - 1].focus(); } catch (err) {}
+        } else if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          const toggle = tr.querySelector(".c-tree-grid__toggle");
+          if (toggle) toggle.click();
         }
       });
     }

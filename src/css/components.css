@@ -3963,6 +3963,9 @@
   .c-calendar__day { aspect-ratio: 1; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-1); color: var(--color-text); cursor: pointer; font-size: var(--type-xs); }
   .c-calendar__day.is-selected { background: var(--color-primary); color: var(--color-on-primary); }
   .c-calendar__day--empty { border: none; background: transparent; }
+  .c-calendar__header { display: flex; align-items: center; justify-content: space-between; gap: var(--space-xs); margin-block-end: var(--space-xs); }
+  .c-calendar__title { font-weight: 600; font-size: var(--type-sm); }
+  .c-calendar__prev, .c-calendar__next { min-inline-size: 2rem; }
   /* -- Carousel ---------------------------------------------------------- */
   .c-carousel { display: block; position: relative; }
   .c-carousel__track { display: flex; overflow: hidden; gap: var(--space-sm); }
@@ -3973,6 +3976,7 @@
   /* -- Data grid --------------------------------------------------------- */
   .c-data-grid { display: block; overflow: auto; }
   .c-data-grid__table { inline-size: 100%; }
+  .c-data-grid__wrap { max-block-size: 400px; overflow: auto; }
   /* -- Tree grid --------------------------------------------------------- */
   .c-tree-grid { display: block; overflow: auto; }
   .c-tree-grid__table { inline-size: 100%; }

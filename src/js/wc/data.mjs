@@ -2141,7 +2141,18 @@ class ContourLegend extends ContourBase {
       // aria-pressed, and the sheet's existing `.c-legend--interactive` rules
       // (hover, dim when pressed=false) apply.
       const selectable = this.hasAttribute("selectable");
-      const items = remoteData(this, "items");
+      // Slotted content support: authored .c-legend__item children take
+      // precedence over the JSON `items` attribute.
+      const authoredLegendItems = Array.from(this.querySelectorAll(":scope > .c-legend__item"));
+      let items = remoteData(this, "items");
+      if (authoredLegendItems.length) {
+        items = JSON.stringify(authoredLegendItems.map((el) => {
+          const sw = el.querySelector(".c-legend__swatch");
+          const lbl = el.querySelector(".c-legend__label") || el;
+          return { label: lbl ? lbl.textContent.trim() : el.textContent.trim(), color: sw ? sw.style.background || undefined : undefined };
+        }));
+        authoredLegendItems.forEach((el) => el.remove());
+      }
       const title = this.getAttribute("title");
       if (title) {
         const t = this.ensure(".c-legend__title", () => { const el = document.createElement("div"); el.className = "c-legend__title"; return el; });
