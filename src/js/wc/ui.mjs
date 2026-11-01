@@ -1485,6 +1485,7 @@ class ContourHoverCard extends ContourBase {
     render() {
       this.classList.add("c-hover-card");
       if (!this.hasAttribute("role")) this.setAttribute("role", "tooltip");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Hover card");
       if (!this.hasAttribute("popover")) this.setAttribute("popover", "auto");
       if (!this.id) this.id = contourId("hover-card");
       const title = this.getAttribute("title");
