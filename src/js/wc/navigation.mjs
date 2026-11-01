@@ -792,7 +792,7 @@ class ContourFilterBar extends ContourBase {
        if (modesAttr) { try { modes = JSON.parse(modesAttr); } catch (e) { modes = modesAttr.split(",").map((s) => s.trim()); } }
        if (modes || this.hasAttribute("mode")) {
          let bar = this.querySelector(".c-filter-bar__modes");
-         if (!bar) { bar = document.createElement("div"); bar.className = "c-filter-bar__modes"; this.appendChild(bar); }
+         if (!bar) { bar = document.createElement("div"); bar.className = "c-filter-bar__modes"; bar.setAttribute("role", "toolbar"); this.appendChild(bar); }
          bar.innerHTML = "";
          const current = this.getAttribute("mode");
          const list = Array.isArray(modes) ? modes : ["draw", "erase", "select"];
@@ -845,6 +845,17 @@ class ContourFilterBar extends ContourBase {
          const mode = btn.dataset.mode || btn.textContent.trim();
          Array.from(this.querySelectorAll(".c-filter-bar__mode")).forEach((b) => b.setAttribute("aria-pressed", String(b === btn)));
          this.dispatchEvent(new CustomEvent("contour:mode-change", { bubbles: true, composed: true, detail: { mode } }));
+       });
+       this.addEventListener("keydown", (e) => {
+         const btn = e.target && e.target.closest ? e.target.closest(".c-filter-bar__mode") : null;
+         if (!btn || !this.contains(btn)) return;
+         const modes = Array.from(this.querySelectorAll(".c-filter-bar__mode"));
+         const idx = modes.indexOf(btn);
+         let next = -1;
+         if (e.key === "ArrowRight") next = Math.min(modes.length - 1, idx + 1);
+         else if (e.key === "ArrowLeft") next = Math.max(0, idx - 1);
+         if (next >= 0) { e.preventDefault(); try { modes[next].focus(); } catch (err) {} }
+         else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); btn.click(); }
        });
        // text input
        const inp = this.querySelector(".c-filter-bar__input");
