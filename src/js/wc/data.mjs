@@ -1771,7 +1771,12 @@ class ContourPivot extends ContourBase {
       if (this._wiredPivot) return;
       this._wiredPivot = true;
       this.addEventListener("click", (e) => {
-        const td = e.target && e.target.closest ? e.target.closest("td, th") : null;
+        const th = e.target && e.target.closest ? e.target.closest("th") : null;
+        const td = e.target && e.target.closest ? e.target.closest("td") : null;
+        if (th && this.contains(th) && th.parentElement && th.parentElement.parentElement && th.parentElement.parentElement.tagName === "THEAD") {
+          this.dispatchEvent(new CustomEvent("contour:sort", { bubbles: true, composed: true, detail: { column: th.textContent.trim() } }));
+          return;
+        }
         if (td && this.contains(td)) {
           this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { value: td.textContent } }));
         }
