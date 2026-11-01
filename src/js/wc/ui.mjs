@@ -2523,6 +2523,7 @@ class ContourTreeGrid extends ContourBase {
     render() {
       this.classList.add("c-tree-grid");
       const table = this.ensure(".c-tree-grid__table", () => { const el = document.createElement("table"); el.className = "c-table c-tree-grid__table"; el.setAttribute("role", "treegrid"); return el; });
+      table.setAttribute("aria-label", "Tree grid");
       const tbody = this.ensure("tbody", () => { const el = document.createElement("tbody"); return el; });
       if (tbody.parentNode !== table) table.appendChild(tbody);
       const items = this.getAttribute("items");
@@ -2535,6 +2536,7 @@ class ContourTreeGrid extends ContourBase {
         const tr = document.createElement("tr");
         tr.setAttribute("role", "row");
         tr.setAttribute("tabindex", "0");
+        tr.setAttribute("aria-level", String(depth + 1));
         tr.dataset.path = path;
         const hasChildren = !!(node && Array.isArray(node.children) && node.children.length);
         if (hasChildren) {
