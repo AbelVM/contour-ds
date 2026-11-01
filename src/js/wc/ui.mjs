@@ -598,6 +598,7 @@ class ContourMapPopup extends ContourBase {
     static get properties() { return { title: { attribute: "title" }, content: { attribute: "content" } }; }
     render() {
       this.classList.add("c-map-popup");
+      this.setAttribute("role", "dialog");
       if (!this.hasAttribute("popover")) this.setAttribute("popover", "auto");
       if (!this.id) this.id = contourId("map-popup");
       const title = this.getAttribute("title");
@@ -619,6 +620,8 @@ class ContourAnimationControls extends ContourBase {
     static get properties() { return { playing: { attribute: "playing", type: Boolean }, speed: { attribute: "speed" }, progress: { attribute: "progress" }, min: { attribute: "min" }, max: { attribute: "max" } }; }
     render() {
       this.classList.add("c-animation-controls");
+      this.setAttribute("role", "toolbar");
+      this.setAttribute("aria-label", "Animation controls");
       const playBtn = this.ensure(".c-animation-controls__play", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-animation-controls__play"; el.type = "button"; return el; });
       playBtn.textContent = this.hasAttribute("playing") ? "Pause" : "Play";
       playBtn.setAttribute("aria-label", this.hasAttribute("playing") ? "Pause" : "Play");
