@@ -2102,6 +2102,7 @@ class ContourCalendar extends ContourBase {
     render() {
       this.classList.add("c-calendar");
       const grid = this.ensure(".c-calendar__grid", () => { const el = document.createElement("div"); el.className = "c-calendar__grid"; el.setAttribute("role", "grid"); return el; });
+      grid.setAttribute("aria-label", "Calendar");
       grid.innerHTML = "";
       const now = new Date();
       const year = now.getFullYear();
@@ -2119,6 +2120,8 @@ class ContourCalendar extends ContourBase {
         const cell = document.createElement("button");
         cell.className = "c-calendar__day";
         cell.type = "button";
+        cell.setAttribute("role", "gridcell");
+        cell.setAttribute("tabindex", "0");
         cell.textContent = String(d);
         const iso = year + "-" + String(month + 1).padStart(2, "0") + "-" + String(d).padStart(2, "0");
         if (iso === selected) cell.classList.add("is-selected");
@@ -2191,7 +2194,7 @@ class ContourDataGrid extends ContourBase {
     static get properties() { return { columns: { attribute: "columns" }, rows: { attribute: "rows" }, page: { attribute: "page" }, filter: { attribute: "filter" }, "page-size": { attribute: "page-size" } }; }
     render() {
       this.classList.add("c-data-grid");
-      const table = this.ensure(".c-data-grid__table", () => { const el = document.createElement("table"); el.className = "c-table c-data-grid__table"; return el; });
+      const table = this.ensure(".c-data-grid__table", () => { const el = document.createElement("table"); el.className = "c-table c-data-grid__table"; el.setAttribute("role", "grid"); return el; });
       const thead = this.ensure("thead", () => { const el = document.createElement("thead"); return el; });
       const tbody = this.ensure("tbody", () => { const el = document.createElement("tbody"); return el; });
       if (thead.parentNode !== table) table.appendChild(thead);
@@ -2203,6 +2206,7 @@ class ContourDataGrid extends ContourBase {
         const tr = document.createElement("tr");
         parsedCols.forEach((c) => {
           const th = document.createElement("th");
+          th.setAttribute("role", "columnheader");
           th.textContent = typeof c === "string" ? c : (c.label || c.key || "");
           tr.appendChild(th);
         });
@@ -2228,6 +2232,8 @@ class ContourDataGrid extends ContourBase {
         parsedCols.forEach((c) => {
           const key = typeof c === "string" ? c : (c.key || c.label || "");
           const td = document.createElement("td");
+          td.setAttribute("role", "gridcell");
+          td.setAttribute("tabindex", "0");
           td.textContent = r && r[key] != null ? r[key] : "";
           tr.appendChild(td);
         });
@@ -2239,6 +2245,22 @@ class ContourDataGrid extends ContourBase {
       if (this._wiredDataGrid) return;
       this._wiredDataGrid = true;
       let sortCol = -1, sortDir = "asc";
+      this.addEventListener("keydown", (e) => {
+        const cell = e.target && e.target.closest ? e.target.closest("[role='gridcell'], [role='columnheader']") : null;
+        if (!cell || !this.contains(cell)) return;
+        const row = cell.parentElement;
+        const table = this.querySelector(".c-data-grid__table");
+        if (!table) return;
+        const rows = Array.from(table.querySelectorAll("tr"));
+        const ri = rows.indexOf(row);
+        const ci = Array.from(row.children).indexOf(cell);
+        let target = null;
+        if (e.key === "ArrowRight") target = row.children[ci + 1];
+        else if (e.key === "ArrowLeft") target = row.children[ci - 1];
+        else if (e.key === "ArrowDown") target = rows[ri + 1] && rows[ri + 1].children[ci];
+        else if (e.key === "ArrowUp") target = rows[ri - 1] && rows[ri - 1].children[ci];
+        if (target) { e.preventDefault(); try { target.focus(); } catch (err) {} }
+      });
       this.addEventListener("click", (e) => {
         const th = e.target && e.target.closest ? e.target.closest("th") : null;
         if (th && this.contains(th)) {
@@ -2277,7 +2299,7 @@ class ContourTreeGrid extends ContourBase {
     static get properties() { return { items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-tree-grid");
-      const table = this.ensure(".c-tree-grid__table", () => { const el = document.createElement("table"); el.className = "c-table c-tree-grid__table"; return el; });
+      const table = this.ensure(".c-tree-grid__table", () => { const el = document.createElement("table"); el.className = "c-table c-tree-grid__table"; el.setAttribute("role", "treegrid"); return el; });
       const tbody = this.ensure("tbody", () => { const el = document.createElement("tbody"); return el; });
       if (tbody.parentNode !== table) table.appendChild(tbody);
       const items = this.getAttribute("items");
@@ -2286,7 +2308,10 @@ class ContourTreeGrid extends ContourBase {
       tbody.innerHTML = "";
       const renderNode = (node, depth) => {
         const tr = document.createElement("tr");
+        tr.setAttribute("role", "row");
+        tr.setAttribute("tabindex", "0");
         const td = document.createElement("td");
+        td.setAttribute("role", "gridcell");
         td.style.paddingInlineStart = (depth * 1.25) + "rem";
         td.textContent = (node && (node.label || node.text || node.name)) || "";
         tr.appendChild(td);
