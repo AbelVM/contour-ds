@@ -727,6 +727,8 @@ class ContourCatchment extends ContourBase {
     static get properties() { return { label: { attribute: "label" }, area: { attribute: "area" }, center: { attribute: "center" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-catchment");
+      this.setAttribute("role", "img");
+      this.setAttribute("aria-label", "Catchment");
       const label = this.getAttribute("label") || (this._remoteData && this._remoteData.label);
       if (label) {
         const l = this.ensure(".c-catchment__label", () => { const el = document.createElement("span"); el.className = "c-catchment__label"; return el; });
