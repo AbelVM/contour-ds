@@ -2244,7 +2244,10 @@ class ContourCalendar extends ContourBase {
         cell.setAttribute("tabindex", "0");
         cell.textContent = String(d);
         const iso = year + "-" + String(month + 1).padStart(2, "0") + "-" + String(d).padStart(2, "0");
-        if (iso === selected) cell.classList.add("is-selected");
+        if (iso === selected) { cell.classList.add("is-selected"); cell.setAttribute("aria-selected", "true"); }
+        else cell.setAttribute("aria-selected", "false");
+        const todayIso = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0") + "-" + String(now.getDate()).padStart(2, "0");
+        if (iso === todayIso) cell.setAttribute("aria-current", "date");
         cell.dataset.value = iso;
         grid.appendChild(cell);
       }
