@@ -797,7 +797,9 @@ class ContourAnnotation extends ContourBase {
     static get properties() { return { label: { attribute: "label" }, x: { attribute: "x" }, y: { attribute: "y" } }; }
     render() {
       this.classList.add("c-annotation");
+      this.setAttribute("role", "note");
       const label = this.getAttribute("label");
+      if (label) this.setAttribute("aria-label", label);
       if (label) {
         const l = this.ensure(".c-annotation__label", () => { const el = document.createElement("span"); el.className = "c-annotation__label"; return el; });
         l.textContent = label;
