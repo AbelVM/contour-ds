@@ -719,8 +719,14 @@ class ContourDropdown extends ContourBase {
       const btn = this.ensure(".c-dropdown__trigger", () => { const el = document.createElement("button"); el.className = "c-dropdown__trigger c-btn c-btn--sm"; el.type = "button"; return el; });
       btn.textContent = this.getAttribute("label") || "Menu";
       const menu = this.ensure(".c-dropdown__menu", () => { const el = document.createElement("div"); el.className = "c-dropdown__menu c-menu"; el.setAttribute("role", "menu"); el.hidden = true; return el; });
+      // Slotted content: authored .c-menu__item children take precedence over
+      // the JSON `items` attribute.
+      const authoredItems = Array.from(this.querySelectorAll(":scope > .c-menu__item"));
       const items = this.getAttribute("items");
-      if (items) {
+      if (authoredItems.length) {
+        menu.innerHTML = "";
+        authoredItems.forEach((it) => { menu.appendChild(it); });
+      } else if (items) {
         try {
           const parsed = JSON.parse(items);
           menu.innerHTML = "";
