@@ -11526,6 +11526,15 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  <code class="c-kbd">tabs</code> attribute. Consumers who need full widget behaviour
                  should use the light-DOM <code class="c-kbd">contour-*</code> elements.
                </p>
+               <p class="c-section-head__desc">
+                 Async-state contract: 60 components expose <code class="c-kbd">loading</code>,
+                 <code class="c-kbd">error</code>, <code class="c-kbd">empty</code>,
+                 <code class="c-kbd">retry</code> and <code class="c-kbd">skeleton</code> attributes,
+                 rendered through the shared <code class="c-kbd">wireStates</code> /
+                 <code class="c-kbd">renderStates</code> helpers in
+                 <code class="c-kbd">src/js/wc/states.mjs</code>. A component that reads one of
+                 these attributes but does not call <code class="c-kbd">wireStates</code> is a bug.
+               </p>
                <div class="c-table-wrap"><table class="c-table">
                  <caption>Shadow wrapper behaviour parity</caption>
                  <thead><tr><th>Behaviour</th><th>Wrappers</th><th>Parity</th></tr></thead>
