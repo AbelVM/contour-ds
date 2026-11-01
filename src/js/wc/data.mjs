@@ -1068,6 +1068,7 @@ class ContourStreamingChart extends ContourBase {
       this.classList.add("c-streaming-chart");
       this.setAttribute("role", "img");
       this.setAttribute("aria-label", "Streaming chart");
+      if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
       wireStates(this);
       loadRemote(this, "line");
       if (renderStates(this, "streaming-chart")) return;
@@ -1124,7 +1125,7 @@ class ContourStreamingChart extends ContourBase {
       // own 1 s floor so the two cannot disagree.
       const sync = () => {
         const seconds = parseFloat(this.getAttribute("interval") || "");
-        const want = Number.isFinite(seconds) && seconds > 0 && !this.hasAttribute("pause") && this._viewVisible !== false;
+        const want = Number.isFinite(seconds) && seconds > 0 && !this.hasAttribute("pause") && !this._streamPausedByUser && this._viewVisible !== false;
         if (want === this._streamRunning) return;
         this._streamRunning = want;
         if (this._streamTimer !== undefined) { clearInterval(this._streamTimer); this._streamTimer = undefined; }
@@ -1156,6 +1157,18 @@ class ContourStreamingChart extends ContourBase {
       this._wiredStream = true;
       this._streamFrame = 0;
       onDispose(this, () => { if (this._streamTimer !== undefined) { clearInterval(this._streamTimer); this._streamTimer = undefined; } });
+      // Keyboard: Space/Enter toggles pause (BY-08 keyboard contract).
+      // Uses an internal flag so the toggle does not re-enter render.
+      this._streamPausedByUser = false;
+      this.addEventListener("keydown", (e) => {
+        if (e.key === " " || e.key === "Enter") {
+          e.preventDefault();
+          this._streamPausedByUser = !this._streamPausedByUser;
+          if (this._streamPausedByUser) this.setAttribute("data-user-paused", "");
+          else this.removeAttribute("data-user-paused");
+          sync();
+        }
+      });
     }
   }
 define("contour-streaming-chart", ContourStreamingChart);
