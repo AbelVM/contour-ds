@@ -19776,7 +19776,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  <span class="ds-spec__token">.c-annotation</span>
                </div>
                <div class="ds-example" data-generated="wrap"><div class="ds-panel">
-                 <div class="c-annotation"></div>
+                 <contour-annotation label="Note" x="10" y="20"></contour-annotation>
                </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -19789,7 +19789,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-419">&lt;div class="c-annotation"&gt;&lt;/div&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-419">&lt;contour-annotation label="Note" x="10" y="20"&gt;&lt;/contour-annotation&gt;</code></pre>
                       </div>
                     </details></div>
              </div>
@@ -19799,7 +19799,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  <span class="ds-spec__token">.c-avatar-group</span>
                </div>
                <div class="ds-example" data-generated="wrap"><div class="ds-panel">
-                 <div class="c-avatar-group"></div>
+                 <div class="c-avatar-group"><span class="c-avatar">AB</span><span class="c-avatar">CD</span><span class="c-avatar">+3</span></div>
                </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -19812,7 +19812,11 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-420">&lt;div class="c-avatar-group"&gt;&lt;/div&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-420">&lt;div class="c-avatar-group"&gt;
+  &lt;span class="c-avatar"&gt;AB&lt;/span&gt;
+  &lt;span class="c-avatar"&gt;CD&lt;/span&gt;
+  &lt;span class="c-avatar"&gt;+3&lt;/span&gt;
+&lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
              </div>
@@ -19822,7 +19826,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  <span class="ds-spec__token">.c-axis</span>
                </div>
                <div class="ds-example" data-generated="wrap"><div class="ds-panel">
-                 <div class="c-axis"></div>
+                 <contour-axis min="0" max="100" ticks="5"></contour-axis>
                </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -19835,7 +19839,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-421">&lt;div class="c-axis"&gt;&lt;/div&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-421">&lt;contour-axis min="0" max="100" ticks="5"&gt;&lt;/contour-axis&gt;</code></pre>
                       </div>
                     </details></div>
              </div>
@@ -19845,7 +19849,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  <span class="ds-spec__token">.c-badge-overflow</span>
                </div>
                <div class="ds-example" data-generated="wrap"><div class="ds-panel">
-                 <div class="c-badge-overflow"></div>
+                 <contour-badge-overflow count="8" max="3"></contour-badge-overflow>
                </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -19858,7 +19862,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-422">&lt;div class="c-badge-overflow"&gt;&lt;/div&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-422">&lt;contour-badge-overflow count="8" max="3"&gt;&lt;/contour-badge-overflow&gt;</code></pre>
                       </div>
                     </details></div>
              </div>
@@ -19868,7 +19872,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  <span class="ds-spec__token">.c-banner</span>
                </div>
                <div class="ds-example" data-generated="wrap"><div class="ds-panel">
-                 <div class="c-banner"></div>
+                 <div class="c-banner c-banner--info">Banner message</div>
                </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -19881,7 +19885,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-423">&lt;div class="c-banner"&gt;&lt;/div&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-423">&lt;div class="c-banner c-banner--info"&gt;Banner message&lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
              </div>
@@ -19891,7 +19895,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  <span class="ds-spec__token">.c-bivariate-legend</span>
                </div>
                <div class="ds-example" data-generated="wrap"><div class="ds-panel">
-                 <div class="c-bivariate-legend"></div>
+                 <contour-bivariate-legend x-label="X" y-label="Y"></contour-bivariate-legend>
                </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -19904,7 +19908,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-424">&lt;div class="c-bivariate-legend"&gt;&lt;/div&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-424">&lt;contour-bivariate-legend x-label="X" y-label="Y"&gt;&lt;/contour-bivariate-legend&gt;</code></pre>
                       </div>
                     </details></div>
              </div>
@@ -19914,7 +19918,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  <span class="ds-spec__token">.c-brownout</span>
                </div>
                <div class="ds-example" data-generated="wrap"><div class="ds-panel">
-                 <div class="c-brownout"></div>
+                 <contour-brownout level="1"><span>Brownout content</span></contour-brownout>
                </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -19927,7 +19931,9 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-425">&lt;div class="c-brownout"&gt;&lt;/div&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-425">&lt;contour-brownout level="1"&gt;
+  &lt;span&gt;Brownout content&lt;/span&gt;
+&lt;/contour-brownout&gt;</code></pre>
                       </div>
                     </details></div>
              </div>
@@ -19937,7 +19943,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  <span class="ds-spec__token">.c-brush</span>
                </div>
                <div class="ds-example" data-generated="wrap"><div class="ds-panel">
-                 <div class="c-brush"></div>
+                 <contour-brush></contour-brush>
                </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -19950,7 +19956,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-426">&lt;div class="c-brush"&gt;&lt;/div&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-426">&lt;contour-brush&gt;&lt;/contour-brush&gt;</code></pre>
                       </div>
                     </details></div>
              </div>
@@ -19960,7 +19966,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  <span class="ds-spec__token">.c-calendar</span>
                </div>
                <div class="ds-example" data-generated="wrap"><div class="ds-panel">
-                 <div class="c-calendar"></div>
+                 <div class="c-calendar">November 2026</div>
                </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -19973,7 +19979,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-427">&lt;div class="c-calendar"&gt;&lt;/div&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-427">&lt;div class="c-calendar"&gt;November 2026&lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
              </div>
@@ -19983,7 +19989,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  <span class="ds-spec__token">.c-carousel</span>
                </div>
                <div class="ds-example" data-generated="wrap"><div class="ds-panel">
-                 <div class="c-carousel"></div>
+                 <div class="c-carousel"><div class="c-carousel__track"><div class="c-carousel__slide">Slide 1</div></div></div>
                </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -19996,7 +20002,11 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-428">&lt;div class="c-carousel"&gt;&lt;/div&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-428">&lt;div class="c-carousel"&gt;
+  &lt;div class="c-carousel__track"&gt;
+    &lt;div class="c-carousel__slide"&gt;Slide 1&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
              </div>
@@ -20006,7 +20016,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  <span class="ds-spec__token">.c-category</span>
                </div>
                <div class="ds-example" data-generated="wrap"><div class="ds-panel">
-                 <div class="c-category"></div>
+                 <contour-category items="[&quot;A&quot;,&quot;B&quot;,&quot;C&quot;]"></contour-category>
                </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -20019,7 +20029,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-429">&lt;div class="c-category"&gt;&lt;/div&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-429">&lt;contour-category items="[&amp;quot;A&amp;quot;,&amp;quot;B&amp;quot;,&amp;quot;C&amp;quot;]"&gt;&lt;/contour-category&gt;</code></pre>
                       </div>
                     </details></div>
              </div>
@@ -20098,7 +20108,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  <span class="ds-spec__token">.c-data-grid</span>
                </div>
                <div class="ds-example" data-generated="wrap"><div class="ds-panel">
-                 <div class="c-data-grid"></div>
+                 <contour-data-grid columns="[&quot;Name&quot;,&quot;Value&quot;]" rows="[[&quot;Alpha&quot;,&quot;1&quot;],[&quot;Beta&quot;,&quot;2&quot;]]"></contour-data-grid>
                </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -20111,7 +20121,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-433">&lt;div class="c-data-grid"&gt;&lt;/div&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-433">&lt;contour-data-grid columns="[&amp;quot;Name&amp;quot;,&amp;quot;Value&amp;quot;]" rows="[[&amp;quot;Alpha&amp;quot;,&amp;quot;1&amp;quot;],[&amp;quot;Beta&amp;quot;,&amp;quot;2&amp;quot;]]"&gt;&lt;/contour-data-grid&gt;</code></pre>
                       </div>
                     </details></div>
              </div>
@@ -20144,7 +20154,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  <span class="ds-spec__token">.c-date-range</span>
                </div>
                <div class="ds-example" data-generated="wrap"><div class="ds-panel">
-                 <div class="c-date-range"></div>
+                 <contour-date-range start="2026-11-01" end="2026-11-30"></contour-date-range>
                </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -20157,7 +20167,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-435">&lt;div class="c-date-range"&gt;&lt;/div&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-435">&lt;contour-date-range start="2026-11-01" end="2026-11-30"&gt;&lt;/contour-date-range&gt;</code></pre>
                       </div>
                     </details></div>
              </div>
@@ -20167,7 +20177,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  <span class="ds-spec__token">.c-divider</span>
                </div>
                <div class="ds-example" data-generated="wrap"><div class="ds-panel">
-                 <div class="c-divider"></div>
+                 <div class="c-divider" role="separator"></div>
                </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -20180,7 +20190,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-436">&lt;div class="c-divider"&gt;&lt;/div&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-436">&lt;div class="c-divider" role="separator"&gt;&lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
              </div>
@@ -20190,7 +20200,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  <span class="ds-spec__token">.c-donut</span>
                </div>
                <div class="ds-example" data-generated="wrap"><div class="ds-panel">
-                 <div class="c-donut"></div>
+                 <contour-donut value="60" max="100"></contour-donut>
                </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -20203,7 +20213,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-437">&lt;div class="c-donut"&gt;&lt;/div&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-437">&lt;contour-donut value="60" max="100"&gt;&lt;/contour-donut&gt;</code></pre>
                       </div>
                     </details></div>
              </div>
@@ -20236,7 +20246,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  <span class="ds-spec__token">.c-fab</span>
                </div>
                <div class="ds-example" data-generated="wrap"><div class="ds-panel">
-                 <div class="c-fab"></div>
+                 <button class="c-fab c-btn" type="button" aria-label="Add">+</button>
                </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -20249,7 +20259,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-439">&lt;div class="c-fab"&gt;&lt;/div&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-439">&lt;button class="c-fab c-btn" type="button" aria-label="Add"&gt;+&lt;/button&gt;</code></pre>
                       </div>
                     </details></div>
              </div>
@@ -20282,7 +20292,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  <span class="ds-spec__token">.c-gauge</span>
                </div>
                <div class="ds-example" data-generated="wrap"><div class="ds-panel">
-                 <div class="c-gauge"></div>
+                 <contour-gauge value="72" min="0" max="100"></contour-gauge>
                </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -20295,7 +20305,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-441">&lt;div class="c-gauge"&gt;&lt;/div&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-441">&lt;contour-gauge value="72" min="0" max="100"&gt;&lt;/contour-gauge&gt;</code></pre>
                       </div>
                     </details></div>
              </div>
@@ -20329,7 +20339,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  <span class="ds-spec__token">.c-map-popup</span>
                </div>
                <div class="ds-example" data-generated="wrap"><div class="ds-panel">
-                 <div class="c-map-popup"></div>
+                 <contour-map-popup title="Location" content="Popup body."></contour-map-popup>
                </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -20342,7 +20352,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-443">&lt;div class="c-map-popup"&gt;&lt;/div&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-443">&lt;contour-map-popup title="Location" content="Popup body."&gt;&lt;/contour-map-popup&gt;</code></pre>
                       </div>
                     </details></div>
              </div>
@@ -20421,7 +20431,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  <span class="ds-spec__token">.c-pivot</span>
                </div>
                <div class="ds-example" data-generated="wrap"><div class="ds-panel">
-                 <div class="c-pivot"></div>
+                 <div class="c-pivot"><table><thead><tr><th>Row</th><th>Value</th></tr></thead><tbody><tr><td>A</td><td>1</td></tr></tbody></table></div>
                </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -20434,7 +20444,22 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-447">&lt;div class="c-pivot"&gt;&lt;/div&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-447">&lt;div class="c-pivot"&gt;
+  &lt;table&gt;
+    &lt;thead&gt;
+      &lt;tr&gt;
+        &lt;th&gt;Row&lt;/th&gt;
+        &lt;th&gt;Value&lt;/th&gt;
+      &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+      &lt;tr&gt;
+        &lt;td&gt;A&lt;/td&gt;
+        &lt;td&gt;1&lt;/td&gt;
+      &lt;/tr&gt;
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+&lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
              </div>
@@ -20490,7 +20515,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  <span class="ds-spec__token">.c-responsive-content</span>
                </div>
                <div class="ds-example" data-generated="wrap"><div class="ds-panel">
-                 <div class="c-responsive-content"></div>
+                 <div class="c-responsive-content"><p>Responsive content</p></div>
                </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -20503,7 +20528,9 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-450">&lt;div class="c-responsive-content"&gt;&lt;/div&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-450">&lt;div class="c-responsive-content"&gt;
+  &lt;p&gt;Responsive content&lt;/p&gt;
+&lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
              </div>
@@ -20538,7 +20565,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  <span class="ds-spec__token">.c-skeleton-group</span>
                </div>
                <div class="ds-example" data-generated="wrap"><div class="ds-panel">
-                 <div class="c-skeleton-group"></div>
+                 <div class="c-skeleton-group"><div class="c-skeleton"></div><div class="c-skeleton"></div></div>
                </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -20551,7 +20578,10 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-452">&lt;div class="c-skeleton-group"&gt;&lt;/div&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-452">&lt;div class="c-skeleton-group"&gt;
+  &lt;div class="c-skeleton"&gt;&lt;/div&gt;
+  &lt;div class="c-skeleton"&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
              </div>
@@ -20584,7 +20614,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  <span class="ds-spec__token">.c-split-button</span>
                </div>
                <div class="ds-example" data-generated="wrap"><div class="ds-panel">
-                 <div class="c-split-button"></div>
+                 <contour-split-button label="Save" items="[&quot;Save as&quot;,&quot;Export&quot;]"></contour-split-button>
                </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -20597,7 +20627,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-454">&lt;div class="c-split-button"&gt;&lt;/div&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-454">&lt;contour-split-button label="Save" items="[&amp;quot;Save as&amp;quot;,&amp;quot;Export&amp;quot;]"&gt;&lt;/contour-split-button&gt;</code></pre>
                       </div>
                     </details></div>
              </div>
@@ -20607,7 +20637,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  <span class="ds-spec__token">.c-stacked-bar</span>
                </div>
                <div class="ds-example" data-generated="wrap"><div class="ds-panel">
-                 <div class="c-stacked-bar"></div>
+                 <contour-stacked-bar values="[30,50,20]"></contour-stacked-bar>
                </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -20620,7 +20650,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-455">&lt;div class="c-stacked-bar"&gt;&lt;/div&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-455">&lt;contour-stacked-bar values="[30,50,20]"&gt;&lt;/contour-stacked-bar&gt;</code></pre>
                       </div>
                     </details></div>
              </div>
@@ -20630,7 +20660,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  <span class="ds-spec__token">.c-status-light</span>
                </div>
                <div class="ds-example" data-generated="wrap"><div class="ds-panel">
-                 <div class="c-status-light"></div>
+                 <span class="c-status-light c-status-light--success" role="status" aria-label="OK"></span>
                </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -20643,7 +20673,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-456">&lt;div class="c-status-light"&gt;&lt;/div&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-456">&lt;span class="c-status-light c-status-light--success" role="status" aria-label="OK"&gt;&lt;/span&gt;</code></pre>
                       </div>
                     </details></div>
              </div>
@@ -20653,7 +20683,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  <span class="ds-spec__token">.c-stepper</span>
                </div>
                <div class="ds-example" data-generated="wrap"><div class="ds-panel">
-                 <div class="c-stepper"></div>
+                 <contour-stepper steps="[&quot;Step 1&quot;,&quot;Step 2&quot;,&quot;Step 3&quot;]" current="1"></contour-stepper>
                </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -20666,7 +20696,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-457">&lt;div class="c-stepper"&gt;&lt;/div&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-457">&lt;contour-stepper steps="[&amp;quot;Step 1&amp;quot;,&amp;quot;Step 2&amp;quot;,&amp;quot;Step 3&amp;quot;]" current="1"&gt;&lt;/contour-stepper&gt;</code></pre>
                       </div>
                     </details></div>
              </div>
@@ -20699,7 +20729,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  <span class="ds-spec__token">.c-style-switcher</span>
                </div>
                <div class="ds-example" data-generated="wrap"><div class="ds-panel">
-                 <div class="c-style-switcher"></div>
+                 <contour-style-switcher options="[&quot;light&quot;,&quot;dark&quot;]" value="light"></contour-style-switcher>
                </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -20712,7 +20742,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-459">&lt;div class="c-style-switcher"&gt;&lt;/div&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-459">&lt;contour-style-switcher options="[&amp;quot;light&amp;quot;,&amp;quot;dark&amp;quot;]" value="light"&gt;&lt;/contour-style-switcher&gt;</code></pre>
                       </div>
                     </details></div>
              </div>
@@ -20722,7 +20752,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  <span class="ds-spec__token">.c-swatch</span>
                </div>
                <div class="ds-example" data-generated="wrap"><div class="ds-panel">
-                 <div class="c-swatch"></div>
+                 <span class="c-swatch" style="background: var(--color-primary)"></span>
                </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -20735,7 +20765,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-460">&lt;div class="c-swatch"&gt;&lt;/div&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-460">&lt;span class="c-swatch" style="background: var(--color-primary)"&gt;&lt;/span&gt;</code></pre>
                       </div>
                     </details></div>
              </div>
@@ -20791,7 +20821,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  <span class="ds-spec__token">.c-time-series</span>
                </div>
                <div class="ds-example" data-generated="wrap"><div class="ds-panel">
-                 <div class="c-time-series"></div>
+                 <contour-time-series data="[1,2,3,4,5]"></contour-time-series>
                </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -20804,7 +20834,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-463">&lt;div class="c-time-series"&gt;&lt;/div&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-463">&lt;contour-time-series data="[1,2,3,4,5]"&gt;&lt;/contour-time-series&gt;</code></pre>
                       </div>
                     </details></div>
              </div>
@@ -20837,7 +20867,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  <span class="ds-spec__token">.c-tree-grid</span>
                </div>
                <div class="ds-example" data-generated="wrap"><div class="ds-panel">
-                 <div class="c-tree-grid"></div>
+                 <contour-tree-grid rows="[{&quot;name&quot;:&quot;Root&quot;,&quot;children&quot;:[{&quot;name&quot;:&quot;Child&quot;}]}]"></contour-tree-grid>
                </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -20850,7 +20880,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-465">&lt;div class="c-tree-grid"&gt;&lt;/div&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-465">&lt;contour-tree-grid rows="[{&amp;quot;name&amp;quot;:&amp;quot;Root&amp;quot;,&amp;quot;children&amp;quot;:[{&amp;quot;name&amp;quot;:&amp;quot;Child&amp;quot;}]}]"&gt;&lt;/contour-tree-grid&gt;</code></pre>
                       </div>
                     </details></div>
              </div>
@@ -20883,7 +20913,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  <span class="ds-spec__token">.c-widget-state</span>
                </div>
                <div class="ds-example" data-generated="wrap"><div class="ds-panel">
-                 <div class="c-widget-state"></div>
+                 <contour-widget-state state="loading"></contour-widget-state>
                </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -20896,7 +20926,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-467">&lt;div class="c-widget-state"&gt;&lt;/div&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-467">&lt;contour-widget-state state="loading"&gt;&lt;/contour-widget-state&gt;</code></pre>
                       </div>
                     </details></div>
              </div>
