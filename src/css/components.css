@@ -1022,6 +1022,15 @@
     -webkit-mask-image: linear-gradient(to bottom, transparent, #000 1rem, #000 calc(100% - 1rem), transparent);
   }
 
+  /* BY-26: scroll-driven edge affordance (progressive enhancement). */
+  @supports (animation-timeline: scroll()) {
+    .c-scroll-area::before, .c-scroll-area::after { content: ""; position: sticky; left: 0; right: 0; block-size: 1rem; pointer-events: none; z-index: 1; }
+    .c-scroll-area::before { top: 0; background: linear-gradient(to bottom, var(--color-surface-0), transparent); animation: c-sa-t linear both; animation-timeline: scroll(self); animation-range: 0% 10%; }
+    .c-scroll-area::after { bottom: 0; background: linear-gradient(to top, var(--color-surface-0), transparent); animation: c-sa-b linear both; animation-timeline: scroll(self); animation-range: 90% 100%; }
+  }
+  @keyframes c-sa-t { from { opacity: 1; } to { opacity: 0; } }
+  @keyframes c-sa-b { from { opacity: 1; } to { opacity: 0; } }
+
   .c-dot {
     contain: layout;
     --dot-color: var(--color-text-subtle);
