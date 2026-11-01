@@ -2973,6 +2973,8 @@ class ContourChartGrid extends ContourBase {
     static get properties() { return { title: { attribute: "title" }, series: { attribute: "series" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-chart-grid");
+      this.setAttribute("role", "group");
+      this.setAttribute("aria-label", "Chart grid");
       wireStates(this);
       loadRemote(this, "series");
       if (renderStates(this, "chart-grid")) return;
@@ -2991,6 +2993,8 @@ class ContourContourPlot extends ContourBase {
     static get properties() { return { axis: { attribute: "axis" }, label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-contour-plot");
+      this.setAttribute("role", "img");
+      this.setAttribute("aria-label", "Contour plot");
       const axis = this.getAttribute("axis");
       if (axis) {
         let svg = this.querySelector("svg");
