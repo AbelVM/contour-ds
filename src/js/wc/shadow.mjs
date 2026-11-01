@@ -76,6 +76,10 @@ import { define, MODS, REGISTERED, CONTOUR_EVENTS, contourId } from './core.mjs'
       this._shadowBase = root.firstElementChild ? root.firstElementChild.className : "";
     }
     // Subclasses with behaviour beyond the template override this.
+    // Lifecycle note: listeners are attached to nodes inside the shadow root
+    // (root-owned), not to the host, so they are collected when the root is
+    // discarded on disconnect. No host-level disposers are required; the
+    // root-owner invariant is what keeps this leak-free (R11-08).
     enhance(root) {
       if (!root) root = this.shadowRoot;
       if (!root) return;
