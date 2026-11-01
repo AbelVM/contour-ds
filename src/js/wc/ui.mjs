@@ -1644,8 +1644,14 @@ class ContourNotificationCenter extends ContourBase {
         badge.textContent = count;
       } else if (badge) { badge.remove(); }
       const panel = this.ensure(".c-notification-center__panel", () => { const el = document.createElement("div"); el.className = "c-notification-center__panel"; el.hidden = true; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", "Notifications"); return el; });
+      // Slotted content: authored .c-notification-center__item children take
+      // precedence over the JSON `items` attribute.
+      const authoredItems = Array.from(this.querySelectorAll(":scope > .c-notification-center__item"));
       const items = this.getAttribute("items");
-      if (items) {
+      if (authoredItems.length) {
+        panel.innerHTML = "";
+        authoredItems.forEach((it) => { panel.appendChild(it); });
+      } else if (items) {
         try {
           const parsed = JSON.parse(items);
           panel.innerHTML = "";
