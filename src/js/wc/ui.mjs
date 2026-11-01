@@ -1373,6 +1373,8 @@ class ContourTimePicker extends ContourBase {
     static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-time-picker");
+      this.setAttribute("role", "group");
+      this.setAttribute("aria-label", "Time picker");
       const label = this.getAttribute("label");
       if (label) {
         const l = this.ensure(".c-time-picker__label", () => { const el = document.createElement("label"); el.className = "c-time-picker__label"; return el; });
