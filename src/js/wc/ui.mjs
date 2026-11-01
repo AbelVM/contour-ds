@@ -1401,6 +1401,8 @@ class ContourColorPicker extends ContourBase {
     static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-color-picker");
+      this.setAttribute("role", "group");
+      this.setAttribute("aria-label", "Color picker");
       const label = this.getAttribute("label");
       if (label) {
         const l = this.ensure(".c-color-picker__label", () => { const el = document.createElement("label"); el.className = "c-color-picker__label"; return el; });
