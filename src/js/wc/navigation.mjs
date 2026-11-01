@@ -877,6 +877,8 @@ class ContourFilterBar extends ContourBase {
     static get properties() { return { placeholder: { attribute: "placeholder" }, items: { attribute: "items" }, recent: { attribute: "recent" }, empty: { attribute: "empty" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-command");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "dialog");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Command palette");
       if (!this.hasAttribute("popover")) this.setAttribute("popover", "auto");
       wireStates(this);
       loadRemote(this, "items");
