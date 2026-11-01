@@ -178,6 +178,8 @@ class ContourLink extends ContourBase {
         const a = document.createElement("a");
         a.href = href;
         a.textContent = label;
+        const ariaLabel = this.getAttribute("aria-label");
+        if (ariaLabel) a.setAttribute("aria-label", ariaLabel);
         this.appendChild(a);
       }
     }
@@ -848,6 +850,8 @@ class ContourAnchor extends ContourBase {
         const a = document.createElement("a");
         a.href = href;
         a.textContent = label;
+        const ariaLabel = this.getAttribute("aria-label");
+        if (ariaLabel) a.setAttribute("aria-label", ariaLabel);
         this.appendChild(a);
       }
     }

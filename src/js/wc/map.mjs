@@ -138,13 +138,14 @@ class ContourCoordinate extends ContourBase {
         // simple DMS conversion assuming decimal degrees "lat,lon"
         const parts = String(value).split(/[,\s]+/).map(Number);
         if (parts.length >= 2 && Number.isFinite(parts[0]) && Number.isFinite(parts[1])) {
-          const toDMS = (d) => {
+          const toDMS = (d, axis) => {
             const deg = Math.floor(Math.abs(d));
             const min = Math.floor((Math.abs(d) - deg) * 60);
             const sec = (((Math.abs(d) - deg) * 60) - min) * 60;
-            return deg + "°" + min + "'" + sec.toFixed(1) + '"' + (d < 0 ? "S" : "N");
+            const hemi = axis === "lat" ? (d < 0 ? "S" : "N") : (d < 0 ? "W" : "E");
+            return deg + "°" + min + "'" + sec.toFixed(1) + '"' + hemi;
           };
-          text = toDMS(parts[0]) + " " + toDMS(parts[1]);
+          text = toDMS(parts[0], "lat") + " " + toDMS(parts[1], "lon");
         }
       } else if (format === "web-mercator") {
         const parts = String(value).split(/[,\s]+/).map(Number);
