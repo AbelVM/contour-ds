@@ -726,9 +726,27 @@ class ContourDropdown extends ContourBase {
       const menu = () => this.querySelector(".c-dropdown__menu");
       this.addEventListener("click", (e) => {
         const b = btn();
+        const m = menu();
+        // Item selection.
+        const item = e.target && e.target.closest ? e.target.closest(".c-menu__item") : null;
+        if (item && m && m.contains(item) && !m.hidden) {
+          const idx = Array.from(m.querySelectorAll(".c-menu__item")).indexOf(item);
+          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index: idx, value: item.textContent } }));
+          m.hidden = true;
+          if (b) { b.setAttribute("aria-expanded", "false"); try { b.focus(); } catch (err) {} }
+          return;
+        }
         if (e.target === b || (b && b.contains(e.target))) {
-          const m = menu();
-          if (m) { m.hidden = !m.hidden; b.setAttribute("aria-expanded", String(!m.hidden)); if (!m.hidden) { b.setAttribute("aria-controls", m.id || ""); if (!m.id) m.id = this.id + "-menu"; b.setAttribute("aria-controls", m.id); } }
+          if (m) {
+            m.hidden = !m.hidden;
+            b.setAttribute("aria-expanded", String(!m.hidden));
+            if (!m.hidden) {
+              if (!m.id) m.id = (this.id || contourId("dd")) + "-menu";
+              b.setAttribute("aria-controls", m.id);
+              const first = m.querySelector(".c-menu__item");
+              if (first) try { first.focus(); } catch (err) {}
+            }
+          }
         }
       });
       const docClick = (e) => {
@@ -740,7 +758,16 @@ class ContourDropdown extends ContourBase {
       onDispose(this, () => document.removeEventListener("click", docClick));
       const keyHandler = (e) => {
         const m = menu(); const b = btn();
-        if (e.key === "Escape" && m && !m.hidden) { e.preventDefault(); m.hidden = true; if (b) { b.setAttribute("aria-expanded", "false"); try { b.focus(); } catch (err) {} } }
+        if (e.key === "Escape" && m && !m.hidden) { e.preventDefault(); m.hidden = true; if (b) { b.setAttribute("aria-expanded", "false"); try { b.focus(); } catch (err) {} } return; }
+        if (!m || m.hidden) return;
+        const items = Array.from(m.querySelectorAll(".c-menu__item"));
+        const active = document.activeElement;
+        const idx = items.indexOf(active);
+        if (e.key === "ArrowDown") { e.preventDefault(); const next = items[Math.min(items.length - 1, idx + 1)] || items[0]; if (next) try { next.focus(); } catch (err) {} }
+        else if (e.key === "ArrowUp") { e.preventDefault(); const prev = items[Math.max(0, idx - 1)] || items[items.length - 1]; if (prev) try { prev.focus(); } catch (err) {} }
+        else if (e.key === "Enter" || e.key === " ") {
+          if (active && items.includes(active)) { e.preventDefault(); active.click(); }
+        }
       };
       document.addEventListener("keydown", keyHandler);
       onDispose(this, () => document.removeEventListener("keydown", keyHandler));
@@ -1862,6 +1889,9 @@ class ContourTagsInput extends ContourBase {
     enhance() {
       if (this._wiredTagsInput) return;
       this._wiredTagsInput = true;
+      let live = this.querySelector(".c-tags-input__live");
+      if (!live) { live = document.createElement("span"); live.className = "c-tags-input__live visually-hidden"; live.setAttribute("aria-live", "polite"); live.setAttribute("aria-atomic", "true"); this.appendChild(live); }
+      const announce = (msg) => { if (live) live.textContent = msg; };
       this.addEventListener("keydown", (e) => {
         const input = this.querySelector(".c-tags-input__input");
         if (!input) return;
@@ -1875,6 +1905,7 @@ class ContourTagsInput extends ContourBase {
             if (!tags.includes(v)) tags.push(v);
             this.setAttribute("value", JSON.stringify(tags));
             input.value = "";
+            announce("Added " + v);
             this.dispatchEvent(new CustomEvent("contour:add", { bubbles: true, composed: true, detail: { value: v } }));
           }
         } else if (e.key === "Backspace" && e.target === input && input.value === "") {
@@ -1884,6 +1915,7 @@ class ContourTagsInput extends ContourBase {
           if (tags.length) {
             const removed = tags.pop();
             this.setAttribute("value", JSON.stringify(tags));
+            announce("Removed " + removed);
             this.dispatchEvent(new CustomEvent("contour:remove", { bubbles: true, composed: true, detail: { value: removed } }));
           }
         }
@@ -1897,6 +1929,7 @@ class ContourTagsInput extends ContourBase {
           if (!Array.isArray(tags)) tags = [];
           const next = tags.filter((t) => t !== val);
           this.setAttribute("value", JSON.stringify(next));
+          announce("Removed " + val);
           this.dispatchEvent(new CustomEvent("contour:remove", { bubbles: true, composed: true, detail: { value: val } }));
         }
       });
@@ -1935,14 +1968,75 @@ class ContourSortableList extends ContourBase {
     enhance() {
       if (this._wiredSortableList) return;
       this._wiredSortableList = true;
+      const list = () => this.querySelector(".c-sortable-list__list");
+      // Live region for position announcements.
+      let live = this.querySelector(".c-sortable-list__live");
+      if (!live) { live = document.createElement("span"); live.className = "c-sortable-list__live visually-hidden"; live.setAttribute("aria-live", "polite"); live.setAttribute("aria-atomic", "true"); this.appendChild(live); }
+      const announce = (msg) => { if (live) live.textContent = msg; };
+      const index = (li) => Array.from(list().children).indexOf(li);
+      // Pointer drag reorder.
+      let dragFrom = null;
+      this.addEventListener("dragstart", (e) => {
+        const li = e.target && e.target.closest ? e.target.closest(".c-sortable-list__item") : null;
+        if (!li || !this.contains(li)) return;
+        dragFrom = index(li);
+        if (e.dataTransfer) { e.dataTransfer.effectAllowed = "move"; try { e.dataTransfer.setData("text/plain", String(dragFrom)); } catch (err) {} }
+        li.classList.add("is-dragging");
+      });
+      this.addEventListener("dragover", (e) => {
+        const li = e.target && e.target.closest ? e.target.closest(".c-sortable-list__item") : null;
+        if (!li || !this.contains(li) || dragFrom === null) return;
+        e.preventDefault();
+        if (e.dataTransfer) e.dataTransfer.dropEffect = "move";
+      });
+      this.addEventListener("drop", (e) => {
+        const li = e.target && e.target.closest ? e.target.closest(".c-sortable-list__item") : null;
+        if (!li || !this.contains(li) || dragFrom === null) return;
+        e.preventDefault();
+        const to = index(li);
+        const l = list();
+        const fromLi = l.children[dragFrom];
+        if (fromLi && dragFrom !== to) {
+          if (dragFrom < to) l.insertBefore(fromLi, l.children[to + 1] || null);
+          else l.insertBefore(fromLi, l.children[to]);
+          const item = fromLi.querySelector(".c-sortable-list__label");
+          announce((item ? item.textContent : "Item") + " moved to position " + (to + 1));
+          this.dispatchEvent(new CustomEvent("contour:reorder", { bubbles: true, composed: true, detail: { from: dragFrom, to } }));
+        }
+        dragFrom = null;
+        Array.from(l.children).forEach((n) => n.classList.remove("is-dragging"));
+      });
+      this.addEventListener("dragend", () => {
+        dragFrom = null;
+        const l = list();
+        if (l) Array.from(l.children).forEach((n) => n.classList.remove("is-dragging"));
+      });
+      // Keyboard reorder.
       this.addEventListener("keydown", (e) => {
         const handle = e.target && e.target.closest ? e.target.closest(".c-sortable-list__handle") : null;
         if (!handle) return;
         const li = handle.closest(".c-sortable-list__item");
         if (!li) return;
-        const list = this.querySelector(".c-sortable-list__list");
-        if (e.key === "ArrowUp" && li.previousElementSibling) { e.preventDefault(); list.insertBefore(li, li.previousElementSibling); this.dispatchEvent(new CustomEvent("contour:move", { bubbles: true, composed: true, detail: { direction: "up" } })); }
-        if (e.key === "ArrowDown" && li.nextElementSibling) { e.preventDefault(); list.insertBefore(li.nextElementSibling, li); this.dispatchEvent(new CustomEvent("contour:move", { bubbles: true, composed: true, detail: { direction: "down" } })); }
+        const l = list();
+        const from = index(li);
+        if (e.key === "ArrowUp" && li.previousElementSibling) {
+          e.preventDefault();
+          l.insertBefore(li, li.previousElementSibling);
+          const to = index(li);
+          const label = li.querySelector(".c-sortable-list__label");
+          announce((label ? label.textContent : "Item") + " moved to position " + (to + 1));
+          this.dispatchEvent(new CustomEvent("contour:move", { bubbles: true, composed: true, detail: { direction: "up", from, to } }));
+          this.dispatchEvent(new CustomEvent("contour:reorder", { bubbles: true, composed: true, detail: { from, to } }));
+        }
+        if (e.key === "ArrowDown" && li.nextElementSibling) {
+          e.preventDefault();
+          l.insertBefore(li.nextElementSibling, li);
+          const to = index(li);
+          const label = li.querySelector(".c-sortable-list__label");
+          announce((label ? label.textContent : "Item") + " moved to position " + (to + 1));
+          this.dispatchEvent(new CustomEvent("contour:move", { bubbles: true, composed: true, detail: { direction: "down", from, to } }));
+          this.dispatchEvent(new CustomEvent("contour:reorder", { bubbles: true, composed: true, detail: { from, to } }));
+        }
       });
     }
   }
@@ -2014,8 +2108,22 @@ class ContourCalendar extends ContourBase {
       this.addEventListener("click", (e) => {
         const cell = e.target && e.target.closest ? e.target.closest(".c-calendar__day") : null;
         if (cell && this.contains(cell) && cell.dataset.value) {
+          this.setAttribute("value", cell.dataset.value);
           this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { value: cell.dataset.value } }));
         }
+      });
+      this.addEventListener("keydown", (e) => {
+        const cell = e.target && e.target.closest ? e.target.closest(".c-calendar__day") : null;
+        if (!cell || !this.contains(cell)) return;
+        const cells = Array.from(this.querySelectorAll(".c-calendar__day:not(.c-calendar__day--empty)"));
+        const idx = cells.indexOf(cell);
+        let next = null;
+        if (e.key === "ArrowRight") next = cells[idx + 1];
+        else if (e.key === "ArrowLeft") next = cells[idx - 1];
+        else if (e.key === "ArrowDown") next = cells[idx + 7];
+        else if (e.key === "ArrowUp") next = cells[idx - 7];
+        else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); cell.click(); return; }
+        if (next) { e.preventDefault(); try { next.focus(); } catch (err) {} }
       });
     }
   }
@@ -2092,6 +2200,17 @@ class ContourDataGrid extends ContourBase {
       });
       if (table.parentNode !== this) this.appendChild(table);
     }
+    enhance() {
+      if (this._wiredDataGrid) return;
+      this._wiredDataGrid = true;
+      this.addEventListener("click", (e) => {
+        const th = e.target && e.target.closest ? e.target.closest("th") : null;
+        if (th && this.contains(th)) {
+          const idx = Array.from(th.parentElement.children).indexOf(th);
+          this.dispatchEvent(new CustomEvent("contour:sort", { bubbles: true, composed: true, detail: { column: idx, direction: "asc" } }));
+        }
+      });
+    }
   }
   define("contour-data-grid", ContourDataGrid);
 
@@ -2118,6 +2237,16 @@ class ContourTreeGrid extends ContourBase {
       };
       parsed.forEach((n) => renderNode(n, 0));
       if (table.parentNode !== this) this.appendChild(table);
+    }
+    enhance() {
+      if (this._wiredTreeGrid) return;
+      this._wiredTreeGrid = true;
+      this.addEventListener("click", (e) => {
+        const tr = e.target && e.target.closest ? e.target.closest("tr") : null;
+        if (tr && this.contains(tr)) {
+          this.dispatchEvent(new CustomEvent("contour:toggle", { bubbles: true, composed: true, detail: { row: Array.from(tr.parentElement.children).indexOf(tr) } }));
+        }
+      });
     }
   }
   define("contour-tree-grid", ContourTreeGrid);

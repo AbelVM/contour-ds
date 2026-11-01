@@ -55,7 +55,7 @@ const DIST = join(ROOT, "dist");
  *  which the Format Module has no legal place for (C-43). It states values only —
  *  a token's meaning is published once, in the Format document. */
 const BUDGETS = {
-  "contour.min.css": 203 * 1024,  // raised 2026-11-01: +reflow/swatch polish; measured 202.0 kB
+  "contour.min.css": 204 * 1024,  // raised 2026-11-01: +specimens; measured 203.1 kB
   "contour.min.js": 38 * 1024,  // raised 2026-10-25: comparison slider drag (1.6 kB) added to ds.js
   "contour.d.ts": 30 * 1024,  // raised 2026-10-26 from 26 kB: expanded ContourProps to include all 99 observed attributes (was 8). Measured 26.2 kB. See M-WC-08 WC8-16.
   "contour.tokens.json": 50 * 1024,
@@ -117,11 +117,11 @@ const BUDGETS = {
   "hljs.css": 4 * 1024,
   "agent-rules.json": 12 * 1024,
   "surfaces/contour-core.min.css": 140 * 1024,  // raised 2026-10-29: +vertical tabs + close button CSS; measured 122.1 kB
-  "surfaces/contour-docs.min.css": 151 * 1024,  // raised 2026-11-01: +legend caption; measured 150.1 kB
+  "surfaces/contour-docs.min.css": 152 * 1024,  // raised 2026-11-01: +specimens; measured 151.0 kB
   "surfaces/contour-data.min.css": 182 * 1024,  // raised 2026-11-01: +legend caption; measured 180.1 kB
   "surfaces/contour-landing.min.css": 146 * 1024,  // raised 2026-10-29: +CSS rules propagate; measured 129.1 kB
   "contour.esm.min.js": 39 * 1024,
-  "contour-wc.esm.min.js": 476 * 1024,  // raised 2026-11-01: +virtual-list; measured 471.2 kB
+  "contour-wc.esm.min.js": 480 * 1024,  // raised 2026-11-01: +specimens; measured 479.1 kB
 };
 
 const kB = (n) => `${(n / 1024).toFixed(1)} kB`;

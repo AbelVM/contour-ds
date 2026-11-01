@@ -825,6 +825,7 @@
     cursor: pointer;
     border-radius: var(--radius-xs);
     padding: 0.25rem 0.4rem;
+    min-block-size: 1.5rem;
     transition:
       opacity var(--dur-fast) var(--ease-standard),
       background-color var(--dur-fast) var(--ease-standard);
@@ -1568,12 +1569,23 @@
      position: absolute;
      inset-block: 0;
      inset-inline-start: var(--comparison-pos, 50%);
-     inline-size: 2px;
-     background: var(--color-primary);
+     inline-size: 1.5rem;
+     transform: translateX(-50%);
+     background: transparent;
      cursor: col-resize;
      touch-action: none;
      z-index: 1;
      pointer-events: auto;
+   }
+   .c-comparison__divider::after {
+     content: "";
+     position: absolute;
+     inset-block: 0;
+     inset-inline-start: 50%;
+     inline-size: 2px;
+     transform: translateX(-50%);
+     background: var(--color-primary);
+     pointer-events: none;
    }
 
    .c-comparison__divider::before {

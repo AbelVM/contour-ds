@@ -713,6 +713,8 @@ const series = this.getAttribute("series");
                     path.style.setProperty("--c", color);
                     path.setAttribute("d", sl.path);
                     path.setAttribute("title", String(s.values[si]));
+                    path.setAttribute("aria-label", "Series " + (i + 1) + ": " + String(s.values[si]));
+                    path.setAttribute("role", "img");
                     svg.appendChild(path);
                   });
                  plot.appendChild(svg);
@@ -731,7 +733,7 @@ const series = this.getAttribute("series");
                     rect.setAttribute("width", r.width);
                      rect.setAttribute("height", r.height);
                       rect.setAttribute("title", String(s.values[ri]));
-                      rect.setAttribute("aria-label", String(s.values[ri]));
+                      rect.setAttribute("aria-label", "Series " + (i + 1) + ": " + String(s.values[ri]));
                       rect.setAttribute("tabindex", "0");
                      rect.setAttribute("role", "button");
                      rect.dataset.index = String(ri);
@@ -763,7 +765,7 @@ const series = this.getAttribute("series");
                    circle.setAttribute("tabindex", pi === 0 ? "0" : "-1");
                    circle.setAttribute("role", "button");
                     circle.setAttribute("title", String(s.values[pi]));
-                    circle.setAttribute("aria-label", String(s.values[pi]));
+                    circle.setAttribute("aria-label", "Series " + (i + 1) + ": " + String(s.values[pi]));
                    svg.appendChild(circle);
                  });
                  plot.appendChild(svg);
@@ -1036,6 +1038,7 @@ class ContourComparison extends ContourBase {
         setPos(pct);
       };
       const onUp = () => { dragging = false; window.removeEventListener("mousemove", onMove); window.removeEventListener("mouseup", onUp); };
+      onDispose(this, () => { dragging = false; window.removeEventListener("mousemove", onMove); window.removeEventListener("mouseup", onUp); });
       this.addEventListener("mousedown", (e) => {
         const d = divider();
         if (!d || !d.contains(e.target)) return;
@@ -1764,7 +1767,16 @@ class ContourPivot extends ContourBase {
       this.appendChild(table);
       if (!data.length && !rows.length) renderEmpty(this, "pivot");
     }
-    enhance() {}
+    enhance() {
+      if (this._wiredPivot) return;
+      this._wiredPivot = true;
+      this.addEventListener("click", (e) => {
+        const td = e.target && e.target.closest ? e.target.closest("td, th") : null;
+        if (td && this.contains(td)) {
+          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { value: td.textContent } }));
+        }
+      });
+    }
   }
 define("contour-pivot", ContourPivot);
 class ContourWidgetState extends ContourBase {
