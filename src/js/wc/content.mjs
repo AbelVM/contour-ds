@@ -262,6 +262,7 @@ class ContourDiff extends ContourBase {
         const el = document.createElement("div");
         el.className = kind ? `c-diff__line c-diff__line--${kind}` : "c-diff__line";
         el.setAttribute("role", "listitem");
+        el.setAttribute("tabindex", "0");
         const s = document.createElement("span");
         s.className = "c-diff__sign";
         s.textContent = sign;
@@ -284,6 +285,14 @@ class ContourDiff extends ContourBase {
           const kind = line.classList.contains("c-diff__line--add") ? "add" : line.classList.contains("c-diff__line--del") ? "del" : "context";
           const text = line.querySelector("span:last-child")?.textContent || "";
           this.dispatchEvent(new CustomEvent("contour:diff-activate", { bubbles: true, composed: true, detail: { kind, text } }));
+        }
+      });
+      this.addEventListener("keydown", (e) => {
+        const line = e.target && e.target.closest ? e.target.closest(".c-diff__line") : null;
+        if (!line || !this.contains(line)) return;
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          line.click();
         }
       });
     }
