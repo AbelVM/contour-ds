@@ -1587,6 +1587,8 @@ class ContourNotificationCenter extends ContourBase {
           parsed.forEach((it) => {
             const row = document.createElement("div");
             row.className = "c-notification-center__item";
+            row.setAttribute("tabindex", "0");
+            row.setAttribute("role", "option");
             row.textContent = typeof it === "string" ? it : (it.text || it.title || "");
             panel.appendChild(row);
           });
@@ -1613,7 +1615,14 @@ class ContourNotificationCenter extends ContourBase {
       const keyHandler = (e) => {
         const panel = this.querySelector(".c-notification-center__panel");
         const btn = this.querySelector(".c-notification-center__trigger");
-        if (e.key === "Escape" && panel && !panel.hidden) { panel.hidden = true; if (btn) { btn.setAttribute("aria-expanded", "false"); try { btn.focus(); } catch (err) {} } }
+        if (e.key === "Escape" && panel && !panel.hidden) { panel.hidden = true; if (btn) { btn.setAttribute("aria-expanded", "false"); try { btn.focus(); } catch (err) {} } return; }
+        if (!panel || panel.hidden) return;
+        const items = Array.from(panel.querySelectorAll(".c-notification-center__item"));
+        if (!items.length) return;
+        const active = document.activeElement;
+        const idx = items.indexOf(active);
+        if (e.key === "ArrowDown") { e.preventDefault(); const next = items[Math.min(items.length - 1, idx + 1)] || items[0]; if (next) try { next.focus(); } catch (err) {} }
+        else if (e.key === "ArrowUp") { e.preventDefault(); const prev = items[Math.max(0, idx - 1)] || items[items.length - 1]; if (prev) try { prev.focus(); } catch (err) {} }
       };
       document.addEventListener("keydown", keyHandler);
       onDispose(this, () => document.removeEventListener("keydown", keyHandler));
