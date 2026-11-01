@@ -2009,7 +2009,7 @@ class ContourTagsInput extends ContourBase {
     static get properties() { return { value: { attribute: "value" }, placeholder: { attribute: "placeholder" } }; }
     render() {
       this.classList.add("c-tags-input");
-      const input = this.ensure(".c-tags-input__input", () => { const el = document.createElement("input"); el.className = "c-input c-tags-input__input"; el.type = "text"; return el; });
+      const input = this.ensure(".c-tags-input__input", () => { const el = document.createElement("input"); el.className = "c-input c-tags-input__input"; el.type = "text"; el.setAttribute("role", "combobox"); el.setAttribute("aria-autocomplete", "list"); el.setAttribute("aria-label", "Add tag"); return el; });
       input.placeholder = this.getAttribute("placeholder") || "Add tag…";
       const tags = this.getAttribute("value");
       let parsed = [];
