@@ -159,6 +159,8 @@ class ContourTable extends ContourBase {
       return String(av).localeCompare(String(bv), undefined, { numeric: true });
     }
     render() {
+      this.setAttribute("role", "region");
+      this.setAttribute("aria-label", "Table");
       // The host is not a <table>, so it carries no table rule. The scroller the
       // reflow contract requires is a real block element inside it.
       const columns = this.getAttribute("columns");
