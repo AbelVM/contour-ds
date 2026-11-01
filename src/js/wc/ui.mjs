@@ -1308,6 +1308,8 @@ class ContourRating extends ContourBase {
     static get properties() { return { value: { attribute: "value", type: Number }, max: { attribute: "max", type: Number } }; }
     render() {
       this.classList.add("c-rating");
+      this.setAttribute("role", "radiogroup");
+      this.setAttribute("aria-label", "Rating");
       const max = parseInt(this.getAttribute("max") || "5", 10) || 5;
       const value = parseInt(this.getAttribute("value") || "0", 10) || 0;
       Array.from(this.querySelectorAll(".c-rating__star")).forEach((n) => n.remove());
@@ -1315,6 +1317,8 @@ class ContourRating extends ContourBase {
         const star = document.createElement("button");
         star.className = "c-rating__star" + (i <= value ? " c-rating__star--filled" : "");
         star.type = "button";
+        star.setAttribute("role", "radio");
+        star.setAttribute("aria-checked", String(i === value));
         star.textContent = "★";
         star.dataset.value = String(i);
         star.setAttribute("aria-label", i + " star" + (i > 1 ? "s" : ""));
@@ -1327,7 +1331,9 @@ class ContourRating extends ContourBase {
       this.addEventListener("click", (e) => {
         const star = e.target && e.target.closest ? e.target.closest(".c-rating__star") : null;
         if (star && this.contains(star)) {
-          this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: parseInt(star.dataset.value, 10) } }));
+          const v = parseInt(star.dataset.value, 10);
+          Array.from(this.querySelectorAll(".c-rating__star")).forEach((st) => st.setAttribute("aria-checked", String(parseInt(st.dataset.value, 10) === v)));
+          this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: v } }));
         }
       });
       this.addEventListener("keydown", (e) => {
