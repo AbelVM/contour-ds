@@ -1537,6 +1537,14 @@ class ContourBrush extends ContourBase {
       this.addEventListener("pointerup", (e) => {
         this.dispatchEvent(new CustomEvent("contour:brush-end", { bubbles: true, composed: true, detail: { value: this.getAttribute("end"), start: this.getAttribute("start"), end: this.getAttribute("end") } }));
       });
+      // Keyboard: Enter/Space emits brush-start/brush-end (WC-P1-08).
+      if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
+      this.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          this.dispatchEvent(new CustomEvent("contour:brush-start", { bubbles: true, composed: true, detail: { value: this.getAttribute("start"), start: this.getAttribute("start"), end: this.getAttribute("end") } }));
+        }
+      });
     }
   }
 define("contour-brush", ContourBrush);
