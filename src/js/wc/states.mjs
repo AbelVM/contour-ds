@@ -338,6 +338,7 @@ export function remoteRefresh(host) {
   const want = host.hasAttribute("src") && Number.isFinite(seconds) && seconds > 0;
   if (!want) {
     if (host._remoteTimer !== undefined) { clearTimeout(host._remoteTimer); host._remoteTimer = undefined; }
+    host._remoteLoop = false;
     return;
   }
   if (host._remoteLoop) return;
@@ -377,6 +378,7 @@ export function remoteVisible(host) {
   if (!host.hasAttribute("lazy")) return true;
   if (typeof IntersectionObserver !== "function") return true;
   if (host._remoteVisible) return true;
+  if (host._lazyRegistered) return false;
   if (!_sharedLazyIO) {
     _sharedLazyIO = new IntersectionObserver((records) => {
       for (const r of records) {
@@ -390,13 +392,16 @@ export function remoteVisible(host) {
   }
   const activate = () => {
     host._remoteVisible = true;
+    host._lazyRegistered = false;
     host.requestRender();
   };
+  host._lazyRegistered = true;
   _sharedLazyTargets.set(host, activate);
   _sharedLazyIO.observe(host);
   onDispose(host, () => {
     _sharedLazyIO.unobserve(host);
     _sharedLazyTargets.delete(host);
+    host._lazyRegistered = false;
   });
   return false;
 }

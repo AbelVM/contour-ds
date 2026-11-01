@@ -427,15 +427,15 @@ class ContourLayerPanel extends ContourBase {
   }
 define("contour-layer-panel", ContourLayerPanel);
 class ContourTimeSlider extends ContourBase {
-    static get observed() { return ["label", "value", "loop", "speed", "speeds", "show-loop", "loop-label", "current-time", "time-format", "is-playing"]; }
-    static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" }, distance: { attribute: "distance" }, resolution: { attribute: "resolution" }, latitude: { attribute: "latitude" }, src: { attribute: "src" } }; }
+    static get observed() { return ["label", "value", "loop", "speed", "speeds", "show-loop", "loop-label", "current-time", "time-format", "is-playing", "play-label", "pause-label", "time-label", "speed-label"]; }
+    static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" }, distance: { attribute: "distance" }, resolution: { attribute: "resolution" }, latitude: { attribute: "latitude" }, src: { attribute: "src" }, loop: { attribute: "loop", type: Boolean }, speed: { attribute: "speed" }, speeds: { attribute: "speeds" }, showLoop: { attribute: "show-loop", type: Boolean }, loopLabel: { attribute: "loop-label" }, currentTime: { attribute: "current-time" }, timeFormat: { attribute: "time-format" }, isPlaying: { attribute: "is-playing", type: Boolean }, playLabel: { attribute: "play-label" }, pauseLabel: { attribute: "pause-label" }, timeLabel: { attribute: "time-label" }, speedLabel: { attribute: "speed-label" } }; }
     render() {
       this.classList.add("c-time-slider");
       const play = this.ensure(".c-time-slider__play", () => {
         const el = document.createElement("button");
         el.className = "c-time-slider__play";
         el.type = "button";
-        el.setAttribute("aria-label", "Play");
+        el.setAttribute("aria-label", this.getAttribute("play-label") || "Play");
         el.setAttribute("data-state", "play");
         const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         svg.setAttribute("aria-hidden", "true");
@@ -445,13 +445,13 @@ class ContourTimeSlider extends ContourBase {
         el.appendChild(svg);
         return el;
       });
-      const track = this.ensure(".c-time-slider__track", () => { const el = document.createElement("input"); el.className = "c-time-slider__track"; el.type = "range"; el.min = "0"; el.max = "100"; el.setAttribute("aria-label", "Time"); return el; });
+      const track = this.ensure(".c-time-slider__track", () => { const el = document.createElement("input"); el.className = "c-time-slider__track"; el.type = "range"; el.min = "0"; el.max = "100"; el.setAttribute("aria-label", this.getAttribute("time-label") || "Time"); return el; });
       const _attrVal = this.getAttribute("value") || "0";
       if (this._timeSliderAttrLast !== _attrVal) {
         track.value = _attrVal;
         this._timeSliderAttrLast = _attrVal;
       }
-      track.setAttribute("aria-label", this.getAttribute("label") || "Time");
+      track.setAttribute("aria-label", this.getAttribute("label") || this.getAttribute("time-label") || "Time");
       const time = this.ensure(".c-time-slider__time", () => { const el = document.createElement("span"); el.className = "c-time-slider__time"; return el; });
       const ct = this.getAttribute("current-time");
       time.textContent = ct ? ct : (this.getAttribute("label") || "");
@@ -459,7 +459,7 @@ class ContourTimeSlider extends ContourBase {
       let speeds = null;
       const speedsAttr = this.getAttribute("speeds");
       if (speedsAttr) { try { speeds = JSON.parse(speedsAttr); } catch (e) { speeds = null; } }
-      const speedSel = this.ensure(".c-time-slider__speed", () => { const el = document.createElement("select"); el.className = "c-time-slider__speed"; el.setAttribute("aria-label", "Speed"); return el; });
+      const speedSel = this.ensure(".c-time-slider__speed", () => { const el = document.createElement("select"); el.className = "c-time-slider__speed"; el.setAttribute("aria-label", this.getAttribute("speed-label") || "Speed"); return el; });
       speedSel.innerHTML = "";
       const speedList = Array.isArray(speeds) ? speeds : [0.5, 1, 2, 5, 10];
       speedList.forEach((sp) => {
@@ -484,7 +484,7 @@ class ContourTimeSlider extends ContourBase {
       // is-playing reflects on play button
       if (this.hasAttribute("is-playing")) {
         play.setAttribute("data-state", "pause");
-        play.setAttribute("aria-label", "Pause");
+        play.setAttribute("aria-label", this.getAttribute("pause-label") || "Pause");
         const use = play.querySelector("use");
         if (use) use.setAttribute("href", "#i-pause");
       }
@@ -515,7 +515,7 @@ class ContourTimeSlider extends ContourBase {
           const btn = this.querySelector(".c-time-slider__play");
           if (btn) {
             btn.setAttribute("data-state", "play");
-            btn.setAttribute("aria-label", "Play");
+            btn.setAttribute("aria-label", this.getAttribute("play-label") || "Play");
             const use = btn.querySelector("use");
             if (use) use.setAttribute("href", "#i-play");
           }
@@ -526,7 +526,7 @@ class ContourTimeSlider extends ContourBase {
         if (btn) {
           const playing = btn.getAttribute("data-state") === "play";
           btn.setAttribute("data-state", playing ? "pause" : "play");
-          btn.setAttribute("aria-label", playing ? "Pause" : "Play");
+          btn.setAttribute("aria-label", playing ? (this.getAttribute("pause-label") || "Pause") : (this.getAttribute("play-label") || "Play"));
           const use = btn.querySelector("use");
           if (use) use.setAttribute("href", playing ? "#i-pause" : "#i-play");
           if (playing) {

@@ -116,10 +116,10 @@
 
 /* Focus ring — re-keyed to Contour's focus token, matching the vendor's
    compound selector so the override actually applies. */
-.maplibregl-ctrl-attrib-button:focus,
-.maplibregl-ctrl-group button:focus,
-.mapboxgl-ctrl-attrib-button:focus,
-.mapboxgl-ctrl-group button:focus {
+.maplibregl-ctrl-attrib-button:focus-visible,
+.maplibregl-ctrl-group button:focus-visible,
+.mapboxgl-ctrl-attrib-button:focus-visible,
+.mapboxgl-ctrl-group button:focus-visible {
   box-shadow: 0 0 0 2px var(--color-focus-ring),
               0 0 0 4px var(--color-focus-halo);
   outline: none;
