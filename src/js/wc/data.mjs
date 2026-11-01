@@ -2585,6 +2585,8 @@ class ContourMeasure extends ContourBase {
     static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" }, point: { attribute: "point" }, line: { attribute: "line" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-measure");
+      this.setAttribute("role", "group");
+      this.setAttribute("aria-label", "Measure");
       wireStates(this);
       loadRemote(this, ["label", "value", "point", "line"]);
       if (renderStates(this, "measure")) return;
@@ -2643,6 +2645,7 @@ class ContourTimeline extends ContourBase {
     static get properties() { return { items: { attribute: "items" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-timeline");
+      this.setAttribute("role", "list");
       wireStates(this);
       loadRemote(this, "items");
       if (renderStates(this, "timeline")) return;
