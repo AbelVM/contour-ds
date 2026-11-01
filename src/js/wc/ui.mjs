@@ -1977,6 +1977,7 @@ class ContourTour extends ContourBase {
       this.classList.add("c-tour");
       this.setAttribute("role", "dialog");
       this.setAttribute("aria-modal", "true");
+      this.setAttribute("aria-label", "Tour");
       const steps = this.getAttribute("steps");
       const current = Number(this.getAttribute("current") || 0);
       let parsed = [];
