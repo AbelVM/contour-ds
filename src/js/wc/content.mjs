@@ -329,6 +329,19 @@ class ContourDoDont extends ContourBase {
           this.dispatchEvent(new CustomEvent("contour:do-dont-activate", { bubbles: true, composed: true, detail: { kind, text } }));
         }
       });
+      // Make items focusable and keyboard-activatable.
+      Array.from(this.querySelectorAll(".c-do-dont__item")).forEach((it) => {
+        if (!it.hasAttribute("tabindex")) it.setAttribute("tabindex", "0");
+        if (!it.hasAttribute("role")) it.setAttribute("role", "button");
+      });
+      this.addEventListener("keydown", (e) => {
+        const item = e.target && e.target.closest ? e.target.closest(".c-do-dont__item") : null;
+        if (!item || !this.contains(item)) return;
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          item.click();
+        }
+      });
     }
   }
   define("contour-do-dont", ContourDoDont);
