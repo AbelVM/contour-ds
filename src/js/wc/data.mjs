@@ -990,6 +990,8 @@ class ContourComparison extends ContourBase {
     static get properties() { return { divider: { attribute: "divider" }, value: { attribute: "value" }, before: { attribute: "before" }, after: { attribute: "after" } }; }
     render() {
       this.classList.add("c-comparison");
+      this.setAttribute("role", "group");
+      this.setAttribute("aria-label", "Comparison");
       if (!this.style.blockSize) this.style.blockSize = "12rem";
       this.style.setProperty("--comparison-pos", (this.getAttribute("value") || "50") + "%");
       // Ensure two panes exist.
