@@ -1937,6 +1937,7 @@ class ContourSideSheet extends ContourBase {
       this.classList.add("c-side-sheet");
       this.setAttribute("role", "dialog");
       this.setAttribute("aria-modal", "true");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Side sheet");
       const side = this.getAttribute("side") || "end";
       this.classList.add("c-side-sheet--" + side);
       if (this.hasAttribute("open")) this.classList.add("is-open");
