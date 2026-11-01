@@ -421,6 +421,7 @@ export type ContourToken =
   | "--color-danger"
   | "--color-danger-hover"
   | "--color-danger-text"
+  | "--color-danger-border"
   | "--color-on-danger"
   | "--color-danger-soft"
   | "--color-info"

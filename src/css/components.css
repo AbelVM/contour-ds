@@ -3949,4 +3949,7 @@
   .c-notification-center__trigger { /* inherits c-btn */ }
   .c-stepper__prev, .c-stepper__next { /* inherits c-btn */ }
   .c-tour__next { /* inherits c-btn */ }
+
+  .c-animation-controls__scrubber:not(.c-animation-controls__scrubber--thumb)::-webkit-slider-thumb { opacity: 0; }
+  .c-animation-controls__scrubber:not(.c-animation-controls__scrubber--thumb)::-moz-range-thumb { opacity: 0; }
 }

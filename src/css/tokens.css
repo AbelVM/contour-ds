@@ -343,6 +343,7 @@
     --color-danger: light-dark(var(--clay-600), var(--clay-400));
     --color-danger-hover: light-dark(var(--clay-700), var(--clay-300));
     --color-danger-text: light-dark(var(--clay-700), var(--clay-300));
+    --color-danger-border: light-dark(var(--clay-600), var(--clay-400));
     --color-on-danger: light-dark(oklch(99% 0.01 27), var(--basalt-1000));
     --color-danger-soft: light-dark(oklch(94% 0.04 30), oklch(27% 0.06 27));
 

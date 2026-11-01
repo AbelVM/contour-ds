@@ -2732,5 +2732,11 @@
     font-size: var(--type-micro);
     color: var(--color-text-muted);
   }
+
+  /* generated scaffolding (containment) */
+  .c-animation-controls__scrubber { contain: layout; }
+  .c-bivariate__live, .c-bivariate-legend__live { contain: layout; }
+  .c-time-slider__speed { contain: layout; }
+  .c-metrics__empty, .c-chart-grid__empty, .c-filter-bar__empty, .c-pagination__prev { contain: layout; }
 }
 

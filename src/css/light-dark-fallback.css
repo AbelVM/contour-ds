@@ -16,7 +16,7 @@
    is deferred to `var(--x)` substitution, which makes the real declaration
    invalid at computed-value time and drops it to its initial value.
 
-   118 two-theme token(s) and 5 composition(s) rewritten, from tokens.css, utilities.css.
+   119 two-theme token(s) and 5 composition(s) rewritten, from tokens.css, utilities.css.
 
    A composition is substituted, not split: `0 1px 2px light-dark(A, B)` is not
    a colour a tool can publish as two themes, but replacing the call with one
@@ -80,6 +80,7 @@
       --color-danger: var(--clay-600);
       --color-danger-hover: var(--clay-700);
       --color-danger-text: var(--clay-700);
+      --color-danger-border: var(--clay-600);
       --color-on-danger: oklch(99% 0.01 27);
       --color-danger-soft: oklch(94% 0.04 30);
       --color-info: var(--lumen-600);
@@ -208,6 +209,7 @@
         --color-danger: var(--clay-400);
         --color-danger-hover: var(--clay-300);
         --color-danger-text: var(--clay-300);
+        --color-danger-border: var(--clay-400);
         --color-on-danger: var(--basalt-1000);
         --color-danger-soft: oklch(27% 0.06 27);
         --color-info: var(--lumen-400);
@@ -340,6 +342,7 @@
       --color-danger: var(--clay-400);
       --color-danger-hover: var(--clay-300);
       --color-danger-text: var(--clay-300);
+      --color-danger-border: var(--clay-400);
       --color-on-danger: var(--basalt-1000);
       --color-danger-soft: oklch(27% 0.06 27);
       --color-info: var(--lumen-400);
@@ -466,6 +469,7 @@
       --color-danger: var(--clay-600);
       --color-danger-hover: var(--clay-700);
       --color-danger-text: var(--clay-700);
+      --color-danger-border: var(--clay-600);
       --color-on-danger: oklch(99% 0.01 27);
       --color-danger-soft: oklch(94% 0.04 30);
       --color-info: var(--lumen-600);

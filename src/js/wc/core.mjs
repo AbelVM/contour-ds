@@ -86,6 +86,7 @@
     "contour:brush-start": { payload: ["value"], composed: true },
     "contour:brush-end": { payload: ["value"], composed: true },
     "contour:change": { payload: ["name", "value", "checked"], composed: true },
+    "contour:clear": { payload: [], composed: true },
     "contour:close": { payload: [], composed: true },
     "contour:copy": { payload: ["text"], composed: true },
     "contour:dash-action": { payload: ["label"], composed: true },
@@ -122,7 +123,12 @@
     "contour:remove": { payload: ["label", "key", "layers", "value"], composed: true },
     "contour:range-change": { payload: ["value"], composed: true },
     "contour:retry": { payload: ["src"], composed: true },
+    "contour:loop-change": { payload: ["loop"], composed: true },
+    "contour:pause": { payload: [], composed: true },
+    "contour:play": { payload: [], composed: true },
+    "contour:seek": { payload: ["progress", "value"], composed: true },
     "contour:select": { payload: ["series", "index", "label", "value"], composed: true },
+    "contour:speed-change": { payload: ["speed"], composed: true },
     "contour:showcase-activate": { payload: ["title"], composed: true },
     "contour:step-activate": { payload: ["index", "title"], composed: true },
     "contour:step-change": { payload: ["index", "title"], composed: true },
@@ -185,6 +191,7 @@
     "quote", "ramp", "refresh", "removable", "reverse", "rings", "retry", "rows", "scale", "selectable", "segments", "show-header", "sparkline", "start", "end", "threshold", "thresholds", "selected", "separator", "series", "shortcut", "side", "size", "skeleton", "sort", "sort-dir", "speed", "status", "step", "submit", "timeout", "trigger", "virtual",
     "state", "steps", "subtitle", "summary", "src", "table", "tabs", "tag", "text", "ticks", "title", "type", "unit",
     "variant", "values", "viewport", "yes", "zoomable", "x", "y",
+    "caption", "current-time", "is-playing", "loop-label", "no-data-color", "property", "show-loop", "show-thumb", "show-thumb-caption", "speeds",
   ];
 
   export function headingTag(host, fallback = "h3") {

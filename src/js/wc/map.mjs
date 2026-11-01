@@ -391,7 +391,7 @@ class ContourLayerPanel extends ContourBase {
   }
 define("contour-layer-panel", ContourLayerPanel);
 class ContourTimeSlider extends ContourBase {
-    static get observed() { return ["label", "value", "loop", "speed"]; }
+    static get observed() { return ["label", "value", "loop", "speed", "speeds", "show-loop", "loop-label", "current-time", "time-format", "is-playing"]; }
     static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-time-slider");
@@ -417,7 +417,41 @@ class ContourTimeSlider extends ContourBase {
       }
       track.setAttribute("aria-label", this.getAttribute("label") || "Time");
       const time = this.ensure(".c-time-slider__time", () => { const el = document.createElement("span"); el.className = "c-time-slider__time"; return el; });
-      time.textContent = this.getAttribute("label") || "";
+      const ct = this.getAttribute("current-time");
+      time.textContent = ct ? ct : (this.getAttribute("label") || "");
+      // speed selector
+      let speeds = null;
+      const speedsAttr = this.getAttribute("speeds");
+      if (speedsAttr) { try { speeds = JSON.parse(speedsAttr); } catch (e) { speeds = null; } }
+      const speedSel = this.ensure(".c-time-slider__speed", () => { const el = document.createElement("select"); el.className = "c-time-slider__speed"; el.setAttribute("aria-label", "Speed"); return el; });
+      speedSel.innerHTML = "";
+      const speedList = Array.isArray(speeds) ? speeds : [0.5, 1, 2, 5, 10];
+      speedList.forEach((sp) => {
+        const opt = document.createElement("option");
+        opt.value = String(sp);
+        opt.textContent = String(sp);
+        if (String(sp) === (this.getAttribute("speed") || "")) opt.selected = true;
+        speedSel.appendChild(opt);
+      });
+      const speedAttr = this.getAttribute("speed");
+      if (speedAttr) speedSel.value = speedAttr;
+      // loop toggle
+      const showLoop = this.hasAttribute("show-loop");
+      if (showLoop) {
+        const loopBtn = this.ensure(".c-time-slider__loop", () => { const el = document.createElement("button"); el.className = "c-time-slider__loop"; el.type = "button"; el.setAttribute("aria-label", this.getAttribute("loop-label") || "Loop"); return el; });
+        loopBtn.setAttribute("aria-pressed", this.hasAttribute("loop") ? "true" : "false");
+        loopBtn.textContent = this.getAttribute("loop-label") || "Loop";
+      } else {
+        const lb = this.querySelector(".c-time-slider__loop");
+        if (lb) lb.remove();
+      }
+      // is-playing reflects on play button
+      if (this.hasAttribute("is-playing")) {
+        play.setAttribute("data-state", "pause");
+        play.setAttribute("aria-label", "Pause");
+        const use = play.querySelector("use");
+        if (use) use.setAttribute("href", "#i-pause");
+      }
     }
     enhance() {
       if (this._wiredTimeSlider) return;
@@ -453,20 +487,38 @@ class ContourTimeSlider extends ContourBase {
       };
       this.addEventListener("click", (e) => {
         const btn = e.target && e.target.closest ? e.target.closest(".c-time-slider__play") : null;
-        if (!btn) return;
-        const playing = btn.getAttribute("data-state") === "play";
-        btn.setAttribute("data-state", playing ? "pause" : "play");
-        btn.setAttribute("aria-label", playing ? "Pause" : "Play");
-        const use = btn.querySelector("use");
-        if (use) use.setAttribute("href", playing ? "#i-pause" : "#i-play");
-        if (playing) {
-          stop();
-          const speed = parseFloat(this.getAttribute("speed") || "1") || 1;
-          const delay = Math.max(100, 1000 / speed);
-          timer = setInterval(step, delay);
-        } else {
-          stop();
+        if (btn) {
+          const playing = btn.getAttribute("data-state") === "play";
+          btn.setAttribute("data-state", playing ? "pause" : "play");
+          btn.setAttribute("aria-label", playing ? "Pause" : "Play");
+          const use = btn.querySelector("use");
+          if (use) use.setAttribute("href", playing ? "#i-pause" : "#i-play");
+          if (playing) {
+            stop();
+            const speed = parseFloat(this.getAttribute("speed") || "1") || 1;
+            const delay = Math.max(100, 1000 / speed);
+            timer = setInterval(step, delay);
+            this.dispatchEvent(new CustomEvent("contour:play", { bubbles: true, composed: true }));
+          } else {
+            stop();
+            this.dispatchEvent(new CustomEvent("contour:pause", { bubbles: true, composed: true }));
+          }
+          return;
         }
+        const loopBtn = e.target && e.target.closest ? e.target.closest(".c-time-slider__loop") : null;
+        if (loopBtn) {
+          const next = loopBtn.getAttribute("aria-pressed") !== "true";
+          loopBtn.setAttribute("aria-pressed", String(next));
+          this.toggleAttribute("loop", next);
+          this.dispatchEvent(new CustomEvent("contour:loop-change", { detail: { loop: next }, bubbles: true, composed: true }));
+        }
+      });
+      // speed select change (delegated)
+      this.addEventListener("change", (e) => {
+        const sel = e.target && e.target.closest ? e.target.closest(".c-time-slider__speed") : null;
+        if (!sel) return;
+        const speed = Number(sel.value);
+        this.dispatchEvent(new CustomEvent("contour:speed-change", { detail: { speed }, bubbles: true, composed: true }));
       });
       onDispose(this, stop);
     }

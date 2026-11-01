@@ -607,8 +607,8 @@ class ContourMapPopup extends ContourBase {
   define("contour-map-popup", ContourMapPopup);
 
 class ContourAnimationControls extends ContourBase {
-    static get observed() { return ["playing", "speed"]; }
-    static get properties() { return { playing: { attribute: "playing", type: Boolean }, speed: { attribute: "speed" } }; }
+    static get observed() { return ["playing", "speed", "progress", "min", "max", "caption", "show-thumb", "show-thumb-caption"]; }
+    static get properties() { return { playing: { attribute: "playing", type: Boolean }, speed: { attribute: "speed" }, progress: { attribute: "progress" }, min: { attribute: "min" }, max: { attribute: "max" } }; }
     render() {
       this.classList.add("c-animation-controls");
       const playBtn = this.ensure(".c-animation-controls__play", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-animation-controls__play"; el.type = "button"; return el; });
@@ -617,6 +617,26 @@ class ContourAnimationControls extends ContourBase {
       const speed = this.getAttribute("speed") || "1x";
       const speedBtn = this.ensure(".c-animation-controls__speed", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-animation-controls__speed"; el.type = "button"; return el; });
       speedBtn.textContent = speed;
+      // scrubber
+      const scrubber = this.ensure(".c-animation-controls__scrubber", () => { const el = document.createElement("input"); el.className = "c-animation-controls__scrubber"; el.type = "range"; return el; });
+      if (this.getAttribute("show-thumb") === "false") scrubber.classList.remove("c-animation-controls__scrubber--thumb");
+      else scrubber.classList.add("c-animation-controls__scrubber--thumb");
+      scrubber.min = this.getAttribute("min") || "0";
+      scrubber.max = this.getAttribute("max") || "100";
+      scrubber.value = this.getAttribute("progress") || "0";
+      const caption = this.getAttribute("caption");
+      if (caption) scrubber.setAttribute("aria-label", caption);
+      else if (!scrubber.getAttribute("aria-label")) scrubber.setAttribute("aria-label", "Playhead");
+      // caption display
+      const showCaption = this.hasAttribute("show-thumb-caption") || this.hasAttribute("show-thumb");
+      if (caption && showCaption) {
+        const cap = this.ensure(".c-animation-controls__caption", () => { const el = document.createElement("span"); el.className = "c-animation-controls__caption"; return el; });
+        cap.textContent = caption;
+      } else {
+        const cap = this.querySelector(".c-animation-controls__caption");
+        if (cap) cap.remove();
+      }
+      // showThumb: hide thumb via attribute? keep default
     }
     enhance() {
       if (this._wiredAnimControls) return;
@@ -629,6 +649,13 @@ class ContourAnimationControls extends ContourBase {
         }
         if (speed && this.contains(speed)) {
           this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { speed: speed.textContent } }));
+        }
+      });
+      this.addEventListener("input", (e) => {
+        const scrubber = e.target && e.target.closest ? e.target.closest(".c-animation-controls__scrubber") : null;
+        if (scrubber && this.contains(scrubber)) {
+          const v = Number(scrubber.value);
+          this.dispatchEvent(new CustomEvent("contour:seek", { bubbles: true, composed: true, detail: { progress: v, value: v } }));
         }
       });
     }
@@ -737,7 +764,7 @@ class ContourStyleSwitcher extends ContourBase {
   define("contour-style-switcher", ContourStyleSwitcher);
 
 class ContourStylePanel extends ContourBase {
-    static get observed() { return ["title", "layers", "layer", "single", "classification", "palette", "breaks", "opacity", "n", "colors"]; }
+    static get observed() { return ["title", "layers", "layer", "single", "classification", "palette", "breaks", "opacity", "n", "colors", "property"]; }
     static get properties() { return { title: { attribute: "title" }, layers: { attribute: "layers" }, classification: { attribute: "classification" }, palette: { attribute: "palette" }, breaks: { attribute: "breaks" }, opacity: { attribute: "opacity" } }; }
     render() {
       this.classList.add("c-style-panel");
@@ -750,39 +777,64 @@ class ContourStylePanel extends ContourBase {
        if (singleMode) {
          const body = this.ensure(".c-style-panel__body", () => { const el = document.createElement("div"); el.className = "c-style-panel__body"; return el; });
          body.innerHTML = "";
-         // classification method selector
-         const clsLabel = document.createElement("label"); clsLabel.textContent = "Classification"; body.appendChild(clsLabel);
-         const clsSel = document.createElement("select"); clsSel.className = "c-style-panel__classification";
+         // property field
+         const propLabel = document.createElement("label"); propLabel.textContent = "Colour field"; propLabel.setAttribute("for", "property"); body.appendChild(propLabel);
+         const propIn = document.createElement("input"); propIn.type = "text"; propIn.id = "property"; propIn.className = "c-style-panel__property c-input"; propIn.setAttribute("aria-label", "Colour field");
+         const pv = this.getAttribute("property"); if (pv) propIn.value = pv;
+         body.appendChild(propIn);
+         // classification method selector (policy)
+         const clsLabel = document.createElement("label"); clsLabel.textContent = "Classification"; clsLabel.setAttribute("for", "policy"); body.appendChild(clsLabel);
+         const clsSel = document.createElement("select"); clsSel.id = "policy"; clsSel.className = "c-style-panel__classification c-input"; clsSel.setAttribute("aria-label", "Classification method");
          ["equal","quantile","jenks","manual"].forEach((m) => { const o = document.createElement("option"); o.value = m; o.textContent = m; clsSel.appendChild(o); });
          const cls = this.getAttribute("classification"); if (cls) clsSel.value = cls;
          body.appendChild(clsSel);
          // palette picker
-         const pal = document.createElement("input"); pal.type = "text"; pal.className = "c-style-panel__palette"; pal.placeholder = "palette";
+         const palLabel = document.createElement("label"); palLabel.textContent = "Palette"; palLabel.setAttribute("for", "palette"); body.appendChild(palLabel);
+         const pal = document.createElement("input"); pal.type = "text"; pal.id = "palette"; pal.className = "c-style-panel__palette c-input"; pal.placeholder = "palette"; pal.setAttribute("aria-label", "Palette");
          const palv = this.getAttribute("palette"); if (palv) pal.value = palv;
          body.appendChild(pal);
          // n (class count)
-         const nIn = document.createElement("input"); nIn.type = "number"; nIn.className = "c-style-panel__n"; nIn.min = "2"; nIn.max = "12";
+         const nLabel = document.createElement("label"); nLabel.textContent = "Classes"; nLabel.setAttribute("for", "n"); body.appendChild(nLabel);
+         const nIn = document.createElement("input"); nIn.type = "number"; nIn.id = "n"; nIn.className = "c-style-panel__n c-input"; nIn.min = "2"; nIn.max = "12"; nIn.setAttribute("aria-label", "Class count");
          const nv = this.getAttribute("n"); if (nv) nIn.value = nv; else nIn.value = "5";
          body.appendChild(nIn);
          // opacity slider
          const op = document.createElement("input"); op.type = "range"; op.className = "c-style-panel__opacity"; op.min = "0"; op.max = "100";
          const ov = this.getAttribute("opacity"); op.value = ov != null ? ov : "100";
          body.appendChild(op);
-         // breaks editor
-         const breaks = document.createElement("input"); breaks.type = "text"; breaks.className = "c-style-panel__breaks"; breaks.placeholder = "breaks";
-         const bv = this.getAttribute("breaks"); if (bv) breaks.value = bv;
-         body.appendChild(breaks);
-         // color list
+         // breaks as .break elements per class
+         const breaksAttr = this.getAttribute("breaks");
+         let breaksArr = null;
+         if (breaksAttr) { try { breaksArr = JSON.parse(breaksAttr); } catch (e) { breaksArr = breaksAttr.split(",").map((s) => s.trim()); } }
+         if (Array.isArray(breaksArr) && breaksArr.length) {
+           const breaksWrap = document.createElement("div"); breaksWrap.className = "c-style-panel__breaks breaks";
+           breaksArr.forEach((b, i) => {
+             const br = document.createElement("div"); br.className = "break";
+             br.textContent = String(b);
+             breaksWrap.appendChild(br);
+           });
+           body.appendChild(breaksWrap);
+         }
+         // color swatches
          const colorsAttr = this.getAttribute("colors");
          let colors = null;
          if (colorsAttr) { try { colors = JSON.parse(colorsAttr); } catch (e) { colors = colorsAttr.split(",").map((s) => s.trim()); } }
          if (Array.isArray(colors)) {
-           const list = document.createElement("div"); list.className = "c-style-panel__colors";
-           colors.forEach((c) => {
-             const sw = document.createElement("span"); sw.className = "c-style-panel__color"; sw.style.background = c; list.appendChild(sw);
+           const list = document.createElement("div"); list.className = "c-style-panel__colors colours";
+           colors.forEach((c, i) => {
+             const sw = document.createElement("input"); sw.type = "color"; sw.className = "c-style-panel__color c-input"; sw.setAttribute("aria-label", "Colour for class " + (i + 1));
+             sw.value = c;
+             sw.addEventListener("input", () => { sw.setAttribute("data-edited", "true"); });
+             list.appendChild(sw);
            });
            body.appendChild(list);
          }
+         // Apply/Revert buttons
+         const actions = document.createElement("div"); actions.className = "c-style-panel__actions actions";
+         const applyBtn = document.createElement("button"); applyBtn.type = "button"; applyBtn.className = "c-btn primary"; applyBtn.textContent = "Apply";
+         const revertBtn = document.createElement("button"); revertBtn.type = "button"; revertBtn.className = "c-btn"; revertBtn.textContent = "Revert";
+         actions.appendChild(applyBtn); actions.appendChild(revertBtn);
+         body.appendChild(actions);
          return;
        }
        const layers = this.getAttribute("layers");
@@ -874,6 +926,15 @@ class ContourStylePanel extends ContourBase {
           const row = t.closest(".c-style-panel__row");
           const name = row ? (row.querySelector(".c-style-panel__name")?.textContent || "") : "";
           this.dispatchEvent(new CustomEvent("contour:style-resolved", { detail: { value: t.value, layer: name, property: t.classList.contains("c-style-panel__palette") ? "palette" : "breaks" }, bubbles: true, composed: true }));
+        }
+      });
+      this.addEventListener("click", (e) => {
+        const t = e.target && e.target.closest ? e.target.closest("button") : null;
+        if (!t || !this.contains(t)) return;
+        if (t.textContent.trim() === "Apply") {
+          this.dispatchEvent(new CustomEvent("contour:style-resolved", { detail: { applied: true }, bubbles: true, composed: true }));
+        } else if (t.textContent.trim() === "Revert") {
+          this.dispatchEvent(new CustomEvent("contour:style-resolved", { detail: { applied: false }, bubbles: true, composed: true }));
         }
       });
     }

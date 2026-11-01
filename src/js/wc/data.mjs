@@ -1823,8 +1823,8 @@ class ContourInstrument extends ContourBase {
   }
 define("contour-instrument", ContourInstrument);
 class ContourBivariate extends ContourBase {
-    static get observed() { return ["size", "axis-x", "axis-y", "colors"]; }
-    static get properties() { return { size: { attribute: "size" }, axisX: { attribute: "axis-x" }, axisY: { attribute: "axis-y" }, colors: { attribute: "colors" } }; }
+    static get observed() { return ["size", "axis-x", "axis-y", "colors", "selected"]; }
+    static get properties() { return { size: { attribute: "size" }, axisX: { attribute: "axis-x" }, axisY: { attribute: "axis-y" }, colors: { attribute: "colors" }, selected: { attribute: "selected" } }; }
     render() {
       this.classList.add("c-bivariate");
       const size = Math.min(12, Math.max(1, parseInt(this.getAttribute("size") || "3", 10) || 3));
@@ -1842,6 +1842,9 @@ class ContourBivariate extends ContourBase {
           for (let c = 0; c < size; c++) {
             const cell = document.createElement("div");
             cell.className = "c-bivariate__cell";
+            cell.setAttribute("role", "button");
+            cell.setAttribute("tabindex", "0");
+            cell.setAttribute("aria-label", "Cell " + c + "," + r);
             // Palette runs from bottom-left (low/low) to top-right (high/high):
             // reverse the row order so the first palette row sits at the bottom.
             const srcIndex = (size - 1 - r) * size + c;
@@ -1849,6 +1852,24 @@ class ContourBivariate extends ContourBase {
             matrix.appendChild(cell);
           }
         }
+        // selected highlight
+        const sel = this.getAttribute("selected");
+        if (sel) {
+          const parts = sel.split(",");
+          const sr = parseInt(parts[0], 10);
+          const sc = parseInt(parts[1], 10);
+          const cells = Array.from(matrix.querySelectorAll(".c-bivariate__cell"));
+          cells.forEach((cell, i) => {
+            const rr = Math.floor(i / size);
+            const cc = i % size;
+            // matrix is row-major in DOM? cells appended row by row r then c, so index = r*size+c
+            if (rr === sr && cc === sc) cell.setAttribute("data-selected", "");
+            else cell.removeAttribute("data-selected");
+          });
+        }
+        // aria-live region
+        let live = this.querySelector(".c-bivariate__live");
+        if (!live) { live = document.createElement("div"); live.className = "c-bivariate__live"; live.setAttribute("aria-live", "polite"); live.style.position = "absolute"; live.style.width = "1px"; live.style.height = "1px"; live.style.overflow = "hidden"; live.style.clip = "rect(0,0,0,0)"; this.appendChild(live); }
       }
       const axisX = this.getAttribute("axis-x");
       if (axisX) {
@@ -1867,11 +1888,47 @@ class ContourBivariate extends ContourBase {
         if (ay) ay.remove();
       }
     }
+    enhance() {
+      if (this._wiredBivariate) return;
+      this._wiredBivariate = true;
+      const selectCell = (cell) => {
+        const matrix = this.querySelector(".c-bivariate__matrix");
+        const cells = Array.from(matrix ? matrix.querySelectorAll(".c-bivariate__cell") : []);
+        const idx = cells.indexOf(cell);
+        if (idx < 0) return;
+        const size = Math.min(12, Math.max(1, parseInt(this.getAttribute("size") || "3", 10) || 3));
+        const row = Math.floor(idx / size);
+        const col = idx % size;
+        cells.forEach((cell, i) => {
+          const rr = Math.floor(i / size);
+          const cc = i % size;
+          if (rr === row && cc === col) cell.setAttribute("data-selected", "");
+          else cell.removeAttribute("data-selected");
+        });
+        this.dispatchEvent(new CustomEvent("contour:select", { detail: { row, col }, bubbles: true, composed: true }));
+      };
+      this.addEventListener("click", (e) => {
+        const cell = e.target && e.target.closest ? e.target.closest(".c-bivariate__cell") : null;
+        if (cell && this.contains(cell)) selectCell(cell);
+      });
+      this.addEventListener("keydown", (e) => {
+        const cell = e.target && e.target.closest ? e.target.closest(".c-bivariate__cell") : null;
+        if (!cell || !this.contains(cell)) return;
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          selectCell(cell);
+        }
+      });
+    }
+    clear() {
+      this.removeAttribute("selected");
+      this.dispatchEvent(new CustomEvent("contour:clear", { bubbles: true, composed: true }));
+    }
   }
   define("contour-bivariate", ContourBivariate);
 class ContourBivariateLegend extends ContourBase {
-    static get observed() { return ["size", "axis-x", "axis-y", "colors"]; }
-    static get properties() { return { size: { attribute: "size" }, axisX: { attribute: "axis-x" }, axisY: { attribute: "axis-y" }, colors: { attribute: "colors" } }; }
+    static get observed() { return ["size", "axis-x", "axis-y", "colors", "selected"]; }
+    static get properties() { return { size: { attribute: "size" }, axisX: { attribute: "axis-x" }, axisY: { attribute: "axis-y" }, colors: { attribute: "colors" }, selected: { attribute: "selected" } }; }
     render() {
       this.classList.add("c-bivariate-legend");
       const size = Math.min(8, Math.max(1, parseInt(this.getAttribute("size") || "3", 10) || 3));
@@ -1887,10 +1944,18 @@ class ContourBivariateLegend extends ContourBase {
         for (let i = 0; i < size * size; i++) {
           const cell = document.createElement("div");
           cell.className = "c-bivariate-legend__cell";
+          cell.setAttribute("role", "button");
+          cell.setAttribute("tabindex", "0");
+          const x = i % size;
+          const y = Math.floor(i / size);
+          cell.setAttribute("aria-label", "Cell " + x + "," + y);
           if (colors[i]) cell.style.background = colors[i];
           else cell.style.background = "var(--chart-" + ((i % 8) + 1) + ")";
           matrix.appendChild(cell);
         }
+        // aria-live
+        let live = this.querySelector(".c-bivariate-legend__live");
+        if (!live) { live = document.createElement("div"); live.className = "c-bivariate-legend__live"; live.setAttribute("aria-live", "polite"); live.style.position = "absolute"; live.style.width = "1px"; live.style.height = "1px"; live.style.overflow = "hidden"; live.style.clip = "rect(0,0,0,0)"; this.appendChild(live); }
       }
       const axisX = this.getAttribute("axis-x");
       const ax = this.querySelector(".c-bivariate-legend__axis--x");
@@ -1909,7 +1974,36 @@ class ContourBivariateLegend extends ContourBase {
         ay.remove();
       }
     }
-    enhance() {}
+    enhance() {
+      if (this._wiredBivLegend) return;
+      this._wiredBivLegend = true;
+      const selectCell = (cell) => {
+        const matrix = this.querySelector(".c-bivariate-legend__matrix");
+        const cells = Array.from(matrix ? matrix.querySelectorAll(".c-bivariate-legend__cell") : []);
+        const idx = cells.indexOf(cell);
+        if (idx < 0) return;
+        const size = Math.min(8, Math.max(1, parseInt(this.getAttribute("size") || "3", 10) || 3));
+        const row = Math.floor(idx / size);
+        const col = idx % size;
+        cells.forEach((cell, i) => {
+          const rr = Math.floor(i / size);
+          const cc = i % size;
+          if (rr === row && cc === col) cell.setAttribute("data-selected", "");
+          else cell.removeAttribute("data-selected");
+        });
+        this.dispatchEvent(new CustomEvent("contour:select", { detail: { row, col }, bubbles: true, composed: true }));
+      };
+      this.addEventListener("click", (e) => {
+        const cell = e.target && e.target.closest ? e.target.closest(".c-bivariate-legend__cell") : null;
+        if (cell && this.contains(cell)) selectCell(cell);
+      });
+      this.addEventListener("keydown", (e) => {
+        const cell = e.target && e.target.closest ? e.target.closest(".c-bivariate-legend__cell") : null;
+        if (!cell || !this.contains(cell)) return;
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); selectCell(cell); }
+      });
+    }
+    clear() { this.removeAttribute("selected"); this.dispatchEvent(new CustomEvent("contour:clear", { bubbles: true, composed: true })); }
   }
 define("contour-bivariate-legend", ContourBivariateLegend);
 class ContourSurvey extends ContourBase {
@@ -2044,13 +2138,18 @@ class ContourLegend extends ContourBase {
       if (items) {
         try {
           const parsed = JSON.parse(items);
-          const list = this.ensure(".c-legend__items", () => { const el = document.createElement("div"); el.className = "c-legend__items"; return el; });
+          const list = this.ensure(".c-legend__items", () => { const el = document.createElement("div"); el.className = "c-legend__items"; el.setAttribute("role", "listbox"); return el; });
+          list.setAttribute("role", "listbox");
+          if (title) list.setAttribute("aria-label", title);
           list.innerHTML = "";
           parsed.forEach((it) => {
             const label = typeof it === "string" ? it : (it.label || String(it));
             const key = typeof it === "string" ? it : (it.key || it.label || String(it));
             const item = document.createElement(selectable ? "button" : "div");
             item.className = "c-legend__item";
+            item.setAttribute("role", "option");
+            item.setAttribute("aria-selected", "false");
+            item.setAttribute("tabindex", "-1");
             if (selectable) {
               item.type = "button";
               item.setAttribute("aria-pressed", "true");
@@ -2103,6 +2202,39 @@ class ContourLegend extends ContourBase {
           renderEmpty(this, "legend");
         }
       }
+       // caption as option description (aria-describedby), not part of name
+       const caption = this.getAttribute("caption");
+       let captionEl = this.querySelector(".c-legend__caption");
+       if (caption) {
+         if (!captionEl) { captionEl = document.createElement("span"); captionEl.className = "c-legend__caption"; this.appendChild(captionEl); }
+         captionEl.id = captionEl.id || ("legend-caption-" + Math.random().toString(36).slice(2));
+         captionEl.textContent = caption;
+         captionEl.style.position = "absolute"; captionEl.style.width = "1px"; captionEl.style.height = "1px"; captionEl.style.overflow = "hidden"; captionEl.style.clip = "rect(0,0,0,0)";
+       } else if (captionEl) {
+         captionEl.remove();
+       }
+       // single tab stop: first option
+       const _items = this.querySelector(".c-legend__items");
+       if (_items) {
+         const opts = Array.from(_items.querySelectorAll(".c-legend__item"));
+         opts.forEach((o, i) => o.setAttribute("tabindex", i === 0 ? "0" : "-1"));
+         if (captionEl) opts.forEach((o) => o.setAttribute("aria-describedby", captionEl.id));
+       }
+       // no-data entry from palette / no-data-color
+       const ndColor = this.getAttribute("no-data-color");
+       if (ndColor) {
+         let nd = this.querySelector(".c-legend__no-data");
+         if (!nd) { nd = document.createElement("div"); nd.className = "c-legend__no-data"; this.appendChild(nd); }
+         nd.setAttribute("part", "no-data");
+         nd.textContent = "No data";
+         const glyph = document.createElement("span");
+         glyph.className = "glyph";
+         glyph.style.background = ndColor;
+         nd.prepend(glyph);
+       } else {
+         const nd = this.querySelector(".c-legend__no-data");
+         if (nd) nd.remove();
+       }
        // audit notice
        const audit = this.getAttribute("audit");
        if (audit) {
@@ -2236,6 +2368,7 @@ class ContourLegend extends ContourBase {
         if (!btn || !this.contains(btn)) return;
         const pressed = btn.getAttribute("aria-pressed") !== "true";
         btn.setAttribute("aria-pressed", String(pressed));
+        btn.setAttribute("aria-selected", String(pressed));
         this.dispatchEvent(new CustomEvent("contour:legend-toggle", {
           detail: { label: btn.textContent.trim(), key: btn.dataset.key || btn.textContent.trim(), pressed },
           bubbles: true,
@@ -2268,11 +2401,34 @@ class ContourLegend extends ContourBase {
         if (e.key === "ArrowDown" || e.key === "ArrowRight") {
           e.preventDefault();
           const next = items[(idx + 1) % items.length];
-          if (next) next.focus();
+          if (next) { next.focus(); items.forEach((o,i)=>o.setAttribute("tabindex", o===next?"0":"-1")); }
         } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
           e.preventDefault();
           const prev = items[(idx - 1 + items.length) % items.length];
-          if (prev) prev.focus();
+          if (prev) { prev.focus(); items.forEach((o)=>o.setAttribute("tabindex", o===prev?"0":"-1")); }
+        } else if (e.key === "Home") {
+          if (items.length > 4) { e.preventDefault(); items[0].focus(); items.forEach((o,i)=>o.setAttribute("tabindex", i===0?"0":"-1")); }
+        } else if (e.key === "End") {
+          if (items.length > 4) { e.preventDefault(); const last = items[items.length-1]; last.focus(); items.forEach((o)=>o.setAttribute("tabindex", o===last?"0":"-1")); }
+        } else if (e.key === "Escape") {
+          // clear selection
+          items.forEach((o) => o.setAttribute("aria-selected", "false"));
+          this.dispatchEvent(new CustomEvent("contour:clear", { bubbles: true, composed: true }));
+        } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+          // type-ahead
+          if (items.length > 7) {
+            const start = idx >= 0 ? idx + 1 : 0;
+            for (let i = 0; i < items.length; i++) {
+              const ii = (start + i) % items.length;
+              const txt = (items[ii].textContent || "").trim().toLowerCase();
+              if (txt.startsWith(e.key.toLowerCase())) {
+                e.preventDefault();
+                items[ii].focus();
+                items.forEach((o,j)=>o.setAttribute("tabindex", j===ii?"0":"-1"));
+                break;
+              }
+            }
+          }
         } else if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
           if (document.activeElement && document.activeElement.classList.contains("c-legend__item")) {
