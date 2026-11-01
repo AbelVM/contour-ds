@@ -247,14 +247,22 @@ class ContourTooltip extends ContourBase {
       }
       const delayMs = (this.delay && this.delay > 0) ? this.delay : 0;
       let showTimer = null;
+      const hasPopover = typeof this.showPopover === "function";
       const show = () => {
         if (showTimer) clearTimeout(showTimer);
-        if (delayMs > 0) showTimer = setTimeout(() => { try { this.showPopover(); } catch (e) {} }, delayMs);
-        else { try { this.showPopover(); } catch (e) {} }
+        if (delayMs > 0) showTimer = setTimeout(() => {
+          if (hasPopover) { try { this.showPopover(); } catch (e) {} }
+          else this.classList.add("is-open");
+        }, delayMs);
+        else {
+          if (hasPopover) { try { this.showPopover(); } catch (e) {} }
+          else this.classList.add("is-open");
+        }
       };
       const hide = () => {
         if (showTimer) { clearTimeout(showTimer); showTimer = null; }
-        try { this.hidePopover(); } catch (e) {}
+        if (hasPopover) { try { this.hidePopover(); } catch (e) {} }
+        else this.classList.remove("is-open");
       };
       const triggerMode = this.getAttribute("trigger") || "hover";
       const trigger = anchorSel ? (anchorSel.startsWith("#") ? document.getElementById(anchorSel.slice(1)) : document.querySelector(anchorSel)) : null;
@@ -696,7 +704,7 @@ class ContourDropdown extends ContourBase {
         const b = btn();
         if (e.target === b || (b && b.contains(e.target))) {
           const m = menu();
-          if (m) { m.hidden = !m.hidden; b.setAttribute("aria-expanded", String(!m.hidden)); }
+          if (m) { m.hidden = !m.hidden; b.setAttribute("aria-expanded", String(!m.hidden)); if (!m.hidden) { b.setAttribute("aria-controls", m.id || ""); if (!m.id) m.id = this.id + "-menu"; b.setAttribute("aria-controls", m.id); } }
         }
       });
       const docClick = (e) => {
@@ -706,6 +714,12 @@ class ContourDropdown extends ContourBase {
       };
       document.addEventListener("click", docClick);
       onDispose(this, () => document.removeEventListener("click", docClick));
+      const keyHandler = (e) => {
+        const m = menu(); const b = btn();
+        if (e.key === "Escape" && m && !m.hidden) { e.preventDefault(); m.hidden = true; if (b) { b.setAttribute("aria-expanded", "false"); try { b.focus(); } catch (err) {} } }
+      };
+      document.addEventListener("keydown", keyHandler);
+      onDispose(this, () => document.removeEventListener("keydown", keyHandler));
     }
   }
   define("contour-dropdown", ContourDropdown);
@@ -919,6 +933,10 @@ class ContourStylePanel extends ContourBase {
           this.dispatchEvent(new CustomEvent("contour:break-change", { detail: { value: t.value, layer: name }, bubbles: true, composed: true }));
         } else if (t.classList.contains("c-style-panel__opacity")) {
           this.dispatchEvent(new CustomEvent("contour:layer-opacity", { detail: { name, opacity: Number(t.value) }, bubbles: true, composed: true }));
+        } else if (t.classList.contains("c-style-panel__property")) {
+          this.dispatchEvent(new CustomEvent("contour:style-resolved", { detail: { value: t.value, layer: name, property: "property" }, bubbles: true, composed: true }));
+        } else if (t.classList.contains("c-style-panel__n")) {
+          this.dispatchEvent(new CustomEvent("contour:style-resolved", { detail: { value: Number(t.value), layer: name, property: "n" }, bubbles: true, composed: true }));
         }
       });
       this.addEventListener("input", (e) => {
@@ -1350,8 +1368,9 @@ class ContourHoverCard extends ContourBase {
         if (trigger) {
           trigger.setAttribute("popovertarget", this.id);
           let showTimer = null;
-          trigger.addEventListener("mouseenter", () => { showTimer = setTimeout(() => { try { this.showPopover(); } catch (e) {} }, 300); });
-          trigger.addEventListener("mouseleave", () => { if (showTimer) clearTimeout(showTimer); try { this.hidePopover(); } catch (e) {} });
+          const hasPopover = typeof this.showPopover === "function";
+          trigger.addEventListener("mouseenter", () => { showTimer = setTimeout(() => { if (hasPopover) { try { this.showPopover(); } catch (e) {} } else this.classList.add("is-open"); }, 300); });
+          trigger.addEventListener("mouseleave", () => { if (showTimer) clearTimeout(showTimer); if (hasPopover) { try { this.hidePopover(); } catch (e) {} } else this.classList.remove("is-open"); });
         }
       }
     }
@@ -1385,13 +1404,15 @@ class ContourContextMenu extends ContourBase {
       this._wiredContextMenu = true;
       this.addEventListener("contextmenu", (e) => {
         e.preventDefault();
-        try { this.showPopover(); } catch (err) {}
+        if (typeof this.showPopover === "function") { try { this.showPopover(); } catch (err) {} }
+        else this.classList.toggle("is-open");
       });
       this.addEventListener("click", (e) => {
         const item = e.target && e.target.closest ? e.target.closest(".c-menu__item") : null;
         if (item && this.contains(item)) {
           this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { label: item.textContent.trim() } }));
-          try { this.hidePopover(); } catch (err) {}
+          if (typeof this.hidePopover === "function") { try { this.hidePopover(); } catch (err) {} }
+          this.classList.remove("is-open");
         }
       });
     }
@@ -1496,6 +1517,13 @@ class ContourNotificationCenter extends ContourBase {
       };
       document.addEventListener("click", docClick);
       onDispose(this, () => document.removeEventListener("click", docClick));
+      const keyHandler = (e) => {
+        const panel = this.querySelector(".c-notification-center__panel");
+        const btn = this.querySelector(".c-notification-center__trigger");
+        if (e.key === "Escape" && panel && !panel.hidden) { panel.hidden = true; if (btn) { btn.setAttribute("aria-expanded", "false"); try { btn.focus(); } catch (err) {} } }
+      };
+      document.addEventListener("keydown", keyHandler);
+      onDispose(this, () => document.removeEventListener("keydown", keyHandler));
     }
   }
   define("contour-notification-center", ContourNotificationCenter);
@@ -1636,8 +1664,10 @@ class ContourCommandPalette extends ContourBase {
         } catch (e) { /* keep */ }
       }
     }
+    show() { if (typeof this.showPopover === "function") { try { this.showPopover(); } catch (e) {} } this.classList.add("is-open"); }
+    hide() { if (typeof this.hidePopover === "function") { try { this.hidePopover(); } catch (e) {} } this.classList.remove("is-open"); }
+    toggle() { if (this.classList.contains("is-open") || this.matches(":popover-open")) this.hide(); else this.show(); }
     enhance() {
-      if (this._wiredCmdPalette) return;
       this._wiredCmdPalette = true;
       const search = () => this.querySelector(".c-command-palette__search");
       const list = () => this.querySelector(".c-command-palette__list");
@@ -1663,6 +1693,7 @@ class ContourCommandPalette extends ContourBase {
         if (!it) return;
         this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index: Number(it.dataset.index), label: it.dataset.label || it.textContent } }));
         try { this.hidePopover(); } catch (e) {}
+        this.classList.remove("is-open");
       };
       const s = search();
       if (s) {
@@ -1681,7 +1712,7 @@ class ContourCommandPalette extends ContourBase {
           else if (e.key === "Home") { e.preventDefault(); setActive(0); }
           else if (e.key === "End") { e.preventDefault(); setActive(vis.length - 1); }
           else if (e.key === "Enter") { e.preventDefault(); if (active) select(active); }
-          else if (e.key === "Escape") { e.preventDefault(); try { this.hidePopover(); } catch (e) {} }
+          else if (e.key === "Escape") { e.preventDefault(); try { this.hidePopover(); } catch (e) {} this.classList.remove("is-open"); }
         });
       }
       // click selection
