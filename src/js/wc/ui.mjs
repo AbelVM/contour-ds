@@ -1289,6 +1289,8 @@ class ContourDatePicker extends ContourBase {
     static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-date-picker");
+      this.setAttribute("role", "group");
+      this.setAttribute("aria-label", "Date picker");
       const label = this.getAttribute("label");
       if (label) {
         const l = this.ensure(".c-date-picker__label", () => { const el = document.createElement("label"); el.className = "c-date-picker__label"; return el; });
