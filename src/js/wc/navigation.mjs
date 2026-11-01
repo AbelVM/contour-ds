@@ -815,8 +815,13 @@ class ContourFilterBar extends ContourBase {
        // Render filter pills from items.
       Array.from(this.querySelectorAll(".c-filter-pill")).forEach((n) => n.remove());
       const items = remoteData(this, "items");
+      // Slotted content: authored .c-filter-pill children take precedence.
+      const authoredPills = Array.from(this.querySelectorAll(":scope > .c-filter-pill"));
       let parsed = null;
-      if (items) { try { parsed = JSON.parse(items); } catch (e) { parsed = null; } }
+      if (authoredPills.length) {
+        parsed = authoredPills.map((p) => p.textContent.trim());
+        authoredPills.forEach((p) => p.remove());
+      } else if (items) { try { parsed = JSON.parse(items); } catch (e) { parsed = null; } }
       if (Array.isArray(parsed)) {
         parsed.forEach((it) => {
           const pill = document.createElement("span");
