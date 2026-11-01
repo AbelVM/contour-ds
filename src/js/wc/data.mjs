@@ -1573,6 +1573,7 @@ class ContourCategory extends ContourBase {
     render() {
       this.classList.add("c-category");
       this.setAttribute("role", "listbox");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Category");
       wireStates(this);
       loadRemote(this, ["items"]);
       if (renderStates(this, "category")) return;
