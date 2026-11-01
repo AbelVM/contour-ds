@@ -1203,6 +1203,8 @@ class ContourDateRange extends ContourBase {
     static get properties() { return { start: { attribute: "start" }, end: { attribute: "end" }, label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-date-range");
+      this.setAttribute("role", "group");
+      this.setAttribute("aria-label", "Date range");
       const label = this.getAttribute("label");
       if (label) {
         const l = this.ensure(".c-date-range__label", () => { const el = document.createElement("span"); el.className = "c-date-range__label"; return el; });
