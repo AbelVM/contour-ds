@@ -666,6 +666,30 @@ class ContourAnimationControls extends ContourBase {
           this.dispatchEvent(new CustomEvent("contour:seek", { bubbles: true, composed: true, detail: { progress: v, value: v } }));
         }
       });
+      // Playback ownership: when `playing` is set, advance the playhead on a
+      // timer and emit contour:time-change so a consumer can sync its data.
+      let timer = null;
+      const speedFactor = () => {
+        const s = this.getAttribute("speed") || "1x";
+        const n = parseFloat(s);
+        return Number.isFinite(n) && n > 0 ? n : 1;
+      };
+      const tick = () => {
+        const scrubber = this.querySelector(".c-animation-controls__scrubber");
+        if (!scrubber) return;
+        const min = Number(scrubber.min || 0);
+        const max = Number(scrubber.max || 100);
+        let v = Number(scrubber.value || 0) + speedFactor();
+        if (v > max) v = min;
+        scrubber.value = String(v);
+        this.dispatchEvent(new CustomEvent("contour:time-change", { bubbles: true, composed: true, detail: { progress: v, value: v } }));
+      };
+      const start = () => { if (timer) return; timer = setInterval(tick, 100); };
+      const stop = () => { if (timer) { clearInterval(timer); timer = null; } };
+      if (this.hasAttribute("playing")) start();
+      const obs = new MutationObserver(() => { if (this.hasAttribute("playing")) start(); else stop(); });
+      obs.observe(this, { attributes: true, attributeFilter: ["playing"] });
+      onDispose(this, () => { stop(); obs.disconnect(); });
     }
   }
   define("contour-animation-controls", ContourAnimationControls);
