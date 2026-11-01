@@ -1631,6 +1631,8 @@ class ContourDonut extends ContourBase {
     static get properties() { return { value: { attribute: "value" }, values: { attribute: "values" }, items: { attribute: "items" }, label: { attribute: "label" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-donut");
+      this.setAttribute("role", "img");
+      this.setAttribute("aria-label", "Donut chart");
       wireStates(this);
       loadRemote(this, ["items", "values"]);
       if (renderStates(this, "donut")) return;
