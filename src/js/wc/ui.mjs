@@ -1809,7 +1809,7 @@ class ContourCommandPalette extends ContourBase {
       if (!this.hasAttribute("role")) this.setAttribute("role", "dialog");
       if (!this.hasAttribute("aria-modal")) this.setAttribute("aria-modal", "true");
       if (!this.hasAttribute("popover")) this.setAttribute("popover", "auto");
-      const search = this.ensure(".c-command-palette__search", () => { const el = document.createElement("input"); el.className = "c-input c-command-palette__search"; el.type = "search"; el.placeholder = "Search…"; return el; });
+      const search = this.ensure(".c-command-palette__search", () => { const el = document.createElement("input"); el.className = "c-input c-command-palette__search"; el.type = "search"; el.placeholder = "Search…"; el.setAttribute("aria-label", "Search commands"); return el; });
       const list = this.ensure(".c-command-palette__list", () => { const el = document.createElement("div"); el.className = "c-command-palette__list"; el.setAttribute("role", "listbox"); return el; });
       const items = this.getAttribute("items");
       if (items) {
