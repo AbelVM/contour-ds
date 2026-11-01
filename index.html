@@ -11535,6 +11535,39 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  <code class="c-kbd">src/js/wc/states.mjs</code>. A component that reads one of
                  these attributes but does not call <code class="c-kbd">wireStates</code> is a bug.
                </p>
+               <p class="c-section-head__desc">
+                 Property reflection: every component declares a <code class="c-kbd">properties</code>
+                 map (name → <code class="c-kbd">{ attribute, type }</code>), and
+                 <code class="c-kbd">ContourBase</code> installs accessors so
+                 <code class="c-kbd">el.value = 42</code> writes the attribute and triggers the
+                 normal re-render path. Types are <code class="c-kbd">String</code> (default),
+                 <code class="c-kbd">Number</code> and <code class="c-kbd">Boolean</code>; a
+                 <code class="c-kbd">null</code>/<code class="c-kbd">false</code> value removes the
+                 attribute. Components that observe an attribute but omit it from
+                 <code class="c-kbd">properties</code> are not reflectable — the
+                 <code class="c-kbd">wc-contract</code> gate flags the gap.
+               </p>
+               <p class="c-section-head__desc">
+                 Mutation and events: attributes are the public input; a consumer mutates them
+                 directly (<code class="c-kbd">el.setAttribute("variant", "danger")</code> or the
+                 reflected property) and the component re-renders. Interactive components emit
+                 the bubbling <code class="c-kbd">contour:*</code> events in the table above with
+                 <code class="c-kbd">composed: true</code>, so a parent — including one inside a
+                 shadow root — handles them without coupling to internals. Form controls use
+                 <code class="c-kbd">ElementInternals</code> and emit
+                 <code class="c-kbd">contour:input</code> / <code class="c-kbd">contour:change</code>
+                 with <code class="c-kbd">{ name, value, checked }</code>.
+               </p>
+               <p class="c-section-head__desc">
+                 Slots and parts: the <code class="c-kbd">contour-shadow-*</code> wrappers adopt the
+                 document's sheets and expose <code class="c-kbd">::part()</code> hooks for the
+                 named regions in their templates; slotted content is preserved across re-render
+                 because the base class snapshots authored nodes. Loading, error, empty and
+                 skeleton states are rendered through the shared
+                 <code class="c-kbd">wireStates</code> / <code class="c-kbd">renderStates</code>
+                 helpers, so a component that reads one of those attributes without calling
+                 <code class="c-kbd">wireStates</code> is a bug.
+               </p>
                <div class="c-table-wrap"><table class="c-table">
                  <caption>Shadow wrapper behaviour parity</caption>
                  <thead><tr><th>Behaviour</th><th>Wrappers</th><th>Parity</th></tr></thead>
@@ -11556,6 +11589,15 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  <code class="c-kbd">--color-*</code> / <code class="c-kbd">--chart-*</code> tokens on
                  <code class="c-kbd">:root</code>; the system publishes only the Contour names.
                </p>
+               <div class="c-table-wrap"><table class="c-table">
+                 <caption>Contour / Libreship ownership boundary</caption>
+                 <thead><tr><th>Concern</th><th>Owner</th></tr></thead>
+                 <tbody>
+                   <tr><td>Tokens, typography, surfaces, focus/target rules, buttons, fields, tables, overlays, layout primitives, chart grammar, optional WC wrappers</td><td>Contour</td></tr>
+                   <tr><td>MapLibre lifecycle, layer/model state, spatial transforms, worker pipelines, map-specific widgets, domain data visualisations</td><td>Libreship</td></tr>
+                   <tr><td>Shared primitive consumption</td><td>Libreship aliases <code class="c-kbd">--ls-*</code> onto Contour tokens; does not import Contour WCs</td></tr>
+                 </tbody>
+               </table></div>
             </div>
           </div>
 
@@ -11580,11 +11622,25 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                     <thead><tr><th>Event</th><th>Payload keys</th><th>Composed</th></tr></thead>
                     <tbody>
                       <tr><td><code>contour:activate</code></td><td>—</td><td>true</td></tr>
+                      <tr><td><code>contour:activity-select</code></td><td><code>index</code>, <code>text</code></td><td>true</td></tr>
                       <tr><td><code>contour:add</code></td><td><code>value</code></td><td>true</td></tr>
+                      <tr><td><code>contour:advanced-toggle</code></td><td><code>title</code></td><td>true</td></tr>
+                      <tr><td><code>contour:affordance-activate</code></td><td><code>name</code></td><td>true</td></tr>
+                      <tr><td><code>contour:aggregate</code></td><td><code>aggregate</code></td><td>true</td></tr>
                       <tr><td><code>contour:bearing</code></td><td><code>direction</code>, <code>degrees</code></td><td>true</td></tr>
-                      <tr><td><code>contour:change</code></td><td><code>name</code>, <code>value</code>, <code>checked</code></td><td>true</td></tr>
-                      <tr><td><code>contour:close</code></td><td>—</td><td>true</td></tr>
+                      <tr><td><code>contour:break-change</code></td><td><code>layer</code>, <code>value</code></td><td>true</td></tr>
+                      <tr><td><code>contour:brush-end</code></td><td><code>end</code>, <code>start</code>, <code>value</code></td><td>true</td></tr>
+                      <tr><td><code>contour:brush-start</code></td><td><code>end</code>, <code>start</code>, <code>value</code></td><td>true</td></tr>
+                      <tr><td><code>contour:btn-group-change</code></td><td><code>index</code>, <code>label</code></td><td>true</td></tr>
+                      <tr><td><code>contour:change</code></td><td><code>checked</code>, <code>color</code>, <code>direction</code>, <code>end</code>, <code>files</code>, <code>high</code>, <code>index</code>, <code>low</code>, <code>month</code>, <code>name</code>, <code>speed</code>, <code>start</code>, <code>unit</code>, <code>value</code>, <code>year</code></td><td>true</td></tr>
+                      <tr><td><code>contour:clear</code></td><td>—</td><td>true</td></tr>
+                      <tr><td><code>contour:close</code></td><td><code>index</code>, <code>label</code></td><td>true</td></tr>
                       <tr><td><code>contour:copy</code></td><td><code>text</code></td><td>true</td></tr>
+                      <tr><td><code>contour:dash-action</code></td><td><code>label</code></td><td>true</td></tr>
+                      <tr><td><code>contour:diff-activate</code></td><td><code>kind</code>, <code>text</code></td><td>true</td></tr>
+                      <tr><td><code>contour:do-dont-activate</code></td><td><code>kind</code>, <code>text</code></td><td>true</td></tr>
+                      <tr><td><code>contour:docs-nav-select</code></td><td><code>label</code>, <code>href</code></td><td>true</td></tr>
+                      <tr><td><code>contour:drag</code></td><td><code>delta</code>, <code>key</code>, <code>value</code></td><td>true</td></tr>
                       <tr><td><code>contour:dragend</code></td><td><code>value</code></td><td>true</td></tr>
                       <tr><td><code>contour:dragstart</code></td><td><code>value</code></td><td>true</td></tr>
                       <tr><td><code>contour:drop</code></td><td><code>value</code>, <code>label</code></td><td>true</td></tr>
@@ -11593,64 +11649,50 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                       <tr><td><code>contour:filter</code></td><td><code>query</code></td><td>true</td></tr>
                       <tr><td><code>contour:hide</code></td><td>—</td><td>true</td></tr>
                       <tr><td><code>contour:input</code></td><td><code>name</code>, <code>value</code>, <code>checked</code></td><td>true</td></tr>
-                      <tr><td><code>contour:layer-opacity</code></td><td><code>name</code>, <code>opacity</code></td><td>true</td></tr>
                       <tr><td><code>contour:layer-duplicate</code></td><td><code>name</code></td><td>true</td></tr>
-                       <tr><td><code>contour:layer-projection</code></td><td><code>name</code>, <code>projection</code></td><td>true</td></tr>
-                       <tr><td><code>contour:layer-remove</code></td><td><code>name</code></td><td>true</td></tr>
-                       <tr><td><code>contour:layer-reorder</code></td><td><code>layerIds</code></td><td>true</td></tr>
-                       <tr><td><code>contour:layer-rename</code></td><td><code>name</code>, <code>newName</code></td><td>true</td></tr>
-                      <tr><td><code>contour:layer-zoom</code></td><td><code>name</code></td><td>true</td></tr>
-                      <tr><td><code>contour:layer-toggle</code></td><td><code>name</code></td><td>true</td></tr>
+                      <tr><td><code>contour:layer-opacity</code></td><td><code>name</code>, <code>opacity</code></td><td>true</td></tr>
+                      <tr><td><code>contour:layer-projection</code></td><td><code>name</code>, <code>projection</code></td><td>true</td></tr>
+                      <tr><td><code>contour:layer-remove</code></td><td><code>name</code></td><td>true</td></tr>
+                      <tr><td><code>contour:layer-rename</code></td><td><code>name</code>, <code>newName</code></td><td>true</td></tr>
+                      <tr><td><code>contour:layer-reorder</code></td><td><code>layerIds</code></td><td>true</td></tr>
+                      <tr><td><code>contour:layer-toggle</code></td><td><code>name</code>, <code>visible</code></td><td>true</td></tr>
                       <tr><td><code>contour:layer-visibility</code></td><td><code>name</code>, <code>visible</code></td><td>true</td></tr>
-                      <tr><td><code>contour:legend-toggle</code></td><td><code>label</code>, <code>key</code>, <code>pressed</code></td><td>true</td></tr>
+                      <tr><td><code>contour:layer-zoom</code></td><td><code>name</code></td><td>true</td></tr>
+                      <tr><td><code>contour:legend-toggle</code></td><td><code>key</code>, <code>label</code>, <code>pressed</code></td><td>true</td></tr>
                       <tr><td><code>contour:load</code></td><td><code>src</code>, <code>count</code></td><td>true</td></tr>
-                       <tr><td><code>contour:map-control</code></td><td><code>control</code></td><td>true</td></tr>
-                       <tr><td><code>contour:mode-change</code></td><td><code>mode</code></td><td>true</td></tr>
-                      <tr><td><code>contour:map-attach</code></td><td><code>—</code></td><td>true</td></tr>
-                      <tr><td><code>contour:map-detach</code></td><td><code>—</code></td><td>true</td></tr>
-                      <tr><td><code>contour:move</code></td><td><code>direction</code></td><td>true</td></tr>
+                      <tr><td><code>contour:loop-change</code></td><td><code>loop</code></td><td>true</td></tr>
+                      <tr><td><code>contour:map-attach</code></td><td>—</td><td>true</td></tr>
+                      <tr><td><code>contour:map-control</code></td><td><code>control</code></td><td>true</td></tr>
+                      <tr><td><code>contour:map-detach</code></td><td>—</td><td>true</td></tr>
+                      <tr><td><code>contour:mode-change</code></td><td><code>mode</code></td><td>true</td></tr>
+                      <tr><td><code>contour:move</code></td><td><code>direction</code>, <code>from</code>, <code>to</code></td><td>true</td></tr>
                       <tr><td><code>contour:open</code></td><td>—</td><td>true</td></tr>
                       <tr><td><code>contour:page</code></td><td><code>page</code></td><td>true</td></tr>
-                      <tr><td><code>contour:ready</code></td><td><code>version</code>, <code>count</code></td><td>true</td></tr>
-                      <tr><td><code>contour:remove</code></td><td><code>label</code>, <code>key</code>, <code>value</code></td><td>true</td></tr>
-                      <tr><td><code>contour:reorder</code></td><td><code>from</code>, <code>to</code></td><td>true</td></tr>
-                      <tr><td><code>contour:retry</code></td><td><code>src</code></td><td>true</td></tr>
-                      <tr><td><code>contour:select</code></td><td><code>series</code>, <code>index</code>, <code>label</code>, <code>value</code></td><td>true</td></tr>
-                      <tr><td><code>contour:show</code></td><td>—</td><td>true</td></tr>
-                      <tr><td><code>contour:sort</code></td><td><code>column</code>, <code>direction</code></td><td>true</td></tr>
-                      <tr><td><code>contour:tab-change</code></td><td><code>index</code>, <code>label</code></td><td>true</td></tr>
-                      <tr><td><code>contour:stream-state</code></td><td><code>running</code></td><td>true</td></tr>
-                      <tr><td><code>contour:theme-change</code></td><td><code>theme</code></td><td>true</td></tr>
-                      <tr><td><code>contour:tick</code></td><td><code>frame</code></td><td>true</td></tr>
-                      <tr><td><code>contour:time-change</code></td><td><code>value</code></td><td>true</td></tr>
-                      <tr><td><code>contour:clear</code></td><td>—</td><td>true</td></tr>
-                      <tr><td><code>contour:loop-change</code></td><td><code>loop</code></td><td>true</td></tr>
                       <tr><td><code>contour:pause</code></td><td>—</td><td>true</td></tr>
                       <tr><td><code>contour:play</code></td><td>—</td><td>true</td></tr>
+                      <tr><td><code>contour:range-change</code></td><td><code>value</code></td><td>true</td></tr>
+                      <tr><td><code>contour:ready</code></td><td><code>version</code>, <code>count</code></td><td>true</td></tr>
+                      <tr><td><code>contour:remove</code></td><td><code>key</code>, <code>label</code>, <code>value</code></td><td>true</td></tr>
+                      <tr><td><code>contour:reorder</code></td><td><code>from</code>, <code>to</code></td><td>true</td></tr>
+                      <tr><td><code>contour:retry</code></td><td><code>src</code></td><td>true</td></tr>
                       <tr><td><code>contour:seek</code></td><td><code>progress</code>, <code>value</code></td><td>true</td></tr>
+                      <tr><td><code>contour:select</code></td><td><code>area</code>, <code>col</code>, <code>index</code>, <code>key</code>, <code>label</code>, <code>labels</code>, <code>path</code>, <code>row</code>, <code>rows</code>, <code>series</code>, <code>value</code></td><td>true</td></tr>
+                      <tr><td><code>contour:show</code></td><td>—</td><td>true</td></tr>
+                      <tr><td><code>contour:showcase-activate</code></td><td><code>title</code></td><td>true</td></tr>
+                      <tr><td><code>contour:sort</code></td><td><code>column</code>, <code>direction</code></td><td>true</td></tr>
                       <tr><td><code>contour:speed-change</code></td><td><code>speed</code></td><td>true</td></tr>
-                      <tr><td><code>contour:toggle</code></td><td><code>open</code>, <code>label</code></td><td>true</td></tr>
+                      <tr><td><code>contour:step-activate</code></td><td><code>index</code>, <code>title</code></td><td>true</td></tr>
+                      <tr><td><code>contour:step-change</code></td><td><code>direction</code>, <code>index</code>, <code>title</code></td><td>true</td></tr>
+                      <tr><td><code>contour:stream-state</code></td><td><code>running</code></td><td>true</td></tr>
+                      <tr><td><code>contour:style-resolved</code></td><td><code>applied</code>, <code>items</code>, <code>layer</code>, <code>property</code>, <code>value</code></td><td>true</td></tr>
+                      <tr><td><code>contour:tab-change</code></td><td><code>index</code>, <code>label</code></td><td>true</td></tr>
+                      <tr><td><code>contour:theme-change</code></td><td><code>theme</code></td><td>true</td></tr>
+                      <tr><td><code>contour:tick</code></td><td><code>frame</code></td><td>true</td></tr>
+                      <tr><td><code>contour:time-change</code></td><td><code>progress</code>, <code>value</code></td><td>true</td></tr>
+                      <tr><td><code>contour:time-range-change</code></td><td><code>value</code></td><td>true</td></tr>
+                      <tr><td><code>contour:toggle</code></td><td><code>expanded</code>, <code>label</code>, <code>open</code>, <code>path</code>, <code>playing</code></td><td>true</td></tr>
                       <tr><td><code>contour:view-enter</code></td><td>—</td><td>true</td></tr>
                       <tr><td><code>contour:view-leave</code></td><td>—</td><td>true</td></tr>
-                      <tr><td><code>contour:activity-select</code></td><td><code>index</code>, <code>text</code></td><td>true</td></tr>
-                      <tr><td><code>contour:break-change</code></td><td><code>value</code></td><td>true</td></tr>
-                      <tr><td><code>contour:style-resolved</code></td><td><code>value</code></td><td>true</td></tr>
-                      <tr><td><code>contour:advanced-toggle</code></td><td><code>title</code></td><td>true</td></tr>
-                      <tr><td><code>contour:affordance-activate</code></td><td><code>name</code></td><td>true</td></tr>
-                      <tr><td><code>contour:aggregate</code></td><td><code>aggregate</code></td><td>true</td></tr>
-                      <tr><td><code>contour:brush-end</code></td><td><code>value</code></td><td>true</td></tr>
-                      <tr><td><code>contour:brush-start</code></td><td><code>value</code></td><td>true</td></tr>
-                      <tr><td><code>contour:btn-group-change</code></td><td><code>index</code>, <code>label</code></td><td>true</td></tr>
-                      <tr><td><code>contour:dash-action</code></td><td><code>label</code></td><td>true</td></tr>
-                      <tr><td><code>contour:diff-activate</code></td><td><code>kind</code>, <code>text</code></td><td>true</td></tr>
-                      <tr><td><code>contour:drag</code></td><td><code>value</code></td><td>true</td></tr>
-                      <tr><td><code>contour:do-dont-activate</code></td><td><code>kind</code>, <code>text</code></td><td>true</td></tr>
-                      <tr><td><code>contour:docs-nav-select</code></td><td><code>label</code>, <code>href</code></td><td>true</td></tr>
-                      <tr><td><code>contour:range-change</code></td><td><code>value</code></td><td>true</td></tr>
-                      <tr><td><code>contour:showcase-activate</code></td><td><code>title</code></td><td>true</td></tr>
-                      <tr><td><code>contour:step-activate</code></td><td><code>index</code>, <code>title</code></td><td>true</td></tr>
-                      <tr><td><code>contour:step-change</code></td><td><code>index</code>, <code>title</code></td><td>true</td></tr>
-                      <tr><td><code>contour:time-range-change</code></td><td><code>value</code></td><td>true</td></tr>
                     </tbody>
                   </table>
                 </div>

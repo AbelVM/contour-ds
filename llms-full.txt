@@ -27,7 +27,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `105a56ffdaaa04b7` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `a8f1bea759b1b388` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -78,7 +78,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `105a56ffdaaa04b7` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `a8f1bea759b1b388` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -128,7 +128,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `105a56ffdaaa04b7` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `a8f1bea759b1b388` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -165,7 +165,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `105a56ffdaaa04b7` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `a8f1bea759b1b388` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -209,7 +209,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `105a56ffdaaa04b7` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `a8f1bea759b1b388` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -262,7 +262,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `105a56ffdaaa04b7` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `a8f1bea759b1b388` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -298,7 +298,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `105a56ffdaaa04b7` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `a8f1bea759b1b388` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -344,7 +344,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `105a56ffdaaa04b7` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `a8f1bea759b1b388` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -380,7 +380,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `105a56ffdaaa04b7` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `a8f1bea759b1b388` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -454,7 +454,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `105a56ffdaaa04b7` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `a8f1bea759b1b388` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -513,7 +513,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `105a56ffdaaa04b7` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `a8f1bea759b1b388` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -584,7 +584,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `105a56ffdaaa04b7` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `a8f1bea759b1b388` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -650,7 +650,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `105a56ffdaaa04b7` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `a8f1bea759b1b388` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -762,7 +762,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `105a56ffdaaa04b7` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `a8f1bea759b1b388` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -828,7 +828,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `105a56ffdaaa04b7` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `a8f1bea759b1b388` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -936,7 +936,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `105a56ffdaaa04b7` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `a8f1bea759b1b388` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1011,7 +1011,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `105a56ffdaaa04b7` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `a8f1bea759b1b388` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1052,7 +1052,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `105a56ffdaaa04b7` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `a8f1bea759b1b388` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1229,7 +1229,7 @@ part of the component contract and nothing in an installed package defines them:
 
 ---
 
-Source `index.html` @ `105a56ffdaaa04b7` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `a8f1bea759b1b388` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1341,7 +1341,7 @@ part of the component contract and nothing in an installed package defines them:
 
 ---
 
-Source `index.html` @ `105a56ffdaaa04b7` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `a8f1bea759b1b388` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1385,7 +1385,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `105a56ffdaaa04b7` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `a8f1bea759b1b388` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1459,7 +1459,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `105a56ffdaaa04b7` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `a8f1bea759b1b388` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1495,7 +1495,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `105a56ffdaaa04b7` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `a8f1bea759b1b388` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1521,6 +1521,12 @@ Composition: components never reach into one another. A host composes by nesting
 Shadow layer parity: the contour-shadow-* wrappers are a styling shell. They adopt the document's sheets and wire a small set of behaviours (tabs, segmented, combobox, tree, menu, pagination, copy, removable); the remaining wrappers provide ARIA setup only. Shadow tabs and code-tabs use a slot template and expect authored panels, unlike the light-DOM tabs which generate panels from the tabs attribute. Consumers who need full widget behaviour should use the light-DOM contour-* elements.
 
 Async-state contract: 60 components expose loading, error, empty, retry and skeleton attributes, rendered through the shared wireStates / renderStates helpers in src/js/wc/states.mjs. A component that reads one of these attributes but does not call wireStates is a bug.
+
+Property reflection: every component declares a properties map (name → { attribute, type }), and ContourBase installs accessors so el.value = 42 writes the attribute and triggers the normal re-render path. Types are String (default), Number and Boolean; a null/false value removes the attribute. Components that observe an attribute but omit it from properties are not reflectable — the wc-contract gate flags the gap.
+
+Mutation and events: attributes are the public input; a consumer mutates them directly (el.setAttribute("variant", "danger") or the reflected property) and the component re-renders. Interactive components emit the bubbling contour:* events in the table above with composed: true, so a parent — including one inside a shadow root — handles them without coupling to internals. Form controls use ElementInternals and emit contour:input / contour:change with { name, value, checked }.
+
+Slots and parts: the contour-shadow-* wrappers adopt the document's sheets and expose ::part() hooks for the named regions in their templates; slotted content is preserved across re-render because the base class snapshots authored nodes. Loading, error, empty and skeleton states are rendered through the shared wireStates / renderStates helpers, so a component that reads one of those attributes without calling wireStates is a bug.
 
 Token-name compatibility: consumers migrating from libreship may keep their --ls-* names by aliasing them onto the corresponding --color-* / --chart-* tokens on :root; the system publishes only the Contour names.
 
@@ -1584,7 +1590,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `105a56ffdaaa04b7` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `a8f1bea759b1b388` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1620,7 +1626,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `105a56ffdaaa04b7` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `a8f1bea759b1b388` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1665,7 +1671,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `105a56ffdaaa04b7` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `a8f1bea759b1b388` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1733,5 +1739,5 @@ outside it is undocumented by the thing meant to document it.
 
 ---
 
-Source `index.html` @ `105a56ffdaaa04b7` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `a8f1bea759b1b388` · last committed 2026-11-01T22:47:56+01:00 · no URL: the project is private until v1.0.
 
