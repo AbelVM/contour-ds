@@ -413,7 +413,7 @@ class ContourLayerPanel extends ContourBase {
 define("contour-layer-panel", ContourLayerPanel);
 class ContourTimeSlider extends ContourBase {
     static get observed() { return ["label", "value", "loop", "speed", "speeds", "show-loop", "loop-label", "current-time", "time-format", "is-playing"]; }
-    static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" }, src: { attribute: "src" } }; }
+    static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" }, distance: { attribute: "distance" }, resolution: { attribute: "resolution" }, latitude: { attribute: "latitude" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-time-slider");
       const play = this.ensure(".c-time-slider__play", () => {
@@ -1097,14 +1097,29 @@ class ContourMapFooter extends ContourBase {
   }
   define("contour-map-footer", ContourMapFooter);
 class ContourScaleBar extends ContourBase {
-    static get observed() { return ["label", "value", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" }, src: { attribute: "src" } }; }
+    static get observed() { return ["label", "value", "distance", "resolution", "latitude", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
+    static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" }, distance: { attribute: "distance" }, resolution: { attribute: "resolution" }, latitude: { attribute: "latitude" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-scale-bar");
       wireStates(this);
       loadRemote(this, ["label", "value"]);
       if (renderStates(this, "scale-bar")) return;
-      const label = remoteData(this, "label") || (this._remoteData && this._remoteData.label);
+      let value = remoteData(this, "value") || (this._remoteData && this._remoteData.value);
+      // BY-23: derive the bar width from map resolution + latitude when the
+      // author gives a resolution (meters per pixel) instead of a raw pixel
+      // length. A scale bar is a ground distance, so its pixel length is
+      // distance / resolution; latitude is recorded for the Mercator-aware
+      // consumers that read it back.
+      const resolution = parseFloat(this.getAttribute("resolution"));
+      let derivedLabel = null;
+      if (Number.isFinite(resolution) && resolution > 0) {
+        const distance = parseFloat(this.getAttribute("distance")) || 1000;
+        value = String(Math.round(distance / resolution));
+        if (!this.getAttribute("label") && !remoteData(this, "label")) {
+          derivedLabel = distance >= 1000 ? (distance / 1000) + " km" : distance + " m";
+        }
+      }
+      const label = derivedLabel || remoteData(this, "label") || (this._remoteData && this._remoteData.label);
       if (label) {
         const l = this.ensure(".c-scale-bar__label", () => { const el = document.createElement("span"); el.className = "c-scale-bar__label"; return el; });
         l.textContent = label;
@@ -1112,7 +1127,6 @@ class ContourScaleBar extends ContourBase {
         const l = this.querySelector(".c-scale-bar__label");
         if (l) l.remove();
       }
-      const value = remoteData(this, "value") || (this._remoteData && this._remoteData.value);
       if (!value) {
         renderEmpty(this, "scale-bar");
         return;
