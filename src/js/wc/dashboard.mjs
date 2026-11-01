@@ -106,6 +106,18 @@ class ContourDashKpiRow extends ContourBase {
         this.appendChild(k);
       }
     }
+    enhance() {
+      if (this._wiredDashKpiRow) return;
+      this._wiredDashKpiRow = true;
+      this.addEventListener("click", (e) => {
+        const kpi = e.target && e.target.closest ? e.target.closest("contour-kpi") : null;
+        if (kpi && this.contains(kpi)) {
+          const kpis = Array.from(this.querySelectorAll("contour-kpi"));
+          const idx = kpis.indexOf(kpi);
+          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index: idx } }));
+        }
+      });
+    }
   }
   define("contour-dash-kpi-row", ContourDashKpiRow);
 class ContourDashFreshness extends ContourBase {

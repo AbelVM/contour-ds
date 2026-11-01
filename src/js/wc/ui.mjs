@@ -611,6 +611,19 @@ class ContourMapPopup extends ContourBase {
         const c = this.ensure(".c-map-popup__body", () => { const el = document.createElement("div"); el.className = "c-map-popup__body"; return el; });
         c.textContent = content;
       }
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", title || "Map popup");
+    }
+    enhance() {
+      if (this._wiredMapPopup) return;
+      this._wiredMapPopup = true;
+      const close = () => { try { this.hidePopover(); } catch (e) {} this.classList.remove("is-open"); this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true })); };
+      const keyHandler = (e) => { if (e.key === "Escape") { e.preventDefault(); close(); } };
+      document.addEventListener("keydown", keyHandler);
+      onDispose(this, () => document.removeEventListener("keydown", keyHandler));
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest(".c-map-popup__close") : null;
+        if (btn && this.contains(btn)) close();
+      });
     }
   }
   define("contour-map-popup", ContourMapPopup);
@@ -1150,7 +1163,24 @@ class ContourSplitButton extends ContourBase {
         const t = toggle();
         if (e.target === t || (t && t.contains(e.target))) {
           const m = menu();
+          if (m) { m.hidden = !m.hidden; t.setAttribute("aria-expanded", String(!m.hidden)); this.dispatchEvent(new CustomEvent("contour:toggle", { bubbles: true, composed: true, detail: { open: !m.hidden } })); }
+        }
+        const item = e.target && e.target.closest ? e.target.closest(".c-menu__item") : null;
+        if (item && this.contains(item)) {
+          const m = menu();
+          if (m) { m.hidden = true; const t = toggle(); if (t) t.setAttribute("aria-expanded", "false"); }
+          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { label: item.textContent } }));
+        }
+      });
+      this.addEventListener("keydown", (e) => {
+        const t = toggle();
+        if ((e.target === t || (t && t.contains(e.target))) && (e.key === "Enter" || e.key === " ")) {
+          e.preventDefault();
+          const m = menu();
           if (m) { m.hidden = !m.hidden; t.setAttribute("aria-expanded", String(!m.hidden)); }
+        } else if (e.key === "Escape") {
+          const m = menu();
+          if (m && !m.hidden) { m.hidden = true; if (t) t.setAttribute("aria-expanded", "false"); }
         }
       });
       const docClick = (e) => {
@@ -1289,6 +1319,18 @@ class ContourPopover extends ContourBase {
         const c = this.ensure(".c-popover__body", () => { const el = document.createElement("div"); el.className = "c-popover__body"; return el; });
         c.textContent = content;
       }
+    }
+    enhance() {
+      if (this._wiredPopover) return;
+      this._wiredPopover = true;
+      const close = () => { try { this.hidePopover(); } catch (e) {} this.classList.remove("is-open"); this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true })); };
+      const keyHandler = (e) => { if (e.key === "Escape") { e.preventDefault(); close(); } };
+      document.addEventListener("keydown", keyHandler);
+      onDispose(this, () => document.removeEventListener("keydown", keyHandler));
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest(".c-popover__close") : null;
+        if (btn && this.contains(btn)) close();
+      });
     }
   }
   define("contour-popover", ContourPopover);
@@ -1515,10 +1557,17 @@ class ContourHoverCard extends ContourBase {
           trigger.setAttribute("popovertarget", this.id);
           let showTimer = null;
           const hasPopover = typeof this.showPopover === "function";
-          trigger.addEventListener("mouseenter", () => { showTimer = setTimeout(() => { if (hasPopover) { try { this.showPopover(); } catch (e) {} } else this.classList.add("is-open"); }, 300); });
-          trigger.addEventListener("mouseleave", () => { if (showTimer) clearTimeout(showTimer); if (hasPopover) { try { this.hidePopover(); } catch (e) {} } else this.classList.remove("is-open"); });
+          const show = () => { if (hasPopover) { try { this.showPopover(); } catch (e) {} } else this.classList.add("is-open"); this.dispatchEvent(new CustomEvent("contour:open", { bubbles: true, composed: true })); };
+          const hide = () => { if (showTimer) clearTimeout(showTimer); if (hasPopover) { try { this.hidePopover(); } catch (e) {} } else this.classList.remove("is-open"); this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true })); };
+          trigger.addEventListener("mouseenter", () => { showTimer = setTimeout(show, 300); });
+          trigger.addEventListener("mouseleave", () => { hide(); });
+          trigger.addEventListener("focus", show);
+          trigger.addEventListener("blur", () => { setTimeout(hide, 100); });
         }
       }
+      const keyHandler = (e) => { if (e.key === "Escape") { e.preventDefault(); if (typeof this.hidePopover === "function") { try { this.hidePopover(); } catch (err) {} } this.classList.remove("is-open"); this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true })); } };
+      document.addEventListener("keydown", keyHandler);
+      onDispose(this, () => document.removeEventListener("keydown", keyHandler));
     }
   }
   define("contour-hover-card", ContourHoverCard);
@@ -1592,6 +1641,9 @@ class ContourFab extends ContourBase {
       this._wiredFab = true;
       this.addEventListener("click", () => {
         this.dispatchEvent(new CustomEvent("contour:activate", { bubbles: true, composed: true }));
+      });
+      this.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); this.dispatchEvent(new CustomEvent("contour:activate", { bubbles: true, composed: true })); }
       });
     }
   }
@@ -1673,7 +1725,13 @@ class ContourNotificationCenter extends ContourBase {
         const btn = this.querySelector(".c-notification-center__trigger");
         const panel = this.querySelector(".c-notification-center__panel");
         if (btn && (e.target === btn || btn.contains(e.target))) {
-          if (panel) { panel.hidden = !panel.hidden; btn.setAttribute("aria-expanded", String(!panel.hidden)); }
+          if (panel) { panel.hidden = !panel.hidden; btn.setAttribute("aria-expanded", String(!panel.hidden)); this.dispatchEvent(new CustomEvent(panel.hidden ? "contour:close" : "contour:open", { bubbles: true, composed: true })); }
+        }
+      });
+      this.addEventListener("click", (e) => {
+        const item = e.target && e.target.closest ? e.target.closest(".c-notification-center__item") : null;
+        if (item && this.contains(item)) {
+          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { label: item.textContent } }));
         }
       });
       const docClick = (e) => {
@@ -1710,8 +1768,15 @@ class ContourStepper extends ContourBase {
       const current = Number(this.getAttribute("current") || 0);
       const list = this.ensure(".c-stepper__list", () => { const el = document.createElement("ol"); el.className = "c-stepper__list"; return el; });
       list.innerHTML = "";
+      // Slotted content: authored .c-stepper__step children take precedence.
+      const authoredSteps = Array.from(this.querySelectorAll(":scope > .c-stepper__step"));
       let parsed = [];
-      try { parsed = steps ? JSON.parse(steps) : []; } catch (e) { parsed = []; }
+      if (authoredSteps.length) {
+        parsed = authoredSteps.map((el) => el.textContent.trim());
+        authoredSteps.forEach((el) => el.remove());
+      } else {
+        try { parsed = steps ? JSON.parse(steps) : []; } catch (e) { parsed = []; }
+      }
       parsed.forEach((s, i) => {
         const li = document.createElement("li");
         li.className = "c-stepper__step" + (i === current ? " is-current" : "") + (i < current ? " is-done" : "");
@@ -1730,10 +1795,8 @@ class ContourStepper extends ContourBase {
       if (this._wiredStepper) return;
       this._wiredStepper = true;
       const go = (dir) => {
-        const steps = this.getAttribute("steps");
-        let parsed = [];
-        try { parsed = steps ? JSON.parse(steps) : []; } catch (e) { parsed = []; }
-        const total = parsed.length;
+        const list = this.querySelector(".c-stepper__list");
+        const total = list ? list.querySelectorAll(".c-stepper__step").length : 0;
         if (!total) return;
         let cur = Number(this.getAttribute("current") || 0);
         if (dir === "prev") cur = Math.max(0, cur - 1);
@@ -1770,7 +1833,9 @@ class ContourVirtualList extends ContourBase {
     }
     render() {
       this.classList.add("c-virtual-list");
+      this.setAttribute("role", "list");
       const scroller = this.ensure(".c-virtual-list__scroller", () => { const el = document.createElement("div"); el.className = "c-virtual-list__scroller"; return el; });
+      scroller.setAttribute("role", "presentation");
       const inner = this.ensure(".c-virtual-list__inner", () => { const el = document.createElement("div"); el.className = "c-virtual-list__inner"; el.style.position = "relative"; return el; });
       if (inner.parentNode !== scroller) scroller.appendChild(inner);
       this._renderWindow(scroller, inner, scroller.scrollTop || 0);
@@ -1787,6 +1852,7 @@ class ContourVirtualList extends ContourBase {
       const end = Math.min(total, start + visibleCount);
       const topSpacerH = start * ih;
       const bottomSpacerH = Math.max(0, (total - end) * ih);
+      this.setAttribute("aria-rowcount", String(total));
       inner.innerHTML = "";
       const top = document.createElement("div");
       top.className = "c-virtual-list__spacer c-virtual-list__spacer--top";
@@ -1795,6 +1861,9 @@ class ContourVirtualList extends ContourBase {
       for (let i = start; i < end; i++) {
         const row = document.createElement("div");
         row.className = "c-virtual-list__item";
+        row.setAttribute("role", "listitem");
+        row.setAttribute("aria-rowindex", String(i + 1));
+        row.setAttribute("tabindex", i === 0 ? "0" : "-1");
         row.textContent = typeof items[i] === "string" ? items[i] : (items[i].label || items[i].text || JSON.stringify(items[i]));
         row.dataset.index = String(i);
         inner.appendChild(row);
@@ -1824,6 +1893,34 @@ class ContourVirtualList extends ContourBase {
         s.addEventListener("scroll", onScroll, { passive: true });
         onDispose(this, () => { s.removeEventListener("scroll", onScroll); if (raf) cancelAnimationFrame(raf); });
       }
+      // keyboard + selection
+      this.addEventListener("keydown", (e) => {
+        const rows = Array.from(this.querySelectorAll(".c-virtual-list__item"));
+        if (!rows.length) return;
+        const active = this.querySelector(".c-virtual-list__item:focus") || rows[0];
+        const idx = rows.indexOf(active);
+        let next = -1;
+        if (e.key === "ArrowDown") next = Math.min(idx + 1, rows.length - 1);
+        else if (e.key === "ArrowUp") next = Math.max(idx - 1, 0);
+        else if (e.key === "Home") next = 0;
+        else if (e.key === "End") next = rows.length - 1;
+        else if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          const i = Number(active.dataset.index);
+          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index: i, value: active.textContent } }));
+          return;
+        }
+        if (next < 0 || next === idx) return;
+        e.preventDefault();
+        rows.forEach((r, i) => r.setAttribute("tabindex", i === next ? "0" : "-1"));
+        try { rows[next].focus(); } catch (err) {}
+      });
+      this.addEventListener("click", (e) => {
+        const row = e.target && e.target.closest ? e.target.closest(".c-virtual-list__item") : null;
+        if (!row || !this.contains(row)) return;
+        const i = Number(row.dataset.index);
+        this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index: i, value: row.textContent } }));
+      });
     }
   }
   define("contour-virtual-list", ContourVirtualList);

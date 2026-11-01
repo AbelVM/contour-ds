@@ -1354,4 +1354,19 @@
     max-inline-size: 68ch;
     overflow-wrap: anywhere;
   }
+
+}
+
+/* Guide-only: render fixed-position components in flow so specimens do not
+   overlay the guide (side-sheet, FAB, command palette). */
+.ds-example .c-side-sheet,
+.ds-example .c-fab,
+.ds-example .c-command-palette {
+  position: static !important;
+  inset: auto !important;
+  transform: none !important;
+}
+.ds-example .c-side-sheet {
+  inline-size: 100%;
+  max-inline-size: 24rem;
 }

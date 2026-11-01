@@ -892,7 +892,7 @@
   // "unit","relative") or a JSON string of Intl.NumberFormat/DateTimeFormat/
   // RelativeTimeFormat options. `locale` defaults to the runtime locale.
   // Returns the raw value when formatting fails.
-  export function formatValue(value, format, locale) {
+  export function formatValue(value, format, locale, unit) {
     if (!format) return value;
     const loc = locale || (typeof navigator !== "undefined" && navigator.language) || "en";
     if (format === "date" || format === "time") {
@@ -921,7 +921,7 @@
     if (format === "currency") opts = { style: "currency", currency: "USD" };
     else if (format === "percent") opts = { style: "percent" };
     else if (format === "compact") opts = { notation: "compact" };
-    else if (format === "unit") opts = { style: "unit", unit: "meter" };
+    else if (format === "unit") opts = { style: "unit", unit: unit || "meter" };
     else if (format !== "number") {
       try { opts = JSON.parse(format); } catch (e) { return value; }
     }

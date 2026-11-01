@@ -104,6 +104,7 @@ class ContourMinimap extends ContourBase {
     enhance() {
       if (this._wiredMinimap) return;
       this._wiredMinimap = true;
+      if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
       let dragging = false;
       this.addEventListener("pointerdown", (e) => {
         const vp = this.querySelector(".c-minimap__viewport");
@@ -116,6 +117,18 @@ class ContourMinimap extends ContourBase {
         this.dispatchEvent(new CustomEvent("contour:move", { detail: { direction: "drag" }, bubbles: true, composed: true }));
       });
       this.addEventListener("pointerup", () => { dragging = false; });
+      this.addEventListener("keydown", (e) => {
+        let dir = null;
+        if (e.key === "ArrowUp") dir = "up";
+        else if (e.key === "ArrowDown") dir = "down";
+        else if (e.key === "ArrowLeft") dir = "left";
+        else if (e.key === "ArrowRight") dir = "right";
+        else if (e.key === "Home") dir = "home";
+        else if (e.key === "End") dir = "end";
+        if (!dir) return;
+        e.preventDefault();
+        this.dispatchEvent(new CustomEvent("contour:move", { detail: { direction: dir }, bubbles: true, composed: true }));
+      });
     }
   }
 define("contour-minimap", ContourMinimap);
@@ -794,6 +807,12 @@ class ContourCatchment extends ContourBase {
       if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
       this.addEventListener("focusin", showTip);
       this.addEventListener("focusout", hideTip);
+      this.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { area: this.getAttribute("area") } }));
+        }
+      });
     }
   }
 define("contour-catchment", ContourCatchment);
