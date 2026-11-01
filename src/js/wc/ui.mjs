@@ -2203,11 +2203,34 @@ class ContourDataGrid extends ContourBase {
     enhance() {
       if (this._wiredDataGrid) return;
       this._wiredDataGrid = true;
+      let sortCol = -1, sortDir = "asc";
       this.addEventListener("click", (e) => {
         const th = e.target && e.target.closest ? e.target.closest("th") : null;
         if (th && this.contains(th)) {
           const idx = Array.from(th.parentElement.children).indexOf(th);
-          this.dispatchEvent(new CustomEvent("contour:sort", { bubbles: true, composed: true, detail: { column: idx, direction: "asc" } }));
+          if (sortCol === idx) sortDir = sortDir === "asc" ? "desc" : "asc";
+          else { sortCol = idx; sortDir = "asc"; }
+          // Re-render sorted rows.
+          const table = this.querySelector(".c-data-grid__table");
+          const tbody = table && table.querySelector("tbody");
+          const thead = table && table.querySelector("thead");
+          if (tbody && thead) {
+            const cols = Array.from(thead.querySelectorAll("th")).map((h) => h.textContent);
+            const rows = Array.from(tbody.querySelectorAll("tr")).map((tr) => Array.from(tr.querySelectorAll("td")).map((td) => td.textContent));
+            rows.sort((a, b) => {
+              const va = a[idx] || "", vb = b[idx] || "";
+              const na = Number(va), nb = Number(vb);
+              const cmp = (!isNaN(na) && !isNaN(nb)) ? na - nb : String(va).localeCompare(String(vb));
+              return sortDir === "asc" ? cmp : -cmp;
+            });
+            tbody.innerHTML = "";
+            rows.forEach((r) => {
+              const tr = document.createElement("tr");
+              r.forEach((v) => { const td = document.createElement("td"); td.textContent = v; tr.appendChild(td); });
+              tbody.appendChild(tr);
+            });
+          }
+          this.dispatchEvent(new CustomEvent("contour:sort", { bubbles: true, composed: true, detail: { column: idx, direction: sortDir } }));
         }
       });
     }
