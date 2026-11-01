@@ -75,6 +75,8 @@ class ContourMinimap extends ContourBase {
     static get properties() { return { label: { attribute: "label" }, viewport: { attribute: "viewport" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-minimap");
+      this.setAttribute("role", "img");
+      this.setAttribute("aria-label", "Minimap");
       wireStates(this);
       loadRemote(this, ["label", "viewport"]);
       if (renderStates(this, "minimap")) return;
@@ -189,6 +191,8 @@ class ContourLayerPanel extends ContourBase {
     static get properties() { return { label: { attribute: "label" }, items: { attribute: "items" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-layer-panel");
+      this.setAttribute("role", "group");
+      this.setAttribute("aria-label", "Layer panel");
       wireStates(this);
       loadRemote(this, "items");
       if (renderStates(this, "layer-panel")) return;
