@@ -348,12 +348,28 @@ class ContourLayerPanel extends ContourBase {
          if (!item) return;
          const name = item.querySelector(".c-layer-panel__name")?.textContent || "";
          if (btn.classList.contains("c-layer-panel__rename")) {
-           const newName = prompt("Rename layer", name);
-           const trimmed = newName ? newName.trim() : "";
-           if (trimmed && trimmed !== name) {
-             const nm = item.querySelector(".c-layer-panel__name");
-             if (nm) nm.textContent = trimmed;
-             this.dispatchEvent(new CustomEvent("contour:layer-rename", { bubbles: true, composed: true, detail: { name, newName: trimmed } }));
+           const nm = item.querySelector(".c-layer-panel__name");
+           if (nm) {
+             const input = document.createElement("input");
+             input.type = "text";
+             input.className = "c-input c-layer-panel__rename-input";
+             input.value = name;
+             input.setAttribute("aria-label", "Rename layer");
+             nm.replaceWith(input);
+             input.focus();
+             input.select();
+             const commit = () => {
+               const trimmed = (input.value || "").trim();
+               const span = document.createElement("span");
+               span.className = "c-layer-panel__name";
+               span.textContent = trimmed || name;
+               input.replaceWith(span);
+               if (trimmed && trimmed !== name) {
+                 this.dispatchEvent(new CustomEvent("contour:layer-rename", { bubbles: true, composed: true, detail: { name, newName: trimmed } }));
+               }
+             };
+             input.addEventListener("keydown", (ev) => { if (ev.key === "Enter") { ev.preventDefault(); commit(); } else if (ev.key === "Escape") { ev.preventDefault(); input.value = name; commit(); } });
+             input.addEventListener("blur", commit, { once: true });
            }
          } else if (btn.classList.contains("c-layer-panel__duplicate")) {
            this.dispatchEvent(new CustomEvent("contour:layer-duplicate", { bubbles: true, composed: true, detail: { name } }));

@@ -963,7 +963,30 @@ export function wireCopy(host) {
       }, 1600);
       onDispose(host, () => clearTimeout(timer));
     };
-    if (navigator.clipboard) navigator.clipboard.writeText(text).then(() => confirm(true)).catch(() => confirm(false));
+    const doCopy = async () => {
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(text);
+          return true;
+        }
+      } catch (e) { /* fall through */ }
+      try {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.setAttribute("readonly", "");
+        ta.style.position = "fixed";
+        ta.style.top = "-9999px";
+        ta.style.opacity = "0";
+        document.body.append(ta);
+        ta.select();
+        const ok = document.execCommand("copy");
+        ta.remove();
+        return ok;
+      } catch (e) {
+        return false;
+      }
+    };
+    doCopy().then((ok) => confirm(ok));
     wcEmit(host, "contour:copy", { text });
   });
 }
