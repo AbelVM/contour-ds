@@ -118,10 +118,10 @@ const BUDGETS = {
   "agent-rules.json": 12 * 1024,
   "surfaces/contour-core.min.css": 140 * 1024,  // raised 2026-10-29: +vertical tabs + close button CSS; measured 122.1 kB
   "surfaces/contour-docs.min.css": 152 * 1024,  // raised 2026-11-01: +specimens; measured 151.0 kB
-  "surfaces/contour-data.min.css": 182 * 1024,  // raised 2026-11-01: +legend caption; measured 180.1 kB
+  "surfaces/contour-data.min.css": 183 * 1024,  // raised 2026-11-01: +pivot toolbar; measured 182.1 kB
   "surfaces/contour-landing.min.css": 146 * 1024,  // raised 2026-10-29: +CSS rules propagate; measured 129.1 kB
   "contour.esm.min.js": 39 * 1024,
-  "contour-wc.esm.min.js": 496 * 1024,  // raised 2026-11-01: +ARIA roles; measured 494.1 kB
+  "contour-wc.esm.min.js": 503 * 1024,  // raised 2026-11-01: +carousel/number-field; measured 502.0 kB
 };
 
 const kB = (n) => `${(n / 1024).toFixed(1)} kB`;

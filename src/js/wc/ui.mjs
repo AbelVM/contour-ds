@@ -1415,11 +1415,15 @@ class ContourNumberField extends ContourBase {
         const l = this.ensure(".c-number-field__label", () => { const el = document.createElement("label"); el.className = "c-number-field__label"; return el; });
         l.textContent = label;
       }
-      const input = this.ensure(".c-number-field__input", () => { const el = document.createElement("input"); el.className = "c-input c-number-field__input"; el.type = "number"; return el; });
+      const input = this.ensure(".c-number-field__input", () => { const el = document.createElement("input"); el.className = "c-input c-number-field__input"; el.type = "number"; el.setAttribute("role", "spinbutton"); return el; });
       if (this.getAttribute("value") !== null) input.value = this.getAttribute("value");
       if (this.getAttribute("min") !== null) input.min = this.getAttribute("min");
       if (this.getAttribute("max") !== null) input.max = this.getAttribute("max");
       if (this.getAttribute("step") !== null) input.step = this.getAttribute("step");
+      const v = input.value;
+      input.setAttribute("aria-valuenow", v === "" ? "" : v);
+      if (input.min !== "") input.setAttribute("aria-valuemin", input.min);
+      if (input.max !== "") input.setAttribute("aria-valuemax", input.max);
     }
     enhance() {
       if (this._wiredNumberField) return;
@@ -1428,6 +1432,25 @@ class ContourNumberField extends ContourBase {
         const t = e.target;
         if (t && t.classList.contains("c-number-field__input")) {
           this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: t.value } }));
+        }
+      });
+      this.addEventListener("keydown", (e) => {
+        const input = this.querySelector(".c-number-field__input");
+        if (!input || document.activeElement !== input) return;
+        const step = Number(input.step) || 1;
+        const min = input.min === "" ? -Infinity : Number(input.min);
+        const max = input.max === "" ? Infinity : Number(input.max);
+        let next = null;
+        if (e.key === "ArrowUp") next = (Number(input.value) || 0) + step;
+        else if (e.key === "ArrowDown") next = (Number(input.value) || 0) - step;
+        else if (e.key === "Home") next = min === -Infinity ? 0 : min;
+        else if (e.key === "End") next = max === Infinity ? (Number(input.value) || 0) : max;
+        if (next !== null) {
+          e.preventDefault();
+          next = Math.min(max, Math.max(min, next));
+          input.value = String(next);
+          input.setAttribute("aria-valuenow", String(next));
+          this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: input.value } }));
         }
       });
     }
@@ -1671,11 +1694,27 @@ class ContourStepper extends ContourBase {
     enhance() {
       if (this._wiredStepper) return;
       this._wiredStepper = true;
+      const go = (dir) => {
+        const steps = this.getAttribute("steps");
+        let parsed = [];
+        try { parsed = steps ? JSON.parse(steps) : []; } catch (e) { parsed = []; }
+        const total = parsed.length;
+        if (!total) return;
+        let cur = Number(this.getAttribute("current") || 0);
+        if (dir === "prev") cur = Math.max(0, cur - 1);
+        else cur = Math.min(total - 1, cur + 1);
+        this.setAttribute("current", String(cur));
+        this.dispatchEvent(new CustomEvent("contour:step-change", { bubbles: true, composed: true, detail: { direction: dir, index: cur } }));
+      };
       this.addEventListener("click", (e) => {
         const prev = e.target && e.target.closest ? e.target.closest(".c-stepper__prev") : null;
         const next = e.target && e.target.closest ? e.target.closest(".c-stepper__next") : null;
-        if (prev && this.contains(prev)) this.dispatchEvent(new CustomEvent("contour:step-change", { bubbles: true, composed: true, detail: { direction: "prev" } }));
-        if (next && this.contains(next)) this.dispatchEvent(new CustomEvent("contour:step-change", { bubbles: true, composed: true, detail: { direction: "next" } }));
+        if (prev && this.contains(prev)) go("prev");
+        if (next && this.contains(next)) go("next");
+      });
+      this.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowLeft") { e.preventDefault(); go("prev"); }
+        else if (e.key === "ArrowRight") { e.preventDefault(); go("next"); }
       });
     }
   }
@@ -2265,36 +2304,65 @@ class ContourCalendar extends ContourBase {
 class ContourCarousel extends ContourBase {
     static get observed() { return ["items", "index"]; }
     static get properties() { return { items: { attribute: "items" }, index: { attribute: "index" } }; }
+    _items() {
+      const items = this.getAttribute("items");
+      let parsed = [];
+      try { parsed = items ? JSON.parse(items) : []; } catch (e) { parsed = []; }
+      return Array.isArray(parsed) ? parsed : [];
+    }
+    _index() {
+      const i = Number(this.getAttribute("index"));
+      const items = this._items();
+      if (Number.isFinite(i) && i >= 0 && i < items.length) return i;
+      return 0;
+    }
     render() {
       this.classList.add("c-carousel");
       this.setAttribute("role", "region");
       this.setAttribute("aria-roledescription", "carousel");
       const track = this.ensure(".c-carousel__track", () => { const el = document.createElement("div"); el.className = "c-carousel__track"; el.setAttribute("role", "group"); el.setAttribute("aria-roledescription", "slide container"); return el; });
-      const items = this.getAttribute("items");
-      let parsed = [];
-      try { parsed = items ? JSON.parse(items) : []; } catch (e) { parsed = []; }
+      const items = this._items();
       track.innerHTML = "";
-      parsed.forEach((it, i) => {
+      const idx = this._index();
+      items.forEach((it, i) => {
         const slide = document.createElement("div");
-        slide.className = "c-carousel__slide";
+        slide.className = "c-carousel__slide" + (i === idx ? " is-active" : "");
         slide.setAttribute("role", "group");
         slide.setAttribute("aria-roledescription", "slide");
-        slide.setAttribute("aria-label", (i + 1) + " of " + parsed.length);
+        slide.setAttribute("aria-label", (i + 1) + " of " + items.length);
+        slide.setAttribute("aria-hidden", i === idx ? "false" : "true");
         slide.textContent = typeof it === "string" ? it : (it.label || it.text || "");
         slide.dataset.index = String(i);
         track.appendChild(slide);
       });
-      const prev = this.ensure(".c-carousel__prev", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-carousel__prev"; el.type = "button"; el.textContent = "‹"; return el; });
-      const next = this.ensure(".c-carousel__next", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-carousel__next"; el.type = "button"; el.textContent = "›"; return el; });
+      const prev = this.ensure(".c-carousel__prev", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-carousel__prev"; el.type = "button"; el.textContent = "‹"; el.setAttribute("aria-label", "Previous slide"); return el; });
+      const next = this.ensure(".c-carousel__next", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-carousel__next"; el.type = "button"; el.textContent = "›"; el.setAttribute("aria-label", "Next slide"); return el; });
+      const status = this.ensure(".c-carousel__status", () => { const el = document.createElement("span"); el.className = "c-carousel__status"; el.setAttribute("aria-live", "polite"); return el; });
+      status.textContent = (idx + 1) + " of " + items.length;
     }
     enhance() {
       if (this._wiredCarousel) return;
       this._wiredCarousel = true;
+      const go = (dir) => {
+        const items = this._items();
+        if (!items.length) return;
+        let idx = this._index();
+        if (dir === "prev") idx = (idx - 1 + items.length) % items.length;
+        else idx = (idx + 1) % items.length;
+        this.setAttribute("index", String(idx));
+        this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { index: idx, direction: dir } }));
+      };
       this.addEventListener("click", (e) => {
         const prev = e.target && e.target.closest ? e.target.closest(".c-carousel__prev") : null;
         const next = e.target && e.target.closest ? e.target.closest(".c-carousel__next") : null;
-        if (prev && this.contains(prev)) this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { direction: "prev" } }));
-        if (next && this.contains(next)) this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { direction: "next" } }));
+        if (prev && this.contains(prev)) go("prev");
+        if (next && this.contains(next)) go("next");
+      });
+      this.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowLeft") { e.preventDefault(); go("prev"); }
+        else if (e.key === "ArrowRight") { e.preventDefault(); go("next"); }
+        else if (e.key === "Home") { e.preventDefault(); this.setAttribute("index", "0"); this.render(); this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { index: 0, direction: "home" } })); }
+        else if (e.key === "End") { e.preventDefault(); const last = this._items().length - 1; if (last >= 0) { this.setAttribute("index", String(last)); this.render(); this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { index: last, direction: "end" } })); } }
       });
     }
   }

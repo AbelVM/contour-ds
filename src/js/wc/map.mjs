@@ -154,7 +154,7 @@ class ContourCoordinate extends ContourBase {
       } else {
         text = formatValue(value, this.getAttribute("format"), this.getAttribute("locale"));
       }
-      const span = this.ensure(".c-coordinate__value", () => { const el = document.createElement("span"); el.className = "c-coordinate__value"; return el; });
+      const span = this.ensure(".c-coordinate__value", () => { const el = document.createElement("span"); el.className = "c-coordinate__value"; el.setAttribute("role", "status"); el.setAttribute("aria-live", "polite"); return el; });
       span.textContent = text;
       // copy button
       let btn = this.querySelector(".c-coordinate__copy");
@@ -885,9 +885,11 @@ class ContourLayerSwitch extends ContourBase {
           capped.forEach((it) => {
             const item = document.createElement("div");
             item.className = "c-layer-switch__item";
+            item.setAttribute("role", "group");
             const sw = document.createElement("span");
             sw.className = "c-layer-switch__swatch";
             if (it.color) sw.style.background = it.color;
+            sw.setAttribute("aria-hidden", "true");
             item.appendChild(sw);
             const name = document.createElement("span");
             name.className = "c-layer-switch__name";
@@ -903,6 +905,7 @@ class ContourLayerSwitch extends ContourBase {
             toggle.className = "c-layer-switch__toggle";
             toggle.type = "button";
              toggle.setAttribute("aria-label", "Toggle " + (typeof it === "string" ? it : (it.name || it.label || "layer")));
+             toggle.setAttribute("aria-pressed", "true");
             toggle.innerHTML = '<svg aria-hidden="true"><use href="#i-check" /></svg>';
             item.appendChild(toggle);
             this.appendChild(item);
@@ -921,7 +924,14 @@ class ContourLayerSwitch extends ContourBase {
         if (!btn || !this.contains(btn)) return;
         const item = btn.closest(".c-layer-switch__item");
         const name = item ? (item.querySelector(".c-layer-switch__name")?.textContent || "") : "";
-        this.dispatchEvent(new CustomEvent("contour:layer-toggle", { bubbles: true, composed: true, detail: { name } }));
+        const now = btn.getAttribute("aria-pressed") !== "true";
+        btn.setAttribute("aria-pressed", String(now));
+        this.dispatchEvent(new CustomEvent("contour:layer-toggle", { bubbles: true, composed: true, detail: { name, visible: now } }));
+      });
+      this.addEventListener("keydown", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest(".c-layer-switch__toggle") : null;
+        if (!btn || !this.contains(btn)) return;
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); btn.click(); }
       });
     }
   }

@@ -1728,44 +1728,105 @@ class ContourTimeSeries extends ContourBase {
 define("contour-time-series", ContourTimeSeries);
 class ContourPivot extends ContourBase {
     static get observed() { return ["rows", "columns", "values", "data", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { rows: { attribute: "rows" }, columns: { attribute: "columns" }, values: { attribute: "values" }, data: { attribute: "data" }, src: { attribute: "src" } }; }
+    static get properties() { return { rows: { attribute: "rows" }, columns: { attribute: "columns" }, values: { attribute: "values" }, data: { attribute: "data" }, src: { attribute: "src" }, filter: { attribute: "filter" }, aggregate: { attribute: "aggregate" } }; }
+    _aggregateFn(name) {
+      const n = (name || "sum").toLowerCase();
+      if (n === "avg" || n === "average" || n === "mean") return (vals) => vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : 0;
+      if (n === "count") return (vals) => vals.length;
+      if (n === "min") return (vals) => vals.length ? Math.min(...vals) : 0;
+      if (n === "max") return (vals) => vals.length ? Math.max(...vals) : 0;
+      return (vals) => vals.reduce((a,b)=>a+b,0);
+    }
     render() {
       this.classList.add("c-pivot");
       wireStates(this);
       loadRemote(this, ["data"]);
       if (renderStates(this, "pivot")) return;
-      Array.from(this.querySelectorAll("table")).forEach((n) => n.remove());
+      Array.from(this.querySelectorAll("table, .c-pivot__toolbar")).forEach((n) => n.remove());
       let data = [];
       const dAttr = this.getAttribute("data");
       if (dAttr) { try { data = JSON.parse(dAttr); } catch (e) { data = []; } }
-      const rows = this.getAttribute("rows") ? this.getAttribute("rows").split(",") : [];
-      const cols = this.getAttribute("columns") ? this.getAttribute("columns").split(",") : [];
+      const rows = this.getAttribute("rows") ? this.getAttribute("rows").split(",").map((s)=>s.trim()).filter(Boolean) : [];
+      const cols = this.getAttribute("columns") ? this.getAttribute("columns").split(",").map((s)=>s.trim()).filter(Boolean) : [];
+      const aggName = this.getAttribute("aggregate") || "sum";
+      const aggFn = this._aggregateFn(aggName);
+      const filterQ = (this.getAttribute("filter") || "").toLowerCase().trim();
+      // Toolbar: filter input + aggregate selector.
+      const toolbar = document.createElement("div");
+      toolbar.className = "c-pivot__toolbar";
+      toolbar.style.display = "flex";
+      toolbar.style.gap = "0.5rem";
+      toolbar.style.marginBlockEnd = "0.5rem";
+      const filterInput = document.createElement("input");
+      filterInput.type = "search";
+      filterInput.className = "c-input c-pivot__filter";
+      filterInput.placeholder = "Filter…";
+      filterInput.value = this.getAttribute("filter") || "";
+      filterInput.setAttribute("aria-label", "Filter pivot");
+      const aggSelect = document.createElement("select");
+      aggSelect.className = "c-select c-pivot__aggregate";
+      aggSelect.setAttribute("aria-label", "Aggregation");
+      ["sum","avg","count","min","max"].forEach((a) => {
+        const opt = document.createElement("option");
+        opt.value = a; opt.textContent = a;
+        if (a === aggName) opt.selected = true;
+        aggSelect.appendChild(opt);
+      });
+      toolbar.appendChild(filterInput);
+      toolbar.appendChild(aggSelect);
+      this.appendChild(toolbar);
+      // Filter rows/cols.
+      let visibleRows = rows;
+      let visibleCols = cols;
+      if (filterQ) {
+        visibleRows = rows.filter((r) => r.toLowerCase().includes(filterQ) || data.some((d) => d.row === r && String(d.value).toLowerCase().includes(filterQ)));
+        visibleCols = cols.filter((c) => c.toLowerCase().includes(filterQ) || data.some((d) => d.col === c && String(d.value).toLowerCase().includes(filterQ)));
+        if (!visibleRows.length) visibleRows = rows;
+        if (!visibleCols.length) visibleCols = cols;
+      }
       const table = document.createElement("table");
+      table.setAttribute("role", "grid");
+      table.setAttribute("aria-rowcount", String(visibleRows.length + 1));
+      table.setAttribute("aria-colcount", String(visibleCols.length + 1));
       const thead = document.createElement("thead");
       const hr = document.createElement("tr");
       const corner = document.createElement("th");
       corner.textContent = "";
+      corner.setAttribute("role", "columnheader");
       hr.appendChild(corner);
-      cols.forEach((c) => { const th = document.createElement("th"); th.textContent = c.trim(); hr.appendChild(th); });
+      visibleCols.forEach((c) => { const th = document.createElement("th"); th.textContent = c; th.setAttribute("role", "columnheader"); th.setAttribute("tabindex", "0"); hr.appendChild(th); });
       thead.appendChild(hr);
       table.appendChild(thead);
       const tbody = document.createElement("tbody");
-      rows.forEach((r) => {
+      visibleRows.forEach((r) => {
         const tr = document.createElement("tr");
+        tr.setAttribute("role", "row");
         const th = document.createElement("th");
-        th.textContent = r.trim();
+        th.textContent = r;
+        th.setAttribute("role", "rowheader");
+        th.setAttribute("tabindex", "0");
         tr.appendChild(th);
-        cols.forEach((c) => {
+        visibleCols.forEach((c) => {
           const td = document.createElement("td");
-          const cell = data.find((d) => d.row === r.trim() && d.col === c.trim());
-          td.textContent = cell ? String(cell.value) : "";
+          td.setAttribute("role", "gridcell");
+          td.setAttribute("tabindex", "0");
+          const cellData = data.filter((d) => d.row === r && d.col === c);
+          const vals = cellData.map((d) => Number(d.value)).filter((n) => Number.isFinite(n));
+          if (cellData.length && vals.length === cellData.length && vals.length) {
+            const v = aggFn(vals);
+            td.textContent = Number.isInteger(v) ? String(v) : v.toFixed(2);
+          } else if (cellData.length) {
+            td.textContent = cellData.map((d) => d.value).join(", ");
+          } else {
+            td.textContent = "";
+          }
           tr.appendChild(td);
         });
         tbody.appendChild(tr);
       });
       table.appendChild(tbody);
       this.appendChild(table);
-      if (!data.length && !rows.length) renderEmpty(this, "pivot");
+      if (!data.length && !rows.length && !cols.length) renderEmpty(this, "pivot");
     }
     enhance() {
       if (this._wiredPivot) return;
@@ -1773,6 +1834,10 @@ class ContourPivot extends ContourBase {
       this.addEventListener("click", (e) => {
         const th = e.target && e.target.closest ? e.target.closest("th") : null;
         const td = e.target && e.target.closest ? e.target.closest("td") : null;
+        const filterInput = e.target && e.target.closest ? e.target.closest(".c-pivot__filter") : null;
+        const aggSelect = e.target && e.target.closest ? e.target.closest(".c-pivot__aggregate") : null;
+        if (filterInput) return;
+        if (aggSelect) return;
         if (th && this.contains(th) && th.parentElement && th.parentElement.parentElement && th.parentElement.parentElement.tagName === "THEAD") {
           this.dispatchEvent(new CustomEvent("contour:sort", { bubbles: true, composed: true, detail: { column: th.textContent.trim() } }));
           return;
@@ -1780,6 +1845,39 @@ class ContourPivot extends ContourBase {
         if (td && this.contains(td)) {
           this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { value: td.textContent } }));
         }
+      });
+      this.addEventListener("input", (e) => {
+        const fi = e.target && e.target.closest ? e.target.closest(".c-pivot__filter") : null;
+        if (fi && this.contains(fi)) {
+          this.setAttribute("filter", fi.value);
+          this.render();
+          this.dispatchEvent(new CustomEvent("contour:filter", { bubbles: true, composed: true, detail: { query: fi.value } }));
+        }
+      });
+      this.addEventListener("change", (e) => {
+        const as = e.target && e.target.closest ? e.target.closest(".c-pivot__aggregate") : null;
+        if (as && this.contains(as)) {
+          this.setAttribute("aggregate", as.value);
+          this.render();
+          this.dispatchEvent(new CustomEvent("contour:aggregate", { bubbles: true, composed: true, detail: { aggregate: as.value } }));
+        }
+      });
+      this.addEventListener("keydown", (e) => {
+        const cell = e.target && e.target.closest ? e.target.closest("th, td") : null;
+        if (!cell || !this.contains(cell)) return;
+        const table = this.querySelector("table");
+        if (!table) return;
+        const rows = Array.from(table.querySelectorAll("tr"));
+        const ri = rows.indexOf(cell.parentElement);
+        const ci = Array.from(cell.parentElement.children).indexOf(cell);
+        let target = null;
+        if (e.key === "ArrowRight") target = cell.parentElement.children[ci + 1];
+        else if (e.key === "ArrowLeft") target = cell.parentElement.children[ci - 1];
+        else if (e.key === "ArrowDown") target = rows[ri + 1] && rows[ri + 1].children[ci];
+        else if (e.key === "ArrowUp") target = rows[ri - 1] && rows[ri - 1].children[ci];
+        else if (e.key === "Home") target = cell.parentElement.children[0];
+        else if (e.key === "End") target = cell.parentElement.children[cell.parentElement.children.length - 1];
+        if (target) { e.preventDefault(); try { target.focus(); } catch (err) {} }
       });
     }
   }

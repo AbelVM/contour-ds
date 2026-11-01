@@ -2705,6 +2705,17 @@
     font-family: var(--font-mono);
     font-size: var(--type-micro);
   }
+  .c-pivot__toolbar {
+    display: flex;
+    gap: var(--space-xs);
+    margin-block-end: var(--space-xs);
+  }
+  .c-pivot__filter {
+    flex: 1 1 auto;
+  }
+  .c-pivot__aggregate {
+    flex: 0 0 auto;
+  }
 
   .c-brush__handle--start, .c-brush__handle--end {
     position: absolute;

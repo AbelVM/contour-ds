@@ -3969,6 +3969,7 @@
   /* -- Carousel ---------------------------------------------------------- */
   .c-carousel { display: block; position: relative; }
   .c-carousel__track { display: flex; overflow: hidden; gap: var(--space-sm); }
+  .c-carousel__status { font-size: var(--type-micro); color: var(--color-text-muted); }
   .c-carousel__slide { flex: 0 0 100%; }
   .c-carousel__prev, .c-carousel__next { position: absolute; inset-block-start: 50%; transform: translateY(-50%); }
   .c-carousel__prev { inset-inline-start: var(--space-xs); }
