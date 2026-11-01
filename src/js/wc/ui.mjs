@@ -1615,14 +1615,14 @@ class ContourNotificationCenter extends ContourBase {
     static get properties() { return { count: { attribute: "count" }, items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-notification-center");
-      const btn = this.ensure(".c-notification-center__trigger", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-notification-center__trigger"; el.type = "button"; el.textContent = "🔔"; return el; });
+      const btn = this.ensure(".c-notification-center__trigger", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-notification-center__trigger"; el.type = "button"; el.textContent = "🔔"; el.setAttribute("aria-haspopup", "dialog"); el.setAttribute("aria-expanded", "false"); return el; });
       const count = this.getAttribute("count");
       let badge = this.querySelector(".c-notification-center__badge");
       if (count && Number(count) > 0) {
         if (!badge) { badge = document.createElement("span"); badge.className = "c-notification-center__badge c-badge c-badge--dot"; this.appendChild(badge); }
         badge.textContent = count;
       } else if (badge) { badge.remove(); }
-      const panel = this.ensure(".c-notification-center__panel", () => { const el = document.createElement("div"); el.className = "c-notification-center__panel"; el.hidden = true; return el; });
+      const panel = this.ensure(".c-notification-center__panel", () => { const el = document.createElement("div"); el.className = "c-notification-center__panel"; el.hidden = true; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", "Notifications"); return el; });
       const items = this.getAttribute("items");
       if (items) {
         try {
