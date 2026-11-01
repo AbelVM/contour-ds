@@ -62,6 +62,17 @@ class ContourDashToolbar extends ContourBase {
           this.dispatchEvent(new CustomEvent("contour:dash-action", { bubbles: true, composed: true, detail: { label } }));
         }
       });
+      this.addEventListener("keydown", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest(".c-btn") : null;
+        if (!btn || !this.contains(btn)) return;
+        const btns = Array.from(this.querySelectorAll(".c-btn"));
+        const idx = btns.indexOf(btn);
+        let next = -1;
+        if (e.key === "ArrowRight") next = Math.min(btns.length - 1, idx + 1);
+        else if (e.key === "ArrowLeft") next = Math.max(0, idx - 1);
+        if (next >= 0) { e.preventDefault(); try { btns[next].focus(); } catch (err) {} }
+        else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); btn.click(); }
+      });
     }
   }
   define("contour-dash-toolbar", ContourDashToolbar);
