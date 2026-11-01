@@ -1708,6 +1708,8 @@ class ContourTimeSeries extends ContourBase {
     static get properties() { return { values: { attribute: "values" }, points: { attribute: "points" }, src: { attribute: "src" }, annotations: { attribute: "annotations" } }; }
     render() {
       this.classList.add("c-time-series");
+      this.setAttribute("role", "img");
+      this.setAttribute("aria-label", "Time series");
       wireStates(this);
       loadRemote(this, ["values", "points"]);
       if (renderStates(this, "time-series")) return;
