@@ -1,4 +1,4 @@
-import { ContourBase, define, sanitizeHtml, headingTag } from './core.mjs';
+import { ContourBase, define, sanitizeHtml, headingTag, formatValue } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { wireCopy } from './behaviours.mjs';
 class ContourCard extends ContourBase {
@@ -647,12 +647,12 @@ class ContourLinkishFull extends ContourBase {
   }
   define("contour-linkish", ContourLinkishFull);
 class ContourPriceFull extends ContourBase {
-    static get observed() { return ["value"]; }
-    static get properties() { return { value: { attribute: "value" } }; }
+    static get observed() { return ["value", "format", "locale"]; }
+    static get properties() { return { value: { attribute: "value" }, format: { attribute: "format" }, locale: { attribute: "locale" } }; }
     render() {
       this.classList.add("c-price");
       const value = this.getAttribute("value");
-      if (value) this.textContent = value;
+      if (value) this.textContent = formatValue(value, this.getAttribute("format"), this.getAttribute("locale"));
     }
   }
   define("contour-price", ContourPriceFull);

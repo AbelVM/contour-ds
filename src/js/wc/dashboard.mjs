@@ -1,4 +1,4 @@
-import { ContourBase, define } from './core.mjs';
+import { ContourBase, define, formatValue } from './core.mjs';
 class ContourDashShell extends ContourBase {
     static get observed() { return ["title"]; }
     static get properties() { return { title: { attribute: "title" } }; }
@@ -109,8 +109,8 @@ class ContourDashKpiRow extends ContourBase {
   }
   define("contour-dash-kpi-row", ContourDashKpiRow);
 class ContourDashFreshness extends ContourBase {
-    static get observed() { return ["label", "value"]; }
-    static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" } }; }
+    static get observed() { return ["label", "value", "format", "locale"]; }
+    static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" }, format: { attribute: "format" }, locale: { attribute: "locale" } }; }
     render() {
       this.classList.add("c-dash-freshness");
       this.setAttribute("role", "status");
@@ -127,7 +127,8 @@ class ContourDashFreshness extends ContourBase {
         this._freshnessText = document.createTextNode("");
         this.appendChild(this._freshnessText);
       }
-      this._freshnessText.nodeValue = [label, value].filter(Boolean).join(" ");
+      const formattedValue = value ? formatValue(value, this.getAttribute("format"), this.getAttribute("locale")) : value;
+      this._freshnessText.nodeValue = [label, formattedValue].filter(Boolean).join(" ");
     }
   }
   define("contour-dash-freshness", ContourDashFreshness);
