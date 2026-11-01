@@ -887,10 +887,11 @@
     } catch (e) { return false; }
   }
 
-  // Value formatting (BY-31): opt-in Intl formatting for kpi/stat/readout/coordinate.
-  // `format` is a preset ("number","currency","percent","compact","date","time")
-  // or a JSON string of Intl.NumberFormat/DateTimeFormat options. `locale`
-  // defaults to the runtime locale. Returns the raw value when formatting fails.
+  // Value formatting (BY-31/BY-22): opt-in Intl formatting for kpi/stat/readout/coordinate.
+  // `format` is a preset ("number","currency","percent","compact","date","time",
+  // "unit","relative") or a JSON string of Intl.NumberFormat/DateTimeFormat/
+  // RelativeTimeFormat options. `locale` defaults to the runtime locale.
+  // Returns the raw value when formatting fails.
   export function formatValue(value, format, locale) {
     if (!format) return value;
     const loc = locale || (typeof navigator !== "undefined" && navigator.language) || "en";
@@ -900,10 +901,27 @@
         return new Intl.DateTimeFormat(loc, opts).format(new Date(value));
       } catch (e) { return value; }
     }
+    if (format === "relative") {
+      try {
+        const num = Number(value);
+        // Interpret the value as seconds from now unless it is an ISO date.
+        let seconds = num;
+        if (Number.isNaN(num)) {
+          const then = new Date(value).getTime();
+          if (Number.isFinite(then)) seconds = (then - Date.now()) / 1000;
+        }
+        const rtf = new Intl.RelativeTimeFormat(loc, { numeric: "auto" });
+        if (Math.abs(seconds) < 60) return rtf.format(Math.round(seconds), "second");
+        if (Math.abs(seconds) < 3600) return rtf.format(Math.round(seconds / 60), "minute");
+        if (Math.abs(seconds) < 86400) return rtf.format(Math.round(seconds / 3600), "hour");
+        return rtf.format(Math.round(seconds / 86400), "day");
+      } catch (e) { return value; }
+    }
     let opts = {};
     if (format === "currency") opts = { style: "currency", currency: "USD" };
     else if (format === "percent") opts = { style: "percent" };
     else if (format === "compact") opts = { notation: "compact" };
+    else if (format === "unit") opts = { style: "unit", unit: "meter" };
     else if (format !== "number") {
       try { opts = JSON.parse(format); } catch (e) { return value; }
     }
