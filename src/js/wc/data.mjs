@@ -2688,6 +2688,7 @@ class ContourHeatmap extends ContourBase {
     render() {
       this.classList.add("c-heatmap");
       if (!this.hasAttribute("role")) this.setAttribute("role", "grid");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Heatmap");
       wireStates(this);
       loadRemote(this, "cells");
       if (renderStates(this, "heatmap")) return;
