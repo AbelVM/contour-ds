@@ -1066,6 +1066,8 @@ class ContourStreamingChart extends ContourBase {
     static get properties() { return { line: { attribute: "line" }, dot: { attribute: "dot" }, interval: { attribute: "interval", type: Number }, pause: { attribute: "pause", type: Boolean }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-streaming-chart");
+      this.setAttribute("role", "img");
+      this.setAttribute("aria-label", "Streaming chart");
       wireStates(this);
       loadRemote(this, "line");
       if (renderStates(this, "streaming-chart")) return;
