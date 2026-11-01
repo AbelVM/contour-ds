@@ -11526,6 +11526,21 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  <code class="c-kbd">tabs</code> attribute. Consumers who need full widget behaviour
                  should use the light-DOM <code class="c-kbd">contour-*</code> elements.
                </p>
+               <table class="c-table">
+                 <caption>Shadow wrapper behaviour parity</caption>
+                 <thead><tr><th>Behaviour</th><th>Wrappers</th><th>Parity</th></tr></thead>
+                 <tbody>
+                   <tr><td>Tabs (roving, slot template)</td><td>contour-shadow-tabs, contour-shadow-code-tabs</td><td>Supported</td></tr>
+                   <tr><td>Segmented</td><td>contour-shadow-segmented</td><td>Supported</td></tr>
+                   <tr><td>Combobox</td><td>contour-shadow-combobox</td><td>Supported</td></tr>
+                   <tr><td>Tree</td><td>contour-shadow-tree (via wireTree)</td><td>Supported</td></tr>
+                   <tr><td>Menu</td><td>contour-shadow-menu</td><td>Supported</td></tr>
+                   <tr><td>Pagination</td><td>contour-shadow-pagination</td><td>Supported</td></tr>
+                   <tr><td>Copy</td><td>contour-shadow-code</td><td>Supported</td></tr>
+                   <tr><td>Removable</td><td>contour-shadow-tag, contour-shadow-chip</td><td>Supported</td></tr>
+                   <tr><td>ARIA setup only</td><td>remaining 43 wrappers</td><td>Shell-only (intentional)</td></tr>
+                 </tbody>
+               </table>
                <p class="c-section-head__desc">
                  Token-name compatibility: consumers migrating from libreship may keep their
                  <code class="c-kbd">--ls-*</code> names by aliasing them onto the corresponding
