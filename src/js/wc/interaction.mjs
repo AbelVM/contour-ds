@@ -1,4 +1,4 @@
-import { ContourBase, define } from './core.mjs';
+import { ContourBase, define, onDispose } from './core.mjs';
 import { wireSegmented } from './behaviours.mjs';
 class ContourPressableFull extends ContourBase {
     static get observed() { return ["disabled"]; }
@@ -121,7 +121,7 @@ class ContourShortcutPanelFull extends ContourBase {
       if (this._wiredShortcutOverlay) return;
       this._wiredShortcutOverlay = true;
       // Global registry: "?" (Shift+/) toggles the overlay; Escape closes.
-      document.addEventListener("keydown", (e) => {
+      const keyHandler = (e) => {
         if (e.key === "?" && !e.metaKey && !e.ctrlKey && !e.altKey) {
           const tag = (e.target && e.target.tagName) || "";
           if (tag === "INPUT" || tag === "TEXTAREA" || (e.target && e.target.isContentEditable)) return;
@@ -130,7 +130,9 @@ class ContourShortcutPanelFull extends ContourBase {
         } else if (e.key === "Escape" && this.hasAttribute("open")) {
           this.hide();
         }
-      });
+      };
+      document.addEventListener("keydown", keyHandler);
+      onDispose(this, () => document.removeEventListener("keydown", keyHandler));
       this.addEventListener("click", (e) => {
         if (e.target === this) this.hide();
       });

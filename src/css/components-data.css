@@ -1473,6 +1473,7 @@
      ======================================================================= */
   .c-time-slider {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: var(--space-sm);
     padding: var(--space-xs);
@@ -1505,7 +1506,8 @@
   }
 
   .c-time-slider__track {
-    flex: 1;
+    flex: 1 1 8rem;
+    min-inline-size: 0;
     min-block-size: 1.5rem;
     accent-color: var(--color-primary);
   }
@@ -1516,6 +1518,18 @@
     color: var(--color-text-subtle);
     min-inline-size: 4rem;
     text-align: end;
+  }
+
+  .c-time-slider__speed {
+    flex: none;
+    max-inline-size: 5rem;
+  }
+
+  .c-time-slider__loop {
+    flex: none;
+    inline-size: auto;
+    padding-inline: var(--space-sm);
+    white-space: nowrap;
   }
 
   /* =======================================================================

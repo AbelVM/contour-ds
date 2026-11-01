@@ -191,7 +191,7 @@
     "quote", "ramp", "refresh", "removable", "reverse", "rings", "retry", "rows", "scale", "selectable", "segments", "show-header", "sparkline", "start", "end", "threshold", "thresholds", "selected", "separator", "series", "shortcut", "side", "size", "skeleton", "sort", "sort-dir", "speed", "status", "step", "submit", "timeout", "trigger", "virtual",
     "state", "steps", "subtitle", "summary", "src", "table", "tabs", "tag", "text", "ticks", "title", "type", "unit",
     "variant", "values", "viewport", "yes", "zoomable", "x", "y",
-    "caption", "current-time", "is-playing", "loop-label", "no-data-color", "property", "show-loop", "show-thumb", "show-thumb-caption", "speeds",
+    "caption", "current-time", "is-playing", "loop-label", "no-data-color", "property", "show-loop", "show-thumb", "show-thumb-caption", "speeds", "item-height",
   ];
 
   export function headingTag(host, fallback = "h3") {

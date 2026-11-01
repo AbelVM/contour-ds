@@ -841,13 +841,16 @@ const series = this.getAttribute("series");
           dragging = true; startX = e.clientX; startY = e.clientY; startPanX = panX; startPanY = panY;
           this.style.cursor = "grabbing";
         });
-        window.addEventListener("mousemove", (e) => {
+        const onMove = (e) => {
           if (!dragging) return;
           panX = startPanX + (e.clientX - startX);
           panY = startPanY + (e.clientY - startY);
           apply();
-        });
-        window.addEventListener("mouseup", () => { if (dragging) { dragging = false; this.style.cursor = ""; } });
+        };
+        const onUp = () => { if (dragging) { dragging = false; this.style.cursor = ""; } };
+        window.addEventListener("mousemove", onMove);
+        window.addEventListener("mouseup", onUp);
+        onDispose(this, () => { window.removeEventListener("mousemove", onMove); window.removeEventListener("mouseup", onUp); });
         this.addEventListener("dblclick", () => { zoom = 1; panX = 0; panY = 0; apply(); });
       }
       // Tooltip: show on hover of a mark.

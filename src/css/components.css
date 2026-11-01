@@ -2532,6 +2532,15 @@
     text-overflow: ellipsis;
   }
 
+  .c-legend__swatch {
+    display: inline-block;
+    inline-size: 0.875rem;
+    block-size: 0.875rem;
+    border-radius: var(--radius-xs);
+    flex: none;
+    background-color: currentColor;
+  }
+
    .c-legend__caption {
      font-size: var(--type-micro);
      color: var(--color-text-subtle);
@@ -3892,6 +3901,10 @@
   /* -- Virtual list ------------------------------------------------------ */
   .c-virtual-list { display: block; }
   .c-virtual-list__scroller { max-block-size: 20rem; overflow: auto; border: 1px solid var(--color-border); border-radius: var(--radius-md); }
+  .c-virtual-list__inner { position: relative; }
+  .c-virtual-list__spacer { display: block; }
+  .c-virtual-list__spacer--top { display: block; }
+  .c-virtual-list__spacer--bottom { display: block; }
   .c-virtual-list__item { padding: var(--space-2xs) var(--space-sm); border-block-end: 1px solid var(--color-border); font-size: var(--type-sm); }
   /* -- Command palette --------------------------------------------------- */
   .c-command-palette { display: block; }

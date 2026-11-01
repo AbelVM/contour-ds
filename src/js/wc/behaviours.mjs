@@ -1087,6 +1087,10 @@ export function modalContain(host, open) {
       modalInerted.clear();
       document.documentElement.style.overflow = modalSavedOverflow || "";
       window.scrollTo(modalSavedX, modalSavedY);
+      if (modalTrapWired) {
+        document.removeEventListener("keydown", modalTrapHandler);
+        modalTrapWired = false;
+      }
     }
   }
 }

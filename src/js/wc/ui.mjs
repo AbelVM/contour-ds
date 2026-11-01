@@ -699,11 +699,13 @@ class ContourDropdown extends ContourBase {
           if (m) { m.hidden = !m.hidden; b.setAttribute("aria-expanded", String(!m.hidden)); }
         }
       });
-      document.addEventListener("click", (e) => {
+      const docClick = (e) => {
         const m = menu();
         const b = btn();
         if (m && !m.hidden && !this.contains(e.target)) { m.hidden = true; if (b) b.setAttribute("aria-expanded", "false"); }
-      });
+      };
+      document.addEventListener("click", docClick);
+      onDispose(this, () => document.removeEventListener("click", docClick));
     }
   }
   define("contour-dropdown", ContourDropdown);
@@ -1055,11 +1057,13 @@ class ContourSplitButton extends ContourBase {
           if (m) { m.hidden = !m.hidden; t.setAttribute("aria-expanded", String(!m.hidden)); }
         }
       });
-      document.addEventListener("click", (e) => {
+      const docClick = (e) => {
         const m = menu();
         const t = toggle();
         if (m && !m.hidden && !this.contains(e.target)) { m.hidden = true; if (t) t.setAttribute("aria-expanded", "false"); }
-      });
+      };
+      document.addEventListener("click", docClick);
+      onDispose(this, () => document.removeEventListener("click", docClick));
     }
   }
   define("contour-split-button", ContourSplitButton);
@@ -1147,12 +1151,14 @@ class ContourShortcut extends ContourBase {
       this._wiredShortcut = true;
       const key = this.getAttribute("key");
       if (key) {
-        document.addEventListener("keydown", (e) => {
+        const handler = (e) => {
           if (e.key === key && (e.metaKey || e.ctrlKey)) {
             e.preventDefault();
             this.dispatchEvent(new CustomEvent("contour:activate", { bubbles: true, composed: true }));
           }
-        });
+        };
+        document.addEventListener("keydown", handler);
+        onDispose(this, () => document.removeEventListener("keydown", handler));
       }
     }
   }
@@ -1435,11 +1441,13 @@ class ContourFileUpload extends ContourBase {
       this._wiredFileUpload = true;
       const dz = () => this.querySelector(".c-file-upload__dropzone");
       const input = () => this.querySelector(".c-file-upload__input");
-      this.addEventListener("click", (e) => { const d = dz(); if (e.target === d || (d && d.contains(e.target))) { const i = input(); if (i) i.click(); } });
+      const activate = () => { const i = input(); if (i) i.click(); };
+      this.addEventListener("click", (e) => { const d = dz(); if (e.target === d || (d && d.contains(e.target))) { activate(); } });
+      this.addEventListener("keydown", (e) => { const d = dz(); if ((e.target === d || (d && d.contains(e.target))) && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); activate(); } });
       this.addEventListener("change", (e) => { const t = e.target; if (t && t.classList.contains("c-file-upload__input")) { this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { files: t.files } })); } });
       this.addEventListener("dragover", (e) => { e.preventDefault(); this.classList.add("is-dragover"); });
       this.addEventListener("dragleave", () => this.classList.remove("is-dragover"));
-      this.addEventListener("drop", (e) => { e.preventDefault(); this.classList.remove("is-dragover"); const i = input(); if (i && e.dataTransfer && e.dataTransfer.files) { i.files = e.dataTransfer.files; this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { files: e.dataTransfer.files } })); } });
+      this.addEventListener("drop", (e) => { e.preventDefault(); this.classList.remove("is-dragover"); const i = input(); if (i && e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) { try { i.files = e.dataTransfer.files; } catch (err) { /* some browsers disallow */ } this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { files: e.dataTransfer.files } })); } });
     }
   }
   define("contour-file-upload", ContourFileUpload);
@@ -1481,11 +1489,13 @@ class ContourNotificationCenter extends ContourBase {
           if (panel) { panel.hidden = !panel.hidden; btn.setAttribute("aria-expanded", String(!panel.hidden)); }
         }
       });
-      document.addEventListener("click", (e) => {
+      const docClick = (e) => {
         const panel = this.querySelector(".c-notification-center__panel");
         const btn = this.querySelector(".c-notification-center__trigger");
         if (panel && !panel.hidden && !this.contains(e.target)) { panel.hidden = true; if (btn) btn.setAttribute("aria-expanded", "false"); }
-      });
+      };
+      document.addEventListener("click", docClick);
+      onDispose(this, () => document.removeEventListener("click", docClick));
     }
   }
   define("contour-notification-center", ContourNotificationCenter);
@@ -1530,20 +1540,72 @@ class ContourStepper extends ContourBase {
 class ContourVirtualList extends ContourBase {
     static get observed() { return ["items", "item-height"]; }
     static get properties() { return { items: { attribute: "items" }, "item-height": { attribute: "item-height" } }; }
-    render() {
-      this.classList.add("c-virtual-list");
-      const scroller = this.ensure(".c-virtual-list__scroller", () => { const el = document.createElement("div"); el.className = "c-virtual-list__scroller"; return el; });
+    _items() {
       const items = this.getAttribute("items");
       let parsed = [];
       try { parsed = items ? JSON.parse(items) : []; } catch (e) { parsed = []; }
-      scroller.innerHTML = "";
-      parsed.forEach((it, i) => {
+      return Array.isArray(parsed) ? parsed : [];
+    }
+    _itemHeight() {
+      const h = Number(this.getAttribute("item-height"));
+      return Number.isFinite(h) && h > 0 ? h : 28;
+    }
+    render() {
+      this.classList.add("c-virtual-list");
+      const scroller = this.ensure(".c-virtual-list__scroller", () => { const el = document.createElement("div"); el.className = "c-virtual-list__scroller"; return el; });
+      const inner = this.ensure(".c-virtual-list__inner", () => { const el = document.createElement("div"); el.className = "c-virtual-list__inner"; el.style.position = "relative"; return el; });
+      if (inner.parentNode !== scroller) scroller.appendChild(inner);
+      this._renderWindow(scroller, inner, scroller.scrollTop || 0);
+    }
+    _renderWindow(scroller, inner, scrollTop) {
+      const items = this._items();
+      const ih = this._itemHeight();
+      const viewportH = scroller.clientHeight || 320;
+      const visibleCount = Math.ceil(viewportH / ih) + 4;
+      const total = items.length;
+      let start = Math.floor((scrollTop || 0) / ih);
+      if (start < 0) start = 0;
+      if (start > Math.max(0, total - visibleCount)) start = Math.max(0, total - visibleCount);
+      const end = Math.min(total, start + visibleCount);
+      const topSpacerH = start * ih;
+      const bottomSpacerH = Math.max(0, (total - end) * ih);
+      inner.innerHTML = "";
+      const top = document.createElement("div");
+      top.className = "c-virtual-list__spacer c-virtual-list__spacer--top";
+      top.style.height = topSpacerH + "px";
+      inner.appendChild(top);
+      for (let i = start; i < end; i++) {
         const row = document.createElement("div");
         row.className = "c-virtual-list__item";
-        row.textContent = typeof it === "string" ? it : (it.label || it.text || JSON.stringify(it));
+        row.textContent = typeof items[i] === "string" ? items[i] : (items[i].label || items[i].text || JSON.stringify(items[i]));
         row.dataset.index = String(i);
-        scroller.appendChild(row);
-      });
+        inner.appendChild(row);
+      }
+      const bottom = document.createElement("div");
+      bottom.className = "c-virtual-list__spacer c-virtual-list__spacer--bottom";
+      bottom.style.height = bottomSpacerH + "px";
+      inner.appendChild(bottom);
+      inner.style.height = (total * ih) + "px";
+    }
+    enhance() {
+      if (this._wiredVirtualList) return;
+      this._wiredVirtualList = true;
+      const scroller = () => this.querySelector(".c-virtual-list__scroller");
+      const inner = () => this.querySelector(".c-virtual-list__inner");
+      let raf = 0;
+      const onScroll = () => {
+        if (raf) return;
+        raf = requestAnimationFrame(() => {
+          raf = 0;
+          const s = scroller(); const i = inner();
+          if (s && i) this._renderWindow(s, i, s.scrollTop);
+        });
+      };
+      const s = scroller();
+      if (s) {
+        s.addEventListener("scroll", onScroll, { passive: true });
+        onDispose(this, () => { s.removeEventListener("scroll", onScroll); if (raf) cancelAnimationFrame(raf); });
+      }
     }
   }
   define("contour-virtual-list", ContourVirtualList);
@@ -1565,8 +1627,10 @@ class ContourCommandPalette extends ContourBase {
             const row = document.createElement("div");
             row.className = "c-command-palette__item";
             row.setAttribute("role", "option");
+            row.id = this.id + "-opt-" + i;
             row.textContent = typeof it === "string" ? it : (it.label || it.title || "");
             row.dataset.index = String(i);
+            row.dataset.label = row.textContent;
             list.appendChild(row);
           });
         } catch (e) { /* keep */ }
@@ -1575,18 +1639,64 @@ class ContourCommandPalette extends ContourBase {
     enhance() {
       if (this._wiredCmdPalette) return;
       this._wiredCmdPalette = true;
-      this.addEventListener("keydown", (e) => {
-        const items = Array.from(this.querySelectorAll(".c-command-palette__item"));
-        const active = this.querySelector(".c-command-palette__item.is-active");
-        let idx = active ? items.indexOf(active) : -1;
-        if (e.key === "ArrowDown") { e.preventDefault(); idx = Math.min(items.length - 1, idx + 1); }
-        else if (e.key === "ArrowUp") { e.preventDefault(); idx = Math.max(0, idx - 1); }
-        else if (e.key === "Home") { e.preventDefault(); idx = 0; }
-        else if (e.key === "End") { e.preventDefault(); idx = items.length - 1; }
-        else if (e.key === "Enter") { e.preventDefault(); if (active) this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index: items.indexOf(active) } })); return; }
-        else return;
-        items.forEach((it, i) => it.classList.toggle("is-active", i === idx));
+      const search = () => this.querySelector(".c-command-palette__search");
+      const list = () => this.querySelector(".c-command-palette__list");
+      const items = () => Array.from(this.querySelectorAll(".c-command-palette__item"));
+      const visibleItems = () => items().filter((it) => !it.hidden);
+      const setActive = (idx) => {
+        const vis = visibleItems();
+        vis.forEach((it, i) => it.classList.toggle("is-active", i === idx));
+        const active = vis[idx];
+        const s = search();
+        if (s && active) s.setAttribute("aria-activedescendant", active.id);
+        else if (s) s.removeAttribute("aria-activedescendant");
+      };
+      const filter = (q) => {
+        const needle = (q || "").toLowerCase().trim();
+        items().forEach((it) => {
+          const label = (it.dataset.label || it.textContent || "").toLowerCase();
+          it.hidden = needle !== "" && !label.includes(needle);
+        });
+        setActive(0);
+      };
+      const select = (it) => {
+        if (!it) return;
+        this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index: Number(it.dataset.index), label: it.dataset.label || it.textContent } }));
+        try { this.hidePopover(); } catch (e) {}
+      };
+      const s = search();
+      if (s) {
+        s.setAttribute("role", "combobox");
+        s.setAttribute("aria-autocomplete", "list");
+        s.setAttribute("aria-controls", list() ? list().id || "" : "");
+        if (!list().id) list().id = this.id + "-list";
+        s.setAttribute("aria-controls", list().id);
+        s.addEventListener("input", (e) => filter(e.target.value));
+        s.addEventListener("keydown", (e) => {
+          const vis = visibleItems();
+          const active = this.querySelector(".c-command-palette__item.is-active");
+          let idx = active ? vis.indexOf(active) : -1;
+          if (e.key === "ArrowDown") { e.preventDefault(); idx = Math.min(vis.length - 1, idx + 1); if (idx < 0) idx = 0; setActive(idx); }
+          else if (e.key === "ArrowUp") { e.preventDefault(); idx = Math.max(0, idx - 1); if (vis.length && idx < 0) idx = 0; setActive(idx); }
+          else if (e.key === "Home") { e.preventDefault(); setActive(0); }
+          else if (e.key === "End") { e.preventDefault(); setActive(vis.length - 1); }
+          else if (e.key === "Enter") { e.preventDefault(); if (active) select(active); }
+          else if (e.key === "Escape") { e.preventDefault(); try { this.hidePopover(); } catch (e) {} }
+        });
+      }
+      // click selection
+      this.addEventListener("click", (e) => {
+        const it = e.target && e.target.closest ? e.target.closest(".c-command-palette__item") : null;
+        if (it && this.contains(it) && !it.hidden) select(it);
       });
+      // focus return on close
+      let lastFocus = null;
+      this.addEventListener("beforetoggle", (e) => {
+        if (e.newState === "open") lastFocus = document.activeElement;
+        else if (lastFocus && typeof lastFocus.focus === "function") { try { lastFocus.focus(); } catch (err) {} }
+      });
+      // Escape via popover light dismiss is handled by keydown above; also close on outside handled by popover.
+      setActive(0);
     }
   }
   define("contour-command-palette", ContourCommandPalette);
@@ -1625,6 +1735,18 @@ class ContourSideSheet extends ContourBase {
         t.textContent = title;
       }
     }
+    enhance() {
+      if (this._wiredSideSheet) return;
+      this._wiredSideSheet = true;
+      const close = () => this.removeAttribute("open");
+      const keyHandler = (e) => { if (e.key === "Escape" && this.hasAttribute("open")) { e.preventDefault(); close(); } };
+      document.addEventListener("keydown", keyHandler);
+      onDispose(this, () => document.removeEventListener("keydown", keyHandler));
+      this.addEventListener("click", (e) => {
+        // backdrop click: clicking the sheet's own backdrop (the element itself) closes
+        if (e.target === this) close();
+      });
+    }
   }
   define("contour-side-sheet", ContourSideSheet);
 
@@ -1651,6 +1773,9 @@ class ContourTour extends ContourBase {
         const next = e.target && e.target.closest ? e.target.closest(".c-tour__next") : null;
         if (next && this.contains(next)) this.dispatchEvent(new CustomEvent("contour:step-change", { bubbles: true, composed: true, detail: { direction: "next" } }));
       });
+      const keyHandler = (e) => { if (e.key === "Escape") this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true })); };
+      document.addEventListener("keydown", keyHandler);
+      onDispose(this, () => document.removeEventListener("keydown", keyHandler));
     }
   }
   define("contour-tour", ContourTour);
@@ -1684,15 +1809,41 @@ class ContourTagsInput extends ContourBase {
       this._wiredTagsInput = true;
       this.addEventListener("keydown", (e) => {
         const input = this.querySelector(".c-tags-input__input");
+        if (!input) return;
         if (e.key === "Enter" && e.target === input) {
           e.preventDefault();
           const v = input.value.trim();
-          if (v) { this.dispatchEvent(new CustomEvent("contour:add", { bubbles: true, composed: true, detail: { value: v } })); input.value = ""; }
+          if (v) {
+            let tags = [];
+            try { tags = JSON.parse(this.getAttribute("value") || "[]"); } catch (err) { tags = (this.getAttribute("value") || "").split(",").map((s) => s.trim()).filter(Boolean); }
+            if (!Array.isArray(tags)) tags = [];
+            if (!tags.includes(v)) tags.push(v);
+            this.setAttribute("value", JSON.stringify(tags));
+            input.value = "";
+            this.dispatchEvent(new CustomEvent("contour:add", { bubbles: true, composed: true, detail: { value: v } }));
+          }
+        } else if (e.key === "Backspace" && e.target === input && input.value === "") {
+          let tags = [];
+          try { tags = JSON.parse(this.getAttribute("value") || "[]"); } catch (err) { tags = (this.getAttribute("value") || "").split(",").map((s) => s.trim()).filter(Boolean); }
+          if (!Array.isArray(tags)) tags = [];
+          if (tags.length) {
+            const removed = tags.pop();
+            this.setAttribute("value", JSON.stringify(tags));
+            this.dispatchEvent(new CustomEvent("contour:remove", { bubbles: true, composed: true, detail: { value: removed } }));
+          }
         }
       });
       this.addEventListener("click", (e) => {
         const rm = e.target && e.target.closest ? e.target.closest(".c-tags-input__remove") : null;
-        if (rm && this.contains(rm)) this.dispatchEvent(new CustomEvent("contour:remove", { bubbles: true, composed: true, detail: { value: rm.dataset.value } }));
+        if (rm && this.contains(rm)) {
+          const val = rm.dataset.value;
+          let tags = [];
+          try { tags = JSON.parse(this.getAttribute("value") || "[]"); } catch (err) { tags = (this.getAttribute("value") || "").split(",").map((s) => s.trim()).filter(Boolean); }
+          if (!Array.isArray(tags)) tags = [];
+          const next = tags.filter((t) => t !== val);
+          this.setAttribute("value", JSON.stringify(next));
+          this.dispatchEvent(new CustomEvent("contour:remove", { bubbles: true, composed: true, detail: { value: val } }));
+        }
       });
     }
   }
