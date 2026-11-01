@@ -2816,6 +2816,8 @@ class ContourCompare extends ContourBase {
     static get properties() { return { no: { attribute: "no" }, text: { attribute: "text" }, yes: { attribute: "yes" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-compare");
+      this.setAttribute("role", "group");
+      this.setAttribute("aria-label", "Comparison");
       this.style.padding = "var(--space-md)";
       wireStates(this);
       loadRemote(this, ["no", "text", "yes"]);
