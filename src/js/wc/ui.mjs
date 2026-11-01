@@ -849,6 +849,8 @@ class ContourStylePanel extends ContourBase {
     static get properties() { return { title: { attribute: "title" }, layers: { attribute: "layers" }, classification: { attribute: "classification" }, palette: { attribute: "palette" }, breaks: { attribute: "breaks" }, opacity: { attribute: "opacity" } }; }
     render() {
       this.classList.add("c-style-panel");
+      this.setAttribute("role", "group");
+      this.setAttribute("aria-label", "Style panel");
       const title = this.getAttribute("title");
       if (title) {
         const t = this.ensure(".c-style-panel__title", () => { const el = document.createElement("div"); el.className = "c-style-panel__title"; return el; });
