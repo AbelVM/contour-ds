@@ -549,6 +549,8 @@ class ContourHexbin extends ContourBase {
     static get properties() { return { label: { attribute: "label" }, cells: { attribute: "cells" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-hexbin");
+      this.setAttribute("role", "img");
+      this.setAttribute("aria-label", "Hexbin");
       const label = this.getAttribute("label") || (this._remoteData && this._remoteData.label);
       if (label) {
         const l = this.ensure(".c-hexbin__label", () => { const el = document.createElement("span"); el.className = "c-hexbin__label"; return el; });
