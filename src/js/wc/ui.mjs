@@ -2163,8 +2163,8 @@ class ContourCarousel extends ContourBase {
   define("contour-carousel", ContourCarousel);
 
 class ContourDataGrid extends ContourBase {
-    static get observed() { return ["columns", "rows", "page"]; }
-    static get properties() { return { columns: { attribute: "columns" }, rows: { attribute: "rows" }, page: { attribute: "page" } }; }
+    static get observed() { return ["columns", "rows", "page", "filter", "page-size"]; }
+    static get properties() { return { columns: { attribute: "columns" }, rows: { attribute: "rows" }, page: { attribute: "page" }, filter: { attribute: "filter" }, "page-size": { attribute: "page-size" } }; }
     render() {
       this.classList.add("c-data-grid");
       const table = this.ensure(".c-data-grid__table", () => { const el = document.createElement("table"); el.className = "c-table c-data-grid__table"; return el; });
@@ -2187,6 +2187,17 @@ class ContourDataGrid extends ContourBase {
       const rows = this.getAttribute("rows");
       let parsedRows = [];
       try { parsedRows = rows ? JSON.parse(rows) : []; } catch (e) { parsedRows = []; }
+      const filter = this.getAttribute("filter");
+      if (filter) {
+        const q = filter.toLowerCase();
+        parsedRows = parsedRows.filter((r) => JSON.stringify(r).toLowerCase().includes(q));
+      }
+      const page = Number(this.getAttribute("page") || 1);
+      const pageSize = Number(this.getAttribute("page-size") || 0);
+      if (pageSize > 0) {
+        const start = (page - 1) * pageSize;
+        parsedRows = parsedRows.slice(start, start + pageSize);
+      }
       tbody.innerHTML = "";
       parsedRows.forEach((r) => {
         const tr = document.createElement("tr");
