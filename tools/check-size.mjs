@@ -121,7 +121,7 @@ const BUDGETS = {
   "surfaces/contour-data.min.css": 182 * 1024,  // raised 2026-11-01: +legend caption; measured 180.1 kB
   "surfaces/contour-landing.min.css": 146 * 1024,  // raised 2026-10-29: +CSS rules propagate; measured 129.1 kB
   "contour.esm.min.js": 39 * 1024,
-  "contour-wc.esm.min.js": 494 * 1024,  // raised 2026-11-01: +ARIA/keyboard improvements; measured 492.6 kB
+  "contour-wc.esm.min.js": 496 * 1024,  // raised 2026-11-01: +ARIA roles; measured 494.1 kB
 };
 
 const kB = (n) => `${(n / 1024).toFixed(1)} kB`;

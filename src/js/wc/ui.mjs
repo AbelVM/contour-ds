@@ -1252,6 +1252,7 @@ class ContourPopover extends ContourBase {
     static get properties() { return { title: { attribute: "title" }, content: { attribute: "content" } }; }
     render() {
       this.classList.add("c-popover");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "dialog");
       if (!this.hasAttribute("popover")) this.setAttribute("popover", "auto");
       if (!this.id) this.id = contourId("popover");
       const title = this.getAttribute("title");
@@ -1430,6 +1431,7 @@ class ContourHoverCard extends ContourBase {
     static get properties() { return { title: { attribute: "title" }, content: { attribute: "content" }, anchor: { attribute: "anchor" } }; }
     render() {
       this.classList.add("c-hover-card");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "tooltip");
       if (!this.hasAttribute("popover")) this.setAttribute("popover", "auto");
       if (!this.id) this.id = contourId("hover-card");
       const title = this.getAttribute("title");
@@ -1466,6 +1468,7 @@ class ContourContextMenu extends ContourBase {
     static get properties() { return { items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-context-menu");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "menu");
       if (!this.hasAttribute("popover")) this.setAttribute("popover", "auto");
       if (!this.id) this.id = contourId("context-menu");
       const items = this.getAttribute("items");
@@ -1517,6 +1520,8 @@ class ContourFab extends ContourBase {
     static get properties() { return { label: { attribute: "label" }, icon: { attribute: "icon" } }; }
     render() {
       this.classList.add("c-fab");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "button");
+      if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
       const label = this.getAttribute("label");
       if (label) this.setAttribute("aria-label", label);
       const icon = this.getAttribute("icon");
@@ -1746,6 +1751,8 @@ class ContourCommandPalette extends ContourBase {
     static get properties() { return { open: { attribute: "open", type: Boolean }, items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-command-palette");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "dialog");
+      if (!this.hasAttribute("aria-modal")) this.setAttribute("aria-modal", "true");
       if (!this.hasAttribute("popover")) this.setAttribute("popover", "auto");
       const search = this.ensure(".c-command-palette__search", () => { const el = document.createElement("input"); el.className = "c-input c-command-palette__search"; el.type = "search"; el.placeholder = "Search…"; return el; });
       const list = this.ensure(".c-command-palette__list", () => { const el = document.createElement("div"); el.className = "c-command-palette__list"; el.setAttribute("role", "listbox"); return el; });
@@ -1859,6 +1866,8 @@ class ContourSideSheet extends ContourBase {
     static get properties() { return { open: { attribute: "open", type: Boolean }, side: { attribute: "side" }, title: { attribute: "title" } }; }
     render() {
       this.classList.add("c-side-sheet");
+      this.setAttribute("role", "dialog");
+      this.setAttribute("aria-modal", "true");
       const side = this.getAttribute("side") || "end";
       this.classList.add("c-side-sheet--" + side);
       if (this.hasAttribute("open")) this.classList.add("is-open");
@@ -1911,6 +1920,8 @@ class ContourTour extends ContourBase {
     static get properties() { return { steps: { attribute: "steps" }, current: { attribute: "current" } }; }
     render() {
       this.classList.add("c-tour");
+      this.setAttribute("role", "dialog");
+      this.setAttribute("aria-modal", "true");
       const steps = this.getAttribute("steps");
       const current = Number(this.getAttribute("current") || 0);
       let parsed = [];
