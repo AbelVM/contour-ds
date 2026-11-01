@@ -1526,6 +1526,8 @@ class ContourStackedBar extends ContourBase {
     static get properties() { return { segments: { attribute: "segments" }, values: { attribute: "values" }, colors: { attribute: "colors" }, src: { attribute: "src" }, normalize: { attribute: "normalize" } }; }
     render() {
       this.classList.add("c-stacked-bar");
+      this.setAttribute("role", "img");
+      this.setAttribute("aria-label", "Stacked bar");
       wireStates(this);
       loadRemote(this, ["segments", "values"]);
       if (renderStates(this, "stacked-bar")) return;
