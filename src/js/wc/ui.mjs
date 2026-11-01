@@ -666,6 +666,20 @@ class ContourAnimationControls extends ContourBase {
           this.dispatchEvent(new CustomEvent("contour:seek", { bubbles: true, composed: true, detail: { progress: v, value: v } }));
         }
       });
+      this.addEventListener("keydown", (e) => {
+        if (e.key === " " || e.key === "Enter") {
+          const play = this.querySelector(".c-animation-controls__play");
+          if (play && (e.target === play || !e.target || e.target === this)) { e.preventDefault(); play.click(); }
+        } else if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+          const scrubber = this.querySelector(".c-animation-controls__scrubber");
+          if (scrubber) {
+            e.preventDefault();
+            const step = e.key === "ArrowRight" ? 1 : -1;
+            scrubber.value = String(Number(scrubber.value) + step);
+            scrubber.dispatchEvent(new Event("input", { bubbles: true }));
+          }
+        }
+      });
       // Playback ownership: when `playing` is set, advance the playhead on a
       // timer and emit contour:time-change so a consumer can sync its data.
       let timer = null;
