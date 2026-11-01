@@ -1873,6 +1873,8 @@ class ContourTour extends ContourBase {
     enhance() {
       if (this._wiredTour) return;
       this._wiredTour = true;
+      const nextBtn = this.querySelector(".c-tour__next");
+      if (nextBtn) try { nextBtn.focus(); } catch (err) {}
       this.addEventListener("click", (e) => {
         const next = e.target && e.target.closest ? e.target.closest(".c-tour__next") : null;
         if (next && this.contains(next)) this.dispatchEvent(new CustomEvent("contour:step-change", { bubbles: true, composed: true, detail: { direction: "next" } }));
