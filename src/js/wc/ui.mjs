@@ -1270,6 +1270,7 @@ class ContourPopover extends ContourBase {
     render() {
       this.classList.add("c-popover");
       if (!this.hasAttribute("role")) this.setAttribute("role", "dialog");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Popover");
       if (!this.hasAttribute("popover")) this.setAttribute("popover", "auto");
       if (!this.id) this.id = contourId("popover");
       const title = this.getAttribute("title");
