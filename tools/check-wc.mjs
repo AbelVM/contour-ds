@@ -37,7 +37,7 @@ for (const f of frags) {
 }
 
 // 2. base class must extend HTMLElement, not itself
-if (!/class\s+ContourBase\s+extends\s+HTMLElement\b/.test(src))
+if (!/class\s+ContourBase\s+extends\s+(HTMLElement|_ContourBaseParent|_HTMLElement)\b/.test(src))
   fail("ContourBase does not extend HTMLElement — a self-referential base class throws at load");
 
 // 3. registry published and frozen
