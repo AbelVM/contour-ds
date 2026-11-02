@@ -278,6 +278,16 @@
       return {};
     }
 
+    // Update policy (R12-06): "scaffold" components may rebuild their generated
+    // DOM on attribute change (the default lifecycle). High-volume components
+    // (table, grid, tree, virtual-list, chart) should override to "keyed" and
+    // use ensure()/keyed patching, or expose an imperative update method.
+    // Documented here so consumers know which components guarantee identity
+    // stability across renders.
+    static get updateMode() {
+      return "scaffold";
+    }
+
     // How many times this host has run `render()`, counting the first connect.
     // Read-only and diagnostic: it exists so a page can show that `batch()` did
     // what it claims instead of asking the reader to believe it, and so a test can
