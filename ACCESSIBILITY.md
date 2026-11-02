@@ -72,3 +72,21 @@ and reviewed like a dependency update.
 
 APG version pinned: WAI-ARIA Authoring Practices Guide 1.2 (2024). Review on
 any APG update before adopting.
+
+## Component-level contracts (R12-17)
+
+Global gates (contrast, reflow, motion, forced colours) do not prove every
+interactive surface. Each interactive component must additionally document:
+
+- **Target size:** minimum 24 px (WCAG 2.5.8) for every pointer target,
+  including icon-only buttons and drag handles.
+- **Forced colours:** component must remain usable in Forced Colors Mode;
+  texture/ridgelines removed, system `CanvasText` outline retained.
+- **Reduced motion:** all transitions collapse under
+  `prefers-reduced-motion: reduce`; infinite animations pausable by a control
+  (`tools/check-motion.mjs`).
+- **Responsive:** no horizontal page scroll at 320/390 px and 200% zoom in both
+  themes (`tools/audit/check-reflow.mjs`); component-specific overflow handled
+  by `.c-table-wrap` or equivalent scroller, never `overflow-x: hidden` on body.
+- **Touch:** pointer targets sized for coarse pointers; no hover-only
+  essential information.
