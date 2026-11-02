@@ -253,7 +253,12 @@
   // consumer put on authored children survive a re-render. The cost is honest:
   // nodes a component generated are rebuilt, so state inside them (a typed
   // value, a focus ring) is lost when a host attribute changes.
-  export class ContourBase extends HTMLElement {
+  // SSR-safe base (R12-25): in a non-DOM runtime (Node, type-only tooling)
+  // HTMLElement is undefined. Fall back to Object so the module can be imported
+  // for metadata/type inspection without a DOM shim; components cannot be
+  // instantiated there, which is the correct boundary.
+  const _ContourBaseParent = (typeof HTMLElement !== "undefined") ? HTMLElement : Object;
+  export class ContourBase extends _ContourBaseParent {
     static formAssociated = false;
     constructor() {
       super();

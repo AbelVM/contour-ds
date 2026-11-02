@@ -65,7 +65,8 @@ import { define, MODS, REGISTERED, CONTOUR_EVENTS, contourId } from './core.mjs'
   // then keep the root's modifier classes in step with MODS on the host. The
   // base classes are snapshotted at construction, so a re-render cannot
   // accumulate a stale modifier the way an additive classList would.
-  class ContourShadow extends HTMLElement {
+  const _ShadowParent = (typeof HTMLElement !== "undefined") ? HTMLElement : Object;
+  class ContourShadow extends _ShadowParent {
     static get observedAttributes() { return MODS; }
     constructor() {
       super();
@@ -207,6 +208,7 @@ connectedCallback() {
   // Registers a wrapper. The template is parsed once into a <template> and
   // cloned per instance, so the markup below is the markup the root gets.
   const shadow = (name, markup) => {
+    if (typeof document === "undefined") return;
     const tpl = document.createElement("template");
     tpl.innerHTML = markup;
     const cls = class extends ContourShadow {};
@@ -268,10 +270,12 @@ connectedCallback() {
     "contour-plot": "plot",
   };
 
-  for (const [tag, blocks] of Object.entries(SHADOW_SLOTS)) {
-    for (const block of blocks) {
-      const part = SHADOW_PARTS[block] || block;
-      shadow("contour-shadow-" + block, slotWrapper(tag, block, part));
+  if (typeof document !== "undefined") {
+    for (const [tag, blocks] of Object.entries(SHADOW_SLOTS)) {
+      for (const block of blocks) {
+        const part = SHADOW_PARTS[block] || block;
+        shadow("contour-shadow-" + block, slotWrapper(tag, block, part));
+      }
     }
   }
 
@@ -338,11 +342,11 @@ shadow("contour-shadow-filter-pill", `<span class="c-filter-pill" part="filter-p
   // The dialog is the one wrapper with behaviour, because a close button that
   // does not close is a control the reader cannot use.
   class ContourShadowDialog extends ContourShadow {
-    static contourTemplate = (() => {
+    static contourTemplate = (typeof document !== "undefined") ? (() => {
       const tpl = document.createElement("template");
       tpl.innerHTML = "<dialog class=\"c-dialog\" part=\"dialog\"> <div class=\"c-dialog__head\" part=\"head\"> <slot name=\"title\"></slot> <button class=\"c-btn c-btn--icon c-btn--ghost\" part=\"close\" type=\"button\" aria-label=\"Close\"> <svg aria-hidden=\"true\"><use href=\"#i-close\" /></svg> </button> </div> <div class=\"c-dialog__body\" part=\"body\"><slot></slot></div> <div class=\"c-dialog__foot\" part=\"foot\"><slot name=\"foot\"></slot></div> </dialog>";
       return tpl;
-    })();
+    })() : null;
     enhance(root) {
       super.enhance(root);
       // The base constructor AND connectedCallback both call enhance; the base's
