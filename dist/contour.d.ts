@@ -397,6 +397,7 @@ export type ContourToken =
   | "--color-control-edge"
   | "--density"
   | "--density-compact"
+  | "--density-roomy"
   | "--density-type"
   | "--density-type-compact"
   | "--density-row"

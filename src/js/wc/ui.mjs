@@ -2559,11 +2559,11 @@ class ContourDataGrid extends ContourBase {
         });
         thead.appendChild(tr);
       }
-      table.setAttribute("aria-rowcount", String(parsedRows.length));
-      table.setAttribute("aria-colcount", String(parsedCols.length));
       const rows = this.getAttribute("rows");
       let parsedRows = [];
       try { parsedRows = rows ? JSON.parse(rows) : []; } catch (e) { parsedRows = []; }
+      table.setAttribute("aria-rowcount", String(parsedRows.length));
+      table.setAttribute("aria-colcount", String(parsedCols.length));
       const filter = this.getAttribute("filter");
       if (filter) {
         const q = filter.toLowerCase();

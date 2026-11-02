@@ -9,6 +9,7 @@ const config = {
     "@storybook/addon-docs",
     "@storybook/addon-vitest",
   ],
+  staticDirs: ["../dist"],
   framework: "@storybook/web-components-vite",
   // Vite config: allow importing the shipped dist/ assets.
   viteFinal: async (config) => config,

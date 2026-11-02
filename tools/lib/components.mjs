@@ -80,6 +80,7 @@ export function buildComponentsDocument(inv) {
       // Observed attributes from the web-component layer (SB-04b). Empty for
       // CSS-only blocks that have no contour-* wrapper.
       attributes: (inv.wcObserved && inv.wcObserved[name]) || [],
+      booleanAttributes: (inv.wcBoolean && inv.wcBoolean[name]) || [],
       // The system's own vocabulary: retune it in tokens.css and this moves.
       tokens,
       // A property the system defines a default for, on the block itself.

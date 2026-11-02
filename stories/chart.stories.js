@@ -1,13 +1,14 @@
 import { expect } from "storybook/test";
 import "../dist/wc/data.mjs";
+import { booleanControls } from "./metadata.js";
 
 export default {
   title: "Contour/Data/Chart",
   tags: ["autodocs"],
   argTypes: {
+    ...booleanControls("c-chart"),
     series: { control: "text" },
     axis: { control: "text" },
-    zoomable: { control: "text" },
   },
   parameters: { contour: { maturity: "complete-widget" } },
 };

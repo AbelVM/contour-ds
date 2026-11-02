@@ -1,12 +1,13 @@
 import { expect, userEvent, within } from "storybook/test";
 import "../dist/wc/interaction.mjs";
+import { variantControl } from "./metadata.js";
 
 export default {
   title: "Contour/Interaction/Button",
   tags: ["autodocs"],
   parameters: { contour: { maturity: "complete-widget" } },
   argTypes: {
-    variant: { control: "select", options: ["", "primary", "ghost", "danger"] },
+    variant: variantControl("c-btn"),
     size: { control: "select", options: ["", "sm", "lg"] },
     color: { control: "text" },
     label: { control: "text" },

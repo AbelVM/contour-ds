@@ -23,11 +23,17 @@ const files = walk(STORIES_DIR);
 const errors = [];
 if (files.length === 0) errors.push("no story files discovered under stories/");
 
+const dedicatedStoryFile = join(STORIES_DIR, "registered-elements.stories.js");
+const dedicatedStorySource = existsSync(dedicatedStoryFile)
+  ? readFileSync(dedicatedStoryFile, "utf8")
+  : "";
+
 // registry of defined custom elements
 const registrySrc = existsSync(WC_DIR)
   ? readdirSync(WC_DIR).map((f) => readFileSync(join(WC_DIR, f), "utf8")).join("\n")
   : "";
 const definedTags = new Set([...registrySrc.matchAll(/define\("([^"]+)"\s*,/g)].map((m) => m[1]));
+const dedicatedTags = new Set([...dedicatedStorySource.matchAll(/makeStory\("([^"]+)"\)/g)].map((m) => m[1]));
 
 // observed attributes per tag, parsed from src/js/wc/*.mjs
 const observedByTag = {};
@@ -164,6 +170,11 @@ if (inventedTags.size) {
   for (const t of inventedTags) errors.push(`story references undefined custom element: ${t}`);
 }
 
+const missingDedicated = [...definedTags].filter((tag) => !dedicatedTags.has(tag));
+if (missingDedicated.length) {
+  errors.push(`registered custom elements without dedicated stories: ${missingDedicated.join(", ")}`);
+}
+
 
 const HIGH_RISK = ["c-btn", "c-input", "c-field", "c-dialog", "c-tabs", "c-command", "c-table", "c-chart", "c-toast", "c-alert", "c-kpi", "c-map-panel", "c-time-slider"];
 let allSrc = "";
@@ -180,6 +191,7 @@ console.log(`  stories with play functions (estimated): ${playCount}`);
 console.log(`  titles: ${titles.join(", ") || "(none)"}`);
 console.log(`  inventory blocks: ${inventoryBlocks.length}`);
 console.log(`  defined custom elements: ${definedTags.size}`);
+console.log(`  dedicated element stories: ${dedicatedTags.size}`);
 console.log(`  a11y status (files): ${JSON.stringify(a11yStatus)}`);
 console.log(`  maturity counts: ${JSON.stringify(maturityCounts)}`);
 

@@ -302,6 +302,7 @@
        widget. 1 = comfortable, 0.72 = compact. */
     --density: 1;
     --density-compact: 0.72;
+   --density-roomy: 1.28;
     --density-type: 1;
     --density-type-compact: 0.875;
     --density-row: calc(var(--space-2xs) + var(--space-2xs) * var(--density));

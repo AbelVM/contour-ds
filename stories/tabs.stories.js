@@ -1,14 +1,15 @@
 import { expect, userEvent, within } from "storybook/test";
 import "../dist/wc/navigation.mjs";
+import { booleanControls } from "./metadata.js";
 
 export default {
   title: "Contour/Navigation/Tabs",
   tags: ["autodocs"],
   parameters: { contour: { maturity: "complete-widget" } },
   argTypes: {
+    ...booleanControls("c-tabs"),
     tabs: { control: "text" },
     orientation: { control: "text" },
-    closable: { control: "text" },
   },
 };
 

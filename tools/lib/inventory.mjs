@@ -305,6 +305,7 @@ export function inventory() {
   // This feeds the component contract's `attributes` field and the Storybook
   // coverage gate's argTypes validation (SB-04b).
   const wcObserved = {};
+  const wcBoolean = {};
   const wcDir = join(ROOT, "src", "js", "wc");
   if (existsSync(wcDir)) {
     for (const f of readdirSync(wcDir).filter((x) => x.endsWith(".mjs"))) {
@@ -317,6 +318,11 @@ export function inventory() {
           const attrs = om[1].split(",").map((a) => a.trim().replace(/^["']|["']$/g, "")).filter(Boolean);
           const blockName = "c-" + tag.replace("contour-", "");
           wcObserved[blockName] = attrs;
+        }
+        const pm = src.match(new RegExp("class\\s+" + cls + "\\s+extends\\s+[^\\{]+\\{[\\s\\S]*?static get properties\\(\\)\\s*\\{\\s*return\\s+\\{([\\s\\S]*?)\\};\\s*\\}", "s"));
+        if (pm) {
+          const booleanAttrs = [...pm[1].matchAll(/attribute\s*:\s*["']([^"']+)["'][^{}]*type\s*:\s*Boolean/g)].map((property) => property[1]);
+          if (booleanAttrs.length) wcBoolean["c-" + tag.replace("contour-", "")] = booleanAttrs.sort();
         }
       }
     }
@@ -347,6 +353,7 @@ export function inventory() {
       specCount: components.length - noSpecimen.length,
     },
     wcObserved,
+    wcBoolean,
     // Every custom property defined in src/css, with the sheets that define it.
     // `{}` rather than a Map so a consumer can JSON-dump it without converting.
     props: Object.fromEntries([...definedProps.entries()].sort((a, b) => a[0].localeCompare(b[0]))),

@@ -17,4 +17,4 @@ __pycache__/
 build/
 
 *storybook.log
-storybook-static
+storybook

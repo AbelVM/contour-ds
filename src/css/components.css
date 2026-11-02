@@ -2286,6 +2286,11 @@
     --density-type: var(--density-type-compact);
   }
 
+  [data-density="roomy"] {
+    --density: var(--density-roomy);
+    --density-type: 1.08;
+  }
+
   .c-table {
     font-size: calc(var(--type-sm) * var(--density-type));
   }

@@ -16,7 +16,7 @@ web-component layer. It is not a consumer deliverable and does not replace
 | Command | What it does |
 |---|---|
 | `npm run storybook` | Start the dev server on port 6006. |
-| `npm run build-storybook` | Build the static Storybook site into `storybook-static/` (gitignored). |
+| `npm run build-storybook` | Build the static Storybook site into `storybook/` (gitignored). |
 | `npm run test:storybook` | Run Storybook interaction/a11y tests via Vitest + Playwright. |
 | `npm run check:storybook-coverage` | Coverage report; fails on zero stories or invented elements. |
 | `npm run check:storybook` | Compose the three above. |

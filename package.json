@@ -12,7 +12,9 @@
     "integrations/"
   ],
   "scripts": {
-    "build": "node tools/build.mjs",
+    "build:core": "node tools/build.mjs",
+    "generate:storybook": "node tools/gen-storybook-stories.mjs",
+    "build": "npm run build:core && npm run generate:storybook && storybook build --output-dir storybook",
     "snippets": "node tools/snippets.mjs",
     "check:tokens": "node tools/check-tokens.mjs",
     "check:motion": "node tools/check-motion.mjs",
@@ -25,7 +27,7 @@
     "check:chart": "node tools/audit/chart-geometry.mjs",
     "check:chart-names": "node tools/audit/chart-names.mjs",
     "validate": "npx html-validate index.html templates/*.html",
-    "prepack": "node tools/build.mjs",
+    "prepack": "npm run build:core",
     "check:docs-exec": "node tools/execute-docs.mjs",
     "check:reflow": "node tools/audit/check-reflow.mjs",
     "check:doctor": "node tools/doctor.mjs",
@@ -35,9 +37,10 @@
     "test:e2e": "playwright test",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build",
-    "test:storybook": "vitest run --project storybook",
+    "storybook": "npm run build:core && npm run generate:storybook && storybook dev -p 6006",
+    "build:storybook": "npm run build",
+    "build-storybook": "npm run build:storybook",
+    "test:storybook": "npm run build && vitest run --project storybook",
     "check:storybook-coverage": "node tools/check-storybook-coverage.mjs",
     "screenshot:baseline": "node tools/screenshot-baseline.mjs",
     "check:storybook": "npm run build-storybook && npm run test:storybook && npm run check:storybook-coverage"

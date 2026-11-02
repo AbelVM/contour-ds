@@ -72,7 +72,7 @@ Anything that matches is either a leak or a false positive you must justify.
 | `node tools/execute-docs.mjs` | Mounts every generated snippet in a page that links `ds.css` and validates it, so markup the guide tells you to copy is tested as markup rather than as text. Prints the fragment exemption count, because `135/135 valid` over an uncounted exemption is not the pass it looks like |
 | `node tools/doctor.mjs` | Dispatches the node gates in one sweep for a human or an agent, and prints what it skipped: a gate absent from the artifact is reported as absent, and a sweep that dispatched nothing exits non-zero rather than going green on an empty run |
 | `npm run storybook` | Dev-only Storybook workshop (Web Components + Vite); not a consumer deliverable |
-| `npm run build:storybook` | Builds the static Storybook site into `storybook-static/` (gitignored) |
+| `npm run build:storybook` | Builds the static Storybook site into `storybook/` (gitignored) |
 | `npm run test:storybook` | Runs Storybook interaction/a11y tests via Vitest + Playwright |
 | `node tools/check-storybook-coverage.mjs` | Storybook coverage report; fails on zero discovered stories |
 | `node tools/gen-llms.mjs` | Regenerates `llms-full.txt` and `.well-known/llms.txt` from `dist/docs/` and `llms.txt`. Not a gate yet: the build does not emit those files and no lane runs this, so the copies it should keep current can drift; wiring it into the build is the open item |
