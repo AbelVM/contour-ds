@@ -264,7 +264,7 @@ class ContourLayerPanel extends ContourBase {
             const isVisible = savedVisibility.has(name) ? savedVisibility.get(name) : (typeof it === "object" && it.visible !== false);
             toggle.setAttribute("aria-pressed", String(!!isVisible));
             toggle.checked = !!isVisible;
-            toggle.textContent = isVisible ? "●" : "○";
+            toggle.innerHTML = isVisible ? '<svg aria-hidden="true"><use href="#i-check" /></svg>' : '<svg aria-hidden="true"><use href="#i-minus" /></svg>';
             item.appendChild(toggle);
             const nm = document.createElement("span");
             nm.className = "c-layer-panel__name";
@@ -313,7 +313,7 @@ class ContourLayerPanel extends ContourBase {
             const removeBtn = document.createElement("button");
             removeBtn.type = "button";
             removeBtn.className = "c-layer-panel__remove";
-            removeBtn.textContent = "✕";
+            removeBtn.innerHTML = '<svg aria-hidden="true"><use href="#i-minus" /></svg>';
             removeBtn.setAttribute("aria-label", "Remove " + (name || "layer"));
             item.appendChild(removeBtn);
             }
@@ -343,7 +343,7 @@ class ContourLayerPanel extends ContourBase {
            const now = (typeof e.target.checked === "boolean") ? e.target.checked : (e.target.getAttribute("aria-pressed") !== "true");
            e.target.checked = now;
            e.target.setAttribute("aria-pressed", String(now));
-           e.target.textContent = now ? "●" : "○";
+           e.target.innerHTML = now ? '<svg aria-hidden="true"><use href="#i-check" /></svg>' : '<svg aria-hidden="true"><use href="#i-minus" /></svg>';
            this.dispatchEvent(new CustomEvent("contour:layer-visibility", { bubbles: true, composed: true, detail: { name, visible: now } }));
          } else if (e.target.classList.contains("c-layer-panel__opacity")) {
            this.dispatchEvent(new CustomEvent("contour:layer-opacity", { bubbles: true, composed: true, detail: { name, opacity: Number(e.target.value) } }));
@@ -361,7 +361,7 @@ class ContourLayerPanel extends ContourBase {
            const now = btn.getAttribute("aria-pressed") !== "true";
            btn.setAttribute("aria-pressed", String(now));
            btn.checked = now;
-           btn.textContent = now ? "●" : "○";
+           btn.innerHTML = now ? '<svg aria-hidden="true"><use href="#i-check" /></svg>' : '<svg aria-hidden="true"><use href="#i-minus" /></svg>';
            this.dispatchEvent(new CustomEvent("contour:layer-visibility", { bubbles: true, composed: true, detail: { name, visible: now } }));
            return;
          }

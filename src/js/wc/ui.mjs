@@ -1379,7 +1379,7 @@ class ContourRating extends ContourBase {
         star.type = "button";
         star.setAttribute("role", "radio");
         star.setAttribute("aria-checked", String(i === value));
-        star.textContent = "★";
+        star.innerHTML = '<svg aria-hidden="true" viewBox="0 0 16 16"><path d="M8 1.5l1.9 3.9 4.3.6-3.1 3 0.7 4.3L8 11.2 4.2 13.3l0.7-4.3-3.1-3 4.3-.6z" fill="currentColor"/></svg>';
         star.dataset.value = String(i);
         star.setAttribute("aria-label", i + " star" + (i > 1 ? "s" : ""));
         this.appendChild(star);
@@ -1688,7 +1688,7 @@ class ContourNotificationCenter extends ContourBase {
     static get properties() { return { count: { attribute: "count" }, items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-notification-center");
-      const btn = this.ensure(".c-notification-center__trigger", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-notification-center__trigger"; el.type = "button"; el.textContent = "🔔"; el.setAttribute("aria-haspopup", "dialog"); el.setAttribute("aria-expanded", "false"); return el; });
+      const btn = this.ensure(".c-notification-center__trigger", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-notification-center__trigger"; el.type = "button"; el.innerHTML = '<svg aria-hidden="true"><use href="#i-alert" /></svg>'; el.setAttribute("aria-haspopup", "dialog"); el.setAttribute("aria-expanded", "false"); return el; });
       const count = this.getAttribute("count");
       let badge = this.querySelector(".c-notification-center__badge");
       if (count && Number(count) > 0) {
