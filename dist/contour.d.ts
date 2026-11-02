@@ -646,6 +646,36 @@ export interface ContourProps {
  */
 export interface ContourElement extends HTMLElement, ContourProps {}
 
+/**
+ * Form-associated Contour element: carries value/checked/disabled/required/name
+ * and participates in form submission and validation (R12-12).
+ */
+export interface ContourFormElement extends ContourElement {
+  value?: string | null;
+  checked?: boolean;
+  disabled?: boolean;
+  required?: boolean;
+  name?: string | null;
+  placeholder?: string | null;
+  min?: string | null;
+  max?: string | null;
+  step?: string | null;
+}
+
+/**
+ * Data-presentation Contour element: carries series/data/src and loading/error/
+ * empty states (R12-12).
+ */
+export interface ContourDataElement extends ContourElement {
+  data?: string | null;
+  series?: string | null;
+  src?: string | null;
+  loading?: string | null;
+  error?: string | null;
+  empty?: string | null;
+  skeleton?: string | null;
+}
+
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -662,53 +692,53 @@ declare global {
     "contour-app-body": ContourElement;
     "contour-avatar": ContourElement;
     "contour-avatar-group": ContourElement;
-    "contour-axis": ContourElement;
+    "contour-axis": ContourDataElement;
     "contour-badge": ContourElement;
     "contour-badge-overflow": ContourElement;
     "contour-banner": ContourElement;
-    "contour-bivariate": ContourElement;
-    "contour-bivariate-legend": ContourElement;
+    "contour-bivariate": ContourDataElement;
+    "contour-bivariate-legend": ContourDataElement;
     "contour-box": ContourElement;
     "contour-brand": ContourElement;
     "contour-breadcrumb": ContourElement;
-    "contour-brownout": ContourElement;
-    "contour-brush": ContourElement;
+    "contour-brownout": ContourDataElement;
+    "contour-brush": ContourDataElement;
     "contour-btn": ContourElement;
     "contour-btn-group": ContourElement;
     "contour-calendar": ContourElement;
     "contour-callout": ContourElement;
     "contour-card": ContourElement;
     "contour-carousel": ContourElement;
-    "contour-catchment": ContourElement;
-    "contour-category": ContourElement;
-    "contour-chart": ContourElement;
+    "contour-catchment": ContourDataElement;
+    "contour-category": ContourDataElement;
+    "contour-chart": ContourDataElement;
     "contour-chart-grid": ContourElement;
-    "contour-check": ContourElement;
+    "contour-check": ContourFormElement;
     "contour-chip": ContourElement;
     "contour-cluster": ContourElement;
     "contour-code": ContourElement;
     "contour-code-tabs": ContourElement;
-    "contour-color-picker": ContourElement;
-    "contour-combobox": ContourElement;
+    "contour-color-picker": ContourFormElement;
+    "contour-combobox": ContourFormElement;
     "contour-command": ContourElement;
     "contour-command-palette": ContourElement;
-    "contour-compare": ContourElement;
-    "contour-comparison": ContourElement;
+    "contour-compare": ContourDataElement;
+    "contour-comparison": ContourDataElement;
     "contour-compass": ContourElement;
     "contour-container": ContourElement;
     "contour-context-menu": ContourElement;
-    "contour-contour-plot": ContourElement;
+    "contour-contour-plot": ContourDataElement;
     "contour-coordinate": ContourElement;
     "contour-cta": ContourElement;
-    "contour-dash-freshness": ContourElement;
-    "contour-dash-kpi-row": ContourElement;
+    "contour-dash-freshness": ContourDataElement;
+    "contour-dash-kpi-row": ContourDataElement;
     "contour-dash-shell": ContourElement;
     "contour-dash-toolbar": ContourElement;
-    "contour-data-grid": ContourElement;
+    "contour-data-grid": ContourDataElement;
     "contour-datamark": ContourElement;
-    "contour-date-picker": ContourElement;
-    "contour-date-range": ContourElement;
-    "contour-delta": ContourElement;
+    "contour-date-picker": ContourFormElement;
+    "contour-date-range": ContourFormElement;
+    "contour-delta": ContourDataElement;
     "contour-destructive-hint": ContourElement;
     "contour-dialog": ContourElement;
     "contour-diff": ContourElement;
@@ -717,7 +747,7 @@ declare global {
     "contour-do-dont": ContourElement;
     "contour-docs-nav": ContourElement;
     "contour-docs-shell": ContourElement;
-    "contour-donut": ContourElement;
+    "contour-donut": ContourDataElement;
     "contour-dot": ContourElement;
     "contour-drag-handle": ContourElement;
     "contour-draggable": ContourElement;
@@ -731,32 +761,32 @@ declare global {
     "contour-fab": ContourElement;
     "contour-faq": ContourElement;
     "contour-feature": ContourElement;
-    "contour-field": ContourElement;
+    "contour-field": ContourFormElement;
     "contour-file-tree": ContourElement;
-    "contour-file-upload": ContourElement;
+    "contour-file-upload": ContourFormElement;
     "contour-filter-bar": ContourElement;
     "contour-filter-pill": ContourElement;
     "contour-flag": ContourElement;
-    "contour-flow-map": ContourElement;
+    "contour-flow-map": ContourDataElement;
     "contour-footer": ContourElement;
-    "contour-gauge": ContourElement;
+    "contour-gauge": ContourDataElement;
     "contour-header": ContourElement;
-    "contour-heatmap": ContourElement;
-    "contour-hexbin": ContourElement;
+    "contour-heatmap": ContourDataElement;
+    "contour-hexbin": ContourDataElement;
     "contour-hover-card": ContourElement;
     "contour-icon-badge": ContourElement;
-    "contour-input": ContourElement;
-    "contour-input-group": ContourElement;
+    "contour-input": ContourFormElement;
+    "contour-input-group": ContourFormElement;
     "contour-install": ContourElement;
-    "contour-instrument": ContourElement;
-    "contour-isochrone": ContourElement;
+    "contour-instrument": ContourDataElement;
+    "contour-isochrone": ContourDataElement;
     "contour-kbd": ContourElement;
-    "contour-kpi": ContourElement;
+    "contour-kpi": ContourDataElement;
     "contour-landing-features": ContourElement;
     "contour-landing-hero": ContourElement;
     "contour-layer-panel": ContourElement;
     "contour-layer-switch": ContourElement;
-    "contour-legend": ContourElement;
+    "contour-legend": ContourDataElement;
     "contour-link": ContourElement;
     "contour-linkish": ContourElement;
     "contour-live-badge": ContourElement;
@@ -768,19 +798,19 @@ declare global {
     "contour-map-popup": ContourElement;
     "contour-map-slot": ContourElement;
     "contour-mark": ContourElement;
-    "contour-measure": ContourElement;
+    "contour-measure": ContourDataElement;
     "contour-menu": ContourElement;
     "contour-meter": ContourElement;
-    "contour-metrics": ContourElement;
+    "contour-metrics": ContourDataElement;
     "contour-minimap": ContourElement;
     "contour-notification-center": ContourElement;
-    "contour-number-field": ContourElement;
+    "contour-number-field": ContourFormElement;
     "contour-pager": ContourElement;
     "contour-pagination": ContourElement;
     "contour-palette-editor": ContourElement;
     "contour-panel": ContourElement;
     "contour-pill": ContourElement;
-    "contour-pivot": ContourElement;
+    "contour-pivot": ContourDataElement;
     "contour-plate": ContourElement;
     "contour-popover": ContourElement;
     "contour-pressable": ContourElement;
@@ -789,12 +819,12 @@ declare global {
     "contour-progress": ContourElement;
     "contour-prose": ContourElement;
     "contour-pullquote": ContourElement;
-    "contour-radio": ContourElement;
+    "contour-radio": ContourFormElement;
     "contour-radio-list": ContourElement;
-    "contour-range": ContourElement;
-    "contour-range-scale": ContourElement;
-    "contour-rating": ContourElement;
-    "contour-readout": ContourElement;
+    "contour-range": ContourFormElement;
+    "contour-range-scale": ContourFormElement;
+    "contour-rating": ContourFormElement;
+    "contour-readout": ContourDataElement;
     "contour-recipe": ContourElement;
     "contour-reserved": ContourElement;
     "contour-resizable": ContourElement;
@@ -808,8 +838,8 @@ declare global {
     "contour-scroll-area": ContourElement;
     "contour-search-trigger": ContourElement;
     "contour-section-head": ContourElement;
-    "contour-segmented": ContourElement;
-    "contour-select": ContourElement;
+    "contour-segmented": ContourFormElement;
+    "contour-select": ContourFormElement;
     "contour-shadow-accordion": ContourElement;
     "contour-shadow-activity": ContourElement;
     "contour-shadow-advanced": ContourElement;
@@ -993,35 +1023,35 @@ declare global {
     "contour-skeleton": ContourElement;
     "contour-skeleton-group": ContourElement;
     "contour-sortable-list": ContourElement;
-    "contour-sparkline": ContourElement;
+    "contour-sparkline": ContourDataElement;
     "contour-spinner": ContourElement;
     "contour-split-button": ContourElement;
     "contour-stack": ContourElement;
-    "contour-stacked-bar": ContourElement;
-    "contour-stat": ContourElement;
+    "contour-stacked-bar": ContourDataElement;
+    "contour-stat": ContourDataElement;
     "contour-status-light": ContourElement;
-    "contour-stepper": ContourElement;
+    "contour-stepper": ContourFormElement;
     "contour-steps": ContourElement;
-    "contour-streaming-chart": ContourElement;
+    "contour-streaming-chart": ContourDataElement;
     "contour-style-panel": ContourElement;
     "contour-style-switcher": ContourElement;
-    "contour-survey": ContourElement;
+    "contour-survey": ContourDataElement;
     "contour-swatch": ContourElement;
-    "contour-switch": ContourElement;
-    "contour-table": ContourElement;
+    "contour-switch": ContourFormElement;
+    "contour-table": ContourDataElement;
     "contour-table-wrap": ContourElement;
     "contour-tabs": ContourElement;
     "contour-tag": ContourElement;
-    "contour-tags-input": ContourElement;
+    "contour-tags-input": ContourFormElement;
     "contour-testimonial": ContourElement;
-    "contour-textarea": ContourElement;
+    "contour-textarea": ContourFormElement;
     "contour-theme-scope": ContourElement;
-    "contour-threshold": ContourElement;
-    "contour-time-picker": ContourElement;
+    "contour-threshold": ContourDataElement;
+    "contour-time-picker": ContourFormElement;
     "contour-time-range": ContourElement;
-    "contour-time-series": ContourElement;
+    "contour-time-series": ContourDataElement;
     "contour-time-slider": ContourElement;
-    "contour-timeline": ContourElement;
+    "contour-timeline": ContourDataElement;
     "contour-toast": ContourElement;
     "contour-toast-host": ContourElement;
     "contour-toc": ContourElement;
@@ -1029,10 +1059,10 @@ declare global {
     "contour-tooltip": ContourElement;
     "contour-tour": ContourElement;
     "contour-tree": ContourElement;
-    "contour-tree-grid": ContourElement;
-    "contour-version": ContourElement;
+    "contour-tree-grid": ContourDataElement;
+    "contour-version": ContourFormElement;
     "contour-version-banner": ContourElement;
     "contour-virtual-list": ContourElement;
-    "contour-widget-state": ContourElement;
+    "contour-widget-state": ContourDataElement;
   }
 }

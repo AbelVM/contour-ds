@@ -617,7 +617,7 @@ class ContourMapPopup extends ContourBase {
       if (this._wiredMapPopup) return;
       this._wiredMapPopup = true;
       const close = () => { try { this.hidePopover(); } catch (e) {} this.classList.remove("is-open"); this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true })); };
-      const keyHandler = (e) => { if (e.key === "Escape") { e.preventDefault(); close(); } };
+      const keyHandler = (e) => { if (e.key === "Escape" && (this.classList.contains("is-open") || this.matches(":popover-open"))) { e.preventDefault(); close(); } };
       document.addEventListener("keydown", keyHandler);
       onDispose(this, () => document.removeEventListener("keydown", keyHandler));
       this.addEventListener("click", (e) => {
@@ -1324,7 +1324,7 @@ class ContourPopover extends ContourBase {
       if (this._wiredPopover) return;
       this._wiredPopover = true;
       const close = () => { try { this.hidePopover(); } catch (e) {} this.classList.remove("is-open"); this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true })); };
-      const keyHandler = (e) => { if (e.key === "Escape") { e.preventDefault(); close(); } };
+      const keyHandler = (e) => { if (e.key === "Escape" && (this.classList.contains("is-open") || this.matches(":popover-open"))) { e.preventDefault(); close(); } };
       document.addEventListener("keydown", keyHandler);
       onDispose(this, () => document.removeEventListener("keydown", keyHandler));
       this.addEventListener("click", (e) => {
@@ -1566,7 +1566,7 @@ class ContourHoverCard extends ContourBase {
           trigger.addEventListener("blur", () => { setTimeout(hide, 100); });
         }
       }
-      const keyHandler = (e) => { if (e.key === "Escape") { e.preventDefault(); if (typeof this.hidePopover === "function") { try { this.hidePopover(); } catch (err) {} } this.classList.remove("is-open"); this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true })); } };
+      const keyHandler = (e) => { if (e.key === "Escape" && (this.classList.contains("is-open") || this.matches(":popover-open"))) { e.preventDefault(); if (typeof this.hidePopover === "function") { try { this.hidePopover(); } catch (err) {} } this.classList.remove("is-open"); this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true })); } };
       document.addEventListener("keydown", keyHandler);
       onDispose(this, () => document.removeEventListener("keydown", keyHandler));
     }
@@ -1823,6 +1823,7 @@ class ContourStepper extends ContourBase {
   define("contour-stepper", ContourStepper);
 
 class ContourVirtualList extends ContourBase {
+    static get updateMode() { return "keyed"; }
     static get observed() { return ["items", "item-height"]; }
     static get properties() { return { items: { attribute: "items" }, "item-height": { attribute: "item-height" } }; }
     _items() {
@@ -2210,6 +2211,7 @@ class ContourTagsInput extends ContourBase {
   define("contour-tags-input", ContourTagsInput);
 
 class ContourSortableList extends ContourBase {
+    static get updateMode() { return "keyed"; }
     static get observed() { return ["items"]; }
     static get properties() { return { items: { attribute: "items" } }; }
     render() {
@@ -2510,6 +2512,7 @@ class ContourCarousel extends ContourBase {
   define("contour-carousel", ContourCarousel);
 
 class ContourDataGrid extends ContourBase {
+    static get updateMode() { return "keyed"; }
     static get observed() { return ["columns", "rows", "page", "filter", "page-size"]; }
     static get properties() { return { columns: { attribute: "columns" }, rows: { attribute: "rows" }, page: { attribute: "page" }, filter: { attribute: "filter" }, "page-size": { attribute: "page-size" } }; }
     render() {
@@ -2654,6 +2657,7 @@ class ContourDataGrid extends ContourBase {
   define("contour-data-grid", ContourDataGrid);
 
 class ContourTreeGrid extends ContourBase {
+    static get updateMode() { return "keyed"; }
     static get observed() { return ["items", "expanded"]; }
     static get properties() { return { items: { attribute: "items" }, expanded: { attribute: "expanded" } }; }
     _expandedSet() {

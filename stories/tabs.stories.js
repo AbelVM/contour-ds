@@ -8,19 +8,51 @@ export default {
   argTypes: {},
 };
 
+const TABS = JSON.stringify(["Overview", "Details", "Settings"]);
+
+const render = () => {
+  const tabs = document.createElement("contour-tabs");
+  tabs.setAttribute("tabs", TABS);
+  return tabs;
+};
+
 export const Default = {
-  render: () => {
-    const tabs = document.createElement("contour-tabs");
-    const t1 = document.createElement("button"); t1.textContent = "Overview"; t1.setAttribute("slot", "tab");
-    const t2 = document.createElement("button"); t2.textContent = "Details"; t2.setAttribute("slot", "tab");
-    const p1 = document.createElement("div"); p1.textContent = "Overview panel"; p1.setAttribute("slot", "panel");
-    const p2 = document.createElement("div"); p2.textContent = "Details panel"; p2.setAttribute("slot", "panel");
-    tabs.appendChild(t1); tabs.appendChild(t2); tabs.appendChild(p1); tabs.appendChild(p2);
-    return tabs;
-  },
+  render,
   play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
     const tabs = canvasElement.querySelector("contour-tabs");
     await expect(tabs).toBeTruthy();
+    const tabButtons = tabs.querySelectorAll("[role='tab']");
+    await expect(tabButtons.length).toBe(3);
+  },
+};
+
+export const KeyboardRoving = {
+  render,
+  play: async ({ canvasElement }) => {
+    const tabs = canvasElement.querySelector("contour-tabs");
+    const tabButtons = Array.from(tabs.querySelectorAll("[role='tab']"));
+    tabButtons[0].focus();
+    await userEvent.keyboard("{ArrowRight}");
+    await expect(document.activeElement).toBe(tabButtons[1]);
+  },
+};
+
+export const TabChangeEvent = {
+  render,
+  play: async ({ canvasElement }) => {
+    const tabs = canvasElement.querySelector("contour-tabs");
+    let detail = null;
+    tabs.addEventListener("contour:tab-change", (e) => { detail = e.detail; });
+    const tabButtons = Array.from(tabs.querySelectorAll("[role='tab']"));
+    await expect(tabButtons.length).toBe(3);
+  },
+};
+
+export const Reactivity = {
+  render,
+  play: async ({ canvasElement }) => {
+    const tabs = canvasElement.querySelector("contour-tabs");
+    const before = tabs.querySelectorAll("[role='tab']").length;
+    await expect(before).toBe(3);
   },
 };

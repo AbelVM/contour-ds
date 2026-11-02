@@ -143,6 +143,7 @@ class ContourKpi extends ContourBase {
   }
 define("contour-kpi", ContourKpi);
 class ContourTable extends ContourBase {
+    static get updateMode() { return "keyed"; }
     static get observed() { return ["columns", "rows", "page", "page-size", "sort", "sort-dir", "virtual", "empty", "loading", "error", "retry", "skeleton", "persist"]; }
     static get properties() { return { columns: { attribute: "columns" }, rows: { attribute: "rows" }, page: { attribute: "page", type: Number }, pageSize: { attribute: "page-size", type: Number } }; }
     _cellValue(cell) {
@@ -610,6 +611,7 @@ class ContourTable extends ContourBase {
   }
   define("contour-table", ContourTable);
 class ContourChart extends ContourBase {
+    static get updateMode() { return "keyed"; }
     static get observed() { return ["series", "axis", "empty", "loading", "error", "retry", "skeleton", "zoomable", "data-table"]; }
     static get properties() { return { series: { attribute: "series" }, axis: { attribute: "axis" }, zoomable: { attribute: "zoomable", type: Boolean } }; }
     render() {
@@ -691,8 +693,9 @@ class ContourChart extends ContourBase {
       }
 const series = this.getAttribute("series");
        if (series) {
+         let parsed = null;
          try {
-           const parsed = JSON.parse(series);
+           parsed = JSON.parse(series);
            const plot = this.ensure(".c-chart__plot", () => { const el = document.createElement("div"); el.className = "c-chart__plot"; return el; });
            plot.innerHTML = "";
            // Structured series: an item may carry `values` plus a `type`
@@ -1106,6 +1109,7 @@ class ContourComparison extends ContourBase {
   }
   define("contour-comparison", ContourComparison);
 class ContourStreamingChart extends ContourBase {
+    static get updateMode() { return "keyed"; }
     static get observed() { return ["line", "dot", "interval", "pause", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { line: { attribute: "line" }, dot: { attribute: "dot" }, interval: { attribute: "interval", type: Number }, pause: { attribute: "pause", type: Boolean }, src: { attribute: "src" } }; }
     render() {
@@ -3176,6 +3180,7 @@ class ContourSparkline extends ContourBase {
   }
 define("contour-sparkline", ContourSparkline);
 class ContourChartGrid extends ContourBase {
+    static get updateMode() { return "keyed"; }
     static get observed() { return ["title", "series", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { title: { attribute: "title" }, series: { attribute: "series" }, src: { attribute: "src" } }; }
     render() {

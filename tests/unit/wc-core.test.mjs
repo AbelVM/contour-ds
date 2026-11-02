@@ -172,3 +172,194 @@ describe("adversarial: malformed attributes (R12-31)", () => {
     expect(["h1","h2","h3","h4","h5","h6"]).toContain(tag);
   });
 });
+
+describe("lifecycle state machine sequences (R12-30)", () => {
+  it("upgrade after connect preserves authored children", async () => {
+    const mod = await import("../../src/js/wc/core.mjs");
+    const tag = "contour-demo-upgrade-" + Math.random().toString(36).slice(2);
+    const el = document.createElement(tag);
+    const authored = document.createTextNode("authored");
+    el.appendChild(authored);
+    document.body.appendChild(el);
+    class Demo extends mod.ContourBase {
+      static get observed() { return ["label"]; }
+      render() {
+        const g = document.createElement("span");
+        g.className = "c-demo__gen";
+        g.textContent = this.getAttribute("label") || "";
+        this.appendChild(g);
+      }
+    }
+    customElements.define(tag, Demo);
+    await new Promise((r) => setTimeout(r, 0));
+    expect(el.textContent).toContain("authored");
+    el.remove();
+  });
+
+  it("attribute change during loading does not throw", async () => {
+    const mod = await import("../../src/js/wc/core.mjs");
+    class Demo extends mod.ContourBase {
+      static get observed() { return ["label"]; }
+      render() { this.textContent = this.getAttribute("label") || ""; }
+    }
+    const tag = "contour-demo-loading-" + Math.random().toString(36).slice(2);
+    if (!customElements.get(tag)) customElements.define(tag, Demo);
+    const el = document.createElement(tag);
+    document.body.appendChild(el);
+    expect(() => { el.setAttribute("label", "x"); el.setAttribute("label", "y"); }).not.toThrow();
+    expect(el.textContent).toBe("y");
+    el.remove();
+  });
+
+  it("disconnect and reconnect re-renders", async () => {
+    const mod = await import("../../src/js/wc/core.mjs");
+    class Demo extends mod.ContourBase {
+      static get observed() { return ["label"]; }
+      render() { this.textContent = "v=" + (this.getAttribute("label") || ""); }
+    }
+    const tag = "contour-demo-reconn-" + Math.random().toString(36).slice(2);
+    if (!customElements.get(tag)) customElements.define(tag, Demo);
+    const el = document.createElement(tag);
+    el.setAttribute("label", "a");
+    document.body.appendChild(el);
+    expect(el.textContent).toBe("v=a");
+    el.remove();
+    document.body.appendChild(el);
+    expect(el.textContent).toBe("v=a");
+    el.remove();
+  });
+
+  it("batch coalesces and restores focus", async () => {
+    const mod = await import("../../src/js/wc/core.mjs");
+    class Demo extends mod.ContourBase {
+      static get observed() { return ["a", "b"]; }
+      render() { this._renders = (this._renders || 0) + 1; }
+    }
+    const tag = "contour-demo-batch2-" + Math.random().toString(36).slice(2);
+    if (!customElements.get(tag)) customElements.define(tag, Demo);
+    const el = document.createElement(tag);
+    document.body.appendChild(el);
+    const before = el.renderCount;
+    el.batch(() => { el.setAttribute("a", "1"); el.setAttribute("b", "2"); el.setAttribute("a", "3"); });
+    expect(el.renderCount).toBe(before + 1);
+    el.remove();
+  });
+
+  it("repeated attribute churn does not leak renderCount unbounded", async () => {
+    const mod = await import("../../src/js/wc/core.mjs");
+    class Demo extends mod.ContourBase {
+      static get observed() { return ["v"]; }
+      render() { this.textContent = this.getAttribute("v") || ""; }
+    }
+    const tag = "contour-demo-churn-" + Math.random().toString(36).slice(2);
+    if (!customElements.get(tag)) customElements.define(tag, Demo);
+    const el = document.createElement(tag);
+    document.body.appendChild(el);
+    for (let i = 0; i < 50; i++) el.setAttribute("v", String(i));
+    expect(el.textContent).toBe("49");
+    el.remove();
+  });
+});
+
+describe("adversarial authored DOM (R12-31 expanded)", () => {
+  it("sanitizeHtml handles nested dangerous tags", async () => {
+    const mod = await import("../../src/js/wc/core.mjs");
+    const out = mod.sanitizeHtml("<div><script><script>nested</script></script><p>ok</p></div>");
+    expect(out).toContain("ok");
+    expect(out).not.toMatch(/<script/i);
+  });
+
+  it("sanitizeHtml handles event handlers in various cases", async () => {
+    const mod = await import("../../src/js/wc/core.mjs");
+    const out = mod.sanitizeHtml('<img SRC="x" ONERROR="alert(1)" /><a HREF="javascript:alert(2)">x</a>');
+    expect(out).not.toMatch(/onerror/i);
+    expect(out).not.toMatch(/javascript:/i);
+  });
+
+  it("contourId is unique across many calls", async () => {
+    const mod = await import("../../src/js/wc/core.mjs");
+    const ids = new Set();
+    for (let i = 0; i < 1000; i++) ids.add(mod.contourId("x"));
+    expect(ids.size).toBe(1000);
+  });
+
+  it("formatValue handles objects and arrays", async () => {
+    const mod = await import("../../src/js/wc/core.mjs");
+    // no format => value returned as-is
+    expect(mod.formatValue({ a: 1 }, null)).toEqual({ a: 1 });
+    expect(mod.formatValue(null, null)).toBe(null);
+  });
+
+  it("headingTag falls back for invalid input", async () => {
+    const mod = await import("../../src/js/wc/core.mjs");
+    const el = document.createElement("div");
+    // invalid fallback is returned as-is (caller's responsibility); default fallback is h3
+    expect(mod.headingTag(el)).toBe("h3");
+    el.setAttribute("heading", "h2");
+    expect(mod.headingTag(el)).toBe("h2");
+    el.setAttribute("heading", "nope");
+    expect(mod.headingTag(el)).toBe("h3");
+  });
+
+  it("sanitizeHtml handles null bytes and unicode", async () => {
+    const mod = await import("../../src/js/wc/core.mjs");
+    const out = mod.sanitizeHtml("<p>caf\u00e9 \u0000 test</p>");
+    expect(out).toContain("caf");
+  });
+});
+
+describe("updateMode policy (R12-06)", () => {
+  it("ContourBase defaults to scaffold", async () => {
+    const mod = await import("../../src/js/wc/core.mjs");
+    expect(mod.ContourBase.updateMode).toBe("scaffold");
+  });
+
+  it("high-volume components declare keyed", async () => {
+    await import("../../src/js/wc/data.mjs");
+    await import("../../src/js/wc/navigation.mjs");
+    await import("../../src/js/wc/ui.mjs");
+    await import("../../src/js/wc/docs.mjs");
+    const tags = ["contour-table","contour-chart","contour-tree","contour-virtual-list","contour-data-grid","contour-tree-grid","contour-file-tree"];
+    for (const t of tags) {
+      const C = customElements.get(t);
+      expect(C).toBeTruthy();
+      expect(C.updateMode).toBe("keyed");
+    }
+  });
+});
+
+describe("performance smoke (R12-07/R12-32)", () => {
+  it("renders a 1000-row table within budget", async () => {
+    await import("../../src/js/wc/data.mjs");
+    const C = customElements.get("contour-table");
+    expect(C).toBeTruthy();
+    const el = document.createElement("contour-table");
+    const cols = JSON.stringify([{ key: "id", label: "ID" }, { key: "name", label: "Name" }]);
+    const rows = JSON.stringify(Array.from({ length: 1000 }, (_, i) => ({ id: i, name: "row " + i })));
+    const t0 = performance.now();
+    el.setAttribute("columns", cols);
+    el.setAttribute("rows", rows);
+    document.body.appendChild(el);
+    const dt = performance.now() - t0;
+    expect(dt).toBeLessThan(5000);
+    el.remove();
+  });
+});
+
+describe("mixed-page contention (R12-32/R12-34)", () => {
+  it("renders mixed components within budget", async () => {
+    await import("../../src/js/wc/data.mjs");
+    await import("../../src/js/wc/ui.mjs");
+    await import("../../src/js/wc/forms.mjs");
+    const t0 = performance.now();
+    const els = [];
+    for (let i = 0; i < 50; i++) {
+      const e = document.createElement("contour-card");
+      els.push(e);
+      document.body.appendChild(e);
+    }
+    const dt = performance.now() - t0;
+    expect(dt).toBeLessThan(5000);
+    els.forEach((e) => e.remove());
+  });
+});

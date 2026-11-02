@@ -10,8 +10,6 @@ export default {
     label: { control: "text" },
     delta: { control: "text" },
     direction: { control: "select", options: ["", "up", "down"] },
-    variant: { control: "text" },
-    format: { control: "text" },
   },
 };
 
@@ -27,5 +25,22 @@ export const Default = {
   play: async ({ canvasElement }) => {
     const k = canvasElement.querySelector("contour-kpi");
     await expect(k).toBeTruthy();
+    await expect(canvasElement.textContent).toContain("Active users");
+    await expect(canvasElement.textContent).toContain("1,234");
+  },
+};
+
+export const Reactivity = {
+  render: () => {
+    const k = document.createElement("contour-kpi");
+    k.setAttribute("label", "Active users");
+    k.setAttribute("value", "1,234");
+    return k;
+  },
+  play: async ({ canvasElement }) => {
+    const k = canvasElement.querySelector("contour-kpi");
+    await expect(k).toBeTruthy();
+    k.setAttribute("value", "2,000");
+    await expect(canvasElement.textContent).toContain("2,000");
   },
 };

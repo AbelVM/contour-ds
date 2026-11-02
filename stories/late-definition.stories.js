@@ -15,6 +15,7 @@ export const NativeFallback = {
   },
   play: async ({ canvasElement }) => {
     await expect(canvasElement.querySelector("button")).toBeTruthy();
+    await expect(canvasElement.textContent).toContain("Native fallback");
   },
 };
 
@@ -28,5 +29,6 @@ export const LateUpgrade = {
     await import("../dist/wc/interaction.mjs");
     const el = canvasElement.querySelector("contour-btn");
     await expect(el).toBeTruthy();
+    await expect(el).toHaveAttribute("role", "button");
   },
 };

@@ -258,3 +258,23 @@ jobs:
         run: npm run test:e2e
       - name: Run coverage
         run: npm run test:coverage
+
+  storybook:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install dependencies
+        run: npm install
+      - name: Install chromium
+        run: npx playwright install --with-deps chromium
+      - name: Build the design system
+        run: node tools/build.mjs
+      - name: Build Storybook
+        run: npm run build-storybook
+      - name: Run Storybook interaction and a11y tests
+        run: npm run test:storybook
+      - name: Check Storybook coverage
+        run: npm run check:storybook-coverage

@@ -39,7 +39,8 @@
     "build-storybook": "storybook build",
     "test:storybook": "vitest run --project storybook",
     "check:storybook-coverage": "node tools/check-storybook-coverage.mjs",
-    "screenshot:baseline": "node tools/screenshot-baseline.mjs"
+    "screenshot:baseline": "node tools/screenshot-baseline.mjs",
+    "check:storybook": "npm run build-storybook && npm run test:storybook && npm run check:storybook-coverage"
   },
   "keywords": [
     "design-system",

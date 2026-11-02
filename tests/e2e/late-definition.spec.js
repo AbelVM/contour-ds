@@ -13,3 +13,12 @@ test("contour-btn without JS stays unupgraded", async ({ page }) => {
   const btn = page.locator("contour-btn");
   await expect(btn).toBeAttached();
 });
+
+test("native fallback renders without JavaScript", async ({ browser }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  const page = await context.newPage();
+  await page.goto("/tests/e2e/fixtures/late.html");
+  const btn = page.locator("button.c-btn, contour-btn");
+  await expect(btn).toBeAttached();
+  await context.close();
+});

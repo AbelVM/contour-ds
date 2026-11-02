@@ -20,3 +20,17 @@ export const Default = {
     await expect(canvasElement.textContent).toContain("Saved");
   },
 };
+
+export const Reactivity = {
+  render: () => {
+    const t = document.createElement("contour-toast");
+    t.textContent = "Saved successfully";
+    return t;
+  },
+  play: async ({ canvasElement }) => {
+    const t = canvasElement.querySelector("contour-toast");
+    await expect(t).toBeTruthy();
+    t.textContent = "Updated";
+    await expect(canvasElement.textContent).toContain("Updated");
+  },
+};

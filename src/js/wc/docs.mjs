@@ -128,6 +128,7 @@ class ContourDocsShell extends ContourBase {
 
 
 class ContourFileTree extends ContourBase {
+    static get updateMode() { return "keyed"; }
     static get observed() { return ["items"]; }
     static get properties() { return { items: { attribute: "items" } }; }
     render() {

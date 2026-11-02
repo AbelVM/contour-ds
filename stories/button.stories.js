@@ -33,6 +33,7 @@ export const Default = {
     const btn = canvas.getByRole("button");
     await expect(btn).toHaveTextContent("Save changes");
     await userEvent.click(btn);
+    await expect(btn).toHaveAttribute("tabindex", "0");
   },
 };
 
@@ -43,6 +44,7 @@ export const Disabled = {
     const canvas = within(canvasElement);
     const btn = canvas.getByRole("button");
     await expect(btn).toHaveAttribute("aria-disabled", "true");
+    await expect(btn).toHaveAttribute("tabindex", "-1");
   },
 };
 
@@ -53,5 +55,29 @@ export const Primary = {
     const canvas = within(canvasElement);
     const btn = canvas.getByRole("button");
     await expect(btn).toHaveClass(/c-btn--primary/);
+  },
+};
+
+export const KeyboardActivate = {
+  render,
+  args: { label: "Save changes" },
+  play: async ({ canvasElement }) => {
+    const btn = canvasElement.querySelector("contour-btn");
+    let activated = false;
+    btn.addEventListener("contour:activate", () => { activated = true; });
+    btn.focus();
+    await userEvent.keyboard("{Enter}");
+    await expect(activated).toBe(true);
+  },
+};
+
+export const Reactivity = {
+  render,
+  args: { label: "Save changes" },
+  play: async ({ canvasElement }) => {
+    const btn = canvasElement.querySelector("contour-btn");
+    await expect(btn).not.toHaveClass(/c-btn--danger/);
+    btn.setAttribute("variant", "danger");
+    await expect(btn).toHaveClass(/c-btn--danger/);
   },
 };

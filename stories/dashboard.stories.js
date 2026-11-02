@@ -35,5 +35,6 @@ export const Default = {
     await expect(canvasElement.querySelector("contour-kpi")).toBeTruthy();
     await expect(canvasElement.querySelector("contour-chart")).toBeTruthy();
     await expect(canvasElement.querySelector("contour-table")).toBeTruthy();
+    await expect(canvasElement.textContent).toContain("Active users");
   },
 };
