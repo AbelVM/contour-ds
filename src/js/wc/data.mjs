@@ -610,7 +610,7 @@ class ContourTable extends ContourBase {
   }
   define("contour-table", ContourTable);
 class ContourChart extends ContourBase {
-    static get observed() { return ["series", "axis", "empty", "loading", "error", "retry", "skeleton", "zoomable"]; }
+    static get observed() { return ["series", "axis", "empty", "loading", "error", "retry", "skeleton", "zoomable", "data-table"]; }
     static get properties() { return { series: { attribute: "series" }, axis: { attribute: "axis" }, zoomable: { attribute: "zoomable", type: Boolean } }; }
     render() {
       this.classList.add("c-chart");
@@ -793,6 +793,50 @@ const series = this.getAttribute("series");
           // Styled tooltip element (positioned via --chart-tip-*).
           const tip = this.ensure(".c-chart__tooltip", () => { const el = document.createElement("div"); el.className = "c-chart__tooltip"; el.setAttribute("role", "tooltip"); el.setAttribute("hidden", ""); return el; });
           tip.setAttribute("hidden", "");
+          // Accessible data-table fallback (R12-18): opt-in via `data-table`
+          // attribute. Renders a visually-hidden table of the series values so
+          // screen readers and no-JS consumers can read the data behind the
+          // graphic. The graphic remains the primary presentation.
+          if (this.hasAttribute("data-table")) {
+            let table = this.querySelector(".c-chart__data-table");
+            if (!table) {
+              table = document.createElement("table");
+              table.className = "c-chart__data-table visually-hidden";
+              this.appendChild(table);
+            }
+            table.innerHTML = "";
+            const thead = document.createElement("thead");
+            const hr = document.createElement("tr");
+            const h = document.createElement("th");
+            h.textContent = "Series";
+            hr.appendChild(h);
+            const maxLen = parsed.reduce((m, s) => Math.max(m, Array.isArray(s.values) ? s.values.length : (Array.isArray(s) ? s.length : 0)), 0);
+            for (let i = 0; i < maxLen; i++) {
+              const th = document.createElement("th");
+              th.textContent = "Value " + (i + 1);
+              hr.appendChild(th);
+            }
+            thead.appendChild(hr);
+            table.appendChild(thead);
+            const tbody = document.createElement("tbody");
+            parsed.forEach((s, si) => {
+              const vals = Array.isArray(s.values) ? s.values : (Array.isArray(s) ? s : []);
+              const tr = document.createElement("tr");
+              const td0 = document.createElement("td");
+              td0.textContent = s.label || ("Series " + (si + 1));
+              tr.appendChild(td0);
+              for (let i = 0; i < maxLen; i++) {
+                const td = document.createElement("td");
+                td.textContent = vals[i] != null ? String(vals[i]) : "";
+                tr.appendChild(td);
+              }
+              tbody.appendChild(tr);
+            });
+            table.appendChild(tbody);
+          } else {
+            const old = this.querySelector(".c-chart__data-table");
+            if (old) old.remove();
+          }
          } else {
          const plot = this.ensure(".c-chart__plot", () => { const el = document.createElement("div"); el.className = "c-chart__plot"; return el; });
          plot.innerHTML = "";
