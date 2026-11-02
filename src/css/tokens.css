@@ -207,7 +207,6 @@
     --dur-sweep: 1.6s;
     --dur-reveal: 320ms;
     --dur-focus: 120ms;
-    --dur-select: 160ms;
 
     --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
     --ease-reveal: cubic-bezier(0.16, 1, 0.3, 1);

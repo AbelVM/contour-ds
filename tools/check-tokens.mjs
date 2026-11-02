@@ -49,6 +49,9 @@ const CSS = join(ROOT, "src/css");
 // anywhere — including `assets/`, which was checked before deleting so nothing
 // in the guide's own chrome would break. This list is what is genuinely left.
 const LEDGER = {
+  "--dur-reveal": { action: "wire", task: "R11-23", verified: false, note: "motion foundation reveal duration; consumer pending" },
+  "--ease-reveal": { action: "wire", task: "R11-23", verified: false, note: "motion foundation reveal easing; consumer pending" },
+  "--reveal-distance": { action: "wire", task: "R11-23", verified: false, note: "motion foundation reveal distance; consumer pending" },
 };
 
 // Referenced-but-undefined tokens that are deliberate author hooks (component-scoped

@@ -347,7 +347,6 @@ export type ContourToken =
   | "--dur-sweep"
   | "--dur-reveal"
   | "--dur-focus"
-  | "--dur-select"
   | "--ease-standard"
   | "--ease-reveal"
   | "--reveal-distance"

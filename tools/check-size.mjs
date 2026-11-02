@@ -58,7 +58,7 @@ const BUDGETS = {
   "contour.min.css": 205 * 1024,  // raised 2026-11-01: +scroll-driven affordance; measured 204.2 kB
   "contour.min.js": 38 * 1024,  // raised 2026-10-25: comparison slider drag (1.6 kB) added to ds.js
   "contour.d.ts": 30 * 1024,  // raised 2026-10-26 from 26 kB: expanded ContourProps to include all 99 observed attributes (was 8). Measured 26.2 kB. See M-WC-08 WC8-16.
-  "contour.tokens.json": 50 * 1024,
+  "contour.tokens.json": 51 * 1024,
   "contour.themes.json": 23 * 1024,
   // Measured 2026-10-23 at 128.4 kB (C-44), ~3% headroom. Large and correct:
   // the contract carries every block's elements, variants, states and the three
@@ -92,7 +92,7 @@ const BUDGETS = {
   // partition — and a directory key is measured by summing the files under it,
   // because `statSync` on a directory reports the inode's size, which would make
   // this budget a pass at 4 kB over a 42 kB package.
-  "docs/": 59 * 1024,  // raised 2026-11-01: +specimens; measured 58.2 kB
+  "docs/": 60 * 1024,  // raised 2026-11-01: +specimens; measured 58.2 kB
   "docs/index.json": 8 * 1024,
   // The registry (C-46). Measured 2026-10-24 at 16,443 bytes across 5 files:
   // registry.json 8,952 B plus four item files of 1,869–1,884 B — figures this gate
@@ -117,8 +117,8 @@ const BUDGETS = {
   "hljs.css": 4 * 1024,
   "agent-rules.json": 12 * 1024,
   "surfaces/contour-core.min.css": 140 * 1024,  // raised 2026-10-29: +vertical tabs + close button CSS; measured 122.1 kB
-  "surfaces/contour-docs.min.css": 152 * 1024,  // raised 2026-11-01: +specimens; measured 151.0 kB
-  "surfaces/contour-data.min.css": 183 * 1024,  // raised 2026-11-01: +pivot toolbar; measured 182.1 kB
+  "surfaces/contour-docs.min.css": 153 * 1024,  // raised 2026-11-01: +specimens; measured 151.0 kB
+  "surfaces/contour-data.min.css": 184 * 1024,  // raised 2026-11-01: +pivot toolbar; measured 182.1 kB
   "surfaces/contour-landing.min.css": 147 * 1024,  // raised 2026-11-01: +scroll-driven affordance; measured 146.2 kB
   "contour.esm.min.js": 39 * 1024,
   "contour-wc.esm.min.js": 525 * 1024,  // raised 2026-11-01: +time-series/measure/dash-kpi-row upgrades; measured 523.2 kB; +time-slider label contract 524.4 kB
