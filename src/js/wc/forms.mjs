@@ -191,9 +191,9 @@ class ContourField extends ContourBase {
   };
   define("contour-field", ContourField);
   class ContourRange extends ContourBase {
-    static get observed() { return ["min", "max", "value", "low", "high", "range", "sparkline", "label"]; }
+    static get observed() { return ["min", "max", "value", "low", "high", "range", "sparkline", "label", "disabled", "error", "help"]; }
     static get formAssociated() { return true; }
-    static get properties() { return { min: { attribute: "min" }, max: { attribute: "max" }, value: { attribute: "value" }, label: { attribute: "label" } }; }
+    static get properties() { return { min: { attribute: "min" }, max: { attribute: "max" }, value: { attribute: "value" }, label: { attribute: "label" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" } }; }
      render() {
        this.classList.add("c-range");
        const min = this.getAttribute("min") || "0";
@@ -317,8 +317,8 @@ class ContourField extends ContourBase {
    };
   define("contour-range", ContourRange);
 class ContourSwitch extends ContourBase {
-    static get observed() { return ["label", "required", "checked"]; }
-    static get properties() { return { label: { attribute: "label" }, required: { attribute: "required", type: Boolean }, checked: { attribute: "checked", type: Boolean } }; }
+    static get observed() { return ["label", "required", "checked", "disabled", "error", "help"]; }
+    static get properties() { return { label: { attribute: "label" }, required: { attribute: "required", type: Boolean }, checked: { attribute: "checked", type: Boolean }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" } }; }
     static get formAssociated() { return true; }
     render() {
       this.classList.add("c-switch");
@@ -330,6 +330,17 @@ class ContourSwitch extends ContourBase {
        input.setAttribute("role", "switch");
       input.setAttribute("aria-checked", String(input.checked));
       this._setCustomState("data-checked", input.checked);
+      if (this.hasAttribute("disabled")) { input.setAttribute("disabled", ""); this.classList.add("is-disabled"); }
+      else { input.removeAttribute("disabled"); this.classList.remove("is-disabled"); }
+      const err = this.getAttribute("error");
+      const help = this.getAttribute("help");
+      let msg = this.querySelector(".c-switch__message");
+      if (err || help) {
+        if (!msg) { msg = document.createElement("div"); msg.className = "c-switch__message"; this.appendChild(msg); }
+        msg.textContent = err || help || "";
+        msg.classList.toggle("c-switch__message--error", !!err);
+      } else if (msg) { msg.remove(); }
+      if (err) this.classList.add("is-error"); else this.classList.remove("is-error");
       // Ensure track element follows the input (CSS: input + track).
       if (!input.nextElementSibling || !input.nextElementSibling.classList.contains("c-switch__track")) {
         const track = document.createElement("span");
@@ -367,8 +378,8 @@ class ContourSwitch extends ContourBase {
   }
   define("contour-switch", ContourSwitch);
 class ContourCheck extends ContourBase {
-    static get observed() { return ["label", "name", "value", "required", "type", "checked"]; }
-    static get properties() { return { label: { attribute: "label" }, name: { attribute: "name" }, value: { attribute: "value" }, required: { attribute: "required", type: Boolean }, type: { attribute: "type" }, checked: { attribute: "checked", type: Boolean } }; }
+    static get observed() { return ["label", "name", "value", "required", "type", "checked", "disabled", "error", "help"]; }
+    static get properties() { return { label: { attribute: "label" }, name: { attribute: "name" }, value: { attribute: "value" }, required: { attribute: "required", type: Boolean }, type: { attribute: "type" }, checked: { attribute: "checked", type: Boolean }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" } }; }
     static get formAssociated() { return true; }
     render() {
       this.classList.add("c-check");
@@ -390,6 +401,17 @@ class ContourCheck extends ContourBase {
       }
       if (this.hasAttribute("name")) input.name = this.getAttribute("name");
       if (this.hasAttribute("value")) input.value = this.getAttribute("value");
+      if (this.hasAttribute("disabled")) { input.setAttribute("disabled", ""); this.classList.add("is-disabled"); }
+      else { input.removeAttribute("disabled"); this.classList.remove("is-disabled"); }
+      const err = this.getAttribute("error");
+      const help = this.getAttribute("help");
+      let msg = this.querySelector(".c-check__message");
+      if (err || help) {
+        if (!msg) { msg = document.createElement("div"); msg.className = "c-check__message"; this.appendChild(msg); }
+        msg.textContent = err || help || "";
+        msg.classList.toggle("c-check__message--error", !!err);
+      } else if (msg) { msg.remove(); }
+      if (err) this.classList.add("is-error"); else this.classList.remove("is-error");
     }
     enhance() {
       const input = this.querySelector("input");
@@ -412,8 +434,8 @@ class ContourCheck extends ContourBase {
   }
   define("contour-check", ContourCheck);
 class ContourRadio extends ContourBase {
-    static get observed() { return ["label", "name", "value", "required", "checked"]; }
-    static get properties() { return { label: { attribute: "label" }, name: { attribute: "name" }, value: { attribute: "value" }, required: { attribute: "required", type: Boolean }, checked: { attribute: "checked", type: Boolean } }; }
+    static get observed() { return ["label", "name", "value", "required", "checked", "disabled", "error", "help"]; }
+    static get properties() { return { label: { attribute: "label" }, name: { attribute: "name" }, value: { attribute: "value" }, required: { attribute: "required", type: Boolean }, checked: { attribute: "checked", type: Boolean }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" } }; }
     static get formAssociated() { return true; }
     render() {
       this.classList.add("c-radio");
@@ -422,6 +444,17 @@ class ContourRadio extends ContourBase {
        input.checked = this.hasAttribute("checked");
       if (this.hasAttribute("name")) input.name = this.getAttribute("name");
       if (this.hasAttribute("value")) input.value = this.getAttribute("value");
+      if (this.hasAttribute("disabled")) { input.setAttribute("disabled", ""); this.classList.add("is-disabled"); }
+      else { input.removeAttribute("disabled"); this.classList.remove("is-disabled"); }
+      const err = this.getAttribute("error");
+      const help = this.getAttribute("help");
+      let msg = this.querySelector(".c-radio__message");
+      if (err || help) {
+        if (!msg) { msg = document.createElement("div"); msg.className = "c-radio__message"; this.appendChild(msg); }
+        msg.textContent = err || help || "";
+        msg.classList.toggle("c-radio__message--error", !!err);
+      } else if (msg) { msg.remove(); }
+      if (err) this.classList.add("is-error"); else this.classList.remove("is-error");
       if (label) {
         input.setAttribute("aria-label", label);
         const txt = this.querySelector(":scope > span:not([class])") || (() => { const el = document.createElement("span"); this.appendChild(el); return el; })();
