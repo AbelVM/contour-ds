@@ -508,6 +508,8 @@ try {
     const load = await page_.evaluate(() => ({
       registry: Array.from(window.ContourElements || []),
       frozen: Object.isFrozen(window.ContourElements),
+      shadowParts: window.ContourShadowParts || null,
+      shadowPartsFrozen: window.ContourShadowParts ? Object.isFrozen(window.ContourShadowParts) : false,
       // The event manifest (BY-45) publishes the same way the registry does:
       // a page can enumerate what a component may tell it without scraping
       // quoted strings. Read off the artifact, because the classic bundle is
@@ -541,6 +543,16 @@ try {
       fail(`${load.attempted - attemptedUnique} names were handed to customElements.define more than once (${load.attempted} attempts, ${attemptedUnique} names) — the second attempt throws, and a catch makes it invisible`);
     if (load.registry.length !== attemptedUnique)
       fail(`the registry holds ${load.registry.length} names but ${attemptedUnique} were registered — the list does not describe what the browser was handed`);
+    if (!load.shadowParts || !load.shadowPartsFrozen)
+      fail("window.ContourShadowParts is missing or mutable — consumers need a stable ::part() surface");
+    else {
+      const manifestParts = Object.values(load.shadowParts).flat();
+      if (!manifestParts.length || manifestParts.some((part) => typeof part !== "string" || !part))
+        fail("window.ContourShadowParts contains no usable part names");
+      if (Object.keys(load.shadowParts).some((name) => !name.startsWith("contour-shadow-")))
+        fail("window.ContourShadowParts contains a non-shadow wrapper");
+      else console.log(`wc-contract: shadow-part manifest compared ${Object.keys(load.shadowParts).length} wrappers and ${manifestParts.length} exported names`);
+    }
 
     // ---- 10. the type declarations must name exactly what registers ---------
     // The .d.ts is the only place a consumer's editor learns a tag exists, and a

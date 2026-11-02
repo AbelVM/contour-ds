@@ -17,6 +17,7 @@
     "build": "npm run build:core && npm run generate:storybook && storybook build --output-dir storybook",
     "snippets": "node tools/snippets.mjs",
     "check:tokens": "node tools/check-tokens.mjs",
+    "check:dead-css": "node tools/check-dead-css.mjs",
     "check:motion": "node tools/check-motion.mjs",
     "check:defs": "node tools/check-defs.mjs",
     "check:light-dark": "node tools/gen-light-dark.mjs --check",

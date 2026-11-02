@@ -207,10 +207,14 @@ connectedCallback() {
 
   // Registers a wrapper. The template is parsed once into a <template> and
   // cloned per instance, so the markup below is the markup the root gets.
+  const SHADOW_PARTS_PUBLIC = {};
   const shadow = (name, markup) => {
     if (typeof document === "undefined") return;
     const tpl = document.createElement("template");
     tpl.innerHTML = markup;
+    SHADOW_PARTS_PUBLIC[name] = [...tpl.content.querySelectorAll("[part]")]
+      .flatMap((node) => (node.getAttribute("part") || "").split(/\s+/))
+      .filter(Boolean);
     const cls = class extends ContourShadow {};
     cls.contourTemplate = tpl;
     define(name, cls);
@@ -409,6 +413,9 @@ shadow("contour-shadow-filter-pill", `<span class="c-filter-pill" part="filter-p
   // this array exists to prevent.
   if (typeof window !== "undefined") {
     window.ContourElements = Object.freeze(REGISTERED.slice());
+    window.ContourShadowParts = Object.freeze(Object.fromEntries(
+      Object.entries(SHADOW_PARTS_PUBLIC).map(([name, parts]) => [name, Object.freeze([...new Set(parts)])]),
+    ));
     // Same rule for the event vocabulary: the manifest is frozen at publish so a
     // page cannot add names the source never emitted, which would make the gate's
     // "every dispatchEvent name has an entry" read meaningless.
