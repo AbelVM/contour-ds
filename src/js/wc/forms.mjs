@@ -451,8 +451,8 @@ class ContourRadio extends ContourBase {
   }
   define("contour-radio", ContourRadio);
   class ContourSelect extends ContourBase {
-    static get observed() { return ["options", "required", "label", "placeholder"]; }
-    static get properties() { return { options: { attribute: "options" }, required: { attribute: "required", type: Boolean }, label: { attribute: "label" }, placeholder: { attribute: "placeholder" } }; }
+    static get observed() { return ["options", "required", "label", "placeholder", "disabled", "error", "help"]; }
+    static get properties() { return { options: { attribute: "options" }, required: { attribute: "required", type: Boolean }, label: { attribute: "label" }, placeholder: { attribute: "placeholder" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" } }; }
     static get formAssociated() { return true; }
     render() {
       this.classList.add("c-select");
@@ -504,6 +504,21 @@ class ContourRadio extends ContourBase {
           select.classList.add("c-select");
         } catch (e) { /* keep existing */ }
       }
+      // Disabled / error / help contract (applies to authored or generated select).
+      const sel = this.querySelector("select");
+      if (sel) {
+        if (this.hasAttribute("disabled")) { sel.setAttribute("disabled", ""); this.classList.add("is-disabled"); }
+        else { sel.removeAttribute("disabled"); this.classList.remove("is-disabled"); }
+      }
+      const err = this.getAttribute("error");
+      const help = this.getAttribute("help");
+      let msg = this.querySelector(".c-select__message");
+      if (err || help) {
+        if (!msg) { msg = document.createElement("div"); msg.className = "c-select__message"; this.appendChild(msg); }
+        msg.textContent = err || help || "";
+        msg.classList.toggle("c-select__message--error", !!err);
+      } else if (msg) { msg.remove(); }
+      if (err) this.classList.add("is-error"); else this.classList.remove("is-error");
     }
     enhance() {
       const select = this.querySelector("select");
@@ -569,8 +584,8 @@ class ContourVersion extends ContourBase {
   }
   define("contour-version", ContourVersion);
 class ContourTextarea extends ContourBase {
-    static get observed() { return ["placeholder", "required"]; }
-    static get properties() { return { placeholder: { attribute: "placeholder" }, required: { attribute: "required", type: Boolean } }; }
+    static get observed() { return ["placeholder", "required", "disabled", "error", "help"]; }
+    static get properties() { return { placeholder: { attribute: "placeholder" }, required: { attribute: "required", type: Boolean }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" } }; }
     static get formAssociated() { return true; }
     render() {
       const ta = this.ensure("textarea", () => { const el = document.createElement("textarea"); el.className = "c-textarea"; return el; });
@@ -578,6 +593,17 @@ class ContourTextarea extends ContourBase {
       ta.placeholder = this.getAttribute("placeholder") || "";
       if (this.hasAttribute("required")) ta.setAttribute("required", "");
       else ta.removeAttribute("required");
+      if (this.hasAttribute("disabled")) { ta.setAttribute("disabled", ""); this.classList.add("is-disabled"); }
+      else { ta.removeAttribute("disabled"); this.classList.remove("is-disabled"); }
+      const err = this.getAttribute("error");
+      const help = this.getAttribute("help");
+      let msg = this.querySelector(".c-textarea__message");
+      if (err || help) {
+        if (!msg) { msg = document.createElement("div"); msg.className = "c-textarea__message"; this.appendChild(msg); }
+        msg.textContent = err || help || "";
+        msg.classList.toggle("c-textarea__message--error", !!err);
+      } else if (msg) { msg.remove(); }
+      if (err) this.classList.add("is-error"); else this.classList.remove("is-error");
     }
     enhance() {
       const ta = this.querySelector("textarea");
