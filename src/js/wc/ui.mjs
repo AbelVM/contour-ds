@@ -1336,8 +1336,8 @@ class ContourPopover extends ContourBase {
   define("contour-popover", ContourPopover);
 
 class ContourDatePicker extends ContourBase {
-    static get observed() { return ["value", "label"]; }
-    static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" } }; }
+    static get observed() { return ["value", "label", "disabled", "error", "help"]; }
+    static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" } }; }
     render() {
       this.classList.add("c-date-picker");
       this.setAttribute("role", "group");
@@ -1349,6 +1349,17 @@ class ContourDatePicker extends ContourBase {
       }
       const input = this.ensure(".c-date-picker__input", () => { const el = document.createElement("input"); el.className = "c-input c-date-picker__input"; el.type = "date"; return el; });
       input.value = this.getAttribute("value") || "";
+      if (this.hasAttribute("disabled")) { input.setAttribute("disabled", ""); this.classList.add("is-disabled"); }
+      else { input.removeAttribute("disabled"); this.classList.remove("is-disabled"); }
+      const err = this.getAttribute("error");
+      const help = this.getAttribute("help");
+      let msg = this.querySelector(".c-date-picker__message");
+      if (err || help) {
+        if (!msg) { msg = document.createElement("div"); msg.className = "c-date-picker__message"; this.appendChild(msg); }
+        msg.textContent = err || help || "";
+        msg.classList.toggle("c-date-picker__message--error", !!err);
+      } else if (msg) { msg.remove(); }
+      if (err) this.classList.add("is-error"); else this.classList.remove("is-error");
     }
     enhance() {
       if (this._wiredDatePicker) return;
@@ -1421,8 +1432,8 @@ class ContourRating extends ContourBase {
   define("contour-rating", ContourRating);
 
 class ContourTimePicker extends ContourBase {
-    static get observed() { return ["value", "label"]; }
-    static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" } }; }
+    static get observed() { return ["value", "label", "disabled", "error", "help"]; }
+    static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" } }; }
     render() {
       this.classList.add("c-time-picker");
       this.setAttribute("role", "group");
@@ -1434,6 +1445,17 @@ class ContourTimePicker extends ContourBase {
       }
       const input = this.ensure(".c-time-picker__input", () => { const el = document.createElement("input"); el.className = "c-input c-time-picker__input"; el.type = "time"; return el; });
       input.value = this.getAttribute("value") || "";
+      if (this.hasAttribute("disabled")) { input.setAttribute("disabled", ""); this.classList.add("is-disabled"); }
+      else { input.removeAttribute("disabled"); this.classList.remove("is-disabled"); }
+      const err = this.getAttribute("error");
+      const help = this.getAttribute("help");
+      let msg = this.querySelector(".c-time-picker__message");
+      if (err || help) {
+        if (!msg) { msg = document.createElement("div"); msg.className = "c-time-picker__message"; this.appendChild(msg); }
+        msg.textContent = err || help || "";
+        msg.classList.toggle("c-time-picker__message--error", !!err);
+      } else if (msg) { msg.remove(); }
+      if (err) this.classList.add("is-error"); else this.classList.remove("is-error");
     }
     enhance() {
       if (this._wiredTimePicker) return;
@@ -1449,8 +1471,8 @@ class ContourTimePicker extends ContourBase {
   define("contour-time-picker", ContourTimePicker);
 
 class ContourColorPicker extends ContourBase {
-    static get observed() { return ["value", "label"]; }
-    static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" } }; }
+    static get observed() { return ["value", "label", "disabled", "error", "help"]; }
+    static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" } }; }
     render() {
       this.classList.add("c-color-picker");
       this.setAttribute("role", "group");
@@ -1462,6 +1484,17 @@ class ContourColorPicker extends ContourBase {
       }
       const input = this.ensure(".c-color-picker__input", () => { const el = document.createElement("input"); el.className = "c-color-picker__input"; el.type = "color"; return el; });
       input.value = this.getAttribute("value") || "#000000";
+      if (this.hasAttribute("disabled")) { input.setAttribute("disabled", ""); this.classList.add("is-disabled"); }
+      else { input.removeAttribute("disabled"); this.classList.remove("is-disabled"); }
+      const err = this.getAttribute("error");
+      const help = this.getAttribute("help");
+      let msg = this.querySelector(".c-color-picker__message");
+      if (err || help) {
+        if (!msg) { msg = document.createElement("div"); msg.className = "c-color-picker__message"; this.appendChild(msg); }
+        msg.textContent = err || help || "";
+        msg.classList.toggle("c-color-picker__message--error", !!err);
+      } else if (msg) { msg.remove(); }
+      if (err) this.classList.add("is-error"); else this.classList.remove("is-error");
     }
     enhance() {
       if (this._wiredColorPicker) return;
@@ -1477,8 +1510,8 @@ class ContourColorPicker extends ContourBase {
   define("contour-color-picker", ContourColorPicker);
 
 class ContourNumberField extends ContourBase {
-    static get observed() { return ["value", "min", "max", "step", "label"]; }
-    static get properties() { return { value: { attribute: "value" }, min: { attribute: "min" }, max: { attribute: "max" }, step: { attribute: "step" }, label: { attribute: "label" } }; }
+    static get observed() { return ["value", "min", "max", "step", "label", "disabled", "error", "help"]; }
+    static get properties() { return { value: { attribute: "value" }, min: { attribute: "min" }, max: { attribute: "max" }, step: { attribute: "step" }, label: { attribute: "label" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" } }; }
     render() {
       this.classList.add("c-number-field");
       const label = this.getAttribute("label");
@@ -1495,6 +1528,17 @@ class ContourNumberField extends ContourBase {
       input.setAttribute("aria-valuenow", v === "" ? "" : v);
       if (input.min !== "") input.setAttribute("aria-valuemin", input.min);
       if (input.max !== "") input.setAttribute("aria-valuemax", input.max);
+      if (this.hasAttribute("disabled")) { input.setAttribute("disabled", ""); this.classList.add("is-disabled"); }
+      else { input.removeAttribute("disabled"); this.classList.remove("is-disabled"); }
+      const err = this.getAttribute("error");
+      const help = this.getAttribute("help");
+      let msg = this.querySelector(".c-number-field__message");
+      if (err || help) {
+        if (!msg) { msg = document.createElement("div"); msg.className = "c-number-field__message"; this.appendChild(msg); }
+        msg.textContent = err || help || "";
+        msg.classList.toggle("c-number-field__message--error", !!err);
+      } else if (msg) { msg.remove(); }
+      if (err) this.classList.add("is-error"); else this.classList.remove("is-error");
     }
     enhance() {
       if (this._wiredNumberField) return;
@@ -2137,12 +2181,23 @@ class ContourTour extends ContourBase {
   define("contour-tour", ContourTour);
 
 class ContourTagsInput extends ContourBase {
-    static get observed() { return ["value", "placeholder"]; }
-    static get properties() { return { value: { attribute: "value" }, placeholder: { attribute: "placeholder" } }; }
+    static get observed() { return ["value", "placeholder", "disabled", "error", "help"]; }
+    static get properties() { return { value: { attribute: "value" }, placeholder: { attribute: "placeholder" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" } }; }
     render() {
       this.classList.add("c-tags-input");
       const input = this.ensure(".c-tags-input__input", () => { const el = document.createElement("input"); el.className = "c-input c-tags-input__input"; el.type = "text"; el.setAttribute("role", "combobox"); el.setAttribute("aria-autocomplete", "list"); el.setAttribute("aria-label", "Add tag"); return el; });
       input.placeholder = this.getAttribute("placeholder") || "Add tag…";
+      if (this.hasAttribute("disabled")) { input.setAttribute("disabled", ""); this.classList.add("is-disabled"); }
+      else { input.removeAttribute("disabled"); this.classList.remove("is-disabled"); }
+      const err = this.getAttribute("error");
+      const help = this.getAttribute("help");
+      let msg = this.querySelector(".c-tags-input__message");
+      if (err || help) {
+        if (!msg) { msg = document.createElement("div"); msg.className = "c-tags-input__message"; this.appendChild(msg); }
+        msg.textContent = err || help || "";
+        msg.classList.toggle("c-tags-input__message--error", !!err);
+      } else if (msg) { msg.remove(); }
+      if (err) this.classList.add("is-error"); else this.classList.remove("is-error");
       const tags = this.getAttribute("value");
       let parsed = [];
       try { parsed = tags ? JSON.parse(tags) : []; } catch (e) { parsed = tags ? tags.split(",").map((s) => s.trim()).filter(Boolean) : []; }
