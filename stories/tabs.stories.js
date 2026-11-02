@@ -49,7 +49,41 @@ export const TabChangeEvent = {
     let detail = null;
     tabs.addEventListener("contour:tab-change", (e) => { detail = e.detail; });
     const tabButtons = Array.from(tabs.querySelectorAll("[role='tab']"));
-    await expect(tabButtons.length).toBe(3);
+    tabButtons[0].focus();
+    await userEvent.keyboard("{ArrowRight}");
+    await expect(detail.index).toBe(1);
+    await expect(detail.label).toBe(tabButtons[1].getAttribute("aria-controls"));
+    await expect(tabButtons[1]).toHaveAttribute("aria-selected", "true");
+  },
+};
+
+export const HorizontalKeyboardMatrix = {
+  render,
+  play: async ({ canvasElement }) => {
+    const tabs = canvasElement.querySelector("contour-tabs");
+    const tabButtons = Array.from(tabs.querySelectorAll("[role='tab']"));
+    tabButtons[0].focus();
+    await userEvent.keyboard("{ArrowRight}{End}");
+    await expect(tabButtons[2]).toHaveFocus();
+    await userEvent.keyboard("{ArrowLeft}{Home}");
+    await expect(tabButtons[0]).toHaveFocus();
+  },
+};
+
+export const VerticalKeyboardMatrix = {
+  render: () => {
+    const tabs = render();
+    tabs.setAttribute("orientation", "vertical");
+    return tabs;
+  },
+  play: async ({ canvasElement }) => {
+    const tabs = canvasElement.querySelector("contour-tabs");
+    const tabButtons = Array.from(tabs.querySelectorAll("[role='tab']"));
+    tabButtons[0].focus();
+    await userEvent.keyboard("{ArrowDown}{End}");
+    await expect(tabButtons[2]).toHaveFocus();
+    await userEvent.keyboard("{ArrowUp}{Home}");
+    await expect(tabButtons[0]).toHaveFocus();
   },
 };
 

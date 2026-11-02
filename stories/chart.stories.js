@@ -14,6 +14,7 @@ export default {
 };
 
 const DATA = JSON.stringify({ labels: ["A", "B", "C"], values: [3, 7, 5] });
+const SERIES = JSON.stringify([{ label: "Sales", type: "donut", values: [3, 7, 5] }]);
 
 export const Default = {
   render: () => {
@@ -56,6 +57,24 @@ export const Empty = {
   play: async ({ canvasElement }) => {
     const chart = canvasElement.querySelector("contour-chart");
     await expect(chart).toBeTruthy();
+  },
+};
+
+export const DataTable = {
+  render: () => {
+    const chart = document.createElement("contour-chart");
+    chart.setAttribute("type", "bar");
+    chart.setAttribute("axis", "Sales by category");
+    chart.setAttribute("series", SERIES);
+    chart.setAttribute("data-table", "true");
+    return chart;
+  },
+  play: async ({ canvasElement }) => {
+    const chart = canvasElement.querySelector("contour-chart");
+    await new Promise((resolve) => setTimeout(resolve, 150));
+    await expect(chart.querySelector(".c-chart__data-table")).toBeTruthy();
+    await expect(chart.textContent).toContain("Sales");
+    await expect(chart.textContent).toContain("3");
   },
 };
 

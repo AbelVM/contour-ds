@@ -1,5 +1,6 @@
-import { expect } from "storybook/test";
+import { expect, userEvent } from "storybook/test";
 import "../dist/wc/forms.mjs";
+import { fixtureArgs } from "./fixtures.js";
 
 export default {
   title: "Contour/Forms/Select",
@@ -38,5 +39,25 @@ export const Reactivity = {
     await expect(s).toBeTruthy();
     s.setAttribute("label", "Region");
     await expect(s).toHaveAttribute("label", "Region");
+  },
+};
+
+export const ChangeEvent = {
+  args: fixtureArgs("contour-select"),
+  render: ({ options }) => {
+    const select = document.createElement("contour-select");
+    select.setAttribute("label", "Country");
+    select.setAttribute("options", options);
+    return select;
+  },
+  play: async ({ canvasElement }) => {
+    const select = canvasElement.querySelector("contour-select");
+    const control = canvasElement.querySelector("select");
+    const changed = new Promise((resolve) => {
+      select.addEventListener("contour:change", (event) => resolve(event.detail), { once: true });
+    });
+    await userEvent.selectOptions(control, "ca");
+    const detail = await changed;
+    await expect(detail).toEqual({ name: null, value: "ca", checked: null });
   },
 };

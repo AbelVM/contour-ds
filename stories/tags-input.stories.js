@@ -7,6 +7,7 @@ export default {
   parameters: { contour: { maturity: "complete-widget" },
     // a11y todo: isolated story lacks full context. Tracked as SB-A11Y-03.
     a11y: { test: "todo" },
+    a11yTodo: { owner: "Contour maintainers", rootCause: "isolated tags input lacks form context", mitigation: "verify labels and validation in form workflow", review: "2026-12-01" },
   },
   argTypes: {},
 };

@@ -11,6 +11,7 @@ export default {
     // SB-09 / issue SB-A11Y-01. Re-enable (error) once the story provides a
     // labelled form context.
     a11y: { test: "todo" },
+    a11yTodo: { owner: "Contour maintainers", rootCause: "isolated input label association is incomplete", mitigation: "provide a labelled form context", review: "2026-12-01" },
   },
 };
 
@@ -21,6 +22,7 @@ const render = (args) => {
   if (args.error) field.setAttribute("error", args.error);
   if (args.required) field.setAttribute("required", "");
   const input = document.createElement("contour-input");
+  if (args.name) input.setAttribute("name", args.name);
   if (args.value) input.setAttribute("value", args.value);
   if (args.placeholder) input.setAttribute("placeholder", args.placeholder);
   if (args.disabled) input.setAttribute("disabled", "");
@@ -67,6 +69,21 @@ export const Typing = {
   },
 };
 
+export const InputEvent = {
+  render,
+  args: { label: "Email", name: "email", placeholder: "you@example.com" },
+  play: async ({ canvasElement }) => {
+    const field = canvasElement.querySelector("contour-field");
+    const input = canvasElement.querySelector("input");
+    const changed = new Promise((resolve) => {
+      field.addEventListener("contour:input", (event) => resolve(event.detail), { once: true });
+    });
+    await userEvent.type(input, "a");
+    const detail = await changed;
+    await expect(detail).toEqual({ name: "email", value: "a", checked: null });
+  },
+};
+
 export const RequiredValidation = {
   render,
   args: { label: "Email", required: true },
@@ -84,5 +101,19 @@ export const Reactivity = {
   play: async ({ canvasElement }) => {
     const input = canvasElement.querySelector("input");
     await expect(input.value).toBe("first");
+  },
+};
+
+export const InputPropertyReflection = {
+  render: () => document.createElement("contour-input"),
+  play: async ({ canvasElement }) => {
+    const input = canvasElement.querySelector("contour-input");
+    input.value = "from-property";
+    await expect(input).toHaveAttribute("value", "from-property");
+    await expect(input.value).toBe("from-property");
+    input.setAttribute("value", "from-attribute");
+    await expect(input.value).toBe("from-attribute");
+    input.value = null;
+    await expect(input).not.toHaveAttribute("value");
   },
 };

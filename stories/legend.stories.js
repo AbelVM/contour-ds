@@ -10,7 +10,7 @@ const ITEMS = JSON.stringify([
 export default {
   title: "Contour/Data/Legend",
   tags: ["autodocs"],
-  parameters: { contour: { maturity: "complete-widget" }, a11y: { test: "todo" }, issue: "SB-A11Y-02" },
+  parameters: { contour: { maturity: "complete-widget" }, a11y: { test: "todo" }, issue: "SB-A11Y-02", a11yTodo: { owner: "Contour maintainers", rootCause: "legend semantics depend on chart context", mitigation: "verify with chart and data-table composition", review: "2026-12-01" } },
 };
 
 export const Selectable = {

@@ -35,17 +35,37 @@ import "../dist/wc/registration.mjs";
 import "../dist/wc/shadow.mjs";
 import "../dist/wc/ui.mjs";
 import "../dist/contour.css";
-import { applyFixture } from "./fixtures.js";
+import { applyFixture, fixtureArgs } from "./fixtures.js";
+import { controlsForTag } from "./metadata.js";
 
 export default {
   title: "Contour/Elements",
   tags: ["autodocs"],
-  parameters: { contour: { maturity: "composition" }, a11y: { test: "todo" }, issue: "SB-04a" },
+  parameters: {
+    contour: { maturity: "composition" },
+    a11y: { test: "todo" },
+    issue: "SB-04a",
+    a11yTodo: {
+      owner: "Contour maintainers",
+      rootCause: "generated catalogue spans incomplete contexts",
+      mitigation: "promote mature elements to focused stories",
+      review: "2026-12-01",
+    },
+  },
 };
 
 function makeStory(tag) {
   return {
-    render: () => applyFixture(document.createElement(tag), tag),
+    args: fixtureArgs(tag),
+    argTypes: controlsForTag(tag),
+    render: (args) => {
+      const element = applyFixture(document.createElement(tag), tag);
+      for (const [name, value] of Object.entries(args)) {
+        if (value === undefined) continue;
+        element.setAttribute(name, String(value));
+      }
+      return element;
+    },
     play: async ({ canvasElement }) => {
       const element = canvasElement.querySelector(tag);
       await expect(element).toBeTruthy();

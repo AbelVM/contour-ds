@@ -538,7 +538,7 @@ export function wireTree(host) {
     if (node.getAttribute("role") !== "treeitem") node.setAttribute("role", "treeitem");
     node.setAttribute("aria-level", String(levelOf(node)));
     const row = node.querySelector(":scope > .c-tree__row");
-    if (row) node.setAttribute("aria-expanded", row.getAttribute("aria-expanded") || "false");
+    if (row) node.setAttribute("aria-expanded", row.querySelector(":scope > .c-tree__toggle")?.getAttribute("aria-expanded") || "false");
     else if (node.hasAttribute("aria-expanded")) node.removeAttribute("aria-expanded");
   });
   // Exactly one tab stop. The author's own `tabindex="0"` is the choice, then the
@@ -634,7 +634,8 @@ export function wireTree(host) {
         if (Array.isArray(labels)) {
           const want = new Set(labels.map((l) => String(l)));
           wcAll(host, ".c-tree__row").forEach((row) => {
-            if (row.getAttribute("aria-expanded") === "true") return;
+            const currentToggle = row.querySelector(":scope > .c-tree__toggle");
+            if (currentToggle?.getAttribute("aria-expanded") === "true") return;
             const label = (row.textContent || "").trim().slice(0, 120);
             if (!want.has(label)) return;
             const toggle = row.querySelector(":scope > .c-tree__toggle");
@@ -642,7 +643,6 @@ export function wireTree(host) {
             const node = row.closest(".c-tree__node");
             const children = node ? node.querySelector(":scope > .c-tree__children") : null;
             toggle.setAttribute("aria-expanded", "true");
-            row.setAttribute("aria-expanded", "true");
             if (node) node.setAttribute("aria-expanded", "true");
             if (children) children.removeAttribute("hidden");
           });
@@ -657,7 +657,8 @@ export function wireTree(host) {
         if (Array.isArray(labels)) {
           const want = new Set(labels.map((l) => String(l)));
           wcAll(host, ".c-tree__row").forEach((row) => {
-            if (row.getAttribute("aria-expanded") === "true") return;
+            const currentToggle = row.querySelector(":scope > .c-tree__toggle");
+            if (currentToggle?.getAttribute("aria-expanded") === "true") return;
             const label = (row.textContent || "").trim().slice(0, 120);
             if (!want.has(label)) return;
             const toggle = row.querySelector(":scope > .c-tree__toggle");
@@ -665,7 +666,6 @@ export function wireTree(host) {
             const node = row.closest(".c-tree__node");
             const children = node ? node.querySelector(":scope > .c-tree__children") : null;
             toggle.setAttribute("aria-expanded", "true");
-            row.setAttribute("aria-expanded", "true");
             if (node) node.setAttribute("aria-expanded", "true");
             if (children) children.removeAttribute("hidden");
           });
@@ -677,7 +677,6 @@ export function wireTree(host) {
     const wasOpen = toggle.getAttribute("aria-expanded") === "true";
     toggle.setAttribute("aria-expanded", String(!wasOpen));
     const row = toggle.closest(".c-tree__row") || toggle.parentElement;
-    if (row) row.setAttribute("aria-expanded", String(!wasOpen));
     const node = toggle.closest(".c-tree__node");
     const children = node ? node.querySelector(":scope > .c-tree__children") : null;
     if (children) {
@@ -695,7 +694,8 @@ export function wireTree(host) {
       try {
         const open = [];
         wcAll(host, ".c-tree__row").forEach((r) => {
-          if (r.getAttribute("aria-expanded") === "true") open.push((r.textContent || "").trim().slice(0, 120));
+          const toggle = r.querySelector(":scope > .c-tree__toggle");
+          if (toggle?.getAttribute("aria-expanded") === "true") open.push((r.textContent || "").trim().slice(0, 120));
         });
         localStorage.setItem("contour-tree:" + host.id, JSON.stringify(open));
       } catch (e) {}
@@ -703,7 +703,8 @@ export function wireTree(host) {
       try {
         const open = [];
         wcAll(host, ".c-tree__row").forEach((r) => {
-          if (r.getAttribute("aria-expanded") === "true") open.push((r.textContent || "").trim().slice(0, 120));
+          const toggle = r.querySelector(":scope > .c-tree__toggle");
+          if (toggle?.getAttribute("aria-expanded") === "true") open.push((r.textContent || "").trim().slice(0, 120));
         });
         const url = new URL(window.location.href);
         url.searchParams.set("c-tree", JSON.stringify(open));

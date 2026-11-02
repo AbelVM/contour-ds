@@ -6,6 +6,7 @@ const ROOT = join(fileURLToPath(new URL(".", import.meta.url)), "..");
 const STORIES_DIR = join(ROOT, "stories");
 const INVENTORY = join(ROOT, "dist", "contour.components.json");
 const WC_DIR = join(ROOT, "dist", "wc");
+const STORYBOOK_DOC = join(ROOT, "STORYBOOK.md");
 
 function walk(dir) {
   const out = [];
@@ -62,6 +63,7 @@ let playCount = 0;
 const titles = [];
 const maturityCounts = {};
 const a11yStatus = { error: 0, todo: 0, off: 0, unset: 0 };
+const a11yTodos = [];
 const perStory = [];
 const inventedTags = new Set();
 
@@ -90,7 +92,18 @@ for (const f of files) {
   else if (!/a11y/.test(src)) a11y = "unset";
   a11yStatus[a11y] = (a11yStatus[a11y] || 0) + 1;
   if (a11y === "off") errors.push(`${relative(ROOT, f)} disables a11y (test: "off") — not allowed`);
-  if (a11y === "todo" && !/SB-[A-Z0-9-]+|issue/i.test(src)) errors.push(`${relative(ROOT, f)} marks a11y as todo without a task/issue id`);
+  if (a11y === "todo") {
+    const ids = [...new Set(src.match(/SB-[A-Z0-9-]+/g) || [])];
+    if (!ids.length && !/issue/i.test(src)) errors.push(`${relative(ROOT, f)} marks a11y as todo without a task/issue id`);
+    const todoMatch = src.match(/a11yTodo\s*:\s*\{([^}]*)\}/);
+    const metadata = {};
+    for (const key of ["owner", "rootCause", "mitigation", "review"]) {
+      const value = todoMatch?.[1]?.match(new RegExp(`${key}\\s*:\\s*["']([^"']+)["']`))?.[1];
+      if (!value) errors.push(`${relative(ROOT, f)} a11y todo is missing ${key} metadata`);
+      else metadata[key] = value;
+    }
+    a11yTodos.push({ file: relative(ROOT, f), ids, ...metadata });
+  }
 
   // play functions: count stories that contain a play property in the file (heuristic)
   const hasPlay = /play\s*:/.test(src) || /play\s*\(/.test(src);
@@ -175,6 +188,18 @@ if (missingDedicated.length) {
   errors.push(`registered custom elements without dedicated stories: ${missingDedicated.join(", ")}`);
 }
 
+const docSource = existsSync(STORYBOOK_DOC) ? readFileSync(STORYBOOK_DOC, "utf8") : "";
+const evidence = docSource.match(/Story files: (\d+); stories: (\d+); stories with play functions: (\d+)\./);
+if (!evidence) {
+  errors.push("STORYBOOK.md is missing measured story counts");
+} else {
+  const [, documentedFiles, documentedStories, documentedPlay] = evidence;
+  const actual = [files.length, storyCount, playCount].map(String);
+  if ([documentedFiles, documentedStories, documentedPlay].some((value, i) => value !== actual[i])) {
+    errors.push(`STORYBOOK.md measured counts are stale: expected ${actual.join("/")}`);
+  }
+}
+
 
 const HIGH_RISK = ["c-btn", "c-input", "c-field", "c-dialog", "c-tabs", "c-command", "c-table", "c-chart", "c-toast", "c-alert", "c-kpi", "c-map-panel", "c-time-slider"];
 let allSrc = "";
@@ -193,6 +218,7 @@ console.log(`  inventory blocks: ${inventoryBlocks.length}`);
 console.log(`  defined custom elements: ${definedTags.size}`);
 console.log(`  dedicated element stories: ${dedicatedTags.size}`);
 console.log(`  a11y status (files): ${JSON.stringify(a11yStatus)}`);
+console.log(`  a11y todos: ${a11yTodos.map(({ file, ids, owner, review }) => `${file} (${ids.join(", ") || "issue"}; ${owner}; review ${review})`).join(", ") || "(none)"}`);
 console.log(`  maturity counts: ${JSON.stringify(maturityCounts)}`);
 
 if (storyCount === 0) errors.push("zero stories discovered");
@@ -213,6 +239,7 @@ const artifact = {
   titles,
   maturityCounts,
   a11yStatus,
+  a11yTodos,
   perStory,
   highRisk: { total: HIGH_RISK.length, covered: HIGH_RISK.length - missingHighRisk.length, missing: missingHighRisk },
   inventoryBlocks: inventoryBlocks.length,

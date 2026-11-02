@@ -24,6 +24,7 @@ export default {
     contour: { maturity: "composition" },
     a11y: { test: "todo" },
     issue: "SB-31",
+    a11yTodo: { owner: "Contour maintainers", rootCause: "catalogue includes mixed maturity elements", mitigation: "review generated elements individually", review: "2026-12-01" },
   },
 };
 

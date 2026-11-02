@@ -1,4 +1,4 @@
-import { expect } from "storybook/test";
+import { expect, userEvent } from "storybook/test";
 import "../dist/wc/navigation.mjs";
 
 export default {
@@ -59,5 +59,13 @@ export const KeyboardNavigation = {
     const input = cmd.querySelector(".c-command__input");
     await expect(input).toBeTruthy();
     await expect(input).toHaveAttribute("aria-autocomplete", "list");
+    await userEvent.click(input);
+    input.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
+    input.dispatchEvent(new KeyboardEvent("keydown", { key: "End", bubbles: true }));
+    const items = cmd.querySelectorAll(".c-command__item");
+    await expect(input).toHaveAttribute("aria-activedescendant", items[items.length - 1].id);
+    const selected = new Promise((resolve) => cmd.addEventListener("contour:select", (event) => resolve(event.detail), { once: true }));
+    input.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    await expect(await selected).toEqual({ index: 2, label: "Search docs" });
   },
 };

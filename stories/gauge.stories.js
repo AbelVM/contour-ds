@@ -7,6 +7,7 @@ export default {
   parameters: { contour: { maturity: "complete-widget" },
     // a11y todo: gauge meter lacks accessible name in isolated story. Tracked as SB-A11Y-05.
     a11y: { test: "todo" },
+    a11yTodo: { owner: "Contour maintainers", rootCause: "isolated gauge has no metric label", mitigation: "provide an explicit labelled gauge fixture", review: "2026-12-01" },
   },
   argTypes: {
     value: { control: "number" },

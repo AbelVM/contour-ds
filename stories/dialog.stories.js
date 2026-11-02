@@ -80,5 +80,76 @@ export const OpenEvent = {
     dlg.addEventListener("contour:open", () => { opened = true; });
     dlg.show();
     await expect(opened).toBe(true);
+    dlg.close();
+  },
+};
+
+export const FocusReturn = {
+  render: () => {
+    const trigger = document.createElement("button");
+    trigger.textContent = "Open dialog";
+    const dlg = document.createElement("contour-dialog");
+    dlg.setAttribute("title", "Confirm");
+    const wrap = document.createElement("div");
+    wrap.appendChild(trigger);
+    wrap.appendChild(dlg);
+    return wrap;
+  },
+  play: async ({ canvasElement }) => {
+    const trigger = canvasElement.querySelector("button");
+    const dlg = canvasElement.querySelector("contour-dialog");
+    trigger.focus();
+    dlg.show();
+    dlg.close();
+    await expect(dlg).not.toHaveAttribute("open");
+    await expect(dlg).not.toHaveAttribute("aria-modal");
+  },
+};
+
+export const ModalTabTrap = {
+  render: () => {
+    const dlg = document.createElement("contour-dialog");
+    dlg.setAttribute("title", "Confirm");
+    const first = document.createElement("button");
+    first.textContent = "Cancel";
+    const last = document.createElement("button");
+    last.textContent = "Confirm";
+    dlg.append(first, last);
+    return dlg;
+  },
+  play: async ({ canvasElement }) => {
+    const dlg = canvasElement.querySelector("contour-dialog");
+    const close = dlg.querySelector(".c-dialog__close");
+    const last = Array.from(dlg.querySelectorAll("button")).at(-1);
+    dlg.show();
+    last.focus();
+    await userEvent.tab();
+    await expect(close).toHaveFocus();
+    dlg.close();
+  },
+};
+
+export const NestedOverlayEscape = {
+  render: () => {
+    const wrap = document.createElement("div");
+    const dlg = document.createElement("contour-dialog");
+    dlg.setAttribute("title", "Parent dialog");
+    const drawer = document.createElement("contour-drawer");
+    drawer.setAttribute("title", "Nested drawer");
+    wrap.append(dlg, drawer);
+    return wrap;
+  },
+  play: async ({ canvasElement }) => {
+    const dlg = canvasElement.querySelector("contour-dialog");
+    const drawer = canvasElement.querySelector("contour-drawer");
+    dlg.show();
+    drawer.show();
+    await expect(dlg).toHaveAttribute("open", "");
+    await expect(drawer).toHaveAttribute("open", "");
+    drawer.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    await expect(drawer).not.toHaveAttribute("open");
+    await expect(dlg).toHaveAttribute("open", "");
+    dlg.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    await expect(dlg).not.toHaveAttribute("open");
   },
 };

@@ -40,6 +40,7 @@ export const fixtures = {
   "contour-radio-list": { items: JSON.stringify(["North loop", "Harbor path"]) },
   "contour-readout": { rows: JSON.stringify(sampleRows) },
   "contour-scale": { values: JSON.stringify([0, 25, 50, 75, 100]) },
+  "contour-select": { options: JSON.stringify([{ value: "us", label: "United States" }, { value: "ca", label: "Canada" }]) },
   "contour-sparkline": { points: JSON.stringify([1, 3, 2, 5, 4, 6]) },
   "contour-stacked-bar": { segments: JSON.stringify([{ label: "Open", value: 64 }, { label: "Review", value: 36 }]) },
   "contour-steps": { steps: JSON.stringify([{ title: "Plan", body: "Choose a route." }, { title: "Review", body: "Confirm the result." }]) },
@@ -64,8 +65,12 @@ const textFixtures = {
 };
 
 export function applyFixture(element, tag) {
-  const attributes = { ...textFixtures, ...(fixtures[tag] || {}) };
+  const attributes = fixtureArgs(tag);
   for (const [name, value] of Object.entries(attributes)) element.setAttribute(name, value);
   if (!element.textContent.trim()) element.textContent = "North loop";
   return element;
+}
+
+export function fixtureArgs(tag) {
+  return { ...textFixtures, ...(fixtures[tag] || {}) };
 }

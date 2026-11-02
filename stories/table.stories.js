@@ -1,4 +1,4 @@
-import { expect } from "storybook/test";
+import { expect, userEvent } from "storybook/test";
 import "../dist/wc/data.mjs";
 
 export default {
@@ -61,5 +61,39 @@ export const Empty = {
   play: async ({ canvasElement }) => {
     const table = canvasElement.querySelector("contour-table");
     await expect(table).toBeTruthy();
+  },
+};
+
+export const TableControlledRows = {
+  render: Default.render,
+  play: async ({ canvasElement }) => {
+    const table = canvasElement.querySelector("contour-table");
+    table.rows = JSON.stringify([["Gamma", "3"]]);
+    await expect(table).toHaveAttribute("rows", JSON.stringify([["Gamma", "3"]]));
+    await expect(table.textContent).toContain("Gamma");
+    await expect(table.textContent).not.toContain("Alpha");
+  },
+};
+
+export const ErrorRetry = {
+  render: () => {
+    const wrap = document.createElement("div");
+    wrap.className = "c-table-wrap";
+    const table = document.createElement("contour-table");
+    table.setAttribute("columns", COLS);
+    table.setAttribute("rows", ROWS);
+    table.setAttribute("error", "Could not load rows");
+    table.setAttribute("retry", "Try again");
+    wrap.appendChild(table);
+    return wrap;
+  },
+  play: async ({ canvasElement }) => {
+    const table = canvasElement.querySelector("contour-table");
+    const wrapper = canvasElement.querySelector(".c-table-wrap");
+    let detail = null;
+    wrapper.addEventListener("contour:retry", (event) => { detail = event.detail; });
+    await expect(canvasElement.textContent).toContain("Could not load rows");
+    await userEvent.click(table.querySelector("button[data-action='retry']"));
+    await expect(detail).toEqual({ src: null });
   },
 };

@@ -1,5 +1,6 @@
-import { expect } from "storybook/test";
+import { expect, userEvent } from "storybook/test";
 import "../dist/wc/navigation.mjs";
+import { fixtureArgs } from "./fixtures.js";
 
 export default {
   title: "Contour/Navigation/Menu",
@@ -7,8 +8,8 @@ export default {
   parameters: { contour: { maturity: "complete-widget" },
     // a11y todo: isolated story lacks full context. Tracked as SB-A11Y-02.
     a11y: { test: "todo" },
+    a11yTodo: { owner: "Contour maintainers", rootCause: "isolated menu lacks trigger and dismissal context", mitigation: "add trigger-owned overlay workflow", review: "2026-12-01" },
   },
-  argTypes: {},
 };
 
 export const Default = {
@@ -26,5 +27,25 @@ export const Default = {
     const m = canvasElement.querySelector("contour-menu");
     await expect(m).toBeTruthy();
     await expect(canvasElement.textContent).toContain("Save");
+  },
+};
+
+export const KeyboardNavigation = {
+  args: fixtureArgs("contour-menu"),
+  render: ({ items }) => {
+    const menu = document.createElement("contour-menu");
+    menu.setAttribute("items", items);
+    return menu;
+  },
+  play: async ({ canvasElement }) => {
+    const menu = canvasElement.querySelector("contour-menu");
+    const items = menu.querySelectorAll("[role='menuitem']");
+    await expect(items).toHaveLength(3);
+    items[0].focus();
+    await userEvent.keyboard("{ArrowDown}{End}");
+    await expect(items[2]).toHaveFocus();
+    const selected = new Promise((resolve) => menu.addEventListener("contour:select", (event) => resolve(event.detail), { once: true }));
+    await userEvent.keyboard("{Enter}");
+    await expect(await selected).toEqual({ index: 2, label: "Remove" });
   },
 };

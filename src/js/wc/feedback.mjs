@@ -75,7 +75,9 @@ class ContourDialog extends ContourBase {
           modalContain(this, false);
           this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true }));
           const last = this._dialogLastFocus;
-          if (last && typeof last.focus === "function") { try { last.focus(); } catch (e) {} }
+          if (last && typeof last.focus === "function") {
+            try { last.focus(); } catch (e) {}
+          }
         }
       };
       this.focus = () => {

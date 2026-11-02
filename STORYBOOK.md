@@ -18,6 +18,7 @@ web-component layer. It is not a consumer deliverable and does not replace
 | `npm run storybook` | Start the dev server on port 6006. |
 | `npm run build-storybook` | Build the static Storybook site into `storybook/` (gitignored). |
 | `npm run test:storybook` | Run Storybook interaction/a11y tests via Vitest + Playwright. |
+| `npm run test:storybook -- --project storybook stories/menu.stories.js` | Run one Storybook story file. |
 | `npm run check:storybook-coverage` | Coverage report; fails on zero stories or invented elements. |
 | `npm run check:storybook` | Compose the three above. |
 | `npm run screenshot:baseline` | Capture deterministic screenshots (requires a running Storybook server). |
@@ -29,8 +30,8 @@ web-component layer. It is not a consumer deliverable and does not replace
   invent classes, tokens, attributes, events, slots, parts, or states absent
   from `contour.components.json`, `API-CONTRACTS.md`, or `src/js/wc/`.
 - **A11y exceptions:** a story may set `a11y: { test: "todo" }` only with a
-  linked task/issue ID in a comment (e.g. `SB-A11Y-01`). Disabling a11y
-  (`test: "off"`) is never allowed.
+  linked task/issue ID and `a11yTodo` metadata containing `owner`, `rootCause`,
+  `mitigation`, and `review`. Disabling a11y (`test: "off"`) is never allowed.
 
 ## CI integration
 
@@ -59,6 +60,8 @@ Record for each release review:
 - Coverage output (`tmp/audit/storybook-coverage.json`).
 - Screenshot baseline result.
 - A11y `todo` IDs and remaining risks.
+- A11y todo metadata is reported in `tmp/audit/storybook-coverage.json` and is
+  rejected when any owner, root cause, mitigation, or review date is missing.
 
 ## Storybook manifests (SB-18)
 
@@ -73,10 +76,17 @@ API stabilizes. `agent-rules.json` and `llms*.txt` remain authoritative.
 
 ## Measured evidence (SB-29)
 
-- Story files: 15; stories: 43; stories with play functions: 43.
+- Story files: 42; stories: 303; stories with play functions: 303.
 - High-risk families covered: 13/13.
-- A11y status (files): error 0, todo 1 (SB-A11Y-01), off 0, unset 14.
-- Maturity counts: complete-widget 11, composition 1, primitive 2, scaffold 1.
+- A11y status (files): error 0, todo 11, off 0, unset 31.
+- Maturity counts: complete-widget 36, composition 3, primitive 2, scaffold 1.
 - Defined custom elements: 209; inventory blocks: 214.
 - Screenshot baseline: 8 stories × 2 themes × 2 widths = 32 PNGs in `tmp/screenshots/`.
+- Protected visual contracts: `contour-forms-input--default` (form validation),
+  `contour-overlays-dialog--default` (overlay framing),
+  `contour-data-table--default` (narrow-table reflow),
+  `contour-data-chart--default` (chart rendering),
+  `contour-map-panel--default` (map chrome), and
+  `contour-workflows-dashboard--default` (dashboard composition). Each runs at
+  390px and 1440px in light and dark themes with reduced motion.
 - All gates pass: `npm run test:storybook`, `npm run build-storybook`, `npm run check:storybook-coverage`, `npm run check:storybook`, `node tools/doctor.mjs`.

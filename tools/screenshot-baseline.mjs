@@ -9,13 +9,13 @@ mkdirSync(OUT, { recursive: true });
 // A small, stable set of stories for visual review.
 const STORIES = [
   "contour-interaction-button--default",
-  "contour-interaction-button--primary",
   "contour-forms-input--default",
   "contour-overlays-dialog--default",
   "contour-navigation-tabs--default",
   "contour-data-chart--default",
   "contour-data-table--default",
-  "contour-feedback-toast--default",
+  "contour-workflows-dashboard--default",
+  "contour-map-panel--default",
 ];
 
 const browser = await chromium.launch();
