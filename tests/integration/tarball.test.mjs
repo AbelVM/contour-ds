@@ -49,3 +49,13 @@ describe("CSP and source maps (R12-29)", () => {
     }
   });
 });
+
+describe("Trusted Types and CSP (R12-29)", () => {
+
+  it("no document.write in shipped JS", async () => {
+    const { readFileSync } = await import("node:fs");
+    const js = readFileSync("dist/contour.min.js", "utf8");
+    expect(js).not.toMatch(/document\.write/);
+  });
+
+});
