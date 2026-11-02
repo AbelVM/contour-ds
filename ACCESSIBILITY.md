@@ -49,3 +49,26 @@ This statement is based on self-assessment supported by automated gates
 (`tools/audit/contrast-and-aria.mjs`, `tools/audit/check-reflow.mjs`,
 `tools/check-motion.mjs`, `tools/audit/chart-names.mjs`). A third-party audit
 is planned before v1.0.
+
+## Pinned ARIA/APG patterns (R12-35)
+
+The following APG patterns are the compatibility contract for Contour's composite
+components. A change to any of them is treated as a behavioral breaking change
+and reviewed like a dependency update.
+
+| Component family | APG pattern | Key contract |
+|---|---|---|
+| tabs | Tabs | roving tabindex, arrow keys, Home/End |
+| menu / context-menu / dropdown | Menu / Menu Button | arrow nav, Enter/Space, Escape, typeahead |
+| combobox | Combobox | aria-activedescendant or roving, Enter to commit, Escape to close |
+| tree | Tree View | arrow expand/collapse, Home/End, typeahead |
+| dialog / drawer / sheet | Dialog (Modal) | focus trap, Escape, focus return |
+| accordion / disclosure | Disclosure | Enter/Space toggle, aria-expanded |
+| segmented | (button group) | arrow selection, single/multi cardinality |
+| grid / data-grid / tree-grid | Grid | 2D arrow nav, Home/End, PageUp/PageDown |
+| carousel | Carousel | prev/next, pause, reduced motion |
+| tooltip / hover-card | Tooltip | hover + focus, Escape, no essential info |
+| toast / notification | (live region) | polite/assertive, no focus steal |
+
+APG version pinned: WAI-ARIA Authoring Practices Guide 1.2 (2024). Review on
+any APG update before adopting.

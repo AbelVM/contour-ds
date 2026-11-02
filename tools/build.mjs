@@ -34,6 +34,7 @@
 import { readFileSync, writeFileSync, mkdirSync, rmSync, copyFileSync, existsSync, readdirSync, statSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
+import { execSync } from "node:child_process";
 import { dirname, join } from "node:path";
 
 import { minifyCss, minifyJs } from "./lib/minify.mjs";
@@ -527,8 +528,16 @@ const manifestSources = [
   join(root, "index.html"),
 ];
 
+// Source revision for provenance (R12-36): record the git commit the build was
+// produced from, so a shipped artifact can be traced back to its source.
+let sourceRevision = null;
+try {
+  sourceRevision = execSync("git rev-parse HEAD", { cwd: root, stdio: ["ignore", "pipe", "ignore"] }).toString().trim() || null;
+} catch (e) { sourceRevision = null; }
+
 const manifest = {
   builtAt: new Date().toISOString(),
+  sourceRevision,
   sources: Object.fromEntries(
     manifestSources.map((p) => {
       const buf = readFileSync(p);
