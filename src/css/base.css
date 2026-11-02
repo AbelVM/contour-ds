@@ -136,6 +136,8 @@
   :focus-visible {
     outline: var(--focus-width) solid var(--color-focus-ring);
     outline-offset: 2px;
+    transition: outline-color var(--dur-focus) var(--ease-standard),
+                outline-offset var(--dur-focus) var(--ease-standard);
   }
 
   ::placeholder {
