@@ -61,3 +61,84 @@ describe("ContourBase lifecycle", () => {
     expect(true).toBe(true);
   });
 });
+
+describe("adversarial authored DOM (R12-31)", () => {
+  it("sanitizeHtml handles huge strings without throwing", async () => {
+    const mod = await import("../../src/js/wc/core.mjs");
+    const big = "<p>" + "a".repeat(100000) + "</p>";
+    const out = mod.sanitizeHtml(big);
+    expect(out.length).toBeGreaterThan(0);
+  });
+
+  it("sanitizeHtml strips script/iframe/object/embed/style/link/meta/base/form", async () => {
+    const mod = await import("../../src/js/wc/core.mjs");
+    const payload = "<script>x</script><iframe src='a'></iframe><object data='b'></object><embed src='c'><style>.x{}</style><link rel='stylesheet' href='d'><meta http-equiv='refresh'><base href='/'><form><input><button>x</button></form><p>ok</p>";
+    const out = mod.sanitizeHtml(payload);
+    expect(out).toContain("ok");
+    for (const tag of ["script", "iframe", "object", "embed", "style", "link", "meta", "base", "form", "input", "button"]) {
+      expect(out).not.toMatch(new RegExp("<" + tag + "[\\s>]"));
+    }
+  });
+
+  it("sanitizeHtml strips on-* attributes and javascript: URLs", async () => {
+    const mod = await import("../../src/js/wc/core.mjs");
+    const out = mod.sanitizeHtml('<a href="javascript:alert(1)" onclick="alert(2)">x</a><img src="data:text/html;base64,AAAA">');
+    expect(out).not.toContain("javascript:");
+    expect(out).not.toContain("onclick");
+  });
+
+  it("contourId produces unique ids", async () => {
+    const mod = await import("../../src/js/wc/core.mjs");
+    const a = mod.contourId("x");
+    const b = mod.contourId("x");
+    expect(a).not.toBe(b);
+  });
+
+  it("formatValue returns raw value on failure", async () => {
+    const mod = await import("../../src/js/wc/core.mjs");
+    expect(mod.formatValue("abc", "{bad json")).toBe("abc");
+    expect(mod.formatValue(42, null)).toBe(42);
+  });
+});
+
+describe("lifecycle state machine (R12-30)", () => {
+  it("re-render preserves authored nodes", async () => {
+    const mod = await import("../../src/js/wc/core.mjs");
+    class Demo extends mod.ContourBase {
+      static get observed() { return ["label"]; }
+      render() {
+        const g = document.createElement("span");
+        g.className = "c-demo__gen";
+        g.textContent = this.getAttribute("label") || "";
+        this.appendChild(g);
+      }
+    }
+    if (!customElements.get("contour-demo-sm")) customElements.define("contour-demo-sm", Demo);
+    const el = document.createElement("contour-demo-sm");
+    const authored = document.createTextNode("authored");
+    el.appendChild(authored);
+    document.body.appendChild(el);
+    expect(el.querySelector(".c-demo__gen").textContent).toBe("");
+    el.setAttribute("label", "x");
+    expect(el.querySelector(".c-demo__gen").textContent).toBe("x");
+    expect(el.textContent).toContain("authored");
+    el.remove();
+  });
+
+  it("batch coalesces multiple attribute changes into one render", async () => {
+    const mod = await import("../../src/js/wc/core.mjs");
+    class Demo extends mod.ContourBase {
+      static get observed() { return ["a", "b"]; }
+      render() {
+        this._renders = (this._renders || 0) + 1;
+      }
+    }
+    if (!customElements.get("contour-demo-batch")) customElements.define("contour-demo-batch", Demo);
+    const el = document.createElement("contour-demo-batch");
+    document.body.appendChild(el);
+    const before = el.renderCount;
+    el.batch(() => { el.setAttribute("a", "1"); el.setAttribute("b", "2"); });
+    expect(el.renderCount).toBe(before + 1);
+    el.remove();
+  });
+});
