@@ -2225,8 +2225,6 @@ class ContourBivariateLegend extends ContourBivariate {
     render() {
       super.render();
       this.classList.add("c-bivariate-legend");
-      this.classList.remove("c-bivariate");
-      this.setAttribute("aria-label", "Bivariate legend");
     }
     enhance() {
       if (this._wiredBivLegend) return;
