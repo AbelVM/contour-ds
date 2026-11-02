@@ -2,6 +2,7 @@ import { ContourBase, define } from './core.mjs';
 import { loadRemote, remoteData, remoteRefresh, renderStates, renderEmpty, wireStates } from './states.mjs';
 class ContourReservedFull extends ContourBase {
     static get observed() { return ["title"]; }
+    static get properties() { return { title: { attribute: "title" } }; }
     render() {
       this.classList.add("c-reserved");
       const title = this.getAttribute("title");

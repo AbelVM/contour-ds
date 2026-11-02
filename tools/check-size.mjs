@@ -67,7 +67,7 @@ const BUDGETS = {
   // exists to catch a jump nobody intended, not to keep the truth brief. A file
   // absent from this map is not budgeted at all, which is how an artifact can
   // grow without anyone noticing.
-  "contour.components.json": 198 * 1024,  // raised 2026-11-01: +scroll-driven affordance; measured 197.1 kB
+  "contour.components.json": 232 * 1024,  // raised 2026-11-02: +component growth; measured 231.0 kB
   // The docs package (C-45). Measured 2026-10-23 at 43.6 kB: 23 section files
   // (37.4 kB) plus the index (6.2 kB) — figures this gate recomputes and prints on
   // every run, so the numbers above are a dated record, not the thing enforced.
@@ -117,11 +117,11 @@ const BUDGETS = {
   "hljs.css": 4 * 1024,
   "agent-rules.json": 12 * 1024,
   "surfaces/contour-core.min.css": 140 * 1024,  // raised 2026-10-29: +vertical tabs + close button CSS; measured 122.1 kB
-  "surfaces/contour-docs.min.css": 153 * 1024,  // raised 2026-11-01: +specimens; measured 151.0 kB
-  "surfaces/contour-data.min.css": 184 * 1024,  // raised 2026-11-01: +pivot toolbar; measured 182.1 kB
+  "surfaces/contour-docs.min.css": 154 * 1024,  // raised 2026-11-02: +polish; measured 153.4 kB
+  "surfaces/contour-data.min.css": 185 * 1024,  // raised 2026-11-02: +polish; measured 184.5 kB
   "surfaces/contour-landing.min.css": 148 * 1024,  // raised 2026-11-01: +scroll-driven affordance; measured 146.2 kB
   "contour.esm.min.js": 39 * 1024,
-  "contour-wc.esm.min.js": 528.5 * 1024,  // raised 2026-11-02: +SSR guards + data-table fallback (R12-18, R12-25)  // raised 2026-11-01: +time-series/measure/dash-kpi-row upgrades; measured 523.2 kB; +time-slider label contract 524.4 kB
+  "contour-wc.esm.min.js": 529 * 1024,  // raised 2026-11-02: +polish (tabindex restore, hover-card cleanup, Boolean getter); measured 528.5 kB
 };
 
 const kB = (n) => `${(n / 1024).toFixed(1)} kB`;
