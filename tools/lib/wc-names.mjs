@@ -167,6 +167,36 @@ export function typeDeclarations(names) {
     " */",
     "export interface ContourElement extends HTMLElement, ContourProps {}",
     "",
+    "/**",
+    " * Form-associated Contour element: carries value/checked/disabled/required/name",
+    " * and participates in form submission and validation (R12-12).",
+    " */",
+    "export interface ContourFormElement extends ContourElement {",
+    "  value?: string | null;",
+    "  checked?: boolean;",
+    "  disabled?: boolean;",
+    "  required?: boolean;",
+    "  name?: string | null;",
+    "  placeholder?: string | null;",
+    "  min?: string | null;",
+    "  max?: string | null;",
+    "  step?: string | null;",
+    "}",
+    "",
+    "/**",
+    " * Data-presentation Contour element: carries series/data/src and loading/error/",
+    " * empty states (R12-12).",
+    " */",
+    "export interface ContourDataElement extends ContourElement {",
+    "  data?: string | null;",
+    "  series?: string | null;",
+    "  src?: string | null;",
+    "  loading?: string | null;",
+    "  error?: string | null;",
+    "  empty?: string | null;",
+    "  skeleton?: string | null;",
+    "}",
+    "",
     // No separate `ContourTagName` union. Writing the same list twice is what put
     // this file over its budget the first time: the map below already names every
     // tag once, and `keyof HTMLElementTagNameMap` is how a consumer derives the
@@ -174,7 +204,12 @@ export function typeDeclarations(names) {
     "",
     "declare global {",
     "  interface HTMLElementTagNameMap {",
-    ...names.map((n) => `    "${n}": ContourElement;`),
+    ...names.map((n) => {
+      const form = /^contour-(field|input|textarea|select|number-field|range|range-scale|date-range|date-picker|time-picker|color-picker|combobox|version|input-group|switch|check|radio|segmented|stepper|rating|tags-input|file-upload)$/.test(n);
+      const data = /^contour-(table|comparison|pivot|data-grid|tree-grid|chart|streaming-chart|sparkline|time-series|stacked-bar|category|donut|gauge|bivariate|bivariate-legend|axis|brush|threshold|legend|heatmap|survey|measure|timeline|compare|contour-plot|isochrone|catchment|hexbin|flow-map|kpi|delta|stat|metrics|instrument|readout|widget-state|brownout|dash-kpi-row|dash-freshness)$/.test(n);
+      const type = form ? "ContourFormElement" : (data ? "ContourDataElement" : "ContourElement");
+      return `    "${n}": ${type};`;
+    }),
     "  }",
     "}",
   ];
