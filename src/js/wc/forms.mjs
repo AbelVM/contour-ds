@@ -605,8 +605,8 @@ class ContourTextarea extends ContourBase {
   }
   define("contour-textarea", ContourTextarea);
 class ContourInputFull extends ContourBase {
-    static get observed() { return ["type", "placeholder", "required", "value"]; }
-    static get properties() { return { type: { attribute: "type" }, placeholder: { attribute: "placeholder" }, required: { attribute: "required", type: Boolean }, value: { attribute: "value" } }; }
+    static get observed() { return ["type", "placeholder", "required", "value", "disabled", "error", "help"]; }
+    static get properties() { return { type: { attribute: "type" }, placeholder: { attribute: "placeholder" }, required: { attribute: "required", type: Boolean }, value: { attribute: "value" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" } }; }
     static get formAssociated() { return true; }
     render() {
       this.classList.add("c-input");
@@ -617,6 +617,18 @@ class ContourInputFull extends ContourBase {
       if (this.hasAttribute("value")) input.value = this.getAttribute("value");
       if (this.hasAttribute("required")) input.setAttribute("required", "");
       else input.removeAttribute("required");
+      if (this.hasAttribute("disabled")) { input.setAttribute("disabled", ""); this.classList.add("is-disabled"); }
+      else { input.removeAttribute("disabled"); this.classList.remove("is-disabled"); }
+      // Error/help text
+      const err = this.getAttribute("error");
+      const help = this.getAttribute("help");
+      let msg = this.querySelector(".c-input__message");
+      if (err || help) {
+        if (!msg) { msg = document.createElement("div"); msg.className = "c-input__message"; this.appendChild(msg); }
+        msg.textContent = err || help || "";
+        msg.classList.toggle("c-input__message--error", !!err);
+      } else if (msg) { msg.remove(); }
+      if (err) this.classList.add("is-error"); else this.classList.remove("is-error");
     }
     enhance() {
       const input = this.querySelector("input");
