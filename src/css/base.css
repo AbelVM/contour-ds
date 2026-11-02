@@ -140,6 +140,11 @@
                 outline-offset var(--dur-focus) var(--ease-standard);
   }
 
+  /* Safe-area insets for notched devices (R11-25). */
+  .container, .section {
+    padding-inline: max(var(--space-md), env(safe-area-inset-left));
+  }
+
   ::placeholder {
     color: var(--color-text-subtle);
     opacity: 1;
