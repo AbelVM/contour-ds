@@ -17716,7 +17716,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
               <span class="ds-spec__token">contour-comparison</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-comparison divider></contour-comparison>
+              <contour-comparison value="50" before="Before" after="After" divider="50%"></contour-comparison>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -17729,7 +17729,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-327">&lt;contour-comparison divider&gt;&lt;/contour-comparison&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-327">&lt;contour-comparison value="50" before="Before" after="After" divider="50%"&gt;&lt;/contour-comparison&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -21004,7 +21004,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
          <section class="ds-section" id="specimens-extra">
            <div class="ds-section__head"><h2 class="ds-section__title">Additional specimens</h2></div>
            <div class="ds-grid ds-grid--2">
-             <div class="ds-example" data-generated="wrap"><div class="c-animation-controls" data-snippet></div><details class="ds-code" data-generated="code">
+             <div class="ds-example" data-generated="wrap"><div class="c-animation-controls" data-snippet playing progress="40" caption="Frame 40"></div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
@@ -21034,7 +21034,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         <pre class="ds-code__pre"><code id="ds-code-469">&lt;div class="c-annotation"&gt;&lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
-             <div class="ds-example" data-generated="wrap"><div class="c-axis" data-snippet></div><details class="ds-code" data-generated="code">
+             <div class="ds-example" data-generated="wrap"><div class="c-axis" data-snippet values="[0,25,50,75,100]"></div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
@@ -21064,7 +21064,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         <pre class="ds-code__pre"><code id="ds-code-471">&lt;div class="c-badge-overflow"&gt;&lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
-             <div class="ds-example" data-generated="wrap"><div class="c-bivariate-legend" data-snippet></div><details class="ds-code" data-generated="code">
+             <div class="ds-example" data-generated="wrap"><div class="c-bivariate-legend" data-snippet size="3" colors="[&quot;#e8f5e9&quot;,&quot;#a5d6a7&quot;,&quot;#66bb6a&quot;,&quot;#c8e6c9&quot;,&quot;#81c784&quot;,&quot;#43a047&quot;,&quot;#a5d6a7&quot;,&quot;#66bb6a&quot;,&quot;#2e7d32&quot;]"></div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
@@ -21094,7 +21094,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         <pre class="ds-code__pre"><code id="ds-code-473">&lt;div class="c-brownout"&gt;&lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
-             <div class="ds-example" data-generated="wrap"><div class="c-brush" data-snippet></div><details class="ds-code" data-generated="code">
+             <div class="ds-example" data-generated="wrap"><div class="c-brush" data-snippet min="0" max="100" start="20" end="80"></div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
@@ -21214,7 +21214,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         <pre class="ds-code__pre"><code id="ds-code-481">&lt;div class="c-date-range"&gt;&lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
-             <div class="ds-example" data-generated="wrap"><div class="c-donut" data-snippet></div><details class="ds-code" data-generated="code">
+             <div class="ds-example" data-generated="wrap"><div class="c-donut" data-snippet items="[{&quot;label&quot;:&quot;Walks&quot;,&quot;value&quot;:40,&quot;color&quot;:&quot;var(--color-primary)&quot;},{&quot;label&quot;:&quot;Rides&quot;,&quot;value&quot;:60,&quot;color&quot;:&quot;var(--color-accent)&quot;}]" value="100"></div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
@@ -21259,7 +21259,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         <pre class="ds-code__pre"><code id="ds-code-484">&lt;div class="c-file-upload"&gt;&lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
-             <div class="ds-example" data-generated="wrap"><div class="c-gauge" data-snippet></div><details class="ds-code" data-generated="code">
+             <div class="ds-example" data-generated="wrap"><div class="c-gauge" data-snippet value="72" min="0" max="100" heading="CPU"></div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
@@ -21304,7 +21304,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         <pre class="ds-code__pre"><code id="ds-code-487">&lt;div class="c-map-popup"&gt;&lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
-             <div class="ds-example" data-generated="wrap"><div class="c-notification-center" data-snippet></div><details class="ds-code" data-generated="code">
+             <div class="ds-example" data-generated="wrap"><div class="c-notification-center" data-snippet count="3"></div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
@@ -21424,7 +21424,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         <pre class="ds-code__pre"><code id="ds-code-495">&lt;div class="c-split-button"&gt;&lt;/div&gt;</code></pre>
                       </div>
                     </details></div>
-             <div class="ds-example" data-generated="wrap"><div class="c-stacked-bar" data-snippet></div><details class="ds-code" data-generated="code">
+             <div class="ds-example" data-generated="wrap"><div class="c-stacked-bar" data-snippet segments="[{&quot;label&quot;:&quot;Walks&quot;,&quot;value&quot;:30,&quot;color&quot;:&quot;var(--color-primary)&quot;},{&quot;label&quot;:&quot;Rides&quot;,&quot;value&quot;:70,&quot;color&quot;:&quot;var(--color-accent)&quot;}]"></div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
