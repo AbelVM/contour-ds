@@ -21,3 +21,31 @@ describe("published tarball (R12-29)", () => {
     }
   });
 });
+
+describe("CSP and source maps (R12-29)", () => {
+  it("shipped JS has no eval/Function constructor", async () => {
+    const { readFileSync } = await import("node:fs");
+    const js = readFileSync("dist/contour.min.js", "utf8");
+    expect(js).not.toMatch(/\beval\s*\(/);
+    expect(js).not.toMatch(/new\s+Function\s*\(/);
+  });
+
+  it("shipped CSS has no @import of off-origin URLs", async () => {
+    const { readFileSync } = await import("node:fs");
+    const css = readFileSync("dist/contour.min.css", "utf8");
+    const imports = css.match(/@import\s+url\([^)]*\)/g) || [];
+    for (const imp of imports) {
+      expect(imp).not.toMatch(/https?:\/\//);
+    }
+  });
+
+  it("source maps are not shipped (or are valid)", async () => {
+    const { existsSync } = await import("node:fs");
+    // Source maps are optional; if present they must be valid JSON.
+    if (existsSync("dist/contour.min.js.map")) {
+      const { readFileSync } = await import("node:fs");
+      const map = JSON.parse(readFileSync("dist/contour.min.js.map", "utf8"));
+      expect(map.version).toBe(3);
+    }
+  });
+});
