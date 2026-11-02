@@ -87,6 +87,7 @@ for (const f of files) {
   for (const c of new Set(guideClasses)) {
     errors.push(`${relative(ROOT, f)} references guide-only class ${c} in a story`);
   }
+
   // inventory block existence: every contour- tag must map to a c- block in the inventory
   for (const t of new Set(tagsInFile)) {
     if (t.includes("shadow-")) continue;
