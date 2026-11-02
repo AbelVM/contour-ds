@@ -3646,13 +3646,23 @@
     background: none;
     border: none;
     cursor: pointer;
-    font-size: var(--type-lg);
-    color: var(--color-text-subtle);
     padding: 0;
     line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
-  .c-rating__star--filled {
-    color: var(--color-warning);
+  .c-rating__swatch {
+    display: inline-block;
+    inline-size: 1rem;
+    block-size: 1rem;
+    border-radius: 50%;
+    border: 2px solid var(--color-text-subtle);
+    background: transparent;
+  }
+  .c-rating__swatch--filled {
+    background: var(--color-warning);
+    border-color: var(--color-warning);
   }
   .c-date-picker {
     display: inline-flex;
@@ -4004,6 +4014,13 @@
 
 
   .c-notification-center__trigger { /* inherits c-btn */ }
+  .c-notification-center__bullet {
+    display: inline-block;
+    inline-size: 0.6rem;
+    block-size: 0.6rem;
+    border-radius: 50%;
+    background: var(--color-primary);
+  }
   .c-stepper__prev, .c-stepper__next { /* inherits c-btn */ }
   .c-tour__next { /* inherits c-btn */ }
 
