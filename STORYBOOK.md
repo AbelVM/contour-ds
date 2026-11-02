@@ -60,6 +60,17 @@ Record for each release review:
 - Screenshot baseline result.
 - A11y `todo` IDs and remaining risks.
 
+## Storybook manifests (SB-18)
+
+Storybook 10 supports Custom Elements Manifests (CEM) for automatic argTypes
+extraction via the `manifest` option in `.storybook/main.js`. The
+`@custom-elements-manifest/analyzer` package is not currently installed, and
+the WC layer's observed attributes are already published in
+`dist/contour.components.json` (SB-04b). Enabling CEM would add a dependency
+and a generation step for marginal benefit. Decision: keep disabled; revisit
+when the analyzer is added to the dev dependencies or when Storybook's manifest
+API stabilizes. `agent-rules.json` and `llms*.txt` remain authoritative.
+
 ## Measured evidence (SB-29)
 
 - Story files: 15; stories: 43; stories with play functions: 43.
