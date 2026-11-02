@@ -1406,7 +1406,7 @@ class ContourGauge extends ContourBase {
         dial.appendChild(needle);
         const hub = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         hub.setAttribute("class", "c-gauge__hub hub");
-        hub.setAttribute("cx", "50"); hub.setAttribute("cy", "50"); hub.setAttribute("r", "4");
+        hub.setAttribute("cx", "50"); hub.setAttribute("cy", "90"); hub.setAttribute("r", "4");
         dial.appendChild(hub);
       }
       // value element (meter)

@@ -343,7 +343,10 @@
   .c-btn--icon {
     inline-size: 2.5rem;
     min-inline-size: 2.5rem;
+    block-size: 2.5rem;
+    min-block-size: 2.5rem;
     padding: 0;
+    aspect-ratio: 1;
   }
 
   .c-btn--icon.c-btn--sm {
@@ -2235,7 +2238,8 @@
     padding: 0.75rem 1rem;
     text-align: start;
     border-block-end: 1px solid var(--color-border-subtle);
-    white-space: nowrap;
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
 
   .c-table thead th {
@@ -3914,7 +3918,7 @@
   .c-notification-center { position: relative; display: inline-block; }
   .c-notification-center__panel { position: absolute; inset-block-start: 100%; inset-inline-end: 0; z-index: var(--z-tooltip); margin-block-start: var(--space-2xs); min-inline-size: 16rem; background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-xs); box-shadow: var(--shadow-md); }
   .c-notification-center__item { padding: var(--space-2xs) var(--space-xs); font-size: var(--type-sm); }
-  .c-notification-center__badge { position: absolute; inset-block-start: -0.25rem; inset-inline-end: -0.25rem; }
+  .c-notification-center__badge { position: absolute; inset-block-start: -0.25rem; inset-inline-end: -0.25rem; z-index: 1; }
   /* -- Stepper (form) ---------------------------------------------------- */
   .c-stepper { display: block; }
   .c-stepper__list { display: flex; gap: var(--space-sm); list-style: none; padding: 0; margin: 0 0 var(--space-sm); }

@@ -642,7 +642,7 @@ class ContourAnimationControls extends ContourBase {
       const speedBtn = this.ensure(".c-animation-controls__speed", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-animation-controls__speed"; el.type = "button"; return el; });
       speedBtn.textContent = speed;
       // scrubber
-      const scrubber = this.ensure(".c-animation-controls__scrubber", () => { const el = document.createElement("input"); el.className = "c-animation-controls__scrubber"; el.type = "range"; return el; });
+      const scrubber = this.ensure(".c-animation-controls__scrubber", () => { const el = document.createElement("input"); el.className = "c-range c-animation-controls__scrubber"; el.type = "range"; return el; });
       if (this.getAttribute("show-thumb") === "false") scrubber.classList.remove("c-animation-controls__scrubber--thumb");
       else scrubber.classList.add("c-animation-controls__scrubber--thumb");
       scrubber.min = this.getAttribute("min") || "0";
