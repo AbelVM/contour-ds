@@ -16712,7 +16712,18 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-285">&lt;contour-pricing&gt;&lt;div class="c-price"&gt;...&lt;/div&gt;&lt;/contour-pricing&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-285">&lt;contour-pricing&gt;
+  &lt;div class="c-price"&gt;
+    &lt;span class="c-price__name"&gt;Starter&lt;/span&gt;
+    &lt;span class="c-price__amount"&gt;$9&lt;/span&gt;
+    &lt;span class="c-price__period"&gt;/mo&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class="c-price c-price--featured"&gt;
+    &lt;span class="c-price__name"&gt;Pro&lt;/span&gt;
+    &lt;span class="c-price__amount"&gt;$29&lt;/span&gt;
+    &lt;span class="c-price__period"&gt;/mo&lt;/span&gt;
+  &lt;/div&gt;
+&lt;/contour-pricing&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -19385,7 +19396,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-400">&lt;button class="c-btn c-btn--sm" type="button" onclick="document.getElementById('reactivity-demo-biv').setAttribute('colors', JSON.stringify(Array.from({length:9},()=>'#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0'))))"&gt;Randomise colors&lt;/button&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-400">&lt;button class="c-btn c-btn--sm" type="button" onclick="document.getElementById('reactivity-demo-biv').setAttribute('colors', JSON.stringify(Array.from({length:9},()=&gt;'#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0'))))"&gt;Randomise colors&lt;/button&gt;</code></pre>
                       </div>
                     </details></div>
           </div>

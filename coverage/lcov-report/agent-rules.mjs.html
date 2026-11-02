@@ -1,0 +1,655 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for agent-rules.mjs</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="prettify.css" />
+    <link rel="stylesheet" href="base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="index.html">All files</a> agent-rules.mjs</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">86.48% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>32/37</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">57.14% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>8/14</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">85.71% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>6/7</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">90% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>27/30</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line high'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a>
+<a name='L111'></a><a href='#L111'>111</a>
+<a name='L112'></a><a href='#L112'>112</a>
+<a name='L113'></a><a href='#L113'>113</a>
+<a name='L114'></a><a href='#L114'>114</a>
+<a name='L115'></a><a href='#L115'>115</a>
+<a name='L116'></a><a href='#L116'>116</a>
+<a name='L117'></a><a href='#L117'>117</a>
+<a name='L118'></a><a href='#L118'>118</a>
+<a name='L119'></a><a href='#L119'>119</a>
+<a name='L120'></a><a href='#L120'>120</a>
+<a name='L121'></a><a href='#L121'>121</a>
+<a name='L122'></a><a href='#L122'>122</a>
+<a name='L123'></a><a href='#L123'>123</a>
+<a name='L124'></a><a href='#L124'>124</a>
+<a name='L125'></a><a href='#L125'>125</a>
+<a name='L126'></a><a href='#L126'>126</a>
+<a name='L127'></a><a href='#L127'>127</a>
+<a name='L128'></a><a href='#L128'>128</a>
+<a name='L129'></a><a href='#L129'>129</a>
+<a name='L130'></a><a href='#L130'>130</a>
+<a name='L131'></a><a href='#L131'>131</a>
+<a name='L132'></a><a href='#L132'>132</a>
+<a name='L133'></a><a href='#L133'>133</a>
+<a name='L134'></a><a href='#L134'>134</a>
+<a name='L135'></a><a href='#L135'>135</a>
+<a name='L136'></a><a href='#L136'>136</a>
+<a name='L137'></a><a href='#L137'>137</a>
+<a name='L138'></a><a href='#L138'>138</a>
+<a name='L139'></a><a href='#L139'>139</a>
+<a name='L140'></a><a href='#L140'>140</a>
+<a name='L141'></a><a href='#L141'>141</a>
+<a name='L142'></a><a href='#L142'>142</a>
+<a name='L143'></a><a href='#L143'>143</a>
+<a name='L144'></a><a href='#L144'>144</a>
+<a name='L145'></a><a href='#L145'>145</a>
+<a name='L146'></a><a href='#L146'>146</a>
+<a name='L147'></a><a href='#L147'>147</a>
+<a name='L148'></a><a href='#L148'>148</a>
+<a name='L149'></a><a href='#L149'>149</a>
+<a name='L150'></a><a href='#L150'>150</a>
+<a name='L151'></a><a href='#L151'>151</a>
+<a name='L152'></a><a href='#L152'>152</a>
+<a name='L153'></a><a href='#L153'>153</a>
+<a name='L154'></a><a href='#L154'>154</a>
+<a name='L155'></a><a href='#L155'>155</a>
+<a name='L156'></a><a href='#L156'>156</a>
+<a name='L157'></a><a href='#L157'>157</a>
+<a name='L158'></a><a href='#L158'>158</a>
+<a name='L159'></a><a href='#L159'>159</a>
+<a name='L160'></a><a href='#L160'>160</a>
+<a name='L161'></a><a href='#L161'>161</a>
+<a name='L162'></a><a href='#L162'>162</a>
+<a name='L163'></a><a href='#L163'>163</a>
+<a name='L164'></a><a href='#L164'>164</a>
+<a name='L165'></a><a href='#L165'>165</a>
+<a name='L166'></a><a href='#L166'>166</a>
+<a name='L167'></a><a href='#L167'>167</a>
+<a name='L168'></a><a href='#L168'>168</a>
+<a name='L169'></a><a href='#L169'>169</a>
+<a name='L170'></a><a href='#L170'>170</a>
+<a name='L171'></a><a href='#L171'>171</a>
+<a name='L172'></a><a href='#L172'>172</a>
+<a name='L173'></a><a href='#L173'>173</a>
+<a name='L174'></a><a href='#L174'>174</a>
+<a name='L175'></a><a href='#L175'>175</a>
+<a name='L176'></a><a href='#L176'>176</a>
+<a name='L177'></a><a href='#L177'>177</a>
+<a name='L178'></a><a href='#L178'>178</a>
+<a name='L179'></a><a href='#L179'>179</a>
+<a name='L180'></a><a href='#L180'>180</a>
+<a name='L181'></a><a href='#L181'>181</a>
+<a name='L182'></a><a href='#L182'>182</a>
+<a name='L183'></a><a href='#L183'>183</a>
+<a name='L184'></a><a href='#L184'>184</a>
+<a name='L185'></a><a href='#L185'>185</a>
+<a name='L186'></a><a href='#L186'>186</a>
+<a name='L187'></a><a href='#L187'>187</a>
+<a name='L188'></a><a href='#L188'>188</a>
+<a name='L189'></a><a href='#L189'>189</a>
+<a name='L190'></a><a href='#L190'>190</a>
+<a name='L191'></a><a href='#L191'>191</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">72x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-yes">36x</span>
+<span class="cline-any cline-yes">36x</span>
+<span class="cline-any cline-yes">36x</span>
+<span class="cline-any cline-yes">36x</span>
+<span class="cline-any cline-yes">36x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
+ * The agent-rules artifact (C-47): `dist/agent-rules.json`.
+ *
+ * An agent generating UI with Contour needs the system's constraints in a form it can
+ * read before it writes anything, and a CSS system's constraints are unusually good at
+ * this: almost every rule here is already a running check rather than a style-guide
+ * sentence. So the artifact is a list of rules that each name the gate enforcing them,
+ * and the gate (`tools/check-agent-rules.mjs`) fails if a rule cites a check that does
+ * not exist or exists but runs in no CI lane.
+ *
+ * That last clause is not decorative. This row originally claimed its rules were
+ * "already machine-checkable" and pointed at `check-ownership`, `family-gate` and
+ * `check-tokens`. Reading their assertion loops found that `check-tokens` owns the
+ * census and no colour literal at all, and that `family-gate` — the only check that
+ * does — was wired into no lane and hard-coded to one absolute path, so it scanned
+ * whichever repo it was written in rather than the one it stood in. A rulebook that
+ * repeats a claim like that would be worse than no rulebook: it launders an
+ * unenforced preference into an authoritative-sounding instruction. So existence and
+ * wiring are resolved from the tree at build time, and the build throws if a cited
+ * gate is missing — the artifact cannot be emitted with a dangling enforcement.
+ *
+ * It deliberately publishes no counts. The numbers an agent needs live in
+ * `contour.components.json` and `contour.tokens.json`, which are derived from
+ * `tools/lib/inventory.mjs` and re-checked by their own gates; restating a count here
+ * would create a second copy of one fact, which is the failure this repository keeps
+ * paying for.
+ */
+import { readFileSync, existsSync } from "node:fs";
+import { join } from "node:path";
+&nbsp;
+export const AGENT_RULES_VERSION = "1.0";
+&nbsp;
+/**
+ * The gates, in the order an agent should run them. `path` is resolved for existence at
+ * build time; `lane` is read out of ci.yml, not asserted from memory.
+ */
+export const RULES = [
+  {
+    id: "source-is-src",
+    rule: "Edit `src/`. Everything under `dist/` is generated by `node tools/build.mjs`; a change written into `dist/` is overwritten by the next build and is not a fix.",
+    why: "The package a consumer installs is derived. An edit that does not survive a rebuild is invisible.",
+    enforcement: [
+      { gate: "tools/build.mjs", command: "node tools/build.mjs" },
+      { gate: "tools/check-size.mjs", command: "node tools/check-size.mjs", note: "refuses a dist/ whose bytes are not what src/ produces" },
+    ],
+  },
+  {
+    id: "generated-output-is-reference",
+    rule: "Snippets, the light-dark() fallback and every contract JSON are generated. Read them as the system's output, never hand-edit them; change the emitter or the source and regenerate.",
+    why: "A generated file edited by hand is a divergence that no gate can distinguish from a fresh build until the next regeneration silently erases it.",
+    enforcement: [
+      { gate: "tools/snippets.mjs", command: "node tools/snippets.mjs" },
+      { gate: "tools/gen-light-dark.mjs", command: "node tools/gen-light-dark.mjs --check" },
+      { gate: "tools/check-docs.mjs", command: "node tools/check-docs.mjs" },
+      { gate: "tools/check-components.mjs", command: "node tools/check-components.mjs" },
+      { gate: "tools/check-registry.mjs", command: "node tools/check-registry.mjs" },
+    ],
+  },
+  {
+    id: "read-a-token",
+    rule: "Consume the token vocabulary (`var(--…)`) instead of writing a colour, duration or size literal. If the value needed does not exist, declare it in `src/css/tokens.css`.",
+    why: "A literal cannot be re-themed, cannot be audited for contrast, and silently contradicts the theme the page is in.",
+    enforcement: [
+      { gate: "tools/audit/family-gate.mjs", command: "node tools/audit/family-gate.mjs", note: "the only check that enforces this; exemptions are named ledger entries, not a regex over the whole file" },
+      { gate: "tools/check-tokens.mjs", command: "node tools/check-tokens.mjs", note: "the census side: every declared token is read or ledgered as unread" },
+    ],
+  },
+  {
+    id: "reuse-a-class",
+    rule: "Compose existing blocks (`.c-*` with `__element` and `--variant` parts) instead of inventing a component. The names are published in `contour.components.json`.",
+    why: "A class outside the contract has no states, no documentation and no contrast guarantee.",
+    enforcement: [
+      { gate: "tools/check-components.mjs", command: "node tools/check-components.mjs" },
+      { gate: "tools/check-ownership.mjs", command: "node tools/check-ownership.mjs", note: "the other direction: guide-only identifiers must not leak into src/" },
+    ],
+  },
+  {
+    id: "names-are-verified",
+    rule: "Every token, block or criterion named in prose must exist in the tree. Read the contracts; do not infer a name from a document.",
+    why: "This repository has published a token that no stylesheet declared, and it stayed green because a gate counts declarations and a sentence is not a declaration.",
+    enforcement: [
+      { gate: "tools/check-claims.mjs", command: "node tools/check-claims.mjs" },
+      { gate: "tools/check-defs.mjs", command: "node tools/check-defs.mjs", note: "every url(#id) reaches a def that exists" },
+    ],
+  },
+  {
+    id: "contrast-is-measured",
+    rule: "Body text clears 4.5:1 and control edges, borders and focus rings clear 3:1, in both themes, against every surface a control can sit on. State is never carried by colour alone.",
+    why: "The ratio is only a claim until something computes it against the surfaces it will actually render on.",
+    enforcement: [
+      { gate: "tools/audit/contrast-and-aria.mjs", command: "node tools/audit/contrast-and-aria.mjs", note: "needs a browser driver; it exits rather than skipping without one" },
+      { gate: "tools/audit/chart-names.mjs", command: "node tools/audit/chart-names.mjs" },
+    ],
+  },
+  {
+    id: "motion-is-pausable",
+    rule: "No animation runs forever without a control on the page that can stop it, and the reduced-motion path is the calm default.",
+    why: "WCAG 2.2.2 is Level A, and an operating-system setting is not a control the page provides.",
+    enforcement: [
+      { gate: "tools/check-motion.mjs", command: "node tools/check-motion.mjs" },
+    ],
+  },
+  {
+    id: "no-dangling-host",
+    rule: "Ship no URL that points at Contour's own deployment, and no install instruction that assumes one. The project is private until v1.0 and the Pages site answers 404.",
+    why: "An artifact that advertises a door nobody can open teaches the next reader to distrust the artifact.",
+    enforcement: [
+      { gate: "tools/check-docs.mjs", command: "node tools/check-docs.mjs" },
+      { gate: "tools/check-registry.mjs", command: "node tools/check-registry.mjs", note: "only the two $schema identifiers are permitted, and no homepage or url field" },
+    ],
+  },
+];
+&nbsp;
+const CI_FILE = ".github/workflows/ci.yml";
+&nbsp;
+/**
+ * Resolve each cited gate against the tree: it must exist, and it must be invoked in a
+ * CI job. The lane is read from ci.yml rather than hardcoded, because a claim about
+ * where a check runs is exactly the kind of claim that goes stale when someone moves it.
+ */
+export function buildAgentRules(root) {
+  const ci = existsSync(join(root, CI_FILE))
+    ? readFileSync(join(root, CI_FILE), "utf8")
+    : <span class="branch-1 cbranch-no" title="branch not covered" >(<span class="fstat-no" title="function not covered" >()</span> =&gt; { <span class="cstat-no" title="statement not covered" >throw new Error(`buildAgentRules: ${CI_FILE} is missing, so no enforcement could be verified`); </span>})();</span>
+&nbsp;
+  const jobs = [...ci.matchAll(/^  ([a-z][\w-]*):\n    runs-on:/gm)].map((m) =&gt; m[1]);
+  // Slice each job's own text between its header and the next job's, not to EOF. The
+  // first version took `ci.slice(indexOf("  validate:"))`, which therefore also held
+  // the contract job, so every gate — including the browser ones — was published as
+  // `validate`. The artifact claims where each check runs; that claim has to be read
+  // out of the file rather than assumed from the first match.
+  const jobText = new Map();
+  {
+    const heads = [...ci.matchAll(/^  ([a-z][\w-]*):\n    runs-on:/gm)];
+    for (let i = 0; i &lt; heads.length; i += 1) {
+      const from = heads[i].index;
+      const to = i + 1 &lt; heads.length ? heads[i + 1].index : ci.length;
+      jobText.set(heads[i][1], ci.slice(from, to));
+    }
+  }
+  // A gate can legitimately run in more than one job — `tools/build.mjs` runs in
+  // validate, and again in contract because dist/ is gitignored so the second job has to
+  // produce the artifacts it reads. Reporting only the first match published that gate
+  // as `validate`, which was true but incomplete: the same class of error as naming a job
+  // that does not run it. So publish the whole set and let the guard compare sets.
+  const jobsFor = (gate) =&gt; jobs.filter((j) =&gt; (jobText.get(j) ?? <span class="branch-1 cbranch-no" title="branch not covered" >"")</span>.includes(gate)).sort();
+&nbsp;
+  const rules = [];
+  const dangling = [];
+  const unwired = [];
+&nbsp;
+  for (const r of RULES) {
+    const enforcement = r.enforcement.map((e) =&gt; {
+      const exists = existsSync(join(root, e.gate));
+      const lane = jobsFor(e.gate);
+      <span class="missing-if-branch" title="if path not taken" >I</span>if (!exists) <span class="cstat-no" title="statement not covered" >dangling.push(`${r.id}: ${e.gate}`);</span>
+      else <span class="missing-if-branch" title="if path not taken" >I</span>if (!lane.length) <span class="cstat-no" title="statement not covered" >unwired.push(`${r.id}: ${e.gate}`);</span>
+      return { ...e, exists, jobs: lane };
+    });
+    rules.push({
+      id: r.id,
+      rule: r.rule,
+      why: r.why,
+      enforcement,
+    });
+  }
+&nbsp;
+  // A rulebook whose enforcement is a file that does not exist, or a check that runs in
+  // no lane, is the thing that got this row started. Fail the build, not the reader.
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (dangling.length) {
+<span class="cstat-no" title="statement not covered" >    throw new Error(`agent-rules cites gates that do not exist:\n  ${dangling.join("\n  ")}`);</span>
+  }
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (unwired.length) {
+<span class="cstat-no" title="statement not covered" >    throw new Error(`agent-rules cites gates that run in no CI lane (wire them, or drop the claim):\n  ${unwired.join("\n  ")}`);</span>
+  }
+&nbsp;
+  return {
+    version: AGENT_RULES_VERSION,
+    name: "contour-agent-rules",
+    audience: "an agent generating or reviewing UI code that uses Contour",
+    statement:
+      "Each rule names the check that enforces it, and that check is verified at build time to exist and to run in a CI lane. Rules are ordered as a working sequence: read this file, then the contracts, then write code, then run the enforcing command for what you touched. Counts are deliberately absent: the numbers an agent needs are published in contour.components.json and contour.tokens.json, which are derived from tools/lib/inventory.mjs and re-checked by their own gates, so restating one here would create a second copy of one fact. Commands assume the repository checkout, not the installed package: a consumer installs src/ and dist/ and cannot run the audit harnesses, which need a browser driver and npm-installed dependencies.",
+    source: "tools/lib/agent-rules.mjs",
+    ciFile: CI_FILE,
+    jobs,
+    rules,
+  };
+}
+&nbsp;
+export const agentRulesJson = (value) =&gt; `${JSON.stringify(value, null, 2)}\n`;
+&nbsp;</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2026-11-02T12:42:33.944Z
+            </div>
+        <script src="prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="sorter.js"></script>
+        <script src="block-navigation.js"></script>
+    </body>
+</html>
+    

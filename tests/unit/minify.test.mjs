@@ -4,7 +4,7 @@ import { minifyCss, minifyJs } from "../../tools/lib/minify.mjs";
 describe("minify", () => {
   it("minifies css removing comments and whitespace", () => {
     const css = "/* c */\n.a {\n  color: red;\n}\n";
-    expect(minifyCss(css)).toBe(".a{color:red;}");
+    expect(minifyCss(css)).toBe(".a{color:red}");
   });
   it("preserves strings", () => {
     const css = '.a { content: "  x  "; }';

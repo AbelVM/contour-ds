@@ -29,6 +29,19 @@ npx html-validate index.html templates/*.html
 - Run `node tools/snippets.mjs` after editing any specimen, and
   `node tools/build.mjs` after touching `src/`.
 
+## Testing
+
+```bash
+npm test                  # unit + integration (vitest)
+npm run test:unit         # unit tests only
+npm run test:integration  # build + gate integration tests
+npm run test:e2e          # Playwright end-to-end (needs a browser driver)
+npm run test:coverage     # with v8 coverage report
+```
+
+The browser driver is installed via `npx playwright install chromium`. E2E
+tests run against a local static server started automatically by Playwright.
+
 ## Pull requests
 
 - One concern per PR.
