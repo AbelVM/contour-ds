@@ -2223,58 +2223,17 @@ class ContourBivariateLegend extends ContourBivariate {
     static get observed() { return ["size", "axis-x", "axis-y", "colors", "selected"]; }
     static get properties() { return { size: { attribute: "size" }, axisX: { attribute: "axis-x" }, axisY: { attribute: "axis-y" }, colors: { attribute: "colors" }, selected: { attribute: "selected" } }; }
     render() {
-      this.classList.add("c-bivariate-legend", "c-bivariate");
-      this.setAttribute("role", "group");
+      super.render();
+      this.classList.add("c-bivariate-legend");
+      this.classList.remove("c-bivariate");
       this.setAttribute("aria-label", "Bivariate legend");
-      const size = Math.min(8, Math.max(1, parseInt(this.getAttribute("size") || "3", 10) || 3));
-      const matrix = this.ensure(".c-bivariate-legend__matrix", () => { const el = document.createElement("div"); el.className = "c-bivariate-legend__matrix"; el.setAttribute("role", "grid"); return el; });
-      matrix.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
-      // Slotted content support: authored cells win over the generated grid.
-      const authored = Array.from(matrix.children).filter((n) => n.classList && n.classList.contains("c-bivariate-legend__cell"));
-      if (!authored.length) {
-        matrix.innerHTML = "";
-        let colors = [];
-        const cAttr = this.getAttribute("colors");
-        if (cAttr) { try { colors = JSON.parse(cAttr); } catch (e) { colors = []; } }
-        for (let i = 0; i < size * size; i++) {
-          const cell = document.createElement("div");
-          cell.className = "c-bivariate-legend__cell";
-          cell.setAttribute("role", "button");
-          cell.setAttribute("tabindex", "0");
-          const x = i % size;
-          const y = Math.floor(i / size);
-          cell.setAttribute("aria-label", "Cell " + x + "," + y);
-          if (colors[i]) cell.style.background = colors[i];
-          else cell.style.background = "var(--chart-" + ((i % 8) + 1) + ")";
-          matrix.appendChild(cell);
-        }
-        // aria-live
-        let live = this.querySelector(".c-bivariate-legend__live");
-        if (!live) { live = document.createElement("div"); live.className = "c-bivariate-legend__live"; live.setAttribute("aria-live", "polite"); live.style.position = "absolute"; live.style.width = "1px"; live.style.height = "1px"; live.style.overflow = "hidden"; live.style.clip = "rect(0,0,0,0)"; this.appendChild(live); }
-      }
-      const axisX = this.getAttribute("axis-x");
-      const ax = this.querySelector(".c-bivariate-legend__axis--x");
-      if (axisX) {
-        const el = ax || this.ensure(".c-bivariate-legend__axis--x", () => { const e = document.createElement("div"); e.className = "c-bivariate-legend__axis c-bivariate-legend__axis--x"; return e; });
-        el.textContent = axisX;
-      } else if (ax) {
-        ax.remove();
-      }
-      const axisY = this.getAttribute("axis-y");
-      const ay = this.querySelector(".c-bivariate-legend__axis--y");
-      if (axisY) {
-        const el = ay || this.ensure(".c-bivariate-legend__axis--y", () => { const e = document.createElement("div"); e.className = "c-bivariate-legend__axis c-bivariate-legend__axis--y"; return e; });
-        el.textContent = axisY;
-      } else if (ay) {
-        ay.remove();
-      }
     }
     enhance() {
       if (this._wiredBivLegend) return;
       this._wiredBivLegend = true;
       const selectCell = (cell) => {
-        const matrix = this.querySelector(".c-bivariate-legend__matrix");
-        const cells = Array.from(matrix ? matrix.querySelectorAll(".c-bivariate-legend__cell") : []);
+        const matrix = this.querySelector(".c-bivariate__matrix");
+        const cells = Array.from(matrix ? matrix.querySelectorAll(".c-bivariate__cell") : []);
         const idx = cells.indexOf(cell);
         if (idx < 0) return;
         const size = Math.min(8, Math.max(1, parseInt(this.getAttribute("size") || "3", 10) || 3));
@@ -2289,11 +2248,11 @@ class ContourBivariateLegend extends ContourBivariate {
         this.dispatchEvent(new CustomEvent("contour:select", { detail: { row, col }, bubbles: true, composed: true }));
       };
       this.addEventListener("click", (e) => {
-        const cell = e.target && e.target.closest ? e.target.closest(".c-bivariate-legend__cell") : null;
+        const cell = e.target && e.target.closest ? e.target.closest(".c-bivariate__cell") : null;
         if (cell && this.contains(cell)) selectCell(cell);
       });
       this.addEventListener("keydown", (e) => {
-        const cell = e.target && e.target.closest ? e.target.closest(".c-bivariate-legend__cell") : null;
+        const cell = e.target && e.target.closest ? e.target.closest(".c-bivariate__cell") : null;
         if (!cell || !this.contains(cell)) return;
         if (e.key === "Enter" || e.key === " ") { e.preventDefault(); selectCell(cell); }
       });
