@@ -1599,12 +1599,12 @@
     content: "";
     position: absolute;
     top: 50%;
-    inset-inline-start: -0.75rem;
+    left: 50%;
     inline-size: 1.5rem;
     block-size: 1.5rem;
     background: var(--color-primary);
     border-radius: 50%;
-    transform: translateY(-50%);
+    transform: translate(-50%, -50%);
   }
 
   .c-comparison__label {
