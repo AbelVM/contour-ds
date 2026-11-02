@@ -15,3 +15,6 @@ __pycache__/
 *.pyc
 # Generated native token output
 build/
+
+*storybook.log
+storybook-static
