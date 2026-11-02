@@ -403,8 +403,10 @@ shadow("contour-shadow-filter-pill", `<span class="c-filter-pill" part="filter-p
   // handed rather than what the source appears to say. Frozen: a page that
   // reshapes it would make the next reader's count wrong, which is the failure
   // this array exists to prevent.
-  window.ContourElements = Object.freeze(REGISTERED.slice());
-  // Same rule for the event vocabulary: the manifest is frozen at publish so a
-  // page cannot add names the source never emitted, which would make the gate's
-  // "every dispatchEvent name has an entry" read meaningless.
-  window.ContourEvents = Object.freeze(CONTOUR_EVENTS);
+  if (typeof window !== "undefined") {
+    window.ContourElements = Object.freeze(REGISTERED.slice());
+    // Same rule for the event vocabulary: the manifest is frozen at publish so a
+    // page cannot add names the source never emitted, which would make the gate's
+    // "every dispatchEvent name has an entry" read meaningless.
+    window.ContourEvents = Object.freeze(CONTOUR_EVENTS);
+  }

@@ -44,11 +44,29 @@
     if (!list) { list = []; DISPOSERS.set(host, list); }
     list.push(fn);
   };
+  function contourDebugEnabled() {
+    try {
+      if (typeof window !== "undefined" && (window.ContourDebug || window.__CONTOUR_DEBUG__)) return true;
+    } catch (e) {}
+    try {
+      if (typeof process !== "undefined" && process.env && process.env.NODE_ENV !== "production" && process.env.CONTOUR_DEBUG) return true;
+    } catch (e) {}
+    return false;
+  }
   const runDisposers = (host) => {
     const list = DISPOSERS.get(host);
     if (!list) return;
     DISPOSERS.delete(host);
-    for (const fn of list) { try { fn(); } catch (e) { /* one bad cleanup cannot strand the rest */ } }
+    for (const fn of list) {
+      try { fn(); }
+      catch (e) {
+        // One bad cleanup cannot strand the rest. Surface the failure in
+        // development/debug mode so a leaking disposer is not invisible.
+        if (contourDebugEnabled()) {
+          try { console.warn("Contour disposer failed for", host && host.tagName, e); } catch (err) {}
+        }
+      }
+    }
   };
 
   // Monotonic counter for unique IDs (avoids Math.random() collision risk).
@@ -56,6 +74,10 @@
   export const contourId = (prefix) => prefix + "-" + (++_contourIdCounter).toString(36);
 
   export const define = (name, cls) => {
+    // SSR-safe / constrained-runtime boundary: if the Custom Elements registry
+    // is unavailable, do not throw on import; registration is a no-op and the
+    // element remains an unknown (upgradable) tag until a browser defines it.
+    if (typeof customElements === "undefined" || !customElements || typeof customElements.define !== "function") return;
     if (customElements.get(name)) return;
     customElements.define(name, cls);
     REGISTERED.push(name);
@@ -153,7 +175,12 @@
   // cannot slip through.
   export function sanitizeHtml(input) {
     const str = String(input == null ? "" : input);
-    if (typeof DOMParser === "undefined") return str;
+    // Fail closed when no parser is available (SSR, constrained runtimes):
+    // never treat "no parser" as "trusted markup". Return the input as inert
+    // text so no tag is interpreted by an innerHTML assignment.
+    if (typeof DOMParser === "undefined") {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
     const doc = new DOMParser().parseFromString(str, "text/html");
     const drop = new Set(["script", "iframe", "object", "embed", "style", "link", "meta", "base", "form", "input", "button"]);
     const walk = (node) => {
