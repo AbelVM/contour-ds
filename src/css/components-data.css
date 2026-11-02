@@ -1595,7 +1595,7 @@
   .c-comparison__divider::before {
     content: "";
     position: absolute;
-    inset-block: 50%;
+    top: 50%;
     inset-inline-start: -0.75rem;
     inline-size: 1.5rem;
     block-size: 1.5rem;
