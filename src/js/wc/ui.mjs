@@ -1685,11 +1685,14 @@ class ContourFileUpload extends ContourBase {
   define("contour-file-upload", ContourFileUpload);
 
 class ContourNotificationCenter extends ContourBase {
-    static get observed() { return ["count", "items"]; }
-    static get properties() { return { count: { attribute: "count" }, items: { attribute: "items" } }; }
+    static get observed() { return ["count", "items", "color"]; }
+    static get properties() { return { count: { attribute: "count" }, items: { attribute: "items" }, color: { attribute: "color" } }; }
     render() {
       this.classList.add("c-notification-center");
       const btn = this.ensure(".c-notification-center__trigger", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-notification-center__trigger"; el.type = "button"; el.innerHTML = '<span class="c-notification-center__bullet" aria-hidden="true"></span>'; el.setAttribute("aria-haspopup", "dialog"); el.setAttribute("aria-expanded", "false"); return el; });
+      const color = this.getAttribute("color");
+      const bullet = btn.querySelector(".c-notification-center__bullet");
+      if (bullet && color) bullet.style.background = color;
       const count = this.getAttribute("count");
       let badge = btn.querySelector(".c-notification-center__badge");
       if (count && Number(count) > 0) {
