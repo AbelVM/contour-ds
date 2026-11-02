@@ -57,6 +57,7 @@ export type ContourComponent =
   | "c-dash-shell"
   | "c-dash-toolbar"
   | "c-data-grid"
+  | "c-data-table"
   | "c-datamark"
   | "c-date-picker"
   | "c-date-range"
@@ -79,6 +80,7 @@ export type ContourComponent =
   | "c-dropdown"
   | "c-elevation"
   | "c-empty"
+  | "c-error-boundary"
   | "c-expandable"
   | "c-fab"
   | "c-faq"
@@ -151,6 +153,7 @@ export type ContourComponent =
   | "c-reserved"
   | "c-resizable"
   | "c-resize-handle"
+  | "c-resize-observer"
   | "c-responsive-content"
   | "c-row"
   | "c-row-action"
@@ -728,7 +731,6 @@ declare global {
     "contour-compass": ContourElement;
     "contour-container": ContourElement;
     "contour-context-menu": ContourElement;
-    "contour-contour-plot": ContourDataElement;
     "contour-coordinate": ContourElement;
     "contour-cta": ContourElement;
     "contour-dash-freshness": ContourDataElement;
@@ -736,6 +738,7 @@ declare global {
     "contour-dash-shell": ContourElement;
     "contour-dash-toolbar": ContourElement;
     "contour-data-grid": ContourDataElement;
+    "contour-data-table": ContourElement;
     "contour-datamark": ContourElement;
     "contour-date-picker": ContourFormElement;
     "contour-date-range": ContourFormElement;
@@ -758,6 +761,7 @@ declare global {
     "contour-dropdown": ContourElement;
     "contour-elevation": ContourElement;
     "contour-empty": ContourElement;
+    "contour-error-boundary": ContourElement;
     "contour-expandable": ContourElement;
     "contour-fab": ContourElement;
     "contour-faq": ContourElement;
@@ -830,6 +834,7 @@ declare global {
     "contour-reserved": ContourElement;
     "contour-resizable": ContourElement;
     "contour-resize-handle": ContourElement;
+    "contour-resize-observer": ContourElement;
     "contour-responsive-content": ContourElement;
     "contour-row": ContourElement;
     "contour-row-action": ContourElement;

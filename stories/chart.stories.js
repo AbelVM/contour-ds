@@ -78,6 +78,27 @@ export const DataTable = {
   },
 };
 
+export const Legend = {
+  parameters: { a11y: { test: "todo" }, issue: "SB-A11Y-02", a11yTodo: { owner: "Contour maintainers", rootCause: "selectable legend dims inactive items via opacity, dropping contrast below 4.5:1", mitigation: "verify contrast in chart composition; consider color-based dimming", review: "2026-12-01" } },
+  render: () => {
+    const legend = document.createElement("contour-legend");
+    legend.setAttribute("title", "Routes");
+    legend.setAttribute("selectable", "");
+    legend.setAttribute("items", JSON.stringify([
+      { key: "walking", label: "Walking", color: "var(--chart-1)" },
+      { key: "cycling", label: "Cycling", color: "var(--chart-2)" },
+    ]));
+    return legend;
+  },
+  play: async ({ canvasElement }) => {
+    const legend = canvasElement.querySelector("contour-legend");
+    const item = legend.querySelector(".c-legend__item");
+    await expect(item).toHaveAttribute("aria-pressed", "true");
+    item.click();
+    await expect(item).toHaveAttribute("aria-pressed", "false");
+  },
+};
+
 export const Reactivity = {
   render: () => {
     const chart = document.createElement("contour-chart");

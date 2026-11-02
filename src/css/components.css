@@ -2232,6 +2232,29 @@
     container: table / inline-size;
   }
 
+
+  .c-data-table {
+    contain: layout;
+  }
+
+  .c-data-table .c-table-wrap {
+    min-block-size: 8rem;
+  }
+
+  .c-error-boundary {
+    display: block;
+    contain: layout;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    background: var(--color-surface-raised);
+  }
+
+  .c-resize-observer {
+    display: block;
+    contain: layout;
+  }
+
   /* Container query: the table drops its optional columns when the table
      itself gets narrow — independent of the viewport. A wide table in a
      narrow sidebar still loses them. */

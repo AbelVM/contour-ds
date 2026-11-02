@@ -16,7 +16,7 @@ tokens:
 
 surfaces: [landing, documentation, dashboard]
 
-components: 214
+components: 217
 
 accessibility:
   conformance: "WCAG 2.2 AA"

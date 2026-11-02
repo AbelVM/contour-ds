@@ -27,7 +27,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `8e1782fd5a0d0718` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `d5e54ff3ab694d19` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -78,7 +78,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `8e1782fd5a0d0718` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `d5e54ff3ab694d19` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -128,7 +128,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `8e1782fd5a0d0718` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `d5e54ff3ab694d19` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -165,7 +165,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `8e1782fd5a0d0718` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `d5e54ff3ab694d19` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -209,7 +209,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `8e1782fd5a0d0718` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `d5e54ff3ab694d19` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -225,6 +225,8 @@ private until v1.0). See `index.json` for the whole set and the shared statement
 ## What the guide says
 
 Exponential easing for entrances, tight linear curves for continuous motion, and a hard stop for anything the user did not ask for. Every animation respects prefers-reduced-motion.
+
+Equivalent contour-* elements are catalogued in §23.
 
 prefers-reduced-motion is an operating-system setting, so it is not the mechanism WCAG 2.2.2 asks for: a reader cannot reach it for one part of one page, and most have never opened it. [data-motion] is the page's own switch. paused holds every animation in its scope on the frame it is on — a spinner stays mid-rotation and still means working. running overrides the media query; leaving the attribute unset gives the choice back to the system.
 
@@ -262,7 +264,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `8e1782fd5a0d0718` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `d5e54ff3ab694d19` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -298,7 +300,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `8e1782fd5a0d0718` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `d5e54ff3ab694d19` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -314,6 +316,8 @@ private until v1.0). See `index.json` for the whole set and the shared statement
 ## What the guide says
 
 Controls sized for the hand and the keyboard. Every input has a visible label, a visible focus state and room for an error message that explains, not scolds. A select keeps its native option list: the platform draws that, so it follows the operating system's theme rather than the page's.
+
+Equivalent contour-* elements are catalogued in §23.
 
 Autocomplete input with keyboard navigation. Type to filter, arrow keys to navigate, Enter to select, Escape to close.
 
@@ -344,7 +348,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `8e1782fd5a0d0718` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `d5e54ff3ab694d19` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -361,9 +365,11 @@ private until v1.0). See `index.json` for the whole set and the shared statement
 
 Badges carry a category. Chips carry a value. Pills carry a state. The waypoint dot carries presence. Four jobs, four shapes — never interchangeable.
 
+Equivalent contour-* elements are catalogued in §23.
+
 ## Blocks documented here
 
-10 block(s). Their facts live in `../contour.components.json`;
+11 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
@@ -373,6 +379,7 @@ starts disagreeing with itself.
 - `.c-chip`
 - `.c-dot`
 - `.c-icon-badge`
+- `.c-kbd`
 - `.c-live-badge`
 - `.c-pill`
 - `.c-section-head`
@@ -380,7 +387,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `8e1782fd5a0d0718` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `d5e54ff3ab694d19` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -396,6 +403,8 @@ private until v1.0). See `index.json` for the whole set and the shared statement
 ## What the guide says
 
 Cards are for things that are independently actionable. Information that only belongs to its group does not get a container — it gets space and a rule.
+
+Equivalent contour-* elements are catalogued in §23.
 
 Route calculation runs in single-digit milliseconds once the tile graph is built.
 
@@ -429,7 +438,7 @@ Scroll container with content-visibility for performance. Virtualization logic i
 
 ## Blocks documented here
 
-18 block(s). Their facts live in `../contour.components.json`;
+19 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
@@ -444,6 +453,7 @@ starts disagreeing with itself.
 - `.c-feature`
 - `.c-footer`
 - `.c-icon-badge`
+- `.c-kbd`
 - `.c-link`
 - `.c-mark`
 - `.c-plate`
@@ -454,7 +464,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `8e1782fd5a0d0718` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `d5e54ff3ab694d19` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -471,6 +481,8 @@ private until v1.0). See `index.json` for the whole set and the shared statement
 
 Tabs for peer views, segmented controls for exclusive choices, a toolbar for map-level actions. Each one announces its state to assistive technology.
 
+Equivalent contour-* elements are catalogued in §23.
+
 The bar that holds the brand, the section links and the actions. It sticks to the top of the page; below 48 rem the links move into a drawer.
 
 Handles high-degree road networks with predictable memory use.
@@ -485,7 +497,7 @@ On this page
 
 ## Blocks documented here
 
-21 block(s). Their facts live in `../contour.components.json`;
+22 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
@@ -498,6 +510,7 @@ starts disagreeing with itself.
 - `.c-disclosure`
 - `.c-header`
 - `.c-icon-badge`
+- `.c-kbd`
 - `.c-mark`
 - `.c-menu`
 - `.c-pagination`
@@ -513,7 +526,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `8e1782fd5a0d0718` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `d5e54ff3ab694d19` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -529,6 +542,8 @@ private until v1.0). See `index.json` for the whole set and the shared statement
 ## What the guide says
 
 Every state the interface can be in has a component: empty, loading, error, done. Each one teaches rather than decorates.
+
+Equivalent contour-* elements are catalogued in §23.
 
 Tile cache is empty
 
@@ -565,7 +580,7 @@ Progress drawn as elevation rings rather than a bar — the system's own shape l
 
 ## Blocks documented here
 
-12 block(s). Their facts live in `../contour.components.json`;
+13 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
@@ -574,6 +589,7 @@ starts disagreeing with itself.
 - `.c-dot`
 - `.c-empty`
 - `.c-icon-badge`
+- `.c-kbd`
 - `.c-loading`
 - `.c-meter`
 - `.c-progress`
@@ -584,7 +600,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `8e1782fd5a0d0718` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `d5e54ff3ab694d19` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -600,6 +616,8 @@ private until v1.0). See `index.json` for the whole set and the shared statement
 ## What the guide says
 
 Dialogs for decisions that need focus, a command palette for the whole system, a drawer for drill-down, and tooltips that appear on interest rather than on click.
+
+Equivalent contour-* elements are catalogued in §23.
 
 Hover or focus the panel to strengthen the grip.
 
@@ -626,7 +644,7 @@ Modal dialog, hint tooltip, command palette and the toast live region. These shi
 
 ## Blocks documented here
 
-17 block(s). Their facts live in `../contour.components.json`;
+18 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
@@ -638,6 +656,7 @@ starts disagreeing with itself.
 - `.c-drawer`
 - `.c-field`
 - `.c-icon-badge`
+- `.c-kbd`
 - `.c-panel`
 - `.c-range`
 - `.c-readout`
@@ -650,7 +669,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `8e1782fd5a0d0718` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `d5e54ff3ab694d19` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -666,6 +685,8 @@ private until v1.0). See `index.json` for the whole set and the shared statement
 ## What the guide says
 
 Numbers are set in mono with tabular figures so columns align. Readouts use dotted rules instead of boxes, which keeps dense data calm — and no two series are ever separated by hue alone.
+
+Equivalent contour-* elements are catalogued in §23.
 
 The friction cost of each surface, and where people end up walking anyway.
 
@@ -733,7 +754,7 @@ A migration aid: the names a consumer may already know, and the Contour class th
 
 ## Blocks documented here
 
-22 block(s). Their facts live in `../contour.components.json`;
+23 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
@@ -749,6 +770,7 @@ starts disagreeing with itself.
 - `.c-heatmap`
 - `.c-icon-badge`
 - `.c-isochrone`
+- `.c-kbd`
 - `.c-kpi`
 - `.c-legend`
 - `.c-panel`
@@ -762,7 +784,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `8e1782fd5a0d0718` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `d5e54ff3ab694d19` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -828,7 +850,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `8e1782fd5a0d0718` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `d5e54ff3ab694d19` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -844,6 +866,8 @@ private until v1.0). See `index.json` for the whole set and the shared statement
 ## What the guide says
 
 The parts that make a manual usable: a callout that holds a rule, a list of steps that holds an order, a diff that holds a change, and a pager that holds the way out.
+
+Equivalent contour-* elements are catalogued in §23.
 
 Five tones. Each carries an icon and a word, so the meaning survives a monochrome print and a reader who cannot tell red from green.
 
@@ -936,7 +960,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `8e1782fd5a0d0718` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `d5e54ff3ab694d19` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1011,7 +1035,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `8e1782fd5a0d0718` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `d5e54ff3ab694d19` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1027,6 +1051,8 @@ private until v1.0). See `index.json` for the whole set and the shared statement
 ## What the guide says
 
 Recurring arrangements, documented so a landing page, a documentation site and a dashboard speak the same visual language.
+
+Equivalent contour-* elements are catalogued in §23.
 
 Run routing without dedicated infrastructure and keep the deployment footprint minimal. The data never leaves the browser.
 
@@ -1058,7 +1084,7 @@ Documentation content.
 
 ## Blocks documented here
 
-18 block(s). Their facts live in `../contour.components.json`;
+19 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
@@ -1070,6 +1096,7 @@ starts disagreeing with itself.
 - `.c-filter-bar`
 - `.c-icon-badge`
 - `.c-input`
+- `.c-kbd`
 - `.c-link`
 - `.c-map-area`
 - `.c-map-slot`
@@ -1083,7 +1110,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `8e1782fd5a0d0718` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `d5e54ff3ab694d19` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1099,6 +1126,8 @@ private until v1.0). See `index.json` for the whole set and the shared statement
 ## What the guide says
 
 An element should look like what it does before anyone touches it. Each interactive class in the system carries a signifier — a shape, a handle, an arrow — that announces its behaviour. Nothing is implied by position alone, and nothing is left to be guessed at.
+
+Equivalent contour-* elements are catalogued in §23.
 
 Button
 
@@ -1212,7 +1241,7 @@ Main content area
 
 ## Blocks documented here
 
-34 block(s). Their facts live in `../contour.components.json`;
+35 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
@@ -1231,6 +1260,7 @@ starts disagreeing with itself.
 - `.c-expandable`
 - `.c-filter-pill`
 - `.c-icon-badge`
+- `.c-kbd`
 - `.c-linkish`
 - `.c-map-footer`
 - `.c-map-panel`
@@ -1260,7 +1290,7 @@ part of the component contract and nothing in an installed package defines them:
 
 ---
 
-Source `index.html` @ `8e1782fd5a0d0718` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `d5e54ff3ab694d19` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1276,6 +1306,8 @@ private until v1.0). See `index.json` for the whole set and the shared statement
 ## What the guide says
 
 Contour covers landing pages, documentation sites and technical dashboards. The components are shared; the composition, density and type scale change. Below are all three, rendered live.
+
+Equivalent contour-* elements are catalogued in §23.
 
 A page whose only job is to earn a click. Generous type, one primary action, and a hero that shows the product rather than describing it. The contour field runs full-bleed behind everything.
 
@@ -1319,7 +1351,7 @@ By route volume
 
 ## Blocks documented here
 
-39 block(s). Their facts live in `../contour.components.json`;
+40 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
@@ -1345,6 +1377,7 @@ starts disagreeing with itself.
 - `.c-filter-pill`
 - `.c-icon-badge`
 - `.c-install`
+- `.c-kbd`
 - `.c-kpi`
 - `.c-landing-features`
 - `.c-landing-hero`
@@ -1372,7 +1405,7 @@ part of the component contract and nothing in an installed package defines them:
 
 ---
 
-Source `index.html` @ `8e1782fd5a0d0718` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `d5e54ff3ab694d19` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1388,6 +1421,8 @@ private until v1.0). See `index.json` for the whole set and the shared statement
 ## What the guide says
 
 Every decision in the system is a custom property. Change one and watch the component respond — this is the same mechanism a consumer would use to retheme. The playground writes into a .c-theme-scope, a subtree that re-derives the brand layer from its own knobs.
+
+Equivalent contour-* elements are catalogued in §23.
 
 The playground writes directly to the scoped container. Nothing here is a special case — it is the same custom-property contract the tokens expose.
 
@@ -1416,7 +1451,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `8e1782fd5a0d0718` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `d5e54ff3ab694d19` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1432,6 +1467,8 @@ private until v1.0). See `index.json` for the whole set and the shared statement
 ## What the guide says
 
 The color-scheme property on :root is the only switch. Every semantic token resolves through light-dark(), so the palette follows the OS by default — and CSS never depends on JavaScript to be readable.
+
+Equivalent contour-* elements are catalogued in §23.
 
 Deeper surfaces, one hairline, no shadows. Designed for long sessions in a dim room and for maps that need to glow against the page.
 
@@ -1490,7 +1527,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `8e1782fd5a0d0718` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `d5e54ff3ab694d19` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1506,6 +1543,8 @@ private until v1.0). See `index.json` for the whole set and the shared statement
 ## What the guide says
 
 One entry point, no runtime. Install from npm for the bundled dist/ deliverables, or link src/css/ds.css straight off a disk.
+
+Equivalent contour-* elements are catalogued in §23.
 
 Optional progressive enhancement. Load contour-wc.js after ds.css to use contour-btn, contour-card, and 320+ other custom elements that generate their scaffolding from attributes. Light-DOM elements (contour-*) use the cascade directly; shadow-DOM elements (contour-shadow-*) ship slots and adopted stylesheets for encapsulation. Interactive blocks (tabs, combobox, tree, menu, segmented, dialog, tag, filter-pill, install, code, pagination) wire their own keyboard behaviour and dispatch contour:* CustomEvents (contour:select, contour:change, contour:remove, contour:copy, contour:page, contour:close, contour:theme-change), so they work standalone. Modifier attributes (variant, size, color) apply to both layers from one list, and attribute changes re-render without losing authored content.
 
@@ -1526,7 +1565,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `8e1782fd5a0d0718` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `d5e54ff3ab694d19` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1565,6 +1604,8 @@ Slots and parts: the contour-shadow-* wrappers adopt the document's sheets and e
 
 Token-name compatibility: consumers migrating from libreship may keep their --ls-* names by aliasing them onto the corresponding --color-* / --chart-* tokens on :root; the system publishes only the Contour names.
 
+The same table contract composes inside a stack, while an error boundary keeps a fallback local to the failed widget.
+
 Every contour:* event the layer dispatches, the payload keys an emission site can carry, and the composed flag. Payload keys are the union of keys the emission sites pass; an empty payload is an event that carries no detail object. Composition here is what the flag is for: a component hosted inside another author's shadow root still surfaces its events to the document, and a consumer reads the same frozen list from window.ContourEvents.
 
 Per-element reference generated from contour.components.json: host-set inputs, sheet-defaulted vars, variants, element count and token count. Regenerate with node tools/gen-api-cards.mjs.
@@ -1591,6 +1632,7 @@ Content behind the scrim.
 
 ## Subsections
 
+- Composition and states
 - Event vocabulary
 - Component API reference
 - Reactivity, counted
@@ -1627,7 +1669,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `8e1782fd5a0d0718` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `d5e54ff3ab694d19` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1663,7 +1705,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `8e1782fd5a0d0718` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `d5e54ff3ab694d19` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1708,5 +1750,5 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `8e1782fd5a0d0718` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `d5e54ff3ab694d19` · last committed 2026-11-02T22:57:29+01:00 · no URL: the project is private until v1.0.
 

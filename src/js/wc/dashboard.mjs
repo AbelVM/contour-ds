@@ -1,4 +1,45 @@
 import { ContourBase, define, formatValue } from './core.mjs';
+
+/**
+ * Dashboard state machine (R13-06).
+ *
+ * A dashboard widget moves through a small, well-defined set of states:
+ *   loading  -> data is being fetched/rendered (show skeleton/spinner)
+ *   empty    -> fetch resolved but no rows/points (show empty state)
+ *   error    -> fetch failed (show error + retry affordance)
+ *   stale    -> data present but older than the freshness threshold
+ *   ready    -> data present and current (default)
+ *
+ * Components that participate:
+ *   - contour-widget-state  : renders the state chrome (loading/empty/error)
+ *     via its `state` attribute; emits `contour:retry` on retry click.
+ *   - contour-brownout      : sheds non-essential chrome at levels 1-3
+ *     (level 3 drops the dial/ring entirely).
+ *   - contour-dash-freshness : live region announcing the last-updated value;
+ *     consumers set `value` to an ISO timestamp and `format`/`locale`.
+ *   - contour-dash-kpi-row  : renders one contour-kpi per item; emits
+ *     `contour:select` with { index } on click.
+ *
+ * Retry/offline handling lives in the consumer (libreship): contour-ds only
+ * provides the affordances (retry button in widget-state, brownout levels,
+ * freshness live region). No data fetching or state management is shipped.
+ *
+ * Slot contracts (R13-17):
+ *   - contour-dash-shell    : light-DOM children become the grid cells; the
+ *     optional `title` attribute generates a contour-dash-toolbar with a
+ *     `.c-dash-toolbar__title`. No shadow slots.
+ *   - contour-dash-toolbar  : light-DOM children are appended after the
+ *     generated title/actions; `.c-dash-toolbar__actions` is generated from
+ *     the `actions` JSON attribute.
+ *   - contour-dash-kpi-row  : light-DOM children are replaced by generated
+ *     contour-kpi elements from the `items` attribute; authored children are
+ *     only kept when no items are provided.
+ *   - contour-dash-freshness : no slots; renders a `.c-dot` + text node.
+ *   - contour-widget-state   : light-DOM children are the fallback content
+ *     shown in the ready state.
+ *   - contour-brownout       : light-DOM children are the content that may be
+ *     shed at higher brownout levels.
+ */
 class ContourDashShell extends ContourBase {
     static get observed() { return ["title"]; }
     static get properties() { return { title: { attribute: "title" } }; }

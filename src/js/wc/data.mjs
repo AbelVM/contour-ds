@@ -610,6 +610,14 @@ class ContourTable extends ContourBase {
     }
   }
   define("contour-table", ContourTable);
+class ContourDataTable extends ContourTable {
+    render() {
+      super.render();
+      this.classList.add("c-data-table");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Data table");
+    }
+  }
+  define("contour-data-table", ContourDataTable);
 class ContourChart extends ContourBase {
     static get updateMode() { return "keyed"; }
     static get observed() { return ["series", "axis", "empty", "loading", "error", "retry", "skeleton", "zoomable", "data-table"]; }
@@ -2458,13 +2466,15 @@ class ContourLegend extends ContourBase {
             const key = typeof it === "string" ? it : (it.key || it.label || String(it));
             const item = document.createElement(selectable ? "button" : "div");
             item.className = "c-legend__item";
-            item.setAttribute("role", "option");
             item.setAttribute("aria-selected", "false");
             item.setAttribute("tabindex", "-1");
             if (selectable) {
               item.type = "button";
+              item.setAttribute("role", "button");
               item.setAttribute("aria-pressed", "true");
               item.dataset.key = key;
+            } else {
+              item.setAttribute("role", "option");
             }
             const sw = document.createElement("span");
             sw.className = "c-legend__swatch";
@@ -3242,4 +3252,44 @@ class ContourContourPlot extends ContourBase {
       }
     }
   }
-  define("contour-contour-plot", ContourContourPlot);
+class ContourErrorBoundary extends ContourBase {
+    static get observed() { return ["fallback", "error"]; }
+    static get properties() { return { fallback: { attribute: "fallback" }, error: { attribute: "error" } }; }
+    render() {
+      this.classList.add("c-error-boundary");
+      this.setAttribute("role", "region");
+      this.setAttribute("aria-live", "polite");
+      const err = this.getAttribute("error");
+      if (err) {
+        this.dataset.state = "error";
+        // Hide authored children, show fallback.
+        Array.from(this.children).forEach((c) => { if (!c.hasAttribute("data-fallback")) c.style.display = "none"; });
+        let fb = this.querySelector("[data-fallback]");
+        if (!fb) {
+          fb = document.createElement("div");
+          fb.className = "c-error-boundary__fallback";
+          fb.dataset.fallback = "";
+          fb.textContent = this.getAttribute("fallback") || "Something went wrong.";
+          this.appendChild(fb);
+        } else {
+          fb.textContent = this.getAttribute("fallback") || fb.textContent || "Something went wrong.";
+        }
+      } else {
+        this.dataset.state = "ready";
+        Array.from(this.children).forEach((c) => { c.style.display = ""; });
+        const fb = this.querySelector("[data-fallback]");
+        if (fb) fb.remove();
+      }
+    }
+    enhance() {
+      if (this._wiredErrorBoundary) return;
+      this._wiredErrorBoundary = true;
+      // Catch errors thrown by descendants during render/event handling.
+      this.addEventListener("error", (e) => {
+        e.stopPropagation();
+        const msg = (e && e.error && e.error.message) ? e.error.message : (e && e.message) ? e.message : "Unknown error";
+        this.setAttribute("error", msg);
+      }, true);
+    }
+  }
+  define("contour-error-boundary", ContourErrorBoundary);

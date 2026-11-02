@@ -1,4 +1,31 @@
-import { ContourBase, define } from './core.mjs';
+class ContourResizeObserver extends ContourBase {
+    static get observed() { return ["debounce"]; }
+    static get properties() { return { debounce: { attribute: "debounce" } }; }
+    render() {
+      this.classList.add("c-resize-observer");
+      this.setAttribute("aria-hidden", "true");
+    }
+    enhance() {
+      if (this._wiredResizeObserver) return;
+      this._wiredResizeObserver = true;
+      if (typeof ResizeObserver !== "function") return;
+      const debounce = parseInt(this.getAttribute("debounce") || "0", 10) || 0;
+      let timer = null;
+      const ro = new ResizeObserver((entries) => {
+        const fire = () => {
+          const e = entries[entries.length - 1];
+          const cr = e && e.contentRect ? e.contentRect : this.getBoundingClientRect();
+          this.dispatchEvent(new CustomEvent("contour:resize", { bubbles: true, composed: true, detail: { width: cr.width, height: cr.height } }));
+        };
+        if (debounce > 0) { clearTimeout(timer); timer = setTimeout(fire, debounce); }
+        else fire();
+      });
+      ro.observe(this);
+      onDispose(this, () => { ro.disconnect(); clearTimeout(timer); });
+    }
+  }
+  define("contour-resize-observer", ContourResizeObserver);
+import { ContourBase, define, onDispose } from './core.mjs';
 import { loadRemote, remoteData, remoteRefresh, renderStates, renderEmpty, wireStates } from './states.mjs';
 class ContourReservedFull extends ContourBase {
     static get observed() { return ["title"]; }
