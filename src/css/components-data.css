@@ -1290,8 +1290,11 @@
     pointer-events: none;
   }
 
-  .c-compass__needle path {
+  .c-compass__needle--n {
     fill: var(--color-danger);
+  }
+  .c-compass__needle--s {
+    fill: var(--color-primary);
   }
 
   .c-compass__label {

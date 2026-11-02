@@ -318,7 +318,7 @@ class ContourLayerPanel extends ContourBase {
             item.appendChild(removeBtn);
             }
             const projSel = document.createElement("select");
-            projSel.className = "c-layer-panel__projection";
+            projSel.className = "c-select c-layer-panel__projection";
             projSel.setAttribute("aria-label", "Projection of " + (name || "layer"));
             ["EPSG:4326","EPSG:3857"].forEach((p) => { const o = document.createElement("option"); o.value = p; o.textContent = p; projSel.appendChild(o); });
             item.appendChild(projSel);
@@ -459,7 +459,7 @@ class ContourTimeSlider extends ContourBase {
       let speeds = null;
       const speedsAttr = this.getAttribute("speeds");
       if (speedsAttr) { try { speeds = JSON.parse(speedsAttr); } catch (e) { speeds = null; } }
-      const speedSel = this.ensure(".c-time-slider__speed", () => { const el = document.createElement("select"); el.className = "c-time-slider__speed"; el.setAttribute("aria-label", this.getAttribute("speed-label") || "Speed"); return el; });
+      const speedSel = this.ensure(".c-time-slider__speed", () => { const el = document.createElement("select"); el.className = "c-select c-time-slider__speed"; el.setAttribute("aria-label", this.getAttribute("speed-label") || "Speed"); return el; });
       speedSel.innerHTML = "";
       const speedList = Array.isArray(speeds) ? speeds : [0.5, 1, 2, 5, 10];
       speedList.forEach((sp) => {
@@ -852,13 +852,20 @@ class ContourCompassFull extends ContourBase {
           el.setAttribute("class", "c-compass__needle");
           el.setAttribute("viewBox", "0 0 40 40");
           el.setAttribute("aria-hidden", "true");
-          const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-          path.setAttribute("d", compassNeedle(20, 20, 16, deg));
-          el.appendChild(path);
+          const pathN = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          pathN.setAttribute("class", "c-compass__needle--n");
+          pathN.setAttribute("d", compassNeedle(20, 20, 16, deg));
+          el.appendChild(pathN);
+          const pathS = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          pathS.setAttribute("class", "c-compass__needle--s");
+          pathS.setAttribute("d", compassNeedle(20, 20, 16, deg + 180));
+          el.appendChild(pathS);
           return el;
         });
-        const path = n.querySelector("path");
-        if (path) path.setAttribute("d", compassNeedle(20, 20, 16, deg));
+        const pathN = n.querySelector(".c-compass__needle--n");
+        if (pathN) pathN.setAttribute("d", compassNeedle(20, 20, 16, deg));
+        const pathS = n.querySelector(".c-compass__needle--s");
+        if (pathS) pathS.setAttribute("d", compassNeedle(20, 20, 16, deg + 180));
       } else {
         const n = this.querySelector("svg.c-compass__needle, .c-compass__needle");
         if (n) n.remove();
@@ -879,8 +886,10 @@ class ContourCompassFull extends ContourBase {
         if (deg === undefined) return;
         const n = this.querySelector(".c-compass__needle");
         if (n) {
-          const path = n.querySelector("path");
-          if (path) path.setAttribute("d", compassNeedle(20, 20, 16, deg));
+          const pathN = n.querySelector(".c-compass__needle--n");
+          if (pathN) pathN.setAttribute("d", compassNeedle(20, 20, 16, deg));
+          const pathS = n.querySelector(".c-compass__needle--s");
+          if (pathS) pathS.setAttribute("d", compassNeedle(20, 20, 16, deg + 180));
         }
         this.dispatchEvent(new CustomEvent("contour:bearing", { bubbles: true, composed: true, detail: { direction: dir, degrees: deg } }));
       };
