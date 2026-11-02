@@ -2219,11 +2219,12 @@ class ContourBivariate extends ContourBase {
     }
   }
   define("contour-bivariate", ContourBivariate);
-class ContourBivariateLegend extends ContourBase {
+class ContourBivariateLegend extends ContourBivariate {
     static get observed() { return ["size", "axis-x", "axis-y", "colors", "selected"]; }
     static get properties() { return { size: { attribute: "size" }, axisX: { attribute: "axis-x" }, axisY: { attribute: "axis-y" }, colors: { attribute: "colors" }, selected: { attribute: "selected" } }; }
     render() {
       this.classList.add("c-bivariate-legend");
+      this.classList.remove("c-bivariate");
       this.setAttribute("role", "group");
       this.setAttribute("aria-label", "Bivariate legend");
       const size = Math.min(8, Math.max(1, parseInt(this.getAttribute("size") || "3", 10) || 3));
