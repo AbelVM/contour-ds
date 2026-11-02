@@ -142,3 +142,33 @@ describe("lifecycle state machine (R12-30)", () => {
     el.remove();
   });
 });
+
+describe("adversarial: malformed attributes (R12-31)", () => {
+  it("sanitizeHtml handles null/undefined/number input", async () => {
+    const mod = await import("../../src/js/wc/core.mjs");
+    expect(mod.sanitizeHtml(null)).toBe("");
+    expect(mod.sanitizeHtml(undefined)).toBe("");
+    expect(typeof mod.sanitizeHtml(42)).toBe("string");
+  });
+
+  it("contourId handles empty and special chars", async () => {
+    const mod = await import("../../src/js/wc/core.mjs");
+    const a = mod.contourId("");
+    const b = mod.contourId("a b/c");
+    expect(typeof a).toBe("string");
+    expect(typeof b).toBe("string");
+    expect(a).not.toBe(b);
+  });
+
+  it("formatValue handles null format and locale", async () => {
+    const mod = await import("../../src/js/wc/core.mjs");
+    expect(mod.formatValue(42, null, null)).toBe(42);
+    expect(mod.formatValue("hello", null, null)).toBe("hello");
+  });
+
+  it("headingTag returns a valid tag", async () => {
+    const mod = await import("../../src/js/wc/core.mjs");
+    const tag = mod.headingTag(document.createElement("div"), "h3");
+    expect(["h1","h2","h3","h4","h5","h6"]).toContain(tag);
+  });
+});
