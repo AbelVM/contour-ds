@@ -1364,14 +1364,15 @@ class ContourDatePicker extends ContourBase {
   define("contour-date-picker", ContourDatePicker);
 
 class ContourRating extends ContourBase {
-    static get observed() { return ["value", "max"]; }
-    static get properties() { return { value: { attribute: "value", type: Number }, max: { attribute: "max", type: Number } }; }
+    static get observed() { return ["value", "max", "color"]; }
+    static get properties() { return { value: { attribute: "value", type: Number }, max: { attribute: "max", type: Number }, color: { attribute: "color" } }; }
     render() {
       this.classList.add("c-rating");
       this.setAttribute("role", "radiogroup");
       this.setAttribute("aria-label", "Rating");
       const max = parseInt(this.getAttribute("max") || "5", 10) || 5;
       const value = parseInt(this.getAttribute("value") || "0", 10) || 0;
+      const color = this.getAttribute("color");
       Array.from(this.querySelectorAll(".c-rating__star")).forEach((n) => n.remove());
       for (let i = 1; i <= max; i++) {
         const star = document.createElement("button");
@@ -1379,7 +1380,7 @@ class ContourRating extends ContourBase {
         star.type = "button";
         star.setAttribute("role", "radio");
         star.setAttribute("aria-checked", String(i === value));
-        star.innerHTML = '<span class="c-rating__swatch' + (i <= value ? ' c-rating__swatch--filled' : '') + '" aria-hidden="true"></span>';
+        star.innerHTML = '<span class="c-rating__swatch' + (i <= value ? ' c-rating__swatch--filled' : '') + '" aria-hidden="true"' + (color && i <= value ? ' style="background:' + color + ';border-color:' + color + '"' : '') + '></span>';
         star.dataset.value = String(i);
         star.setAttribute("aria-label", i + " star" + (i > 1 ? "s" : ""));
         this.appendChild(star);
@@ -1690,9 +1691,9 @@ class ContourNotificationCenter extends ContourBase {
       this.classList.add("c-notification-center");
       const btn = this.ensure(".c-notification-center__trigger", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-notification-center__trigger"; el.type = "button"; el.innerHTML = '<span class="c-notification-center__bullet" aria-hidden="true"></span>'; el.setAttribute("aria-haspopup", "dialog"); el.setAttribute("aria-expanded", "false"); return el; });
       const count = this.getAttribute("count");
-      let badge = this.querySelector(".c-notification-center__badge");
+      let badge = btn.querySelector(".c-notification-center__badge");
       if (count && Number(count) > 0) {
-        if (!badge) { badge = document.createElement("span"); badge.className = "c-notification-center__badge c-badge c-badge--dot"; this.appendChild(badge); }
+        if (!badge) { badge = document.createElement("span"); badge.className = "c-notification-center__badge c-badge c-badge--dot"; btn.appendChild(badge); }
         badge.textContent = count;
       } else if (badge) { badge.remove(); }
       const panel = this.ensure(".c-notification-center__panel", () => { const el = document.createElement("div"); el.className = "c-notification-center__panel"; el.hidden = true; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", "Notifications"); return el; });
