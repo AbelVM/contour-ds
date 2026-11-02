@@ -2759,6 +2759,14 @@
   .c-bivariate-legend__matrix {
     display: grid;
     gap: 2px;
+    max-inline-size: 8rem;
+  }
+  .c-bivariate-legend__axis--x {
+    text-align: center;
+  }
+  .c-bivariate-legend__axis--y {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
   }
   .c-bivariate-legend__cell {
     aspect-ratio: 1;

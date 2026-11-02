@@ -1395,13 +1395,14 @@ class ContourGauge extends ContourBase {
             dial.appendChild(z);
           }
         }
-        // needle
-        const angle = ((num - min) / (max - min || 1)) * 180 - 90;
+        // needle (pivot at dial centre 50,90; 0 -> left, 100 -> right)
+        const ratio = (num - min) / (max - min || 1);
+        const angle = Math.PI * (1 - ratio);
         const needle = document.createElementNS("http://www.w3.org/2000/svg", "line");
         needle.setAttribute("class", "c-gauge__needle needle");
-        needle.setAttribute("x1", "50"); needle.setAttribute("y1", "50");
-        needle.setAttribute("x2", String(50 + 35 * Math.cos(angle * Math.PI / 180)));
-        needle.setAttribute("y2", String(50 + 35 * Math.sin(angle * Math.PI / 180)));
+        needle.setAttribute("x1", "50"); needle.setAttribute("y1", "90");
+        needle.setAttribute("x2", String(50 + 35 * Math.cos(angle)));
+        needle.setAttribute("y2", String(90 - 35 * Math.sin(angle)));
         dial.appendChild(needle);
         const hub = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         hub.setAttribute("class", "c-gauge__hub hub");
@@ -1531,10 +1532,61 @@ class ContourBrush extends ContourBase {
     enhance() {
       if (this._wiredBrush) return;
       this._wiredBrush = true;
+      let dragging = null;
+      const min = () => parseFloat(this.getAttribute("min") || "0");
+      const max = () => parseFloat(this.getAttribute("max") || "100");
+      const toValue = (clientX) => {
+        const r = this.getBoundingClientRect();
+        const ratio = Math.max(0, Math.min(1, (clientX - r.left) / (r.width || 1)));
+        return min() + ratio * (max() - min());
+      };
       this.addEventListener("pointerdown", (e) => {
+        const handle = e.target && e.target.classList && e.target.classList.contains("c-brush__handle") ? e.target : null;
+        dragging = handle ? (handle.classList.contains("c-brush__handle--start") ? "start" : "end") : "move";
+        try { this.setPointerCapture(e.pointerId); } catch (err) {}
         this.dispatchEvent(new CustomEvent("contour:brush-start", { bubbles: true, composed: true, detail: { value: this.getAttribute("start"), start: this.getAttribute("start"), end: this.getAttribute("end") } }));
       });
+      this.addEventListener("pointermove", (e) => {
+        if (!dragging) return;
+        const v = toValue(e.clientX);
+        const mn = min(), mx = max(), range = mx - mn || 1;
+        const sel = this.querySelector(".c-brush__selection");
+        let ns = parseFloat(this.getAttribute("start") || "0");
+        let ne = parseFloat(this.getAttribute("end") || "100");
+        if (dragging === "start") {
+          ns = Math.min(v, ne);
+        } else if (dragging === "end") {
+          ne = Math.max(v, ns);
+        } else {
+          const width = ne - ns;
+          ns = v - width / 2;
+          ne = v + width / 2;
+          if (ns < mn) { ne += mn - ns; ns = mn; }
+          if (ne > mx) { ns -= ne - mx; ne = mx; }
+        }
+        ns = Math.max(mn, Math.min(mx, ns));
+        ne = Math.max(mn, Math.min(mx, ne));
+        // update DOM directly to avoid re-render during drag
+        if (sel) {
+          sel.style.insetInlineStart = (((ns - mn) / range) * 100) + "%";
+          sel.style.inlineSize = (((ne - ns) / range) * 100) + "%";
+        }
+        const sh = this.querySelector(".c-brush__handle--start");
+        const eh = this.querySelector(".c-brush__handle--end");
+        if (sh) sh.style.insetInlineStart = (((ns - mn) / range) * 100) + "%";
+        if (eh) eh.style.insetInlineStart = (((ne - mn) / range) * 100) + "%";
+        // stash pending values
+        this._brushPending = { start: ns, end: ne };
+      });
       this.addEventListener("pointerup", (e) => {
+        if (!dragging) return;
+        dragging = null;
+        const p = this._brushPending;
+        if (p) {
+          this.setAttribute("start", String(p.start));
+          this.setAttribute("end", String(p.end));
+          this._brushPending = null;
+        }
         this.dispatchEvent(new CustomEvent("contour:brush-end", { bubbles: true, composed: true, detail: { value: this.getAttribute("end"), start: this.getAttribute("start"), end: this.getAttribute("end") } }));
       });
       // Keyboard: Enter/Space emits brush-start/brush-end (WC-P1-08).

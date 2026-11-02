@@ -938,7 +938,7 @@ class ContourStylePanel extends ContourBase {
          }
          // Apply/Revert buttons
          const actions = document.createElement("div"); actions.className = "c-style-panel__actions";
-         const applyBtn = document.createElement("button"); applyBtn.type = "button"; applyBtn.className = "c-btn primary"; applyBtn.textContent = "Apply";
+         const applyBtn = document.createElement("button"); applyBtn.type = "button"; applyBtn.className = "c-btn c-btn--primary"; applyBtn.textContent = "Apply";
          const revertBtn = document.createElement("button"); revertBtn.type = "button"; revertBtn.className = "c-btn"; revertBtn.textContent = "Revert";
          actions.appendChild(applyBtn); actions.appendChild(revertBtn);
          body.appendChild(actions);

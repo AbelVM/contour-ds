@@ -18548,7 +18548,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
               <span class="ds-spec__token">contour-donut</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-donut items="[{&quot;label&quot;:&quot;A&quot;,&quot;value&quot;:40},{&quot;label&quot;:&quot;B&quot;,&quot;value&quot;:60}]" value="100"></contour-donut>
+              <contour-donut items="[{&quot;label&quot;:&quot;Walks&quot;,&quot;value&quot;:40,&quot;color&quot;:&quot;var(--color-primary)&quot;},{&quot;label&quot;:&quot;Rides&quot;,&quot;value&quot;:60,&quot;color&quot;:&quot;var(--color-accent)&quot;}]" value="100"></contour-donut>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -18561,7 +18561,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-361">&lt;contour-donut items="[{&amp;quot;label&amp;quot;:&amp;quot;A&amp;quot;,&amp;quot;value&amp;quot;:40},{&amp;quot;label&amp;quot;:&amp;quot;B&amp;quot;,&amp;quot;value&amp;quot;:60}]" value="100"&gt;&lt;/contour-donut&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-361">&lt;contour-donut items="[{&amp;quot;label&amp;quot;:&amp;quot;Walks&amp;quot;,&amp;quot;value&amp;quot;:40,&amp;quot;color&amp;quot;:&amp;quot;var(--color-primary)&amp;quot;},{&amp;quot;label&amp;quot;:&amp;quot;Rides&amp;quot;,&amp;quot;value&amp;quot;:60,&amp;quot;color&amp;quot;:&amp;quot;var(--color-accent)&amp;quot;}]" value="100"&gt;&lt;/contour-donut&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -18668,7 +18668,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
               <span class="ds-spec__token">contour-axis</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-axis></contour-axis>
+              <contour-axis values="[0,25,50,75,100]" orientation="horizontal"></contour-axis>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -18681,7 +18681,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-366">&lt;contour-axis&gt;&lt;/contour-axis&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-366">&lt;contour-axis values="[0,25,50,75,100]" orientation="horizontal"&gt;&lt;/contour-axis&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -18716,7 +18716,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
               <span class="ds-spec__token">contour-stacked-bar</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-stacked-bar segments="[{&quot;label&quot;:&quot;A&quot;,&quot;value&quot;:30},{&quot;label&quot;:&quot;B&quot;,&quot;value&quot;:70}]"></contour-stacked-bar>
+              <contour-stacked-bar segments="[{&quot;label&quot;:&quot;Walks&quot;,&quot;value&quot;:30,&quot;color&quot;:&quot;var(--color-primary)&quot;},{&quot;label&quot;:&quot;Rides&quot;,&quot;value&quot;:70,&quot;color&quot;:&quot;var(--color-accent)&quot;}]"></contour-stacked-bar>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -18729,7 +18729,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-368">&lt;contour-stacked-bar segments="[{&amp;quot;label&amp;quot;:&amp;quot;A&amp;quot;,&amp;quot;value&amp;quot;:30},{&amp;quot;label&amp;quot;:&amp;quot;B&amp;quot;,&amp;quot;value&amp;quot;:70}]"&gt;&lt;/contour-stacked-bar&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-368">&lt;contour-stacked-bar segments="[{&amp;quot;label&amp;quot;:&amp;quot;Walks&amp;quot;,&amp;quot;value&amp;quot;:30,&amp;quot;color&amp;quot;:&amp;quot;var(--color-primary)&amp;quot;},{&amp;quot;label&amp;quot;:&amp;quot;Rides&amp;quot;,&amp;quot;value&amp;quot;:70,&amp;quot;color&amp;quot;:&amp;quot;var(--color-accent)&amp;quot;}]"&gt;&lt;/contour-stacked-bar&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -18822,7 +18822,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
               <span class="ds-spec__token">contour-donut</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-donut id="reactivity-demo-donut" items="[{&quot;label&quot;:&quot;A&quot;,&quot;value&quot;:40},{&quot;label&quot;:&quot;B&quot;,&quot;value&quot;:60}]" value="100"></contour-donut>
+              <contour-donut id="reactivity-demo-donut" items="[{&quot;label&quot;:&quot;Walks&quot;,&quot;value&quot;:40,&quot;color&quot;:&quot;var(--color-primary)&quot;},{&quot;label&quot;:&quot;Rides&quot;,&quot;value&quot;:60,&quot;color&quot;:&quot;var(--color-accent)&quot;}]" value="100"></contour-donut>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -18835,7 +18835,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-373">&lt;contour-donut id="reactivity-demo-donut" items="[{&amp;quot;label&amp;quot;:&amp;quot;A&amp;quot;,&amp;quot;value&amp;quot;:40},{&amp;quot;label&amp;quot;:&amp;quot;B&amp;quot;,&amp;quot;value&amp;quot;:60}]" value="100"&gt;&lt;/contour-donut&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-373">&lt;contour-donut id="reactivity-demo-donut" items="[{&amp;quot;label&amp;quot;:&amp;quot;Walks&amp;quot;,&amp;quot;value&amp;quot;:40,&amp;quot;color&amp;quot;:&amp;quot;var(--color-primary)&amp;quot;},{&amp;quot;label&amp;quot;:&amp;quot;Rides&amp;quot;,&amp;quot;value&amp;quot;:60,&amp;quot;color&amp;quot;:&amp;quot;var(--color-accent)&amp;quot;}]" value="100"&gt;&lt;/contour-donut&gt;</code></pre>
                       </div>
                     </details></div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
@@ -18945,7 +18945,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
               <span class="ds-spec__token">contour-stacked-bar</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-stacked-bar id="reactivity-demo-sb" segments="[{&quot;label&quot;:&quot;A&quot;,&quot;value&quot;:30},{&quot;label&quot;:&quot;B&quot;,&quot;value&quot;:70}]"></contour-stacked-bar>
+              <contour-stacked-bar id="reactivity-demo-sb" segments="[{&quot;label&quot;:&quot;Walks&quot;,&quot;value&quot;:30,&quot;color&quot;:&quot;var(--color-primary)&quot;},{&quot;label&quot;:&quot;Rides&quot;,&quot;value&quot;:70,&quot;color&quot;:&quot;var(--color-accent)&quot;}]"></contour-stacked-bar>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -18958,7 +18958,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-379">&lt;contour-stacked-bar id="reactivity-demo-sb" segments="[{&amp;quot;label&amp;quot;:&amp;quot;A&amp;quot;,&amp;quot;value&amp;quot;:30},{&amp;quot;label&amp;quot;:&amp;quot;B&amp;quot;,&amp;quot;value&amp;quot;:70}]"&gt;&lt;/contour-stacked-bar&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-379">&lt;contour-stacked-bar id="reactivity-demo-sb" segments="[{&amp;quot;label&amp;quot;:&amp;quot;Walks&amp;quot;,&amp;quot;value&amp;quot;:30,&amp;quot;color&amp;quot;:&amp;quot;var(--color-primary)&amp;quot;},{&amp;quot;label&amp;quot;:&amp;quot;Rides&amp;quot;,&amp;quot;value&amp;quot;:70,&amp;quot;color&amp;quot;:&amp;quot;var(--color-accent)&amp;quot;}]"&gt;&lt;/contour-stacked-bar&gt;</code></pre>
                       </div>
                     </details></div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
