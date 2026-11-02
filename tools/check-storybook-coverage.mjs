@@ -104,6 +104,45 @@ for (const f of files) {
     errors.push(`${relative(ROOT, f)} references guide-only class ${c} in a story`);
   }
 
+  // argTypes validation (SB-04b): top-level keys must be observed attributes
+  // of a contour-* tag used in this file.
+  const argTypesIdx = src.indexOf("argTypes");
+  if (argTypesIdx !== -1) {
+    const braceStart = src.indexOf("{", argTypesIdx);
+    if (braceStart !== -1) {
+      let depth = 0;
+      let end = braceStart;
+      for (let i = braceStart; i < src.length; i++) {
+        if (src[i] === "{") depth++;
+        else if (src[i] === "}") { depth--; if (depth === 0) { end = i; break; } }
+      }
+      const block = src.slice(braceStart + 1, end);
+      // top-level keys: identifiers followed by colon at depth 0
+      const keys = [];
+      let d = 0;
+      let i = 0;
+      while (i < block.length) {
+        if (block[i] === "{") { d++; i++; continue; }
+        if (block[i] === "}") { d--; i++; continue; }
+        if (d === 0) {
+          const m = block.slice(i).match(/^\s*(\w+)\s*:/);
+          if (m) { keys.push(m[1]); i += m[0].length; continue; }
+        }
+        i++;
+      }
+      if (keys.length) {
+        const tagsInFile = [...new Set([...src.matchAll(/contour-[a-z][a-z0-9-]*/g)].map((m) => m[0]))];
+        const allowed = new Set();
+        for (const t of tagsInFile) for (const a of (observedByTag[t] || [])) allowed.add(a);
+        for (const k of keys) {
+          if (allowed.size && !allowed.has(k)) {
+            errors.push(`${relative(ROOT, f)} argTypes key "${k}" is not an observed attribute of ${tagsInFile.join(", ")}`);
+          }
+        }
+      }
+    }
+  }
+
   // inventory block existence: every contour- tag must map to a c- block in the inventory
   for (const t of new Set(tagsInFile)) {
     if (t.includes("shadow-")) continue;

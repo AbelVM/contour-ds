@@ -299,6 +299,29 @@ export function inventory() {
 
   const distSize = (p) => (existsSync(join(ROOT, "dist", p)) ? statSync(join(ROOT, "dist", p)).size : null);
 
+  // ---- wc observed attributes -------------------------------------------
+  // Parse src/js/wc/*.mjs to extract the `observed` array for each custom
+  // element, keyed by the CSS block name it corresponds to (contour-btn -> c-btn).
+  // This feeds the component contract's `attributes` field and the Storybook
+  // coverage gate's argTypes validation (SB-04b).
+  const wcObserved = {};
+  const wcDir = join(ROOT, "src", "js", "wc");
+  if (existsSync(wcDir)) {
+    for (const f of readdirSync(wcDir).filter((x) => x.endsWith(".mjs"))) {
+      const src = readFileSync(join(wcDir, f), "utf8");
+      for (const m of src.matchAll(/define\("(contour-[a-z0-9-]+)",\s*(\w+)\)/g)) {
+        const tag = m[1];
+        const cls = m[2];
+        const om = src.match(new RegExp("class\\s+" + cls + "\\s+extends\\s+ContourBase\\s*\\{[^}]*static get observed\\(\\)\\s*\\{\\s*return\\s*\\[([^\\]]*)\\]", "s"));
+        if (om) {
+          const attrs = om[1].split(",").map((a) => a.trim().replace(/^["']|["']$/g, "")).filter(Boolean);
+          const blockName = "c-" + tag.replace("contour-", "");
+          wcObserved[blockName] = attrs;
+        }
+      }
+    }
+  }
+
   return {
     root: ROOT,
     components: {
@@ -323,6 +346,7 @@ export function inventory() {
       noSpecimen,
       specCount: components.length - noSpecimen.length,
     },
+    wcObserved,
     // Every custom property defined in src/css, with the sheets that define it.
     // `{}` rather than a Map so a consumer can JSON-dump it without converting.
     props: Object.fromEntries([...definedProps.entries()].sort((a, b) => a[0].localeCompare(b[0]))),
