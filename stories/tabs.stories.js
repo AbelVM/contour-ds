@@ -5,7 +5,11 @@ export default {
   title: "Contour/Navigation/Tabs",
   tags: ["autodocs"],
   parameters: { contour: { maturity: "complete-widget" } },
-  argTypes: {},
+  argTypes: {
+    tabs: { control: "text" },
+    orientation: { control: "text" },
+    closable: { control: "text" },
+  },
 };
 
 const TABS = JSON.stringify(["Overview", "Details", "Settings"]);

@@ -5,7 +5,11 @@ export default {
   title: "Contour/Feedback/Toast",
   tags: ["autodocs"],
   parameters: { contour: { maturity: "complete-widget" } },
-  argTypes: {},
+  argTypes: {
+    message: { control: "text" },
+    variant: { control: "text" },
+    duration: { control: "text" },
+  },
 };
 
 export const Default = {

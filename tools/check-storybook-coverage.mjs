@@ -36,7 +36,7 @@ for (const f of readdirSync(join(ROOT, "src", "js", "wc"))) {
   const src = readFileSync(join(ROOT, "src", "js", "wc", f), "utf8");
   for (const m of src.matchAll(/define\("(contour-[a-z-]+)",\s*(\w+)\)/g)) {
     const tag = m[1]; const cls = m[2];
-    const om = src.match(new RegExp("class\\s+" + cls + "\\s+extends\\s+ContourBase\\s*\\{[^}]*static get observed\\(\\)\\s*\\{\\s*return\\s*\\[([^\\]]*)\\]", "s"));
+    const om = src.match(new RegExp("class\\s+" + cls + "\\s+extends\\s+ContourBase\\s*\\{[\\s\\S]*?static get observed\\(\\)\\s*\\{\\s*return\\s*\\[([^\\]]*)\\]", "s"));
     if (om) {
       observedByTag[tag] = om[1].split(",").map((a) => a.trim().replace(/^["']|["']$/g, "")).filter(Boolean);
     }
@@ -125,7 +125,7 @@ for (const f of files) {
         if (block[i] === "{") { d++; i++; continue; }
         if (block[i] === "}") { d--; i++; continue; }
         if (d === 0) {
-          const m = block.slice(i).match(/^\s*(\w+)\s*:/);
+          const m = block.slice(i).match(/^\s*([\w-]+)\s*:/);
           if (m) { keys.push(m[1]); i += m[0].length; continue; }
         }
         i++;

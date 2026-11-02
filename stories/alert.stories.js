@@ -5,7 +5,13 @@ export default {
   title: "Contour/Feedback/Alert",
   tags: ["autodocs"],
   parameters: { contour: { maturity: "complete-widget" } },
-  argTypes: {},
+  argTypes: {
+    title: { control: "text" },
+    body: { control: "text" },
+    variant: { control: "text" },
+    icon: { control: "text" },
+    closable: { control: "text" },
+  },
 };
 
 export const Default = {

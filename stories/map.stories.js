@@ -5,7 +5,9 @@ export default {
   title: "Contour/Map/Panel",
   tags: ["autodocs"],
   parameters: { contour: { maturity: "scaffold" } },
-  argTypes: {},
+  argTypes: {
+    title: { control: "text" },
+  },
 };
 
 export const Default = {

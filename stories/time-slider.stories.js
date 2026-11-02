@@ -5,7 +5,9 @@ export default {
   title: "Contour/Map/TimeSlider",
   tags: ["autodocs"],
   parameters: { contour: { maturity: "complete-widget" } },
-  argTypes: {},
+  argTypes: {
+    value: { control: "text" },
+  },
 };
 
 export const Default = {

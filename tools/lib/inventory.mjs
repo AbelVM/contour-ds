@@ -312,7 +312,7 @@ export function inventory() {
       for (const m of src.matchAll(/define\("(contour-[a-z0-9-]+)",\s*(\w+)\)/g)) {
         const tag = m[1];
         const cls = m[2];
-        const om = src.match(new RegExp("class\\s+" + cls + "\\s+extends\\s+ContourBase\\s*\\{[^}]*static get observed\\(\\)\\s*\\{\\s*return\\s*\\[([^\\]]*)\\]", "s"));
+        const om = src.match(new RegExp("class\\s+" + cls + "\\s+extends\\s+ContourBase\\s*\\{[\\s\\S]*?static get observed\\(\\)\\s*\\{\\s*return\\s*\\[([^\\]]*)\\]", "s"));
         if (om) {
           const attrs = om[1].split(",").map((a) => a.trim().replace(/^["']|["']$/g, "")).filter(Boolean);
           const blockName = "c-" + tag.replace("contour-", "");

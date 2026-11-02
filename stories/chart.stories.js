@@ -4,6 +4,11 @@ import "../dist/wc/data.mjs";
 export default {
   title: "Contour/Data/Chart",
   tags: ["autodocs"],
+  argTypes: {
+    series: { control: "text" },
+    axis: { control: "text" },
+    zoomable: { control: "text" },
+  },
   parameters: { contour: { maturity: "complete-widget" } },
 };
 

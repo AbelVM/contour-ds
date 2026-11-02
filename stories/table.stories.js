@@ -5,7 +5,13 @@ export default {
   title: "Contour/Data/Table",
   tags: ["autodocs"],
   parameters: { contour: { maturity: "complete-widget" } },
-  argTypes: {},
+  argTypes: {
+    columns: { control: "text" },
+    rows: { control: "text" },
+    page: { control: "text" },
+    "page-size": { control: "text" },
+    "sort-dir": { control: "text" },
+  },
 };
 
 const COLS = JSON.stringify([{ key: "name", label: "Name" }, { key: "value", label: "Value" }]);

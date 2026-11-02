@@ -5,7 +5,11 @@ export default {
   title: "Contour/Navigation/Command",
   tags: ["autodocs"],
   parameters: { contour: { maturity: "complete-widget" } },
-  argTypes: {},
+  argTypes: {
+    placeholder: { control: "text" },
+    items: { control: "text" },
+    recent: { control: "text" },
+  },
 };
 
 const ITEMS = JSON.stringify([

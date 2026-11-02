@@ -4,6 +4,10 @@ import "../dist/wc/feedback.mjs";
 export default {
   title: "Contour/Overlays/Dialog",
   tags: ["autodocs"],
+  argTypes: {
+    title: { control: "text" },
+    size: { control: "text" },
+  },
   parameters: { contour: { maturity: "complete-widget" } },
 };
 
