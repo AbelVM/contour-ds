@@ -573,7 +573,6 @@ class ContourTextarea extends ContourBase {
     static get properties() { return { placeholder: { attribute: "placeholder" }, required: { attribute: "required", type: Boolean } }; }
     static get formAssociated() { return true; }
     render() {
-      this.classList.add("c-textarea");
       const ta = this.ensure("textarea", () => { const el = document.createElement("textarea"); el.className = "c-textarea"; return el; });
       ta.className = "c-textarea";
       ta.placeholder = this.getAttribute("placeholder") || "";

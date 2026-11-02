@@ -23,6 +23,10 @@ web-component layer. It is not a consumer deliverable and does not replace
 | `npm run check:storybook` | Compose the three above. |
 | `npm run screenshot:baseline` | Capture deterministic screenshots (requires a running Storybook server). |
 
+The MCP addon exposes the local Storybook MCP server at `/mcp` during development.
+It is intended for local agent-assisted story authoring and testing; do not expose
+the development server publicly.
+
 ## Ownership
 
 - **Maintainer:** Contour core maintainers.
@@ -81,12 +85,15 @@ API stabilizes. `agent-rules.json` and `llms*.txt` remain authoritative.
 - A11y status (files): error 0, todo 11, off 0, unset 31.
 - Maturity counts: complete-widget 36, composition 3, primitive 2, scaffold 1.
 - Defined custom elements: 209; inventory blocks: 214.
-- Screenshot baseline: 8 stories × 2 themes × 2 widths = 32 PNGs in `tmp/screenshots/`.
+- Screenshot baseline: 12 stories × 2 themes × 2 widths = 48 PNGs in `tmp/screenshots/`.
 - Protected visual contracts: `contour-forms-input--default` (form validation),
   `contour-overlays-dialog--default` (overlay framing),
   `contour-data-table--default` (narrow-table reflow),
   `contour-data-chart--default` (chart rendering),
   `contour-map-panel--default` (map chrome), and
   `contour-workflows-dashboard--default` (dashboard composition). Each runs at
-  390px and 1440px in light and dark themes with reduced motion.
+  `forms-select--default` and `forms-textarea--default` (form overflow), plus
+  `layerandstyle-layerpanel--default` and `layerandstyle-stylepanel--default`
+  (map control layout). Each runs at 390px and 1440px in light and dark themes
+  with reduced motion.
 - All gates pass: `npm run test:storybook`, `npm run build-storybook`, `npm run check:storybook-coverage`, `npm run check:storybook`, `node tools/doctor.mjs`.

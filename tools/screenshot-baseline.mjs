@@ -16,6 +16,10 @@ const STORIES = [
   "contour-data-table--default",
   "contour-workflows-dashboard--default",
   "contour-map-panel--default",
+  "forms-select--default",
+  "forms-textarea--default",
+  "layerandstyle-layerpanel--default",
+  "layerandstyle-stylepanel--default",
 ];
 
 const browser = await chromium.launch();
@@ -32,11 +36,7 @@ for (const theme of ["light", "dark"]) {
           content: "*, *::before, *::after { animation: none !important; transition: none !important; caret-color: transparent !important; }",
         });
         await page.evaluate(() => document.fonts.ready);
-        await page.evaluate((t) => {
-          document.documentElement.setAttribute("data-theme", t);
-          document.documentElement.style.colorScheme = t;
-          document.documentElement.classList.toggle("dark", t === "dark");
-        }, theme);
+        await page.waitForFunction((t) => document.documentElement.dataset.theme === t, theme);
         await page.waitForTimeout(100);
         await page.screenshot({ path: join(OUT, `${story}-${theme}-${width}.png`), fullPage: false });
       } catch (e) {

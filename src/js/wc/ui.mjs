@@ -1564,6 +1564,7 @@ class ContourHoverCard extends ContourBase {
           trigger.addEventListener("mouseleave", () => { hide(); });
           trigger.addEventListener("focus", show);
           trigger.addEventListener("blur", () => { setTimeout(hide, 100); });
+          onDispose(this, () => { if (showTimer) { clearTimeout(showTimer); showTimer = null; } });
         }
       }
       const keyHandler = (e) => { if (e.key === "Escape" && (this.classList.contains("is-open") || this.matches(":popover-open"))) { e.preventDefault(); if (typeof this.hidePopover === "function") { try { this.hidePopover(); } catch (err) {} } this.classList.remove("is-open"); this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true })); } };

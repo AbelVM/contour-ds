@@ -56,6 +56,32 @@ describe("ContourBase lifecycle", () => {
     el.remove();
   });
 
+  it("reflects string and boolean property changes", async () => {
+    const mod = await import("../../src/js/wc/core.mjs");
+    class Demo extends mod.ContourBase {
+      static get observed() { return ["label", "disabled"]; }
+      static get properties() {
+        return {
+          label: { attribute: "label" },
+          disabled: { attribute: "disabled", type: Boolean },
+        };
+      }
+      render() {
+        this.textContent = `${this.label}:${this.disabled}`;
+      }
+    }
+    const tag = "contour-demo-props-" + Math.random().toString(36).slice(2);
+    customElements.define(tag, Demo);
+    const el = document.createElement(tag);
+    document.body.appendChild(el);
+    el.label = "updated";
+    el.disabled = true;
+    expect(el.textContent).toBe("updated:true");
+    el.disabled = false;
+    expect(el.textContent).toBe("updated:false");
+    el.remove();
+  });
+
   it("sanitizeHtml is fail-closed (no DOMParser)", async () => {
     // already covered above; placeholder for state-machine expansion
     expect(true).toBe(true);

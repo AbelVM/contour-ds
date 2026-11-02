@@ -44,7 +44,7 @@ export const fixtures = {
   "contour-sparkline": { points: JSON.stringify([1, 3, 2, 5, 4, 6]) },
   "contour-stacked-bar": { segments: JSON.stringify([{ label: "Open", value: 64 }, { label: "Review", value: 36 }]) },
   "contour-steps": { steps: JSON.stringify([{ title: "Plan", body: "Choose a route." }, { title: "Review", body: "Confirm the result." }]) },
-  "contour-streaming-chart": { line: "true", dot: "true" },
+  "contour-streaming-chart": { line: "M0 100 30 90 60 95 90 80 120 85 150 70 180 75 210 60 240 65 270 50 300 55", dot: "300 55" },
   "contour-survey": { date: "2026-11-02", instrument: "Pedestrian count" },
   "contour-table": {
     columns: JSON.stringify(["Route", "Volume", "Status"]),
@@ -57,20 +57,12 @@ export const fixtures = {
   "contour-toc": { items: JSON.stringify([{ label: "Overview", href: "#overview" }]) },
 };
 
-const textFixtures = {
-  label: "North loop",
-  title: "Route overview",
-  text: "A representative Contour component.",
-  value: "42",
-};
-
 export function applyFixture(element, tag) {
   const attributes = fixtureArgs(tag);
   for (const [name, value] of Object.entries(attributes)) element.setAttribute(name, value);
-  if (!element.textContent.trim()) element.textContent = "North loop";
   return element;
 }
 
 export function fixtureArgs(tag) {
-  return { ...textFixtures, ...(fixtures[tag] || {}) };
+  return fixtures[tag] || {};
 }

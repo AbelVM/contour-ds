@@ -11,7 +11,7 @@ class ContourPressableFull extends ContourBase {
         this.setAttribute("tabindex", "-1");
       } else {
         this.removeAttribute("aria-disabled");
-        if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
+        if (!this.hasAttribute("tabindex") || this.getAttribute("tabindex") === "-1") this.setAttribute("tabindex", "0");
       }
     }
     enhance() {
@@ -153,7 +153,7 @@ class ContourRowActionFull extends ContourBase {
         this.setAttribute("tabindex", "-1");
       } else {
         this.removeAttribute("aria-disabled");
-        if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
+        if (!this.hasAttribute("tabindex") || this.getAttribute("tabindex") === "-1") this.setAttribute("tabindex", "0");
       }
       const label = this.getAttribute("label");
       if (label && !this.hasChildNodes()) this.textContent = label;
@@ -470,7 +470,7 @@ class ContourBtn extends ContourBase {
         this.setAttribute("tabindex", "-1");
       } else {
         this.removeAttribute("aria-disabled");
-        if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
+        if (!this.hasAttribute("tabindex") || this.getAttribute("tabindex") === "-1") this.setAttribute("tabindex", "0");
       }
       const label = this.getAttribute("label");
       if (label && !this.hasChildNodes()) this.textContent = label;

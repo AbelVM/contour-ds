@@ -320,8 +320,8 @@
         Object.defineProperty(ctor.prototype, name, {
           get() {
             const raw = this.getAttribute(attr);
+            if (type === Boolean) return raw !== null;
             if (raw === null) return spec && spec.default !== undefined ? spec.default : null;
-            if (type === Boolean) return true;
             if (type === Number) { const n = Number(raw); return Number.isNaN(n) ? null : n; }
             return raw;
           },

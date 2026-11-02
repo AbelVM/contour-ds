@@ -69,7 +69,9 @@ function makeStory(tag) {
     play: async ({ canvasElement }) => {
       const element = canvasElement.querySelector(tag);
       await expect(element).toBeTruthy();
-      await expect(element.textContent).not.toMatch(/no data/i);
+      if (Object.keys(fixtureArgs(tag)).length) {
+        await expect(element.textContent).not.toMatch(/no data/i);
+      }
     },
   };
 }

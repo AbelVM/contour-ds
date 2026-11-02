@@ -1,5 +1,6 @@
 import "../dist/contour.css";
 import "../dist/contour-wc.esm.js";
+import iconSprite from "../src/svg/icons.svg?raw";
 
 // Inject the contour stylesheet as a link tag if Vite's CSS injection did not
 // apply (defensive: the import above is the primary path).
@@ -8,6 +9,14 @@ if (typeof document !== "undefined" && !document.querySelector('link[href*="cont
   link.rel = "stylesheet";
   link.href = "/contour.css";
   document.head.appendChild(link);
+}
+
+if (typeof document !== "undefined" && !document.querySelector("#contour-icon-sprite")) {
+  const sprite = document.createElement("div");
+  sprite.id = "contour-icon-sprite";
+  sprite.innerHTML = iconSprite;
+  sprite.setAttribute("aria-hidden", "true");
+  document.body.appendChild(sprite);
 }
 
 /** @type { import('@storybook/web-components-vite').Preview } */
