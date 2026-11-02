@@ -19355,7 +19355,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
               <span class="ds-spec__token">contour-bivariate</span>
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <contour-bivariate id="reactivity-demo-biv" colors="[&quot;#3b82f6&quot;,&quot;#ef4444&quot;,&quot;#22c55e&quot;]"></contour-bivariate>
+              <contour-bivariate id="reactivity-demo-biv" size="3" colors="[&quot;#e8f5e9&quot;,&quot;#a5d6a7&quot;,&quot;#66bb6a&quot;,&quot;#c8e6c9&quot;,&quot;#81c784&quot;,&quot;#43a047&quot;,&quot;#a5d6a7&quot;,&quot;#66bb6a&quot;,&quot;#2e7d32&quot;]"></contour-bivariate>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -19368,11 +19368,11 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-399">&lt;contour-bivariate id="reactivity-demo-biv" colors="[&amp;quot;#3b82f6&amp;quot;,&amp;quot;#ef4444&amp;quot;,&amp;quot;#22c55e&amp;quot;]"&gt;&lt;/contour-bivariate&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-399">&lt;contour-bivariate id="reactivity-demo-biv" size="3" colors="[&amp;quot;#e8f5e9&amp;quot;,&amp;quot;#a5d6a7&amp;quot;,&amp;quot;#66bb6a&amp;quot;,&amp;quot;#c8e6c9&amp;quot;,&amp;quot;#81c784&amp;quot;,&amp;quot;#43a047&amp;quot;,&amp;quot;#a5d6a7&amp;quot;,&amp;quot;#66bb6a&amp;quot;,&amp;quot;#2e7d32&amp;quot;]"&gt;&lt;/contour-bivariate&gt;</code></pre>
                       </div>
                     </details></div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <button class="c-btn c-btn--sm" type="button" onclick="document.getElementById('reactivity-demo-biv').setAttribute('colors', JSON.stringify(['#'+Math.floor(Math.random()*16777215).toString(16),'#'+Math.floor(Math.random()*16777215).toString(16),'#'+Math.floor(Math.random()*16777215).toString(16)]))">Randomise colors</button>
+              <button class="c-btn c-btn--sm" type="button" onclick="document.getElementById('reactivity-demo-biv').setAttribute('colors', JSON.stringify(Array.from({length:9},()=>'#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0'))))">Randomise colors</button>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -19385,7 +19385,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-400">&lt;button class="c-btn c-btn--sm" type="button" onclick="document.getElementById('reactivity-demo-biv').setAttribute('colors', JSON.stringify(['#'+Math.floor(Math.random()*16777215).toString(16),'#'+Math.floor(Math.random()*16777215).toString(16),'#'+Math.floor(Math.random()*16777215).toString(16)]))"&gt;Randomise colors&lt;/button&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-400">&lt;button class="c-btn c-btn--sm" type="button" onclick="document.getElementById('reactivity-demo-biv').setAttribute('colors', JSON.stringify(Array.from({length:9},()=>'#'+Math.floor(Math.random()*16777215).toString(16).padStart(6,'0'))))"&gt;Randomise colors&lt;/button&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -19413,7 +19413,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                       </div>
                     </details></div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
-              <button class="c-btn c-btn--sm" type="button" onclick="document.getElementById('reactivity-demo-compass').setAttribute('heading', String(Math.round(Math.random()*360)))">Randomise heading</button>
+              <button class="c-btn c-btn--sm" type="button" onclick="document.getElementById('reactivity-demo-compass').setAttribute('needle', String(Math.round(Math.random()*360)))">Randomise heading</button>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -19426,7 +19426,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-402">&lt;button class="c-btn c-btn--sm" type="button" onclick="document.getElementById('reactivity-demo-compass').setAttribute('heading', String(Math.round(Math.random()*360)))"&gt;Randomise heading&lt;/button&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-402">&lt;button class="c-btn c-btn--sm" type="button" onclick="document.getElementById('reactivity-demo-compass').setAttribute('needle', String(Math.round(Math.random()*360)))"&gt;Randomise heading&lt;/button&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
