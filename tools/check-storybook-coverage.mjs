@@ -29,6 +29,20 @@ const registrySrc = existsSync(WC_DIR)
   : "";
 const definedTags = new Set([...registrySrc.matchAll(/define\("([^"]+)"\s*,/g)].map((m) => m[1]));
 
+// observed attributes per tag, parsed from src/js/wc/*.mjs
+const observedByTag = {};
+for (const f of readdirSync(join(ROOT, "src", "js", "wc"))) {
+  if (!f.endsWith(".mjs")) continue;
+  const src = readFileSync(join(ROOT, "src", "js", "wc", f), "utf8");
+  for (const m of src.matchAll(/define\("(contour-[a-z-]+)",\s*(\w+)\)/g)) {
+    const tag = m[1]; const cls = m[2];
+    const om = src.match(new RegExp("class\\s+" + cls + "\\s+extends\\s+ContourBase\\s*\\{[^}]*static get observed\\(\\)\\s*\\{\\s*return\\s*\\[([^\\]]*)\\]", "s"));
+    if (om) {
+      observedByTag[tag] = om[1].split(",").map((a) => a.trim().replace(/^["']|["']$/g, "")).filter(Boolean);
+    }
+  }
+}
+
 // inventory
 let inventoryBlocks = [];
 if (existsSync(INVENTORY)) {
@@ -60,6 +74,8 @@ for (const f of files) {
   maturityCounts[maturity] = (maturityCounts[maturity] || 0) + 1;
   const ALLOWED_MATURITY = new Set(["primitive", "scaffold", "complete-widget", "composition", "unspecified"]);
   if (!ALLOWED_MATURITY.has(maturity)) errors.push(`${relative(ROOT, f)} uses unknown maturity: ${maturity}`);
+
+
 
   // a11y status for this file
   let a11y = "error";
