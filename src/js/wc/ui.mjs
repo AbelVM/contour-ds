@@ -1,5 +1,10 @@
 import { ContourBase, define, contourId, onDispose } from './core.mjs';
 import { wireRemovable } from './behaviours.mjs';
+/**
+ * Avatar: a circular avatar with initials (from `name`) or an image (`src`),
+ * optional size/variant modifiers and a status dot. Attributes: `name`, `size`,
+ * `variant`, `src`, `status`.
+ */
 class ContourAvatar extends ContourBase {
     static get observed() { return ["name", "size", "variant", "src", "status"]; }
     static get properties() { return { name: { attribute: "name" }, size: { attribute: "size" }, variant: { attribute: "variant" }, src: { attribute: "src" }, status: { attribute: "status" } }; }
@@ -42,6 +47,10 @@ class ContourAvatar extends ContourBase {
     }
   }
   define("contour-avatar", ContourAvatar);
+/**
+ * Badge: a small status label with variant/size modifiers and an optional
+ * removable (×) button. Attributes: `variant`, `label`, `size`, `removable`.
+ */
 class ContourBadgeFull extends ContourBase {
     static get observed() { return ["variant", "label", "size", "removable"]; }
     static get properties() { return { variant: { attribute: "variant" }, label: { attribute: "label" }, size: { attribute: "size" }, removable: { attribute: "removable", type: Boolean } }; }
@@ -79,6 +88,10 @@ class ContourBadgeFull extends ContourBase {
     }
   }
   define("contour-badge", ContourBadgeFull);
+/**
+ * Chip: a compact status pill with `key`/`value` text and a variant modifier.
+ * Attributes: `variant`, `key`, `value`.
+ */
 class ContourChipFull extends ContourBase {
     static get observed() { return ["variant", "key", "value"]; }
     static get properties() { return { variant: { attribute: "variant" }, key: { attribute: "key" }, value: { attribute: "value" } }; }
@@ -107,6 +120,10 @@ class ContourChipFull extends ContourBase {
     }
   }
   define("contour-chip", ContourChipFull);
+/**
+ * Tag: a removable status label with a variant modifier. Attributes: `label`,
+ * `removable`, `variant`.
+ */
 class ContourTag extends ContourBase {
     static get observed() { return ["label", "removable", "variant"]; }
     static get properties() { return { label: { attribute: "label" }, removable: { attribute: "removable", type: Boolean }, variant: { attribute: "variant" } }; }
@@ -148,6 +165,10 @@ class ContourTag extends ContourBase {
     }
   }
   define("contour-tag", ContourTag);
+/**
+ * Dot: a small status indicator with variant and live states. Attributes:
+ * `variant`, `live`.
+ */
 class ContourDot extends ContourBase {
     static get observed() { return ["variant", "live"]; }
     static get properties() { return { variant: { attribute: "variant" }, live: { attribute: "live", type: Boolean } }; }
@@ -162,6 +183,10 @@ class ContourDot extends ContourBase {
     }
   }
   define("contour-dot", ContourDot);
+/**
+ * Pill: a rounded status label with live state and variant modifier.
+ * Attributes: `label`, `live`, `variant`.
+ */
 class ContourPill extends ContourBase {
     static get observed() { return ["label", "live", "variant"]; }
     static get properties() { return { label: { attribute: "label" }, live: { attribute: "live", type: Boolean }, variant: { attribute: "variant" } }; }
@@ -179,6 +204,9 @@ class ContourPill extends ContourBase {
     }
   }
   define("contour-pill", ContourPill);
+/**
+ * Kbd: a keyboard key display. Attribute: `key`.
+ */
 class ContourKbd extends ContourBase {
     static get observed() { return ["key"]; }
     static get properties() { return { key: { attribute: "key" } }; }
@@ -191,6 +219,9 @@ class ContourKbd extends ContourBase {
     }
   }
   define("contour-kbd", ContourKbd);
+/**
+ * Spinner: a loading indicator with size modifier. Attribute: `size`.
+ */
 class ContourSpinner extends ContourBase {
     static get observed() { return ["size"]; }
     static get properties() { return { size: { attribute: "size" } }; }
@@ -204,6 +235,10 @@ class ContourSpinner extends ContourBase {
     }
   }
   define("contour-spinner", ContourSpinner);
+/**
+ * Skeleton: a loading placeholder with size and shimmer options. Attributes:
+ * `size`, `shimmer`.
+ */
 class ContourSkeleton extends ContourBase {
     static get observed() { return ["size", "shimmer"]; }
     static get properties() { return { size: { attribute: "size" }, shimmer: { attribute: "shimmer", type: Boolean } }; }
@@ -222,6 +257,10 @@ class ContourSkeleton extends ContourBase {
     }
   }
   define("contour-skeleton", ContourSkeleton);
+/**
+ * Tooltip: a popover-triggered tooltip with anchor association, delay, and
+ * viewport flip. Attributes: `text`, `anchor`, `delay`, `trigger`.
+ */
 class ContourTooltip extends ContourBase {
     static get observed() { return ["text", "anchor", "delay", "trigger"]; }
     static get properties() { return { text: { attribute: "text" }, anchor: { attribute: "anchor" }, delay: { attribute: "delay", type: Number }, trigger: { attribute: "trigger" } }; }
@@ -328,6 +367,11 @@ class ContourTooltip extends ContourBase {
     }
   }
   define("contour-tooltip", ContourTooltip);
+/**
+ * Progress: a determinate or indeterminate progress bar with value, min/max,
+ * paused and pausable states. Attributes: `value`, `label`, `min`, `max`,
+ * `paused`, `pausable`.
+ */
 class ContourProgress extends ContourBase {
     static get observed() { return ["value", "label", "min", "max", "paused", "pausable"]; }
     static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" }, min: { attribute: "min" }, max: { attribute: "max" }, paused: { attribute: "paused", type: Boolean }, pausable: { attribute: "pausable", type: Boolean } }; }
@@ -388,12 +432,18 @@ class ContourProgress extends ContourBase {
     }
   }
   define("contour-progress", ContourProgress);
+/**
+ * Mark: a highlighted text marker. No attributes.
+ */
 class ContourMark extends ContourBase {
     render() {
       this.classList.add("c-mark");
     }
   }
   define("contour-mark", ContourMark);
+/**
+ * Loading: a spinner wrapped in a container. No attributes.
+ */
 class ContourLoading extends ContourBase {
     render() {
       this.classList.add("c-loading");
@@ -401,6 +451,10 @@ class ContourLoading extends ContourBase {
     }
   }
   define("contour-loading", ContourLoading);
+/**
+ * Elevation: a single step of the elevation ramp (`.c-elevation` carries
+ * `--shadow-md`). Raises the surface it is given. No attributes.
+ */
 class ContourElevation extends ContourBase {
     render() {
       // The block is one step of the ramp, not the ramp: .c-elevation carries
@@ -412,6 +466,10 @@ class ContourElevation extends ContourBase {
     }
   }
   define("contour-elevation", ContourElevation);
+/**
+ * VersionBanner: a dismissible info banner with message, link and href.
+ * Attributes: `message`, `link`, `href`, `dismissible`.
+ */
 class ContourVersionBannerFull extends ContourBase {
     static get observed() { return ["message", "link", "href", "dismissible"]; }
     static get properties() { return { message: { attribute: "message" }, link: { attribute: "link" }, href: { attribute: "href" }, dismissible: { attribute: "dismissible", type: Boolean } }; }
@@ -460,6 +518,10 @@ class ContourVersionBannerFull extends ContourBase {
     }
   }
   define("contour-version-banner", ContourVersionBannerFull);
+/**
+ * Banner: a simple message banner with a variant modifier. Attributes:
+ * `message`, `variant`.
+ */
 class ContourBanner extends ContourBase {
     static get observed() { return ["message", "variant"]; }
     static get properties() { return { message: { attribute: "message" }, variant: { attribute: "variant" } }; }
@@ -475,6 +537,10 @@ class ContourBanner extends ContourBase {
     }
   }
   define("contour-banner", ContourBanner);
+/**
+ * FilterPill: a key/value filter chip with an optional remove button.
+ * Attributes: `key`, `value`, `removable`.
+ */
 class ContourFilterPill extends ContourBase {
     static get observed() { return ["key", "value", "removable"]; }
     static get properties() { return { key: { attribute: "key" }, value: { attribute: "value" }, removable: { attribute: "removable", type: Boolean } }; }
@@ -518,6 +584,10 @@ class ContourFilterPill extends ContourBase {
     }
   }
   define("contour-filter-pill", ContourFilterPill);
+/**
+ * Datamark: a data value display with optional unit and label. Attributes:
+ * `value`, `unit`, `label`.
+ */
 class ContourDatamark extends ContourBase {
     static get observed() { return ["value", "unit", "label"]; }
     static get properties() { return { value: { attribute: "value" }, unit: { attribute: "unit" }, label: { attribute: "label" } }; }
@@ -542,6 +612,9 @@ class ContourDatamark extends ContourBase {
     }
   }
   define("contour-datamark", ContourDatamark);
+/**
+ * DestructiveHint: a text hint for destructive actions. Attribute: `text`.
+ */
 class ContourDestructiveHint extends ContourBase {
     static get observed() { return ["text"]; }
     static get properties() { return { text: { attribute: "text" } }; }
@@ -552,6 +625,10 @@ class ContourDestructiveHint extends ContourBase {
     }
   }
   define("contour-destructive-hint", ContourDestructiveHint);
+/**
+ * IconBadge: an icon from the sprite (i-* convention) with a warning if the
+ * name doesn't match. Attribute: `icon`.
+ */
 class ContourIconBadge extends ContourBase {
     static get observed() { return ["icon"]; }
     static get properties() { return { icon: { attribute: "icon" } }; }
@@ -585,6 +662,10 @@ class ContourIconBadge extends ContourBase {
     }
   }
   define("contour-icon-badge", ContourIconBadge);
+/**
+ * LiveBadge: a connection status badge with state/live modifiers and label.
+ * Attributes: `label`, `state`, `live`.
+ */
 class ContourLiveBadge extends ContourBase {
     static get observed() { return ["label", "state", "live"]; }
     static get properties() { return { label: { attribute: "label" }, state: { attribute: "state" }, live: { attribute: "live", type: Boolean } }; }
@@ -604,6 +685,9 @@ class ContourLiveBadge extends ContourBase {
   }
   define("contour-live-badge", ContourLiveBadge);
 
+/**
+ * SkeletonGroup: a group of N skeleton placeholders. Attribute: `count`.
+ */
 class ContourSkeletonGroup extends ContourBase {
     static get observed() { return ["count"]; }
     static get properties() { return { count: { attribute: "count", type: Number } }; }
@@ -620,6 +704,11 @@ class ContourSkeletonGroup extends ContourBase {
   }
   define("contour-skeleton-group", ContourSkeletonGroup);
 
+/**
+ * MapPopup: a map popup dialog with title, content, and optional cluster
+ * badge (cluster-count / cluster-expanded). Attributes: `title`, `content`,
+ * `cluster-count`, `cluster-expanded`.
+ */
 class ContourMapPopup extends ContourBase {
   static get observed() { return ["title", "content", "cluster-count", "cluster-expanded"]; }
   static get properties() { return { title: { attribute: "title" }, content: { attribute: "content" }, "cluster-count": { attribute: "cluster-count", type: Number }, "cluster-expanded": { attribute: "cluster-expanded", type: Boolean } }; }
@@ -672,6 +761,11 @@ class ContourMapPopup extends ContourBase {
   }
   define("contour-map-popup", ContourMapPopup);
 
+/**
+ * AnimationControls: a media control toolbar with play/pause, speed, scrubber
+ * and caption. Attributes: `playing`, `speed`, `progress`, `min`, `max`,
+ * `caption`, `show-thumb`, `show-thumb-caption`.
+ */
 class ContourAnimationControls extends ContourBase {
     static get observed() { return ["playing", "speed", "progress", "min", "max", "caption", "show-thumb", "show-thumb-caption"]; }
     static get properties() { return { playing: { attribute: "playing", type: Boolean }, speed: { attribute: "speed" }, progress: { attribute: "progress" }, min: { attribute: "min" }, max: { attribute: "max" } }; }
@@ -768,6 +862,10 @@ class ContourAnimationControls extends ContourBase {
   }
   define("contour-animation-controls", ContourAnimationControls);
 
+/**
+ * Dropdown: a trigger button with a menu of items from JSON `items` or slotted
+ * `.c-menu__item` children. Attributes: `label`, `items`.
+ */
 class ContourDropdown extends ContourBase {
     static get observed() { return ["label", "items"]; }
     static get properties() { return { label: { attribute: "label" }, items: { attribute: "items" } }; }
@@ -855,6 +953,10 @@ class ContourDropdown extends ContourBase {
   }
   define("contour-dropdown", ContourDropdown);
 
+/**
+ * Annotation: a positioned note with label and x/y coordinates. Attributes:
+ * `label`, `x`, `y`.
+ */
 class ContourAnnotation extends ContourBase {
     static get observed() { return ["label", "x", "y"]; }
     static get properties() { return { label: { attribute: "label" }, x: { attribute: "x" }, y: { attribute: "y" } }; }
@@ -875,6 +977,10 @@ class ContourAnnotation extends ContourBase {
   }
   define("contour-annotation", ContourAnnotation);
 
+/**
+ * Style Switcher: web component wrapper.
+ * Attributes: `items`, `value`.
+ */
 class ContourStyleSwitcher extends ContourBase {
     static get observed() { return ["items", "value"]; }
     static get properties() { return { items: { attribute: "items" }, value: { attribute: "value" } }; }
@@ -912,6 +1018,10 @@ class ContourStyleSwitcher extends ContourBase {
   }
   define("contour-style-switcher", ContourStyleSwitcher);
 
+/**
+ * Style Panel: web component wrapper.
+ * Attributes: `title`, `layers`, `layer`, `single`, `classification`, `palette`, `breaks`, `opacity`, `n`, `colors`, `property`.
+ */
 class ContourStylePanel extends ContourBase {
     static get observed() { return ["title", "layers", "layer", "single", "classification", "palette", "breaks", "opacity", "n", "colors", "property"]; }
     static get properties() { return { title: { attribute: "title" }, layers: { attribute: "layers" }, classification: { attribute: "classification" }, palette: { attribute: "palette" }, breaks: { attribute: "breaks" }, opacity: { attribute: "opacity" } }; }
@@ -1096,6 +1206,10 @@ class ContourStylePanel extends ContourBase {
   }
   define("contour-style-panel", ContourStylePanel);
 
+/**
+ * Responsive Content: web component wrapper.
+ * Attributes: `breakpoint`.
+ */
 class ContourResponsiveContent extends ContourBase {
     static get observed() { return ["breakpoint"]; }
     static get properties() { return { breakpoint: { attribute: "breakpoint" } }; }
@@ -1107,6 +1221,10 @@ class ContourResponsiveContent extends ContourBase {
   }
   define("contour-responsive-content", ContourResponsiveContent);
 
+/**
+ * Avatar Group: web component wrapper.
+ * Attributes: `items`, `max`.
+ */
 class ContourAvatarGroup extends ContourBase {
     static get observed() { return ["items", "max"]; }
     static get properties() { return { items: { attribute: "items" }, max: { attribute: "max", type: Number } }; }
@@ -1139,6 +1257,10 @@ class ContourAvatarGroup extends ContourBase {
   }
   define("contour-avatar-group", ContourAvatarGroup);
 
+/**
+ * Divider: web component wrapper.
+ * Attributes: `label`, `orientation`.
+ */
 class ContourDivider extends ContourBase {
     static get observed() { return ["label", "orientation"]; }
     static get properties() { return { label: { attribute: "label" }, orientation: { attribute: "orientation" } }; }
@@ -1155,6 +1277,10 @@ class ContourDivider extends ContourBase {
   }
   define("contour-divider", ContourDivider);
 
+/**
+ * Status Light: web component wrapper.
+ * Attributes: `status`, `label`.
+ */
 class ContourStatusLight extends ContourBase {
     static get observed() { return ["status", "label"]; }
     static get properties() { return { status: { attribute: "status" }, label: { attribute: "label" } }; }
@@ -1171,6 +1297,10 @@ class ContourStatusLight extends ContourBase {
   }
   define("contour-status-light", ContourStatusLight);
 
+/**
+ * Split Button: web component wrapper.
+ * Attributes: `label`, `menu`.
+ */
 class ContourSplitButton extends ContourBase {
     static get observed() { return ["label", "menu"]; }
     static get properties() { return { label: { attribute: "label" }, menu: { attribute: "menu" } }; }
@@ -1238,6 +1368,10 @@ class ContourSplitButton extends ContourBase {
   }
   define("contour-split-button", ContourSplitButton);
 
+/**
+ * Palette Editor: web component wrapper.
+ * Attributes: `colors`.
+ */
 class ContourPaletteEditor extends ContourBase {
     static get observed() { return ["colors"]; }
     static get properties() { return { colors: { attribute: "colors" } }; }
@@ -1280,6 +1414,10 @@ class ContourPaletteEditor extends ContourBase {
   }
   define("contour-palette-editor", ContourPaletteEditor);
 
+/**
+ * Date Range: web component wrapper.
+ * Attributes: `start`, `end`, `label`, `time`, `min`, `max`, `locale`.
+ */
 class ContourDateRange extends ContourBase {
   static get observed() { return ["start", "end", "label", "time", "min", "max", "locale"]; }
   static get properties() { return { start: { attribute: "start" }, end: { attribute: "end" }, label: { attribute: "label" }, time: { attribute: "time", type: Boolean }, min: { attribute: "min" }, max: { attribute: "max" }, locale: { attribute: "locale" } }; }
@@ -1319,6 +1457,10 @@ class ContourDateRange extends ContourBase {
   }
   define("contour-date-range", ContourDateRange);
 
+/**
+ * Shortcut: web component wrapper.
+ * Attributes: `key`, `label`.
+ */
 class ContourShortcut extends ContourBase {
     static get observed() { return ["key", "label"]; }
     static get properties() { return { key: { attribute: "key" }, label: { attribute: "label" } }; }
@@ -1353,6 +1495,10 @@ class ContourShortcut extends ContourBase {
   }
   define("contour-shortcut", ContourShortcut);
 
+/**
+ * Popover: web component wrapper.
+ * Attributes: `title`, `content`.
+ */
 class ContourPopover extends ContourBase {
     static get observed() { return ["title", "content"]; }
     static get properties() { return { title: { attribute: "title" }, content: { attribute: "content" } }; }
@@ -1412,6 +1558,10 @@ class ContourPopover extends ContourBase {
   }
   define("contour-popover", ContourPopover);
 
+/**
+ * Date Picker: web component wrapper.
+ * Attributes: `value`, `range`, `range-start`, `range-end`, `label`, `disabled`, `error`, `help`, `time`, `min`, `max`, `locale`.
+ */
 class ContourDatePicker extends ContourBase {
   static get observed() { return ["value", "range", "range-start", "range-end", "label", "disabled", "error", "help", "time", "min", "max", "locale"]; }
   static get properties() { return { value: { attribute: "value" }, range: { attribute: "range", type: Boolean }, rangeStart: { attribute: "range-start" }, rangeEnd: { attribute: "range-end" }, label: { attribute: "label" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" }, time: { attribute: "time", type: Boolean }, min: { attribute: "min" }, max: { attribute: "max" }, locale: { attribute: "locale" } }; }
@@ -1471,6 +1621,10 @@ class ContourDatePicker extends ContourBase {
   }
   define("contour-date-picker", ContourDatePicker);
 
+/**
+ * Rating: web component wrapper.
+ * Attributes: `value`, `max`, `color`.
+ */
 class ContourRating extends ContourBase {
     static get observed() { return ["value", "max", "color"]; }
     static get properties() { return { value: { attribute: "value", type: Number }, max: { attribute: "max", type: Number }, color: { attribute: "color" } }; }
@@ -1528,6 +1682,10 @@ class ContourRating extends ContourBase {
   }
   define("contour-rating", ContourRating);
 
+/**
+ * Time Picker: web component wrapper.
+ * Attributes: `value`, `label`, `disabled`, `error`, `help`.
+ */
 class ContourTimePicker extends ContourBase {
     static get observed() { return ["value", "label", "disabled", "error", "help"]; }
     static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" } }; }
@@ -1567,6 +1725,10 @@ class ContourTimePicker extends ContourBase {
   }
   define("contour-time-picker", ContourTimePicker);
 
+/**
+ * Color Picker: web component wrapper.
+ * Attributes: `value`, `label`, `disabled`, `error`, `help`, `alpha`, `presets`.
+ */
 class ContourColorPicker extends ContourBase {
     static get observed() { return ["value", "label", "disabled", "error", "help", "alpha", "presets"]; }
     static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" }, alpha: { attribute: "alpha", type: Boolean }, presets: { attribute: "presets" } }; }
@@ -1678,6 +1840,10 @@ class ContourColorPicker extends ContourBase {
   }
   define("contour-color-picker", ContourColorPicker);
 
+/**
+ * Number Field: web component wrapper.
+ * Attributes: `value`, `min`, `max`, `step`, `label`, `disabled`, `error`, `help`.
+ */
 class ContourNumberField extends ContourBase {
     static get observed() { return ["value", "min", "max", "step", "label", "disabled", "error", "help"]; }
     static get properties() { return { value: { attribute: "value" }, min: { attribute: "min" }, max: { attribute: "max" }, step: { attribute: "step" }, label: { attribute: "label" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" } }; }
@@ -1741,6 +1907,10 @@ class ContourNumberField extends ContourBase {
   }
   define("contour-number-field", ContourNumberField);
 
+/**
+ * Hover Card: web component wrapper.
+ * Attributes: `title`, `content`, `anchor`.
+ */
 class ContourHoverCard extends ContourBase {
     static get observed() { return ["title", "content", "anchor"]; }
     static get properties() { return { title: { attribute: "title" }, content: { attribute: "content" }, anchor: { attribute: "anchor" } }; }
@@ -1787,6 +1957,10 @@ class ContourHoverCard extends ContourBase {
   }
   define("contour-hover-card", ContourHoverCard);
 
+/**
+ * Context Menu: web component wrapper.
+ * Attributes: `items`.
+ */
 class ContourContextMenu extends ContourBase {
     static get observed() { return ["items"]; }
     static get properties() { return { items: { attribute: "items" } }; }
@@ -1839,6 +2013,10 @@ class ContourContextMenu extends ContourBase {
   }
   define("contour-context-menu", ContourContextMenu);
 
+/**
+ * Fab: web component wrapper.
+ * Attributes: `label`, `icon`.
+ */
 class ContourFab extends ContourBase {
     static get observed() { return ["label", "icon"]; }
     static get properties() { return { label: { attribute: "label" }, icon: { attribute: "icon" } }; }
@@ -1864,6 +2042,10 @@ class ContourFab extends ContourBase {
   }
   define("contour-fab", ContourFab);
 
+/**
+ * File Upload: web component wrapper.
+ * Attributes: `label`, `accept`, `multiple`, `progress`.
+ */
 class ContourFileUpload extends ContourBase {
     static get observed() { return ["label", "accept", "multiple", "progress"]; }
     static get properties() { return { label: { attribute: "label" }, accept: { attribute: "accept" }, multiple: { attribute: "multiple", type: Boolean }, progress: { attribute: "progress" } }; }
@@ -1926,6 +2108,10 @@ class ContourFileUpload extends ContourBase {
   }
   define("contour-file-upload", ContourFileUpload);
 
+/**
+ * Notification Center: web component wrapper.
+ * Attributes: `count`, `items`, `color`.
+ */
 class ContourNotificationCenter extends ContourBase {
     static get observed() { return ["count", "items", "color"]; }
     static get properties() { return { count: { attribute: "count" }, items: { attribute: "items" }, color: { attribute: "color" } }; }
@@ -2005,6 +2191,10 @@ class ContourNotificationCenter extends ContourBase {
   }
   define("contour-notification-center", ContourNotificationCenter);
 
+/**
+ * Stepper: web component wrapper.
+ * Attributes: `steps`, `current`.
+ */
 class ContourStepper extends ContourBase {
     static get observed() { return ["steps", "current"]; }
     static get properties() { return { steps: { attribute: "steps" }, current: { attribute: "current" } }; }
@@ -2064,6 +2254,10 @@ class ContourStepper extends ContourBase {
   }
   define("contour-stepper", ContourStepper);
 
+/**
+ * Virtual List: web component wrapper.
+ * Attributes: `items`, `item-height`, `orientation`, `sticky`.
+ */
 class ContourVirtualList extends ContourBase {
     static get updateMode() { return "keyed"; }
     static get observed() { return ["items", "item-height", "orientation", "sticky"]; }
@@ -2190,6 +2384,10 @@ class ContourVirtualList extends ContourBase {
   }
   define("contour-virtual-list", ContourVirtualList);
 
+/**
+ * Command Palette: web component wrapper.
+ * Attributes: `open`, `items`.
+ */
 class ContourCommandPalette extends ContourBase {
     static get observed() { return ["open", "items"]; }
     static get properties() { return { open: { attribute: "open", type: Boolean }, items: { attribute: "items" } }; }
@@ -2286,6 +2484,10 @@ class ContourCommandPalette extends ContourBase {
   }
   define("contour-command-palette", ContourCommandPalette);
 
+/**
+ * Badge Overflow: web component wrapper.
+ * Attributes: `count`, `max`.
+ */
 class ContourBadgeOverflow extends ContourBase {
     static get observed() { return ["count", "max"]; }
     static get properties() { return { count: { attribute: "count" }, max: { attribute: "max" } }; }
@@ -2305,6 +2507,10 @@ class ContourBadgeOverflow extends ContourBase {
   }
   define("contour-badge-overflow", ContourBadgeOverflow);
 
+/**
+ * Side Sheet: web component wrapper.
+ * Attributes: `open`, `side`, `title`.
+ */
 class ContourSideSheet extends ContourBase {
     static get observed() { return ["open", "side", "title"]; }
     static get properties() { return { open: { attribute: "open", type: Boolean }, side: { attribute: "side" }, title: { attribute: "title" } }; }
@@ -2360,6 +2566,10 @@ class ContourSideSheet extends ContourBase {
   }
   define("contour-side-sheet", ContourSideSheet);
 
+/**
+ * Tour: web component wrapper.
+ * Attributes: `steps`, `current`.
+ */
 class ContourTour extends ContourBase {
     static get observed() { return ["steps", "current"]; }
     static get properties() { return { steps: { attribute: "steps" }, current: { attribute: "current" } }; }
@@ -2395,6 +2605,10 @@ class ContourTour extends ContourBase {
   }
   define("contour-tour", ContourTour);
 
+/**
+ * Tags Input: web component wrapper.
+ * Attributes: `value`, `placeholder`, `disabled`, `error`, `help`.
+ */
 class ContourTagsInput extends ContourBase {
     static get observed() { return ["value", "placeholder", "disabled", "error", "help"]; }
     static get properties() { return { value: { attribute: "value" }, placeholder: { attribute: "placeholder" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" } }; }
@@ -2481,6 +2695,10 @@ class ContourTagsInput extends ContourBase {
   }
   define("contour-tags-input", ContourTagsInput);
 
+/**
+ * Sortable List: web component wrapper.
+ * Attributes: `items`.
+ */
 class ContourSortableList extends ContourBase {
     static get updateMode() { return "keyed"; }
     static get observed() { return ["items"]; }
@@ -2587,6 +2805,10 @@ class ContourSortableList extends ContourBase {
   }
   define("contour-sortable-list", ContourSortableList);
 
+/**
+ * Swatch: web component wrapper.
+ * Attributes: `color`, `selected`, `label`.
+ */
 class ContourSwatch extends ContourBase {
     static get observed() { return ["color", "selected", "label"]; }
     static get properties() { return { color: { attribute: "color" }, selected: { attribute: "selected", type: Boolean }, label: { attribute: "label" } }; }
@@ -2617,6 +2839,10 @@ class ContourSwatch extends ContourBase {
   }
   define("contour-swatch", ContourSwatch);
 
+/**
+ * Calendar: web component wrapper.
+ * Attributes: `value`.
+ */
 class ContourCalendar extends ContourBase {
     static get observed() { return ["value"]; }
     static get properties() { return { value: { attribute: "value" }, month: { attribute: "month" }, year: { attribute: "year" } }; }
@@ -2715,6 +2941,10 @@ class ContourCalendar extends ContourBase {
   }
   define("contour-calendar", ContourCalendar);
 
+/**
+ * Carousel: web component wrapper.
+ * Attributes: `items`, `index`.
+ */
 class ContourCarousel extends ContourBase {
     static get observed() { return ["items", "index"]; }
     static get properties() { return { items: { attribute: "items" }, index: { attribute: "index" } }; }
@@ -2782,6 +3012,10 @@ class ContourCarousel extends ContourBase {
   }
   define("contour-carousel", ContourCarousel);
 
+/**
+ * Data Grid: web component wrapper.
+ * Attributes: `columns`, `rows`, `page`, `filter`, `page-size`, `resizable`.
+ */
 class ContourDataGrid extends ContourBase {
     static get updateMode() { return "keyed"; }
   static get observed() { return ["columns", "rows", "page", "filter", "page-size", "resizable"]; }
@@ -2951,6 +3185,10 @@ class ContourDataGrid extends ContourBase {
   }
   define("contour-data-grid", ContourDataGrid);
 
+/**
+ * Tree Grid: web component wrapper.
+ * Attributes: `items`, `expanded`.
+ */
 class ContourTreeGrid extends ContourBase {
     static get updateMode() { return "keyed"; }
     static get observed() { return ["items", "expanded"]; }

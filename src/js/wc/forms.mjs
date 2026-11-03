@@ -1,6 +1,27 @@
+/**
+ * Form controls: field, field-group, form, combobox, select, check, radio,
+ * switch, textarea, input, input-group, range, radio-list, version.
+ *
+ * All form controls are `ContourBase` subclasses. They render light-DOM markup
+ * from observed attributes, reflect properties back to attributes, take part in
+ * form association (`formAssociated`, `_internals.setFormValue`) where the
+ * platform allows it, and emit `contour:input` / `contour:change` / `contour:submit`
+ * events. Inline validation (blur-driven `aria-invalid`) is handled by
+ * `ContourField`; `ContourForm` owns submission state and a live-region summary.
+ * @module contour-wc/forms
+ */
+
 import { ContourBase, define, contourId } from './core.mjs';
 import { wireCombobox } from './behaviours.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
+/**
+ * Combobox: a filterable, keyboard-navigable listbox backed by a JSON `options`
+ * attribute or authored `<li>` options. Supports single and multi-select
+ * (`multiple`), fixed-row virtualization (`virtual`), async/remote options
+ * (`src`, `loading`, `error`, `retry`, `empty`, `skeleton`), a clear button and
+ * form association. Emits `contour:select` on commit and `contour:input` on
+ * filter. ArrowUp/Down/Home/End rove the cursor; Enter commits; Escape closes.
+ */
 class ContourCombobox extends ContourBase {
   static get observed() { return ["options", "placeholder", "label", "value", "multiple", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "empty", "skeleton", "virtual"]; }
     static get formAssociated() { return true; }
@@ -134,6 +155,13 @@ class ContourCombobox extends ContourBase {
      }
   }
 define("contour-combobox", ContourCombobox);
+/**
+ * Field: a labelled form control wrapper. Renders an `<input>`/`<textarea>`/
+ * `<select>` (or adopts an authored one), associates a label via `for`/`id`,
+ * and attaches hint and error text with `aria-describedby`. Drives inline
+ * validation on blur (`aria-invalid`, `is-invalid`) and keeps the form value in
+ * sync via `_internals.setFormValue`. Emits `contour:input` / `contour:change`.
+ */
 class ContourField extends ContourBase {
     static get observed() { return ["label", "hint", "error", "placeholder", "type", "required"]; }
     static get formAssociated() { return true; }
@@ -243,7 +271,12 @@ class ContourField extends ContourBase {
   };
   define("contour-field", ContourField);
 
-  class ContourFieldGroup extends ContourBase {
+  /**
+ * Field-group: a grouped field with a shared label, optional hint and error
+ * text. Sets `role="group"` and `aria-required` when required; toggles
+ * `is-error` when an error is present. Child fields are labelled by the group.
+ */
+class ContourFieldGroup extends ContourBase {
     static get observed() { return ["label", "hint", "error", "required"]; }
     static get properties() { return { label: { attribute: "label" }, hint: { attribute: "hint" }, error: { attribute: "error" }, required: { attribute: "required", type: Boolean } }; }
     render() {
@@ -284,7 +317,13 @@ class ContourField extends ContourBase {
   }
   define("contour-field-group", ContourFieldGroup);
 
-  class ContourForm extends ContourBase {
+  /**
+ * Form: a form wrapper with submission state and a validation summary. Adds
+ * `is-submitting` and disables the submit button while `submitting` is set.
+ * On invalid submit, prevents default and renders a `role="alert"` summary
+ * listing the invalid fields. Emits `contour:submit` on valid submit.
+ */
+class ContourForm extends ContourBase {
     static get observed() { return ["submitting", "error", "summary"]; }
     static get properties() { return { submitting: { attribute: "submitting", type: Boolean }, error: { attribute: "error" }, summary: { attribute: "summary" } }; }
     render() {
@@ -331,7 +370,14 @@ class ContourField extends ContourBase {
   }
   define("contour-form", ContourForm);
 
-  class ContourRange extends ContourBase {
+  /**
+ * Range: a native `<input type=range>` wrapper with optional dual-handle range
+ * mode (`range`, `low`, `high`) and a sparkline canvas (`sparkline`). Form
+ * associated; emits `contour:input` / `contour:change` with the current value
+ * (or `{low, high}` in range mode). Renders a `--fill` custom property for the
+ * filled track.
+ */
+class ContourRange extends ContourBase {
     static get observed() { return ["min", "max", "value", "low", "high", "range", "sparkline", "label", "disabled", "error", "help"]; }
     static get formAssociated() { return true; }
     static get properties() { return { min: { attribute: "min" }, max: { attribute: "max" }, value: { attribute: "value" }, label: { attribute: "label" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" } }; }
@@ -457,6 +503,12 @@ class ContourField extends ContourBase {
      sync();
    };
   define("contour-range", ContourRange);
+/**
+ * Switch: a `role="switch"` checkbox control with label, required, disabled,
+ * error and help states. Form associated; emits `contour:change` on toggle.
+ * Renders a `c-switch__track` element after the input for the sheet's track
+ * styling.
+ */
 class ContourSwitch extends ContourBase {
     static get observed() { return ["label", "required", "checked", "disabled", "error", "help"]; }
     static get properties() { return { label: { attribute: "label" }, required: { attribute: "required", type: Boolean }, checked: { attribute: "checked", type: Boolean }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" } }; }
@@ -518,6 +570,12 @@ class ContourSwitch extends ContourBase {
     }
   }
   define("contour-switch", ContourSwitch);
+/**
+ * Check: a checkbox (or `type="radio"` when `type` is set) with label, name,
+ * value, required, checked, disabled, error and help states. Renders a
+ * `c-check__box` element after the input. Form associated; emits
+ * `contour:change` on toggle.
+ */
 class ContourCheck extends ContourBase {
     static get observed() { return ["label", "name", "value", "required", "type", "checked", "disabled", "error", "help"]; }
     static get properties() { return { label: { attribute: "label" }, name: { attribute: "name" }, value: { attribute: "value" }, required: { attribute: "required", type: Boolean }, type: { attribute: "type" }, checked: { attribute: "checked", type: Boolean }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" } }; }
@@ -574,6 +632,11 @@ class ContourCheck extends ContourBase {
     }
   }
   define("contour-check", ContourCheck);
+/**
+ * Radio: a radio button with label, name, value, required, checked, disabled,
+ * error and help states. Form associated; unchecking clears the stale FormData
+ * entry. Emits `contour:change` on toggle.
+ */
 class ContourRadio extends ContourBase {
     static get observed() { return ["label", "name", "value", "required", "checked", "disabled", "error", "help"]; }
     static get properties() { return { label: { attribute: "label" }, name: { attribute: "name" }, value: { attribute: "value" }, required: { attribute: "required", type: Boolean }, checked: { attribute: "checked", type: Boolean }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" } }; }
@@ -624,7 +687,12 @@ class ContourRadio extends ContourBase {
     }
   }
   define("contour-radio", ContourRadio);
-  class ContourSelect extends ContourBase {
+  /**
+ * Select: a native `<select>` wrapper populated from a JSON `options` attribute
+ * (with optgroup support) or an authored `<select>`. Supports label, placeholder,
+ * required, disabled, error and help. Form associated; emits `contour:change`.
+ */
+class ContourSelect extends ContourBase {
     static get observed() { return ["options", "required", "label", "placeholder", "disabled", "error", "help"]; }
     static get properties() { return { options: { attribute: "options" }, required: { attribute: "required", type: Boolean }, label: { attribute: "label" }, placeholder: { attribute: "placeholder" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" } }; }
     static get formAssociated() { return true; }
@@ -712,6 +780,10 @@ class ContourRadio extends ContourBase {
     }
   }
   define("contour-select", ContourSelect);
+/**
+ * Version: a `<select>` of version options from a JSON `options` attribute,
+ * with `selected` support per option. Form associated; emits `contour:change`.
+ */
 class ContourVersion extends ContourBase {
     static get observed() { return ["options"]; }
     static get formAssociated() { return true; }
@@ -757,6 +829,10 @@ class ContourVersion extends ContourBase {
     }
   }
   define("contour-version", ContourVersion);
+/**
+ * Textarea: a `<textarea>` wrapper with placeholder, required, disabled, error
+ * and help states. Form associated; emits `contour:input` / `contour:change`.
+ */
 class ContourTextarea extends ContourBase {
     static get observed() { return ["placeholder", "required", "disabled", "error", "help"]; }
     static get properties() { return { placeholder: { attribute: "placeholder" }, required: { attribute: "required", type: Boolean }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" } }; }
@@ -804,6 +880,10 @@ class ContourTextarea extends ContourBase {
     }
   }
   define("contour-textarea", ContourTextarea);
+/**
+ * Input: an `<input>` wrapper with type, placeholder, required, value, disabled,
+ * error and help states. Form associated; emits `contour:input` / `contour:change`.
+ */
 class ContourInputFull extends ContourBase {
     static get observed() { return ["type", "placeholder", "required", "value", "disabled", "error", "help"]; }
     static get properties() { return { type: { attribute: "type" }, placeholder: { attribute: "placeholder" }, required: { attribute: "required", type: Boolean }, value: { attribute: "value" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" } }; }
@@ -855,6 +935,12 @@ class ContourInputFull extends ContourBase {
     }
   }
   define("contour-input", ContourInputFull);
+/**
+ * InputGroup: a text input with an optional search icon, a clear (×) affordance
+ * and a submit (→) affordance. Attributes: `label`, `placeholder`, `clearable`,
+ * `submit`. Emits `contour:change` (bubbles, composed) with `{ value: "" }` on
+ * clear.
+ */
 class ContourInputGroup extends ContourBase {
     static get observed() { return ["label", "placeholder", "clearable", "submit"]; }
     static get properties() { return { label: { attribute: "label" }, placeholder: { attribute: "placeholder" }, clearable: { attribute: "clearable", type: Boolean }, submit: { attribute: "submit", type: Boolean } }; }
@@ -901,6 +987,12 @@ class ContourInputGroup extends ContourBase {
     }
   }
   define("contour-input-group", ContourInputGroup);
+/**
+ * RadioList: a `role="radiogroup"` of radio options from a JSON `items`
+ * attribute (or remote `src`). Supports roving tabindex, Home/End navigation,
+ * RTL, empty/loading/error states, and `formResetCallback` that re-renders from
+ * the authored `items` payload. Form associated; emits `contour:change`.
+ */
 class ContourRadioList extends ContourBase {
     static get observed() { return ["items", "name", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { items: { attribute: "items" }, name: { attribute: "name" }, src: { attribute: "src" } }; }

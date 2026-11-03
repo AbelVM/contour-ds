@@ -499,6 +499,8 @@ export function wireCombobox(host) {
     const visible = optionList().filter((o) => !o.hidden);
     if (e.key === "ArrowDown") { e.preventDefault(); cursor = Math.min(cursor + 1, visible.length - 1); mark(visible); }
     else if (e.key === "ArrowUp") { e.preventDefault(); cursor = Math.max(cursor - 1, 0); mark(visible); }
+    else if (e.key === "Home") { e.preventDefault(); cursor = 0; mark(visible); }
+    else if (e.key === "End") { e.preventDefault(); cursor = Math.max(0, visible.length - 1); mark(visible); }
     else if (e.key === "Enter") { e.preventDefault(); if (cursor >= 0 && visible[cursor]) commit(visible[cursor]); }
     else if (e.key === "Escape") close();
   });

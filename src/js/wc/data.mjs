@@ -1,6 +1,10 @@
 import { ContourBase, define, onDispose, formatValue, contourId } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates, remoteInvalidate, watchViewport } from './states.mjs';
 import { donutSlices, barRects, smoothPath, polylinePoints } from './svg.mjs';
+/**
+ * Readout: web component wrapper.
+ * Attributes: `rows`, `empty`, `loading`, `error`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`, `format`, `locale`.
+ */
 class ContourReadout extends ContourBase {
     static get observed() { return ["rows", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "format", "locale"]; }
     static get properties() { return { rows: { attribute: "rows" }, format: { attribute: "format" }, locale: { attribute: "locale" }, src: { attribute: "src" } }; }
@@ -43,6 +47,10 @@ class ContourReadout extends ContourBase {
     }
   }
 define("contour-readout", ContourReadout);
+/**
+ * Kpi: web component wrapper.
+ * Attributes: `value`, `label`, `delta`, `direction`, `note`, `variant`, `unit`, `format`, `locale`, `empty`, `loading`, `error`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`, `thresholds`, `threshold`, `sparkline`, `polarity`.
+ */
 class ContourKpi extends ContourBase {
     static get observed() { return ["value", "label", "delta", "direction", "note", "variant", "unit", "format", "locale", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "thresholds", "threshold", "sparkline", "polarity"]; }
     static get properties() {
@@ -142,6 +150,10 @@ class ContourKpi extends ContourBase {
     }
   }
 define("contour-kpi", ContourKpi);
+/**
+ * Table: web component wrapper.
+ * Attributes: `columns`, `rows`, `page`, `page-size`, `sort`, `sort-dir`, `virtual`, `empty`, `loading`, `error`, `retry`, `skeleton`, `persist`.
+ */
 class ContourTable extends ContourBase {
     static get updateMode() { return "keyed"; }
     static get observed() { return ["columns", "rows", "page", "page-size", "sort", "sort-dir", "virtual", "empty", "loading", "error", "retry", "skeleton", "persist"]; }
@@ -645,6 +657,10 @@ class ContourDataTable extends ContourTable {
     }
   }
   define("contour-data-table", ContourDataTable);
+/**
+ * Chart: web component wrapper.
+ * Attributes: `series`, `axis`, `empty`, `loading`, `error`, `retry`, `skeleton`, `zoomable`, `data-table`, `brush`, `brush-min`, `brush-max`, `brush-start`, `brush-end`.
+ */
 class ContourChart extends ContourBase {
     static get updateMode() { return "keyed"; }
   static get observed() { return ["series", "axis", "empty", "loading", "error", "retry", "skeleton", "zoomable", "data-table", "brush", "brush-min", "brush-max", "brush-start", "brush-end"]; }
@@ -1086,6 +1102,10 @@ const series = this.getAttribute("series");
     }
   }
   define("contour-chart", ContourChart);
+/**
+ * Comparison: web component wrapper.
+ * Attributes: `divider`, `value`, `before`, `after`.
+ */
 class ContourComparison extends ContourBase {
     static get observed() { return ["divider", "value", "before", "after"]; }
     static get properties() { return { divider: { attribute: "divider" }, value: { attribute: "value" }, before: { attribute: "before" }, after: { attribute: "after" } }; }
@@ -1162,6 +1182,10 @@ class ContourComparison extends ContourBase {
     }
   }
   define("contour-comparison", ContourComparison);
+/**
+ * Streaming Chart: web component wrapper.
+ * Attributes: `line`, `dot`, `interval`, `pause`, `empty`, `loading`, `error`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`.
+ */
 class ContourStreamingChart extends ContourBase {
     static get updateMode() { return "keyed"; }
     static get observed() { return ["line", "dot", "interval", "pause", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
@@ -1274,6 +1298,10 @@ class ContourStreamingChart extends ContourBase {
     }
   }
 define("contour-streaming-chart", ContourStreamingChart);
+/**
+ * Meter: web component wrapper.
+ * Attributes: `value`, `label`, `variant`, `min`, `max`, `low`, `high`, `optimum`, `empty`, `loading`, `error`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`.
+ */
 class ContourMeter extends ContourBase {
     static get observed() { return ["value", "label", "variant", "min", "max", "low", "high", "optimum", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" }, variant: { attribute: "variant" }, min: { attribute: "min" }, max: { attribute: "max" }, low: { attribute: "low" }, high: { attribute: "high" }, optimum: { attribute: "optimum" }, src: { attribute: "src" } }; }
@@ -1327,6 +1355,10 @@ class ContourMeter extends ContourBase {
     }
   }
 define("contour-meter", ContourMeter);
+/**
+ * Delta: web component wrapper.
+ * Attributes: `value`, `direction`, `empty`, `loading`, `error`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`.
+ */
 class ContourDelta extends ContourBase {
     static get observed() { return ["value", "direction", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { value: { attribute: "value" }, direction: { attribute: "direction" }, src: { attribute: "src" } }; }
@@ -1355,6 +1387,10 @@ class ContourDelta extends ContourBase {
     }
   }
 define("contour-delta", ContourDelta);
+/**
+ * Stat: web component wrapper.
+ * Attributes: `value`, `label`, `delta`, `unit`, `format`, `locale`, `empty`, `loading`, `error`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`.
+ */
 class ContourStat extends ContourBase {
     static get observed() { return ["value", "label", "delta", "unit", "format", "locale", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" }, delta: { attribute: "delta" }, unit: { attribute: "unit" }, format: { attribute: "format" }, locale: { attribute: "locale" }, src: { attribute: "src" } }; }
@@ -1405,6 +1441,10 @@ class ContourStat extends ContourBase {
     }
   }
 define("contour-stat", ContourStat);
+/**
+ * Gauge: web component wrapper.
+ * Attributes: `value`, `min`, `max`, `heading`, `thresholds`, `format`, `locale`, `unit`, `empty`, `loading`, `error`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`, `brownout`, `brownout-level`, `no-data-message`, `show-header`, `description`.
+ */
 class ContourGauge extends ContourBase {
     static get observed() { return ["value", "min", "max", "heading", "thresholds", "format", "locale", "unit", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "brownout", "brownout-level", "no-data-message", "show-header", "description"]; }
     static get properties() { return { value: { attribute: "value" }, min: { attribute: "min" }, max: { attribute: "max" }, heading: { attribute: "heading" }, thresholds: { attribute: "thresholds" }, format: { attribute: "format" }, locale: { attribute: "locale" }, unit: { attribute: "unit" }, src: { attribute: "src" }, brownout: { attribute: "brownout" } }; }
@@ -1555,6 +1595,10 @@ class ContourGauge extends ContourBase {
     enhance() {}
   }
 define("contour-gauge", ContourGauge);
+/**
+ * Axis: web component wrapper.
+ * Attributes: `orientation`, `values`, `ticks`, `format`, `locale`, `padding`, `min`, `max`, `empty`, `loading`, `error`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`.
+ */
 class ContourAxis extends ContourBase {
     static get observed() { return ["orientation", "values", "ticks", "format", "locale", "padding", "min", "max", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { orientation: { attribute: "orientation" }, values: { attribute: "values" }, ticks: { attribute: "ticks" }, format: { attribute: "format" }, locale: { attribute: "locale" }, padding: { attribute: "padding" }, min: { attribute: "min" }, max: { attribute: "max" }, src: { attribute: "src" } }; }
@@ -1602,6 +1646,10 @@ class ContourAxis extends ContourBase {
     enhance() {}
   }
 define("contour-axis", ContourAxis);
+/**
+ * Brush: web component wrapper.
+ * Attributes: `start`, `end`, `min`, `max`, `empty`, `loading`, `error`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`.
+ */
 class ContourBrush extends ContourBase {
     static get observed() { return ["start", "end", "min", "max", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { start: { attribute: "start" }, end: { attribute: "end" }, min: { attribute: "min" }, max: { attribute: "max" }, src: { attribute: "src" } }; }
@@ -1702,6 +1750,10 @@ class ContourBrush extends ContourBase {
     }
   }
 define("contour-brush", ContourBrush);
+/**
+ * Stacked Bar: web component wrapper.
+ * Attributes: `segments`, `values`, `colors`, `empty`, `loading`, `error`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`, `normalize`.
+ */
 class ContourStackedBar extends ContourBase {
     static get observed() { return ["segments", "values", "colors", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "normalize"]; }
     static get properties() { return { segments: { attribute: "segments" }, values: { attribute: "values" }, colors: { attribute: "colors" }, src: { attribute: "src" }, normalize: { attribute: "normalize" } }; }
@@ -1746,6 +1798,10 @@ class ContourStackedBar extends ContourBase {
     enhance() {}
   }
 define("contour-stacked-bar", ContourStackedBar);
+/**
+ * Category: web component wrapper.
+ * Attributes: `items`, `empty`, `loading`, `error`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`, `search`.
+ */
 class ContourCategory extends ContourBase {
     static get observed() { return ["items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "search"]; }
     static get properties() { return { items: { attribute: "items" }, src: { attribute: "src" }, search: { attribute: "search" } }; }
@@ -1839,6 +1895,10 @@ class ContourCategory extends ContourBase {
     }
   }
 define("contour-category", ContourCategory);
+/**
+ * Donut: web component wrapper.
+ * Attributes: `value`, `values`, `items`, `label`, `empty`, `loading`, `error`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`, `brownout`, `brownout-level`.
+ */
 class ContourDonut extends ContourBase {
     static get observed() { return ["value", "values", "items", "label", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "brownout", "brownout-level"]; }
     static get properties() { return { value: { attribute: "value" }, values: { attribute: "values" }, items: { attribute: "items" }, label: { attribute: "label" }, src: { attribute: "src" } }; }
@@ -1925,6 +1985,10 @@ class ContourDonut extends ContourBase {
     enhance() {}
   }
 define("contour-donut", ContourDonut);
+/**
+ * Time Series: web component wrapper.
+ * Attributes: `values`, `points`, `empty`, `loading`, `error`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`, `annotations`.
+ */
 class ContourTimeSeries extends ContourBase {
     static get observed() { return ["values", "points", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "annotations"]; }
     static get properties() { return { values: { attribute: "values" }, points: { attribute: "points" }, src: { attribute: "src" }, annotations: { attribute: "annotations" } }; }
@@ -2001,6 +2065,10 @@ class ContourTimeSeries extends ContourBase {
     }
   }
 define("contour-time-series", ContourTimeSeries);
+/**
+ * Pivot: web component wrapper.
+ * Attributes: `rows`, `columns`, `values`, `data`, `empty`, `loading`, `error`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`.
+ */
 class ContourPivot extends ContourBase {
     static get observed() { return ["rows", "columns", "values", "data", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { rows: { attribute: "rows" }, columns: { attribute: "columns" }, values: { attribute: "values" }, data: { attribute: "data" }, src: { attribute: "src" }, filter: { attribute: "filter" }, aggregate: { attribute: "aggregate" } }; }
@@ -2157,6 +2225,10 @@ class ContourPivot extends ContourBase {
     }
   }
 define("contour-pivot", ContourPivot);
+/**
+ * Widget State: web component wrapper.
+ * Attributes: `loading`, `error`, `empty`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`.
+ */
 class ContourWidgetState extends ContourBase {
     static get observed() { return ["loading", "error", "empty", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { loading: { attribute: "loading" }, error: { attribute: "error" }, empty: { attribute: "empty" }, retry: { attribute: "retry" }, src: { attribute: "src" } }; }
@@ -2170,6 +2242,10 @@ class ContourWidgetState extends ContourBase {
     enhance() {}
   }
 define("contour-widget-state", ContourWidgetState);
+/**
+ * Brownout: web component wrapper.
+ * Attributes: `level`.
+ */
 class ContourBrownout extends ContourBase {
     static get observed() { return ["level"]; }
     static get properties() { return { level: { attribute: "level" } }; }
@@ -2182,6 +2258,10 @@ class ContourBrownout extends ContourBase {
     enhance() {}
   }
 define("contour-brownout", ContourBrownout);
+/**
+ * Instrument: web component wrapper.
+ * Attributes: `rows`, `empty`, `loading`, `error`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`.
+ */
 class ContourInstrument extends ContourBase {
     static get observed() { return ["rows", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { rows: { attribute: "rows" }, src: { attribute: "src" } }; }
@@ -2215,6 +2295,10 @@ class ContourInstrument extends ContourBase {
     }
   }
 define("contour-instrument", ContourInstrument);
+/**
+ * Bivariate: web component wrapper.
+ * Attributes: `size`, `axis-x`, `axis-y`, `colors`, `selected`.
+ */
 class ContourBivariate extends ContourBase {
     static get observed() { return ["size", "axis-x", "axis-y", "colors", "selected"]; }
     static get properties() { return { size: { attribute: "size" }, axisX: { attribute: "axis-x" }, axisY: { attribute: "axis-y" }, colors: { attribute: "colors" }, selected: { attribute: "selected" } }; }
@@ -2360,6 +2444,10 @@ class ContourBivariateLegend extends ContourBivariate {
     clear() { this.removeAttribute("selected"); this.dispatchEvent(new CustomEvent("contour:clear", { bubbles: true, composed: true })); }
   }
 define("contour-bivariate-legend", ContourBivariateLegend);
+/**
+ * Survey: web component wrapper.
+ * Attributes: `date`, `instrument`, `empty`, `loading`, `error`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`.
+ */
 class ContourSurvey extends ContourBase {
     static get observed() { return ["date", "instrument", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { date: { attribute: "date" }, instrument: { attribute: "instrument" }, src: { attribute: "src" } }; }
@@ -2397,6 +2485,10 @@ class ContourSurvey extends ContourBase {
     }
   }
 define("contour-survey", ContourSurvey);
+/**
+ * Threshold: web component wrapper.
+ * Attributes: `label`, `norm`, `state`, `value`, `empty`, `loading`, `error`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`.
+ */
 class ContourThreshold extends ContourBase {
     static get observed() { return ["label", "norm", "state", "value", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { label: { attribute: "label" }, norm: { attribute: "norm" }, state: { attribute: "state" }, value: { attribute: "value" }, src: { attribute: "src" } }; }
@@ -2434,6 +2526,10 @@ class ContourThreshold extends ContourBase {
     }
   }
 define("contour-threshold", ContourThreshold);
+/**
+ * Metrics Full: web component wrapper.
+ * Attributes: `items`, `empty`, `loading`, `error`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`.
+ */
 class ContourMetricsFull extends ContourBase {
     static get observed() { return ["items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { items: { attribute: "items" }, src: { attribute: "src" } }; }
@@ -2468,6 +2564,10 @@ class ContourMetricsFull extends ContourBase {
     enhance() { wireStates(this); }
   }
   define("contour-metrics", ContourMetricsFull);
+/**
+ * Legend: web component wrapper.
+ * Attributes: `title`, `ramp`, `scale`, `items`, `method`, `norm`, `selectable`, `empty`, `loading`, `error`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`, `glyphs`, `thresholds`, `breaks`, `no-data-color`, `size`, `table`, `classification`, `audit`, `continuous`, `ends`, `caption`.
+ */
 class ContourLegend extends ContourBase {
     static get observed() { return ["title", "ramp", "scale", "items", "method", "norm", "selectable", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "glyphs", "thresholds", "breaks", "no-data-color", "size", "table", "classification", "audit", "continuous", "ends", "caption"]; }
     static get properties() { return { title: { attribute: "title" }, ramp: { attribute: "ramp" }, scale: { attribute: "scale" }, items: { attribute: "items" }, method: { attribute: "method" }, norm: { attribute: "norm" }, selectable: { attribute: "selectable", type: Boolean }, src: { attribute: "src" } }; }
@@ -2806,6 +2906,10 @@ class ContourLegend extends ContourBase {
     }
   }
 define("contour-legend", ContourLegend);
+/**
+ * Measure: web component wrapper.
+ * Attributes: `label`, `value`, `point`, `line`, `empty`, `loading`, `error`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`.
+ */
 class ContourMeasure extends ContourBase {
     static get observed() { return ["label", "value", "point", "line", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" }, point: { attribute: "point" }, line: { attribute: "line" }, src: { attribute: "src" } }; }
@@ -2876,6 +2980,10 @@ class ContourMeasure extends ContourBase {
     }
   }
 define("contour-measure", ContourMeasure);
+/**
+ * Timeline: web component wrapper.
+ * Attributes: `items`, `empty`, `loading`, `error`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`.
+ */
 class ContourTimeline extends ContourBase {
     static get observed() { return ["items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { items: { attribute: "items" }, src: { attribute: "src" } }; }
@@ -2956,6 +3064,10 @@ class ContourTimeline extends ContourBase {
      }
   }
 define("contour-timeline", ContourTimeline);
+/**
+ * Heatmap: web component wrapper.
+ * Attributes: `cells`, `count`, `legend`, `empty`, `loading`, `values`, `error`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`.
+ */
 class ContourHeatmap extends ContourBase {
     static get observed() { return ["cells", "count", "legend", "empty", "loading", "values", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { cells: { attribute: "cells" }, count: { attribute: "count" }, legend: { attribute: "legend" }, src: { attribute: "src" } }; }
@@ -3085,6 +3197,10 @@ class ContourHeatmap extends ContourBase {
     }
   }
 define("contour-heatmap", ContourHeatmap);
+/**
+ * Compare: web component wrapper.
+ * Attributes: `no`, `text`, `yes`, `empty`, `loading`, `error`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`.
+ */
 class ContourCompare extends ContourBase {
     static get observed() { return ["no", "text", "yes", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { no: { attribute: "no" }, text: { attribute: "text" }, yes: { attribute: "yes" }, src: { attribute: "src" } }; }
@@ -3124,6 +3240,10 @@ class ContourCompare extends ContourBase {
     }
   }
 define("contour-compare", ContourCompare);
+/**
+ * Sparkline: web component wrapper.
+ * Attributes: `points`, `empty`, `loading`, `error`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`.
+ */
 class ContourSparkline extends ContourBase {
     static get observed() { return ["points", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { points: { attribute: "points" }, src: { attribute: "src" } }; }
@@ -3235,6 +3355,10 @@ class ContourSparkline extends ContourBase {
     }
   }
 define("contour-sparkline", ContourSparkline);
+/**
+ * Chart Grid: web component wrapper.
+ * Attributes: `title`, `series`, `empty`, `loading`, `error`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`.
+ */
 class ContourChartGrid extends ContourBase {
     static get updateMode() { return "keyed"; }
     static get observed() { return ["title", "series", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
@@ -3256,6 +3380,10 @@ class ContourChartGrid extends ContourBase {
     }
   }
   define("contour-chart-grid", ContourChartGrid);
+/**
+ * Contour Plot: web component wrapper.
+ * Attributes: `axis`, `label`.
+ */
 class ContourContourPlot extends ContourBase {
     static get observed() { return ["axis", "label"]; }
     static get properties() { return { axis: { attribute: "axis" }, label: { attribute: "label" } }; }
@@ -3298,6 +3426,10 @@ class ContourContourPlot extends ContourBase {
       }
     }
   }
+/**
+ * Error Boundary: web component wrapper.
+ * Attributes: `fallback`, `error`.
+ */
 class ContourErrorBoundary extends ContourBase {
     static get observed() { return ["fallback", "error"]; }
     static get properties() { return { fallback: { attribute: "fallback" }, error: { attribute: "error" } }; }
