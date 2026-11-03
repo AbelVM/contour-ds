@@ -18,7 +18,7 @@ const name = (tag) => tag
   .map((part) => part[0].toUpperCase() + part.slice(1))
   .join("");
 
-const stories = [...tags].sort().map((tag) => `export const ${name(tag)} = makeStory("${tag}");`).join("\n");
+const stories = [...tags].sort().map((tag) => `export const ${name(tag)} = makeStory("${tag}");\nexport const ${name(tag)}Playground = makeStory("${tag}");`).join("\n");
 const content = `import { expect } from "storybook/test";
 import "../dist/wc/content.mjs";
 import "../dist/wc/dashboard.mjs";
