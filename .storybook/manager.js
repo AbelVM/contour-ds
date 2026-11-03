@@ -1,28 +1,29 @@
 import { addons } from "storybook/manager-api";
 import { create } from "storybook/theming";
 
-// Aligned with Contour design tokens (light theme).
+// Aligned with Contour design tokens (light theme). Hex values are used because
+// Storybook's theming (polished) cannot parse oklch().
 const contourTheme = create({
   base: "light",
   brandTitle: "Contour",
   brandImage: "/svg/contour-mark.svg",
   brandTarget: "_self",
-  colorPrimary: "oklch(50% 0.115 182.5)",
-  colorSecondary: "oklch(62.36% 0.2534 358.92)",
-  appBg: "oklch(96.6% 0.005 230)",
-  appContentBg: "oklch(100% 0 0)",
-  appBorderColor: "oklch(85% 0.01 230)",
+  colorPrimary: "#14b8a6",
+  colorSecondary: "#f20084",
+  appBg: "#f5f5f4",
+  appContentBg: "#ffffff",
+  appBorderColor: "#d9d4c8",
   appBorderRadius: 6,
   fontBase: '"Inter", system-ui, sans-serif',
   fontCode: '"JetBrains Mono", ui-monospace, monospace',
-  textColor: "oklch(33% 0.02 230)",
-  textInverseColor: "oklch(99% 0.01 182.5)",
-  barTextColor: "oklch(33% 0.02 230)",
-  barSelectedColor: "oklch(50% 0.115 182.5)",
-  barBg: "oklch(96.6% 0.005 230)",
-  inputBg: "oklch(100% 0 0)",
-  inputBorder: "oklch(85% 0.01 230)",
-  inputTextColor: "oklch(33% 0.02 230)",
+  textColor: "#1f1d1a",
+  textInverseColor: "#ffffff",
+  barTextColor: "#1f1d1a",
+  barSelectedColor: "#14b8a6",
+  barBg: "#f5f5f4",
+  inputBg: "#ffffff",
+  inputBorder: "#d9d4c8",
+  inputTextColor: "#1f1d1a",
   inputBorderRadius: 4,
 });
 
