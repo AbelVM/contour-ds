@@ -5,7 +5,7 @@ import "../dist/wc/ui.mjs";
 export default {
   title: "Contour/Map/LayerAndStyle",
   tags: ["autodocs"],
-  parameters: { contour: { maturity: "complete-widget" }, a11y: { test: "todo" }, issue: "SB-A11Y-04", a11yTodo: { owner: "Contour maintainers", rootCause: "map style needs host application context", mitigation: "verify in map workflow story", review: "2026-12-01" } },
+  parameters: { contour: { maturity: "complete-widget" } },
   argTypes: {
     title: { control: "text" },
     items: { control: "text" },

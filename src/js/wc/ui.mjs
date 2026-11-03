@@ -1081,7 +1081,7 @@ class ContourStylePanel extends ContourBase {
          const nv = this.getAttribute("n"); if (nv) nIn.value = nv; else nIn.value = "5";
          body.appendChild(nIn);
          // opacity slider
-         const op = document.createElement("input"); op.type = "range"; op.className = "c-style-panel__opacity"; op.min = "0"; op.max = "100";
+         const op = document.createElement("input"); op.type = "range"; op.className = "c-style-panel__opacity"; op.setAttribute("aria-label", "Opacity"); op.min = "0"; op.max = "100";
          const ov = this.getAttribute("opacity"); op.value = ov != null ? ov : "100";
          body.appendChild(op);
          // breaks as .break elements per class
@@ -1152,11 +1152,13 @@ class ContourStylePanel extends ContourBase {
             const input = document.createElement("input");
             input.type = "color";
             input.className = "c-style-panel__color";
+            input.setAttribute("aria-label", "Colour for " + (typeof l === "string" ? l : (l.name || l.label || "layer")));
             if (typeof l === "object" && l.color) input.value = l.color;
             row.appendChild(input);
             // classification method selector
             const clsSel = document.createElement("select");
             clsSel.className = "c-style-panel__classification";
+            clsSel.setAttribute("aria-label", "Classification method");
             ["equal","quantile","jenks","manual"].forEach((m) => { const o = document.createElement("option"); o.value = m; o.textContent = m; clsSel.appendChild(o); });
             if (typeof l === "object" && l.classification) clsSel.value = l.classification;
             row.appendChild(clsSel);
@@ -1164,6 +1166,7 @@ class ContourStylePanel extends ContourBase {
             const pal = document.createElement("input");
             pal.type = "text";
             pal.className = "c-style-panel__palette";
+            pal.setAttribute("aria-label", "Palette");
             pal.placeholder = "palette";
             if (typeof l === "object" && l.palette) pal.value = l.palette;
             row.appendChild(pal);
@@ -1178,6 +1181,7 @@ class ContourStylePanel extends ContourBase {
             const op = document.createElement("input");
             op.type = "range";
             op.className = "c-style-panel__opacity";
+            op.setAttribute("aria-label", "Opacity");
             op.min = "0"; op.max = "100";
             op.value = (typeof l === "object" && l.opacity != null) ? l.opacity : "100";
             row.appendChild(op);
