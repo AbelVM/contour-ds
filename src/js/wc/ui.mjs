@@ -2654,7 +2654,6 @@ class ContourSideSheet extends ContourBase {
       const side = this.getAttribute("side") || "end";
       this.classList.add("c-side-sheet--" + side);
       if (this.hasAttribute("open")) this.classList.add("is-open"); else this.classList.remove("is-open");
-      else this.classList.remove("is-open");
       const title = this.getAttribute("title");
       if (title) {
         const t = this.ensure(".c-side-sheet__title", () => { const el = document.createElement("div"); el.className = "c-side-sheet__title"; return el; });

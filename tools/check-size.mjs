@@ -121,7 +121,7 @@ const BUDGETS = {
   "surfaces/contour-data.min.css": 197 * 1024,  // raised 2026-11-03: deferred 1.5 feature batch; measured 186.9 kB
   "surfaces/contour-landing.min.css": 158 * 1024,  // raised 2026-11-03: deferred 1.5 feature batch; measured 149.99 kB
   "contour.esm.min.js": 39 * 1024,
-  "contour-wc.esm.min.js": 593 * 1024,  // raised 2026-11-03: deferred 1.5 feature batch; measured 555.7 kB; +geocoder+spatial-filter+timeseries 592.0 kB
+  "contour-wc.esm.min.js": 594 * 1024,  // raised 2026-11-03: deferred 1.5 feature batch; measured 555.7 kB; +geocoder+spatial-filter+timeseries 592.0 kB; +a11y fixes 593.2 kB
 };
 
 const kB = (n) => `${(n / 1024).toFixed(1)} kB`;
