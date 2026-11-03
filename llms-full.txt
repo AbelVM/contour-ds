@@ -27,7 +27,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `79f8665a2627aebf` · last committed 2026-11-03T10:28:52+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0b2db09f0e697557` · last committed 2026-11-03T10:30:27+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -78,7 +78,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `79f8665a2627aebf` · last committed 2026-11-03T10:28:52+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0b2db09f0e697557` · last committed 2026-11-03T10:30:27+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -128,7 +128,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `79f8665a2627aebf` · last committed 2026-11-03T10:28:52+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0b2db09f0e697557` · last committed 2026-11-03T10:30:27+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -165,7 +165,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `79f8665a2627aebf` · last committed 2026-11-03T10:28:52+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0b2db09f0e697557` · last committed 2026-11-03T10:30:27+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -209,7 +209,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `79f8665a2627aebf` · last committed 2026-11-03T10:28:52+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0b2db09f0e697557` · last committed 2026-11-03T10:30:27+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -265,7 +265,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `79f8665a2627aebf` · last committed 2026-11-03T10:28:52+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0b2db09f0e697557` · last committed 2026-11-03T10:30:27+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -305,7 +305,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `79f8665a2627aebf` · last committed 2026-11-03T10:28:52+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0b2db09f0e697557` · last committed 2026-11-03T10:30:27+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -331,31 +331,59 @@ Autocomplete input with keyboard navigation. Type to filter, arrow keys to navig
 - Web component counterpart
 - Web component counterpart
 - Combobox
+- Form
+- Field group
+- Number field
+- Tags input
+- Time picker
+- Date picker
+- Date range
+- Color picker
+- File upload
+- Rating
+- Stepper
+- Sortable list
+- Split button
+- Web component counterparts
 
 ## Blocks documented here
 
-14 block(s). Their facts live in `../contour.components.json`;
+28 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
 - `.c-btn`
 - `.c-check`
+- `.c-color-picker`
 - `.c-combobox`
+- `.c-date-picker`
+- `.c-date-range`
 - `.c-field`
+- `.c-field-group`
+- `.c-file-upload`
+- `.c-form`
 - `.c-icon-badge`
 - `.c-input`
 - `.c-input-group`
 - `.c-kbd`
+- `.c-number-field`
 - `.c-range`
 - `.c-range-scale`
+- `.c-rating`
 - `.c-section-head`
 - `.c-select`
+- `.c-sortable-list`
+- `.c-split-button`
+- `.c-stepper`
 - `.c-switch`
+- `.c-tag`
+- `.c-tags-input`
 - `.c-textarea`
+- `.c-time-picker`
 
 ---
 
-Source `index.html` @ `79f8665a2627aebf` · last committed 2026-11-03T10:28:52+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0b2db09f0e697557` · last committed 2026-11-03T10:30:27+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -364,7 +392,7 @@ Source `index.html` @ `79f8665a2627aebf` · last committed 2026-11-03T10:28:52+0
 
 # Status & labels
 
-Section `status` — marker `08`, position 9 of 26 in the guide.
+Section `status` — marker `07`, position 9 of 26 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -377,10 +405,14 @@ Equivalent contour-* elements are catalogued in §23.
 ## Subsections
 
 - Web component counterpart
+- Empty state
+- Skeleton
+- Loading
+- Web component counterparts
 
 ## Blocks documented here
 
-11 block(s). Their facts live in `../contour.components.json`;
+16 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
@@ -389,16 +421,21 @@ starts disagreeing with itself.
 - `.c-btn`
 - `.c-chip`
 - `.c-dot`
+- `.c-empty`
 - `.c-icon-badge`
 - `.c-kbd`
 - `.c-live-badge`
+- `.c-loading`
 - `.c-pill`
 - `.c-section-head`
+- `.c-skeleton`
+- `.c-skeleton-group`
+- `.c-spinner`
 - `.c-tag`
 
 ---
 
-Source `index.html` @ `79f8665a2627aebf` · last committed 2026-11-03T10:28:52+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0b2db09f0e697557` · last committed 2026-11-03T10:30:27+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -476,7 +513,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `79f8665a2627aebf` · last committed 2026-11-03T10:28:52+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0b2db09f0e697557` · last committed 2026-11-03T10:30:27+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -542,7 +579,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `79f8665a2627aebf` · last committed 2026-11-03T10:28:52+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0b2db09f0e697557` · last committed 2026-11-03T10:30:27+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -595,10 +632,13 @@ Progress drawn as elevation rings rather than a bar — the system's own shape l
 - Contour meter
 - Progress & toasts
 - Web component counterpart
+- Notification center
+- Error boundary
+- Web component counterpart
 
 ## Blocks documented here
 
-13 block(s). Their facts live in `../contour.components.json`;
+15 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
@@ -606,10 +646,12 @@ starts disagreeing with itself.
 - `.c-btn`
 - `.c-dot`
 - `.c-empty`
+- `.c-error-boundary`
 - `.c-icon-badge`
 - `.c-kbd`
 - `.c-loading`
 - `.c-meter`
+- `.c-notification-center`
 - `.c-progress`
 - `.c-section-head`
 - `.c-skeleton`
@@ -618,7 +660,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `79f8665a2627aebf` · last committed 2026-11-03T10:28:52+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0b2db09f0e697557` · last committed 2026-11-03T10:30:27+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -627,7 +669,7 @@ Source `index.html` @ `79f8665a2627aebf` · last committed 2026-11-03T10:28:52+0
 
 # Overlays
 
-Section `overlays` — marker `12`, position 13 of 26 in the guide.
+Section `overlays` — marker `11`, position 13 of 26 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -660,35 +702,54 @@ Modal dialog, hint tooltip, command palette and the toast live region. These shi
 - Drawer
 - Dialog, tooltip, command palette & toast host
 - Web component counterpart
+- Popover
+- Tooltip
+- Hover card
+- Side sheet
+- Dropdown
+- Context menu
+- Command palette
+- Badge overflow
+- Web component counterparts
 
 ## Blocks documented here
 
-18 block(s). Their facts live in `../contour.components.json`;
+28 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
+- `.c-badge`
+- `.c-badge-overflow`
 - `.c-btn`
 - `.c-callout`
 - `.c-chip`
 - `.c-command`
+- `.c-command-palette`
+- `.c-context-menu`
 - `.c-dialog`
 - `.c-drawer`
+- `.c-dropdown`
 - `.c-field`
+- `.c-hover-card`
 - `.c-icon-badge`
+- `.c-input`
 - `.c-kbd`
+- `.c-link`
 - `.c-panel`
+- `.c-popover`
 - `.c-range`
 - `.c-readout`
 - `.c-resize-handle`
 - `.c-scrim`
 - `.c-section-head`
 - `.c-sheet`
+- `.c-side-sheet`
 - `.c-toast-host`
 - `.c-tooltip`
 
 ---
 
-Source `index.html` @ `79f8665a2627aebf` · last committed 2026-11-03T10:28:52+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0b2db09f0e697557` · last committed 2026-11-03T10:30:27+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -771,22 +832,49 @@ A migration aid: the names a consumer may already know, and the Contour class th
 - How to add a component
 - Rename table (legacy → Contour)
 - Web component counterpart
+- Virtual list
+- Data table
+- Data grid
+- Tree grid
+- Annotation
+- Axis
+- Gauge
+- Donut
+- Category
+- Brush
+- Bivariate legend
+- Stacked bar
+- Time series
+- Brownout
+- Animation controls
+- Web component counterparts
 
 ## Blocks documented here
 
-23 block(s). Their facts live in `../contour.components.json`;
+38 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
 - `.c-activity`
+- `.c-animation-controls`
+- `.c-annotation`
+- `.c-axis`
 - `.c-badge`
+- `.c-bivariate-legend`
+- `.c-brownout`
+- `.c-brush`
 - `.c-btn`
 - `.c-catchment`
+- `.c-category`
 - `.c-chart`
 - `.c-contour-plot`
+- `.c-data-grid`
+- `.c-data-table`
 - `.c-datamark`
 - `.c-delta`
+- `.c-donut`
 - `.c-flow-map`
+- `.c-gauge`
 - `.c-heatmap`
 - `.c-icon-badge`
 - `.c-isochrone`
@@ -796,15 +884,19 @@ starts disagreeing with itself.
 - `.c-panel`
 - `.c-readout`
 - `.c-section-head`
+- `.c-stacked-bar`
 - `.c-streaming-chart`
 - `.c-table`
 - `.c-table-wrap`
 - `.c-time-range`
+- `.c-time-series`
 - `.c-timeline`
+- `.c-tree-grid`
+- `.c-virtual-list`
 
 ---
 
-Source `index.html` @ `79f8665a2627aebf` · last committed 2026-11-03T10:28:52+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0b2db09f0e697557` · last committed 2026-11-03T10:30:27+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -875,7 +967,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `79f8665a2627aebf` · last committed 2026-11-03T10:28:52+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0b2db09f0e697557` · last committed 2026-11-03T10:30:27+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -987,7 +1079,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `79f8665a2627aebf` · last committed 2026-11-03T10:28:52+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0b2db09f0e697557` · last committed 2026-11-03T10:30:27+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1063,7 +1155,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `79f8665a2627aebf` · last committed 2026-11-03T10:28:52+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0b2db09f0e697557` · last committed 2026-11-03T10:30:27+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1139,7 +1231,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `79f8665a2627aebf` · last committed 2026-11-03T10:28:52+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0b2db09f0e697557` · last committed 2026-11-03T10:30:27+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1267,11 +1359,17 @@ Main content area
 ## Subsections
 
 - Layout primitives
+- Tour
+- Resize observer
+- Style panel
+- Style switcher
+- Palette editor
+- Widget state
 - Web component counterpart
 
 ## Blocks documented here
 
-35 block(s). Their facts live in `../contour.components.json`;
+41 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
@@ -1296,11 +1394,13 @@ starts disagreeing with itself.
 - `.c-map-panel`
 - `.c-map-slot`
 - `.c-menu`
+- `.c-palette-editor`
 - `.c-panel`
 - `.c-pressable`
 - `.c-range`
 - `.c-reserved`
 - `.c-resize-handle`
+- `.c-resize-observer`
 - `.c-row`
 - `.c-row-action`
 - `.c-scrim`
@@ -1308,8 +1408,12 @@ starts disagreeing with itself.
 - `.c-select`
 - `.c-sidebar`
 - `.c-stack`
+- `.c-style-panel`
+- `.c-style-switcher`
 - `.c-switch`
 - `.c-tag`
+- `.c-tour`
+- `.c-widget-state`
 
 ### Defined by the guide, not the system
 
@@ -1320,7 +1424,7 @@ part of the component contract and nothing in an installed package defines them:
 
 ---
 
-Source `index.html` @ `79f8665a2627aebf` · last committed 2026-11-03T10:28:52+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0b2db09f0e697557` · last committed 2026-11-03T10:30:27+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1436,7 +1540,7 @@ part of the component contract and nothing in an installed package defines them:
 
 ---
 
-Source `index.html` @ `79f8665a2627aebf` · last committed 2026-11-03T10:28:52+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0b2db09f0e697557` · last committed 2026-11-03T10:30:27+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1483,7 +1587,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `79f8665a2627aebf` · last committed 2026-11-03T10:28:52+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0b2db09f0e697557` · last committed 2026-11-03T10:30:27+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1560,7 +1664,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `79f8665a2627aebf` · last committed 2026-11-03T10:28:52+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0b2db09f0e697557` · last committed 2026-11-03T10:30:27+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1598,7 +1702,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `79f8665a2627aebf` · last committed 2026-11-03T10:28:52+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0b2db09f0e697557` · last committed 2026-11-03T10:30:27+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1702,7 +1806,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `79f8665a2627aebf` · last committed 2026-11-03T10:28:52+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0b2db09f0e697557` · last committed 2026-11-03T10:30:27+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1725,20 +1829,26 @@ The consumer owns this canvas; the system themes the chrome around it.
 
 Map-engine seam: Contour never imports a map library. Attach a live engine via el.attachMap(map) (or set el.map = map); read viewport bounds via el.getViewport(). Events (contour:map-control, contour:map-attach, contour:map-detach) are composed and bubble through shadow hosts. See templates/map.html for a working MapLibre example.
 
+## Subsections
+
+- Map popup
+- Web component counterpart
+
 ## Blocks documented here
 
-4 block(s). Their facts live in `../contour.components.json`;
+5 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
 - `.c-btn`
 - `.c-icon-badge`
 - `.c-map-area`
+- `.c-map-popup`
 - `.c-section-head`
 
 ---
 
-Source `index.html` @ `79f8665a2627aebf` · last committed 2026-11-03T10:28:52+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0b2db09f0e697557` · last committed 2026-11-03T10:30:27+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1783,5 +1893,5 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `79f8665a2627aebf` · last committed 2026-11-03T10:28:52+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0b2db09f0e697557` · last committed 2026-11-03T10:30:27+01:00 · no URL: the project is private until v1.0.
 

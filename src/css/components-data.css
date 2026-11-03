@@ -2066,6 +2066,8 @@
   .c-map-footer {
     display: flex;
     flex: 0 0 auto;
+    max-inline-size: 100%;
+    min-inline-size: 0;
     max-block-size: 16rem;
     overflow-x: auto;
     overscroll-behavior-x: contain;
@@ -2077,7 +2079,7 @@
 
   .c-map-footer > * {
     flex: 1 1 0;
-    min-inline-size: 12rem;
+    min-inline-size: 0;
     padding: var(--space-sm);
   }
 

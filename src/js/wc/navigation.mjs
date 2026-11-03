@@ -347,8 +347,153 @@ class ContourHeader extends ContourBase {
   define("contour-header", ContourHeader);
 class ContourTree extends ContourBase {
     static get updateMode() { return "keyed"; }
-    static get observed() { return ["items", "virtual", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "persist"]; }
-    static get properties() { return { items: { attribute: "items" }, src: { attribute: "src" } }; }
+    static get observed() { return ["items", "virtual", "item-height", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "persist", "selectable"]; }
+    static get properties() { return { items: { attribute: "items" }, src: { attribute: "src" }, "item-height": { attribute: "item-height" } }; }
+    _itemHeight() {
+      const h = Number(this.getAttribute("item-height"));
+      return Number.isFinite(h) && h > 0 ? h : 28;
+    }
+    _labelToPaths(nodes, pathPrefix, map) {
+      (nodes || []).forEach((node, i) => {
+        const p = pathPrefix + "." + i;
+        const label = String(node.label || node).trim().slice(0, 120);
+        if (!map.has(label)) map.set(label, []);
+        map.get(label).push(p);
+        if (Array.isArray(node.children)) this._labelToPaths(node.children, p, map);
+      });
+    }
+    _restoreExpanded() {
+      const persist = this.getAttribute("persist");
+      if (!persist || !this._treeData) return;
+      let labels = null;
+      try {
+        if (persist === "storage" && this.id) {
+          const saved = localStorage.getItem("contour-tree:" + this.id);
+          if (saved !== null) labels = JSON.parse(saved);
+        } else if (persist === "url") {
+          const v = new URLSearchParams(window.location.search).get("c-tree");
+          if (v !== null) labels = JSON.parse(v);
+        }
+      } catch (e) { labels = null; }
+      if (!Array.isArray(labels)) return;
+      const want = new Set(labels.map((l) => String(l)));
+      const map = new Map();
+      this._labelToPaths(this._treeData, "", map);
+      const expanded = this._expanded || (this._expanded = new Set());
+      for (const lbl of want) {
+        const paths = map.get(lbl);
+        if (paths) paths.forEach((p) => expanded.add(p));
+      }
+    }
+    _persistExpanded() {
+      const persist = this.getAttribute("persist");
+      if (!persist || !this._expanded) return;
+      // Map expanded paths back to labels.
+      const pathToNode = new Map();
+      const walk = (nodes, pathPrefix) => {
+        (nodes || []).forEach((node, i) => {
+          const p = pathPrefix + "." + i;
+          pathToNode.set(p, node);
+          if (Array.isArray(node.children)) walk(node.children, p);
+        });
+      };
+      walk(this._treeData, "");
+      const open = [];
+      for (const p of this._expanded) {
+        const node = pathToNode.get(p);
+        if (node) open.push(String(node.label || node).trim().slice(0, 120));
+      }
+      try {
+        if (persist === "storage" && this.id) {
+          localStorage.setItem("contour-tree:" + this.id, JSON.stringify(open));
+        } else if (persist === "url") {
+          const url = new URL(window.location.href);
+          url.searchParams.set("c-tree", JSON.stringify(open));
+          window.history.replaceState(null, "", url.toString());
+        }
+      } catch (e) {}
+    }
+    _flatten(nodes, pathPrefix, depth, expanded, out) {
+      (nodes || []).forEach((node, i) => {
+        const p = pathPrefix + "." + i;
+        const hasChildren = Array.isArray(node.children) && node.children.length > 0;
+        const isExpanded = expanded.has(p);
+        out.push({ node, path: p, depth, hasChildren, expanded: isExpanded });
+        if (hasChildren && isExpanded) {
+          this._flatten(node.children, p, depth + 1, expanded, out);
+        }
+      });
+    }
+    _renderNodeFlat(rootUl, f) {
+      const node = f.node;
+      const depth = f.depth;
+      const li = document.createElement("div");
+      li.className = "c-tree__node";
+      li.setAttribute("role", "treeitem");
+      li.setAttribute("aria-level", String(depth));
+      li.dataset.path = f.path;
+      if (f.hasChildren) {
+        li.setAttribute("aria-expanded", String(f.expanded));
+        const row = document.createElement("div");
+        row.className = "c-tree__row" + (node.active ? " c-tree__row--active" : "") + (node.dir ? " c-tree__row--dir" : "");
+        row.style.paddingInlineStart = ((depth - 1) * 1) + "rem";
+        const toggle = document.createElement("button");
+        toggle.className = "c-tree__toggle";
+        toggle.setAttribute("type", "button");
+        toggle.setAttribute("aria-expanded", String(f.expanded));
+        toggle.setAttribute("aria-label", "Toggle");
+        toggle.innerHTML = '<svg aria-hidden="true"><use href="#i-chevron-right" /></svg>';
+        row.appendChild(toggle);
+        const span = document.createElement("span");
+        span.textContent = node.label;
+        row.appendChild(span);
+        li.appendChild(row);
+      } else {
+        const leaf = document.createElement("div");
+        leaf.className = "c-tree__leaf" + (node.active ? " c-tree__row--active" : "") + (node.dir ? " c-tree__row--dir" : "");
+        leaf.style.paddingInlineStart = (depth * 1) + "rem";
+        if (this.hasAttribute("selectable")) {
+          const cb = document.createElement("input");
+          cb.type = "checkbox";
+          cb.className = "c-tree__select";
+          cb.setAttribute("aria-label", "Select " + (node.label || node));
+          const label = String(node.label || node).trim().slice(0, 120);
+          if (this._selectedTree && this._selectedTree.has(label)) cb.checked = true;
+          leaf.insertBefore(cb, leaf.firstChild);
+        }
+        leaf.appendChild(document.createTextNode(node.label || node));
+        li.appendChild(leaf);
+      }
+      return li;
+    }
+    _renderWindow(rootUl, scrollTop) {
+      if (!this._treeData) return;
+      const ih = this._itemHeight();
+      const expanded = this._expanded || (this._expanded = new Set());
+      const flat = [];
+      this._flatten(this._treeData, "", 1, expanded, flat);
+      const total = flat.length;
+      const viewportSize = rootUl.clientHeight || 320;
+      const visibleCount = Math.ceil(viewportSize / ih) + 6;
+      let start = Math.floor((scrollTop || 0) / ih);
+      if (start < 0) start = 0;
+      if (start > Math.max(0, total - visibleCount)) start = Math.max(0, total - visibleCount);
+      const end = Math.min(total, start + visibleCount);
+      const topSize = start * ih;
+      const bottomSize = Math.max(0, (total - end) * ih);
+      rootUl.innerHTML = "";
+      const top = document.createElement("div");
+      top.className = "c-tree__spacer c-tree__spacer--top";
+      top.style.height = topSize + "px";
+      rootUl.appendChild(top);
+      for (let i = start; i < end; i++) {
+        rootUl.appendChild(this._renderNodeFlat(rootUl, flat[i]));
+      }
+      const bottom = document.createElement("div");
+      bottom.className = "c-tree__spacer c-tree__spacer--bottom";
+      bottom.style.height = bottomSize + "px";
+      rootUl.appendChild(bottom);
+    }
 render() {
        this.classList.add("c-tree");
        // Slot composition wins over the JSON attribute, same as ContourMenu:
@@ -362,77 +507,84 @@ render() {
         if (items && !authored.length) {
          try {
            const parsed = JSON.parse(items);
-            const rootUl = this.ensure("div.c-tree", () => { const el = document.createElement("div"); el.className = "c-tree"; el.setAttribute("role", "tree"); return el; });
+           const rootUl = this.ensure("div.c-tree", () => { const el = document.createElement("div"); el.className = "c-tree"; el.setAttribute("role", "tree"); return el; });
            rootUl.innerHTML = "";
            rootUl.className = "c-tree";
-           const render = (nodes, parent, depth) => {
-              const ul = parent ? document.createElement("div") : rootUl;
-              if (parent) {
-                ul.className = "c-tree__children";
-                ul.setAttribute("role", "group");
-                if (supportsUntilFound()) ul.setAttribute("hidden", "until-found"); else ul.setAttribute("hidden", "");
-              }
-             nodes.forEach((node) => {
-              const li = document.createElement("div");
-              li.className = "c-tree__node";
-              li.setAttribute("role", "treeitem");
-              li.setAttribute("aria-level", String(depth));
-               if (node.children) {
-                  li.setAttribute("aria-expanded", "false");
-                  const row = document.createElement("div");
-                  row.className = "c-tree__row" + (node.active ? " c-tree__row--active" : "") + (node.dir ? " c-tree__row--dir" : "");
-                 if (node.indent) {
-                   const ind = document.createElement("span");
-                   ind.className = "c-tree__indent";
-                   ind.style.inlineSize = (node.indent * 1) + "rem";
-                   row.appendChild(ind);
-                 }
-                 const toggle = document.createElement("button");
-                 toggle.className = "c-tree__toggle";
-                 toggle.setAttribute("type", "button");
-                 toggle.setAttribute("aria-expanded", "false");
-                toggle.setAttribute("aria-label", "Toggle");
-                toggle.innerHTML = '<svg aria-hidden="true"><use href="#i-chevron-right" /></svg>';
-                row.appendChild(toggle);
-                const span = document.createElement("span");
-                span.textContent = node.label;
-                row.appendChild(span);
-                li.appendChild(row);
-                render(node.children, li, depth + 1);
-              } else {
-                const leaf = document.createElement("div");
-                leaf.className = "c-tree__leaf" + (node.active ? " c-tree__row--active" : "") + (node.dir ? " c-tree__row--dir" : "");
-                if (node.indent) {
-                  const ind = document.createElement("span");
-                  ind.className = "c-tree__indent";
-                  ind.style.inlineSize = (node.indent * 1) + "rem";
-                  leaf.appendChild(ind);
-                }
-                if (this.hasAttribute("selectable")) {
-                   const cb = document.createElement("input");
-                   cb.type = "checkbox";
-                   cb.className = "c-tree__select";
-                   cb.setAttribute("aria-label", "Select " + (node.label || node));
-                   leaf.insertBefore(cb, leaf.firstChild);
-                 }
-                 leaf.appendChild(document.createTextNode(node.label || node));
-                li.appendChild(leaf);
-              }
-              ul.appendChild(li);
-            });
-            if (parent) parent.appendChild(ul);
-          };
-          render(parsed, null, 1);
-           this.classList.remove("c-tree");
-           rootUl.classList.add("c-tree");
-           if (this.hasAttribute("virtual")) {
+           rootUl.setAttribute("role", "tree");
+           const virtual = this.hasAttribute("virtual");
+           if (virtual) {
+             this._treeData = parsed;
+             this._expanded = this._expanded || new Set();
+             this._treeRoot = rootUl;
+             this._restoreExpanded();
              rootUl.style.maxHeight = rootUl.style.maxHeight || "24rem";
              rootUl.style.overflow = "auto";
-             rootUl.querySelectorAll(".c-tree__node").forEach((n) => {
-               n.style.contentVisibility = "auto";
-               n.style.containIntrinsicSize = "auto 1.5rem";
-             });
+             const scrollTop = this._treeScrollTop || 0;
+             this._renderWindow(rootUl, scrollTop);
+             try { rootUl.scrollTop = scrollTop; } catch (e) {}
+           } else {
+             this._treeData = null;
+             const render = (nodes, parent, depth) => {
+                const ul = parent ? document.createElement("div") : rootUl;
+                if (parent) {
+                  ul.className = "c-tree__children";
+                  ul.setAttribute("role", "group");
+                  if (supportsUntilFound()) ul.setAttribute("hidden", "until-found"); else ul.setAttribute("hidden", "");
+                }
+               nodes.forEach((node) => {
+                const li = document.createElement("div");
+                li.className = "c-tree__node";
+                li.setAttribute("role", "treeitem");
+                li.setAttribute("aria-level", String(depth));
+                 if (node.children) {
+                    li.setAttribute("aria-expanded", "false");
+                    const row = document.createElement("div");
+                    row.className = "c-tree__row" + (node.active ? " c-tree__row--active" : "") + (node.dir ? " c-tree__row--dir" : "");
+                   if (node.indent) {
+                     const ind = document.createElement("span");
+                     ind.className = "c-tree__indent";
+                     ind.style.inlineSize = (node.indent * 1) + "rem";
+                     row.appendChild(ind);
+                   }
+                   const toggle = document.createElement("button");
+                   toggle.className = "c-tree__toggle";
+                   toggle.setAttribute("type", "button");
+                   toggle.setAttribute("aria-expanded", "false");
+                  toggle.setAttribute("aria-label", "Toggle");
+                  toggle.innerHTML = '<svg aria-hidden="true"><use href="#i-chevron-right" /></svg>';
+                  row.appendChild(toggle);
+                  const span = document.createElement("span");
+                  span.textContent = node.label;
+                  row.appendChild(span);
+                  li.appendChild(row);
+                  render(node.children, li, depth + 1);
+                } else {
+                  const leaf = document.createElement("div");
+                  leaf.className = "c-tree__leaf" + (node.active ? " c-tree__row--active" : "") + (node.dir ? " c-tree__row--dir" : "");
+                  if (node.indent) {
+                    const ind = document.createElement("span");
+                    ind.className = "c-tree__indent";
+                    ind.style.inlineSize = (node.indent * 1) + "rem";
+                    leaf.appendChild(ind);
+                  }
+                  if (this.hasAttribute("selectable")) {
+                     const cb = document.createElement("input");
+                     cb.type = "checkbox";
+                     cb.className = "c-tree__select";
+                     cb.setAttribute("aria-label", "Select " + (node.label || node));
+                     leaf.insertBefore(cb, leaf.firstChild);
+                   }
+                   leaf.appendChild(document.createTextNode(node.label || node));
+                  li.appendChild(leaf);
+                }
+                ul.appendChild(li);
+              });
+              if (parent) parent.appendChild(ul);
+            };
+            render(parsed, null, 1);
            }
+           this.classList.remove("c-tree");
+           rootUl.classList.add("c-tree");
            if (rootUl.parentNode !== this) this.appendChild(rootUl);
         } catch (e) { /* keep existing */ }
       } else if (!items && !authored.length) {
@@ -440,6 +592,92 @@ render() {
       }
     }
     enhance() {
+      // Toggle handling via delegation (works for windowed + static trees).
+      if (!this._wiredTreeToggle) {
+        this._wiredTreeToggle = true;
+        this.addEventListener("click", (e) => {
+          const toggle = e.target && e.target.closest ? e.target.closest(".c-tree__toggle") : null;
+          if (!toggle || !this.contains(toggle)) return;
+          e.stopPropagation();
+          const nodeEl = toggle.closest(".c-tree__node");
+          const path = nodeEl && nodeEl.dataset ? nodeEl.dataset.path : null;
+          const expanded = toggle.getAttribute("aria-expanded") === "true";
+          if (path && this._expanded) {
+            if (expanded) this._expanded.delete(path); else this._expanded.add(path);
+          }
+          toggle.setAttribute("aria-expanded", String(!expanded));
+          const row = toggle.closest(".c-tree__row");
+          if (row) row.setAttribute("aria-expanded", String(!expanded));
+          if (this.hasAttribute("virtual") && this._treeRoot) {
+            const s = this._treeRoot;
+            this._treeScrollTop = s.scrollTop || 0;
+            this._renderWindow(s, this._treeScrollTop);
+            try { s.scrollTop = this._treeScrollTop; } catch (err) {}
+            this._persistExpanded();
+          }
+        });
+      }
+      // Scroll-driven windowing for virtual trees.
+      if (this.hasAttribute("virtual") && !this._wiredTreeScroll) {
+        this._wiredTreeScroll = true;
+        const attach = () => {
+          const s = this.querySelector(".c-tree");
+          if (!s || s._treeScrollWired) return;
+          s._treeScrollWired = true;
+          let raf = 0;
+          const onScroll = () => {
+            if (raf) return;
+            raf = requestAnimationFrame(() => {
+              raf = 0;
+              this._treeScrollTop = s.scrollTop || 0;
+              this._renderWindow(s, this._treeScrollTop);
+              try { s.scrollTop = this._treeScrollTop; } catch (err) {}
+            });
+          };
+          s.addEventListener("scroll", onScroll, { passive: true });
+          onDispose(this, () => { s.removeEventListener("scroll", onScroll); if (raf) cancelAnimationFrame(raf); });
+        };
+        attach();
+        // retry if root not ready
+        if (!this.querySelector(".c-tree")) {
+          const mo = new MutationObserver(() => { if (this.querySelector(".c-tree")) { attach(); mo.disconnect(); } });
+          mo.observe(this, { childList: true, subtree: true });
+          onDispose(this, () => mo.disconnect());
+        }
+      }
+      // Auto-scroll during drag for virtual trees (so off-screen targets
+      // become reachable). Delegated on the host; only active in virtual mode.
+      if (this.hasAttribute("virtual") && !this._wiredTreeDragScroll) {
+        this._wiredTreeDragScroll = true;
+        let dragScrollRaf = 0;
+        let dragScrollDir = 0;
+        const tick = () => {
+          if (!dragScrollDir) { dragScrollRaf = 0; return; }
+          const s = this._treeRoot;
+          if (s) {
+            s.scrollTop += dragScrollDir * 8;
+            this._treeScrollTop = s.scrollTop;
+            this._renderWindow(s, this._treeScrollTop);
+          }
+          dragScrollRaf = requestAnimationFrame(tick);
+        };
+        this.addEventListener("dragover", (e) => {
+          const s = this._treeRoot;
+          if (!s) return;
+          const rect = s.getBoundingClientRect();
+          const edge = 40;
+          if (e.clientY < rect.top + edge) dragScrollDir = -1;
+          else if (e.clientY > rect.bottom - edge) dragScrollDir = 1;
+          else dragScrollDir = 0;
+          if (dragScrollDir && !dragScrollRaf) dragScrollRaf = requestAnimationFrame(tick);
+        });
+        const stop = () => {
+          dragScrollDir = 0;
+          if (dragScrollRaf) { cancelAnimationFrame(dragScrollRaf); dragScrollRaf = 0; }
+        };
+        this.addEventListener("dragend", stop);
+        this.addEventListener("drop", stop);
+      }
       // Interaction lives in behaviours.mjs, which the shadow wrappers call too.
       // One implementation, so the two layers cannot drift apart again: the shadow
       // copy queried its root for slotted nodes, found none, and wired nothing.

@@ -3796,8 +3796,10 @@
   }
   .c-date-picker {
     display: inline-flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: var(--space-2xs);
+    max-inline-size: 100%;
   }
   .c-date-picker__label {
     font-size: var(--type-xs);
