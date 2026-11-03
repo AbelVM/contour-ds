@@ -581,7 +581,7 @@ class ContourDrawer extends ContourBase {
       // cannot re-enter the render — see the dialog); the `.is-open` class the
       // CSS keys off is re-derived here because the base restores the authored
       // class on every render and would otherwise drop it mid-lock.
-      if (this.hasAttribute("open")) this.classList.add("is-open");
+      if (this.hasAttribute("open")) this.classList.add("is-open"); else this.classList.remove("is-open");
       const body = this.getAttribute("body");
       const b = this.querySelector(".c-drawer__body");
       const authored = b ? Array.from(b.children) : [];
@@ -678,7 +678,7 @@ class ContourSheet extends ContourBase {
       // Open state is the `open` attribute (written, never observed, so it
       // cannot re-enter the render); the `.is-open` class is re-derived because
       // the base restores the authored class on every render (see the drawer).
-      if (this.hasAttribute("open")) this.classList.add("is-open");
+      if (this.hasAttribute("open")) this.classList.add("is-open"); else this.classList.remove("is-open");
       const body = this.getAttribute("body");
       const b = this.querySelector(".c-sheet__body");
       const authored = b ? Array.from(b.children) : [];

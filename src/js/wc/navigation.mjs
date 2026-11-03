@@ -1461,8 +1461,7 @@ class ContourSidebar extends ContourBase {
     static get properties() { return { title: { attribute: "title" }, items: { attribute: "items" }, collapsed: { attribute: "collapsed", type: Boolean } }; }
     render() {
       this.classList.add("c-sidebar");
-      if (this.hasAttribute("collapsed")) this.classList.add("c-sidebar--collapsed");
-      else Array.from(this.classList).forEach((c) => { if (c === "c-sidebar--collapsed") this.classList.remove(c); });
+      if (this.hasAttribute("collapsed")) this.classList.add("c-sidebar--collapsed"); else this.classList.remove("c-sidebar--collapsed");
       const title = this.getAttribute("title");
       if (title) {
         const t = this.ensure(".c-sidebar__title", () => { const el = document.createElement("div"); el.className = "c-sidebar__title"; return el; });

@@ -179,7 +179,7 @@ class ContourDot extends ContourBase {
       Array.from(this.classList).forEach((c) => { if (c.startsWith("c-dot--")) this.classList.remove(c); });
       const variant = this.getAttribute("variant");
       if (variant) this.classList.add("c-dot--" + variant);
-      if (this.hasAttribute("live")) this.classList.add("c-dot--live");
+      if (this.hasAttribute("live")) this.classList.add("c-dot--live"); else this.classList.remove("c-dot--live");
     }
   }
   define("contour-dot", ContourDot);
@@ -200,7 +200,7 @@ class ContourPill extends ContourBase {
       if (label) {
         this.textContent = label;
       }
-      if (this.hasAttribute("live")) this.classList.add("c-pill--live");
+      if (this.hasAttribute("live")) this.classList.add("c-pill--live"); else this.classList.remove("c-pill--live");
     }
   }
   define("contour-pill", ContourPill);
@@ -1619,8 +1619,7 @@ class ContourDatePicker extends ContourBase {
         configure(end, this.getAttribute("range-end"), "End date");
         if (end.parentNode !== this) this.appendChild(end);
       } else if (end) end.remove();
-      if (this.hasAttribute("disabled")) this.classList.add("is-disabled");
-      else this.classList.remove("is-disabled");
+      if (this.hasAttribute("disabled")) this.classList.add("is-disabled"); else this.classList.remove("is-disabled");
       const err = this.getAttribute("error");
       const help = this.getAttribute("help");
       let msg = this.querySelector(".c-date-picker__message");
@@ -2654,7 +2653,7 @@ class ContourSideSheet extends ContourBase {
       if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Side sheet");
       const side = this.getAttribute("side") || "end";
       this.classList.add("c-side-sheet--" + side);
-      if (this.hasAttribute("open")) this.classList.add("is-open");
+      if (this.hasAttribute("open")) this.classList.add("is-open"); else this.classList.remove("is-open");
       else this.classList.remove("is-open");
       const title = this.getAttribute("title");
       if (title) {

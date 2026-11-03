@@ -446,8 +446,7 @@ class ContourShowcaseFull extends ContourBase {
     static get properties() { return { title: { attribute: "title" }, text: { attribute: "text" }, media: { attribute: "media" }, reverse: { attribute: "reverse" }, items: { attribute: "items" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-showcase");
-      if (this.hasAttribute("reverse")) this.classList.add("c-showcase--reverse");
-      else this.classList.remove("c-showcase--reverse");
+      if (this.hasAttribute("reverse")) this.classList.add("c-showcase--reverse"); else this.classList.remove("c-showcase--reverse");
       const title = this.getAttribute("title");
       if (title) this.setAttribute("aria-label", title);
       else this.removeAttribute("aria-label");
