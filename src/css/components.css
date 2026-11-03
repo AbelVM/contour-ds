@@ -1850,6 +1850,13 @@
     color: var(--color-text-muted);
   }
 
+  .c-field-group__fields {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    align-items: center;
+  }
+
   .c-field-group__hint {
     font-size: var(--type-xs);
     color: var(--color-text-subtle);
@@ -2308,9 +2315,20 @@
     background: var(--color-surface-raised);
   }
 
+  .c-error-boundary__message {
+    font-size: var(--type-sm);
+    color: var(--color-text-muted);
+    margin-block-start: var(--space-xs);
+  }
+
   .c-resize-observer {
     display: block;
     contain: layout;
+  }
+
+  .c-resize-observer__target {
+    display: block;
+    min-block-size: 1rem;
   }
 
   /* Container query: the table drops its optional columns when the table
@@ -2732,6 +2750,11 @@
     block-size: 1.15rem;
     margin-block-start: 0.1rem;
     flex: none;
+  }
+
+  .c-alert__icon svg {
+    inline-size: 100%;
+    block-size: 100%;
   }
 
   .c-alert__title {
@@ -3705,6 +3728,11 @@
     font-size: var(--type-sm);
     color: var(--color-text-muted);
   }
+
+  .c-hover-card__content {
+    font-size: var(--type-sm);
+    color: var(--color-text);
+  }
   .c-number-field {
     display: inline-flex;
     align-items: center;
@@ -3875,6 +3903,11 @@
     font-size: var(--type-sm);
     color: var(--color-text-muted);
   }
+
+  .c-popover__content {
+    font-size: var(--type-sm);
+    color: var(--color-text);
+  }
   .c-shortcut {
     display: inline-flex;
     align-items: center;
@@ -4026,6 +4059,23 @@
     white-space: nowrap;
   }
 
+  .c-style-panel__actions {
+    display: flex;
+    gap: var(--space-xs);
+    justify-content: flex-end;
+  }
+
+  .c-style-panel__colors {
+    display: flex;
+    gap: var(--space-2xs);
+    flex-wrap: wrap;
+  }
+
+  .c-style-panel__property {
+    flex: 1;
+    min-inline-size: 0;
+  }
+
   .c-annotation {
     position: absolute;
     left: var(--annotation-x, 50%);
@@ -4038,6 +4088,11 @@
     font-size: var(--type-xs);
     box-shadow: var(--shadow-sm);
     white-space: nowrap;
+  }
+
+  .c-annotation__label {
+    font-weight: var(--weight-medium);
+    color: var(--color-text);
   }
 
   .c-map-popup {
@@ -4162,10 +4217,22 @@
   .c-side-sheet--end { inset-inline-end: 0; }
   .c-side-sheet.is-open { transform: translateX(0); }
   .c-side-sheet__title { font-size: var(--type-h4); font-weight: 600; margin-block-end: var(--space-sm); }
+
+  .c-side-sheet__panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
   /* -- Tour -------------------------------------------------------------- */
   .c-tour { position: fixed; z-index: var(--z-tooltip); background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-sm); box-shadow: var(--shadow-md); max-inline-size: 18rem; }
   .c-tour__tip { font-size: var(--type-sm); margin-block-end: var(--space-xs); }
   .c-tour__nav { display: flex; justify-content: flex-end; }
+
+  .c-tour__step {
+    font-size: var(--type-xs);
+    color: var(--color-text-muted);
+    margin-block-end: var(--space-2xs);
+  }
   /* -- Tags input -------------------------------------------------------- */
   .c-tags-input { display: flex; flex-wrap: wrap; gap: var(--space-2xs); align-items: center; border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-2xs); }
   .c-tags-input__input { border: none; outline: none; flex: 1; min-inline-size: 6rem; font-size: var(--type-sm); background: transparent; color: var(--color-text); }
@@ -4201,6 +4268,14 @@
   .c-data-grid { display: block; overflow: auto; }
   .c-data-grid__table { inline-size: 100%; }
   .c-data-grid__wrap { max-block-size: 400px; overflow: auto; }
+
+  .c-data-grid__row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-2xs) var(--space-xs);
+    border-block-end: 1px solid var(--color-border-subtle);
+  }
   /* -- Tree grid --------------------------------------------------------- */
   .c-tree-grid { display: block; overflow: auto; }
   .c-tree-grid__table { inline-size: 100%; }

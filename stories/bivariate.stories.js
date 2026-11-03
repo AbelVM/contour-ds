@@ -20,7 +20,7 @@ const renderBivariate = (tag, args = {}) => {
 export default {
   title: "Contour/Data/Bivariate",
   tags: ["autodocs"],
-  parameters: { contour: { maturity: "complete-widget" }, a11y: { test: "todo" }, issue: "SB-A11Y-03", a11yTodo: { owner: "Contour maintainers", rootCause: "isolated matrix context", mitigation: "retain todo until standalone semantics are verified", review: "2026-12-01" } },
+  parameters: { contour: { maturity: "complete-widget" } },
   argTypes: {
     size: { control: "text" },
     "axis-x": { control: "text" },

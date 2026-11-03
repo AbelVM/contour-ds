@@ -210,6 +210,11 @@
     flex: none;
   }
 
+  .c-callout__icon svg {
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
   .c-callout__title {
     font-weight: var(--weight-semibold);
     color: var(--color-text-strong);

@@ -843,6 +843,7 @@
     min-block-size: 1.5rem;
     transition:
       opacity var(--dur-fast) var(--ease-standard),
+      color var(--dur-fast) var(--ease-standard),
       background-color var(--dur-fast) var(--ease-standard);
   }
 
@@ -851,6 +852,10 @@
   }
 
   .c-legend__item[aria-pressed="false"] {
+    color: var(--color-text-muted);
+  }
+
+  .c-legend__item[aria-pressed="false"] .c-legend__swatch {
     opacity: 0.4;
   }
 
@@ -1417,6 +1422,9 @@
      8e. LAYER PANEL — toggleable layer list
      ======================================================================= */
   .c-layer-panel {
+    display: block;
+    min-inline-size: 0;
+    box-sizing: border-box;
     background: var(--color-surface-1);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
@@ -1427,12 +1435,19 @@
 
   .c-layer-panel__item {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: var(--space-xs);
     padding: var(--space-2xs) var(--space-xs);
     border-radius: var(--radius-sm);
     font-size: var(--type-sm);
     cursor: grab;
+    min-inline-size: 0;
+    overflow: hidden;
+  }
+
+  .c-layer-panel__item > * {
+    min-inline-size: 0;
   }
 
   .c-layer-panel__item:hover {
@@ -1461,20 +1476,27 @@
      cursor: pointer;
    }
 
+  .c-layer-panel__toggle svg,
+  .c-layer-panel__remove svg {
+    inline-size: 0.75rem;
+    block-size: 0.75rem;
+  }
+
   .c-layer-panel__opacity {
-    flex: 1;
+    flex: 1 1 8rem;
+    min-inline-size: 0;
     min-block-size: 1.5rem;
     accent-color: var(--color-primary);
   }
 
   .c-layer-panel__projection {
-    flex: 1;
+    flex: 0 1 8rem;
     min-inline-size: 0;
     max-inline-size: 100%;
   }
 
    .c-layer-panel__name {
-     flex: 1;
+     flex: 1 1 8rem;
      min-inline-size: 0;
      overflow: hidden;
      text-overflow: ellipsis;
@@ -1485,6 +1507,37 @@
      font-size: var(--type-sm);
      color: var(--color-text-muted);
    }
+
+  .c-layer-panel__label {
+    font-size: var(--type-xs);
+    font-weight: var(--weight-medium);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-label);
+  }
+
+  .c-layer-panel__rename,
+  .c-layer-panel__duplicate,
+  .c-layer-panel__zoom,
+  .c-layer-panel__remove {
+    flex: 0 0 auto;
+    font-size: var(--type-xs);
+    padding: var(--space-3xs) var(--space-2xs);
+    border: 1px solid var(--color-control-edge);
+    border-radius: var(--radius-xs);
+    background: var(--color-surface-2);
+    color: var(--color-text);
+    cursor: pointer;
+  }
+
+  .c-layer-panel__rename-input {
+    font-size: var(--type-sm);
+    padding: var(--space-3xs) var(--space-2xs);
+    border: 1px solid var(--color-control-edge);
+    border-radius: var(--radius-xs);
+    background: var(--color-surface-1);
+    color: var(--color-text);
+  }
 
   .c-layer-panel__empty,
   .c-layer-panel__loading,
@@ -2432,6 +2485,11 @@
     border-radius: var(--radius-xs);
   }
 
+  .c-layer-switch__toggle svg {
+    inline-size: 0.75rem;
+    block-size: 0.75rem;
+  }
+
   .c-layer-switch__toggle:hover {
     color: var(--color-text);
     background: var(--color-surface-3);
@@ -2584,6 +2642,13 @@
     background: color-mix(in oklab, var(--color-primary) 24%, transparent);
     border-inline: 2px solid var(--color-primary);
   }
+
+  .c-brush__range {
+    display: block;
+    font-size: var(--type-xs);
+    color: var(--color-text-muted);
+    margin-block-start: var(--space-2xs);
+  }
   .c-brush__handle {
     position: absolute;
     inset-block: 0;
@@ -2665,6 +2730,13 @@
   .c-donut__center {
     font-family: var(--font-display);
     font-size: var(--type-lg);
+    font-weight: var(--weight-bold);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .c-donut__value {
+    font-family: var(--font-display);
+    font-size: var(--type-h3);
     font-weight: var(--weight-bold);
     font-variant-numeric: tabular-nums;
   }
@@ -2767,6 +2839,11 @@
     padding: var(--space-md);
   }
 
+  .c-widget-state__label {
+    font-size: var(--type-sm);
+    color: var(--color-text-muted);
+  }
+
   /* =======================================================================
      BROWNOUT — degraded-mode wrapper
      ======================================================================= */
@@ -2774,6 +2851,11 @@
     display: none;
   }
   .c-brownout__decorative { }
+
+  .c-brownout__label {
+    font-size: var(--type-xs);
+    color: var(--color-text-muted);
+  }
 
   /* =======================================================================
      BIVARIATE LEGEND — 2D matrix legend
@@ -2797,6 +2879,14 @@
   .c-bivariate-legend__cell {
     aspect-ratio: 1;
     border-radius: var(--radius-xs);
+  }
+
+  .c-bivariate-legend__swatch {
+    display: inline-block;
+    inline-size: 0.75rem;
+    block-size: 0.75rem;
+    border-radius: var(--radius-xs);
+    border: 1px solid var(--color-border);
   }
   .c-bivariate-legend__axis {
     font-family: var(--font-mono);

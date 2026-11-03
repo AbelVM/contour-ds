@@ -731,10 +731,6 @@ class ContourSelect extends ContourBase {
            const label = this.getAttribute("label");
            if (label) {
              select.setAttribute("aria-label", label);
-             // Associated label element.
-             let lbl = this.querySelector("label.c-select__label");
-             if (!lbl) { lbl = document.createElement("label"); lbl.className = "c-select__label"; lbl.textContent = label; this.insertBefore(lbl, select); }
-             else lbl.textContent = label;
            }
            const placeholder = this.getAttribute("placeholder");
            if (placeholder) {
@@ -767,11 +763,25 @@ class ContourSelect extends ContourBase {
           select.classList.add("c-select");
         } catch (e) { /* keep existing */ }
       }
+      // Ensure authored select gets c-select styling.
+      const authoredSel = this.querySelector("select");
+      if (authoredSel && !authoredSel.classList.contains("c-select")) {
+        authoredSel.classList.add("c-select");
+        this.classList.remove("c-select");
+      }
       // Disabled / error / help contract (applies to authored or generated select).
       const sel = this.querySelector("select");
       if (sel) {
         if (this.hasAttribute("disabled")) { sel.setAttribute("disabled", ""); this.classList.add("is-disabled"); }
         else { sel.removeAttribute("disabled"); this.classList.remove("is-disabled"); }
+      }
+      // Label (applies to both JSON and authored options).
+      const label = this.getAttribute("label");
+      if (label) {
+        let lbl = this.querySelector("label.c-select__label");
+        if (!lbl) { lbl = document.createElement("label"); lbl.className = "c-select__label"; this.insertBefore(lbl, sel || this.firstChild); }
+        lbl.textContent = label;
+        if (sel) sel.setAttribute("aria-label", label);
       }
       const err = this.getAttribute("error");
       const help = this.getAttribute("help");
@@ -906,15 +916,18 @@ class ContourTextarea extends ContourBase {
  * error and help states. Form associated; emits `contour:input` / `contour:change`.
  */
 class ContourInputFull extends ContourBase {
-    static get observed() { return ["type", "placeholder", "required", "value", "disabled", "error", "help"]; }
-    static get properties() { return { type: { attribute: "type" }, placeholder: { attribute: "placeholder" }, required: { attribute: "required", type: Boolean }, value: { attribute: "value" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" } }; }
+    static get observed() { return ["type", "placeholder", "required", "value", "disabled", "error", "help", "label"]; }
+    static get properties() { return { type: { attribute: "type" }, placeholder: { attribute: "placeholder" }, required: { attribute: "required", type: Boolean }, value: { attribute: "value" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" }, label: { attribute: "label" } }; }
     static get formAssociated() { return true; }
     render() {
       this.classList.add("c-input");
       const input = this.ensure("input", () => { const el = document.createElement("input"); el.className = "c-input"; return el; });
       input.className = "c-input";
       input.type = this.getAttribute("type") || "text";
-      input.placeholder = this.getAttribute("placeholder") || "";
+       input.placeholder = this.getAttribute("placeholder") || "";
+       const label = this.getAttribute("label");
+       if (label) input.setAttribute("aria-label", label);
+       else if (!this.hasAttribute("aria-label")) input.removeAttribute("aria-label");
       if (this.hasAttribute("value")) input.value = this.getAttribute("value");
       if (this.hasAttribute("required")) input.setAttribute("required", "");
       else input.removeAttribute("required");

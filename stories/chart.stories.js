@@ -10,7 +10,7 @@ export default {
     series: { control: "text" },
     axis: { control: "text" },
   },
-  parameters: { a11y: { test: "todo" }, issue: "SB-A11Y-02", a11yTodo: { owner: "Contour maintainers", rootCause: "selectable legend dims inactive items via opacity, dropping contrast below 4.5:1", mitigation: "verify contrast in chart composition; consider color-based dimming", review: "2026-12-01" } },
+  parameters: { contour: { maturity: "complete-widget" } },
 };
 
 const DATA = JSON.stringify({ labels: ["A", "B", "C"], values: [3, 7, 5] });
@@ -81,7 +81,7 @@ export const DataTable = {
 };
 
 export const Legend = {
-  parameters: { a11y: { test: "todo" }, issue: "SB-A11Y-02", a11yTodo: { owner: "Contour maintainers", rootCause: "selectable legend dims inactive items via opacity, dropping contrast below 4.5:1", mitigation: "verify contrast in chart composition; consider color-based dimming", review: "2026-12-01" } },
+  parameters: { } ,
   render: (args = {}) => {
     const legend = document.createElement("contour-legend");
     legend.setAttribute("title", "Routes");

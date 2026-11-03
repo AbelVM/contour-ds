@@ -27,9 +27,11 @@ const render = (args = {}) => {
   if (args.error) s.setAttribute("error", args.error);
   if (args.help) s.setAttribute("help", args.help);
   if (!args.options) {
+    const sel = document.createElement("select");
     const opt1 = document.createElement("option"); opt1.value = "us"; opt1.textContent = "United States";
     const opt2 = document.createElement("option"); opt2.value = "ca"; opt2.textContent = "Canada";
-    s.appendChild(opt1); s.appendChild(opt2);
+    sel.appendChild(opt1); sel.appendChild(opt2);
+    s.appendChild(sel);
   }
   return s;
 };
@@ -40,7 +42,7 @@ export const Default = {
   play: async ({ canvasElement }) => {
     const s = canvasElement.querySelector("contour-select");
     await expect(s).toBeTruthy();
-    await expect(s).toHaveClass(/c-select/);
+    await expect(s.querySelector("select")).toHaveClass(/c-select/);
     await expect(canvasElement.textContent).toContain("United States");
   },
 };

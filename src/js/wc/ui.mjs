@@ -447,7 +447,9 @@ class ContourMark extends ContourBase {
 class ContourLoading extends ContourBase {
     render() {
       this.classList.add("c-loading");
-      this.ensure(".c-spinner", () => { const el = document.createElement("span"); el.className = "c-spinner"; return el; });
+      if (!this.hasAttribute("role")) this.setAttribute("role", "status");
+      if (!this.hasAttribute("aria-live")) this.setAttribute("aria-live", "polite");
+      this.ensure(".c-spinner", () => { const el = document.createElement("span"); el.className = "c-spinner"; el.setAttribute("aria-hidden", "true"); return el; });
     }
   }
   define("contour-loading", ContourLoading);

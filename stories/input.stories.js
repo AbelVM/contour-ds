@@ -6,12 +6,6 @@ export default {
   tags: ["autodocs"],
   parameters: {
     contour: { maturity: "complete-widget" },
-    // a11y todo: contour-input wraps a native input; axe flags the generated
-    // label association in the isolated story (no form context). Tracked as
-    // SB-09 / issue SB-A11Y-01. Re-enable (error) once the story provides a
-    // labelled form context.
-    a11y: { test: "todo" },
-    a11yTodo: { owner: "Contour maintainers", rootCause: "isolated input label association is incomplete", mitigation: "provide a labelled form context", review: "2026-12-01" },
   },
 };
 

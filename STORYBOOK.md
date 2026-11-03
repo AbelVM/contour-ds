@@ -80,7 +80,7 @@ API stabilizes. `agent-rules.json` and `llms*.txt` remain authoritative.
 
 ## Measured evidence (SB-29)
 
-- Story files: 49; stories: 557; stories with play functions: 557.
+- Story files: 50; stories: 579; stories with play functions: 579.
 - High-risk families covered: 13/13.
 - A11y status (files): error 0, todo 11, off 0, unset 31.
 - Maturity counts: complete-widget 36, composition 3, primitive 2, scaffold 1.

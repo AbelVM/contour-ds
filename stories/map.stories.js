@@ -4,7 +4,7 @@ import "../dist/wc/map.mjs";
 export default {
   title: "Contour/Map/Panel",
   tags: ["autodocs"],
-  parameters: { contour: { maturity: "scaffold" } },
+  parameters: { contour: { maturity: "complete-widget" } },
   argTypes: {
     title: { control: "text" },
   },

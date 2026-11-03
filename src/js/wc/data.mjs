@@ -1401,11 +1401,13 @@ class ContourMeter extends ContourBase {
         renderEmpty(this, "meter");
         return;
       }
-      if (rValue === null) {
-        this.style.removeProperty("--meter-value");
-      } else {
-        this.style.setProperty("--meter-value", rValue);
-      }
+       if (rValue === null) {
+         this.style.removeProperty("--meter-value");
+       } else {
+         const num = parseFloat(rValue);
+         if (Number.isFinite(num)) this.style.setProperty("--meter-value", rValue);
+         else this.style.removeProperty("--meter-value");
+       }
       const core = this.ensure(".c-meter__core", () => { const el = document.createElement("span"); el.className = "c-meter__core"; return el; });
       let val = core.querySelector(".c-meter__value");
       if (!val) { val = document.createElement("span"); val.className = "c-meter__value"; core.appendChild(val); }
