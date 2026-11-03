@@ -110,6 +110,11 @@ const decorators = [
 
 const preview = {
   parameters: {
+    options: {
+      storySort: {
+        order: ["Contour", ["Foundations", "Elements", "Catalog", "*"]],
+      },
+    },
     controls: {
       matchers: {
         color: /(background|color)$/i,
