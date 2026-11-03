@@ -210,7 +210,7 @@ class ContourField extends ContourBase {
       if (!input.id) input.id = contourId("contour-field");
       // Associate the label with the input so the control is labelled.
       const lbl = this.querySelector(".c-field__label");
-      if (lbl) { if (!input.id) input.id = contourId("contour-field"); lbl.setAttribute("for", input.id); }
+      if (lbl) { if (!input.id) input.id = contourId("contour-field"); lbl.setAttribute("for", input.id); input.setAttribute("aria-label", lbl.textContent); }
       if (hint) {
         const h = this.ensure(".c-field__hint", () => { const el = document.createElement("span"); el.className = "c-field__hint"; return el; });
         h.textContent = hint;
@@ -927,7 +927,7 @@ class ContourInputFull extends ContourBase {
        input.placeholder = this.getAttribute("placeholder") || "";
        const label = this.getAttribute("label");
        if (label) input.setAttribute("aria-label", label);
-       else if (!this.hasAttribute("aria-label")) input.removeAttribute("aria-label");
+       // else: keep any aria-label set by an ancestor (e.g. contour-field).
       if (this.hasAttribute("value")) input.value = this.getAttribute("value");
       if (this.hasAttribute("required")) input.setAttribute("required", "");
       else input.removeAttribute("required");
