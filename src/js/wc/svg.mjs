@@ -25,6 +25,7 @@
  * @param {number} endAngle   end angle in radians
  * @returns {string} SVG path `d` attribute
  */
+/** Build an SVG arc path string. */
 export function arcPath(cx, cy, r, inner, startAngle, endAngle) {
   // Clamp non-finite inputs so a bad value cannot emit NaN/Infinity into the
   // path string (B3-22). A degenerate slice collapses to a point.
@@ -61,6 +62,7 @@ export function arcPath(cx, cy, r, inner, startAngle, endAngle) {
  * @param {number} [opts.gap=0.02] angular gap between slices in radians
  * @returns {{path: string, value: number, index: number}[]}
  */
+/** Compute donut slice geometry. */
 export function donutSlices(values, opts) {
   opts = opts || {};
   const cx = opts.cx != null ? opts.cx : 100;
@@ -95,6 +97,7 @@ export function donutSlices(values, opts) {
  * @param {number} [opts.max] override max value (defaults to max of values)
  * @returns {{x:number,y:number,width:number,height:number}[]}
  */
+/** Compute bar rectangle geometry. */
 export function barRects(values, opts) {
   opts = opts || {};
   const width = opts.width != null ? opts.width : 300;
@@ -122,6 +125,7 @@ export function barRects(values, opts) {
  * @param {number} [opts.min] override min
  * @returns {string} "x,y x,y ..."
  */
+/** Compute polyline point string. */
 export function polylinePoints(values, opts) {
   opts = opts || {};
   const width = opts.width != null ? opts.width : 300;
@@ -146,6 +150,7 @@ export function polylinePoints(values, opts) {
  * @param {object} [opts] same as polylinePoints
  * @returns {string} SVG path `d` attribute
  */
+/** Compute a smoothed SVG path. */
 export function smoothPath(values, opts) {
   const pts = polylinePoints(values, opts).split(" ").map((p) => p.split(",").map(Number));
   if (!pts.length) return "";
@@ -171,6 +176,7 @@ export function smoothPath(values, opts) {
  * @param {number} [width=3] half-width of the needle at the base
  * @returns {string} SVG path `d` attribute
  */
+/** Compute compass needle geometry. */
 export function compassNeedle(cx, cy, length, angleDeg, width) {
   angleDeg = angleDeg == null ? 0 : angleDeg;
   width = width == null ? 3 : width;
@@ -196,6 +202,7 @@ export function compassNeedle(cx, cy, length, angleDeg, width) {
  * @param {number} [segments=4] number of segments
  * @returns {number[]} tick values from 0 to value inclusive
  */
+/** Compute scale bar tick positions. */
 export function scaleBarTicks(value, segments) {
   value = Number(value) || 0;
   segments = Math.max(1, Math.round(segments || 4));
@@ -206,7 +213,9 @@ export function scaleBarTicks(value, segments) {
   return out;
 }
 // Marker shape encoding utility (G-13)
+/** Supported marker shapes for chart series. */
 export const MARKER_SHAPES = ["circle", "square", "triangle", "diamond", "star"];
+/** Return CSS styles for a marker shape. */
 export function markerStyles(shape) {
   const map = {
     circle: "border-radius:50%",
@@ -217,6 +226,7 @@ export function markerStyles(shape) {
   };
   return map[shape] || "";
 }
+/** Assign marker shapes to chart items. */
 export function assignMarkers(items) {
   return (items || []).map((it, i) => ({ ...it, marker: MARKER_SHAPES[i % MARKER_SHAPES.length] }));
 }

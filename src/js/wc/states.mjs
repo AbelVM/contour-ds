@@ -48,6 +48,7 @@ import { onDispose } from './core.mjs';
 // Copy. A component overrides any of these through its own attribute, because a
 // legend and a table should not both say "No data" — but a default must exist,
 // because a state with no text is a state the reader cannot see.
+/** Fallback state copy used when remote data is unavailable. */
 export const STATE_FALLBACK = {
   empty: "No data",
   loading: "Loading…",
@@ -118,6 +119,7 @@ function leaveRequest(host) {
  * prefers them. Reads nothing and writes nothing the component paints — the
  * values come back through `remoteData`.
  */
+/** Load remote data for the given fields on a host. */
 export function loadRemote(host, fields) {
   const src = host.getAttribute("src");
   if (!src) {
@@ -247,6 +249,7 @@ export function loadRemote(host, fields) {
  * websocket that says the tiles changed) without forcing a remount.
  * @param {string} srcOrKey the URL — or the cache-key a host asked under
  */
+/** Invalidate cached remote data by source or key. */
 export function remoteInvalidate(srcOrKey) {
   remoteCache.delete(srcOrKey);
 }
@@ -306,6 +309,7 @@ function startFetch(host, src, entry) {
  * The return is always the string the render body already parses, so adopting this
  * changes no component's parsing.
  */
+/** Read the cached remote data for a field. */
 export function remoteData(host, field) {
   const authored = host.getAttribute(field);
   if (authored !== null) return authored;
@@ -333,6 +337,7 @@ export function remoteData(host, field) {
  * timer scheduled here fires and clears `_remoteTimer`, so the guard has to be a
  * flag that survives the tick or every re-render adds another loop.
  */
+/** Refresh remote data for a host. */
 export function remoteRefresh(host) {
   const seconds = parseFloat(host.getAttribute("refresh") || "");
   const want = host.hasAttribute("src") && Number.isFinite(seconds) && seconds > 0;
@@ -374,6 +379,7 @@ export function remoteRefresh(host) {
 // observer disconnected) once it enters, so siblings keep watching.
 let _sharedLazyIO = null;
 const _sharedLazyTargets = new Map();
+/** Whether remote data is currently visible. */
 export function remoteVisible(host) {
   if (!host.hasAttribute("lazy")) return true;
   if (typeof IntersectionObserver !== "function") return true;
@@ -421,6 +427,7 @@ export function remoteVisible(host) {
  * and a dashboard that waits for leave that can never come is a dashboard that
  * never resumes.
  */
+/** Watch viewport intersection for lazy loading. */
 export function watchViewport(host) {
   if (host._contourViewWired) return () => {};
   host._contourViewWired = true;
@@ -483,6 +490,7 @@ function skeletonRow(i, total) {
  * because a retry in flight is not a failure, and either wins over `skeleton`,
  * which is a placeholder for a state the host may already be in.
  */
+/** Render loading/empty/error states for a block. */
 export function renderStates(host, block, opts) {
   const options = opts || {};
   const loading = host.getAttribute("loading");
@@ -518,12 +526,14 @@ export function renderStates(host, block, opts) {
 }
 
 /** Paint the empty state — for a host with no data and no authored content. */
+/** Render the empty state for a block. */
 export function renderEmpty(host, block) {
   host.appendChild(stateNode(block, "empty", host.getAttribute("empty") || STATE_FALLBACK.empty));
 }
 
 // Delegated on the host (AGENTS.md rule 12): the retry button is regenerated on
 // every render, so a listener bound to the node would be dropped by the next pass.
+/** Wire state (loading/empty/error) interactions for a host. */
 export function wireStates(host) {
   if (host._contourStatesWired) return;
   host._contourStatesWired = true;

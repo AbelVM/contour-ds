@@ -40,6 +40,7 @@ import { contourId, supportsUntilFound, onDispose } from './core.mjs';
 // calls enhance() after every render — so the guard lives in a WeakMap keyed on
 // the node, where a re-render cannot drop it.
 const WIRED_HOSTS = new WeakMap();
+/** Reset the wired-host claim for a host, allowing re-wiring after disconnect. */
 export const wcReset = (host) => { WIRED_HOSTS.delete(host); };
 const wcClaim = (host, name) => {
   let set = WIRED_HOSTS.get(host);
@@ -141,6 +142,7 @@ function isRtl(host) {
   catch (e) { return false; }
 }
 
+/** Wire tab keyboard navigation and selection for a host. */
 export function wireTabs(host) {
   if (!wcClaim(host, "tabs")) return;
   for (const list of wcSelfOrAll(host, ".c-tabs__list, .c-code-tabs__list")) {
@@ -262,6 +264,7 @@ export function wireTabs(host) {
  * markup carries the option value in a `data-*-value` hook, so the event reads
  * the hook it can see and falls back to the label the reader sees.
  */
+/** Wire segmented-control selection for a host. */
 export function wireSegmented(host) {
   const groups = wcSelfOrAll(host, ".c-segmented");
   // The block's contract is the option class, a group role and an explicit
@@ -357,6 +360,7 @@ export function wireSegmented(host) {
  * Native `<select>` stays native elsewhere — its popup cannot be styled — so the
  * one list this file drives is the one the system does draw.
  */
+/** Wire combobox filtering, keyboard nav and selection for a host. */
 export function wireCombobox(host) {
   wireComboboxDocDismiss();
   const input = wcOne(host, ".c-combobox__input");
@@ -533,6 +537,7 @@ function wireComboboxDocDismiss() {
 const visibleStops = (host) => wcAll(host, ".c-tree__toggle, .c-tree__leaf").filter((el) => !el.closest(".c-tree__children[hidden]"));
 
 /** Tree: one toggle per branch, and `contour:toggle` so a page can persist it. */
+/** Wire tree toggle and keyboard navigation for a host. */
 export function wireTree(host) {
   // The ARIA shape and the tab stop are re-applied on every pass, before the
   // claim. Two reasons, both measured on the shipped guide: the generated items
@@ -800,6 +805,7 @@ export function wireTree(host) {
 }
 
 /** Menu: roving focus over items, `contour:select` from key or pointer. */
+/** Wire menu keyboard navigation and selection for a host. */
 export function wireMenu(host) {
   wcAll(host, "[role='menuitem']").forEach((it) => { if (!it.hasAttribute("tabindex")) it.setAttribute("tabindex", it.getAttribute("aria-disabled") === "true" ? "-1" : "-1"); });
   const all = () => wcAll(host, "[role='menuitem']");
@@ -901,6 +907,7 @@ export function wireMenu(host) {
 }
 
 /** Pagination: `[aria-current="page"]` is the state the sheet paints. */
+/** Wire pagination controls for a host. */
 export function wirePagination(host) {
   wcAll(host, ".c-pagination__link").forEach((b) => { if (!b.hasAttribute("tabindex")) b.setAttribute("tabindex", "0"); });
   if (!wcClaim(host, "pagination")) return;
@@ -955,6 +962,7 @@ export function wirePagination(host) {
  * handler because both need the same three things: the text, the clipboard, and
  * a `contour:copy` a page can toast from when the clipboard is denied.
  */
+/** Wire copy-to-clipboard behaviour for a host. */
 export function wireCopy(host) {
   if (!wcClaim(host, "copy")) return;
   wcListen(host, "click", (e) => {
@@ -1015,6 +1023,7 @@ export function wireCopy(host) {
  * affordance is the control's job to remove and to say so; keeping the node in
  * sync with the event is what makes the two copies of this rule agree.
  */
+/** Wire removable-item (chip/tag) dismissal for a host. */
 export function wireRemovable(host) {
   if (!wcClaim(host, "removable")) return;
   wcListen(host, "click", (e) => {
@@ -1094,6 +1103,7 @@ function modalTrapHandler(e) {
   }
 }
 
+/** Contain focus within a modal host while open. */
 export function modalContain(host, open) {
   if (open) {
     if (modalDepth.n === 0) {
