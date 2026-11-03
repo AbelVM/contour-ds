@@ -375,10 +375,10 @@ Full reference: [style guide](index.html).
 <contour-card title="Hello"><p>Slotted content</p></contour-card>
 ```
 
-Light DOM (`<contour-*>`) and Shadow DOM (`<contour-shadow-*>`) wrappers. Attribute-reactive, form-associated, keyboard-navigable. See [§23](index.html#webcomponents).
+Light DOM (`<contour-*>`) and Shadow DOM (`<contour-shadow-*>`) wrappers. Attribute-reactive, form-associated, keyboard-navigable. See [§23](https://abelvm.github.io/contour-ds/index.html#webcomponents).
 
 Interactive stories, controls, keyboard paths and workflow demonstrations live in the
-optional [Storybook workshop](storybook/index.html) (`npm run storybook`).
+optional [Storybook workshop](https://abelvm.github.io/contour-ds/storybook/) (`npm run storybook`).
 
 ## Starter templates
 
