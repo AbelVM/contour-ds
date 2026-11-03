@@ -10,7 +10,7 @@ export default {
     series: { control: "text" },
     axis: { control: "text" },
   },
-  parameters: { contour: { maturity: "complete-widget" } },
+  parameters: { a11y: { test: "todo" }, issue: "SB-A11Y-02", a11yTodo: { owner: "Contour maintainers", rootCause: "selectable legend dims inactive items via opacity, dropping contrast below 4.5:1", mitigation: "verify contrast in chart composition; consider color-based dimming", review: "2026-12-01" } },
 };
 
 const DATA = JSON.stringify({ labels: ["A", "B", "C"], values: [3, 7, 5] });
