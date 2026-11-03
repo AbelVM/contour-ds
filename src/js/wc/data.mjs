@@ -2465,7 +2465,7 @@ class ContourBivariate extends ContourBase {
     static get properties() { return { size: { attribute: "size" }, axisX: { attribute: "axis-x" }, axisY: { attribute: "axis-y" }, colors: { attribute: "colors" }, selected: { attribute: "selected" } }; }
     render() {
       this.classList.add("c-bivariate");
-      this.setAttribute("role", "img");
+      this.setAttribute("role", "group");
       this.setAttribute("aria-label", "Bivariate legend");
       const size = Math.min(12, Math.max(1, parseInt(this.getAttribute("size") || "3", 10) || 3));
       const matrix = this.ensure(".c-bivariate__matrix", () => { const el = document.createElement("div"); el.className = "c-bivariate__matrix"; return el; });
