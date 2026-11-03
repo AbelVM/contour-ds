@@ -1,0 +1,154 @@
+/* ============================================================================
+   CONTOUR — code presentation: the highlight.js theme
+   ----------------------------------------------------------------------------
+   Maps highlight.js token classes onto Contour tokens, so a consumer who
+   chooses to run highlight.js gets code that matches the system's palette in
+   both themes. Both variants travel through light-dark().
+
+   This file is deliberately NOT imported by ds.css: highlight.js is a
+   third-party library and Contour ships zero runtime dependencies. A page
+   that does not load highlight.js has no reason to load this sheet, and a
+   page that does loads it after the library's own stylesheet:
+
+     <link rel="stylesheet" href="src/css/ds.css" />
+     <script src="highlight.min.js"></script>
+     <link rel="stylesheet" href="src/css/hljs.css" />
+
+   It sets colour only — never layout, never font-family (the system's mono
+   stack already applies to <code>). The class names are the contract
+   published in README.md under "Code presentation".
+   ========================================================================= */
+
+/* Base: inherit the container's background so rows never read as highlighted. */
+.hljs {
+  color: var(--color-text);
+  background: transparent;
+}
+
+/* Comments and documentation — subtle grey */
+.hljs-comment,
+.hljs-quote,
+.hljs-doctag {
+  color: var(--color-text-subtle);
+  font-style: italic;
+}
+
+/* Keywords and control flow — primary (teal) */
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal,
+.hljs-type,
+.hljs-meta-keyword,
+.hljs-tag {
+  color: var(--color-primary-solid);
+  font-weight: var(--weight-medium);
+}
+
+/* Attribute names — accent (magenta) */
+.hljs-attr {
+  color: var(--color-accent);
+}
+
+/* Strings — warning (amber) for contrast against teal primary */
+.hljs-string,
+.hljs-template-tag,
+.hljs-meta-string,
+.hljs-regexp {
+  color: var(--color-warning);
+}
+
+/* Numbers and constants — info (blue) */
+.hljs-number,
+.hljs-symbol,
+.hljs-bullet {
+  color: var(--color-info);
+}
+
+/* Titles, sections, names, functions — accent (magenta) */
+.hljs-title,
+.hljs-section,
+.hljs-name,
+.hljs-class .hljs-title,
+.hljs-function .hljs-title {
+  color: var(--color-accent);
+  font-weight: var(--weight-medium);
+}
+
+/* Built-ins — data (blue) */
+.hljs-built_in,
+.hljs-builtin-name {
+  color: var(--color-data);
+}
+
+/* Variables and parameters — text-strong */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-params {
+  color: var(--color-text-strong);
+}
+
+/* Properties — data (blue) */
+.hljs-property {
+  color: var(--color-data);
+}
+
+/* Attributes (HTML/XML) — accent (magenta) */
+.hljs-attribute {
+  color: var(--color-accent);
+}
+
+/* Selectors */
+.hljs-selector-id {
+  color: var(--color-accent);
+  font-weight: var(--weight-medium);
+}
+
+.hljs-selector-class {
+  color: var(--color-info);
+}
+
+.hljs-selector-attr,
+.hljs-selector-pseudo {
+  color: var(--color-warning);
+}
+
+/* Meta — subtle */
+.hljs-meta {
+  color: var(--color-text-subtle);
+}
+
+/* Substitution — text */
+.hljs-subst {
+  color: var(--color-text);
+}
+
+/* Diff — danger (clay/red) and success (green) */
+.hljs-deletion {
+  color: var(--color-danger);
+  background: color-mix(in oklab, var(--color-danger) 12%, transparent);
+}
+
+.hljs-addition {
+  color: var(--color-success);
+  background: color-mix(in oklab, var(--color-success) 12%, transparent);
+}
+
+/* Emphasis */
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: var(--weight-bold);
+}
+
+/* Links */
+.hljs-link {
+  color: var(--color-link);
+  text-decoration: underline;
+}
+
+/* Punctuation — muted */
+.hljs-punctuation {
+  color: var(--color-text-muted);
+}

@@ -1,0 +1,239 @@
+{
+  "version": "1.0",
+  "source": "index.html",
+  "sourceSha256": "89164adf826b1812",
+  "lastUpdated": "2026-11-03T18:38:35+01:00",
+  "generatedBy": "tools/build.mjs, from index.html",
+  "statement": "Machine-readable copy of the style guide's prose, generated and never hand-edited. Sections are listed in guide order; titles, prose and counts are quoted or counted, not authored. Prose is verbatim: a paragraph here is the guide's own sentence, never a sentence this generator wrote. Contains no URL: the project is private until v1.0.",
+  "counts": {
+    "sections": 26,
+    "inRail": 26,
+    "titled": 25,
+    "blocksReferenced": 221,
+    "guideOnlyClasses": 1
+  },
+  "sections": [
+    {
+      "id": "overview",
+      "title": null,
+      "marker": "00",
+      "file": "docs/overview.md",
+      "blocks": 1,
+      "inRail": true
+    },
+    {
+      "id": "principles",
+      "title": "Six rules that break every tie.",
+      "marker": "01",
+      "file": "docs/principles.md",
+      "blocks": 4,
+      "inRail": true
+    },
+    {
+      "id": "colour",
+      "title": "Colour, in five families and a neutral ramp.",
+      "marker": "02",
+      "file": "docs/colour.md",
+      "blocks": 6,
+      "inRail": true
+    },
+    {
+      "id": "type",
+      "title": "Two families, one superfamily.",
+      "marker": "03",
+      "file": "docs/type.md",
+      "blocks": 3,
+      "inRail": true
+    },
+    {
+      "id": "space",
+      "title": "A 4px base, and shapes that stay soft.",
+      "marker": "04",
+      "file": "docs/space.md",
+      "blocks": 8,
+      "inRail": true
+    },
+    {
+      "id": "motion",
+      "title": "Motion that decelerates, never bounces.",
+      "marker": "05",
+      "file": "docs/motion.md",
+      "blocks": 13,
+      "inRail": true
+    },
+    {
+      "id": "actions",
+      "title": "Actions",
+      "marker": "06",
+      "file": "docs/actions.md",
+      "blocks": 8,
+      "inRail": true
+    },
+    {
+      "id": "forms",
+      "title": "Forms",
+      "marker": "07",
+      "file": "docs/forms.md",
+      "blocks": 28,
+      "inRail": true
+    },
+    {
+      "id": "status",
+      "title": "Status & labels",
+      "marker": "07",
+      "file": "docs/status.md",
+      "blocks": 16,
+      "inRail": true
+    },
+    {
+      "id": "surfaces",
+      "title": "Surfaces",
+      "marker": "09",
+      "file": "docs/surfaces.md",
+      "blocks": 19,
+      "inRail": true
+    },
+    {
+      "id": "navigation",
+      "title": "Navigation",
+      "marker": "10",
+      "file": "docs/navigation.md",
+      "blocks": 22,
+      "inRail": true
+    },
+    {
+      "id": "feedback",
+      "title": "Feedback",
+      "marker": "11",
+      "file": "docs/feedback.md",
+      "blocks": 15,
+      "inRail": true
+    },
+    {
+      "id": "overlays",
+      "title": "Overlays",
+      "marker": "11",
+      "file": "docs/overlays.md",
+      "blocks": 28,
+      "inRail": true
+    },
+    {
+      "id": "data",
+      "title": "Data display",
+      "marker": "13",
+      "file": "docs/data.md",
+      "blocks": 38,
+      "inRail": true
+    },
+    {
+      "id": "field",
+      "title": "Field",
+      "marker": "14",
+      "file": "docs/field.md",
+      "blocks": 30,
+      "inRail": true
+    },
+    {
+      "id": "docs",
+      "title": "Documentation",
+      "marker": "15",
+      "file": "docs/docs.md",
+      "blocks": 14,
+      "inRail": true
+    },
+    {
+      "id": "landing",
+      "title": "Landing",
+      "marker": "16",
+      "file": "docs/landing.md",
+      "blocks": 15,
+      "inRail": true
+    },
+    {
+      "id": "patterns",
+      "title": "Patterns",
+      "marker": "17",
+      "file": "docs/patterns.md",
+      "blocks": 19,
+      "inRail": true
+    },
+    {
+      "id": "affordances",
+      "title": "Affordances, made visible.",
+      "marker": "18",
+      "file": "docs/affordances.md",
+      "blocks": 41,
+      "inRail": true
+    },
+    {
+      "id": "recipes",
+      "title": "Three shells, one system.",
+      "marker": "19",
+      "file": "docs/recipes.md",
+      "blocks": 40,
+      "inRail": true
+    },
+    {
+      "id": "playground",
+      "title": "Playground",
+      "marker": "20",
+      "file": "docs/playground.md",
+      "blocks": 12,
+      "inRail": true
+    },
+    {
+      "id": "theming",
+      "title": "Two themes, one cascade.",
+      "marker": "21",
+      "file": "docs/theming.md",
+      "blocks": 10,
+      "inRail": true
+    },
+    {
+      "id": "install",
+      "title": "Install",
+      "marker": "22",
+      "file": "docs/install.md",
+      "blocks": 6,
+      "inRail": true
+    },
+    {
+      "id": "webcomponents",
+      "title": "Web components",
+      "marker": "23",
+      "file": "docs/webcomponents.md",
+      "blocks": 23,
+      "inRail": true
+    },
+    {
+      "id": "mapengine",
+      "title": "Map engine integration.",
+      "marker": "24",
+      "file": "docs/mapengine.md",
+      "blocks": 5,
+      "inRail": true
+    },
+    {
+      "id": "componentindex",
+      "title": "Component index.",
+      "marker": "25",
+      "file": "docs/componentindex.md",
+      "blocks": 15,
+      "inRail": true
+    }
+  ],
+  "coverage": {
+    "contractBlocks": 221,
+    "namedBySections": 221,
+    "notNamedByAnySection": []
+  },
+  "contracts": {
+    "tokens": "../contour.tokens.json",
+    "themes": "../contour.themes.json",
+    "components": "../contour.components.json"
+  },
+  "tables": {
+    "taxonomy-table": "| Group | Count | Read | Unread | Covers |\n|---|---|---|---|---|\n| Colour ramps | 53 | 53 | — | `--basalt-…`, `--tidal-…`, `--lumen-…`, `--plasma-…`, `--sol-…`, `--clay-…` |\n| Brand ramp | 8 | 8 | — | `--brand-hue` and the ramp derived from it |\n| Semantic colours | 69 | 69 | — | `--color-…` — text, surface, border, primary; every one `light-dark()` |\n| Chart | 45 | 45 | — | categorical, sequential, diverging, dash patterns, chart chrome |\n| Fill patterns | 6 | 6 | — | `--fill-hatch-…`, `--fill-dot` — the shape branch of a filled mark |\n| Gradients | 4 | 4 | — | canvas, plate, heat, rule |\n| Typography | 31 | 31 | — | families, sizes, weights, leading, tracking, measures |\n| Space and layout | 22 | 22 | — | the 4 px scale, containers, gutter, header height, target sizes |\n| Shape | 20 | 20 | — | radii, borders, hairline, shadows, elevation |\n| Motion | 16 | 14 | 2 | durations and easings |\n| Z-index | 6 | 6 | — | `--z-raised` … `--z-tooltip` |\n| Density | 6 | 6 | — | row height, cell padding, label size |\n| Focus | 1 | 1 | — | the focus ring perimeter |\n| Miscellaneous | 13 | 12 | 1 | no documented prefix — fix the taxonomy |\n| **Total** | **300** | **297** | **3** | unique custom properties in `src/css/tokens.css` |"
+  },
+  "missingRail": []
+}

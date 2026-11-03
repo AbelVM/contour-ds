@@ -1,0 +1,2527 @@
+{
+  "$schema": "https://www.designtokens.org/TR/2025.10/format/",
+  "basalt": {
+    "50": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.99,
+          0.002,
+          230
+        ]
+      }
+    },
+    "100": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.955,
+          0.005,
+          230
+        ]
+      }
+    },
+    "200": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.9,
+          0.008,
+          230
+        ]
+      }
+    },
+    "300": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.82,
+          0.01,
+          230
+        ]
+      }
+    },
+    "400": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.72,
+          0.012,
+          230
+        ]
+      }
+    },
+    "500": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.61,
+          0.014,
+          230
+        ]
+      }
+    },
+    "600": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.51,
+          0.016,
+          230
+        ]
+      }
+    },
+    "700": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.41,
+          0.018,
+          230
+        ]
+      }
+    },
+    "800": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.31,
+          0.02,
+          230
+        ]
+      }
+    },
+    "900": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.23,
+          0.02,
+          230
+        ]
+      }
+    },
+    "950": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.17,
+          0.018,
+          230
+        ]
+      }
+    },
+    "1000": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.12,
+          0.016,
+          230
+        ]
+      }
+    },
+    "$description": "PRIMITIVES — Basalt (cool ink neutrals)"
+  },
+  "tidal": {
+    "100": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.96,
+          0.025,
+          182.5
+        ]
+      },
+      "$description": "2. PRIMITIVES — Tidal (teal · primary · success) Anchored on the reference brand teal #14b8a6 at the 500 step."
+    },
+    "200": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.92,
+          0.05,
+          182.5
+        ]
+      }
+    },
+    "300": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.85,
+          0.09,
+          182.5
+        ]
+      }
+    },
+    "400": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.78,
+          0.11,
+          182.5
+        ]
+      }
+    },
+    "500": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.7040000000000001,
+          0.123,
+          182.5
+        ]
+      }
+    },
+    "600": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.61,
+          0.115,
+          183
+        ]
+      }
+    },
+    "700": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.51,
+          0.1,
+          183
+        ]
+      }
+    },
+    "800": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.41,
+          0.082,
+          183
+        ]
+      }
+    },
+    "900": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.31,
+          0.06,
+          184
+        ]
+      }
+    },
+    "$description": "PRIMITIVES — Basalt (cool ink neutrals)"
+  },
+  "lumen": {
+    "100": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.96,
+          0.02,
+          236
+        ]
+      }
+    },
+    "200": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.91,
+          0.045,
+          236
+        ]
+      }
+    },
+    "300": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.85,
+          0.08,
+          236
+        ]
+      }
+    },
+    "400": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.78,
+          0.11,
+          236
+        ]
+      }
+    },
+    "500": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.71,
+          0.13,
+          236
+        ]
+      }
+    },
+    "600": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.62,
+          0.125,
+          238
+        ]
+      }
+    },
+    "700": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.52,
+          0.105,
+          240
+        ]
+      }
+    },
+    "800": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.42,
+          0.08,
+          242
+        ]
+      }
+    },
+    "$description": "PRIMITIVES — Lumen (azure · data · info)"
+  },
+  "plasma": {
+    "100": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.96,
+          0.024,
+          358.92
+        ]
+      },
+      "$description": "4. PRIMITIVES — Plasma (magenta · accent · live data) Anchored on the reference brand magenta #f20084 at the 500 step."
+    },
+    "200": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.92,
+          0.06,
+          358.92
+        ]
+      }
+    },
+    "300": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.85,
+          0.12,
+          358.92
+        ]
+      }
+    },
+    "400": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.74,
+          0.2,
+          358.92
+        ]
+      }
+    },
+    "500": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.6236,
+          0.2534,
+          358.92
+        ]
+      }
+    },
+    "600": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.52,
+          0.235,
+          358.92
+        ]
+      }
+    },
+    "700": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.42,
+          0.185,
+          358.92
+        ]
+      }
+    },
+    "800": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.32,
+          0.13,
+          358.92
+        ]
+      }
+    },
+    "$description": "PRIMITIVES — Lumen (azure · data · info)"
+  },
+  "sol": {
+    "100": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.97,
+          0.025,
+          85
+        ]
+      }
+    },
+    "200": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.94,
+          0.055,
+          85
+        ]
+      }
+    },
+    "300": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.88,
+          0.105,
+          80
+        ]
+      }
+    },
+    "400": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.83,
+          0.135,
+          78
+        ]
+      }
+    },
+    "500": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.77,
+          0.145,
+          75
+        ]
+      }
+    },
+    "600": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.66,
+          0.135,
+          70
+        ]
+      }
+    },
+    "700": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.54,
+          0.11,
+          65
+        ]
+      }
+    },
+    "800": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.42,
+          0.085,
+          60
+        ]
+      }
+    },
+    "$description": "PRIMITIVES — Sol (amber · caution · mid isoline bands)"
+  },
+  "clay": {
+    "100": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.96,
+          0.02,
+          32
+        ]
+      }
+    },
+    "200": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.92,
+          0.045,
+          31
+        ]
+      }
+    },
+    "300": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.86,
+          0.08,
+          30
+        ]
+      }
+    },
+    "400": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.78,
+          0.13,
+          29
+        ]
+      }
+    },
+    "500": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.68,
+          0.175,
+          27
+        ]
+      }
+    },
+    "600": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.58,
+          0.18,
+          26
+        ]
+      }
+    },
+    "700": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.47,
+          0.15,
+          26
+        ]
+      }
+    },
+    "800": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.36,
+          0.1,
+          28
+        ]
+      }
+    },
+    "$description": "PRIMITIVES — Clay (red-orange · alarm · destructive)"
+  },
+  "font": {
+    "display": {
+      "$type": "fontFamily",
+      "$value": [
+        "Contour Plex Sans Condensed",
+        "Contour Plex Sans",
+        "ui-sans-serif",
+        "system-ui",
+        "sans-serif"
+      ]
+    },
+    "sans": {
+      "$type": "fontFamily",
+      "$value": [
+        "Contour Plex Sans",
+        "ui-sans-serif",
+        "system-ui",
+        "-apple-system",
+        "Segoe UI",
+        "sans-serif"
+      ]
+    },
+    "mono": {
+      "$type": "fontFamily",
+      "$value": [
+        "Contour Plex Mono",
+        "ui-monospace",
+        "SFMono-Regular",
+        "Cascadia Mono",
+        "Menlo",
+        "monospace"
+      ]
+    },
+    "$description": "TYPOGRAPHY"
+  },
+  "type": {
+    "h3": {
+      "$type": "dimension",
+      "$value": {
+        "value": 1.25,
+        "unit": "rem"
+      }
+    },
+    "h4": {
+      "$type": "dimension",
+      "$value": {
+        "value": 1.0625,
+        "unit": "rem"
+      }
+    },
+    "lead": {
+      "$type": "dimension",
+      "$value": {
+        "value": 1.0625,
+        "unit": "rem"
+      }
+    },
+    "lg": {
+      "$type": "dimension",
+      "$value": {
+        "value": 1.125,
+        "unit": "rem"
+      }
+    },
+    "body": {
+      "$type": "dimension",
+      "$value": {
+        "value": 1,
+        "unit": "rem"
+      }
+    },
+    "sm": {
+      "$type": "dimension",
+      "$value": {
+        "value": 0.875,
+        "unit": "rem"
+      }
+    },
+    "xs": {
+      "$type": "dimension",
+      "$value": {
+        "value": 0.8125,
+        "unit": "rem"
+      }
+    },
+    "micro": {
+      "$type": "dimension",
+      "$value": {
+        "value": 0.6875,
+        "unit": "rem"
+      }
+    },
+    "$description": "TYPOGRAPHY"
+  },
+  "weight": {
+    "regular": {
+      "$type": "number",
+      "$value": 400
+    },
+    "medium": {
+      "$type": "number",
+      "$value": 500
+    },
+    "semibold": {
+      "$type": "number",
+      "$value": 600
+    },
+    "bold": {
+      "$type": "number",
+      "$value": 700
+    },
+    "$description": "TYPOGRAPHY"
+  },
+  "leading": {
+    "tight": {
+      "$type": "number",
+      "$value": 1.04
+    },
+    "snug": {
+      "$type": "number",
+      "$value": 1.22
+    },
+    "normal": {
+      "$type": "number",
+      "$value": 1.45
+    },
+    "relaxed": {
+      "$type": "number",
+      "$value": 1.65
+    },
+    "$description": "TYPOGRAPHY"
+  },
+  "space": {
+    "3xs": {
+      "$type": "dimension",
+      "$value": {
+        "value": 0.25,
+        "unit": "rem"
+      },
+      "$description": "8. SPACE — 4px base, semantic aliases for the rhythm layer Hand-picked steps, not a single ratio: the bottom half (0.25–1.25) serves component internals; the top half (1.75–5) is a ~1.4 ratio for page-level rhythm. A single ratio would not serve both."
+    },
+    "2xs": {
+      "$type": "dimension",
+      "$value": {
+        "value": 0.5,
+        "unit": "rem"
+      }
+    },
+    "xs": {
+      "$type": "dimension",
+      "$value": {
+        "value": 0.75,
+        "unit": "rem"
+      }
+    },
+    "sm": {
+      "$type": "dimension",
+      "$value": {
+        "value": 1,
+        "unit": "rem"
+      }
+    },
+    "md": {
+      "$type": "dimension",
+      "$value": {
+        "value": 1.25,
+        "unit": "rem"
+      }
+    },
+    "lg": {
+      "$type": "dimension",
+      "$value": {
+        "value": 1.75,
+        "unit": "rem"
+      }
+    },
+    "xl": {
+      "$type": "dimension",
+      "$value": {
+        "value": 2.5,
+        "unit": "rem"
+      }
+    },
+    "2xl": {
+      "$type": "dimension",
+      "$value": {
+        "value": 3.5,
+        "unit": "rem"
+      }
+    },
+    "3xl": {
+      "$type": "dimension",
+      "$value": {
+        "value": 5,
+        "unit": "rem"
+      }
+    },
+    "stack": {
+      "$type": "dimension",
+      "$value": {
+        "value": 1.25,
+        "unit": "rem"
+      },
+      "$description": "sibling blocks in a component"
+    },
+    "cluster": {
+      "$type": "dimension",
+      "$value": {
+        "value": 2,
+        "unit": "rem"
+      },
+      "$description": "groups of components"
+    }
+  },
+  "radius": {
+    "scale": {
+      "$type": "number",
+      "$value": 1,
+      "$description": "9. RADIUS — generously round, but not uniformly soft Driven by --radius-scale so a whole product can be tightened or softened from one value."
+    },
+    "xs": {
+      "$type": "dimension",
+      "$value": {
+        "value": 6,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.contour.css": {
+          "knob-resolved": [
+            "--radius-scale"
+          ],
+          "declared": "calc(6px * var(--radius-scale))"
+        }
+      }
+    },
+    "sm": {
+      "$type": "dimension",
+      "$value": {
+        "value": 10,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.contour.css": {
+          "knob-resolved": [
+            "--radius-scale"
+          ],
+          "declared": "calc(10px * var(--radius-scale))"
+        }
+      }
+    },
+    "md": {
+      "$type": "dimension",
+      "$value": {
+        "value": 14,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.contour.css": {
+          "knob-resolved": [
+            "--radius-scale"
+          ],
+          "declared": "calc(14px * var(--radius-scale))"
+        }
+      }
+    },
+    "lg": {
+      "$type": "dimension",
+      "$value": {
+        "value": 20,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.contour.css": {
+          "knob-resolved": [
+            "--radius-scale"
+          ],
+          "declared": "calc(20px * var(--radius-scale))"
+        }
+      }
+    },
+    "xl": {
+      "$type": "dimension",
+      "$value": {
+        "value": 28,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.contour.css": {
+          "knob-resolved": [
+            "--radius-scale"
+          ],
+          "declared": "calc(28px * var(--radius-scale))"
+        }
+      }
+    },
+    "2xl": {
+      "$type": "dimension",
+      "$value": {
+        "value": 36,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.contour.css": {
+          "knob-resolved": [
+            "--radius-scale"
+          ],
+          "declared": "calc(36px * var(--radius-scale))"
+        }
+      }
+    },
+    "pill": {
+      "$type": "dimension",
+      "$value": {
+        "value": 999,
+        "unit": "px"
+      }
+    }
+  },
+  "ring": {
+    "1": {
+      "$type": "dimension",
+      "$value": {
+        "value": 0.75,
+        "unit": "rem"
+      }
+    },
+    "2": {
+      "$type": "dimension",
+      "$value": {
+        "value": 1.5,
+        "unit": "rem"
+      }
+    },
+    "3": {
+      "$type": "dimension",
+      "$value": {
+        "value": 3,
+        "unit": "rem"
+      }
+    },
+    "pitch": {
+      "$type": "dimension",
+      "$value": {
+        "value": 0.5,
+        "unit": "rem"
+      }
+    },
+    "weight": {
+      "$type": "dimension",
+      "$value": {
+        "value": 1,
+        "unit": "px"
+      }
+    },
+    "$description": "Ring geometry (one pitch for every circle in the system)"
+  },
+  "shadow": {
+    "color-highlight": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          1,
+          0,
+          0
+        ],
+        "alpha": 0.22
+      }
+    },
+    "color-primary": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.2,
+          0.04,
+          182.5
+        ],
+        "alpha": 0.22
+      },
+      "$extensions": {
+        "com.contour.css": {
+          "knob-resolved": [
+            "--brand-hue"
+          ],
+          "declared": "oklch(20% 0.04 var(--brand-hue) / 0.22)"
+        }
+      }
+    },
+    "color-accent": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.2,
+          0.06,
+          356
+        ],
+        "alpha": 0.24
+      }
+    },
+    "color-range": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.2,
+          0.04,
+          182.5
+        ],
+        "alpha": 0.3
+      },
+      "$extensions": {
+        "com.contour.css": {
+          "knob-resolved": [
+            "--brand-hue"
+          ],
+          "declared": "oklch(20% 0.04 var(--brand-hue) / 0.3)"
+        }
+      }
+    },
+    "$description": "Ring geometry (one pitch for every circle in the system)"
+  },
+  "dur": {
+    "fast": {
+      "$type": "duration",
+      "$value": {
+        "value": 180,
+        "unit": "ms"
+      }
+    },
+    "base": {
+      "$type": "duration",
+      "$value": {
+        "value": 260,
+        "unit": "ms"
+      }
+    },
+    "slow": {
+      "$type": "duration",
+      "$value": {
+        "value": 420,
+        "unit": "ms"
+      }
+    },
+    "spin": {
+      "$type": "duration",
+      "$value": {
+        "value": 720,
+        "unit": "ms"
+      }
+    },
+    "spin-slow": {
+      "$type": "duration",
+      "$value": {
+        "value": 1,
+        "unit": "s"
+      }
+    },
+    "copy-tick": {
+      "$type": "duration",
+      "$value": {
+        "value": 220,
+        "unit": "ms"
+      }
+    },
+    "ping": {
+      "$type": "duration",
+      "$value": {
+        "value": 2.4,
+        "unit": "s"
+      }
+    },
+    "sweep": {
+      "$type": "duration",
+      "$value": {
+        "value": 1.6,
+        "unit": "s"
+      }
+    },
+    "reveal": {
+      "$type": "duration",
+      "$value": {
+        "value": 320,
+        "unit": "ms"
+      }
+    },
+    "focus": {
+      "$type": "duration",
+      "$value": {
+        "value": 120,
+        "unit": "ms"
+      }
+    },
+    "$description": "MOTION"
+  },
+  "ease": {
+    "standard": {
+      "$type": "cubicBezier",
+      "$value": [
+        0.22,
+        1,
+        0.36,
+        1
+      ]
+    },
+    "reveal": {
+      "$type": "cubicBezier",
+      "$value": [
+        0.16,
+        1,
+        0.3,
+        1
+      ]
+    },
+    "out-expo": {
+      "$type": "cubicBezier",
+      "$value": [
+        0.16,
+        1,
+        0.3,
+        1
+      ]
+    },
+    "in-out": {
+      "$type": "cubicBezier",
+      "$value": [
+        0.65,
+        0,
+        0.35,
+        1
+      ]
+    },
+    "exit": {
+      "$type": "cubicBezier",
+      "$value": [
+        0.4,
+        0,
+        1,
+        1
+      ]
+    },
+    "$description": "MOTION"
+  },
+  "reveal": {
+    "distance": {
+      "$type": "dimension",
+      "$value": {
+        "value": 1.5,
+        "unit": "rem"
+      }
+    },
+    "$description": "MOTION"
+  },
+  "container": {
+    "sm": {
+      "$type": "dimension",
+      "$value": {
+        "value": 40,
+        "unit": "rem"
+      }
+    },
+    "md": {
+      "$type": "dimension",
+      "$value": {
+        "value": 54,
+        "unit": "rem"
+      }
+    },
+    "xl": {
+      "$type": "dimension",
+      "$value": {
+        "value": 84,
+        "unit": "rem"
+      }
+    },
+    "$description": "LAYOUT & STACKING"
+  },
+  "header": {
+    "height": {
+      "$type": "dimension",
+      "$value": {
+        "value": 4.25,
+        "unit": "rem"
+      }
+    },
+    "$description": "LAYOUT & STACKING"
+  },
+  "z": {
+    "raised": {
+      "$type": "number",
+      "$value": 10
+    },
+    "sticky": {
+      "$type": "number",
+      "$value": 100
+    },
+    "drawer": {
+      "$type": "number",
+      "$value": 500
+    },
+    "header": {
+      "$type": "number",
+      "$value": 400
+    },
+    "toast": {
+      "$type": "number",
+      "$value": 700
+    },
+    "tooltip": {
+      "$type": "number",
+      "$value": 800
+    },
+    "$description": "LAYOUT & STACKING"
+  },
+  "border": {
+    "width": {
+      "$type": "dimension",
+      "$value": {
+        "value": 1,
+        "unit": "px"
+      }
+    },
+    "width-thick": {
+      "$type": "dimension",
+      "$value": {
+        "value": 2,
+        "unit": "px"
+      }
+    },
+    "$description": "BORDERS"
+  },
+  "target": {
+    "control": {
+      "$type": "dimension",
+      "$value": {
+        "value": 2.75,
+        "unit": "rem"
+      },
+      "$description": "Target sizes by kind (WCAG 2.5.8). A control is pressed (44 px), a listbox option is selected (24 px), a chart control is 24 px, and a data mark is not a target at all."
+    },
+    "option": {
+      "$type": "dimension",
+      "$value": {
+        "value": 1.5,
+        "unit": "rem"
+      }
+    },
+    "chart": {
+      "$type": "dimension",
+      "$value": {
+        "value": 1.5,
+        "unit": "rem"
+      }
+    },
+    "mark": {
+      "$type": "number",
+      "$value": 0,
+      "$description": "a data mark is not a target"
+    },
+    "$description": "BORDERS"
+  },
+  "hairline": {
+    "hairline": {
+      "$type": "border",
+      "$value": {
+        "width": "{border.width}",
+        "style": "solid",
+        "color": "{color.border}"
+      }
+    },
+    "$description": "BORDERS"
+  },
+  "brand": {
+    "200": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.92,
+          0.05,
+          182.5
+        ]
+      },
+      "$extensions": {
+        "com.contour.css": {
+          "knob-resolved": [
+            "--brand-hue"
+          ],
+          "declared": "oklch(92% 0.05 var(--brand-hue))"
+        }
+      }
+    },
+    "300": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.85,
+          0.09,
+          182.5
+        ]
+      },
+      "$extensions": {
+        "com.contour.css": {
+          "knob-resolved": [
+            "--brand-hue"
+          ],
+          "declared": "oklch(85% 0.09 var(--brand-hue))"
+        }
+      }
+    },
+    "400": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.78,
+          0.11,
+          182.5
+        ]
+      },
+      "$extensions": {
+        "com.contour.css": {
+          "knob-resolved": [
+            "--brand-hue"
+          ],
+          "declared": "oklch(78% 0.11 var(--brand-hue))"
+        }
+      }
+    },
+    "500": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.7040000000000001,
+          0.123,
+          182.5
+        ]
+      },
+      "$extensions": {
+        "com.contour.css": {
+          "knob-resolved": [
+            "--brand-hue"
+          ],
+          "declared": "oklch(70.4% 0.123 var(--brand-hue))"
+        }
+      }
+    },
+    "600": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.5,
+          0.115,
+          182.5
+        ]
+      },
+      "$extensions": {
+        "com.contour.css": {
+          "knob-resolved": [
+            "--brand-hue"
+          ],
+          "declared": "oklch(50% 0.115 var(--brand-hue))"
+        }
+      }
+    },
+    "700": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.51,
+          0.1,
+          182.5
+        ]
+      },
+      "$extensions": {
+        "com.contour.css": {
+          "knob-resolved": [
+            "--brand-hue"
+          ],
+          "declared": "oklch(51% 0.1 var(--brand-hue))"
+        }
+      }
+    },
+    "800": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.41,
+          0.082,
+          182.5
+        ]
+      },
+      "$extensions": {
+        "com.contour.css": {
+          "knob-resolved": [
+            "--brand-hue"
+          ],
+          "declared": "oklch(41% 0.082 var(--brand-hue))"
+        }
+      }
+    },
+    "hue": {
+      "$type": "number",
+      "$value": 182.5,
+      "$description": "One hue drives the whole brand layer. Change it and every primary surface, ring and tint follows. The documented ramps above stay fixed, so the palette reference never drifts."
+    },
+    "$description": "Brand knob"
+  },
+  "color": {
+    "canvas": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.982,
+          0.004,
+          230
+        ]
+      }
+    },
+    "canvas-sunken": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.95,
+          0.007,
+          230
+        ]
+      }
+    },
+    "surface-1": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          1,
+          0,
+          0
+        ]
+      }
+    },
+    "surface-2": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.966,
+          0.005,
+          230
+        ]
+      }
+    },
+    "surface-3": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.935,
+          0.008,
+          230
+        ]
+      }
+    },
+    "surface-raised": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          1,
+          0,
+          0
+        ]
+      }
+    },
+    "scrim": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.3,
+          0.02,
+          230
+        ],
+        "alpha": 0.42
+      }
+    },
+    "text-strong": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.23,
+          0.02,
+          230
+        ]
+      }
+    },
+    "text": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.33,
+          0.02,
+          230
+        ]
+      }
+    },
+    "text-muted": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.47,
+          0.018,
+          230
+        ]
+      }
+    },
+    "text-subtle": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.44,
+          0.018,
+          230
+        ]
+      }
+    },
+    "border-subtle": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.88,
+          0.008,
+          230
+        ]
+      }
+    },
+    "border": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.85,
+          0.01,
+          230
+        ]
+      }
+    },
+    "border-strong": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.72,
+          0.014,
+          230
+        ]
+      }
+    },
+    "control-edge": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.61,
+          0.016,
+          230
+        ]
+      },
+      "$description": "Control edge: the border of an input, select, textarea or secondary/outline button. Must clear 3:1 against every surface it can sit on (WCAG 1.4.11). The binding surface is --color-surface-3 in both themes: at the previous 62%/56% the edge measured 3.01:1 light and 2.84:1 dark there, so the dark step failed the contract this comment states. 61%/58% measures 3.14 and 3.09 — the smallest change that clears 3:1 with margin, chosen by sweeping the same canvas estimator the gate certifies with."
+    },
+    "primary": {
+      "$value": "{brand.600}"
+    },
+    "primary-hover": {
+      "$value": "{brand.700}"
+    },
+    "primary-active": {
+      "$value": "{brand.800}"
+    },
+    "primary-text": {
+      "$value": "{brand.700}"
+    },
+    "on-primary": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.99,
+          0.01,
+          182.5
+        ]
+      },
+      "$extensions": {
+        "com.contour.css": {
+          "knob-resolved": [
+            "--brand-hue"
+          ],
+          "declared": "light-dark(oklch(99% 0.01 var(--brand-hue)), var(--basalt-1000))"
+        }
+      }
+    },
+    "primary-solid": {
+      "$value": "{brand.700}",
+      "$description": "Filled surfaces need one extra step of depth so white text clears 4.5:1 on a light background."
+    },
+    "on-primary-solid": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.99,
+          0.01,
+          182.5
+        ]
+      },
+      "$extensions": {
+        "com.contour.css": {
+          "knob-resolved": [
+            "--brand-hue"
+          ],
+          "declared": "light-dark( oklch(99% 0.01 var(--brand-hue)), var(--basalt-1000) )"
+        }
+      }
+    },
+    "primary-soft": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.94,
+          0.035,
+          182.5
+        ]
+      },
+      "$extensions": {
+        "com.contour.css": {
+          "knob-resolved": [
+            "--brand-hue"
+          ],
+          "declared": "light-dark( oklch(94% 0.035 var(--brand-hue)), oklch(26% 0.05 var(--brand-hue)) )"
+        }
+      }
+    },
+    "accent": {
+      "$value": "{plasma.600}"
+    },
+    "accent-hover": {
+      "$value": "{plasma.700}"
+    },
+    "accent-text": {
+      "$value": "{plasma.700}"
+    },
+    "on-accent": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.99,
+          0.01,
+          359
+        ]
+      }
+    },
+    "accent-soft": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.94,
+          0.035,
+          358.92
+        ]
+      }
+    },
+    "data": {
+      "$value": "{lumen.600}"
+    },
+    "data-text": {
+      "$value": "{lumen.700}"
+    },
+    "data-soft": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.94,
+          0.035,
+          236
+        ]
+      }
+    },
+    "success": {
+      "$value": "{tidal.700}"
+    },
+    "success-text": {
+      "$value": "{tidal.700}"
+    },
+    "success-soft": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.94,
+          0.035,
+          182.5
+        ]
+      }
+    },
+    "warning": {
+      "$value": "{sol.600}"
+    },
+    "warning-text": {
+      "$value": "{sol.800}"
+    },
+    "warning-soft": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.95,
+          0.045,
+          85
+        ]
+      }
+    },
+    "danger": {
+      "$value": "{clay.600}"
+    },
+    "danger-hover": {
+      "$value": "{clay.700}"
+    },
+    "danger-text": {
+      "$value": "{clay.700}"
+    },
+    "danger-border": {
+      "$value": "{clay.600}"
+    },
+    "on-danger": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.99,
+          0.01,
+          27
+        ]
+      }
+    },
+    "danger-soft": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.94,
+          0.04,
+          30
+        ]
+      }
+    },
+    "info": {
+      "$value": "{lumen.600}"
+    },
+    "info-text": {
+      "$value": "{lumen.700}"
+    },
+    "info-soft": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.94,
+          0.035,
+          236
+        ]
+      }
+    },
+    "focus-ring": {
+      "$value": "{brand.700}"
+    },
+    "focus-halo": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.94,
+          0.05,
+          182.5
+        ],
+        "alpha": 0.9
+      },
+      "$extensions": {
+        "com.contour.css": {
+          "knob-resolved": [
+            "--brand-hue"
+          ],
+          "declared": "light-dark( oklch(94% 0.05 var(--brand-hue) / 0.9), oklch(78% 0.12 var(--brand-hue) / 0.24) )"
+        }
+      }
+    },
+    "selection": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.92,
+          0.04,
+          182.5
+        ]
+      },
+      "$extensions": {
+        "com.contour.css": {
+          "knob-resolved": [
+            "--brand-hue"
+          ],
+          "declared": "light-dark(oklch(92% 0.04 var(--brand-hue)), oklch(28% 0.05 var(--brand-hue)))"
+        }
+      }
+    },
+    "tooltip-bg": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.26,
+          0.02,
+          230
+        ]
+      }
+    },
+    "tooltip-fg": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.97,
+          0.004,
+          230
+        ]
+      }
+    },
+    "link": {
+      "$value": "{brand.700}"
+    },
+    "link-hover": {
+      "$value": "{brand.800}"
+    },
+    "code-bg": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.96,
+          0.008,
+          230
+        ]
+      }
+    },
+    "code-header-bg": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.93,
+          0.01,
+          230
+        ]
+      }
+    },
+    "track": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.9,
+          0.01,
+          230
+        ]
+      }
+    },
+    "skeleton": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.92,
+          0.008,
+          230
+        ]
+      }
+    },
+    "syntax-keyword": {
+      "$value": "{tidal.700}"
+    },
+    "syntax-string": {
+      "$value": "{plasma.600}"
+    },
+    "syntax-function": {
+      "$value": "{lumen.700}"
+    },
+    "syntax-punctuation": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.55,
+          0.016,
+          230
+        ]
+      }
+    },
+    "syntax-comment": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.55,
+          0.016,
+          230
+        ]
+      }
+    },
+    "syntax-number": {
+      "$value": "{sol.700}"
+    },
+    "heat-1": {
+      "$value": "{lumen.500}",
+      "$description": "NOT a sequential ramp: luminance is not monotonic across the six steps. Use --chart-seq-* for any ordered band."
+    },
+    "heat-2": {
+      "$value": "{lumen.400}"
+    },
+    "heat-3": {
+      "$value": "{tidal.400}"
+    },
+    "heat-4": {
+      "$value": "{tidal.500}"
+    },
+    "heat-5": {
+      "$value": "{sol.500}"
+    },
+    "heat-6": {
+      "$value": "{plasma.500}"
+    }
+  },
+  "density": {
+    "density": {
+      "$type": "number",
+      "$value": 1,
+      "$description": "A single multiplier that compresses row padding and gaps, so the same table can serve a 34-inch analyst monitor and an embedded widget. 1 = comfortable, 0.72 = compact."
+    },
+    "compact": {
+      "$type": "number",
+      "$value": 0.72
+    },
+    "roomy": {
+      "$type": "number",
+      "$value": 1.28
+    },
+    "type": {
+      "$type": "number",
+      "$value": 1
+    },
+    "type-compact": {
+      "$type": "number",
+      "$value": 0.875
+    },
+    "$description": "Density"
+  },
+  "focus": {
+    "width": {
+      "$type": "dimension",
+      "$value": {
+        "value": 2,
+        "unit": "px"
+      }
+    },
+    "$description": "Focus"
+  },
+  "chart": {
+    "1": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.55,
+          0.12,
+          182
+        ]
+      },
+      "$description": "Categorical — eight series, ordered so neighbouring hues stay apart. Cap at eight: past that, adjacent colours stop being reliably distinguishable and the tail should fold into \"other\". Closest pairs by luminance (C-20, measured): light 2↔8 (ΔL .0053), dark 1↔5 (ΔL .0001, ratio 1.00). Series 1 stays the default (brand hue) by design; separation is reported, not gated, and the dash pattern discharges WCAG 1.4.1. No reordering performed."
+    },
+    "2": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.52,
+          0.14,
+          243
+        ]
+      }
+    },
+    "3": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.5,
+          0.19,
+          300
+        ]
+      }
+    },
+    "4": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.52,
+          0.19,
+          350
+        ]
+      }
+    },
+    "5": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.56,
+          0.15,
+          45
+        ]
+      }
+    },
+    "6": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.62,
+          0.13,
+          90
+        ]
+      }
+    },
+    "7": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.54,
+          0.13,
+          148
+        ]
+      }
+    },
+    "8": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.52,
+          0.05,
+          250
+        ]
+      }
+    },
+    "seq-1": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.92,
+          0.04,
+          182
+        ]
+      }
+    },
+    "seq-2": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.84,
+          0.08,
+          182
+        ]
+      }
+    },
+    "seq-3": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.75,
+          0.11,
+          182
+        ]
+      }
+    },
+    "seq-4": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.65,
+          0.13,
+          182
+        ]
+      }
+    },
+    "seq-5": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.55,
+          0.13,
+          182
+        ]
+      }
+    },
+    "seq-6": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.45,
+          0.11,
+          182
+        ]
+      }
+    },
+    "seq-7": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.35,
+          0.08,
+          182
+        ]
+      }
+    },
+    "cyc-1": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.62,
+          0.02,
+          182
+        ]
+      },
+      "$description": "Cyclic — equal lightness, hue carries the encoding, wraps seamlessly. For bearing/aspect/phase/time-of-day data where 0 and 360 are the same value: index mod N, so the last stop meets the first. The seam is a neutral (low chroma) so the wrap reads as continuous rather than as a hard edge."
+    },
+    "cyc-2": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.62,
+          0.12,
+          227
+        ]
+      }
+    },
+    "cyc-3": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.62,
+          0.12,
+          272
+        ]
+      }
+    },
+    "cyc-4": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.62,
+          0.12,
+          317
+        ]
+      }
+    },
+    "cyc-5": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.62,
+          0.12,
+          2
+        ]
+      }
+    },
+    "cyc-6": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.62,
+          0.12,
+          47
+        ]
+      }
+    },
+    "cyc-7": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.62,
+          0.12,
+          92
+        ]
+      }
+    },
+    "cyc-8": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.62,
+          0.02,
+          137
+        ]
+      }
+    },
+    "div-neg": {
+      "$value": "{clay.500}"
+    },
+    "div-mid": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.92,
+          0.01,
+          230
+        ]
+      }
+    },
+    "div-pos": {
+      "$value": "{tidal.600}"
+    },
+    "ticks": {
+      "$type": "number",
+      "$value": 5,
+      "$description": "The chart's tick count, and the reason the grid can align at all. Gridlines are one repeating band, so a band is exactly `100% / (ticks - 1)` wide and every line falls on a tick by construction — see `.c-chart__plot`. An author sets this to the number of labels their axis actually renders; `Contour.chart.ticks()` returns that many values. Five is the CSS convention, not a ceiling."
+    },
+    "tip-block-start": {
+      "$type": "number",
+      "$value": 0,
+      "$description": "Where a tooltip sits inside its plot. Declared here rather than invented at the point of use: a `var()` reference to a token that exists nowhere is the exact discrepancy `node tools/check-tokens.mjs` fails the build on, and a consumer overriding an undeclared knob gets nothing. Both default to the plot's own origin, so a tooltip with no anchors is still positioned."
+    },
+    "tip-inline-start": {
+      "$type": "number",
+      "$value": 0
+    },
+    "grid": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.91,
+          0.006,
+          230
+        ]
+      }
+    },
+    "axis": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.78,
+          0.01,
+          230
+        ]
+      }
+    },
+    "label": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.48,
+          0.018,
+          230
+        ]
+      },
+      "$description": "Axis labels are text, not furniture: --type-micro is below the large-text exemption, so this must clear the same 4.5:1 body copy does. Measured, the dark value sat at 4.23:1 on --color-surface-3 (basalt-800) — the one surface in the set it failed — which is why the floor is 70% and not 66%."
+    },
+    "missing": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.5,
+          0.02,
+          230
+        ]
+      }
+    },
+    "hover": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.96,
+          0.006,
+          230
+        ]
+      }
+    },
+    "selection": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.92,
+          0.04,
+          182.5
+        ]
+      },
+      "$extensions": {
+        "com.contour.css": {
+          "knob-resolved": [
+            "--brand-hue"
+          ],
+          "declared": "light-dark( oklch(92% 0.04 var(--brand-hue)), oklch(30% 0.05 var(--brand-hue)) )"
+        }
+      }
+    },
+    "tooltip-bg": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.26,
+          0.02,
+          230
+        ]
+      }
+    },
+    "tooltip-fg": {
+      "$type": "color",
+      "$value": {
+        "colorSpace": "oklch",
+        "components": [
+          0.97,
+          0.004,
+          230
+        ]
+      }
+    }
+  },
+  "map": {
+    "attribution-inset-block": {
+      "$type": "dimension",
+      "$value": {
+        "value": 0.1875,
+        "unit": "rem"
+      },
+      "$description": "The attribution band (C-15). A map's credit line is the one piece of chrome a consumer does not own: the vendor's terms say it must be visible over the map, and let us choose its colour and size but not its presence. So the geometry lives here rather than in the rule, because a dashboard that wants the bottom-right corner has to move the band, and moving a token is a reviewable act while overriding a rule is not. The logo box is the size the vendor ships — 65px by 20px, published in their own CSS — and it is a MINIMUM: the band reserves room for the mark and never resizes it."
+    },
+    "attribution-inset-inline": {
+      "$type": "dimension",
+      "$value": {
+        "value": 0.1875,
+        "unit": "rem"
+      }
+    },
+    "attribution-logo-inline": {
+      "$type": "dimension",
+      "$value": {
+        "value": 4.0625,
+        "unit": "rem"
+      },
+      "$description": "65px, the shipped mark"
+    },
+    "attribution-logo-block": {
+      "$type": "dimension",
+      "$value": {
+        "value": 1.25,
+        "unit": "rem"
+      },
+      "$description": "20px, the shipped mark"
+    },
+    "attribution-padding-inline": {
+      "$value": "{space.2xs}"
+    },
+    "attribution-gap": {
+      "$value": "{space.2xs}"
+    },
+    "attribution-surface": {
+      "$value": "{color.surface-1}"
+    },
+    "$description": "Sequential — one hue, rising lightness."
+  },
+  "$extensions": {
+    "com.contour.dtcg": {
+      "source": "src/css/tokens.css",
+      "statement": "Generated by tools/build.mjs; src/css stays the source of truth. The tokens named here are declared CSS the Format Module cannot represent, so a consumer must read the stylesheet for them — they are listed rather than dropped, and tools/check-export.mjs fails unless exported plus refused equals the census. Note what this document CANNOT say: a knob-resolved colour is published at the value :root declares, so the JSON describes the default theme only. Re-pointing --brand-hue works from :root and not from a subtree — that is why .c-theme-scope re-derives the whole brand layer rather than overriding one value — and a Resolver set carries themes, not an arbitrary hue. Read src/css for the mechanism.",
+      "refusedCount": 40,
+      "reasons": {
+        "fluid-value": {
+          "count": 6,
+          "tokens": [
+            "--type-display-1",
+            "--type-display-2",
+            "--type-h1",
+            "--type-h2",
+            "--space-section",
+            "--gutter"
+          ],
+          "because": "clamp()/min()/max() resolve per viewport, so there is no single value to publish"
+        },
+        "unit-not-expressible (em)": {
+          "count": 6,
+          "tokens": [
+            "--tracking-display",
+            "--tracking-heading",
+            "--tracking-body",
+            "--tracking-label",
+            "--tracking-micro",
+            "--tracking-wide"
+          ],
+          "because": "the Format Module allows only px and rem; the declared length is in another unit"
+        },
+        "unit-not-expressible (ch)": {
+          "count": 2,
+          "tokens": [
+            "--measure-prose",
+            "--measure-tight"
+          ],
+          "because": "the Format Module allows only px and rem; the declared length is in another unit"
+        },
+        "composite-value (light-dark() inside a composition)": {
+          "count": 5,
+          "tokens": [
+            "--shadow-xs",
+            "--shadow-sm",
+            "--shadow-md",
+            "--shadow-lg",
+            "--shadow-xl"
+          ],
+          "because": "a computed expression over other tokens, or a multi-part value (a shadow list, a length with a style), that is not one typed value"
+        },
+        "value-not-classified (linear)": {
+          "count": 1,
+          "tokens": [
+            "--ease-linear"
+          ],
+          "because": "the exporter reached the end of its rules without a type — treat as a defect"
+        },
+        "alias-target-refused (--gutter)": {
+          "count": 1,
+          "tokens": [
+            "--container-gutter"
+          ],
+          "because": "the token it aliases is itself refused, so a reference would dangle"
+        },
+        "colour-not-parseable (knob substitution left calc(var(--space-2xs) + var(--space-2xs))": {
+          "count": 1,
+          "tokens": [
+            "--density-row"
+          ],
+          "because": "not a colour literal this exporter can read without guessing"
+        },
+        "dash-list": {
+          "count": 8,
+          "tokens": [
+            "--chart-dash-1",
+            "--chart-dash-2",
+            "--chart-dash-3",
+            "--chart-dash-4",
+            "--chart-dash-5",
+            "--chart-dash-6",
+            "--chart-dash-7",
+            "--chart-dash-8"
+          ],
+          "because": "strokeStyle needs a lineCap that a dash token never states; inventing one would be a new claim"
+        },
+        "gradient-value": {
+          "count": 10,
+          "tokens": [
+            "--fill-hatch-1",
+            "--fill-hatch-2",
+            "--fill-hatch-3",
+            "--fill-hatch-4",
+            "--fill-hatch-5",
+            "--fill-dot",
+            "--gradient-canvas",
+            "--gradient-plate",
+            "--gradient-heat",
+            "--gradient-rule"
+          ],
+          "because": "a CSS gradient is not the array of stops the gradient type requires"
+        }
+      }
+    }
+  }
+}

@@ -377,6 +377,9 @@ Full reference: [style guide](index.html).
 
 Light DOM (`<contour-*>`) and Shadow DOM (`<contour-shadow-*>`) wrappers. Attribute-reactive, form-associated, keyboard-navigable. See [§23](index.html#webcomponents).
 
+Interactive stories, controls, keyboard paths and workflow demonstrations live in the
+optional [Storybook workshop](storybook/index.html) (`npm run storybook`).
+
 ## Starter templates
 
 Three complete pages ship in `templates/`, one per surface. They run straight
@@ -509,6 +512,9 @@ Full details: [Browser support](index.html#browser-support).
 | `node tools/snippets.mjs` | Regenerate code snippets in `index.html` |
 | `npx html-validate index.html templates/*.html` | Validate markup |
 | `node tools/doctor.mjs` | Run all quality gates |
+| `npm run storybook` | Start the Storybook workshop on port 6006 |
+| `npm run build:storybook` | Build the static Storybook site into `storybook/` |
+| `npm run test:storybook` | Run Storybook interaction/a11y tests |
 
 ## Repository
 

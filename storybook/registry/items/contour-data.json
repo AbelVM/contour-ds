@@ -1,0 +1,62 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "contour-data",
+  "type": "registry:style",
+  "title": "Contour data",
+  "description": "Contour data surface: 191.9 kB of layered CSS, self-contained (the core layer is already inside it), 221 blocks and 300 custom properties declared under src/.",
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "surfaces/contour-data.min.css",
+      "target": "contour/contour-data.min.css",
+      "type": "registry:file"
+    },
+    {
+      "path": "contour.tokens.json",
+      "target": "contour/contour.tokens.json",
+      "type": "registry:file"
+    },
+    {
+      "path": "contour.themes.json",
+      "target": "contour/contour.themes.json",
+      "type": "registry:file"
+    },
+    {
+      "path": "contour.components.json",
+      "target": "contour/contour.components.json",
+      "type": "registry:file"
+    },
+    {
+      "path": "docs/recipes.md",
+      "target": "contour/docs/recipes.md",
+      "type": "registry:file"
+    }
+  ],
+  "meta": {
+    "distribution": "pointer",
+    "selfContained": true,
+    "bundleBytes": 196498,
+    "shared": [
+      {
+        "path": "contour.tokens.json",
+        "target": "contour/contour.tokens.json",
+        "purpose": "the token layer as a DTCG 2025.10 Format document"
+      },
+      {
+        "path": "contour.themes.json",
+        "target": "contour/contour.themes.json",
+        "purpose": "the dark branch of every light-dark() pair, as a Resolver document"
+      },
+      {
+        "path": "contour.components.json",
+        "target": "contour/contour.components.json",
+        "purpose": "the component contract: blocks, elements, variants, states, properties"
+      },
+      {
+        "path": "docs/recipes.md",
+        "target": "contour/docs/recipes.md",
+        "purpose": "the guide's own composition prose"
+      }
+    ]
+  }
+}

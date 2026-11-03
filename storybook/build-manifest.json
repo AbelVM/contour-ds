@@ -1,0 +1,242 @@
+{
+  "builtAt": "2026-11-03T17:58:19.832Z",
+  "sourceRevision": "2b7d48b89ca8efdc24c3bea81f19ede95e89c0af",
+  "sources": {
+    "src/css/base.css": {
+      "bytes": 11735,
+      "mtimeMs": 1793615422447.2854,
+      "sha256": "9bf1615a1a084e6e"
+    },
+    "src/css/components-data.css": {
+      "bytes": 82316,
+      "mtimeMs": 1793723684768.5884,
+      "sha256": "8c9e562cc87c2861"
+    },
+    "src/css/components-docs.css": {
+      "bytes": 21571,
+      "mtimeMs": 1793723185303.296,
+      "sha256": "e12614ba89739ff5"
+    },
+    "src/css/components-landing.css": {
+      "bytes": 12326,
+      "mtimeMs": 1793615079427.4856,
+      "sha256": "679d4cde72bc03c5"
+    },
+    "src/css/components-shell.css": {
+      "bytes": 17444,
+      "mtimeMs": 1793279736682.0605,
+      "sha256": "8d9d17fcf6ce739a"
+    },
+    "src/css/components.css": {
+      "bytes": 118297,
+      "mtimeMs": 1793723185303.296,
+      "sha256": "bec261a35fa781ae"
+    },
+    "src/css/ds.css": {
+      "bytes": 2463,
+      "mtimeMs": 1793123939886.126,
+      "sha256": "3fdb1ae7c5f8adce"
+    },
+    "src/css/fonts.css": {
+      "bytes": 2165,
+      "mtimeMs": 1793123939886.126,
+      "sha256": "c09e7c111892e71f"
+    },
+    "src/css/hljs.css": {
+      "bytes": 3664,
+      "mtimeMs": 1793123939887.0303,
+      "sha256": "f063fb1ba31e62d5"
+    },
+    "src/css/light-dark-fallback.css": {
+      "bytes": 26868,
+      "mtimeMs": 1793727287843.7478,
+      "sha256": "69c9a302eb8853bb"
+    },
+    "src/css/map-chrome.css": {
+      "bytes": 49541,
+      "mtimeMs": 1793569384372.018,
+      "sha256": "ae1f4a637a45c654"
+    },
+    "src/css/patterns.css": {
+      "bytes": 10454,
+      "mtimeMs": 1793126882236.2822,
+      "sha256": "fc8fc0695d5053c0"
+    },
+    "src/css/tokens.css": {
+      "bytes": 32355,
+      "mtimeMs": 1793638300635.9612,
+      "sha256": "ce42e9ad1db19234"
+    },
+    "src/css/utilities.css": {
+      "bytes": 15584,
+      "mtimeMs": 1793287767011.3933,
+      "sha256": "11bd9ec14531b5d8"
+    },
+    "src/css/fonts/OFL.txt": {
+      "bytes": 4360,
+      "mtimeMs": 1793123939886.126,
+      "sha256": "91c25c350d3cac39"
+    },
+    "src/css/fonts/ibm-plex-mono-var-italic.woff2": {
+      "bytes": 32868,
+      "mtimeMs": 1793123939887.0303,
+      "sha256": "0538d40cfc1b8ed9"
+    },
+    "src/css/fonts/ibm-plex-mono-var.woff2": {
+      "bytes": 27916,
+      "mtimeMs": 1793123939887.0303,
+      "sha256": "f6faa9b2ef34329b"
+    },
+    "src/css/fonts/ibm-plex-sans-condensed-500.woff2": {
+      "bytes": 19792,
+      "mtimeMs": 1793123939887.0303,
+      "sha256": "9165b4f11aafebc4"
+    },
+    "src/css/fonts/ibm-plex-sans-condensed-600.woff2": {
+      "bytes": 19868,
+      "mtimeMs": 1793123939887.0303,
+      "sha256": "deb8b2cac925c713"
+    },
+    "src/css/fonts/ibm-plex-sans-condensed-700.woff2": {
+      "bytes": 19252,
+      "mtimeMs": 1793123939887.0303,
+      "sha256": "76d8aa5c17b04fca"
+    },
+    "src/css/fonts/ibm-plex-sans-var-italic.woff2": {
+      "bytes": 75448,
+      "mtimeMs": 1793123939887.0303,
+      "sha256": "b8457a7fa6f77520"
+    },
+    "src/css/fonts/ibm-plex-sans-var.woff2": {
+      "bytes": 65132,
+      "mtimeMs": 1793123939887.0303,
+      "sha256": "7b17d18376841562"
+    },
+    "src/js/ds.js": {
+      "bytes": 63873,
+      "mtimeMs": 1793665219498.0676,
+      "sha256": "ccf29862e27a0262"
+    },
+    "src/js/wc/behaviours.mjs": {
+      "bytes": 55539,
+      "mtimeMs": 1793666379864.832,
+      "sha256": "4a7c08eb750ba3ae"
+    },
+    "src/js/wc/content.mjs": {
+      "bytes": 47101,
+      "mtimeMs": 1793726961906.7947,
+      "sha256": "c01ed860cba95f50"
+    },
+    "src/js/wc/core.mjs": {
+      "bytes": 55259,
+      "mtimeMs": 1793715788311.3003,
+      "sha256": "b897bac74914f6e3"
+    },
+    "src/js/wc/dashboard.mjs": {
+      "bytes": 9519,
+      "mtimeMs": 1793657542198.0571,
+      "sha256": "4358e4e821859c8a"
+    },
+    "src/js/wc/data.mjs": {
+      "bytes": 191039,
+      "mtimeMs": 1793725369887.0288,
+      "sha256": "41d67c3445c17de5"
+    },
+    "src/js/wc/docs.mjs": {
+      "bytes": 7549,
+      "mtimeMs": 1793630648348.6292,
+      "sha256": "1574cb62de49d319"
+    },
+    "src/js/wc/feedback.mjs": {
+      "bytes": 46833,
+      "mtimeMs": 1793726961907.01,
+      "sha256": "8b72bcd369a96757"
+    },
+    "src/js/wc/forms.mjs": {
+      "bytes": 59892,
+      "mtimeMs": 1793725835993.131,
+      "sha256": "fc926efb9d9b53ea"
+    },
+    "src/js/wc/index.mjs": {
+      "bytes": 1132,
+      "mtimeMs": 1793665574378.9905,
+      "sha256": "b27310746b27fdc6"
+    },
+    "src/js/wc/interaction.mjs": {
+      "bytes": 25492,
+      "mtimeMs": 1793656498740.6355,
+      "sha256": "c184740568ece722"
+    },
+    "src/js/wc/layout.mjs": {
+      "bytes": 8161,
+      "mtimeMs": 1793630648349.4324,
+      "sha256": "b2ce6108858c8310"
+    },
+    "src/js/wc/map.mjs": {
+      "bytes": 64480,
+      "mtimeMs": 1793630648349.7283,
+      "sha256": "bea087daa939d662"
+    },
+    "src/js/wc/misc.mjs": {
+      "bytes": 10278,
+      "mtimeMs": 1793657624084.5422,
+      "sha256": "636f9341019a702b"
+    },
+    "src/js/wc/navigation.mjs": {
+      "bytes": 81296,
+      "mtimeMs": 1793726961907.3982,
+      "sha256": "61127e8a6348a9c2"
+    },
+    "src/js/wc/registration.mjs": {
+      "bytes": 876,
+      "mtimeMs": 1793722037330.8916,
+      "sha256": "1b5552b74062e448"
+    },
+    "src/js/wc/shadow.mjs": {
+      "bytes": 30137,
+      "mtimeMs": 1793660025208.275,
+      "sha256": "7a234d2dc95095de"
+    },
+    "src/js/wc/states.mjs": {
+      "bytes": 24743,
+      "mtimeMs": 1793665242686.3792,
+      "sha256": "5b630ff9a5090bea"
+    },
+    "src/js/wc/svg.mjs": {
+      "bytes": 9241,
+      "mtimeMs": 1793665247126.5437,
+      "sha256": "e7a7fce22d5518f1"
+    },
+    "src/js/wc/ui.mjs": {
+      "bytes": 188012,
+      "mtimeMs": 1793727176816.4736,
+      "sha256": "9dbbc81e13142730"
+    },
+    "src/svg/contour-mark.svg": {
+      "bytes": 1727,
+      "mtimeMs": 1792842320541.2366,
+      "sha256": "e3c004dac0dd251e"
+    },
+    "index.html": {
+      "bytes": 1385830,
+      "mtimeMs": 1793728210496.3,
+      "sha256": "89164adf826b1812"
+    }
+  },
+  "outputs": {
+    "contour.css": 353290,
+    "contour.min.css": 218444,
+    "contour.js": 63873,
+    "contour.min.js": 38776,
+    "contour.tokens.json": 51610,
+    "contour.themes.json": 23019,
+    "contour.components.json": 248420,
+    "docs/index.json": 6695,
+    "registry/registry.json": 8952,
+    "svg/contour-mark.svg": 1727,
+    "surfaces/contour-core.min.css": 147913,
+    "surfaces/contour-docs.min.css": 161786,
+    "surfaces/contour-data.min.css": 196498,
+    "surfaces/contour-landing.min.css": 155786
+  }
+}
