@@ -278,3 +278,8 @@ jobs:
         run: npm run test:storybook
       - name: Check Storybook coverage
         run: npm run check:storybook-coverage
+      - name: Capture Storybook screenshot baseline
+        run: |
+          npx serve storybook -l 6006 &
+          sleep 5
+          npm run screenshot:baseline
