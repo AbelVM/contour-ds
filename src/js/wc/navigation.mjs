@@ -995,8 +995,8 @@ class ContourTocFull extends ContourBase {
   }
 define("contour-toc", ContourTocFull);
 class ContourFilterBar extends ContourBase {
-    static get observed() { return ["label", "divider", "items", "input", "placeholder", "mode", "modes", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { label: { attribute: "label" }, divider: { attribute: "divider" }, items: { attribute: "items" }, src: { attribute: "src" } }; }
+    static get observed() { return ["label", "divider", "items", "input", "placeholder", "mode", "modes", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "count", "clearable"]; }
+    static get properties() { return { label: { attribute: "label" }, divider: { attribute: "divider" }, items: { attribute: "items" }, src: { attribute: "src" }, count: { attribute: "count" }, clearable: { attribute: "clearable" } }; }
     render() {
       this.classList.add("c-filter-bar");
       wireStates(this);
@@ -1078,6 +1078,16 @@ class ContourFilterBar extends ContourBase {
           this.appendChild(pill);
         });
       }
+      // Clear-all affordance (CARTO-inspired): panel-level clear with active count.
+      Array.from(this.querySelectorAll(".c-filter-bar__clear-all")).forEach((n) => n.remove());
+      if (this.hasAttribute("clearable")) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "c-btn c-btn--ghost c-btn--sm c-filter-bar__clear-all";
+        const count = this.getAttribute("count");
+        btn.textContent = count ? ("Clear all (" + count + ")") : "Clear all";
+        this.appendChild(btn);
+      }
       if (!parsed && !label) renderEmpty(this, "filter-bar");
     }
      enhance() {
@@ -1111,6 +1121,16 @@ class ContourFilterBar extends ContourBase {
          });
          inp.addEventListener("change", () => {
            this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: inp.value } }));
+         });
+       }
+       // Clear-all (CARTO-inspired): delegated on host.
+       if (!this._wiredClearAll) {
+         this._wiredClearAll = true;
+         this.addEventListener("click", (e) => {
+           const btn = e.target && e.target.closest ? e.target.closest(".c-filter-bar__clear-all") : null;
+           if (!btn || !this.contains(btn)) return;
+           e.preventDefault();
+           this.dispatchEvent(new CustomEvent("contour:clear-all", { bubbles: true, composed: true, detail: {} }));
          });
        }
      }
@@ -1473,8 +1493,7 @@ class ContourSidebar extends ContourBase {
       this.addEventListener("click", (e) => {
         const btn = e.target && e.target.closest ? e.target.closest(".c-sidebar__toggle") : null;
         if (!btn || !this.contains(btn)) return;
-        if (this.hasAttribute("collapsed")) this.removeAttribute("collapsed");
-        else this.setAttribute("collapsed", "");
+        this.toggleAttribute("collapsed");
       });
     }
   }
@@ -1544,3 +1563,76 @@ class ContourToolbar extends ContourBase {
     }
   }
   define("contour-toolbar", ContourToolbar);
+
+/**
+ * Spatial filter (CARTO-inspired): draw-on-map affordance. Engine-agnostic:
+ * Contour renders the mode toolbar and emits `contour:draw-start`/`contour:draw-end`
+ * (with a geometry payload) and `contour:clear`; the consumer runs the spatial
+ * query against its map engine.
+ * Attributes: `modes`, `mode`, `active`, `empty`, `loading`, `error`, `retry`,
+ * `src`, `lazy`, `refresh`, `timeout`, `skeleton`.
+ */
+class ContourSpatialFilter extends ContourBase {
+    static get observed() { return ["modes", "mode", "active", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
+    static get properties() { return { modes: { attribute: "modes" }, mode: { attribute: "mode" }, active: { attribute: "active" }, src: { attribute: "src" } }; }
+    render() {
+      this.classList.add("c-spatial-filter");
+      wireStates(this);
+      loadRemote(this, []);
+      if (renderStates(this, "spatial-filter")) return;
+      const modesAttr = this.getAttribute("modes");
+      let modes = null;
+      if (modesAttr) { try { modes = JSON.parse(modesAttr); } catch (e) { modes = modesAttr.split(",").map((s) => s.trim()); } }
+      const list = Array.isArray(modes) ? modes : ["rect", "circle", "polygon", "clear"];
+      let bar = this.querySelector(".c-spatial-filter__modes");
+      if (!bar) { bar = document.createElement("div"); bar.className = "c-spatial-filter__modes"; bar.setAttribute("role", "toolbar"); this.appendChild(bar); }
+      bar.innerHTML = "";
+      const current = this.getAttribute("mode");
+      list.forEach((m) => {
+        const name = typeof m === "string" ? m : (m.label || m.value || m);
+        const val = typeof m === "string" ? m : (m.value || m.label || m);
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "c-spatial-filter__mode c-btn c-btn--ghost c-btn--sm";
+        btn.textContent = name;
+        btn.dataset.mode = val;
+        if (current && current === val) btn.setAttribute("aria-pressed", "true");
+        bar.appendChild(btn);
+      });
+      if (this.hasAttribute("active")) {
+        this.classList.add("c-spatial-filter--active");
+      } else {
+        this.classList.remove("c-spatial-filter--active");
+      }
+    }
+    enhance() {
+      if (this._wiredSpatialFilter) return;
+      this._wiredSpatialFilter = true;
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest(".c-spatial-filter__mode") : null;
+        if (!btn || !this.contains(btn)) return;
+        const mode = btn.dataset.mode || btn.textContent.trim();
+        if (mode === "clear") {
+          this.classList.remove("c-spatial-filter--active");
+          Array.from(this.querySelectorAll(".c-spatial-filter__mode")).forEach((b) => b.setAttribute("aria-pressed", "false"));
+          this.dispatchEvent(new CustomEvent("contour:clear", { bubbles: true, composed: true, detail: {} }));
+          return;
+        }
+        this.classList.add("c-spatial-filter--active");
+        Array.from(this.querySelectorAll(".c-spatial-filter__mode")).forEach((b) => b.setAttribute("aria-pressed", String(b === btn)));
+        this.dispatchEvent(new CustomEvent("contour:draw-start", { bubbles: true, composed: true, detail: { mode } }));
+      });
+      this.addEventListener("keydown", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest(".c-spatial-filter__mode") : null;
+        if (!btn || !this.contains(btn)) return;
+        const modes = Array.from(this.querySelectorAll(".c-spatial-filter__mode"));
+        const idx = modes.indexOf(btn);
+        let next = -1;
+        if (e.key === "ArrowRight") next = Math.min(modes.length - 1, idx + 1);
+        else if (e.key === "ArrowLeft") next = Math.max(0, idx - 1);
+        if (next >= 0) { e.preventDefault(); try { modes[next].focus(); } catch (err) {} }
+        else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); btn.click(); }
+      });
+    }
+  }
+  define("contour-spatial-filter", ContourSpatialFilter);

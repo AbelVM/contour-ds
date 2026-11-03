@@ -662,8 +662,8 @@ class ContourProseFull extends ContourBase {
   }
   define("contour-prose", ContourProseFull);
 class ContourPanel extends ContourBase {
-    static get observed() { return ["title", "subtitle", "status", "heading"]; }
-    static get properties() { return { title: { attribute: "title" }, subtitle: { attribute: "subtitle" }, status: { attribute: "status" } }; }
+    static get observed() { return ["title", "subtitle", "status", "heading", "collapsible", "collapsed"]; }
+    static get properties() { return { title: { attribute: "title" }, subtitle: { attribute: "subtitle" }, status: { attribute: "status" }, collapsible: { attribute: "collapsible", type: Boolean }, collapsed: { attribute: "collapsed", type: Boolean } }; }
     render() {
       this.classList.add("c-panel");
       const title = this.getAttribute("title");
@@ -691,6 +691,31 @@ class ContourPanel extends ContourBase {
         const st = this.querySelector(".c-panel__status");
         if (st) st.remove();
       }
+      // Collapsible widget chrome (CARTO-inspired): opt-in via `collapsible`.
+      if (this.hasAttribute("collapsible")) {
+        let btn = this.querySelector(".c-panel__collapse");
+        if (!btn) {
+          btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "c-panel__collapse c-btn c-btn--ghost c-btn--sm";
+          btn.setAttribute("aria-label", "Toggle panel");
+          btn.textContent = "▾";
+          this.appendChild(btn);
+        }
+        if (this.hasAttribute("collapsed")) {
+          this.classList.add("c-panel--collapsed");
+          btn.setAttribute("aria-expanded", "false");
+          btn.textContent = "▸";
+        } else {
+          this.classList.remove("c-panel--collapsed");
+          btn.setAttribute("aria-expanded", "true");
+          btn.textContent = "▾";
+        }
+      } else {
+        const btn = this.querySelector(".c-panel__collapse");
+        if (btn) btn.remove();
+        this.classList.remove("c-panel--collapsed");
+      }
       // Wrap authored content in a body so it picks up the panel's padding.
       const body = this.ensure(".c-panel__body", () => { const el = document.createElement("div"); el.className = "c-panel__body"; return el; });
       const head = this.querySelector(".c-panel__head");
@@ -704,6 +729,17 @@ class ContourPanel extends ContourBase {
       if (head && head.parentNode === this && body.parentNode === this && head.compareDocumentPosition(body) & Node.DOCUMENT_POSITION_PRECEDING) {
         this.insertBefore(body, head.nextSibling);
       }
+    }
+    enhance() {
+      if (this._wiredPanel) return;
+      this._wiredPanel = true;
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest(".c-panel__collapse") : null;
+        if (!btn || !this.contains(btn)) return;
+        e.preventDefault();
+        this.toggleAttribute("collapsed");
+        this.dispatchEvent(new CustomEvent("contour:collapse", { bubbles: true, composed: true, detail: { collapsed: this.hasAttribute("collapsed") } }));
+      });
     }
   }
   define("contour-panel", ContourPanel);
@@ -857,3 +893,97 @@ class ContourAnchor extends ContourBase {
     }
   }
   define("contour-anchor", ContourAnchor);
+
+/**
+ * Geocoder (CARTO-inspired): engine-agnostic search input + result list.
+ * The consumer runs the geocoding service and passes results via `results`
+ * (JSON array of {label, lat, lon}) or `src`. Contour renders the input and
+ * list and emits `contour:search` (query) and `contour:select` (result).
+ * Attributes: `placeholder`, `value`, `results`, `empty`, `loading`, `error`,
+ * `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`.
+ */
+class ContourGeocoder extends ContourBase {
+    static get observed() { return ["placeholder", "value", "results", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
+    static get properties() { return { placeholder: { attribute: "placeholder" }, value: { attribute: "value" }, results: { attribute: "results" }, src: { attribute: "src" } }; }
+    render() {
+      this.classList.add("c-geocoder");
+      wireStates(this);
+      loadRemote(this, ["results"]);
+      if (renderStates(this, "geocoder")) return;
+      // Input
+      let inp = this.querySelector(".c-geocoder__input");
+      if (!inp) {
+        inp = document.createElement("input");
+        inp.type = "search";
+        inp.className = "c-geocoder__input";
+        this.appendChild(inp);
+      }
+      const ph = this.getAttribute("placeholder");
+      if (ph) inp.setAttribute("placeholder", ph);
+      const val = this.getAttribute("value");
+      if (val !== null && inp.value !== val) inp.value = val;
+      // Results
+      Array.from(this.querySelectorAll(".c-geocoder__result")).forEach((n) => n.remove());
+      let results = [];
+      const rAttr = this.getAttribute("results");
+      if (rAttr) { try { results = JSON.parse(rAttr); } catch (e) { results = []; } }
+      const remote = remoteData(this, "results");
+      if (Array.isArray(remote)) results = remote;
+      if (Array.isArray(results) && results.length) {
+        const list = document.createElement("ul");
+        list.className = "c-geocoder__list";
+        list.setAttribute("role", "listbox");
+        results.forEach((r, idx) => {
+          const li = document.createElement("li");
+          li.className = "c-geocoder__result";
+          li.setAttribute("role", "option");
+          li.setAttribute("tabindex", idx === 0 ? "0" : "-1");
+          li.textContent = (typeof r === "object") ? (r.label || r.name || "") : String(r);
+          if (typeof r === "object") {
+            if (r.lat != null) li.dataset.lat = String(r.lat);
+            if (r.lon != null) li.dataset.lon = String(r.lon);
+          }
+          list.appendChild(li);
+        });
+        this.appendChild(list);
+      } else if (!this.hasAttribute("loading") && !this.hasAttribute("error")) {
+        renderEmpty(this, "geocoder");
+      }
+    }
+    enhance() {
+      if (this._wiredGeocoder) return;
+      this._wiredGeocoder = true;
+      const inp = this.querySelector(".c-geocoder__input");
+      if (inp) {
+        let timer = null;
+        inp.addEventListener("input", () => {
+          if (timer) clearTimeout(timer);
+          timer = setTimeout(() => {
+            this.dispatchEvent(new CustomEvent("contour:search", { bubbles: true, composed: true, detail: { query: inp.value } }));
+          }, 200);
+        });
+        inp.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            this.dispatchEvent(new CustomEvent("contour:search", { bubbles: true, composed: true, detail: { query: inp.value } }));
+          }
+        });
+      }
+      this.addEventListener("click", (e) => {
+        const li = e.target && e.target.closest ? e.target.closest(".c-geocoder__result") : null;
+        if (!li || !this.contains(li)) return;
+        const result = { label: li.textContent.trim(), lat: li.dataset.lat, lon: li.dataset.lon };
+        this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { result } }));
+      });
+      this.addEventListener("keydown", (e) => {
+        const li = e.target && e.target.closest ? e.target.closest(".c-geocoder__result") : null;
+        if (!li || !this.contains(li)) return;
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          const result = { label: li.textContent.trim(), lat: li.dataset.lat, lon: li.dataset.lon };
+          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { result } }));
+        }
+      });
+    }
+  }
+  define("contour-geocoder", ContourGeocoder);

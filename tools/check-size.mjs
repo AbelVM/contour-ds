@@ -92,7 +92,7 @@ const BUDGETS = {
   // partition — and a directory key is measured by summing the files under it,
   // because `statSync` on a directory reports the inode's size, which would make
   // this budget a pass at 4 kB over a 42 kB package.
-  "docs/": 62 * 1024,  // raised 2026-11-03: +wc bridge specimens; measured 61.2 kB
+  "docs/": 63 * 1024,  // raised 2026-11-03: +wc bridge specimens; measured 61.2 kB; +event rows 62.4 kB
   "docs/index.json": 8 * 1024,
   // The registry (C-46). Measured 2026-10-24 at 16,443 bytes across 5 files:
   // registry.json 8,952 B plus four item files of 1,869–1,884 B — figures this gate
@@ -121,7 +121,7 @@ const BUDGETS = {
   "surfaces/contour-data.min.css": 197 * 1024,  // raised 2026-11-03: deferred 1.5 feature batch; measured 186.9 kB
   "surfaces/contour-landing.min.css": 158 * 1024,  // raised 2026-11-03: deferred 1.5 feature batch; measured 149.99 kB
   "contour.esm.min.js": 39 * 1024,
-  "contour-wc.esm.min.js": 590 * 1024,  // raised 2026-11-03: deferred 1.5 feature batch; measured 555.7 kB
+  "contour-wc.esm.min.js": 593 * 1024,  // raised 2026-11-03: deferred 1.5 feature batch; measured 555.7 kB; +geocoder+spatial-filter+timeseries 592.0 kB
 };
 
 const kB = (n) => `${(n / 1024).toFixed(1)} kB`;

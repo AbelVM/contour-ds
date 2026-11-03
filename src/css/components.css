@@ -2356,10 +2356,12 @@
   }
 
   .c-table tbody tr {
+    cursor: pointer;
     transition: background-color var(--dur-fast) var(--ease-standard);
   }
 
-  .c-table tbody tr:hover {
+  .c-table tbody tr:hover,
+  .c-table tbody tr:focus-visible {
     background: var(--color-surface-2);
   }
 

@@ -96,6 +96,7 @@ export type ContourComponent =
   | "c-footer"
   | "c-form"
   | "c-gauge"
+  | "c-geocoder"
   | "c-header"
   | "c-heatmap"
   | "c-hexbin"
@@ -180,6 +181,7 @@ export type ContourComponent =
   | "c-skeleton-group"
   | "c-sortable-list"
   | "c-sparkline"
+  | "c-spatial-filter"
   | "c-spinner"
   | "c-split-button"
   | "c-stack"
@@ -779,6 +781,7 @@ declare global {
     "contour-footer": ContourElement;
     "contour-form": ContourElement;
     "contour-gauge": ContourDataElement;
+    "contour-geocoder": ContourElement;
     "contour-header": ContourElement;
     "contour-heatmap": ContourDataElement;
     "contour-hexbin": ContourDataElement;
@@ -1034,6 +1037,7 @@ declare global {
     "contour-skeleton-group": ContourElement;
     "contour-sortable-list": ContourElement;
     "contour-sparkline": ContourDataElement;
+    "contour-spatial-filter": ContourElement;
     "contour-spinner": ContourElement;
     "contour-split-button": ContourElement;
     "contour-stack": ContourElement;

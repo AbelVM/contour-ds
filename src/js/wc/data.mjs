@@ -492,6 +492,8 @@ class ContourTable extends ContourBase {
           } else {
             visibleData.forEach((row, ri) => {
               const tr = document.createElement("tr");
+              tr.dataset.rowIndex = String(windowStart + ri);
+              tr.setAttribute("tabindex", "0");
               cols.forEach((c, ci) => {
                 const isSelect = (typeof c === "object" && c !== null && c.select);
                 const td = document.createElement("td");
@@ -646,6 +648,35 @@ class ContourTable extends ContourBase {
           this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { rows: Array.from(this._selectedRows) } }));
         }
       });
+      // Map-linked table (CARTO-inspired): emit contour:hover on row hover so a
+      // consumer can highlight/zoom the corresponding feature on the map.
+      // Contour stays engine-agnostic: it only announces the row.
+      this.addEventListener("mouseover", (e) => {
+        const tr = e.target && e.target.closest ? e.target.closest("tbody tr") : null;
+        if (!tr || !this.contains(tr)) return;
+        const idx = Number(tr.dataset.rowIndex);
+        if (!Number.isFinite(idx)) return;
+        if (this._hoveredRow === idx) return;
+        this._hoveredRow = idx;
+        this.dispatchEvent(new CustomEvent("contour:hover", { bubbles: true, composed: true, detail: { row: idx } }));
+      });
+      this.addEventListener("mouseout", (e) => {
+        const tr = e.target && e.target.closest ? e.target.closest("tbody tr") : null;
+        if (!tr || !this.contains(tr)) return;
+        const related = e.relatedTarget && e.relatedTarget.closest ? e.relatedTarget.closest("tbody tr") : null;
+        if (related === tr) return;
+        this._hoveredRow = null;
+        this.dispatchEvent(new CustomEvent("contour:leave", { bubbles: true, composed: true, detail: {} }));
+      });
+      this.addEventListener("keydown", (e) => {
+        if (e.key !== "Enter" && e.key !== " ") return;
+        const tr = e.target && e.target.closest ? e.target.closest("tbody tr") : null;
+        if (!tr || !this.contains(tr)) return;
+        e.preventDefault();
+        const idx = Number(tr.dataset.rowIndex);
+        if (!Number.isFinite(idx)) return;
+        this.dispatchEvent(new CustomEvent("contour:activate", { bubbles: true, composed: true, detail: { row: idx } }));
+      });
     }
   }
   define("contour-table", ContourTable);
@@ -663,8 +694,8 @@ class ContourDataTable extends ContourTable {
  */
 class ContourChart extends ContourBase {
     static get updateMode() { return "keyed"; }
-  static get observed() { return ["series", "axis", "empty", "loading", "error", "retry", "skeleton", "zoomable", "data-table", "brush", "brush-min", "brush-max", "brush-start", "brush-end"]; }
-  static get properties() { return { series: { attribute: "series" }, axis: { attribute: "axis" }, zoomable: { attribute: "zoomable", type: Boolean }, brush: { attribute: "brush", type: Boolean } }; }
+  static get observed() { return ["series", "axis", "empty", "loading", "error", "retry", "skeleton", "zoomable", "data-table", "brush", "brush-min", "brush-max", "brush-start", "brush-end", "note"]; }
+  static get properties() { return { series: { attribute: "series" }, axis: { attribute: "axis" }, zoomable: { attribute: "zoomable", type: Boolean }, brush: { attribute: "brush", type: Boolean }, note: { attribute: "note" } }; }
     render() {
       this.classList.add("c-chart");
       if (!this.hasAttribute("role")) this.setAttribute("role", "img");
@@ -796,6 +827,41 @@ const series = this.getAttribute("series");
                      svg.appendChild(rect);
                   });
                  plot.appendChild(svg);
+               } else if (s.type === "scatter") {
+                 const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                 svg.setAttribute("viewBox", "0 0 300 120");
+                 svg.setAttribute("preserveAspectRatio", "none");
+                 svg.style.cssText = "position: absolute; inset: 0; width: 100%; height: 100%";
+                 const pts = (Array.isArray(s.values) ? s.values : []).map((v) => {
+                   if (Array.isArray(v)) return { x: Number(v[0]) || 0, y: Number(v[1]) || 0 };
+                   return { x: Number(v && v.x) || 0, y: Number(v && v.y) || 0 };
+                 });
+                 const xs = pts.map((p) => p.x);
+                 const ys = pts.map((p) => p.y);
+                 const minX = xs.length ? Math.min.apply(null, xs) : 0;
+                 const maxX = xs.length ? Math.max.apply(null, xs) : 1;
+                 const minY = ys.length ? Math.min.apply(null, ys) : 0;
+                 const maxY = ys.length ? Math.max.apply(null, ys) : 1;
+                 const xRange = (maxX - minX) || 1;
+                 const yRange = (maxY - minY) || 1;
+                 pts.forEach((p, pi) => {
+                   const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                   circle.setAttribute("class", "c-chart__point");
+                   circle.setAttribute("data-series", String(i + 1));
+                   circle.setAttribute("data-index", String(pi));
+                   circle.style.setProperty("--c", color);
+                   const cx = ((p.x - minX) / xRange) * 300;
+                   const cy = 120 - ((p.y - minY) / yRange) * 120;
+                   circle.setAttribute("cx", cx.toFixed(2));
+                   circle.setAttribute("cy", cy.toFixed(2));
+                   circle.setAttribute("r", "3");
+                   circle.setAttribute("tabindex", pi === 0 ? "0" : "-1");
+                   circle.setAttribute("role", "button");
+                   circle.setAttribute("title", p.x + ", " + p.y);
+                   circle.setAttribute("aria-label", "Series " + (i + 1) + ": " + p.x + ", " + p.y);
+                   svg.appendChild(circle);
+                 });
+                 plot.appendChild(svg);
                } else {
                  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
                  svg.setAttribute("viewBox", "0 0 300 120");
@@ -902,6 +968,14 @@ const series = this.getAttribute("series");
               const brush = this.querySelector("contour-brush");
               if (brush) brush.remove();
             }
+            const note = this.getAttribute("note");
+            let noteEl = this.querySelector(".c-chart__note");
+            if (note) {
+              if (!noteEl) { noteEl = document.createElement("div"); noteEl.className = "c-chart__note"; this.appendChild(noteEl); }
+              noteEl.textContent = note;
+            } else if (noteEl) {
+              noteEl.remove();
+            }
          } else {
          const plot = this.ensure(".c-chart__plot", () => { const el = document.createElement("div"); el.className = "c-chart__plot"; return el; });
          plot.innerHTML = "";
@@ -913,6 +987,14 @@ const series = this.getAttribute("series");
          empty.style.height = "100%";
          empty.style.color = "var(--color-text-muted)";
          plot.appendChild(empty);
+         const note = this.getAttribute("note");
+         let noteEl2 = this.querySelector(".c-chart__note");
+         if (note) {
+           if (!noteEl2) { noteEl2 = document.createElement("div"); noteEl2.className = "c-chart__note"; this.appendChild(noteEl2); }
+           noteEl2.textContent = note;
+         } else if (noteEl2) {
+           noteEl2.remove();
+         }
        }
      }
     enhance() {
@@ -1803,8 +1885,8 @@ define("contour-stacked-bar", ContourStackedBar);
  * Attributes: `items`, `empty`, `loading`, `error`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`, `search`.
  */
 class ContourCategory extends ContourBase {
-    static get observed() { return ["items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "search"]; }
-    static get properties() { return { items: { attribute: "items" }, src: { attribute: "src" }, search: { attribute: "search" } }; }
+    static get observed() { return ["items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "search", "note", "limit", "sort"]; }
+    static get properties() { return { items: { attribute: "items" }, src: { attribute: "src" }, search: { attribute: "search" }, note: { attribute: "note" }, limit: { attribute: "limit" }, sort: { attribute: "sort" } }; }
     render() {
       this.classList.add("c-category");
       this.setAttribute("role", "listbox");
@@ -1827,6 +1909,20 @@ class ContourCategory extends ContourBase {
         const iAttr = this.getAttribute("items");
         if (iAttr) { try { items = JSON.parse(iAttr); } catch (e) { items = []; } }
       }
+      // Top-N + sort (CARTO-inspired): optional `limit` and `sort` attributes.
+      const sort = this.getAttribute("sort") || "value-desc";
+      items.sort((a, b) => {
+        const va = (typeof a === "object") ? (a.value || 0) : (Number(a) || 0);
+        const vb = (typeof b === "object") ? (b.value || 0) : (Number(b) || 0);
+        const la = (typeof a === "object") ? (a.label || a.name || "") : String(a);
+        const lb = (typeof b === "object") ? (b.label || b.name || "") : String(b);
+        if (sort === "value-asc") return va - vb;
+        if (sort === "alpha-asc") return String(la).localeCompare(String(lb));
+        if (sort === "alpha-desc") return String(lb).localeCompare(String(la));
+        return vb - va; // value-desc (default)
+      });
+      const limit = parseInt(this.getAttribute("limit") || "0", 10);
+      if (limit > 0) items = items.slice(0, limit);
       const max = items.reduce((m, it) => Math.max(m, (typeof it === "object" ? (it.value || 0) : Number(it) || 0)), 0) || 1;
       items.forEach((it, idx) => {
         const value = (typeof it === "object") ? (it.value || 0) : (Number(it) || 0);
@@ -1854,6 +1950,14 @@ class ContourCategory extends ContourBase {
         this.appendChild(item);
       });
       if (!items.length) renderEmpty(this, "category");
+      const note = this.getAttribute("note");
+      let noteEl = this.querySelector(".c-category__note");
+      if (note) {
+        if (!noteEl) { noteEl = document.createElement("div"); noteEl.className = "c-category__note"; this.appendChild(noteEl); }
+        noteEl.textContent = note;
+      } else if (noteEl) {
+        noteEl.remove();
+      }
     }
     enhance() {
       if (this._wiredCategory) return;
@@ -1900,8 +2004,8 @@ define("contour-category", ContourCategory);
  * Attributes: `value`, `values`, `items`, `label`, `empty`, `loading`, `error`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`, `brownout`, `brownout-level`.
  */
 class ContourDonut extends ContourBase {
-    static get observed() { return ["value", "values", "items", "label", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "brownout", "brownout-level"]; }
-    static get properties() { return { value: { attribute: "value" }, values: { attribute: "values" }, items: { attribute: "items" }, label: { attribute: "label" }, src: { attribute: "src" } }; }
+    static get observed() { return ["value", "values", "items", "label", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "brownout", "brownout-level", "note"]; }
+    static get properties() { return { value: { attribute: "value" }, values: { attribute: "values" }, items: { attribute: "items" }, label: { attribute: "label" }, src: { attribute: "src" }, note: { attribute: "note" } }; }
     render() {
       this.classList.add("c-donut");
       this.setAttribute("role", "img");
@@ -1981,6 +2085,14 @@ class ContourDonut extends ContourBase {
       });
       this.appendChild(list);
       if (!items.length) renderEmpty(this, "donut");
+      const note = this.getAttribute("note");
+      let noteEl = this.querySelector(".c-donut__note");
+      if (note) {
+        if (!noteEl) { noteEl = document.createElement("div"); noteEl.className = "c-donut__note"; this.appendChild(noteEl); }
+        noteEl.textContent = note;
+      } else if (noteEl) {
+        noteEl.remove();
+      }
     }
     enhance() {}
   }
@@ -1990,8 +2102,8 @@ define("contour-donut", ContourDonut);
  * Attributes: `values`, `points`, `empty`, `loading`, `error`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`, `annotations`.
  */
 class ContourTimeSeries extends ContourBase {
-    static get observed() { return ["values", "points", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "annotations"]; }
-    static get properties() { return { values: { attribute: "values" }, points: { attribute: "points" }, src: { attribute: "src" }, annotations: { attribute: "annotations" } }; }
+    static get observed() { return ["values", "points", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "annotations", "note", "style"]; }
+    static get properties() { return { values: { attribute: "values" }, points: { attribute: "points" }, src: { attribute: "src" }, annotations: { attribute: "annotations" }, note: { attribute: "note" }, style: { attribute: "style" } }; }
     render() {
       this.classList.add("c-time-series");
       this.setAttribute("role", "img");
@@ -2004,21 +2116,68 @@ class ContourTimeSeries extends ContourBase {
       const vAttr = this.getAttribute("values");
       if (vAttr) { try { values = JSON.parse(vAttr); } catch (e) { values = vAttr.split(",").map(Number); } }
       const max = Math.max(...values, 1);
+      const min = Math.min(...values, 0);
+      const style = this.getAttribute("style") || "bar";
       const plot = document.createElement("div");
       plot.className = "c-time-series__plot";
       plot.setAttribute("part", "plot");
-      values.forEach((v, i) => {
-        const bar = document.createElement("div");
-        bar.className = "c-time-series__bar";
-        bar.style.blockSize = ((v / max) * 100) + "%";
-        bar.setAttribute("title", String(v));
-        bar.setAttribute("role", "img");
-        bar.setAttribute("aria-label", "Value " + v);
-        bar.setAttribute("tabindex", i === 0 ? "0" : "-1");
-        plot.appendChild(bar);
-      });
+      if (style === "line") {
+        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("viewBox", "0 0 300 120");
+        svg.setAttribute("preserveAspectRatio", "none");
+        svg.style.cssText = "position: absolute; inset: 0; width: 100%; height: 100%";
+        const range = (max - min) || 1;
+        const n = values.length || 1;
+        const pts = values.map((v, i) => {
+          const x = (i / Math.max(1, n - 1)) * 300;
+          const y = 120 - ((v - min) / range) * 120;
+          return x.toFixed(2) + "," + y.toFixed(2);
+        }).join(" ");
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("class", "c-time-series__line");
+        path.setAttribute("d", "M " + pts.replace(/ /g, " L "));
+        path.style.stroke = "var(--chart-1)";
+        path.style.fill = "none";
+        path.style.strokeWidth = "2";
+        svg.appendChild(path);
+        // point markers
+        values.forEach((v, i) => {
+          const x = (i / Math.max(1, n - 1)) * 300;
+          const y = 120 - ((v - min) / range) * 120;
+          const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          c.setAttribute("class", "c-time-series__point");
+          c.setAttribute("cx", x.toFixed(2));
+          c.setAttribute("cy", y.toFixed(2));
+          c.setAttribute("r", "3");
+          c.setAttribute("tabindex", i === 0 ? "0" : "-1");
+          c.setAttribute("role", "button");
+          c.setAttribute("title", String(v));
+          c.setAttribute("aria-label", "Value " + v);
+          svg.appendChild(c);
+        });
+        plot.appendChild(svg);
+      } else {
+        values.forEach((v, i) => {
+          const bar = document.createElement("div");
+          bar.className = "c-time-series__bar";
+          bar.style.blockSize = ((v / max) * 100) + "%";
+          bar.setAttribute("title", String(v));
+          bar.setAttribute("role", "img");
+          bar.setAttribute("aria-label", "Value " + v);
+          bar.setAttribute("tabindex", i === 0 ? "0" : "-1");
+          plot.appendChild(bar);
+        });
+      }
       this.appendChild(plot);
       if (!values.length) renderEmpty(this, "time-series");
+      const note = this.getAttribute("note");
+      let noteEl = this.querySelector(".c-time-series__note");
+      if (note) {
+        if (!noteEl) { noteEl = document.createElement("div"); noteEl.className = "c-time-series__note"; this.appendChild(noteEl); }
+        noteEl.textContent = note;
+      } else if (noteEl) {
+        noteEl.remove();
+      }
     }
     enhance() {
       if (this._wiredTimeSeries) return;
