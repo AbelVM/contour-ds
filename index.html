@@ -15954,6 +15954,32 @@ area.addEventListener("contour:map-control", (e) =&gt; {
             </div>
           </div>
 
+          <div class="c-panel">
+            <div class="c-panel__head">
+              <div>
+                <h3 class="c-panel__title">DX notes (per component)</h3>
+              </div>
+            </div>
+            <div class="c-panel__body">
+              <div class="c-stack">
+                <p>
+                  Concise usage notes for the web-component layer. The generated API cards above cover
+                  structural inputs (observed attributes, properties, parts); these notes cover intent,
+                  composition and gotchas the cards cannot express. Full text:
+                  <code class="c-kbd">tmp/dx_notes.md</code>.
+                </p>
+                <ul class="c-stack" style="margin:0;padding-inline-start:1.25rem">
+                  <li><strong>Form controls</strong> — prefer <code class="c-kbd">contour-field</code> for label/hint/error; standalone controls support <code class="c-kbd">disabled</code>/<code class="c-kbd">error</code>/<code class="c-kbd">help</code>.</li>
+                  <li><strong>Feedback</strong> — <code class="c-kbd">contour-toast-host</code> carries the live region; toasts carry none. <code class="c-kbd">contour-loading</code> sets <code class="c-kbd">role=status</code>.</li>
+                  <li><strong>Data display</strong> — chart series carry dash patterns as well as hues. <code class="c-kbd">contour-data-table</code> requires a <code class="c-kbd">.c-table-wrap</code> ancestor.</li>
+                  <li><strong>Overlays</strong> — native <code class="c-kbd">&lt;dialog&gt;</code>/popover; JS only adds behaviour. Popover <code class="c-kbd">display</code> set only when open.</li>
+                  <li><strong>Navigation</strong> — keyboard nav via roving tabindex; disclosure preserves authored content across re-render.</li>
+                  <li><strong>Map chrome</strong> — no raw colours/geometry; tokens only.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
           <div class="c-panel" data-wc-playground>
             <div class="c-panel__head">
               <div>
