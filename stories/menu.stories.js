@@ -7,9 +7,6 @@ export default {
   tags: ["autodocs"],
   parameters: {
     contour: { maturity: "complete-widget" },
-    a11y: { test: "todo" },
-    issue: "SB-A11Y-02",
-    a11yTodo: { owner: "Contour maintainers", rootCause: "isolated menu lacks trigger and dismissal context", mitigation: "add trigger-owned overlay workflow", review: "2026-12-01" },
   },
   argTypes: {
     items: { control: "text" },
@@ -20,19 +17,13 @@ export const Default = {
   args: {},
   render: (args = {}) => {
     const m = document.createElement("contour-menu");
-    if (args.items) m.setAttribute("items", args.items);
-    const items = ["New", "Open", "Save"];
-    for (const it of items) {
-      const el = document.createElement("button");
-      el.textContent = it;
-      m.appendChild(el);
-    }
+    m.setAttribute("items", JSON.stringify(["New", "Open", "Save"]));
     return m;
   },
   play: async ({ canvasElement }) => {
     const m = canvasElement.querySelector("contour-menu");
     await expect(m).toBeTruthy();
-    await expect(m).toHaveClass(/c-menu/);
+    await expect(m.querySelector(".c-menu")).toBeTruthy();
     await expect(canvasElement.textContent).toContain("Save");
   },
 };

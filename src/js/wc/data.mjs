@@ -2764,8 +2764,8 @@ class ContourLegend extends ContourBase {
       if (items) {
         try {
           const parsed = JSON.parse(items);
-          const list = this.ensure(".c-legend__items", () => { const el = document.createElement("div"); el.className = "c-legend__items"; el.setAttribute("role", "listbox"); return el; });
-          list.setAttribute("role", "listbox");
+          const list = this.ensure(".c-legend__items", () => { const el = document.createElement("div"); el.className = "c-legend__items"; return el; });
+          list.setAttribute("role", selectable ? "group" : "listbox");
           if (title) list.setAttribute("aria-label", title);
           list.innerHTML = "";
           parsed.forEach((it) => {
@@ -2773,7 +2773,6 @@ class ContourLegend extends ContourBase {
             const key = typeof it === "string" ? it : (it.key || it.label || String(it));
             const item = document.createElement(selectable ? "button" : "div");
             item.className = "c-legend__item";
-            item.setAttribute("aria-selected", "false");
             item.setAttribute("tabindex", "-1");
             if (selectable) {
               item.type = "button";
@@ -2782,6 +2781,7 @@ class ContourLegend extends ContourBase {
               item.dataset.key = key;
             } else {
               item.setAttribute("role", "option");
+              item.setAttribute("aria-selected", "false");
             }
             const sw = document.createElement("span");
             sw.className = "c-legend__swatch";
@@ -2996,7 +2996,6 @@ class ContourLegend extends ContourBase {
         if (!btn || !this.contains(btn)) return;
         const pressed = btn.getAttribute("aria-pressed") !== "true";
         btn.setAttribute("aria-pressed", String(pressed));
-        btn.setAttribute("aria-selected", String(pressed));
         this.dispatchEvent(new CustomEvent("contour:legend-toggle", {
           detail: { label: btn.textContent.trim(), key: btn.dataset.key || btn.textContent.trim(), pressed },
           bubbles: true,
@@ -3040,7 +3039,7 @@ class ContourLegend extends ContourBase {
           if (items.length > 4) { e.preventDefault(); const last = items[items.length-1]; last.focus(); items.forEach((o)=>o.setAttribute("tabindex", o===last?"0":"-1")); }
         } else if (e.key === "Escape") {
           // clear selection
-          items.forEach((o) => o.setAttribute("aria-selected", "false"));
+          items.forEach((o) => { if (o.getAttribute("role") === "option") o.setAttribute("aria-selected", "false"); else o.setAttribute("aria-pressed", "false"); });
           this.dispatchEvent(new CustomEvent("contour:clear", { bubbles: true, composed: true }));
         } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
           // type-ahead

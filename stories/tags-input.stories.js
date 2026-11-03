@@ -6,9 +6,6 @@ export default {
   tags: ["autodocs"],
   parameters: {
     contour: { maturity: "complete-widget" },
-    a11y: { test: "todo" },
-    issue: "SB-A11Y-03",
-    a11yTodo: { owner: "Contour maintainers", rootCause: "isolated tags input lacks form context", mitigation: "verify labels and validation in form workflow", review: "2026-12-01" },
   },
   argTypes: {
     value: { control: "text" },
