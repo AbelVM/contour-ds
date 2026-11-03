@@ -6,9 +6,7 @@ export default {
   tags: ["autodocs"],
   parameters: {
     contour: { maturity: "complete-widget" },
-    a11y: { test: "todo" },
-    issue: "SB-A11Y-04",
-    a11yTodo: { owner: "Contour maintainers", rootCause: "isolated textarea label association is incomplete", mitigation: "provide a labelled form context", review: "2026-12-01" },
+
   },
   argTypes: {
     placeholder: { control: "text" },

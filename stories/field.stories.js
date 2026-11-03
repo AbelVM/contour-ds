@@ -6,9 +6,7 @@ export default {
   tags: ["autodocs"],
   parameters: {
     contour: { maturity: "complete-widget" },
-    a11y: { test: "todo" },
-    issue: "SB-A11Y-05",
-    a11yTodo: { owner: "Contour maintainers", rootCause: "field story lacks consumer form context", mitigation: "add labelled form workflow before promotion", review: "2026-12-01" },
+
   },
   argTypes: {
     label: { control: "text" },
