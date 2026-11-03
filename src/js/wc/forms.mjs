@@ -115,12 +115,33 @@ class ContourCombobox extends ContourBase {
         empty.textContent = this.getAttribute("empty") || "No matches";
         list.appendChild(empty);
       }
+      if (this.hasAttribute("multiple")) list.setAttribute("aria-multiselectable", "true");
+      else list.removeAttribute("aria-multiselectable");
       filtered.slice(start, end).forEach((item) => {
         const li = document.createElement("li");
         li.className = "c-combobox__option";
         li.dataset.optionIndex = String(item.index);
-        li.textContent = item.label;
-        if (this.hasAttribute("multiple") && selectedVals.includes(String(item.value))) li.setAttribute("aria-selected", "true");
+        li.setAttribute("role", "option");
+        const label = String(item.label);
+        const q = String(query || "").toLowerCase();
+        if (q && label.toLowerCase().includes(q)) {
+          const idx = label.toLowerCase().indexOf(q);
+          const before = label.slice(0, idx);
+          const match = label.slice(idx, idx + q.length);
+          const after = label.slice(idx + q.length);
+          li.innerHTML = "";
+          if (before) li.appendChild(document.createTextNode(before));
+          const mark = document.createElement("mark");
+          mark.className = "c-combobox__match";
+          mark.textContent = match;
+          li.appendChild(mark);
+          if (after) li.appendChild(document.createTextNode(after));
+        } else {
+          li.textContent = label;
+        }
+        const isSelected = this.hasAttribute("multiple") && selectedVals.includes(String(item.value));
+        li.setAttribute("aria-selected", String(isSelected));
+        if (isSelected) li.classList.add("c-combobox__option--selected");
         list.appendChild(li);
       });
       if (this._comboboxVirtual) addSpacer(Math.max(0, filtered.length - end) * rowHeight);

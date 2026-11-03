@@ -27,7 +27,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `f3ebcf854852bdc5` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3df2e1380c937e34` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -78,7 +78,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `f3ebcf854852bdc5` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3df2e1380c937e34` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -128,7 +128,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `f3ebcf854852bdc5` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3df2e1380c937e34` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -165,7 +165,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `f3ebcf854852bdc5` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3df2e1380c937e34` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -209,7 +209,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `f3ebcf854852bdc5` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3df2e1380c937e34` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -241,6 +241,7 @@ Entrances, reveals and anything that moves the eye across a gap.
 ## Subsections
 
 - Motion a reader can stop
+- Web component counterpart
 
 ## Blocks documented here
 
@@ -264,7 +265,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `f3ebcf854852bdc5` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3df2e1380c937e34` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -304,7 +305,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `f3ebcf854852bdc5` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3df2e1380c937e34` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -327,6 +328,7 @@ Autocomplete input with keyboard navigation. Type to filter, arrow keys to navig
 
 ## Subsections
 
+- Web component counterpart
 - Web component counterpart
 - Combobox
 
@@ -353,7 +355,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `f3ebcf854852bdc5` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3df2e1380c937e34` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -371,6 +373,10 @@ private until v1.0). See `index.json` for the whole set and the shared statement
 Badges carry a category. Chips carry a value. Pills carry a state. The waypoint dot carries presence. Four jobs, four shapes — never interchangeable.
 
 Equivalent contour-* elements are catalogued in §23.
+
+## Subsections
+
+- Web component counterpart
 
 ## Blocks documented here
 
@@ -392,7 +398,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `f3ebcf854852bdc5` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3df2e1380c937e34` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -440,6 +446,7 @@ Scroll container with content-visibility for performance. Virtualization logic i
 - Feature blocks
 - Foundations
 - Components
+- Web component counterpart
 
 ## Blocks documented here
 
@@ -469,7 +476,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `f3ebcf854852bdc5` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3df2e1380c937e34` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -499,6 +506,10 @@ Adaptive barrier SSSP. Scales to very large networks by keeping the frontier sma
 The headings of the page being read, with the current one marked. The guide's own rail is the same idea, numbered and built from the page.
 
 On this page
+
+## Subsections
+
+- Web component counterpart
 
 ## Blocks documented here
 
@@ -531,7 +542,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `f3ebcf854852bdc5` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3df2e1380c937e34` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -583,6 +594,7 @@ Progress drawn as elevation rings rather than a bar — the system's own shape l
 - Empty state
 - Contour meter
 - Progress & toasts
+- Web component counterpart
 
 ## Blocks documented here
 
@@ -606,7 +618,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `f3ebcf854852bdc5` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3df2e1380c937e34` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -647,6 +659,7 @@ Modal dialog, hint tooltip, command palette and the toast live region. These shi
 - Desire Paths
 - Drawer
 - Dialog, tooltip, command palette & toast host
+- Web component counterpart
 
 ## Blocks documented here
 
@@ -675,7 +688,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `f3ebcf854852bdc5` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3df2e1380c937e34` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -757,6 +770,7 @@ A migration aid: the names a consumer may already know, and the Contour class th
 - Deltas
 - How to add a component
 - Rename table (legacy → Contour)
+- Web component counterpart
 
 ## Blocks documented here
 
@@ -790,7 +804,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `f3ebcf854852bdc5` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3df2e1380c937e34` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -819,6 +833,7 @@ Shown — same markup, wider profile.
 
 ## Subsections
 
+- Web component counterpart
 - Web component counterpart
 
 ## Blocks documented here
@@ -860,7 +875,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `f3ebcf854852bdc5` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3df2e1380c937e34` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -947,6 +962,7 @@ The way out of a long page, at the foot of it. Both links are real links, so the
 - Versions
 - File tree
 - Pager
+- Web component counterpart
 
 ## Blocks documented here
 
@@ -971,7 +987,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `f3ebcf854852bdc5` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3df2e1380c937e34` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1021,6 +1037,7 @@ One package, one tile source, and the same engine you can read line by line.
 - Feature comparison
 - FAQ
 - Start routing this afternoon.
+- Web component counterpart
 
 ## Blocks documented here
 
@@ -1046,7 +1063,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `f3ebcf854852bdc5` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3df2e1380c937e34` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1092,6 +1109,7 @@ Documentation content.
 - Time slider + chart + stale data
 - Layer panel + map slot
 - Documentation page with URL state
+- Web component counterpart
 
 ## Blocks documented here
 
@@ -1121,7 +1139,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `f3ebcf854852bdc5` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3df2e1380c937e34` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1249,6 +1267,7 @@ Main content area
 ## Subsections
 
 - Layout primitives
+- Web component counterpart
 
 ## Blocks documented here
 
@@ -1301,7 +1320,7 @@ part of the component contract and nothing in an installed package defines them:
 
 ---
 
-Source `index.html` @ `f3ebcf854852bdc5` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3df2e1380c937e34` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1416,7 +1435,7 @@ part of the component contract and nothing in an installed package defines them:
 
 ---
 
-Source `index.html` @ `f3ebcf854852bdc5` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3df2e1380c937e34` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1462,7 +1481,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `f3ebcf854852bdc5` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3df2e1380c937e34` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1518,6 +1537,7 @@ Full surface with the complete content and a wider layout.
 - Card
 - Preview
 - Detail
+- Web component counterpart
 
 ## Blocks documented here
 
@@ -1538,7 +1558,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `f3ebcf854852bdc5` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3df2e1380c937e34` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1576,7 +1596,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `f3ebcf854852bdc5` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3df2e1380c937e34` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1680,7 +1700,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `f3ebcf854852bdc5` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3df2e1380c937e34` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1716,7 +1736,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `f3ebcf854852bdc5` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3df2e1380c937e34` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1761,5 +1781,5 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `f3ebcf854852bdc5` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3df2e1380c937e34` · last committed 2026-11-03T01:20:29+01:00 · no URL: the project is private until v1.0.
 

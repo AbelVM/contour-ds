@@ -710,8 +710,8 @@ class ContourSkeletonGroup extends ContourBase {
  * `cluster-count`, `cluster-expanded`.
  */
 class ContourMapPopup extends ContourBase {
-  static get observed() { return ["title", "content", "cluster-count", "cluster-expanded"]; }
-  static get properties() { return { title: { attribute: "title" }, content: { attribute: "content" }, "cluster-count": { attribute: "cluster-count", type: Number }, "cluster-expanded": { attribute: "cluster-expanded", type: Boolean } }; }
+  static get observed() { return ["title", "content", "cluster-count", "cluster-expanded", "cluster-items"]; }
+  static get properties() { return { title: { attribute: "title" }, content: { attribute: "content" }, "cluster-count": { attribute: "cluster-count", type: Number }, "cluster-expanded": { attribute: "cluster-expanded", type: Boolean }, "cluster-items": { attribute: "cluster-items" } }; }
     render() {
       this.classList.add("c-map-popup");
       this.setAttribute("role", "dialog");
@@ -737,6 +737,25 @@ class ContourMapPopup extends ContourBase {
       } else {
         const badge = this.querySelector(".c-map-popup__cluster");
         if (badge) badge.remove();
+      }
+      // Spatial clustering (R14-28): render clustered locations when expanded.
+      const expanded = this.hasAttribute("cluster-expanded");
+      let items = [];
+      try { items = this.getAttribute("cluster-items") ? JSON.parse(this.getAttribute("cluster-items")) : []; } catch (e) { items = []; }
+      const list = this.querySelector(".c-map-popup__cluster-list");
+      if (expanded && Array.isArray(items) && items.length) {
+        const ul = list || document.createElement("ul");
+        ul.className = "c-map-popup__cluster-list";
+        ul.innerHTML = "";
+        items.forEach((it) => {
+          const li = document.createElement("li");
+          li.className = "c-map-popup__cluster-item";
+          li.textContent = typeof it === "string" ? it : (it.label || it.name || JSON.stringify(it));
+          ul.appendChild(li);
+        });
+        if (ul.parentNode !== this) this.appendChild(ul);
+      } else if (list) {
+        list.remove();
       }
       if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", title || "Map popup");
     }
@@ -1605,6 +1624,56 @@ class ContourDatePicker extends ContourBase {
         msg.classList.toggle("c-date-picker__message--error", !!err);
       } else if (msg) { msg.remove(); }
       if (err) this.classList.add("is-error"); else this.classList.remove("is-error");
+      // Calendar affordance (R14-22): a toggle + month grid alongside the native input.
+      const toggle = this.ensure(".c-date-picker__calendar-toggle", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-date-picker__calendar-toggle"; el.type = "button"; el.textContent = "📅"; el.setAttribute("aria-label", "Open calendar"); el.setAttribute("aria-expanded", "false"); return el; });
+      let cal = this.querySelector(".c-date-picker__calendar");
+      if (!cal) { cal = document.createElement("div"); cal.className = "c-date-picker__calendar"; cal.setAttribute("hidden", ""); cal.setAttribute("role", "dialog"); cal.setAttribute("aria-label", "Calendar"); this.appendChild(cal); }
+    }
+    _renderCalendar() {
+      const cal = this.querySelector(".c-date-picker__calendar");
+      if (!cal) return;
+      const input = this.querySelector(".c-date-picker__input");
+      const base = (input && input.value) ? new Date(input.value) : new Date();
+      const month = this._calMonth || new Date(base.getFullYear(), base.getMonth(), 1);
+      this._calMonth = month;
+      const y = month.getFullYear();
+      const m = month.getMonth();
+      const first = new Date(y, m, 1);
+      const startDay = first.getDay();
+      const daysInMonth = new Date(y, m + 1, 0).getDate();
+      cal.innerHTML = "";
+      const header = document.createElement("div");
+      header.className = "c-date-picker__calendar-header";
+      const prev = document.createElement("button"); prev.type = "button"; prev.className = "c-btn c-btn--sm"; prev.textContent = "‹"; prev.setAttribute("aria-label", "Previous month");
+      const title = document.createElement("span"); title.className = "c-date-picker__calendar-title"; title.textContent = month.toLocaleString(this.getAttribute("locale") || undefined, { month: "long", year: "numeric" });
+      const next = document.createElement("button"); next.type = "button"; next.className = "c-btn c-btn--sm"; next.textContent = "›"; next.setAttribute("aria-label", "Next month");
+      header.appendChild(prev); header.appendChild(title); header.appendChild(next);
+      cal.appendChild(header);
+      const grid = document.createElement("div");
+      grid.className = "c-date-picker__calendar-grid";
+      grid.setAttribute("role", "grid");
+      const weekdays = ["Su","Mo","Tu","We","Th","Fr","Sa"];
+      weekdays.forEach((w) => { const h = document.createElement("div"); h.className = "c-date-picker__calendar-weekday"; h.textContent = w; grid.appendChild(h); });
+      for (let i = 0; i < startDay; i++) { const empty = document.createElement("div"); empty.className = "c-date-picker__calendar-day c-date-picker__calendar-day--empty"; grid.appendChild(empty); }
+      const selected = input ? input.value : "";
+      for (let d = 1; d <= daysInMonth; d++) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "c-date-picker__calendar-day";
+        btn.textContent = String(d);
+        const iso = `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+        if (selected && selected.startsWith(iso)) btn.classList.add("is-selected");
+        btn.addEventListener("click", () => {
+          if (input) { input.value = iso; input.dispatchEvent(new Event("change", { bubbles: true })); }
+          cal.setAttribute("hidden", "");
+          const tgl = this.querySelector(".c-date-picker__calendar-toggle");
+          if (tgl) tgl.setAttribute("aria-expanded", "false");
+        });
+        grid.appendChild(btn);
+      }
+      cal.appendChild(grid);
+      prev.addEventListener("click", () => { this._calMonth = new Date(y, m - 1, 1); this._renderCalendar(); });
+      next.addEventListener("click", () => { this._calMonth = new Date(y, m + 1, 1); this._renderCalendar(); });
     }
     enhance() {
       if (this._wiredDatePicker) return;
@@ -1616,6 +1685,18 @@ class ContourDatePicker extends ContourBase {
           const detail = end ? { start: this.querySelector(".c-date-picker__input").value, end: end.value } : { value: t.value };
           this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail }));
         }
+      });
+      const toggle = () => {
+        const cal = this.querySelector(".c-date-picker__calendar");
+        const btn = this.querySelector(".c-date-picker__calendar-toggle");
+        if (!cal) return;
+        const hidden = cal.hasAttribute("hidden");
+        if (hidden) { cal.removeAttribute("hidden"); if (btn) btn.setAttribute("aria-expanded", "true"); this._renderCalendar(); }
+        else { cal.setAttribute("hidden", ""); if (btn) btn.setAttribute("aria-expanded", "false"); }
+      };
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest(".c-date-picker__calendar-toggle") : null;
+        if (btn && this.contains(btn)) { e.preventDefault(); toggle(); }
       });
     }
   }
@@ -1711,6 +1792,10 @@ class ContourTimePicker extends ContourBase {
         msg.classList.toggle("c-time-picker__message--error", !!err);
       } else if (msg) { msg.remove(); }
       if (err) this.classList.add("is-error"); else this.classList.remove("is-error");
+      // Calendar affordance (R14-22): a toggle + month grid alongside the native input.
+      const toggle = this.ensure(".c-date-picker__calendar-toggle", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-date-picker__calendar-toggle"; el.type = "button"; el.textContent = "📅"; el.setAttribute("aria-label", "Open calendar"); el.setAttribute("aria-expanded", "false"); return el; });
+      let cal = this.querySelector(".c-date-picker__calendar");
+      if (!cal) { cal = document.createElement("div"); cal.className = "c-date-picker__calendar"; cal.setAttribute("hidden", ""); cal.setAttribute("role", "dialog"); cal.setAttribute("aria-label", "Calendar"); this.appendChild(cal); }
     }
     enhance() {
       if (this._wiredTimePicker) return;
@@ -1794,6 +1879,10 @@ class ContourColorPicker extends ContourBase {
         msg.classList.toggle("c-color-picker__message--error", !!err);
       } else if (msg) { msg.remove(); }
       if (err) this.classList.add("is-error"); else this.classList.remove("is-error");
+      // Calendar affordance (R14-22): a toggle + month grid alongside the native input.
+      const toggle = this.ensure(".c-date-picker__calendar-toggle", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-date-picker__calendar-toggle"; el.type = "button"; el.textContent = "📅"; el.setAttribute("aria-label", "Open calendar"); el.setAttribute("aria-expanded", "false"); return el; });
+      let cal = this.querySelector(".c-date-picker__calendar");
+      if (!cal) { cal = document.createElement("div"); cal.className = "c-date-picker__calendar"; cal.setAttribute("hidden", ""); cal.setAttribute("role", "dialog"); cal.setAttribute("aria-label", "Calendar"); this.appendChild(cal); }
     }
     enhance() {
       if (this._wiredColorPicker) return;
@@ -1874,6 +1963,10 @@ class ContourNumberField extends ContourBase {
         msg.classList.toggle("c-number-field__message--error", !!err);
       } else if (msg) { msg.remove(); }
       if (err) this.classList.add("is-error"); else this.classList.remove("is-error");
+      // Calendar affordance (R14-22): a toggle + month grid alongside the native input.
+      const toggle = this.ensure(".c-date-picker__calendar-toggle", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-date-picker__calendar-toggle"; el.type = "button"; el.textContent = "📅"; el.setAttribute("aria-label", "Open calendar"); el.setAttribute("aria-expanded", "false"); return el; });
+      let cal = this.querySelector(".c-date-picker__calendar");
+      if (!cal) { cal = document.createElement("div"); cal.className = "c-date-picker__calendar"; cal.setAttribute("hidden", ""); cal.setAttribute("role", "dialog"); cal.setAttribute("aria-label", "Calendar"); this.appendChild(cal); }
     }
     enhance() {
       if (this._wiredNumberField) return;
@@ -2281,12 +2374,15 @@ class ContourVirtualList extends ContourBase {
       const scroller = this.ensure(".c-virtual-list__scroller", () => { const el = document.createElement("div"); el.className = "c-virtual-list__scroller"; return el; });
       scroller.setAttribute("role", "presentation");
       const horizontal = this.getAttribute("orientation") === "horizontal";
-      this.setAttribute("aria-orientation", horizontal ? "horizontal" : "vertical");
       scroller.style.overflowX = horizontal ? "auto" : "hidden";
       scroller.style.overflowY = horizontal ? "hidden" : "auto";
       const inner = this.ensure(".c-virtual-list__inner", () => { const el = document.createElement("div"); el.className = "c-virtual-list__inner"; el.style.position = "relative"; return el; });
       if (inner.parentNode !== scroller) scroller.appendChild(inner);
       this._renderWindow(scroller, inner, horizontal ? (scroller.scrollLeft || 0) : (scroller.scrollTop || 0));
+    }
+    _measureHeights(inner, horizontal) {
+      const rows = Array.from(inner.querySelectorAll(".c-virtual-list__item"));
+      return rows.map((r) => horizontal ? (r.getBoundingClientRect().width || 28) : (r.getBoundingClientRect().height || 28));
     }
     _renderWindow(scroller, inner, scrollTop) {
       const items = this._items();
@@ -2294,15 +2390,35 @@ class ContourVirtualList extends ContourBase {
       const horizontal = this.getAttribute("orientation") === "horizontal";
       const autoHeight = this._autoHeight();
       const viewportSize = horizontal ? (scroller.clientWidth || 320) : (scroller.clientHeight || 320);
-      const visibleCount = autoHeight ? items.length : Math.ceil(viewportSize / ih) + 4;
       const total = items.length;
-      let start = autoHeight ? 0 : Math.floor((scrollTop || 0) / ih);
+      // Reset measured heights when item count changes.
+      if (this._vlItemCount !== total) { this._vlHeights = null; this._vlItemCount = total; }
+      let heights = autoHeight ? this._vlHeights : null;
+      let cumulative = null;
+      if (autoHeight && heights && heights.length === total) {
+        cumulative = [0];
+        for (let i = 0; i < total; i++) cumulative.push(cumulative[i] + (heights[i] || 28));
+      }
+      const visibleCount = autoHeight && !cumulative ? total : (autoHeight ? Math.ceil(viewportSize / 28) + 6 : Math.ceil(viewportSize / ih) + 4);
+      let start = 0;
+      if (autoHeight && cumulative) {
+        // binary search for start
+        let lo = 0, hi = total;
+        while (lo < hi) {
+          const mid = (lo + hi) >> 1;
+          if (cumulative[mid] < (scrollTop || 0)) lo = mid + 1; else hi = mid;
+        }
+        start = Math.max(0, lo - 3);
+      } else if (!autoHeight) {
+        start = Math.floor((scrollTop || 0) / ih);
+      }
       if (start < 0) start = 0;
-      if (start > Math.max(0, total - visibleCount)) start = Math.max(0, total - visibleCount);
-      const end = Math.min(total, start + visibleCount);
-      const topSpacerSize = autoHeight ? 0 : start * ih;
-      const bottomSpacerSize = autoHeight ? 0 : Math.max(0, (total - end) * ih);
-      this.setAttribute("aria-rowcount", String(total));
+      const end = autoHeight && cumulative
+        ? Math.min(total, start + visibleCount)
+        : Math.min(total, start + visibleCount);
+      if (start > Math.max(0, total - visibleCount) && !autoHeight) start = Math.max(0, total - visibleCount);
+      const topSpacerSize = autoHeight && cumulative ? cumulative[start] : (autoHeight ? 0 : start * ih);
+      const bottomSpacerSize = autoHeight && cumulative ? Math.max(0, cumulative[total] - cumulative[end]) : (autoHeight ? 0 : Math.max(0, (total - end) * ih));
       inner.style.display = horizontal ? "flex" : "block";
       inner.style.width = horizontal && autoHeight ? "max-content" : "";
       inner.style.height = horizontal || autoHeight ? "" : (total * ih) + "px";
@@ -2315,7 +2431,7 @@ class ContourVirtualList extends ContourBase {
         const row = document.createElement("div");
         row.className = "c-virtual-list__item";
         row.setAttribute("role", "listitem");
-        row.setAttribute("aria-rowindex", String(i + 1));
+        // aria-rowindex omitted: not allowed on role="listitem" (axe aria-allowed-attr)
         row.setAttribute("tabindex", i === 0 ? "0" : "-1");
         row.textContent = typeof items[i] === "string" ? items[i] : (items[i].label || items[i].text || JSON.stringify(items[i]));
         if (this.hasAttribute("sticky") && items[i] && items[i].sticky) {
@@ -2332,6 +2448,17 @@ class ContourVirtualList extends ContourBase {
       bottom.style[horizontal ? "width" : "height"] = bottomSpacerSize + "px";
       inner.appendChild(bottom);
       if (horizontal && !autoHeight) inner.style.width = (total * ih) + "px";
+      // Measure heights in auto mode for future windowing.
+      if (autoHeight && !this._vlHeights) {
+        // defer measurement to next frame so layout is done
+        requestAnimationFrame(() => {
+          this._vlHeights = this._measureHeights(inner, horizontal);
+          // re-render windowed now that heights known
+          const s = scroller;
+          const i = inner;
+          if (s && i) this._renderWindow(s, i, s.scrollTop || 0);
+        });
+      }
     }
     enhance() {
       if (this._wiredVirtualList) return;
@@ -3018,8 +3145,8 @@ class ContourCarousel extends ContourBase {
  */
 class ContourDataGrid extends ContourBase {
     static get updateMode() { return "keyed"; }
-  static get observed() { return ["columns", "rows", "page", "filter", "page-size", "resizable"]; }
-  static get properties() { return { columns: { attribute: "columns" }, rows: { attribute: "rows" }, page: { attribute: "page" }, filter: { attribute: "filter" }, "page-size": { attribute: "page-size" }, resizable: { attribute: "resizable", type: Boolean } }; }
+  static get observed() { return ["columns", "rows", "page", "filter", "page-size", "resizable", "virtual", "row-height"]; }
+  static get properties() { return { columns: { attribute: "columns" }, rows: { attribute: "rows" }, page: { attribute: "page" }, filter: { attribute: "filter" }, "page-size": { attribute: "page-size" }, resizable: { attribute: "resizable", type: Boolean }, virtual: { attribute: "virtual", type: Boolean }, "row-height": { attribute: "row-height" } }; }
     render() {
       this.classList.add("c-data-grid");
       if (this.hasAttribute("loading") || this.hasAttribute("error") || this.hasAttribute("empty")) {
@@ -3086,10 +3213,66 @@ class ContourDataGrid extends ContourBase {
         const start = (page - 1) * pageSize;
         parsedRows = parsedRows.slice(start, start + pageSize);
       }
+      this._dgCols = parsedCols;
+      this._dgRows = parsedRows;
+      this._dgFilteredRows = parsedRows;
+      const virtual = this.hasAttribute("virtual") && !(Number(this.getAttribute("page-size")) > 0);
+      if (virtual) {
+        this._renderDataGridWindow(0);
+      } else {
+        tbody.innerHTML = "";
+        parsedRows.forEach((r) => {
+          const tr = document.createElement("tr");
+          parsedCols.forEach((c) => {
+            const key = typeof c === "string" ? c : (c.key || c.label || "");
+            const td = document.createElement("td");
+            td.setAttribute("role", "gridcell");
+            td.setAttribute("tabindex", "0");
+            td.textContent = r && r[key] != null ? r[key] : "";
+            tr.appendChild(td);
+          });
+          tbody.appendChild(tr);
+        });
+      }
+      // Wrap in a scroll container for virtualization of large datasets.
+      let wrap = this.querySelector(".c-data-grid__wrap");
+      if (!wrap) { wrap = document.createElement("div"); wrap.className = "c-data-grid__wrap"; wrap.style.maxHeight = "400px"; wrap.style.overflow = "auto"; }
+      if (table.parentNode !== wrap) wrap.appendChild(table);
+      if (wrap.parentNode !== this) this.appendChild(wrap);
+    }
+    _rowHeight() {
+      const h = Number(this.getAttribute("row-height"));
+      return Number.isFinite(h) && h > 0 ? h : 32;
+    }
+    _renderDataGridWindow(scrollTop) {
+      const table = this.querySelector(".c-data-grid__table");
+      const tbody = table && table.querySelector("tbody");
+      if (!tbody) return;
+      const cols = this._dgCols || [];
+      const rows = this._dgRows || [];
+      const rh = this._rowHeight();
+      const viewport = 400;
+      const visibleCount = Math.ceil(viewport / rh) + 6;
+      let start = Math.floor((scrollTop || 0) / rh);
+      if (start < 0) start = 0;
+      if (start > Math.max(0, rows.length - visibleCount)) start = Math.max(0, rows.length - visibleCount);
+      const end = Math.min(rows.length, start + visibleCount);
       tbody.innerHTML = "";
-      parsedRows.forEach((r) => {
+      // top spacer
+      if (start > 0) {
+        const sp = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = Math.max(1, cols.length);
+        td.style.blockSize = (start * rh) + "px";
+        td.style.padding = "0";
+        sp.appendChild(td);
+        tbody.appendChild(sp);
+      }
+      for (let i = start; i < end; i++) {
+        const r = rows[i];
         const tr = document.createElement("tr");
-        parsedCols.forEach((c) => {
+        tr.dataset.index = String(i);
+        cols.forEach((c) => {
           const key = typeof c === "string" ? c : (c.key || c.label || "");
           const td = document.createElement("td");
           td.setAttribute("role", "gridcell");
@@ -3098,16 +3281,30 @@ class ContourDataGrid extends ContourBase {
           tr.appendChild(td);
         });
         tbody.appendChild(tr);
-      });
-      // Wrap in a scroll container for virtualization of large datasets.
-      let wrap = this.querySelector(".c-data-grid__wrap");
-      if (!wrap) { wrap = document.createElement("div"); wrap.className = "c-data-grid__wrap"; wrap.style.maxHeight = "400px"; wrap.style.overflow = "auto"; }
-      if (table.parentNode !== wrap) wrap.appendChild(table);
-      if (wrap.parentNode !== this) this.appendChild(wrap);
+      }
+      if (end < rows.length) {
+        const sp = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = Math.max(1, cols.length);
+        td.style.blockSize = ((rows.length - end) * rh) + "px";
+        td.style.padding = "0";
+        sp.appendChild(td);
+        tbody.appendChild(sp);
+      }
     }
     enhance() {
       if (this._wiredDataGrid) return;
       this._wiredDataGrid = true;
+      const wrap = () => this.querySelector(".c-data-grid__wrap");
+      const onScroll = () => {
+        const w = wrap();
+        if (w && this.hasAttribute("virtual")) this._renderDataGridWindow(w.scrollTop);
+      };
+      // attach after render creates wrap; use delegated listener on host
+      this.addEventListener("scroll", (e) => {
+        const w = e.target && e.target.classList && e.target.classList.contains("c-data-grid__wrap") ? e.target : null;
+        if (w && this.hasAttribute("virtual")) this._renderDataGridWindow(w.scrollTop);
+      }, true);
       let sortCol = -1, sortDir = "asc";
       this.addEventListener("keydown", (e) => {
         const cell = e.target && e.target.closest ? e.target.closest("[role='gridcell'], [role='columnheader']") : null;
