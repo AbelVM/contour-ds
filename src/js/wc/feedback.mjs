@@ -341,6 +341,7 @@ class ContourEmpty extends ContourBase {
     static get properties() { return { state: { attribute: "state" }, title: { attribute: "title" }, body: { attribute: "body" }, action: { attribute: "action" }, icon: { attribute: "icon" }, illustration: { attribute: "illustration" } }; }
     render() {
       this.classList.add("c-empty");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "status");
       const state = this.getAttribute("state") || "empty";
       const title = this.getAttribute("title") || (state === "filtered" ? "Nothing matches" : state === "error" ? "Could not load" : "No data yet");
       const body = this.getAttribute("body") || (state === "filtered" ? "Try clearing some filters." : state === "error" ? "Check your connection and try again." : "There is nothing to show here yet.");
@@ -841,7 +842,8 @@ class ContourToastHost extends ContourBase {
       if (this._wiredToastHost) return;
       this._wiredToastHost = true;
       this._toastQueue = [];
-      const showOne = (message, opts) => {
+      this._toastActive = null;
+      const buildToast = (message, opts) => {
         opts = opts || {};
         const toast = document.createElement("div");
         toast.className = "c-toast";
@@ -849,22 +851,80 @@ class ContourToastHost extends ContourBase {
         toast.setAttribute("aria-live", "polite");
         toast.setAttribute("aria-atomic", "true");
         if (opts.variant) toast.classList.add("c-toast--" + opts.variant);
-        toast.textContent = message == null ? "" : String(message);
-        this.appendChild(toast);
-        const ms = (opts.duration && opts.duration > 0) ? opts.duration : 3000;
-        const timer = setTimeout(() => {
-          if (toast.parentNode) toast.parentNode.removeChild(toast);
-          this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true }));
-        }, ms);
-        toast._timer = timer;
+        toast.dataset.message = message == null ? "" : String(message);
+        const text = document.createElement("span");
+        text.className = "c-toast__text";
+        text.textContent = message == null ? "" : String(message);
+        toast.appendChild(text);
+        if (opts.action && (typeof opts.action === "string" || (opts.action.label))) {
+          const label = (typeof opts.action === "string") ? opts.action : opts.action.label;
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "c-btn c-btn--ghost c-toast__action";
+          btn.textContent = label;
+          btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (typeof opts.action === "object" && typeof opts.action.onClick === "function") {
+              try { opts.action.onClick(); } catch (err) {}
+            }
+            dismiss(toast);
+          });
+          toast.appendChild(btn);
+        }
         return toast;
       };
-      this.show = (message, opts) => showOne(message, opts);
+      const dismiss = (toast) => {
+        if (!toast || !toast.parentNode) return;
+        if (toast._timer) { clearTimeout(toast._timer); toast._timer = null; }
+        toast.parentNode.removeChild(toast);
+        if (this._toastActive === toast) this._toastActive = null;
+        this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true, detail: { message: toast.textContent } }));
+        pump();
+      };
+      const pump = () => {
+        if (this._toastActive && this._toastActive.parentNode) return;
+        // dedup: skip queued items whose message matches the one just shown
+        while (this._toastQueue.length) {
+          const next = this._toastQueue.shift();
+          if (next._deduped) continue;
+          const toast = buildToast(next.message, next.opts);
+          this._toastActive = toast;
+          this.appendChild(toast);
+          const ms = (next.opts && next.opts.duration && next.opts.duration > 0) ? next.opts.duration : 3000;
+          toast._timer = setTimeout(() => dismiss(toast), ms);
+          return;
+        }
+        this._toastActive = null;
+      };
+      this.show = (message, opts) => {
+        opts = opts || {};
+        const key = String(message == null ? "" : message);
+        // dedup: if an identical message is already queued or active, reset its timer instead of stacking
+        const active = this._toastActive;
+        if (active && active.dataset && active.dataset.message === key && key !== "") {
+          if (active._timer) { clearTimeout(active._timer); }
+          const ms = (opts.duration && opts.duration > 0) ? opts.duration : 3000;
+          active._timer = setTimeout(() => dismiss(active), ms);
+          return active;
+        }
+        const queuedDup = this._toastQueue.find((q) => String(q.message) === key && key !== "");
+        if (queuedDup) {
+          queuedDup.opts = Object.assign({}, queuedDup.opts, opts);
+          return null;
+        }
+        const entry = { message, opts, _deduped: false };
+        this._toastQueue.push(entry);
+        pump();
+        return this._toastActive;
+      };
       this.hide = () => {
+        if (this._toastActive) dismiss(this._toastActive);
+        this._toastQueue.length = 0;
         Array.from(this.querySelectorAll(".c-toast")).forEach((t) => {
           if (t._timer) clearTimeout(t._timer);
           if (t.parentNode) t.parentNode.removeChild(t);
         });
+        this._toastActive = null;
       };
     }
   }

@@ -408,6 +408,11 @@ export function wireCombobox(host) {
   };
   const filter = (query) => {
     const q = (query || "").toLowerCase();
+    if (host._comboboxVirtual && typeof host._renderComboboxWindow === "function") {
+      host._renderComboboxWindow(q, true);
+      cursor = -1;
+      return;
+    }
     optionList().forEach((o) => { o.hidden = !!(q && !o.textContent.toLowerCase().includes(q)); });
     cursor = -1;
   };
@@ -435,6 +440,12 @@ export function wireCombobox(host) {
       o.setAttribute("aria-selected", "false");
     });
   };
+  if (host._comboboxVirtual && list && !list._contourVirtualScroll) {
+    list._contourVirtualScroll = true;
+    list.addEventListener("scroll", () => {
+      if (typeof host._renderComboboxWindow === "function") host._renderComboboxWindow(host._comboboxQuery || "");
+    }, { passive: true });
+  }
   const commit = (opt) => {
     const field = liveInput();
     if (!field) return;
@@ -442,7 +453,13 @@ export function wireCombobox(host) {
       const now = opt.getAttribute("aria-selected") === "true";
       opt.setAttribute("aria-selected", String(!now));
       opt.classList.toggle("c-combobox__option--selected", !now);
-      const selected = optionList().filter((o) => o.getAttribute("aria-selected") === "true").map((o) => o.textContent.trim());
+      const selected = (host.getAttribute("value") || "").split(",").map((v) => v.trim()).filter(Boolean);
+      const value = host._comboboxVirtual && host._comboboxFiltered
+        ? host._comboboxFiltered.find((item) => item.index === Number(opt.dataset.optionIndex))?.value
+        : opt.textContent.trim();
+      const position = selected.indexOf(String(value));
+      if (now && position >= 0) selected.splice(position, 1);
+      if (!now && position < 0) selected.push(String(value));
       host.setAttribute("value", selected.join(","));
       if (typeof host._syncFormValue === "function") host._syncFormValue();
       wcEmit(host, "contour:select", { value: selected });
@@ -461,6 +478,7 @@ export function wireCombobox(host) {
   const isField = (target) => wcClosest(host, target, ".c-combobox__input") !== null;
   wcListen(host, "input", (e) => {
     if (!isField(e.target)) return;
+    host._comboboxQuery = e.target.value;
     filter(e.target.value);
     open();
     // The form-value event (BY-44) rides on the same interaction; the shadow

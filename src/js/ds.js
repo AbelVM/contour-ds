@@ -1631,29 +1631,45 @@
     });
   });
 
+  /**
+   * Public runtime API exposed on `window.Contour`.
+   * @namespace Contour
+   */
   window.Contour = Object.freeze({
+    /** Whether the system script has finished loading. */
     __loaded: true,
+    /** Published runtime version. */
     version: "1.0",
+    /** Show a toast notification. */
     toast: showToast,
+    /** Apply a color scheme ("light" or "dark"). */
     setScheme: applyScheme,
+    /** Scroll to an element by id or element reference. */
     scrollTo: (id) => {
       const el = typeof id === "string" ? document.getElementById(id) : id;
       if (el) goTo(el);
     },
+    /** Copy text to the clipboard. */
     copy: async (text) => copyText(text),
+    /** Formatting helpers. */
     format: {
+      /** Format a number with optional percent mode. */
       number: (value, format, locale) => {
         const n = Number(value);
         if (!Number.isFinite(n)) return String(value);
         if (format === "percent") return (n * 100).toFixed(0) + "%";
         try { return new Intl.NumberFormat(locale || undefined).format(n); } catch (e) { return String(n); }
       },
+      /** Format a date/time value. */
       time: (value, locale) => {
         try { return new Intl.DateTimeFormat(locale || undefined).format(new Date(value)); } catch (e) { return String(value); }
       },
+      /** Resolve the active locale. */
       locale: (locale) => locale || (typeof navigator !== "undefined" ? navigator.language : "en"),
     },
+    /** Chart math helpers. */
     chart: { scale: linearScale, ticks: niceTicks, datum: datum },
+    /** Command palette helpers. */
     commands: { register: registerCommand, list: listCommands },
   });
 })();

@@ -22,6 +22,7 @@
   // Every name this file actually registers, in registration order. define() is
   // the only door to the registry, so the list cannot drift from what the
   // browser was handed.
+  /** Names registered by this module, in registration order. */
   export const REGISTERED = [];
 
   // Per-host teardown, run when a host leaves the page.
@@ -39,6 +40,7 @@
   // `disconnectedCallback` runs the list. A reconnect re-renders and re-registers,
   // which is why the list is dropped rather than kept: one disposal per mount.
   const DISPOSERS = new WeakMap();
+  /** Register teardown work for the host's current connection. */
   export const onDispose = (host, fn) => {
     let list = DISPOSERS.get(host);
     if (!list) { list = []; DISPOSERS.set(host, list); }
@@ -71,8 +73,10 @@
 
   // Monotonic counter for unique IDs (avoids Math.random() collision risk).
   let _contourIdCounter = 0;
+  /** Return a unique, document-safe id with the supplied prefix. */
   export const contourId = (prefix) => prefix + "-" + (++_contourIdCounter).toString(36);
 
+  /** Define a custom element once, while remaining safe in SSR runtimes. */
   export const define = (name, cls) => {
     // SSR-safe / constrained-runtime boundary: if the Custom Elements registry
     // is unavailable, do not throw on import; registration is a no-op and the
@@ -86,6 +90,7 @@
   // The attributes a consumer may set to ask for a modifier class. Both layers
   // read this one list: a wrapper that added a modifier from a different list is
   // how the light and shadow halves drifted apart over "color".
+  /** Attribute names that map to component modifier classes. */
   export const MODS = ["variant", "size", "color"];
 
   // Every event this layer emits, with the payload keys each one carries and
@@ -95,6 +100,7 @@
   // Payload keys are the union of keys every emission site passes, read from
   // the source rather than invented: contour:select carries {series, index},
   // {index, label} and {value} across its sites, so all three are listed.
+  /** Frozen event vocabulary with the public detail keys for each event. */
   export const CONTOUR_EVENTS = Object.freeze({
     "contour:activate": { payload: [], composed: true },
     "contour:add": { payload: ["value"], composed: true },
@@ -109,6 +115,7 @@
     "contour:brush-start": { payload: ["end", "start", "value"], composed: true },
     "contour:brush-end": { payload: ["end", "start", "value"], composed: true },
     "contour:change": { payload: ["checked", "color", "direction", "end", "files", "high", "index", "low", "month", "name", "speed", "start", "unit", "value", "year"], composed: true },
+      "contour:cluster-toggle": { payload: ["count", "expanded"], composed: true },
     "contour:clear": { payload: [], composed: true },
     "contour:close": { payload: ["index", "label"], composed: true },
     "contour:copy": { payload: ["text"], composed: true },
@@ -160,6 +167,7 @@
     "contour:step-change": { payload: ["direction", "index", "title"], composed: true },
     "contour:show": { payload: [], composed: true },
     "contour:sort": { payload: ["column", "direction"], composed: true },
+    "contour:submit": { payload: ["submitting"], composed: true },
     "contour:stream-state": { payload: ["running"], composed: true },
     "contour:tab-change": { payload: ["index", "label"], composed: true },
     "contour:theme-change": { payload: ["theme"], composed: true },
@@ -174,6 +182,7 @@
   // Shared HTML sanitizer (B3-18): allowlist via DOMParser instead of a
   // blacklist regex, so single-quoted, unquoted and javascript: payloads
   // cannot slip through.
+  /** Sanitize consumer-provided HTML using a DOM allowlist. */
   export function sanitizeHtml(input) {
     const str = String(input == null ? "" : input);
     // Fail closed when no parser is available (SSR, constrained runtimes):
@@ -213,18 +222,20 @@
   // Excluded because the render bodies below set them on the host:
   //   role, open, aria-label, aria-valuenow, aria-valuemin, aria-valuemax, tabindex
   // Adding one of those back to this list makes that component recurse.
+  /** Shared attribute vocabulary used by components that opt into defaults. */
   export const OBSERVED = [
-    "accept", "action", "actions", "after", "allow-duplicate", "allow-remove", "allow-rename", "allow-zoom", "anchor", "answer", "area", "article", "attribution", "attribution-mark", "audit", "autoplay", "axis", "axis-x", "axis-y", "brownout", "brownout-level", "before", "body", "brand", "breakpoint", "breaks", "cache-key", "canvas", "center", "clearable", "cols", "columns", "color", "command",
+    "accept", "action", "actions", "after", "allow-duplicate", "allow-remove", "allow-rename", "allow-zoom", "alpha", "anchor", "answer", "area", "article", "attribution", "attribution-mark", "audit", "autoplay", "axis", "axis-x", "axis-y", "brownout", "brownout-level", "before", "body", "brand", "breakpoint", "breaks", "brush", "brush-end", "brush-max", "brush-min", "brush-start", "cache-key", "canvas", "center", "clearable", "cols", "columns", "color", "command",
     "cells", "checked", "chrome", "debounce", "closable", "classification", "colors", "continuous", "content", "controls", "copyable", "count", "data", "data-table", "date", "delta", "description", "glyphs", "demo", "density", "desc", "dir", "direction", "disabled", "distance", "dismissible", "divider", "do", "dont", "dot", "ends", "high", "input", "layer", "low", "mode", "modes", "n", "opacity", "palette", "polarity", "precision", "range", "single",
-    "empty", "exclusive", "fallback", "format", "heading", "help", "hint", "href", "icon", "illustration", "instrument", "interval", "items", "key", "layers", "level",
+    "empty", "exclusive", "fallback", "format", "heading", "help", "hint", "href", "icon", "illustration", "instrument", "interval", "items", "key", "layers", "level", "range-end", "range-start",
     "label", "lazy", "lede", "legend", "line", "link", "links", "live", "loading", "locale", "loop", "max", "media", "message", "method", "menu", "min", "multiple", "name", "needle", "next", "no", "no-cache", "no-data-message", "nodes", "note", "norm", "normalize",
-    "options", "orientation", "page-size", "pages", "pause", "paused", "pausable", "persist", "placeholder", "playing", "point", "points", "prev", "progress", "prompt", "question", "recent", "required",
-    "quote", "ramp", "refresh", "removable", "resolution", "reverse", "rings", "retry", "rows", "scale", "selectable", "segments", "show-header", "sparkline", "threshold", "thresholds", "selected", "separator", "series", "shortcut", "side", "size", "skeleton", "sort", "sort-dir", "speed", "status", "step", "submit", "timeout", "trigger", "virtual",
+    "options", "orientation", "page-size", "pages", "pause", "paused", "pausable", "persist", "placeholder", "playing", "point", "points", "prev", "presets", "progress", "prompt", "question", "recent", "required",
+    "quote", "ramp", "refresh", "removable", "resolution", "reverse", "rings", "retry", "rows", "scale", "selectable", "segments", "show-header", "sparkline", "threshold", "thresholds", "selected", "separator", "series", "shortcut", "side", "size", "skeleton", "sort", "sort-dir", "speed", "status", "step", "submit", "submitting", "timeout", "trigger", "virtual", "sticky", "cluster-count", "cluster-expanded", "time", "resizable",
     "state", "steps", "subtitle", "summary", "src", "table", "tabs", "tag", "text", "ticks", "title", "type", "unit",
     "variant", "values", "viewport", "yes", "zoomable", "x", "y",
-    "caption", "current-time", "is-playing", "loop-label", "no-data-color", "property", "show-loop", "show-thumb", "show-thumb-caption", "speeds", "item-height", "pause-label", "play-label", "speed-label", "time-label",
+    "caption", "current-time", "is-playing", "loop-label", "no-data-color", "property", "show-loop", "show-thumb", "show-thumb-caption", "speeds", "item-height", "pause-label", "play-label", "speed-label", "time-label", "shimmer",
   ];
 
+  /** Resolve an authored heading level while keeping the fallback valid. */
   export function headingTag(host, fallback = "h3") {
     const v = host && host.getAttribute ? host.getAttribute("heading") : null;
     return /^h[1-6]$/.test(v || "") ? v : fallback;
@@ -764,6 +775,7 @@
     // render. Usage: el.batch(() => { el.value = 42; el.delta = "+3"; });
     // The render fires once when the callback returns, reading all final
     // attribute values. Nested calls are supported.
+    /** Coalesce synchronous property changes into one render. */
     batch(fn) {
       if (typeof fn !== "function") return;
       this._batchDepth = (this._batchDepth || 0) + 1;
@@ -888,6 +900,7 @@
   }
 
   // Simple component: just adds CSS classes.
+  /** Create a light-DOM component that only applies block and modifier classes. */
   export const simple = (classes) => class extends ContourBase {
     render() {
       classes.forEach((c) => this.classList.add(c));
@@ -915,6 +928,7 @@
   // here — they declare a class above, and their presence in this list would be
   // a fallback that only runs when the real component is broken, so the
   // registration loop skips a name an explicit component already claimed.
+  /** Blocks whose custom elements need no generated markup. */
   export const CLASS_ONLY = [
     "box", "cluster", "container", "row", "scrim", "stack"
   ];
@@ -922,6 +936,7 @@
   // Feature detection for `hidden="until-found"` (BY-51). Browsers that do not
   // support it treat the value as the boolean hidden attribute, which would
   // hide the content permanently — so we only upgrade where supported.
+  /** Detect support for the non-destructive `hidden="until-found"` value. */
   export function supportsUntilFound() {
     try {
       const t = document.createElement("div");
@@ -935,6 +950,7 @@
   // "unit","relative") or a JSON string of Intl.NumberFormat/DateTimeFormat/
   // RelativeTimeFormat options. `locale` defaults to the runtime locale.
   // Returns the raw value when formatting fails.
+  /** Format a value with the component's supported Intl presets. */
   export function formatValue(value, format, locale, unit) {
     if (!format) return value;
     const loc = locale || (typeof navigator !== "undefined" && navigator.language) || "en";
@@ -974,6 +990,7 @@
 
   // Spatial maths (BY-23): pure functions on the host's own attributes.
   // Haversine distance in meters between two lat/lon points.
+  /** Return the great-circle distance between two latitude/longitude points. */
   export function haversine(lat1, lon1, lat2, lon2) {
     const R = 6371000;
     const toRad = (d) => d * Math.PI / 180;
@@ -983,6 +1000,7 @@
     return 2 * R * Math.asin(Math.sqrt(a));
   }
   // Bearing in degrees (clockwise from north) from point 1 to point 2.
+  /** Return the initial bearing from one latitude/longitude point to another. */
   export function bearing(lat1, lon1, lat2, lon2) {
     const toRad = (d) => d * Math.PI / 180;
     const toDeg = (r) => r * 180 / Math.PI;
@@ -992,6 +1010,7 @@
     return (toDeg(Math.atan2(y, x)) + 360) % 360;
   }
   // Mercator resolution (meters per pixel) at a given latitude and zoom.
+  /** Return meters per pixel for Web Mercator at a latitude and zoom level. */
   export function mercatorResolution(lat, zoom) {
     return 156543.03392 * Math.cos(lat * Math.PI / 180) / Math.pow(2, zoom);
   }

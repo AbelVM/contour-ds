@@ -1,5 +1,8 @@
-// Entry point for the web-component modules. Importing this module registers
-// every Contour custom element as a side effect.
+/**
+ * Contour web-component entry point.
+ * Importing this module registers every light-DOM and shadow-DOM element.
+ * @module contour-wc
+ */
 
 import { REGISTERED } from "./core.mjs";
 import "./core.mjs";
@@ -22,6 +25,7 @@ import "./shadow.mjs";
 
 // Published version + readiness signal. Fires after every fragment has run, so
 // a consumer listening for `contour:ready` can assume the full registry exists.
+/** Published component runtime version. */
 export const CONTOUR_VERSION = "1.2.0";
 if (typeof window !== "undefined") {
   window.ContourVersion = CONTOUR_VERSION;

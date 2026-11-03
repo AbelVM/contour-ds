@@ -86,6 +86,7 @@ export type ContourComponent =
   | "c-faq"
   | "c-feature"
   | "c-field"
+  | "c-field-group"
   | "c-file-tree"
   | "c-file-upload"
   | "c-filter-bar"
@@ -93,6 +94,7 @@ export type ContourComponent =
   | "c-flag"
   | "c-flow-map"
   | "c-footer"
+  | "c-form"
   | "c-gauge"
   | "c-header"
   | "c-heatmap"
@@ -767,6 +769,7 @@ declare global {
     "contour-faq": ContourElement;
     "contour-feature": ContourElement;
     "contour-field": ContourFormElement;
+    "contour-field-group": ContourElement;
     "contour-file-tree": ContourElement;
     "contour-file-upload": ContourFormElement;
     "contour-filter-bar": ContourElement;
@@ -774,6 +777,7 @@ declare global {
     "contour-flag": ContourElement;
     "contour-flow-map": ContourDataElement;
     "contour-footer": ContourElement;
+    "contour-form": ContourElement;
     "contour-gauge": ContourDataElement;
     "contour-header": ContourElement;
     "contour-heatmap": ContourDataElement;

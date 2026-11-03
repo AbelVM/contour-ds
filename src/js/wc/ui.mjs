@@ -205,13 +205,20 @@ class ContourSpinner extends ContourBase {
   }
   define("contour-spinner", ContourSpinner);
 class ContourSkeleton extends ContourBase {
-    static get observed() { return ["size"]; }
-    static get properties() { return { size: { attribute: "size" } }; }
+    static get observed() { return ["size", "shimmer"]; }
+    static get properties() { return { size: { attribute: "size" }, shimmer: { attribute: "shimmer", type: Boolean } }; }
     render() {
       this.classList.add("c-skeleton");
       Array.from(this.classList).forEach((c) => { if (c.startsWith("c-skeleton--")) this.classList.remove(c); });
       const size = this.getAttribute("size");
       if (size) this.classList.add("c-skeleton--" + size);
+      if (!this.hasAttribute("role")) this.setAttribute("role", "status");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Loading");
+      if (!this.hasAttribute("aria-busy")) this.setAttribute("aria-busy", "true");
+      if (!this.hasAttribute("aria-hidden")) this.setAttribute("aria-hidden", "true");
+      const shimmer = this.getAttribute("shimmer");
+      if (shimmer === "false" || shimmer === "off") this.classList.add("c-skeleton--static");
+      else this.classList.remove("c-skeleton--static");
     }
   }
   define("contour-skeleton", ContourSkeleton);
@@ -253,10 +260,12 @@ class ContourTooltip extends ContourBase {
         if (delayMs > 0) showTimer = setTimeout(() => {
           if (hasPopover) { try { this.showPopover(); } catch (e) {} }
           else this.classList.add("is-open");
+          try { requestAnimationFrame(flipIfNeeded); } catch (e) { flipIfNeeded(); }
         }, delayMs);
         else {
           if (hasPopover) { try { this.showPopover(); } catch (e) {} }
           else this.classList.add("is-open");
+          try { requestAnimationFrame(flipIfNeeded); } catch (e) { flipIfNeeded(); }
         }
       };
       const hide = () => {
@@ -276,17 +285,35 @@ class ContourTooltip extends ContourBase {
            if (this.matches(":popover-open")) hide(); else show();
          }
        };
+       const onTouchStart = () => { if (triggerMode !== "click") show(); };
+       const onTouchEnd = () => { if (triggerMode !== "click") { setTimeout(hide, 1500); } };
        target.addEventListener("mouseenter", onEnter);
        target.addEventListener("mouseleave", onLeave);
        target.addEventListener("focus", onFocus);
        target.addEventListener("blur", onBlur);
        target.addEventListener("click", onClick);
+       target.addEventListener("touchstart", onTouchStart, { passive: true });
+       target.addEventListener("touchend", onTouchEnd, { passive: true });
+       // Placement flip: if the tooltip would overflow the viewport, flip it.
+       const flipIfNeeded = () => {
+         try {
+           const r = this.getBoundingClientRect();
+           if (r.right > window.innerWidth) this.classList.add("c-tooltip--flip-x");
+           else this.classList.remove("c-tooltip--flip-x");
+           if (r.bottom > window.innerHeight) this.classList.add("c-tooltip--flip-y");
+           else this.classList.remove("c-tooltip--flip-y");
+         } catch (e) {}
+       };
+       const origShow = show;
+       // wrap show to flip after display
        onDispose(this, () => {
          target.removeEventListener("mouseenter", onEnter);
          target.removeEventListener("mouseleave", onLeave);
          target.removeEventListener("focus", onFocus);
          target.removeEventListener("blur", onBlur);
          target.removeEventListener("click", onClick);
+         target.removeEventListener("touchstart", onTouchStart);
+         target.removeEventListener("touchend", onTouchEnd);
          if (showTimer) clearTimeout(showTimer);
        });
       this.addEventListener("toggle", (e) => {
@@ -594,8 +621,8 @@ class ContourSkeletonGroup extends ContourBase {
   define("contour-skeleton-group", ContourSkeletonGroup);
 
 class ContourMapPopup extends ContourBase {
-    static get observed() { return ["title", "content"]; }
-    static get properties() { return { title: { attribute: "title" }, content: { attribute: "content" } }; }
+  static get observed() { return ["title", "content", "cluster-count", "cluster-expanded"]; }
+  static get properties() { return { title: { attribute: "title" }, content: { attribute: "content" }, "cluster-count": { attribute: "cluster-count", type: Number }, "cluster-expanded": { attribute: "cluster-expanded", type: Boolean } }; }
     render() {
       this.classList.add("c-map-popup");
       this.setAttribute("role", "dialog");
@@ -611,6 +638,17 @@ class ContourMapPopup extends ContourBase {
         const c = this.ensure(".c-map-popup__body", () => { const el = document.createElement("div"); el.className = "c-map-popup__body"; return el; });
         c.textContent = content;
       }
+      const clusterCount = Number(this.getAttribute("cluster-count"));
+      if (Number.isFinite(clusterCount) && clusterCount > 1) {
+        const badge = this.ensure(".c-map-popup__cluster", () => { const el = document.createElement("button"); el.className = "c-map-popup__cluster c-btn c-btn--sm"; el.type = "button"; return el; });
+        const expanded = this.hasAttribute("cluster-expanded");
+        badge.textContent = expanded ? "Hide locations" : `${clusterCount} locations`;
+        badge.setAttribute("aria-expanded", String(expanded));
+        badge.setAttribute("aria-label", expanded ? "Hide locations" : `Show ${clusterCount} locations`);
+      } else {
+        const badge = this.querySelector(".c-map-popup__cluster");
+        if (badge) badge.remove();
+      }
       if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", title || "Map popup");
     }
     enhance() {
@@ -623,6 +661,12 @@ class ContourMapPopup extends ContourBase {
       this.addEventListener("click", (e) => {
         const btn = e.target && e.target.closest ? e.target.closest(".c-map-popup__close") : null;
         if (btn && this.contains(btn)) close();
+        const cluster = e.target && e.target.closest ? e.target.closest(".c-map-popup__cluster") : null;
+        if (cluster && this.contains(cluster)) {
+          const expanded = !this.hasAttribute("cluster-expanded");
+          this.toggleAttribute("cluster-expanded", expanded);
+          this.dispatchEvent(new CustomEvent("contour:cluster-toggle", { bubbles: true, composed: true, detail: { count: Number(this.getAttribute("cluster-count")), expanded } }));
+        }
       });
     }
   }
@@ -1237,8 +1281,8 @@ class ContourPaletteEditor extends ContourBase {
   define("contour-palette-editor", ContourPaletteEditor);
 
 class ContourDateRange extends ContourBase {
-    static get observed() { return ["start", "end", "label"]; }
-    static get properties() { return { start: { attribute: "start" }, end: { attribute: "end" }, label: { attribute: "label" } }; }
+  static get observed() { return ["start", "end", "label", "time", "min", "max", "locale"]; }
+  static get properties() { return { start: { attribute: "start" }, end: { attribute: "end" }, label: { attribute: "label" }, time: { attribute: "time", type: Boolean }, min: { attribute: "min" }, max: { attribute: "max" }, locale: { attribute: "locale" } }; }
     render() {
       this.classList.add("c-date-range");
       this.setAttribute("role", "group");
@@ -1248,10 +1292,19 @@ class ContourDateRange extends ContourBase {
         const l = this.ensure(".c-date-range__label", () => { const el = document.createElement("span"); el.className = "c-date-range__label"; return el; });
         l.textContent = label;
       }
-      const start = this.ensure(".c-date-range__start", () => { const el = document.createElement("input"); el.className = "c-input c-date-range__start"; el.type = "date"; return el; });
+      const start = this.ensure(".c-date-range__start", () => { const el = document.createElement("input"); el.className = "c-input c-date-range__start"; return el; });
+      start.type = this.hasAttribute("time") ? "datetime-local" : "date";
       start.value = this.getAttribute("start") || "";
-      const end = this.ensure(".c-date-range__end", () => { const el = document.createElement("input"); el.className = "c-input c-date-range__end"; el.type = "date"; return el; });
+      const end = this.ensure(".c-date-range__end", () => { const el = document.createElement("input"); el.className = "c-input c-date-range__end"; return el; });
+      end.type = start.type;
       end.value = this.getAttribute("end") || "";
+      const min = this.getAttribute("min");
+      const max = this.getAttribute("max");
+      [start, end].forEach((input) => {
+        if (min) input.min = min; else input.removeAttribute("min");
+        if (max) input.max = max; else input.removeAttribute("max");
+        if (this.getAttribute("locale")) input.lang = this.getAttribute("locale");
+      });
     }
     enhance() {
       if (this._wiredDateRange) return;
@@ -1324,9 +1377,33 @@ class ContourPopover extends ContourBase {
       if (this._wiredPopover) return;
       this._wiredPopover = true;
       const close = () => { try { this.hidePopover(); } catch (e) {} this.classList.remove("is-open"); this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true })); };
-      const keyHandler = (e) => { if (e.key === "Escape" && (this.classList.contains("is-open") || this.matches(":popover-open"))) { e.preventDefault(); close(); } };
+      const keyHandler = (e) => {
+        const open = this.classList.contains("is-open") || this.matches(":popover-open");
+        if (!open) return;
+        if (e.key === "Escape") { e.preventDefault(); close(); return; }
+        // Focus trap: keep Tab within the popover.
+        if (e.key === "Tab") {
+          const focusable = Array.from(this.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'));
+          if (!focusable.length) { e.preventDefault(); return; }
+          const first = focusable[0];
+          const last = focusable[focusable.length - 1];
+          if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+          else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+        }
+      };
       document.addEventListener("keydown", keyHandler);
       onDispose(this, () => document.removeEventListener("keydown", keyHandler));
+      // Nested popover support: when a nested popover opens, mark this one as parent.
+      this.addEventListener("contour:show", (e) => {
+        if (e.target && e.target !== this && this.contains(e.target)) {
+          this.classList.add("is-parent");
+        }
+      });
+      this.addEventListener("contour:close", (e) => {
+        if (e.target && e.target !== this) {
+          this.classList.remove("is-parent");
+        }
+      });
       this.addEventListener("click", (e) => {
         const btn = e.target && e.target.closest ? e.target.closest(".c-popover__close") : null;
         if (btn && this.contains(btn)) close();
@@ -1336,8 +1413,8 @@ class ContourPopover extends ContourBase {
   define("contour-popover", ContourPopover);
 
 class ContourDatePicker extends ContourBase {
-    static get observed() { return ["value", "label", "disabled", "error", "help"]; }
-    static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" } }; }
+  static get observed() { return ["value", "range", "range-start", "range-end", "label", "disabled", "error", "help", "time", "min", "max", "locale"]; }
+  static get properties() { return { value: { attribute: "value" }, range: { attribute: "range", type: Boolean }, rangeStart: { attribute: "range-start" }, rangeEnd: { attribute: "range-end" }, label: { attribute: "label" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" }, time: { attribute: "time", type: Boolean }, min: { attribute: "min" }, max: { attribute: "max" }, locale: { attribute: "locale" } }; }
     render() {
       this.classList.add("c-date-picker");
       this.setAttribute("role", "group");
@@ -1347,10 +1424,28 @@ class ContourDatePicker extends ContourBase {
         const l = this.ensure(".c-date-picker__label", () => { const el = document.createElement("label"); el.className = "c-date-picker__label"; return el; });
         l.textContent = label;
       }
-      const input = this.ensure(".c-date-picker__input", () => { const el = document.createElement("input"); el.className = "c-input c-date-picker__input"; el.type = "date"; return el; });
-      input.value = this.getAttribute("value") || "";
-      if (this.hasAttribute("disabled")) { input.setAttribute("disabled", ""); this.classList.add("is-disabled"); }
-      else { input.removeAttribute("disabled"); this.classList.remove("is-disabled"); }
+      const input = this.ensure(".c-date-picker__input", () => { const el = document.createElement("input"); el.className = "c-input c-date-picker__input"; return el; });
+      const range = this.hasAttribute("range");
+      const type = this.hasAttribute("time") ? "datetime-local" : "date";
+      const configure = (control, value, name) => {
+        control.type = type;
+        control.value = value || "";
+        control.setAttribute("aria-label", name);
+        if (this.hasAttribute("min")) control.min = this.getAttribute("min"); else control.removeAttribute("min");
+        if (this.hasAttribute("max")) control.max = this.getAttribute("max"); else control.removeAttribute("max");
+        if (this.hasAttribute("locale")) control.lang = this.getAttribute("locale"); else control.removeAttribute("lang");
+        if (this.hasAttribute("disabled")) control.setAttribute("disabled", ""); else control.removeAttribute("disabled");
+      };
+      configure(input, range ? this.getAttribute("range-start") : this.getAttribute("value"), range ? "Start date" : (label || "Date"));
+      let end = this.querySelector(".c-date-picker__end");
+      if (range) {
+        end = end || document.createElement("input");
+        end.className = "c-input c-date-picker__input c-date-picker__end";
+        configure(end, this.getAttribute("range-end"), "End date");
+        if (end.parentNode !== this) this.appendChild(end);
+      } else if (end) end.remove();
+      if (this.hasAttribute("disabled")) this.classList.add("is-disabled");
+      else this.classList.remove("is-disabled");
       const err = this.getAttribute("error");
       const help = this.getAttribute("help");
       let msg = this.querySelector(".c-date-picker__message");
@@ -1367,7 +1462,9 @@ class ContourDatePicker extends ContourBase {
       this.addEventListener("change", (e) => {
         const t = e.target;
         if (t && t.classList.contains("c-date-picker__input")) {
-          this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: t.value } }));
+          const end = this.querySelector(".c-date-picker__end");
+          const detail = end ? { start: this.querySelector(".c-date-picker__input").value, end: end.value } : { value: t.value };
+          this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail }));
         }
       });
     }
@@ -1471,8 +1568,8 @@ class ContourTimePicker extends ContourBase {
   define("contour-time-picker", ContourTimePicker);
 
 class ContourColorPicker extends ContourBase {
-    static get observed() { return ["value", "label", "disabled", "error", "help"]; }
-    static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" } }; }
+    static get observed() { return ["value", "label", "disabled", "error", "help", "alpha", "presets"]; }
+    static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" }, alpha: { attribute: "alpha", type: Boolean }, presets: { attribute: "presets" } }; }
     render() {
       this.classList.add("c-color-picker");
       this.setAttribute("role", "group");
@@ -1483,9 +1580,49 @@ class ContourColorPicker extends ContourBase {
         l.textContent = label;
       }
       const input = this.ensure(".c-color-picker__input", () => { const el = document.createElement("input"); el.className = "c-color-picker__input"; el.type = "color"; return el; });
-      input.value = this.getAttribute("value") || "#000000";
+      input.value = (this.getAttribute("value") || "#000000").slice(0, 7);
       if (this.hasAttribute("disabled")) { input.setAttribute("disabled", ""); this.classList.add("is-disabled"); }
       else { input.removeAttribute("disabled"); this.classList.remove("is-disabled"); }
+      // Alpha channel (optional).
+      if (this.hasAttribute("alpha")) {
+        const alpha = this.ensure(".c-color-picker__alpha", () => { const el = document.createElement("input"); el.className = "c-color-picker__alpha"; el.type = "range"; el.min = "0"; el.max = "1"; el.step = "0.01"; return el; });
+        const v = this.getAttribute("value") || "#000000";
+        const a = v.length === 9 ? parseInt(v.slice(7, 9), 16) / 255 : 1;
+        alpha.value = String(a);
+        alpha.setAttribute("aria-label", "Alpha");
+      } else {
+        const a = this.querySelector(".c-color-picker__alpha");
+        if (a) a.remove();
+      }
+      // Presets.
+      const presetsAttr = this.getAttribute("presets");
+      let presets = [];
+      if (presetsAttr) { try { presets = JSON.parse(presetsAttr); } catch (e) { presets = []; } }
+      const oldPresets = this.querySelector(".c-color-picker__presets");
+      if (oldPresets) oldPresets.remove();
+      if (Array.isArray(presets) && presets.length) {
+        const wrap = document.createElement("div");
+        wrap.className = "c-color-picker__presets";
+        presets.forEach((c) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "c-color-picker__preset";
+          btn.style.background = c;
+          btn.setAttribute("aria-label", "Preset " + c);
+          btn.dataset.color = c;
+          wrap.appendChild(btn);
+        });
+        this.appendChild(wrap);
+      }
+      // Eyedropper (if supported).
+      if (typeof window !== "undefined" && "EyeDropper" in window) {
+        const ed = this.ensure(".c-color-picker__eyedropper", () => { const el = document.createElement("button"); el.className = "c-color-picker__eyedropper"; el.type = "button"; el.textContent = "Pick"; el.setAttribute("aria-label", "Pick color from screen"); return el; });
+        if (this.hasAttribute("disabled")) ed.setAttribute("disabled", "");
+        else ed.removeAttribute("disabled");
+      } else {
+        const ed = this.querySelector(".c-color-picker__eyedropper");
+        if (ed) ed.remove();
+      }
       const err = this.getAttribute("error");
       const help = this.getAttribute("help");
       let msg = this.querySelector(".c-color-picker__message");
@@ -1503,6 +1640,38 @@ class ContourColorPicker extends ContourBase {
         const t = e.target;
         if (t && t.classList.contains("c-color-picker__input")) {
           this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: t.value } }));
+        }
+        if (t && t.classList.contains("c-color-picker__alpha")) {
+          const base = (this.getAttribute("value") || "#000000").slice(0, 7);
+          const a = Math.round(parseFloat(t.value) * 255).toString(16).padStart(2, "0");
+          const val = base + a;
+          this.setAttribute("value", val);
+          this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: val } }));
+        }
+      });
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest(".c-color-picker__preset") : null;
+        if (btn && this.contains(btn)) {
+          const c = btn.dataset.color;
+          if (c) {
+            this.setAttribute("value", c);
+            const input = this.querySelector(".c-color-picker__input");
+            if (input) input.value = c.slice(0, 7);
+            this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: c } }));
+          }
+        }
+        const ed = e.target && e.target.closest ? e.target.closest(".c-color-picker__eyedropper") : null;
+        if (ed && this.contains(ed) && typeof window !== "undefined" && "EyeDropper" in window) {
+          e.preventDefault();
+          const dropper = new window.EyeDropper();
+          dropper.open().then((r) => {
+            if (r && r.sRGBHex) {
+              this.setAttribute("value", r.sRGBHex);
+              const input = this.querySelector(".c-color-picker__input");
+              if (input) input.value = r.sRGBHex;
+              this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: r.sRGBHex } }));
+            }
+          }).catch(() => {});
         }
       });
     }
@@ -1711,7 +1880,12 @@ class ContourFileUpload extends ContourBase {
         const bar = this.ensure(".c-file-upload__progress", () => { const el = document.createElement("progress"); el.className = "c-file-upload__progress"; return el; });
         bar.value = Number(p) || 0;
         bar.max = 100;
+      } else {
+        const bar = this.querySelector(".c-file-upload__progress");
+        if (bar) bar.remove();
       }
+      const preview = this.ensure(".c-file-upload__preview", () => { const el = document.createElement("div"); el.className = "c-file-upload__preview"; return el; });
+      if (!preview) {}
     }
     enhance() {
       if (this._wiredFileUpload) return;
@@ -1721,10 +1895,33 @@ class ContourFileUpload extends ContourBase {
       const activate = () => { const i = input(); if (i) i.click(); };
       this.addEventListener("click", (e) => { const d = dz(); if (e.target === d || (d && d.contains(e.target))) { activate(); } });
       this.addEventListener("keydown", (e) => { const d = dz(); if ((e.target === d || (d && d.contains(e.target))) && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); activate(); } });
-      this.addEventListener("change", (e) => { const t = e.target; if (t && t.classList.contains("c-file-upload__input")) { this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { files: t.files } })); } });
+      const renderPreview = (files) => {
+        const preview = this.querySelector(".c-file-upload__preview");
+        if (!preview) return;
+        preview.innerHTML = "";
+        Array.from(files || []).forEach((f) => {
+          const item = document.createElement("div");
+          item.className = "c-file-upload__preview-item";
+          if (f.type && f.type.startsWith("image/")) {
+            const img = document.createElement("img");
+            img.className = "c-file-upload__preview-thumb";
+            img.alt = f.name;
+            try { img.src = URL.createObjectURL(f); } catch (e) {}
+            item.appendChild(img);
+          } else {
+            const name = document.createElement("span");
+            name.className = "c-file-upload__preview-name";
+            name.textContent = f.name;
+            item.appendChild(name);
+          }
+          preview.appendChild(item);
+        });
+      };
+      this.addEventListener("change", (e) => { const t = e.target; if (t && t.classList.contains("c-file-upload__input")) { renderPreview(t.files); this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { files: t.files } })); } });
+      // drag-drop already dispatches contour:change; also render preview there
       this.addEventListener("dragover", (e) => { e.preventDefault(); this.classList.add("is-dragover"); });
       this.addEventListener("dragleave", () => this.classList.remove("is-dragover"));
-      this.addEventListener("drop", (e) => { e.preventDefault(); this.classList.remove("is-dragover"); const i = input(); if (i && e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) { try { i.files = e.dataTransfer.files; } catch (err) { /* some browsers disallow */ } this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { files: e.dataTransfer.files } })); } });
+      this.addEventListener("drop", (e) => { e.preventDefault(); this.classList.remove("is-dragover"); const i = input(); if (i && e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) { try { i.files = e.dataTransfer.files; } catch (err) { /* some browsers disallow */ } const preview = this.querySelector(".c-file-upload__preview"); if (preview) { preview.innerHTML = ""; Array.from(e.dataTransfer.files).forEach((f) => { const item = document.createElement("div"); item.className = "c-file-upload__preview-item"; if (f.type && f.type.startsWith("image/")) { const img = document.createElement("img"); img.className = "c-file-upload__preview-thumb"; img.alt = f.name; try { img.src = URL.createObjectURL(f); } catch (err2) {} item.appendChild(img); } else { const name = document.createElement("span"); name.className = "c-file-upload__preview-name"; name.textContent = f.name; item.appendChild(name); } preview.appendChild(item); }); } this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { files: e.dataTransfer.files } })); } });
     }
   }
   define("contour-file-upload", ContourFileUpload);
@@ -1869,8 +2066,8 @@ class ContourStepper extends ContourBase {
 
 class ContourVirtualList extends ContourBase {
     static get updateMode() { return "keyed"; }
-    static get observed() { return ["items", "item-height"]; }
-    static get properties() { return { items: { attribute: "items" }, "item-height": { attribute: "item-height" } }; }
+    static get observed() { return ["items", "item-height", "orientation", "sticky"]; }
+    static get properties() { return { items: { attribute: "items" }, "item-height": { attribute: "item-height" }, orientation: { attribute: "orientation" }, sticky: { attribute: "sticky", type: Boolean } }; }
     _items() {
       const items = this.getAttribute("items");
       let parsed = [];
@@ -1881,32 +2078,44 @@ class ContourVirtualList extends ContourBase {
       const h = Number(this.getAttribute("item-height"));
       return Number.isFinite(h) && h > 0 ? h : 28;
     }
+    _autoHeight() {
+      return this.getAttribute("item-height") === "auto";
+    }
     render() {
       this.classList.add("c-virtual-list");
       this.setAttribute("role", "list");
       const scroller = this.ensure(".c-virtual-list__scroller", () => { const el = document.createElement("div"); el.className = "c-virtual-list__scroller"; return el; });
       scroller.setAttribute("role", "presentation");
+      const horizontal = this.getAttribute("orientation") === "horizontal";
+      this.setAttribute("aria-orientation", horizontal ? "horizontal" : "vertical");
+      scroller.style.overflowX = horizontal ? "auto" : "hidden";
+      scroller.style.overflowY = horizontal ? "hidden" : "auto";
       const inner = this.ensure(".c-virtual-list__inner", () => { const el = document.createElement("div"); el.className = "c-virtual-list__inner"; el.style.position = "relative"; return el; });
       if (inner.parentNode !== scroller) scroller.appendChild(inner);
-      this._renderWindow(scroller, inner, scroller.scrollTop || 0);
+      this._renderWindow(scroller, inner, horizontal ? (scroller.scrollLeft || 0) : (scroller.scrollTop || 0));
     }
     _renderWindow(scroller, inner, scrollTop) {
       const items = this._items();
       const ih = this._itemHeight();
-      const viewportH = scroller.clientHeight || 320;
-      const visibleCount = Math.ceil(viewportH / ih) + 4;
+      const horizontal = this.getAttribute("orientation") === "horizontal";
+      const autoHeight = this._autoHeight();
+      const viewportSize = horizontal ? (scroller.clientWidth || 320) : (scroller.clientHeight || 320);
+      const visibleCount = autoHeight ? items.length : Math.ceil(viewportSize / ih) + 4;
       const total = items.length;
-      let start = Math.floor((scrollTop || 0) / ih);
+      let start = autoHeight ? 0 : Math.floor((scrollTop || 0) / ih);
       if (start < 0) start = 0;
       if (start > Math.max(0, total - visibleCount)) start = Math.max(0, total - visibleCount);
       const end = Math.min(total, start + visibleCount);
-      const topSpacerH = start * ih;
-      const bottomSpacerH = Math.max(0, (total - end) * ih);
+      const topSpacerSize = autoHeight ? 0 : start * ih;
+      const bottomSpacerSize = autoHeight ? 0 : Math.max(0, (total - end) * ih);
       this.setAttribute("aria-rowcount", String(total));
+      inner.style.display = horizontal ? "flex" : "block";
+      inner.style.width = horizontal && autoHeight ? "max-content" : "";
+      inner.style.height = horizontal || autoHeight ? "" : (total * ih) + "px";
       inner.innerHTML = "";
       const top = document.createElement("div");
       top.className = "c-virtual-list__spacer c-virtual-list__spacer--top";
-      top.style.height = topSpacerH + "px";
+      top.style[horizontal ? "width" : "height"] = topSpacerSize + "px";
       inner.appendChild(top);
       for (let i = start; i < end; i++) {
         const row = document.createElement("div");
@@ -1915,14 +2124,20 @@ class ContourVirtualList extends ContourBase {
         row.setAttribute("aria-rowindex", String(i + 1));
         row.setAttribute("tabindex", i === 0 ? "0" : "-1");
         row.textContent = typeof items[i] === "string" ? items[i] : (items[i].label || items[i].text || JSON.stringify(items[i]));
+        if (this.hasAttribute("sticky") && items[i] && items[i].sticky) {
+          row.style.position = "sticky";
+          row.style.insetBlockStart = "0";
+          row.style.zIndex = "1";
+        }
+        if (horizontal && !autoHeight) row.style.flex = "0 0 " + ih + "px";
         row.dataset.index = String(i);
         inner.appendChild(row);
       }
       const bottom = document.createElement("div");
       bottom.className = "c-virtual-list__spacer c-virtual-list__spacer--bottom";
-      bottom.style.height = bottomSpacerH + "px";
+      bottom.style[horizontal ? "width" : "height"] = bottomSpacerSize + "px";
       inner.appendChild(bottom);
-      inner.style.height = (total * ih) + "px";
+      if (horizontal && !autoHeight) inner.style.width = (total * ih) + "px";
     }
     enhance() {
       if (this._wiredVirtualList) return;
@@ -1935,7 +2150,7 @@ class ContourVirtualList extends ContourBase {
         raf = requestAnimationFrame(() => {
           raf = 0;
           const s = scroller(); const i = inner();
-          if (s && i) this._renderWindow(s, i, s.scrollTop);
+          if (s && i) this._renderWindow(s, i, this.getAttribute("orientation") === "horizontal" ? s.scrollLeft : s.scrollTop);
         });
       };
       const s = scroller();
@@ -2569,8 +2784,8 @@ class ContourCarousel extends ContourBase {
 
 class ContourDataGrid extends ContourBase {
     static get updateMode() { return "keyed"; }
-    static get observed() { return ["columns", "rows", "page", "filter", "page-size"]; }
-    static get properties() { return { columns: { attribute: "columns" }, rows: { attribute: "rows" }, page: { attribute: "page" }, filter: { attribute: "filter" }, "page-size": { attribute: "page-size" } }; }
+  static get observed() { return ["columns", "rows", "page", "filter", "page-size", "resizable"]; }
+  static get properties() { return { columns: { attribute: "columns" }, rows: { attribute: "rows" }, page: { attribute: "page" }, filter: { attribute: "filter" }, "page-size": { attribute: "page-size" }, resizable: { attribute: "resizable", type: Boolean } }; }
     render() {
       this.classList.add("c-data-grid");
       if (this.hasAttribute("loading") || this.hasAttribute("error") || this.hasAttribute("empty")) {
@@ -2614,6 +2829,12 @@ class ContourDataGrid extends ContourBase {
           tr.appendChild(th);
         });
         thead.appendChild(tr);
+      }
+      if (this.hasAttribute("resizable")) {
+        Array.from(thead.querySelectorAll("th")).forEach((th) => {
+          th.style.position = "relative";
+          th.setAttribute("data-resizable", "true");
+        });
       }
       const rows = this.getAttribute("rows");
       let parsedRows = [];
@@ -2707,6 +2928,24 @@ class ContourDataGrid extends ContourBase {
           });
           this.dispatchEvent(new CustomEvent("contour:sort", { bubbles: true, composed: true, detail: { column: idx, direction: sortDir } }));
         }
+      });
+      this.addEventListener("pointerdown", (e) => {
+        if (!this.hasAttribute("resizable")) return;
+        const th = e.target && e.target.closest ? e.target.closest("th[data-resizable]") : null;
+        if (!th || !this.contains(th) || th.getBoundingClientRect().right - e.clientX > 10) return;
+        e.preventDefault();
+        const startX = e.clientX;
+        const startWidth = th.getBoundingClientRect().width;
+        const index = Array.from(th.parentElement.children).indexOf(th);
+        const move = (event) => {
+          const width = Math.max(48, startWidth + event.clientX - startX);
+          const table = this.querySelector(".c-data-grid__table");
+          if (table) Array.from(table.rows).forEach((row) => { if (row.children[index]) row.children[index].style.inlineSize = width + "px"; });
+        };
+        const stop = () => window.removeEventListener("pointermove", move);
+        window.addEventListener("pointermove", move);
+        window.addEventListener("pointerup", stop, { once: true });
+        onDispose(this, stop);
       });
     }
   }

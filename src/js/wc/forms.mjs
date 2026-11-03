@@ -2,9 +2,9 @@ import { ContourBase, define, contourId } from './core.mjs';
 import { wireCombobox } from './behaviours.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 class ContourCombobox extends ContourBase {
-    static get observed() { return ["options", "placeholder", "label", "value", "multiple", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "empty", "skeleton"]; }
+  static get observed() { return ["options", "placeholder", "label", "value", "multiple", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "empty", "skeleton", "virtual"]; }
     static get formAssociated() { return true; }
-    static get properties() { return { options: { attribute: "options" }, placeholder: { attribute: "placeholder" }, label: { attribute: "label" }, value: { attribute: "value" }, multiple: { attribute: "multiple", type: Boolean }, src: { attribute: "src" } }; }
+    static get properties() { return { options: { attribute: "options" }, placeholder: { attribute: "placeholder" }, label: { attribute: "label" }, value: { attribute: "value" }, multiple: { attribute: "multiple", type: Boolean }, virtual: { attribute: "virtual", type: Boolean }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-combobox");
       wireStates(this);
@@ -25,15 +25,19 @@ class ContourCombobox extends ContourBase {
           const list = this.ensure(".c-combobox__list", () => { const el = document.createElement("ul"); el.className = "c-combobox__list"; el.setAttribute("hidden", ""); return el; });
           list.innerHTML = "";
           list.setAttribute("hidden", "");
-          const selectedVals = (this.getAttribute("value") || "").split(",").map((v) => v.trim()).filter(Boolean);
-          parsed.forEach((opt) => {
-            const li = document.createElement("li");
-            li.className = "c-combobox__option";
-            const v = typeof opt === "string" ? opt : opt.value;
-            li.textContent = typeof opt === "string" ? opt : opt.label;
-            if (this.hasAttribute("multiple") && selectedVals.includes(String(v))) li.setAttribute("aria-selected", "true");
-            list.appendChild(li);
-          });
+          this._comboboxOptions = parsed;
+          this._comboboxVirtual = this.hasAttribute("virtual") && parsed.length > 100;
+          if (this._comboboxVirtual) {
+            list.classList.add("c-combobox__list--virtual");
+            list.style.maxBlockSize = "20rem";
+            list.style.overflow = "auto";
+            this._renderComboboxWindow("", true);
+          } else {
+            list.classList.remove("c-combobox__list--virtual");
+            list.style.maxBlockSize = "";
+            list.style.overflow = "";
+            this._renderComboboxWindow("", true);
+          }
         } catch (e) { /* keep existing */ }
       } else if (!authored.length && !options) {
         renderEmpty(this, "combobox");
@@ -52,6 +56,54 @@ class ContourCombobox extends ContourBase {
         const btn = this.querySelector(".c-combobox__clear");
         if (btn) btn.remove();
       }
+    }
+    _renderComboboxWindow(query = "", reset = false) {
+      const list = this.querySelector(".c-combobox__list");
+      const options = this._comboboxOptions || [];
+      if (!list) return;
+      const q = String(query || "").toLowerCase();
+      const filtered = options.map((opt, index) => ({
+        opt,
+        index,
+        label: typeof opt === "string" ? opt : opt.label,
+        value: typeof opt === "string" ? opt : opt.value,
+      })).filter((item) => !q || String(item.label).toLowerCase().includes(q));
+      this._comboboxFiltered = filtered;
+      const rowHeight = 32;
+      const windowSize = 20;
+      const overscan = 6;
+      const oldScrollTop = list.scrollTop;
+      const start = this._comboboxVirtual && !reset
+        ? Math.min(Math.max(0, filtered.length - windowSize), Math.max(0, Math.floor(oldScrollTop / rowHeight) - overscan))
+        : 0;
+      this._comboboxWindowStart = start;
+      const end = this._comboboxVirtual ? Math.min(filtered.length, start + windowSize + overscan * 2) : filtered.length;
+      const selectedVals = (this.getAttribute("value") || "").split(",").map((v) => v.trim()).filter(Boolean);
+      list.innerHTML = "";
+      const addSpacer = (height) => {
+        const spacer = document.createElement("li");
+        spacer.setAttribute("aria-hidden", "true");
+        spacer.style.blockSize = `${height}px`;
+        list.appendChild(spacer);
+      };
+      if (this._comboboxVirtual) addSpacer(start * rowHeight);
+      if (!filtered.length) {
+        const empty = document.createElement("li");
+        empty.className = "c-combobox__empty";
+        empty.setAttribute("role", "status");
+        empty.textContent = this.getAttribute("empty") || "No matches";
+        list.appendChild(empty);
+      }
+      filtered.slice(start, end).forEach((item) => {
+        const li = document.createElement("li");
+        li.className = "c-combobox__option";
+        li.dataset.optionIndex = String(item.index);
+        li.textContent = item.label;
+        if (this.hasAttribute("multiple") && selectedVals.includes(String(item.value))) li.setAttribute("aria-selected", "true");
+        list.appendChild(li);
+      });
+      if (this._comboboxVirtual) addSpacer(Math.max(0, filtered.length - end) * rowHeight);
+      if (this._comboboxVirtual && !reset) list.scrollTop = oldScrollTop;
     }
      enhance() {
        wireCombobox(this);
@@ -190,6 +242,95 @@ class ContourField extends ContourBase {
     sync();
   };
   define("contour-field", ContourField);
+
+  class ContourFieldGroup extends ContourBase {
+    static get observed() { return ["label", "hint", "error", "required"]; }
+    static get properties() { return { label: { attribute: "label" }, hint: { attribute: "hint" }, error: { attribute: "error" }, required: { attribute: "required", type: Boolean } }; }
+    render() {
+      this.classList.add("c-field-group");
+      this.setAttribute("role", "group");
+      const label = this.getAttribute("label");
+      if (label) {
+        const lbl = this.ensure(".c-field-group__label", () => { const el = document.createElement("div"); el.className = "c-field-group__label"; return el; });
+        lbl.textContent = label;
+      } else {
+        const lbl = this.querySelector(".c-field-group__label");
+        if (lbl) lbl.remove();
+      }
+      const hint = this.getAttribute("hint");
+      if (hint) {
+        const h = this.ensure(".c-field-group__hint", () => { const el = document.createElement("span"); el.className = "c-field-group__hint"; return el; });
+        h.textContent = hint;
+      } else {
+        const h = this.querySelector(".c-field-group__hint");
+        if (h) h.remove();
+      }
+      const error = this.getAttribute("error");
+      if (error) {
+        const e = this.ensure(".c-field-group__error", () => { const el = document.createElement("span"); el.className = "c-field-group__error"; return el; });
+        e.textContent = error;
+      } else {
+        const e = this.querySelector(".c-field-group__error");
+        if (e) e.remove();
+      }
+      if (error) this.classList.add("is-error"); else this.classList.remove("is-error");
+      if (this.hasAttribute("required")) this.setAttribute("aria-required", "true");
+      else this.removeAttribute("aria-required");
+    }
+    enhance() {
+      if (this._wiredFieldGroup) return;
+      this._wiredFieldGroup = true;
+    }
+  }
+  define("contour-field-group", ContourFieldGroup);
+
+  class ContourForm extends ContourBase {
+    static get observed() { return ["submitting", "error", "summary"]; }
+    static get properties() { return { submitting: { attribute: "submitting", type: Boolean }, error: { attribute: "error" }, summary: { attribute: "summary" } }; }
+    render() {
+      this.classList.add("c-form");
+      if (this.hasAttribute("submitting")) this.classList.add("is-submitting"); else this.classList.remove("is-submitting");
+      const summaryText = this.getAttribute("summary") || this.getAttribute("error");
+      let summary = this.querySelector(".c-form__summary");
+      if (summaryText) {
+        if (!summary) { summary = document.createElement("div"); summary.className = "c-form__summary"; summary.setAttribute("role", "alert"); this.prepend(summary); }
+        summary.textContent = summaryText;
+        summary.removeAttribute("hidden");
+      } else if (summary) {
+        summary.setAttribute("hidden", "");
+      }
+      const submit = this.querySelector("[type='submit'], .c-form__submit");
+      if (submit) {
+        if (this.hasAttribute("submitting")) submit.setAttribute("disabled", "");
+        else submit.removeAttribute("disabled");
+      }
+    }
+    enhance() {
+      if (this._wiredForm) return;
+      this._wiredForm = true;
+      this.addEventListener("submit", (e) => {
+        const form = e.target;
+        if (form && typeof form.checkValidity === "function" && !form.checkValidity()) {
+          e.preventDefault();
+          const invalid = Array.from(form.querySelectorAll(":invalid"));
+          const names = invalid.map((el) => el.getAttribute("aria-label") || el.name || el.id || "field").join(", ");
+          // Update DOM directly (avoid setAttribute on observed attr -> re-entrancy).
+          let summary = this.querySelector(".c-form__summary");
+          if (!summary) { summary = document.createElement("div"); summary.className = "c-form__summary"; summary.setAttribute("role", "alert"); this.prepend(summary); }
+          summary.textContent = "Please fix: " + (names || "invalid fields");
+          summary.removeAttribute("hidden");
+          return;
+        }
+        // submitting state via class + button, not attribute.
+        this.classList.add("is-submitting");
+        const submit = this.querySelector("[type='submit'], .c-form__submit");
+        if (submit) submit.setAttribute("disabled", "");
+        this.dispatchEvent(new CustomEvent("contour:submit", { bubbles: true, composed: true, detail: { submitting: true } }));
+      });
+    }
+  }
+  define("contour-form", ContourForm);
+
   class ContourRange extends ContourBase {
     static get observed() { return ["min", "max", "value", "low", "high", "range", "sparkline", "label", "disabled", "error", "help"]; }
     static get formAssociated() { return true; }

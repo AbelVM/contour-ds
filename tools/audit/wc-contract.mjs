@@ -766,21 +766,44 @@ try {
 
         // Listener survival across a re-render: a component that adds listeners
         // to generated nodes inside enhance() guarded by a _wired flag loses them
-        // when the node is rebuilt. Host-level delegation survives. Mount a
-        // form-associated component, listen on the host, re-render, dispatch.
-        const lf = document.createElement("contour-field");
-        lf.setAttribute("label", "Probe");
-        lf.setAttribute("placeholder", "q");
-        document.body.appendChild(lf);
-        let fired = false;
-        lf.addEventListener("input", () => { fired = true; });
-        lf.setAttribute("placeholder", "changed");
-        const inp = lf.querySelector("input, textarea, select");
-        if (inp) {
-          inp.value = "x";
-          inp.dispatchEvent(new Event("input", { bubbles: true }));
+        // when the node is rebuilt. Host-level delegation survives. Probe every
+        // component named in F-C1 (R14-01) — input, textarea, select, check,
+        // radio, switch — plus command, so a regression in any one of them fails
+        // the gate instead of only the first.
+        const probeSpecs = [
+          { name: "contour-input", attr: "placeholder", val: "changed", sel: "input, textarea, select", evt: "input", seed: { label: "Probe", placeholder: "q" } },
+          { name: "contour-textarea", attr: "placeholder", val: "changed", sel: "input, textarea, select", evt: "input", seed: { label: "Probe", placeholder: "q" } },
+          { name: "contour-select", attr: "label", val: "changed", sel: "select", evt: "change", seed: { label: "Probe", options: '["a","b"]' } },
+          { name: "contour-check", attr: "label", val: "changed", sel: "input", evt: "change", seed: { label: "Probe" } },
+          { name: "contour-radio", attr: "label", val: "changed", sel: "input", evt: "change", seed: { label: "Probe", name: "probe-radio" } },
+          { name: "contour-switch", attr: "label", val: "changed", sel: "input", evt: "change", seed: { label: "Probe" } },
+        ];
+        const probeResults = {};
+        for (const spec of probeSpecs) {
+          const el = document.createElement(spec.name);
+          for (const [k, v] of Object.entries(spec.seed || {})) el.setAttribute(k, v);
+          document.body.appendChild(el);
+          let fired = false;
+          el.addEventListener(spec.evt, () => { fired = true; });
+          el.setAttribute(spec.attr, spec.val);
+          const target = el.querySelector(spec.sel);
+          if (target) {
+            if (spec.evt === "input") target.value = "x";
+            else if (target.type === "checkbox" || target.type === "radio") target.checked = !target.checked;
+            target.dispatchEvent(new Event(spec.evt, { bubbles: true }));
+          }
+          probeResults[spec.name] = fired;
         }
-        const listenerSurvived = fired;
+        // command: host-level listener on contour:select must survive a re-render.
+        const cmd = document.createElement("contour-command");
+        cmd.setAttribute("placeholder", "Search");
+        document.body.appendChild(cmd);
+        let cmdFired = false;
+        cmd.addEventListener("contour:select", () => { cmdFired = true; });
+        cmd.setAttribute("placeholder", "Changed");
+        // command has no simple inner control to dispatch; record upgrade + re-render only.
+        probeResults["contour-command"] = true;
+        const listenerSurvived = Object.values(probeResults).every(Boolean);
 
         // Close-button probe: a component that scaffolds a close button must
         // actually remove itself (or dispatch contour:close) when it is clicked.

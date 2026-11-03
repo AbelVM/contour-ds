@@ -443,7 +443,32 @@ class ContourTable extends ContourBase {
           });
           const tbody = table.querySelector("tbody");
           tbody.innerHTML = "";
-          if (pageData.length === 0) {
+          const useVirtual = this.hasAttribute("virtual") && !usePaging && pageData.length > 100;
+          const rowHeight = 36;
+          const windowSize = 30;
+          const overscan = 10;
+          let windowStart = 0;
+          let visibleData = pageData;
+          if (useVirtual) {
+            const maxStart = Math.max(0, pageData.length - windowSize);
+            windowStart = Math.min(maxStart, Math.max(0, Math.floor(wrap.scrollTop / rowHeight) - overscan));
+            visibleData = pageData.slice(windowStart, windowStart + windowSize + overscan * 2);
+            table.setAttribute("aria-rowcount", String(pageData.length + 1));
+          } else {
+            table.removeAttribute("aria-rowcount");
+          }
+          const addSpacer = (height) => {
+            const tr = document.createElement("tr");
+            tr.setAttribute("aria-hidden", "true");
+            const td = document.createElement("td");
+            td.colSpan = cols.length;
+            td.style.blockSize = `${height}px`;
+            td.style.padding = "0";
+            tr.appendChild(td);
+            tbody.appendChild(tr);
+          };
+          if (useVirtual) addSpacer(windowStart * rowHeight);
+          if (visibleData.length === 0) {
             const tr = document.createElement("tr");
             const td = document.createElement("td");
             td.colSpan = cols.length;
@@ -453,7 +478,7 @@ class ContourTable extends ContourBase {
             tr.appendChild(td);
             tbody.appendChild(tr);
           } else {
-            pageData.forEach((row, ri) => {
+            visibleData.forEach((row, ri) => {
               const tr = document.createElement("tr");
               cols.forEach((c, ci) => {
                 const isSelect = (typeof c === "object" && c !== null && c.select);
@@ -462,8 +487,8 @@ class ContourTable extends ContourBase {
                   const cb = document.createElement("input");
                   cb.type = "checkbox";
                   cb.className = "c-table__row-select";
-                  cb.dataset.rowIndex = String(ri);
-                  if (this._selectedRows && this._selectedRows.has(ri)) cb.checked = true;
+                  cb.dataset.rowIndex = String(windowStart + ri);
+                  if (this._selectedRows && this._selectedRows.has(windowStart + ri)) cb.checked = true;
                   td.appendChild(cb);
                 } else {
                   td.textContent = this._cellValue(row[ci]);
@@ -473,21 +498,17 @@ class ContourTable extends ContourBase {
               tbody.appendChild(tr);
             });
           }
+          if (useVirtual) addSpacer(Math.max(0, pageData.length - windowStart - visibleData.length) * rowHeight);
           if (table.parentNode !== wrap) {
             wrap.innerHTML = "";
             wrap.appendChild(table);
           }
           if (wrap.parentNode !== this) this.appendChild(wrap);
-          // Optional virtualization: native content-visibility windowing for
-          // large datasets, without a JS scroll handler. Opt-in via `virtual`.
+          // Optional fixed-row DOM windowing for large datasets. Opt-in via `virtual`.
           if (this.hasAttribute("virtual")) {
             wrap.style.maxHeight = wrap.style.maxHeight || "24rem";
             wrap.style.overflow = "auto";
             table.classList.add("c-table--virtual");
-            Array.from(tbody.querySelectorAll("tr")).forEach((tr) => {
-              tr.style.contentVisibility = "auto";
-              tr.style.containIntrinsicSize = "auto 2rem";
-            });
           } else {
             wrap.style.maxHeight = "";
             wrap.style.overflow = "";
@@ -588,6 +609,12 @@ class ContourTable extends ContourBase {
         this._filters[idx] = inp.value;
         this.requestRender();
       });
+      this.addEventListener("scroll", (e) => {
+        if (!this.hasAttribute("virtual") || !e.target || !e.target.classList || !e.target.classList.contains("c-table-wrap")) return;
+        if (this._tableVirtualRaf) return;
+        const run = () => { this._tableVirtualRaf = 0; this.requestRender(); };
+        this._tableVirtualRaf = typeof requestAnimationFrame === "function" ? requestAnimationFrame(run) : setTimeout(run, 16);
+      }, true);
       // Row selection (F-09): track checked rows and emit contour:select.
       this._selectedRows = this._selectedRows || new Set();
       this.addEventListener("change", (e) => {
@@ -620,8 +647,8 @@ class ContourDataTable extends ContourTable {
   define("contour-data-table", ContourDataTable);
 class ContourChart extends ContourBase {
     static get updateMode() { return "keyed"; }
-    static get observed() { return ["series", "axis", "empty", "loading", "error", "retry", "skeleton", "zoomable", "data-table"]; }
-    static get properties() { return { series: { attribute: "series" }, axis: { attribute: "axis" }, zoomable: { attribute: "zoomable", type: Boolean } }; }
+  static get observed() { return ["series", "axis", "empty", "loading", "error", "retry", "skeleton", "zoomable", "data-table", "brush", "brush-min", "brush-max", "brush-start", "brush-end"]; }
+  static get properties() { return { series: { attribute: "series" }, axis: { attribute: "axis" }, zoomable: { attribute: "zoomable", type: Boolean }, brush: { attribute: "brush", type: Boolean } }; }
     render() {
       this.classList.add("c-chart");
       if (!this.hasAttribute("role")) this.setAttribute("role", "img");
@@ -848,6 +875,17 @@ const series = this.getAttribute("series");
             const old = this.querySelector(".c-chart__data-table");
             if (old) old.remove();
           }
+            if (this.hasAttribute("brush")) {
+              const brush = this.ensure("contour-brush", () => document.createElement("contour-brush"));
+              brush.setAttribute("min", this.getAttribute("brush-min") || "0");
+              brush.setAttribute("max", this.getAttribute("brush-max") || "100");
+              brush.setAttribute("start", this.getAttribute("brush-start") || this.getAttribute("brush-min") || "0");
+              brush.setAttribute("end", this.getAttribute("brush-end") || this.getAttribute("brush-max") || "100");
+              if (brush.previousElementSibling !== plot) this.appendChild(brush);
+            } else {
+              const brush = this.querySelector("contour-brush");
+              if (brush) brush.remove();
+            }
          } else {
          const plot = this.ensure(".c-chart__plot", () => { const el = document.createElement("div"); el.className = "c-chart__plot"; return el; });
          plot.innerHTML = "";
@@ -878,6 +916,14 @@ const series = this.getAttribute("series");
             n.style.display = pressed === false ? "none" : "";
           }
         });
+      });
+      this.addEventListener("contour:brush-end", (e) => {
+        if (!this.hasAttribute("brush") || !e.target || !e.target.matches("contour-brush")) return;
+        this.dispatchEvent(new CustomEvent("contour:select", {
+          bubbles: true,
+          composed: true,
+          detail: e.detail,
+        }));
       });
       // Zoom/pan (F-10 deferred): wheel to zoom, drag to pan, double-click to reset.
       if (this.hasAttribute("zoomable")) {
