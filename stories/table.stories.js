@@ -18,28 +18,30 @@ const COLS = JSON.stringify([{ key: "name", label: "Name" }, { key: "value", lab
 const ROWS = JSON.stringify([["Alpha", "1"], ["Beta", "2"]]);
 
 export const Default = {
-  render: () => {
+  render: (args = {}) => {
     const wrap = document.createElement("div");
     wrap.className = "c-table-wrap";
     const table = document.createElement("contour-table");
-    table.setAttribute("columns", COLS);
-    table.setAttribute("rows", ROWS);
+    table.setAttribute("columns", args.columns || COLS);
+    table.setAttribute("rows", args.rows || ROWS);
+    if (args.page) table.setAttribute("page", args.page);
     wrap.appendChild(table);
     return wrap;
   },
   play: async ({ canvasElement }) => {
     const table = canvasElement.querySelector("contour-table");
     await expect(table).toBeTruthy();
+    await expect(canvasElement.querySelector("table.c-table")).toBeTruthy();
     await expect(table.textContent).toContain("Alpha");
   },
 };
 
 export const Loading = {
-  render: () => {
+  render: (args = {}) => {
     const wrap = document.createElement("div");
     wrap.className = "c-table-wrap";
     const table = document.createElement("contour-table");
-    table.setAttribute("loading", "Loading…");
+    table.setAttribute("loading", args.loading || "Loading…");
     wrap.appendChild(table);
     return wrap;
   },
@@ -50,11 +52,11 @@ export const Loading = {
 };
 
 export const Empty = {
-  render: () => {
+  render: (args = {}) => {
     const wrap = document.createElement("div");
     wrap.className = "c-table-wrap";
     const table = document.createElement("contour-table");
-    table.setAttribute("empty", "No rows");
+    table.setAttribute("empty", args.empty || "No rows");
     wrap.appendChild(table);
     return wrap;
   },
@@ -76,12 +78,13 @@ export const TableControlledRows = {
 };
 
 export const ErrorRetry = {
-  render: () => {
+  render: (args = {}) => {
     const wrap = document.createElement("div");
     wrap.className = "c-table-wrap";
     const table = document.createElement("contour-table");
-    table.setAttribute("columns", COLS);
-    table.setAttribute("rows", ROWS);
+    table.setAttribute("columns", args.columns || COLS);
+    table.setAttribute("rows", args.rows || ROWS);
+    if (args.page) table.setAttribute("page", args.page);
     table.setAttribute("error", "Could not load rows");
     table.setAttribute("retry", "Try again");
     wrap.appendChild(table);

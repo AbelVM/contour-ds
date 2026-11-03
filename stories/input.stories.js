@@ -37,6 +37,7 @@ export const Default = {
     const input = canvasElement.querySelector("input");
     await expect(input).toBeTruthy();
     await expect(input).toHaveAttribute("placeholder", "you@example.com");
+    await expect(canvasElement.querySelector("contour-field")).toHaveClass(/c-field/);
   },
 };
 
@@ -105,7 +106,7 @@ export const Reactivity = {
 };
 
 export const InputPropertyReflection = {
-  render: () => document.createElement("contour-input"),
+  render: (args = {}) => document.createElement("contour-input"),
   play: async ({ canvasElement }) => {
     const input = canvasElement.querySelector("contour-input");
     input.value = "from-property";

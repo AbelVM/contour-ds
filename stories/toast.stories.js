@@ -12,25 +12,29 @@ export default {
   },
 };
 
+const render = (args = {}) => {
+  const t = document.createElement("contour-toast");
+  if (args.variant) t.setAttribute("variant", args.variant);
+  if (args.duration) t.setAttribute("duration", args.duration);
+  if (args.message) t.textContent = args.message;
+  else t.textContent = "Saved successfully";
+  return t;
+};
+
 export const Default = {
-  render: () => {
-    const t = document.createElement("contour-toast");
-    t.textContent = "Saved successfully";
-    return t;
-  },
+  args: { message: "Saved successfully" },
+  render,
   play: async ({ canvasElement }) => {
     const t = canvasElement.querySelector("contour-toast");
     await expect(t).toBeTruthy();
+    await expect(t).toHaveClass(/c-toast/);
     await expect(canvasElement.textContent).toContain("Saved");
   },
 };
 
 export const Reactivity = {
-  render: () => {
-    const t = document.createElement("contour-toast");
-    t.textContent = "Saved successfully";
-    return t;
-  },
+  args: { message: "Saved successfully" },
+  render,
   play: async ({ canvasElement }) => {
     const t = canvasElement.querySelector("contour-toast");
     await expect(t).toBeTruthy();

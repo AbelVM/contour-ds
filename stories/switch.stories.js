@@ -8,29 +8,37 @@ export default {
   argTypes: {
     label: { control: "text" },
     checked: { control: "boolean" },
+    disabled: { control: "boolean" },
+    error: { control: "text" },
+    help: { control: "text" },
   },
 };
 
+const render = (args = {}) => {
+  const s = document.createElement("contour-switch");
+  if (args.label) s.setAttribute("label", args.label);
+  else s.setAttribute("label", "Enable notifications");
+  if (args.checked) s.setAttribute("checked", "");
+  if (args.disabled) s.setAttribute("disabled", "");
+  if (args.error) s.setAttribute("error", args.error);
+  if (args.help) s.setAttribute("help", args.help);
+  return s;
+};
+
 export const Default = {
-  render: () => {
-    const s = document.createElement("contour-switch");
-    s.setAttribute("label", "Enable notifications");
-    return s;
-  },
+  args: { label: "Enable notifications" },
+  render,
   play: async ({ canvasElement }) => {
     const s = canvasElement.querySelector("contour-switch");
     await expect(s).toBeTruthy();
+    await expect(s).toHaveClass(/c-switch/);
     await expect(canvasElement.textContent).toContain("Enable notifications");
   },
 };
 
 export const Checked = {
-  render: () => {
-    const s = document.createElement("contour-switch");
-    s.setAttribute("label", "Enable notifications");
-    s.setAttribute("checked", "");
-    return s;
-  },
+  args: { label: "Enable notifications", checked: true },
+  render,
   play: async ({ canvasElement }) => {
     const s = canvasElement.querySelector("contour-switch");
     await expect(s).toBeTruthy();
@@ -39,6 +47,7 @@ export const Checked = {
 };
 
 export const ChangeEvent = {
+  args: { label: "Enable notifications" },
   render: Default.render,
   play: async ({ canvasElement }) => {
     const switchControl = canvasElement.querySelector("contour-switch");

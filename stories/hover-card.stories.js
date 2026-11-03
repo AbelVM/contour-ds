@@ -5,22 +5,50 @@ export default {
   title: "Contour/Overlays/HoverCard",
   tags: ["autodocs"],
   parameters: { contour: { maturity: "complete-widget" } },
-  argTypes: {},
+  argTypes: {
+    title: { control: "text" },
+  },
+};
+
+const renderDefault = (args = {}) => {
+  const h = document.createElement("contour-hover-card");
+  if (args.title) h.setAttribute("title", args.title);
+  const trigger = document.createElement("button");
+  trigger.textContent = "Hover";
+  h.appendChild(trigger);
+  const content = document.createElement("div");
+  content.textContent = "Card content";
+  h.appendChild(content);
+  return h;
 };
 
 export const Default = {
-  render: () => {
+  args: {},
+  render: renderDefault,
+  play: async ({ canvasElement }) => {
+    const h = canvasElement.querySelector("contour-hover-card");
+    await expect(h).toBeTruthy();
+    await expect(h).toHaveClass(/c-hover-card/);
+    await expect(canvasElement.textContent).toContain("Hover");
+    await expect(canvasElement.textContent).toContain("Card content");
+  },
+};
+
+export const WithTitle = {
+  args: { title: "Preview" },
+  render: (args = {}) => {
     const h = document.createElement("contour-hover-card");
-    const trigger = document.createElement("button");
-    trigger.textContent = "Hover";
+    h.setAttribute("title", args.title || "Preview");
+    const trigger = document.createElement("a");
+    trigger.textContent = "Link";
+    trigger.href = "#";
     h.appendChild(trigger);
-    const content = document.createElement("div");
-    content.textContent = "Card content";
-    h.appendChild(content);
     return h;
   },
   play: async ({ canvasElement }) => {
     const h = canvasElement.querySelector("contour-hover-card");
     await expect(h).toBeTruthy();
+    await expect(h).toHaveClass(/c-hover-card/);
+    await expect(canvasElement.textContent).toContain("Link");
   },
 };

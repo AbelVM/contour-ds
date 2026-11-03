@@ -9,31 +9,45 @@ export default {
   argTypes: {
     label: { control: "text" },
     placeholder: { control: "text" },
+    options: { control: "text" },
+    disabled: { control: "boolean" },
+    error: { control: "text" },
+    help: { control: "text" },
   },
 };
 
-export const Default = {
-  render: () => {
-    const s = document.createElement("contour-select");
-    s.setAttribute("label", "Country");
+const render = (args = {}) => {
+  const s = document.createElement("contour-select");
+  if (args.label) s.setAttribute("label", args.label); else s.setAttribute("label", "Country");
+  if (args.placeholder) s.setAttribute("placeholder", args.placeholder);
+  if (args.options) s.setAttribute("options", args.options);
+  if (args.value) s.setAttribute("value", args.value);
+  if (args.multiple) s.setAttribute("multiple", "");
+  if (args.disabled) s.setAttribute("disabled", "");
+  if (args.error) s.setAttribute("error", args.error);
+  if (args.help) s.setAttribute("help", args.help);
+  if (!args.options) {
     const opt1 = document.createElement("option"); opt1.value = "us"; opt1.textContent = "United States";
     const opt2 = document.createElement("option"); opt2.value = "ca"; opt2.textContent = "Canada";
     s.appendChild(opt1); s.appendChild(opt2);
-    return s;
-  },
+  }
+  return s;
+};
+
+export const Default = {
+  args: { label: "Country" },
+  render,
   play: async ({ canvasElement }) => {
     const s = canvasElement.querySelector("contour-select");
     await expect(s).toBeTruthy();
+    await expect(s).toHaveClass(/c-select/);
     await expect(canvasElement.textContent).toContain("United States");
   },
 };
 
 export const Reactivity = {
-  render: () => {
-    const s = document.createElement("contour-select");
-    s.setAttribute("label", "Country");
-    return s;
-  },
+  args: { label: "Country" },
+  render,
   play: async ({ canvasElement }) => {
     const s = canvasElement.querySelector("contour-select");
     await expect(s).toBeTruthy();

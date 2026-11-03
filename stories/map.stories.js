@@ -10,25 +10,26 @@ export default {
   },
 };
 
+const render = (args = {}) => {
+  const panel = document.createElement("contour-map-panel");
+  panel.setAttribute("title", args.title || "Layers");
+  return panel;
+};
+
 export const Default = {
-  render: () => {
-    const panel = document.createElement("contour-map-panel");
-    panel.setAttribute("title", "Layers");
-    return panel;
-  },
+  args: { title: "Layers" },
+  render,
   play: async ({ canvasElement }) => {
     const panel = canvasElement.querySelector("contour-map-panel");
     await expect(panel).toBeTruthy();
+    await expect(panel).toHaveClass(/c-map-panel/);
     await expect(panel).toHaveAttribute("aria-label", "Layers");
   },
 };
 
 export const Reactivity = {
-  render: () => {
-    const panel = document.createElement("contour-map-panel");
-    panel.setAttribute("title", "Layers");
-    return panel;
-  },
+  args: { title: "Layers" },
+  render,
   play: async ({ canvasElement }) => {
     const panel = canvasElement.querySelector("contour-map-panel");
     await expect(panel).toBeTruthy();

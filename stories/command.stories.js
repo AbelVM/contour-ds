@@ -9,6 +9,7 @@ export default {
     placeholder: { control: "text" },
     items: { control: "text" },
     recent: { control: "text" },
+    empty: { control: "text" },
   },
 };
 
@@ -18,29 +19,31 @@ const ITEMS = JSON.stringify([
   { title: "Search docs" },
 ]);
 
+const render = (args = {}) => {
+  const cmd = document.createElement("contour-command");
+  cmd.setAttribute("items", args.items || ITEMS);
+  if (args.placeholder) cmd.setAttribute("placeholder", args.placeholder);
+  if (args.recent) cmd.setAttribute("recent", args.recent);
+  if (args.empty) cmd.setAttribute("empty", args.empty);
+  if (args.open !== false) cmd.setAttribute("open", "");
+  return cmd;
+};
+
 export const Default = {
-  render: () => {
-    const cmd = document.createElement("contour-command");
-    cmd.setAttribute("items", ITEMS);
-    cmd.setAttribute("open", "");
-    return cmd;
-  },
+  args: { items: ITEMS, open: true },
+  render,
   play: async ({ canvasElement }) => {
     const cmd = canvasElement.querySelector("contour-command");
     await expect(cmd).toBeTruthy();
+    await expect(cmd).toHaveClass(/c-command/);
     const items = cmd.querySelectorAll(".c-command__item");
     await expect(items.length).toBeGreaterThan(0);
   },
 };
 
 export const EmptyResult = {
-  render: () => {
-    const cmd = document.createElement("contour-command");
-    cmd.setAttribute("items", "[]");
-    cmd.setAttribute("empty", "No matches");
-    cmd.setAttribute("open", "");
-    return cmd;
-  },
+  args: { items: "[]", empty: "No matches", open: true },
+  render,
   play: async ({ canvasElement }) => {
     const cmd = canvasElement.querySelector("contour-command");
     await expect(cmd).toBeTruthy();
@@ -48,12 +51,8 @@ export const EmptyResult = {
 };
 
 export const KeyboardNavigation = {
-  render: () => {
-    const cmd = document.createElement("contour-command");
-    cmd.setAttribute("items", ITEMS);
-    cmd.setAttribute("open", "");
-    return cmd;
-  },
+  args: { items: ITEMS, open: true },
+  render,
   play: async ({ canvasElement }) => {
     const cmd = canvasElement.querySelector("contour-command");
     const input = cmd.querySelector(".c-command__input");

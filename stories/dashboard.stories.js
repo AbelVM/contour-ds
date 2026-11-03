@@ -10,7 +10,7 @@ export default {
 };
 
 export const Default = {
-  render: () => {
+  render: (args = {}) => {
     const wrap = document.createElement("div");
     wrap.style.display = "grid";
     wrap.style.gap = "1rem";
@@ -40,7 +40,7 @@ export const Default = {
 };
 
 export const DashboardFilterToData = {
-  render: () => {
+  render: (args = {}) => {
     const wrap = document.createElement("div");
     const input = document.createElement("contour-input");
     input.setAttribute("name", "filter");

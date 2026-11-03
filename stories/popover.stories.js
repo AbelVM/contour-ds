@@ -5,11 +5,14 @@ export default {
   title: "Contour/Overlays/Popover",
   tags: ["autodocs"],
   parameters: { contour: { maturity: "complete-widget" } },
-  argTypes: {},
+  argTypes: {
+    title: { control: "text" },
+  },
 };
 
 export const Default = {
-  render: () => {
+  args: {},
+  render: (args = {}) => {
     const p = document.createElement("contour-popover");
     const btn = document.createElement("button");
     btn.textContent = "Toggle";
@@ -22,17 +25,19 @@ export const Default = {
   play: async ({ canvasElement }) => {
     const p = canvasElement.querySelector("contour-popover");
     await expect(p).toBeTruthy();
+    await expect(p).toHaveClass(/c-popover/);
   },
 };
 
 export const TriggerAndDismiss = {
-  render: () => {
+  args: { title: "Details" },
+  render: (args = {}) => {
     const wrap = document.createElement("div");
     const trigger = document.createElement("button");
     trigger.textContent = "Open popover";
     const popover = document.createElement("contour-popover");
     popover.id = "storybook-popover-trigger";
-    popover.setAttribute("title", "Details");
+    popover.setAttribute("title", args.title || "Details");
     trigger.setAttribute("popovertarget", popover.id);
     wrap.append(trigger, popover);
     return wrap;
@@ -40,6 +45,7 @@ export const TriggerAndDismiss = {
   play: async ({ canvasElement }) => {
     const trigger = canvasElement.querySelector("button");
     const popover = canvasElement.querySelector("contour-popover");
+    await expect(popover).toHaveClass(/c-popover/);
     let closed = false;
     popover.addEventListener("contour:close", () => { closed = true; });
     trigger.click();

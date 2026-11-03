@@ -12,11 +12,12 @@ export default {
 };
 
 export const Default = {
-  render: () => {
+  render: (args = {}) => {
     const btn = document.createElement("contour-btn");
     btn.setAttribute("label", "Open dialog");
     const dlg = document.createElement("contour-dialog");
-    dlg.setAttribute("title", "Confirm");
+    if (args.title) dlg.setAttribute("title", args.title); else dlg.setAttribute("title", "Confirm");
+    if (args.size) dlg.setAttribute("size", args.size);
     const p = document.createElement("p");
     p.textContent = "Dialog body content.";
     dlg.appendChild(p);
@@ -28,14 +29,16 @@ export const Default = {
   play: async ({ canvasElement }) => {
     const dlg = canvasElement.querySelector("contour-dialog");
     await expect(dlg).toBeTruthy();
+    await expect(dlg).toHaveClass(/c-dialog/);
     await expect(canvasElement.textContent).toContain("Dialog body content.");
   },
 };
 
 export const OpenClose = {
-  render: () => {
+  render: (args = {}) => {
     const dlg = document.createElement("contour-dialog");
-    dlg.setAttribute("title", "Confirm");
+    if (args.title) dlg.setAttribute("title", args.title); else dlg.setAttribute("title", "Confirm");
+    if (args.size) dlg.setAttribute("size", args.size);
     const p = document.createElement("p");
     p.textContent = "Dialog body content.";
     dlg.appendChild(p);
@@ -51,9 +54,10 @@ export const OpenClose = {
 };
 
 export const EscapeCloses = {
-  render: () => {
+  render: (args = {}) => {
     const dlg = document.createElement("contour-dialog");
-    dlg.setAttribute("title", "Confirm");
+    if (args.title) dlg.setAttribute("title", args.title); else dlg.setAttribute("title", "Confirm");
+    if (args.size) dlg.setAttribute("size", args.size);
     const p = document.createElement("p");
     p.textContent = "Dialog body content.";
     dlg.appendChild(p);
@@ -69,9 +73,10 @@ export const EscapeCloses = {
 };
 
 export const OpenEvent = {
-  render: () => {
+  render: (args = {}) => {
     const dlg = document.createElement("contour-dialog");
-    dlg.setAttribute("title", "Confirm");
+    if (args.title) dlg.setAttribute("title", args.title); else dlg.setAttribute("title", "Confirm");
+    if (args.size) dlg.setAttribute("size", args.size);
     return dlg;
   },
   play: async ({ canvasElement }) => {
@@ -85,11 +90,12 @@ export const OpenEvent = {
 };
 
 export const FocusReturn = {
-  render: () => {
+  render: (args = {}) => {
     const trigger = document.createElement("button");
     trigger.textContent = "Open dialog";
     const dlg = document.createElement("contour-dialog");
-    dlg.setAttribute("title", "Confirm");
+    if (args.title) dlg.setAttribute("title", args.title); else dlg.setAttribute("title", "Confirm");
+    if (args.size) dlg.setAttribute("size", args.size);
     const wrap = document.createElement("div");
     wrap.appendChild(trigger);
     wrap.appendChild(dlg);
@@ -107,9 +113,10 @@ export const FocusReturn = {
 };
 
 export const ModalTabTrap = {
-  render: () => {
+  render: (args = {}) => {
     const dlg = document.createElement("contour-dialog");
-    dlg.setAttribute("title", "Confirm");
+    if (args.title) dlg.setAttribute("title", args.title); else dlg.setAttribute("title", "Confirm");
+    if (args.size) dlg.setAttribute("size", args.size);
     const first = document.createElement("button");
     first.textContent = "Cancel";
     const last = document.createElement("button");
@@ -130,10 +137,12 @@ export const ModalTabTrap = {
 };
 
 export const NestedOverlayEscape = {
-  render: () => {
+  render: (args = {}) => {
     const wrap = document.createElement("div");
     const dlg = document.createElement("contour-dialog");
-    dlg.setAttribute("title", "Parent dialog");
+    if (args.title) dlg.setAttribute("title", args.title);
+    if (args.size) dlg.setAttribute("size", args.size);
+    if (args.title) dlg.setAttribute("title", args.title); else dlg.setAttribute("title", "Parent dialog");
     const drawer = document.createElement("contour-drawer");
     drawer.setAttribute("title", "Nested drawer");
     wrap.append(dlg, drawer);

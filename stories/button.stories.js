@@ -33,6 +33,7 @@ export const Default = {
     const canvas = within(canvasElement);
     const btn = canvas.getByRole("button");
     await expect(btn).toHaveTextContent("Save changes");
+    await expect(btn).toHaveClass(/c-btn/);
     await userEvent.click(btn);
     await expect(btn).toHaveAttribute("tabindex", "0");
   },

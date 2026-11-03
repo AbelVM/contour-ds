@@ -6,35 +6,37 @@ export default {
   tags: ["autodocs"],
   parameters: { contour: { maturity: "complete-widget" } },
   argTypes: {
+    label: { control: "text" },
     value: { control: "text" },
+    loop: { control: "boolean" },
   },
 };
 
+const render = (args = {}) => {
+  const s = document.createElement("contour-time-slider");
+  s.setAttribute("value", args.value || "25");
+  if (args.label) s.setAttribute("label", args.label);
+  if (args.loop) s.setAttribute("loop", "");
+  return s;
+};
+
 export const Default = {
-  render: () => {
-    const s = document.createElement("contour-time-slider");
-    s.setAttribute("min", "0");
-    s.setAttribute("max", "100");
-    s.setAttribute("value", "25");
-    return s;
-  },
+  args: { value: "25" },
+  render,
   play: async ({ canvasElement }) => {
     const s = canvasElement.querySelector("contour-time-slider");
     await expect(s).toBeTruthy();
+    await expect(s).toHaveClass(/c-time-slider/);
   },
 };
 
 export const Reactivity = {
-  render: () => {
-    const s = document.createElement("contour-time-slider");
-    s.setAttribute("min", "0");
-    s.setAttribute("max", "100");
-    s.setAttribute("value", "25");
-    return s;
-  },
+  args: { value: "25" },
+  render,
   play: async ({ canvasElement }) => {
     const s = canvasElement.querySelector("contour-time-slider");
     await expect(s).toBeTruthy();
+    await expect(s).toHaveClass(/c-time-slider/);
     s.setAttribute("value", "75");
     await expect(s).toBeTruthy();
   },

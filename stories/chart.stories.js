@@ -17,41 +17,43 @@ const DATA = JSON.stringify({ labels: ["A", "B", "C"], values: [3, 7, 5] });
 const SERIES = JSON.stringify([{ label: "Sales", type: "donut", values: [3, 7, 5] }]);
 
 export const Default = {
-  render: () => {
+  render: (args = {}) => {
     const chart = document.createElement("contour-chart");
-    chart.setAttribute("type", "bar");
-    chart.setAttribute("axis", "Sales by category");
-    chart.setAttribute("data", DATA);
+    chart.setAttribute("type", args.type || "bar");
+    chart.setAttribute("axis", args.axis || "Sales by category");
+    chart.setAttribute("data", args.data || DATA);
     return chart;
   },
   play: async ({ canvasElement }) => {
     const chart = canvasElement.querySelector("contour-chart");
     await expect(chart).toBeTruthy();
+    await expect(chart).toHaveClass(/c-chart/);
     await expect(chart).toHaveAttribute("aria-label", "Sales by category");
   },
 };
 
 export const Loading = {
-  render: () => {
+  render: (args = {}) => {
     const chart = document.createElement("contour-chart");
     chart.setAttribute("type", "bar");
     chart.setAttribute("axis", "Sales by category");
-    chart.setAttribute("loading", "Loading chart…");
+    chart.setAttribute("loading", args.loading || "Loading chart…");
     return chart;
   },
   play: async ({ canvasElement }) => {
     const chart = canvasElement.querySelector("contour-chart");
     await expect(chart).toBeTruthy();
+    await expect(chart).toHaveClass(/c-chart/);
     await expect(chart.textContent).toContain("Loading");
   },
 };
 
 export const Empty = {
-  render: () => {
+  render: (args = {}) => {
     const chart = document.createElement("contour-chart");
     chart.setAttribute("type", "bar");
     chart.setAttribute("axis", "Sales by category");
-    chart.setAttribute("empty", "No data");
+    chart.setAttribute("empty", args.empty || "No data");
     return chart;
   },
   play: async ({ canvasElement }) => {
@@ -61,12 +63,12 @@ export const Empty = {
 };
 
 export const DataTable = {
-  render: () => {
+  render: (args = {}) => {
     const chart = document.createElement("contour-chart");
     chart.setAttribute("type", "bar");
     chart.setAttribute("axis", "Sales by category");
-    chart.setAttribute("series", SERIES);
-    chart.setAttribute("data-table", "true");
+    chart.setAttribute("series", args.series || SERIES);
+    chart.setAttribute("data-table", args["data-table"] || "true");
     return chart;
   },
   play: async ({ canvasElement }) => {
@@ -80,7 +82,7 @@ export const DataTable = {
 
 export const Legend = {
   parameters: { a11y: { test: "todo" }, issue: "SB-A11Y-02", a11yTodo: { owner: "Contour maintainers", rootCause: "selectable legend dims inactive items via opacity, dropping contrast below 4.5:1", mitigation: "verify contrast in chart composition; consider color-based dimming", review: "2026-12-01" } },
-  render: () => {
+  render: (args = {}) => {
     const legend = document.createElement("contour-legend");
     legend.setAttribute("title", "Routes");
     legend.setAttribute("selectable", "");
@@ -100,11 +102,11 @@ export const Legend = {
 };
 
 export const Reactivity = {
-  render: () => {
+  render: (args = {}) => {
     const chart = document.createElement("contour-chart");
-    chart.setAttribute("type", "bar");
-    chart.setAttribute("axis", "Sales by category");
-    chart.setAttribute("data", DATA);
+    chart.setAttribute("type", args.type || "bar");
+    chart.setAttribute("axis", args.axis || "Sales by category");
+    chart.setAttribute("data", args.data || DATA);
     return chart;
   },
   play: async ({ canvasElement }) => {

@@ -5,20 +5,29 @@ export default {
   title: "Contour/Data/VirtualList",
   tags: ["autodocs"],
   parameters: { contour: { maturity: "complete-widget" } },
+  argTypes: {
+    items: { control: "text" },
+    "item-height": { control: "text" },
+    orientation: { control: "text" },
+    sticky: { control: "boolean" },
+  },
 };
 
 const ITEMS = JSON.stringify(Array.from({ length: 200 }, (_, i) => `Item ${i}`));
 
 export const MeasuredHeights = {
-  render: () => {
+  args: { items: ITEMS, "item-height": "auto" },
+  render: (args = {}) => {
     const v = document.createElement("contour-virtual-list");
-    v.setAttribute("items", ITEMS);
-    v.setAttribute("item-height", "auto");
+    v.setAttribute("items", args.items || ITEMS);
+    v.setAttribute("item-height", args["item-height"] || "auto");
+    if (args.sticky) v.setAttribute("sticky", "");
     return v;
   },
   play: async ({ canvasElement }) => {
     const v = canvasElement.querySelector("contour-virtual-list");
     await expect(v).toBeTruthy();
+    await expect(v).toHaveClass(/c-virtual-list/);
     const scroller = v.querySelector(".c-virtual-list__scroller");
     await expect(scroller).toBeTruthy();
     const items = v.querySelectorAll(".c-virtual-list__item");
@@ -27,10 +36,12 @@ export const MeasuredHeights = {
 };
 
 export const Horizontal = {
-  render: () => {
+  args: { items: ITEMS, orientation: "horizontal" },
+  render: (args = {}) => {
     const v = document.createElement("contour-virtual-list");
-    v.setAttribute("items", ITEMS);
-    v.setAttribute("orientation", "horizontal");
+    v.setAttribute("items", args.items || ITEMS);
+    v.setAttribute("orientation", args.orientation || "horizontal");
+    if (args.sticky) v.setAttribute("sticky", "");
     return v;
   },
   play: async ({ canvasElement }) => {

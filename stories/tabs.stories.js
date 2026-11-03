@@ -15,9 +15,10 @@ export default {
 
 const TABS = JSON.stringify(["Overview", "Details", "Settings"]);
 
-const render = () => {
+const render = (args = {}) => {
   const tabs = document.createElement("contour-tabs");
-  tabs.setAttribute("tabs", TABS);
+  tabs.setAttribute("tabs", args.tabs || TABS);
+  if (args.orientation) tabs.setAttribute("orientation", args.orientation);
   return tabs;
 };
 
@@ -26,6 +27,7 @@ export const Default = {
   play: async ({ canvasElement }) => {
     const tabs = canvasElement.querySelector("contour-tabs");
     await expect(tabs).toBeTruthy();
+    await expect(tabs).toHaveClass(/c-tabs/);
     const tabButtons = tabs.querySelectorAll("[role='tab']");
     await expect(tabButtons.length).toBe(3);
   },

@@ -13,30 +13,30 @@ export default {
   },
 };
 
+const render = (args = {}) => {
+  const k = document.createElement("contour-kpi");
+  if (args.label) k.setAttribute("label", args.label); else k.setAttribute("label", "Active users");
+  if (args.value) k.setAttribute("value", args.value); else k.setAttribute("value", "1,234");
+  if (args.delta) k.setAttribute("delta", args.delta); else k.setAttribute("delta", "+5%");
+  if (args.direction) k.setAttribute("direction", args.direction); else k.setAttribute("direction", "up");
+  return k;
+};
+
 export const Default = {
-  render: () => {
-    const k = document.createElement("contour-kpi");
-    k.setAttribute("label", "Active users");
-    k.setAttribute("value", "1,234");
-    k.setAttribute("delta", "+5%");
-    k.setAttribute("direction", "up");
-    return k;
-  },
+  args: { label: "Active users", value: "1,234", delta: "+5%", direction: "up" },
+  render,
   play: async ({ canvasElement }) => {
     const k = canvasElement.querySelector("contour-kpi");
     await expect(k).toBeTruthy();
+    await expect(k).toHaveClass(/c-kpi/);
     await expect(canvasElement.textContent).toContain("Active users");
     await expect(canvasElement.textContent).toContain("1,234");
   },
 };
 
 export const Reactivity = {
-  render: () => {
-    const k = document.createElement("contour-kpi");
-    k.setAttribute("label", "Active users");
-    k.setAttribute("value", "1,234");
-    return k;
-  },
+  args: { label: "Active users", value: "1,234" },
+  render,
   play: async ({ canvasElement }) => {
     const k = canvasElement.querySelector("contour-kpi");
     await expect(k).toBeTruthy();

@@ -157,6 +157,15 @@ for (const f of files) {
           if (allowed.size && !allowed.has(k)) {
             errors.push(`${relative(ROOT, f)} argTypes key "${k}" is not an observed attribute of ${tagsInFile.join(", ")}`);
           }
+          // render-usage: the key must actually be applied in a render function.
+          const referenced =
+            src.includes(`args.${k}`) ||
+            src.includes(`args["${k}"]`) ||
+            src.includes(`args['${k}']`) ||
+            new RegExp(`render:\\s*\\(\\s*\\{[^}]*\\b${k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`).test(src);
+          if (!referenced) {
+            errors.push(`${relative(ROOT, f)} argTypes key "${k}" is never applied in a render function`);
+          }
         }
       }
     }

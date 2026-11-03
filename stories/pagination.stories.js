@@ -12,24 +12,25 @@ export default {
 };
 
 export const Default = {
-  render: () => {
+  render: (args = {}) => {
     const p = document.createElement("contour-pagination");
-    p.setAttribute("page", "2");
-    p.setAttribute("page-size", "10");
-    p.setAttribute("total", "50");
+    if (args.page) p.setAttribute("page", String(args.page)); else p.setAttribute("page", "2");
+    if (args["page-size"]) p.setAttribute("page-size", String(args["page-size"])); else p.setAttribute("page-size", "10");
+    if (args.total) p.setAttribute("total", String(args.total)); else p.setAttribute("total", "50");
     return p;
   },
   play: async ({ canvasElement }) => {
     const p = canvasElement.querySelector("contour-pagination");
     await expect(p).toBeTruthy();
+    await expect(p).toHaveClass(/c-pagination/);
   },
 };
 
 export const NextPage = {
-  render: () => {
+  render: (args = {}) => {
     const pagination = document.createElement("contour-pagination");
-    pagination.setAttribute("pages", "3");
-    pagination.setAttribute("current", "1");
+    if (args.pages) pagination.setAttribute("pages", String(args.pages)); else pagination.setAttribute("pages", "3");
+    if (args.current) pagination.setAttribute("current", String(args.current)); else pagination.setAttribute("current", "1");
     return pagination;
   },
   play: async ({ canvasElement }) => {
