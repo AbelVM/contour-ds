@@ -223,27 +223,27 @@
       color var(--dur-fast) var(--ease-standard),
       transform var(--dur-fast) var(--ease-standard),
       box-shadow var(--dur-fast) var(--ease-standard);
-  }
 
-  .c-btn:hover {
-    transform: translateY(-1px);
-  }
+    &:hover {
+      transform: translateY(-1px);
+    }
 
-  .c-btn:active {
-    transform: translateY(1px);
-  }
+    &:active {
+      transform: translateY(1px);
+    }
 
-  .c-btn[disabled],
-  .c-btn[aria-disabled="true"] {
-    opacity: 0.45;
-    cursor: not-allowed;
-    transform: none;
-  }
+    &[disabled],
+    &[aria-disabled="true"] {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+    }
 
-  .c-btn svg {
-    inline-size: 1rem;
-    block-size: 1rem;
-    flex: none;
+    & svg {
+      inline-size: 1rem;
+      block-size: 1rem;
+      flex: none;
+    }
   }
 
   /* -- Variants ---------------------------------------------------- */
@@ -1187,25 +1187,38 @@
       border-color var(--dur-base) var(--ease-standard),
       background-color var(--dur-base) var(--ease-standard),
       transform var(--dur-base) var(--ease-standard);
-  }
 
-  /* A hairline "trace" that runs along the top edge and lights up on hover.
-     This replaces the reflex of adding a coloured left border. */
-  .c-card::before {
-    content: "";
-    position: absolute;
-    inset-block-start: -1px;
-    inset-inline: 22%;
-    block-size: 1px;
-    background: var(--color-primary);
-    opacity: 0;
-    transition: opacity var(--dur-base) var(--ease-standard);
-  }
+    /* A hairline "trace" that runs along the top edge and lights up on hover.
+       This replaces the reflex of adding a coloured left border. */
+    &::before {
+      content: "";
+      position: absolute;
+      inset-block-start: -1px;
+      inset-inline: 22%;
+      block-size: 1px;
+      background: var(--color-primary);
+      opacity: 0;
+      transition: opacity var(--dur-base) var(--ease-standard);
+    }
 
-  .c-card:hover,
-  .c-card:focus-within {
-    border-color: var(--color-border-strong);
-    background: var(--color-surface-2);
+    &:hover,
+    &:focus-within {
+      border-color: var(--color-border-strong);
+      background: var(--color-surface-2);
+    }
+
+    &:hover::before,
+    &:focus-within::before {
+      opacity: 0.8;
+    }
+
+    .c-card__title {
+      font-family: var(--font-display);
+      font-size: var(--type-h4);
+      font-weight: var(--weight-semibold);
+      letter-spacing: -0.012em;
+      color: var(--color-text-strong);
+    }
   }
 
   /* Container query: reduce padding when the card is narrow. */
@@ -1213,19 +1226,6 @@
     .c-card {
       padding: var(--space-md);
     }
-  }
-
-  .c-card:hover::before,
-  .c-card:focus-within::before {
-    opacity: 0.8;
-  }
-
-  .c-card__title {
-    font-family: var(--font-display);
-    font-size: var(--type-h4);
-    font-weight: var(--weight-semibold);
-    letter-spacing: -0.012em;
-    color: var(--color-text-strong);
   }
 
   @supports (font-size: 1cqi) {
