@@ -1211,7 +1211,10 @@
     &:focus-within::before {
       opacity: 0.8;
     }
+  }
 
+  /* @scope pilot (PF2): scope element rules to .c-card descendants. */
+  @scope (.c-card) {
     .c-card__title {
       font-family: var(--font-display);
       font-size: var(--type-h4);
