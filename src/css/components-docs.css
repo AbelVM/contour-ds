@@ -777,7 +777,10 @@
      color: var(--color-text-muted);
      overflow-x: auto;
      overscroll-behavior-x: contain;
+   }
 
+   /* @scope pilot (PF2): scope element rules to .c-file-tree descendants. */
+   @scope (.c-file-tree) {
      .c-file-tree__row {
        display: flex;
        align-items: center;
