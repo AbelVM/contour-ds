@@ -56,6 +56,7 @@ export type ContourComponent =
   | "c-dash-kpi-row"
   | "c-dash-shell"
   | "c-dash-toolbar"
+  | "c-data-export"
   | "c-data-grid"
   | "c-data-table"
   | "c-datamark"
@@ -145,6 +146,7 @@ export type ContourComponent =
   | "c-pricing"
   | "c-progress"
   | "c-prose"
+  | "c-pull-to-refresh"
   | "c-pullquote"
   | "c-radio"
   | "c-radio-list"
@@ -184,6 +186,7 @@ export type ContourComponent =
   | "c-spatial-filter"
   | "c-spinner"
   | "c-split-button"
+  | "c-split-map"
   | "c-stack"
   | "c-stacked-bar"
   | "c-stat"
@@ -742,6 +745,7 @@ declare global {
     "contour-dash-kpi-row": ContourDataElement;
     "contour-dash-shell": ContourElement;
     "contour-dash-toolbar": ContourElement;
+    "contour-data-export": ContourElement;
     "contour-data-grid": ContourDataElement;
     "contour-data-table": ContourElement;
     "contour-datamark": ContourElement;
@@ -831,6 +835,7 @@ declare global {
     "contour-pricing": ContourElement;
     "contour-progress": ContourElement;
     "contour-prose": ContourElement;
+    "contour-pull-to-refresh": ContourElement;
     "contour-pullquote": ContourElement;
     "contour-radio": ContourFormElement;
     "contour-radio-list": ContourElement;
@@ -1041,6 +1046,7 @@ declare global {
     "contour-spatial-filter": ContourElement;
     "contour-spinner": ContourElement;
     "contour-split-button": ContourElement;
+    "contour-split-map": ContourElement;
     "contour-stack": ContourElement;
     "contour-stacked-bar": ContourDataElement;
     "contour-stat": ContourDataElement;

@@ -3504,3 +3504,52 @@ class ContourTreeGrid extends ContourBase {
     }
   }
   define("contour-tree-grid", ContourTreeGrid);
+
+class ContourPullToRefresh extends ContourBase {
+    static get observed() { return ["threshold"]; }
+    static get properties() { return { threshold: { attribute: "threshold" } }; }
+    render() {
+      this.classList.add("c-pull-to-refresh");
+      const ind = this.ensure(".c-pull-to-refresh__indicator", () => {
+        const e = document.createElement("div");
+        e.className = "c-pull-to-refresh__indicator";
+        e.textContent = "Pull to refresh";
+        return e;
+      });
+      if (ind.parentNode !== this) this.prepend(ind);
+    }
+    enhance() {
+      if (this._wiredPullToRefresh) return;
+      this._wiredPullToRefresh = true;
+      let startY = 0;
+      let pulling = false;
+      this.addEventListener("touchstart", (e) => {
+        if (this.scrollTop > 0) return;
+        const t = e.touches && e.touches[0];
+        if (t) { startY = t.clientY; pulling = true; }
+      }, { passive: true });
+      this.addEventListener("touchmove", (e) => {
+        if (!pulling) return;
+        const t = e.touches && e.touches[0];
+        if (!t) return;
+        const dy = t.clientY - startY;
+        if (dy > 0 && dy < 120) {
+          this.style.setProperty("--ptr-offset", dy + "px");
+        }
+      }, { passive: true });
+      this.addEventListener("touchend", (e) => {
+        if (!pulling) return;
+        pulling = false;
+        const t = e.changedTouches && e.changedTouches[0];
+        const dy = t ? t.clientY - startY : 0;
+        const thr = Number(this.getAttribute("threshold")) || 60;
+        if (dy >= thr) {
+          this.classList.add("is-refreshing");
+          this.dispatchEvent(new CustomEvent("contour:refresh", { bubbles: true, composed: true }));
+          setTimeout(() => this.classList.remove("is-refreshing"), 800);
+        }
+        this.style.removeProperty("--ptr-offset");
+      }, { passive: true });
+    }
+  }
+  define("contour-pull-to-refresh", ContourPullToRefresh);

@@ -563,6 +563,15 @@ export function buildDocuments(declared, tokensCss) {
   }
 
   const tokensDoc = { $schema: FORMAT_SCHEMA, ...tree };
+  // Token-level versioning (PF10): publish the design-system version and a
+  // deprecation convention so consumers can diff token sets across releases.
+  tokensDoc.$extensions = {
+    ...(tokensDoc.$extensions || {}),
+    "com.contour.version": {
+      version: "1.6.0",
+      deprecation: "A deprecated token keeps its name and gains a `$deprecated` boolean plus a `replacement` pointer in its `$extensions`; removals land in the next major release (see CHANGELOG.md).",
+    },
+  };
 
   // A group gets the banner description only when every token under it shares
   // one; two banners means the group would inherit a sentence about half of it.
@@ -581,6 +590,7 @@ export function buildDocuments(declared, tokensCss) {
   const refusedCount = Object.values(refused).reduce((a, b) => a + b.length, 0);
   if (refusedCount) {
     tokensDoc.$extensions = {
+      ...(tokensDoc.$extensions || {}),
       "com.contour.dtcg": {
         source: "src/css/tokens.css",
         statement:

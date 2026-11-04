@@ -55,9 +55,9 @@ const DIST = join(ROOT, "dist");
  *  which the Format Module has no legal place for (C-43). It states values only —
  *  a token's meaning is published once, in the Format document. */
 const BUDGETS = {
-  "contour.min.css": 214 * 1024,  // raised 2026-11-03: deferred 1.5 feature batch; measured 208.2 kB
+  "contour.min.css": 215 * 1024,  // raised 2026-11-04: deferred 1.6 feature batch (data-export, pull-to-refresh, split-map); measured 214.7 kB
   "contour.min.js": 38 * 1024,  // raised 2026-10-25: comparison slider drag (1.6 kB) added to ds.js
-  "contour.d.ts": 31.5 * 1024,  // raised 2026-11-02: +ContourFormElement/ContourDataElement interfaces (R12-12)  // raised 2026-10-26 from 26 kB: expanded ContourProps to include all 99 observed attributes (was 8). Measured 26.2 kB. See M-WC-08 WC8-16.
+  "contour.d.ts": 32 * 1024,  // raised 2026-11-04: +3 new components (data-export, pull-to-refresh, split-map)
   "contour.tokens.json": 51 * 1024,
   "contour.themes.json": 23 * 1024,
   // Measured 2026-10-23 at 128.4 kB (C-44), ~3% headroom. Large and correct:
@@ -67,7 +67,7 @@ const BUDGETS = {
   // exists to catch a jump nobody intended, not to keep the truth brief. A file
   // absent from this map is not budgeted at all, which is how an artifact can
   // grow without anyone noticing.
-  "contour.components.json": 244 * 1024,  // raised 2026-11-03: deferred 1.5 feature batch; measured 236.5 kB
+  "contour.components.json": 263 * 1024,  // raised 2026-11-04: +3 new blocks (data-export, pull-to-refresh, split-map); measured 262.3 kB
   // The docs package (C-45). Measured 2026-10-23 at 43.6 kB: 23 section files
   // (37.4 kB) plus the index (6.2 kB) — figures this gate recomputes and prints on
   // every run, so the numbers above are a dated record, not the thing enforced.
@@ -121,7 +121,7 @@ const BUDGETS = {
   "surfaces/contour-data.min.css": 197 * 1024,  // raised 2026-11-03: deferred 1.5 feature batch; measured 186.9 kB
   "surfaces/contour-landing.min.css": 158 * 1024,  // raised 2026-11-03: deferred 1.5 feature batch; measured 149.99 kB
   "contour.esm.min.js": 39 * 1024,
-  "contour-wc.esm.min.js": 596 * 1024,  // raised 2026-11-04: +legend listbox + brush event + brownout helpers + colour preservation
+  "contour-wc.esm.min.js": 599 * 1024,  // raised 2026-11-04: +3 new components (data-export, pull-to-refresh, split-map)
 };
 
 const kB = (n) => `${(n / 1024).toFixed(1)} kB`;

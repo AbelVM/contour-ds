@@ -43,6 +43,10 @@ for (const rel of PAGES) {
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
   const cdp = await page.context().newCDPSession(page);
   await page.goto(`file://${ROOT}/${rel}`, { waitUntil: "load" });
+  // content-visibility: auto on .ds-example collapses off-screen specimens to
+  // their intrinsic size, which makes scrollIntoView land on the wrong offset
+  // and leaves the chart unrendered. Measure the rendered tree.
+  await page.addStyleTag({ content: ".ds-example { content-visibility: visible !important; }" });
   await page.waitForTimeout(650);
   await cdp.send("Accessibility.enable");
 

@@ -6,7 +6,7 @@
 A token-driven design system for **spatial interfaces** — routing engines, pedestrian
 simulators, map tooling and geospatial dashboards.
 
-<!-- ds:components-line -->221 components, 300 design tokens<!-- /ds:components-line -->, dark and light themes, zero runtime dependencies, no build step.
+<!-- ds:components-line -->224 components, 301 design tokens<!-- /ds:components-line -->, dark and light themes, zero runtime dependencies, no build step.
 
 The [style guide](index.html) is the specification and the test suite.
 
@@ -359,6 +359,28 @@ Four layers: primitives → semantic → component → utilities. Primitives nev
 @import "src/css/components.css" layer(components);
 /* + components-shell, components-data, components-docs, components-landing, patterns, utilities */
 ```
+
+## Consumer layering
+
+Contour declares four cascade layers in this order:
+
+```css
+@layer tokens, base, components, utilities;
+```
+
+A consumer who wants to override a component should add their own layer **after**
+`utilities` so their rules win without specificity wars:
+
+```css
+@layer contour-overrides {
+  .c-button { --color-primary: oklch(60% 0.2 30); }
+}
+```
+
+Import Contour first, then declare your override layer; later layers always beat
+earlier ones regardless of source order within a layer. Never put overrides in
+an unlayered stylesheet — unlayered rules beat every layered rule, which makes
+future Contour updates fight your overrides.
 
 ## Components
 

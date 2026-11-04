@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Contour — a design system for spatial interfaces</title>
-    <meta name="description" content="Contour is a token-driven design system for spatial interfaces. Dark and light themes, 221 components, 300 design tokens, zero runtime dependencies." />
+    <meta name="description" content="Contour is a token-driven design system for spatial interfaces. Dark and light themes, 224 components, 301 design tokens, zero runtime dependencies." />
     <!-- One sentence, two readers: stamp.mjs generates BOTH descriptions from
          the same computed string, so the crawler copy can never fall a whole
          component count behind the search copy. `twitter:description` is
@@ -15,7 +15,7 @@
          that resolves — a card pointing at a dead image is a claim, not a
          fallback. -->
     <meta property="og:title" content="Contour — a design system for spatial interfaces" />
-    <meta property="og:description" content="Contour is a token-driven design system for spatial interfaces. Dark and light themes, 221 components, 300 design tokens, zero runtime dependencies." />
+    <meta property="og:description" content="Contour is a token-driven design system for spatial interfaces. Dark and light themes, 224 components, 301 design tokens, zero runtime dependencies." />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="Contour — a design system for spatial interfaces" />
@@ -48,6 +48,7 @@
     <link rel="preload" href="src/css/fonts/ibm-plex-sans-var.woff2" as="font" type="font/woff2" crossorigin fetchpriority="high" />
 
     <link rel="icon" href="src/svg/contour-mark.svg" type="image/svg+xml" />
+    <link rel="manifest" href="manifest.webmanifest" />
     <link rel="stylesheet" href="src/css/ds.css" fetchpriority="high" />
     <!-- Map chrome: unlayered, so it must be last — the same order a consumer
          uses, with the engine's own stylesheet in between. See §21. -->
@@ -491,8 +492,8 @@
               <div class="ds-hero__readout" role="group" aria-label="System parameters">
                 <span>GRID 0.88 m</span>
                 <span>H3 · RES 15</span>
-                <span><!-- ds:tokens -->300<!-- /ds:tokens --> tokens</span>
-                <span><!-- ds:components -->221<!-- /ds:components --> components</span>
+                <span><!-- ds:tokens -->301<!-- /ds:tokens --> tokens</span>
+                <span><!-- ds:components -->224<!-- /ds:components --> components</span>
                 <span>0 runtime deps</span>
                 <span>2 + system themes</span>
               </div>
@@ -13904,7 +13905,9 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                       <tr><td><code>contour:dragstart</code></td><td><code>value</code></td><td>true</td></tr>
                       <tr><td><code>contour:drop</code></td><td><code>value</code>, <code>label</code></td><td>true</td></tr>
                       <tr><td><code>contour:empty-action</code></td><td><code>state</code></td><td>true</td></tr>
-                      <tr><td><code>contour:error</code></td><td><code>src</code>, <code>message</code>, <code>name</code>, <code>status</code></td><td>true</td></tr>
+                       <tr><td><code>contour:error</code></td><td><code>src</code>, <code>message</code>, <code>name</code>, <code>status</code></td><td>true</td></tr>
+                       <tr><td><code>contour:export</code></td><td><code>format</code></td><td>true</td></tr>
+                       <tr><td><code>contour:refresh</code></td><td></td><td>true</td></tr>
                       <tr><td><code>contour:filter</code></td><td><code>query</code></td><td>true</td></tr>
                       <tr><td><code>contour:hide</code></td><td>—</td><td>true</td></tr>
                       <tr><td><code>contour:hover</code></td><td><code>row</code></td><td>true</td></tr>

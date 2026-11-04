@@ -1179,3 +1179,24 @@ class ContourScaleBar extends ContourBase {
     }
   }
 define("contour-scale-bar", ContourScaleBar);
+
+class ContourSplitMap extends ContourBase {
+    static get observed() { return ["left", "right"]; }
+    static get properties() { return { left: { attribute: "left" }, right: { attribute: "right" } }; }
+    render() {
+      this.classList.add("c-split-map");
+      const left = this.ensure(".c-split-map__pane--left", () => {
+        const e = document.createElement("div");
+        e.className = "c-split-map__pane c-split-map__pane--left";
+        return e;
+      });
+      const right = this.ensure(".c-split-map__pane--right", () => {
+        const e = document.createElement("div");
+        e.className = "c-split-map__pane c-split-map__pane--right";
+        return e;
+      });
+      if (left.parentNode !== this) this.appendChild(left);
+      if (right.parentNode !== this) this.appendChild(right);
+    }
+  }
+  define("contour-split-map", ContourSplitMap);
