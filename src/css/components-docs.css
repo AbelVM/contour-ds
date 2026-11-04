@@ -136,54 +136,54 @@
     display: grid;
     gap: 0.6rem;
     font-size: var(--type-xs);
-  }
 
-  .c-toc__empty,
-  .c-toc__loading,
-  .c-toc__error {
-    color: var(--color-text-muted);
-    padding: var(--space-md);
-  }
+    .c-toc__empty,
+    .c-toc__loading,
+    .c-toc__error {
+      color: var(--color-text-muted);
+      padding: var(--space-md);
+    }
 
-  .c-toc__title {
-    font-family: var(--font-mono);
-    font-size: var(--type-micro);
-    font-weight: var(--weight-medium);
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
-    color: var(--color-text-subtle);
-  }
+    .c-toc__title {
+      font-family: var(--font-mono);
+      font-size: var(--type-micro);
+      font-weight: var(--weight-medium);
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      color: var(--color-text-subtle);
+    }
 
-  .c-toc__list {
-    display: grid;
-    gap: 1px;
-    border-inline-start: 1px solid var(--color-border);
-  }
+    .c-toc__list {
+      display: grid;
+      gap: 1px;
+      border-inline-start: 1px solid var(--color-border);
+    }
 
-  .c-toc__link {
-    display: block;
-    padding: 0.25rem 0.65rem;
-    margin-inline-start: -1px;
-    border-inline-start: 1px solid transparent;
-    color: var(--color-text-subtle);
-    text-decoration: none;
-    transition:
-      color var(--dur-fast) var(--ease-standard),
-      border-color var(--dur-fast) var(--ease-standard);
-  }
+    .c-toc__link {
+      display: block;
+      padding: 0.25rem 0.65rem;
+      margin-inline-start: -1px;
+      border-inline-start: 1px solid transparent;
+      color: var(--color-text-subtle);
+      text-decoration: none;
+      transition:
+        color var(--dur-fast) var(--ease-standard),
+        border-color var(--dur-fast) var(--ease-standard);
 
-  .c-toc__link:hover {
-    color: var(--color-text-strong);
-  }
+      &:hover {
+        color: var(--color-text-strong);
+      }
 
-  .c-toc__link[aria-current="true"] {
-    color: var(--color-text-strong);
-    border-inline-start-color: var(--color-primary);
-  }
+      &[aria-current="true"] {
+        color: var(--color-text-strong);
+        border-inline-start-color: var(--color-primary);
+      }
+    }
 
-  .c-toc__link--sub {
-    padding-inline-start: 1.4rem;
-    font-size: var(--type-micro);
+    .c-toc__link--sub {
+      padding-inline-start: 1.4rem;
+      font-size: var(--type-micro);
+    }
   }
 
   /* =======================================================================

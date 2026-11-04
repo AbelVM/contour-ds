@@ -309,6 +309,18 @@ a component's `render()`.
 - Tokens are defined in `src/css/tokens.css` and consumed as
   `var(--color-…)`. A raw hex value in a component is a bug.
 - `light-dark()` for anything that changes between themes.
+- CSS nesting (PF1): source may use CSS nesting for readability, but only
+  browser-valid forms: `& .element` (descendant), `&.modifier` (compound),
+  `&:hover`/`&::before` (pseudo). The `&__element` and `&--modifier` shorthand
+  forms are **not** supported by Chromium and must not be used — they silently
+  fail to apply. The minifier flattens nesting to flat selectors for the shipped
+  bytes, so consumers get broad compatibility. The inventory parser and
+  `check-components` gate are nesting-aware.
+- `@scope` (PF2): may be used for component-level encapsulation, but keep the
+  base block and modifiers **outside** `@scope` (flat) and scope only element
+  rules inside `@scope (.c-block) { ... }`. Putting `:scope` base styles inside
+  @scope escalates specificity and breaks modifier overrides. Verify with
+  `check-reflow` and `wc-contract` after any change.
 
 ### HTML
 
