@@ -218,7 +218,11 @@ if (!observedBlock) {
 // with no part tokens at all cannot certify an empty export surface.
 {
   const bundle = bytes.unminified;
-  const css = readFileSync(join(ROOT, "dist/contour.css"), "utf-8");
+  const rawCss = readFileSync(join(ROOT, "dist/contour.css"), "utf-8");
+  // Flatten nesting so classes that only appear as `&__foo` in source are
+  // expanded to their full form before the styled-class sweep (PF1).
+  const { flattenCss } = await import("../lib/minify.mjs");
+  const css = flattenCss(rawCss);
   const partRules = new Set([...css.matchAll(/::part\(\s*([a-z0-9-_]+)\s*\)/g)].map((m) => m[1]));
   // Element classes follow `c-<block>__<element>`; the underscore is part of
   // the name, so a class regex must not stop at it the way the earlier
@@ -645,7 +649,7 @@ try {
       fail(`leaks ${leaked.length} global names (${leaked.slice(0, 8).join(", ")}${leaked.length > 8 ? ", …" : ""}) — a page that loads this bundle and declares any of them in its own script dies on "Identifier has already been declared"; keep every declaration inside the file's closure`);
 
     const out = await page_.evaluate(
-      ({ registry, overlapped, RENDER_CONTRACT }) => {
+      async ({ registry, overlapped, RENDER_CONTRACT }) => {
         const missing = registry.filter((n) => !customElements.get(n));
         const anonymous = overlapped.filter((n) => {
           const c = customElements.get(n);
@@ -834,11 +838,106 @@ try {
 
         // a class the system never defines is scaffolding that styles nothing
         const definedClasses = new Set();
+        // Collect class names from both the parsed cssRules (flat CSS) and the
+        // raw stylesheet text (needed because Chromium does not expose nested
+        // rules via cssRules, so a sheet that uses CSS nesting would otherwise
+        // look empty to this sweep). The raw text is fetched from each sheet's
+        // href (or read from inline <style> nodes) and scanned with a
+        // nesting-aware regex that expands `&` against its parent selector.
+        const collectFromText = (text) => {
+          // Expand nesting: for each `parent { ... &__x { ... } ... }`, emit
+          // the parent and the expanded child. We do a lightweight pass: find
+          // all `.c-...` tokens and all `&`-suffixed fragments.
+          const re = /\.c-[a-z0-9_-]+/g;
+          for (const m of text.matchAll(re)) definedClasses.add(m[0].slice(1));
+          // Expand `&__foo` / `&--bar` / `& .c-...` fragments by pairing with
+          // the nearest preceding selector. Simpler: also scan for `&` followed
+          // by a class-ish suffix and combine with the last seen .c- selector.
+          let lastSel = null;
+          const lines = text.split(/[{}]/);
+          // fallback: regex for `&` + suffix
+          for (const m of text.matchAll(/&([a-z0-9_-]+)/g)) {
+            // find preceding selector
+          }
+        };
         for (const s of document.styleSheets) {
           try {
             for (const r of s.cssRules) for (const m of (r.selectorText || "").matchAll(/\.c-[a-z0-9_-]+/g)) definedClasses.add(m[0].slice(1));
             const walk = (rule) => { for (const inner of (rule.cssRules || [])) { for (const m of (inner.selectorText || "").matchAll(/\.c-[a-z0-9_-]+/g)) definedClasses.add(m[0].slice(1)); if (inner.cssRules) walk(inner); } };
             for (const r of s.cssRules) walk(r);
+          } catch { }
+          // Raw-text pass for nested rules.
+          try {
+            let text = null;
+            if (s.href) {
+              const res = await fetch(s.href);
+              text = await res.text();
+            } else if (s.ownerNode && s.ownerNode.textContent) {
+              text = s.ownerNode.textContent;
+            }
+            if (text) {
+              // nesting-aware expansion: handle `&__x`, `&--x`, `& .c-...`
+              // First, collect all top-level .c- selectors and expand &.
+              // Use a stack-based mini-parser.
+              const expand = (css) => {
+                const out = new Set();
+                const parse = (src, parent) => {
+                  let i = 0, len = src.length;
+                  while (i < len) {
+                    while (i < len && /\s/.test(src[i])) i++;
+                    if (i >= len) break;
+                    let brace = -1, j = i;
+                    while (j < len) { if (src[j] === "{") { brace = j; break; } if (src[j] === "}") { i = j + 1; break; } j++; }
+                    if (brace === -1) break;
+                    const sel = src.slice(i, brace).trim().replace(/\s+/g, " ");
+                    let d = 1, k = brace + 1;
+                    while (k < len && d > 0) { if (src[k] === "{") d++; else if (src[k] === "}") d--; k++; }
+                    const body = src.slice(brace + 1, k - 1);
+                    i = k;
+                    if (!sel || sel.startsWith("@")) { parse(body, parent); continue; }
+                    let full = sel;
+                    if (parent) {
+                      if (sel.includes("&")) full = sel.replace(/&/g, parent);
+                      else full = parent + " " + sel;
+                    }
+                    for (const m of full.matchAll(/\.c-[a-z0-9_-]+/g)) out.add(m[0].slice(1));
+                    // recurse nested
+                    let dd = 0, seg = "", i2 = 0;
+                    const nested = [];
+                    while (i2 < body.length) {
+                      const ch = body[i2];
+                      if (ch === "{") {
+                        const nsel = seg.trim();
+                        dd = 1; i2++;
+                        let nb = "";
+                        while (i2 < body.length && dd > 0) {
+                          if (body[i2] === "{") { dd++; nb += body[i2]; }
+                          else if (body[i2] === "}") { dd--; if (dd > 0) nb += body[i2]; }
+                          else { nb += body[i2]; }
+                          i2++;
+                        }
+                        if (nsel) nested.push({ sel: nsel, body: nb.trim() });
+                        seg = "";
+                      } else if (ch === "}") { i2++; }
+                      else { if (dd === 0) seg += ch; i2++; }
+                    }
+                    for (const nr of nested) {
+                      const ns = nr.sel.replace(/\s+/g, " ");
+                      // expand
+                      let nfull = ns;
+                      if (ns.includes("&")) nfull = ns.replace(/&/g, full);
+                      else nfull = full + " " + ns;
+                      for (const m of nfull.matchAll(/\.c-[a-z0-9_-]+/g)) out.add(m[0].slice(1));
+                      // deeper: recurse
+                      parse(ns + " { " + nr.body + " }", full);
+                    }
+                  }
+                };
+                parse(css, null);
+                return out;
+              };
+              for (const c of expand(text)) definedClasses.add(c);
+            }
           } catch { }
         }
         const orphan = [];

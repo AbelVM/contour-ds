@@ -44,17 +44,114 @@ function cssFiles() {
   return readdirSync(CSS_DIR).filter((f) => f.endsWith(".css"));
 }
 
-/** Every `selector { body }` block, comments already gone. */
-function blocks(css) {
+/** Every `selector { body }` block, comments already gone.
+ *  Nesting-aware: a nested rule is flattened into its own block with its
+ *  selector expanded against the parent (replacing `&`), so the inventory and
+ *  every gate that reads src/css keep working when a sheet adopts CSS nesting
+ *  (PF1). At-rules are recursed into so their inner rules are still captured. */
+export function blocks(css) {
   const source = withoutComments(css);
   const out = [];
-  const re = /([^{}]+)\{([^{}]*)\}/g;
-  let match;
-  while ((match = re.exec(source))) {
-    const selector = match[1].trim().replace(/\s+/g, " ");
-    if (!selector || selector.startsWith("@")) continue;
-    out.push({ selector, body: match[2] });
-  }
+  const parse = (text, parent) => {
+    let i = 0;
+    const len = text.length;
+    while (i < len) {
+      while (i < len && /\s/.test(text[i])) i++;
+      if (i >= len) break;
+      // find next top-level '{'
+      let brace = -1;
+      let j = i;
+      while (j < len) {
+        if (text[j] === "{") { brace = j; break; }
+        if (text[j] === "}") { i = j + 1; break; }
+        j++;
+      }
+      if (brace === -1) break;
+      const selector = text.slice(i, brace).trim().replace(/\s+/g, " ");
+      // matching close brace
+      let d = 1, k = brace + 1;
+      while (k < len && d > 0) {
+        if (text[k] === "{") d++;
+        else if (text[k] === "}") d--;
+        k++;
+      }
+      const body = text.slice(brace + 1, k - 1);
+      i = k;
+      if (!selector) continue;
+      if (selector.startsWith("@")) {
+        parse(body, parent);
+        continue;
+      }
+      // expand against parent
+      let full = selector;
+      if (parent) {
+        if (selector.includes("&")) full = selector.replace(/&/g, parent);
+        else full = parent + " " + selector;
+      }
+      // split body into declarations + nested rules
+      const decls = [];
+      const nested = [];
+      let cur = "", dep = 0, buf = "";
+      // walk body char by char
+      let seg = "";
+      const chunks = [];
+      let depth = 0;
+      let acc = "";
+      for (let c = 0; c < body.length; c++) {
+        const ch = body[c];
+        if (ch === "{") {
+          if (depth === 0) {
+            chunks.push({ type: "sel", text: acc.trim() });
+            acc = "";
+          }
+          depth++;
+          acc += ch;
+        } else if (ch === "}") {
+          depth--;
+          acc += ch;
+          if (depth === 0) {
+            chunks.push({ type: "rule", text: acc.trim() });
+            acc = "";
+          }
+        } else {
+          acc += ch;
+        }
+      }
+      const trailing = acc.trim();
+      // collect declarations: text between rules
+      let declText = trailing;
+      // Actually declarations are the non-rule parts; rebuild by removing nested rules from body
+      // Simpler: extract nested rule strings, remove them from body -> decls
+      let declBody = body;
+      for (const ch of chunks) {
+        if (ch.type === "rule") declBody = declBody.replace(ch.text, "");
+      }
+      declBody = declBody.trim();
+      if (declBody) out.push({ selector: full, body: declBody });
+      // pair sel + rule chunks, then recurse/expand
+      let ci = 0;
+      while (ci < chunks.length) {
+        if (chunks[ci].type === "sel" && ci + 1 < chunks.length && chunks[ci+1].type === "rule") {
+          const nsel = chunks[ci].text.trim().replace(/\s+/g, " ");
+          const nbody = chunks[ci+1].text.trim();
+          // nbody is "{ ... }"
+          const inner = nbody.replace(/^\{/, "").replace(/\}$/, "");
+          let nfull = nsel;
+          if (nsel.includes("&")) nfull = nsel.replace(/&/g, full);
+          else if (!nsel.startsWith("@")) nfull = full + " " + nsel;
+          if (inner.includes("{")) {
+            parse(nsel + " { " + inner + " }", full);
+          } else {
+            out.push({ selector: nfull, body: inner.trim() });
+          }
+          ci += 2;
+        } else {
+          ci += 1;
+        }
+      }
+    }
+  };
+  parse(source, "");
   return out;
 }
 

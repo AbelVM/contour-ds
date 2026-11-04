@@ -55,8 +55,8 @@ const DIST = join(ROOT, "dist");
  *  which the Format Module has no legal place for (C-43). It states values only —
  *  a token's meaning is published once, in the Format document. */
 const BUDGETS = {
-  "contour.min.css": 215 * 1024,  // raised 2026-11-04: deferred 1.6 feature batch (data-export, pull-to-refresh, split-map); measured 214.7 kB
-  "contour.min.js": 38 * 1024,  // raised 2026-10-25: comparison slider drag (1.6 kB) added to ds.js
+  "contour.min.css": 216 * 1024,  // raised 2026-11-04: +changelog viewer; measured 215.8 kB
+  "contour.min.js": 39 * 1024,  // raised 2026-11-04: focus restoration + changelog; measured 38.0 kB
   "contour.d.ts": 32 * 1024,  // raised 2026-11-04: +3 new components (data-export, pull-to-refresh, split-map)
   "contour.tokens.json": 51 * 1024,
   "contour.themes.json": 23 * 1024,
@@ -67,7 +67,7 @@ const BUDGETS = {
   // exists to catch a jump nobody intended, not to keep the truth brief. A file
   // absent from this map is not budgeted at all, which is how an artifact can
   // grow without anyone noticing.
-  "contour.components.json": 263 * 1024,  // raised 2026-11-04: +3 new blocks (data-export, pull-to-refresh, split-map); measured 262.3 kB
+  "contour.components.json": 264 * 1024,  // raised 2026-11-04: +changelog block; measured 263.9 kB
   // The docs package (C-45). Measured 2026-10-23 at 43.6 kB: 23 section files
   // (37.4 kB) plus the index (6.2 kB) — figures this gate recomputes and prints on
   // every run, so the numbers above are a dated record, not the thing enforced.
@@ -92,7 +92,7 @@ const BUDGETS = {
   // partition — and a directory key is measured by summing the files under it,
   // because `statSync` on a directory reports the inode's size, which would make
   // this budget a pass at 4 kB over a 42 kB package.
-  "docs/": 63 * 1024,  // raised 2026-11-03: +wc bridge specimens; measured 61.2 kB; +event rows 62.4 kB
+  "docs/": 64 * 1024,  // raised 2026-11-04: +changelog specimen + api reference section; measured 63.8 kB
   "docs/index.json": 8 * 1024,
   // The registry (C-46). Measured 2026-10-24 at 16,443 bytes across 5 files:
   // registry.json 8,952 B plus four item files of 1,869–1,884 B — figures this gate
@@ -121,7 +121,7 @@ const BUDGETS = {
   "surfaces/contour-data.min.css": 197 * 1024,  // raised 2026-11-03: deferred 1.5 feature batch; measured 186.9 kB
   "surfaces/contour-landing.min.css": 158 * 1024,  // raised 2026-11-03: deferred 1.5 feature batch; measured 149.99 kB
   "contour.esm.min.js": 39 * 1024,
-  "contour-wc.esm.min.js": 599 * 1024,  // raised 2026-11-04: +3 new components (data-export, pull-to-refresh, split-map)
+  "contour-wc.esm.min.js": 603 * 1024,  // raised 2026-11-04: +changelog component; measured 602.2 kB
 };
 
 const kB = (n) => `${(n / 1024).toFixed(1)} kB`;

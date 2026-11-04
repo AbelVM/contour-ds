@@ -13,7 +13,99 @@
  * @param {string} css
  * @returns {string}
  */
+/**
+ * Flatten CSS nesting into flat selectors (PF1 support).
+ * Expands `&` and descendant nesting so the shipped CSS is flat and broadly
+ * compatible, while source may use nesting for readability. At-rules are
+ * recursed into. Returns flat CSS text.
+ */
+function flattenNested(text, parent) {
+  const result = [];
+  let i = 0;
+  const len = text.length;
+  while (i < len) {
+    while (i < len && /\s/.test(text[i])) i++;
+    if (i >= len) break;
+    let brace = -1, j = i;
+    while (j < len) {
+      if (text[j] === "{") { brace = j; break; }
+      if (text[j] === "}") { i = j + 1; break; }
+      j++;
+    }
+    if (brace === -1) break;
+    const selector = text.slice(i, brace).trim().replace(/\s+/g, " ");
+    let d = 1, k = brace + 1;
+    while (k < len && d > 0) {
+      if (text[k] === "{") d++;
+      else if (text[k] === "}") d--;
+      k++;
+    }
+    const body = text.slice(brace + 1, k - 1);
+    i = k;
+    if (!selector) continue;
+    if (selector.startsWith("@")) {
+      const inner = flattenNested(body, null);
+      if (inner.length === 0) {
+        if (body.trim()) result.push(`${selector} { ${body.trim()} }`);
+      } else {
+        result.push(`${selector} { ${inner.join(" ")} }`);
+      }
+      continue;
+    }
+    let full = selector;
+    if (parent) {
+      if (selector.includes("&")) full = selector.replace(/&/g, parent);
+      else full = parent + " " + selector;
+    }
+    const declSegments = [];
+    const nestedRules = [];
+    let dd = 0;
+    let seg = "";
+    let i2 = 0;
+    while (i2 < body.length) {
+      const ch = body[i2];
+      if (ch === "{") {
+        const nsel = seg.trim();
+        dd = 1; i2++;
+        let nb = "";
+        while (i2 < body.length && dd > 0) {
+          if (body[i2] === "{") { dd++; nb += body[i2]; }
+          else if (body[i2] === "}") { dd--; if (dd > 0) nb += body[i2]; }
+          else { nb += body[i2]; }
+          i2++;
+        }
+        if (nsel) nestedRules.push({ sel: nsel, body: nb.trim() });
+        seg = "";
+      } else if (ch === "}") {
+        i2++;
+      } else if (ch === ";" && dd === 0) {
+        if (seg.trim()) declSegments.push(seg.trim() + ";");
+        seg = "";
+        i2++;
+      } else {
+        if (dd === 0) seg += ch;
+        i2++;
+      }
+    }
+    if (seg.trim() && dd === 0) declSegments.push(seg.trim());
+    const declBody = declSegments.join(" ").trim();
+    if (declBody) result.push(`${full} { ${declBody} }`);
+    for (const nr of nestedRules) {
+      const nsel = nr.sel.replace(/\s+/g, " ");
+      const inner = nr.body;
+      const nested = flattenNested(nsel + " { " + inner + " }", full);
+      result.push(...nested);
+    }
+  }
+  return result;
+}
+export function flattenCss(css) {
+  css = css.replace(/\/\*[\s\S]*?\*\//g, "");
+  return flattenNested(css, null).join("\n");
+}
+
 export function minifyCss(css) {
+  css = flattenCss(css);
   let out = "";
   let index = 0;
 

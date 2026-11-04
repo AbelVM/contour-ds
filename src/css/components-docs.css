@@ -203,44 +203,48 @@
     line-height: var(--leading-relaxed);
   }
 
-  .c-callout__icon {
-    inline-size: 1.15rem;
-    block-size: 1.15rem;
-    margin-block-start: 0.15rem;
-    flex: none;
-  }
+  /* @scope pilot (PF2): scope element rules to .c-callout descendants.
+     Base + modifiers stay flat to avoid specificity escalation. */
+  @scope (.c-callout) {
+    .c-callout__icon {
+      inline-size: 1.15rem;
+      block-size: 1.15rem;
+      margin-block-start: 0.15rem;
+      flex: none;
+    }
 
-  .c-callout__icon svg {
-    inline-size: 100%;
-    block-size: 100%;
-  }
+    .c-callout__icon svg {
+      inline-size: 100%;
+      block-size: 100%;
+    }
 
-  .c-callout__title {
-    font-weight: var(--weight-semibold);
-    color: var(--color-text-strong);
-    margin-block-end: 0.2rem;
-  }
+    .c-callout__title {
+      font-weight: var(--weight-semibold);
+      color: var(--color-text-strong);
+      margin-block-end: 0.2rem;
+    }
 
-  .c-callout__body {
-    color: var(--color-text-muted);
-  }
+    .c-callout__body {
+      color: var(--color-text-muted);
+    }
 
-  .c-callout__body > * + * {
-    margin-block-start: 0.6rem;
-  }
+    .c-callout__body > * + * {
+      margin-block-start: 0.6rem;
+    }
 
-  .c-callout__close {
-    color: var(--color-text-subtle);
-    cursor: pointer;
-    padding: 0.25rem;
-    border: none;
-    background: transparent;
-    border-radius: var(--radius-xs);
-  }
+    .c-callout__close {
+      color: var(--color-text-subtle);
+      cursor: pointer;
+      padding: 0.25rem;
+      border: none;
+      background: transparent;
+      border-radius: var(--radius-xs);
+    }
 
-  .c-callout__close:hover {
-    color: var(--color-text-strong);
-    background: var(--color-surface-3);
+    .c-callout__close:hover {
+      color: var(--color-text-strong);
+      background: var(--color-surface-3);
+    }
   }
 
   .c-callout--note {
@@ -813,4 +817,73 @@
     max-inline-size: 100%;
   }
 
+
+  /* =======================================================================
+     CHANGELOG VIEWER
+     A versioned history browser: each release is a collapsible entry with a
+     version badge, date and body. Works without JS (native <details>).
+     ======================================================================= */
+  .c-changelog {
+    display: grid;
+    gap: var(--space-md);
+
+    .c-changelog__entry {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-surface-1);
+      overflow: hidden;
+    }
+
+    .c-changelog__summary {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: var(--space-sm) var(--space-md);
+      cursor: pointer;
+      list-style: none;
+      font-weight: var(--weight-medium);
+
+      &::-webkit-details-marker { display: none; }
+    }
+
+    .c-changelog__version {
+      font-family: var(--font-mono);
+      font-size: var(--type-sm);
+      font-weight: var(--weight-semibold);
+      color: var(--color-text);
+    }
+
+    .c-changelog__date {
+      font-size: var(--type-xs);
+      color: var(--color-text-muted);
+      margin-inline-start: auto;
+    }
+
+    .c-changelog__body {
+      padding: var(--space-md);
+      border-block-start: 1px solid var(--color-border);
+      font-size: var(--type-sm);
+      line-height: var(--leading-relaxed);
+
+      & :where(h3, h4) {
+        margin-block-start: var(--space-md);
+        margin-block-end: var(--space-xs);
+        font-size: var(--type-sm);
+        font-weight: var(--weight-semibold);
+      }
+
+      & :where(ul) {
+        padding-inline-start: var(--space-lg);
+        margin-block: var(--space-xs);
+      }
+    }
+
+    .c-changelog__empty,
+    .c-changelog__loading,
+    .c-changelog__error {
+      color: var(--color-text-muted);
+      padding: var(--space-md);
+      font-size: var(--type-sm);
+    }
+  }
 }

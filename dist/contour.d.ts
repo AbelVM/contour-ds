@@ -33,6 +33,7 @@ export type ContourComponent =
   | "c-carousel"
   | "c-catchment"
   | "c-category"
+  | "c-changelog"
   | "c-chart"
   | "c-chart-grid"
   | "c-check"
@@ -723,6 +724,7 @@ declare global {
     "contour-carousel": ContourElement;
     "contour-catchment": ContourDataElement;
     "contour-category": ContourDataElement;
+    "contour-changelog": ContourElement;
     "contour-chart": ContourDataElement;
     "contour-chart-grid": ContourElement;
     "contour-check": ContourFormElement;

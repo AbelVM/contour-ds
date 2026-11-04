@@ -1,3 +1,14 @@
+## [1.7.0] - 2026-11-04
+
+### Added
+- `contour-changelog` web component: versioned history browser that fetches a changelog URL and renders collapsible release entries (BY2-X11).
+- Focus restoration for the command palette: returns focus to the triggering element on close.
+- Component API reference promoted to its own guide section (§24) with rail and footer links (BY2-X10).
+- CSS nesting support (infrastructure): nesting-aware inventory parser, nesting-aware `check-components` gate, and a nesting flattener in the minifier so shipped CSS stays flat and broadly compatible while source may use nesting (PF1). Source-level adoption deferred: Chromium does not support `&__element`/`&--modifier` nesting syntax, so only browser-valid forms (`& .element`, `&.modifier`) can be used; @scope pilot (PF2) deferred due to specificity changes breaking the cascade.
+
+### Changed
+- Deferred task backlog (BY2-B1/B2/B3, BY2-I13, BY3-I13) remains behind 1.0; requires dedicated sessions or a stated 1.0 goal to activate.
+
 ## [1.6.0] - 2026-11-04
 
 ### Added

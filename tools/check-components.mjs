@@ -35,7 +35,7 @@
 
 import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
-import { inventory, blockOf } from "./lib/inventory.mjs";
+import { inventory, blockOf, blocks } from "./lib/inventory.mjs";
 import { CONTRACT_VERSION, buildComponentsDocument } from "./lib/components.mjs";
 
 // ".." like every sibling gate: this file sits in tools/, so "." resolves to
@@ -64,6 +64,13 @@ function main() {
     .map((f) => readFileSync(join(ROOT, "src/css", f), "utf8"))
     .join("\n")
     .replace(/\/\*[\s\S]*?\*\//g, " ");
+  // Nesting-aware view of the same CSS: class names that only appear as `&__foo`
+  // in source are expanded to their full form, so the substring checks below keep
+  // working when a sheet adopts CSS nesting (PF1).
+  const expandedCssText = [...sheets]
+    .map((f) => readFileSync(join(ROOT, "src/css", f), "utf8"))
+    .map((t) => blocks(t).map((b) => b.selector + " { " + b.body + " }").join("\n"))
+    .join("\n");
 
   const failures = [];
   const fail = (m) => failures.push(m);
@@ -142,12 +149,12 @@ function main() {
         // already CSS-safe, and the escaped-dot pattern I first wrote here
         // matched the same text `includes` matches, for more code and a regex
         // whose `$`-heavy source invites shell quoting bugs in anyone piping it.
-        if (!cssText.includes(`.${cls}`)) {
+        if (!expandedCssText.includes(`.${cls}`)) {
           fail(`.${cls} is listed as a ${field.slice(0, -1)} of ${b.name} but appears in no src/css selector`);
         }
       }
     }
-    for (const s of b.states) if (!cssText.includes(s)) fail(`${b.name} claims state ${s}, which no src/css selector contains`);
+    for (const s of b.states) if (!expandedCssText.includes(s)) fail(`${b.name} claims state ${s}, which no src/css selector contains`);
     for (const f of b.sheets) if (!sheets.has(f)) fail(`${b.name} names sheet ${f}, which is not a file in src/css`);
     if (!(raw.rules[b.name]?.rules > 0)) fail(`${b.name} is published with ${raw.rules[b.name]?.rules} rules — a block with no rule is not a block`);
     resolved++;
