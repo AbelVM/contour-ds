@@ -643,16 +643,16 @@
     transition:
       border-color var(--dur-fast) var(--ease-standard),
       box-shadow var(--dur-fast) var(--ease-standard);
-  }
 
-  .c-version:hover {
-    border-color: var(--color-border-strong);
-  }
+    &:hover {
+      border-color: var(--color-border-strong);
+    }
 
-  .c-version:focus-visible {
-    outline: 2px solid var(--color-focus-ring);
-    outline-offset: 2px;
-    border-color: var(--color-primary);
+    &:focus-visible {
+      outline: 2px solid var(--color-focus-ring);
+      outline-offset: 2px;
+      border-color: var(--color-primary);
+    }
   }
 
   /* "You are viewing an older version" banner. */
