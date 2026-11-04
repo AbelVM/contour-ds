@@ -752,11 +752,14 @@
     text-decoration: none;
     font-weight: var(--weight-regular);
     transition: opacity var(--dur-fast) var(--ease-standard);
+
+    &:focus-visible {
+      opacity: 1;
+    }
   }
 
   .c-prose h2:hover .c-anchor,
-  .c-prose h3:hover .c-anchor,
-  .c-anchor:focus-visible {
+  .c-prose h3:hover .c-anchor {
     opacity: 1;
   }
 
