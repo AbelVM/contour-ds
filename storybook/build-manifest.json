@@ -1,6 +1,6 @@
 {
-  "builtAt": "2026-11-04T18:10:56.164Z",
-  "sourceRevision": "b17598604efbc31157c4eb949beba5e48182435a",
+  "builtAt": "2026-11-04T19:46:44.327Z",
+  "sourceRevision": "3eb9e0a49fbbff40f118253220a20419e34b6eb0",
   "sources": {
     "src/css/base.css": {
       "bytes": 11735,
@@ -13,9 +13,9 @@
       "sha256": "acfa6154cf835840"
     },
     "src/css/components-docs.css": {
-      "bytes": 24357,
-      "mtimeMs": 1793814999367.635,
-      "sha256": "730a9948cd2baa35"
+      "bytes": 24638,
+      "mtimeMs": 1793818715895.3699,
+      "sha256": "67ab0e48ac8ebcd7"
     },
     "src/css/components-landing.css": {
       "bytes": 12326,
@@ -28,9 +28,9 @@
       "sha256": "8d9d17fcf6ce739a"
     },
     "src/css/components.css": {
-      "bytes": 119799,
-      "mtimeMs": 1793800291463.7864,
-      "sha256": "f9c6aec17a4fc978"
+      "bytes": 119931,
+      "mtimeMs": 1793819478288.0083,
+      "sha256": "d3305cffc86e5df1"
     },
     "src/css/ds.css": {
       "bytes": 2463,
@@ -159,8 +159,8 @@
     },
     "src/js/wc/index.mjs": {
       "bytes": 2474,
-      "mtimeMs": 1793798766075.6428,
-      "sha256": "0d76bde6b431379b"
+      "mtimeMs": 1793820176298.9333,
+      "sha256": "3edffe7c30be7b0c"
     },
     "src/js/wc/interaction.mjs": {
       "bytes": 25492,
@@ -224,8 +224,8 @@
     }
   },
   "outputs": {
-    "contour.css": 358115,
-    "contour.min.css": 221567,
+    "contour.css": 358528,
+    "contour.min.css": 221598,
     "contour.js": 64118,
     "contour.min.js": 38957,
     "contour.tokens.json": 51941,
@@ -234,9 +234,9 @@
     "docs/index.json": 6965,
     "registry/registry.json": 8952,
     "svg/contour-mark.svg": 1727,
-    "surfaces/contour-core.min.css": 148594,
-    "surfaces/contour-docs.min.css": 164546,
-    "surfaces/contour-data.min.css": 197542,
-    "surfaces/contour-landing.min.css": 156467
+    "surfaces/contour-core.min.css": 148611,
+    "surfaces/contour-docs.min.css": 164577,
+    "surfaces/contour-data.min.css": 197559,
+    "surfaces/contour-landing.min.css": 156484
   }
 }

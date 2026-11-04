@@ -1,4 +1,4 @@
-## [1.7.0] - 2026-11-04
+## [1.7.1] - 2026-11-04
 
 ### Added
 - `contour-changelog` web component: versioned history browser that fetches a changelog URL and renders collapsible release entries (BY2-X11).

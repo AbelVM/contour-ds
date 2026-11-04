@@ -1,6 +1,6 @@
 {
   "name": "contour-ds",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "A token-driven design system for spatial interfaces",
   "license": "MIT",
   "type": "module",

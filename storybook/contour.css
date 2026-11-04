@@ -1488,27 +1488,27 @@
       color var(--dur-fast) var(--ease-standard),
       transform var(--dur-fast) var(--ease-standard),
       box-shadow var(--dur-fast) var(--ease-standard);
-  }
 
-  .c-btn:hover {
-    transform: translateY(-1px);
-  }
+    &:hover {
+      transform: translateY(-1px);
+    }
 
-  .c-btn:active {
-    transform: translateY(1px);
-  }
+    &:active {
+      transform: translateY(1px);
+    }
 
-  .c-btn[disabled],
-  .c-btn[aria-disabled="true"] {
-    opacity: 0.45;
-    cursor: not-allowed;
-    transform: none;
-  }
+    &[disabled],
+    &[aria-disabled="true"] {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+    }
 
-  .c-btn svg {
-    inline-size: 1rem;
-    block-size: 1rem;
-    flex: none;
+    & svg {
+      inline-size: 1rem;
+      block-size: 1rem;
+      flex: none;
+    }
   }
 
   /* -- Variants ---------------------------------------------------- */
@@ -2452,25 +2452,41 @@
       border-color var(--dur-base) var(--ease-standard),
       background-color var(--dur-base) var(--ease-standard),
       transform var(--dur-base) var(--ease-standard);
+
+    /* A hairline "trace" that runs along the top edge and lights up on hover.
+       This replaces the reflex of adding a coloured left border. */
+    &::before {
+      content: "";
+      position: absolute;
+      inset-block-start: -1px;
+      inset-inline: 22%;
+      block-size: 1px;
+      background: var(--color-primary);
+      opacity: 0;
+      transition: opacity var(--dur-base) var(--ease-standard);
+    }
+
+    &:hover,
+    &:focus-within {
+      border-color: var(--color-border-strong);
+      background: var(--color-surface-2);
+    }
+
+    &:hover::before,
+    &:focus-within::before {
+      opacity: 0.8;
+    }
   }
 
-  /* A hairline "trace" that runs along the top edge and lights up on hover.
-     This replaces the reflex of adding a coloured left border. */
-  .c-card::before {
-    content: "";
-    position: absolute;
-    inset-block-start: -1px;
-    inset-inline: 22%;
-    block-size: 1px;
-    background: var(--color-primary);
-    opacity: 0;
-    transition: opacity var(--dur-base) var(--ease-standard);
-  }
-
-  .c-card:hover,
-  .c-card:focus-within {
-    border-color: var(--color-border-strong);
-    background: var(--color-surface-2);
+  /* @scope pilot (PF2): scope element rules to .c-card descendants. */
+  @scope (.c-card) {
+    .c-card__title {
+      font-family: var(--font-display);
+      font-size: var(--type-h4);
+      font-weight: var(--weight-semibold);
+      letter-spacing: -0.012em;
+      color: var(--color-text-strong);
+    }
   }
 
   /* Container query: reduce padding when the card is narrow. */
@@ -2478,19 +2494,6 @@
     .c-card {
       padding: var(--space-md);
     }
-  }
-
-  .c-card:hover::before,
-  .c-card:focus-within::before {
-    opacity: 0.8;
-  }
-
-  .c-card__title {
-    font-family: var(--font-display);
-    font-size: var(--type-h4);
-    font-weight: var(--weight-semibold);
-    letter-spacing: -0.012em;
-    color: var(--color-text-strong);
   }
 
   @supports (font-size: 1cqi) {
@@ -9393,7 +9396,10 @@
     display: grid;
     gap: 0.6rem;
     font-size: var(--type-xs);
+  }
 
+  /* @scope pilot (PF2): scope element rules to .c-toc descendants. */
+  @scope (.c-toc) {
     .c-toc__empty,
     .c-toc__loading,
     .c-toc__error {
@@ -9939,66 +9945,66 @@
     color: var(--color-text);
     font-size: var(--type-body);
     line-height: var(--leading-relaxed);
-  }
 
-  .c-prose > * + * {
-    margin-block-start: var(--space-md);
-  }
+    & > * + * {
+      margin-block-start: var(--space-md);
+    }
 
-  .c-prose h2 {
-    font-family: var(--font-display);
-    font-size: var(--type-h2);
-    font-weight: var(--weight-bold);
-    letter-spacing: var(--tracking-heading);
-    color: var(--color-text-strong);
-    margin-block-start: var(--space-2xl);
-    scroll-margin-block-start: calc(var(--header-height) + 1.5rem);
-  }
+    h2 {
+      font-family: var(--font-display);
+      font-size: var(--type-h2);
+      font-weight: var(--weight-bold);
+      letter-spacing: var(--tracking-heading);
+      color: var(--color-text-strong);
+      margin-block-start: var(--space-2xl);
+      scroll-margin-block-start: calc(var(--header-height) + 1.5rem);
+    }
 
-  .c-prose h3 {
-    font-family: var(--font-display);
-    font-size: var(--type-h3);
-    font-weight: var(--weight-semibold);
-    color: var(--color-text-strong);
-    margin-block-start: var(--space-xl);
-    scroll-margin-block-start: calc(var(--header-height) + 1.5rem);
-  }
+    h3 {
+      font-family: var(--font-display);
+      font-size: var(--type-h3);
+      font-weight: var(--weight-semibold);
+      color: var(--color-text-strong);
+      margin-block-start: var(--space-xl);
+      scroll-margin-block-start: calc(var(--header-height) + 1.5rem);
+    }
 
-  .c-prose a {
-    text-decoration: underline;
-    text-decoration-color: color-mix(in oklab, var(--color-link) 40%, transparent);
-    text-underline-offset: 0.2em;
-    overflow-wrap: break-word;
-  }
+    a {
+      text-decoration: underline;
+      text-decoration-color: color-mix(in oklab, var(--color-link) 40%, transparent);
+      text-underline-offset: 0.2em;
+      overflow-wrap: break-word;
 
-  .c-prose a:hover {
-    text-decoration-color: currentColor;
-  }
+      &:hover {
+        text-decoration-color: currentColor;
+      }
+    }
 
-  .c-prose ul,
-  .c-prose ol {
-    padding-inline-start: 1.35rem;
-    color: var(--color-text-muted);
-  }
+    ul,
+    ol {
+      padding-inline-start: 1.35rem;
+      color: var(--color-text-muted);
+    }
 
-  .c-prose li + li {
-    margin-block-start: 0.35rem;
-  }
+    li + li {
+      margin-block-start: 0.35rem;
+    }
 
-  .c-prose code:not(pre code) {
-    padding: 0.12em 0.36em;
-    border-radius: var(--radius-xs);
-    background: var(--color-surface-3);
-    color: var(--color-text-strong);
-    font-size: 0.875em;
-    overflow-wrap: break-word;
-  }
+    code:not(pre code) {
+      padding: 0.12em 0.36em;
+      border-radius: var(--radius-xs);
+      background: var(--color-surface-3);
+      color: var(--color-text-strong);
+      font-size: 0.875em;
+      overflow-wrap: break-word;
+    }
 
-  .c-prose blockquote {
-    padding-inline-start: var(--space-md);
-    border-inline-start: var(--border-width-thick) solid var(--color-primary);
-    color: var(--color-text-muted);
-    font-style: italic;
+    blockquote {
+      padding-inline-start: var(--space-md);
+      border-inline-start: var(--border-width-thick) solid var(--color-primary);
+      color: var(--color-text-muted);
+      font-style: italic;
+    }
   }
 
   /* An anchor link that appears on hover next to a heading. */
@@ -10036,32 +10042,35 @@
      overscroll-behavior-x: contain;
    }
 
-   .c-file-tree__row {
-     display: flex;
-     align-items: center;
-     gap: 0.45rem;
-     white-space: nowrap;
-   }
+   /* @scope pilot (PF2): scope element rules to .c-file-tree descendants. */
+   @scope (.c-file-tree) {
+     .c-file-tree__row {
+       display: flex;
+       align-items: center;
+       gap: 0.45rem;
+       white-space: nowrap;
 
-   .c-file-tree__row svg {
-     inline-size: 0.9rem;
-     block-size: 0.9rem;
-     flex: none;
-     opacity: 0.6;
-   }
+       & svg {
+         inline-size: 0.9rem;
+         block-size: 0.9rem;
+         flex: none;
+         opacity: 0.6;
+       }
 
-   .c-file-tree__row--dir {
-     color: var(--color-text-strong);
-   }
+       &.c-file-tree__row--dir {
+         color: var(--color-text-strong);
+       }
 
-   .c-file-tree__row--active {
-     color: var(--color-primary-text);
-   }
+       &.c-file-tree__row--active {
+         color: var(--color-primary-text);
+       }
+     }
 
-   .c-file-tree__indent {
-     display: inline-block;
-     inline-size: 1rem;
-     flex: none;
+     .c-file-tree__indent {
+       display: inline-block;
+       inline-size: 1rem;
+       flex: none;
+     }
    }
 
 

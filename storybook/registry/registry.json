@@ -40,7 +40,7 @@
       "meta": {
         "distribution": "pointer",
         "selfContained": true,
-        "bundleBytes": 148594,
+        "bundleBytes": 148611,
         "shared": [
           {
             "path": "contour.tokens.json",
@@ -102,7 +102,7 @@
       "meta": {
         "distribution": "pointer",
         "selfContained": true,
-        "bundleBytes": 197542,
+        "bundleBytes": 197559,
         "shared": [
           {
             "path": "contour.tokens.json",
@@ -164,7 +164,7 @@
       "meta": {
         "distribution": "pointer",
         "selfContained": true,
-        "bundleBytes": 164546,
+        "bundleBytes": 164577,
         "shared": [
           {
             "path": "contour.tokens.json",
@@ -226,7 +226,7 @@
       "meta": {
         "distribution": "pointer",
         "selfContained": true,
-        "bundleBytes": 156467,
+        "bundleBytes": 156484,
         "shared": [
           {
             "path": "contour.tokens.json",

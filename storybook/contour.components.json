@@ -4414,7 +4414,7 @@
       "sheets": [
         "components-docs.css"
       ],
-      "rules": 6,
+      "rules": 8,
       "elements": [
         "c-file-tree__indent",
         "c-file-tree__row",
@@ -7498,7 +7498,7 @@
       "sheets": [
         "components-docs.css"
       ],
-      "rules": 13,
+      "rules": 12,
       "elements": [],
       "variants": [],
       "states": [
@@ -10700,7 +10700,7 @@
       "sheets": [
         "components-docs.css"
       ],
-      "rules": 17,
+      "rules": 10,
       "elements": [
         "c-toc__empty",
         "c-toc__error",
