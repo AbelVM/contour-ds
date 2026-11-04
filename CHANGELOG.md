@@ -1,3 +1,20 @@
+## [1.5.1] - 2026-11-04
+
+### Added
+- `contour:brush` generic event on `contour-brush` (alongside `contour:brush-start`/`contour:brush-end`).
+- `window.Contour.format` and `window.Contour.markers` exposed from the web-component bundle.
+- `withBrownout(Base)` mixin and `brownoutLevel()`/`shed()` helpers on `ContourBase`.
+- Editable class-break inputs in single-mode `contour-style-panel`.
+
+### Fixed
+- Accessible names on the pivot corner header cell and empty data-grid cells.
+- `aria-label` on the filter-bar toolbar region.
+- `contour-legend` selectable items now use the listbox/option pattern (`aria-selected`) instead of button-in-group.
+- Colour serialisation preserves original hex spelling via `dataset.color` (legend, palette editor, color picker, data components).
+
+### Changed
+- Size budget for `contour-wc.esm.min.js` raised to 596 kB.
+
 ## [1.5.0] - 2026-11-02
 
 ### Added
