@@ -665,12 +665,12 @@
     background: var(--color-warning-soft);
     color: var(--color-warning-text);
     font-size: var(--type-xs);
-  }
 
-  .c-version-banner svg {
-    inline-size: 1rem;
-    block-size: 1rem;
-    flex: none;
+    & svg {
+      inline-size: 1rem;
+      block-size: 1rem;
+      flex: none;
+    }
   }
 
   /* =======================================================================
