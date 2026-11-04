@@ -495,21 +495,21 @@
     overflow-x: auto;
     overscroll-behavior-x: contain;
     scroll-padding-inline: 0.5rem;
-  }
 
-  .c-install__prompt {
-    color: var(--color-primary-text);
-    user-select: none;
-    flex: none;
-  }
+    .c-install__prompt {
+      color: var(--color-primary-text);
+      user-select: none;
+      flex: none;
+    }
 
-  .c-install__command {
-    white-space: nowrap;
-  }
+    .c-install__command {
+      white-space: nowrap;
+    }
 
-  .c-install__copy {
-    margin-inline-start: auto;
-    flex: none;
+    .c-install__copy {
+      margin-inline-start: auto;
+      flex: none;
+    }
   }
 
   /* =======================================================================
