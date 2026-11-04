@@ -1200,13 +1200,17 @@
       "$type": "number",
       "$value": 100
     },
+    "header": {
+      "$type": "number",
+      "$value": 400
+    },
     "drawer": {
       "$type": "number",
       "$value": 500
     },
-    "header": {
+    "modal": {
       "$type": "number",
-      "$value": 400
+      "$value": 600
     },
     "toast": {
       "$type": "number",

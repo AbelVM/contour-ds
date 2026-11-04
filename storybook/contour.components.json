@@ -8,10 +8,10 @@
     "elements": 737,
     "variants": 115,
     "states": 286,
-    "tokens": 2075,
+    "tokens": 2077,
     "vars": 19,
     "inputs": 18,
-    "tokensIndexed": 197
+    "tokensIndexed": 198
   },
   "blocks": [
     {
@@ -43,6 +43,12 @@
       ],
       "booleanAttributes": [
         "exclusive"
+      ],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "accordion"
       ],
       "tokens": [
         "--color-text-muted",
@@ -89,6 +95,12 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "activity"
+      ],
       "tokens": [
         "--color-accent",
         "--color-danger",
@@ -125,6 +137,12 @@
         "title"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "advanced"
+      ],
       "tokens": [
         "--color-text",
         "--type-sm"
@@ -155,6 +173,12 @@
         "demo"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "affordance"
+      ],
       "tokens": [
         "--color-border",
         "--color-surface-1",
@@ -192,6 +216,12 @@
         "title"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "affordances"
+      ],
       "tokens": [
         "--space-md"
       ],
@@ -250,6 +280,18 @@
       "booleanAttributes": [
         "closable"
       ],
+      "slots": [
+        "title",
+        "",
+        "action"
+      ],
+      "parts": [
+        "alert",
+        "title",
+        "body",
+        "actions",
+        "close"
+      ],
       "tokens": [
         "--color-accent",
         "--color-accent-soft",
@@ -307,6 +349,12 @@
         "label"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "anchor"
+      ],
       "tokens": [
         "--color-text-subtle",
         "--dur-fast",
@@ -354,6 +402,8 @@
       "booleanAttributes": [
         "playing"
       ],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--space-2xs"
       ],
@@ -381,6 +431,8 @@
         "y"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-border",
         "--color-surface-1",
@@ -418,6 +470,12 @@
         "title"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "app"
+      ],
       "tokens": [
         "--color-canvas",
         "--color-text",
@@ -447,6 +505,12 @@
         "title"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "app-body"
+      ],
       "tokens": [],
       "vars": [],
       "inputs": [],
@@ -477,6 +541,12 @@
         "status"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "avatar"
+      ],
       "tokens": [
         "--color-accent-soft",
         "--color-accent-text",
@@ -512,6 +582,8 @@
         "max"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-surface-1"
       ],
@@ -558,6 +630,12 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "axis"
+      ],
       "tokens": [
         "--chart-axis",
         "--chart-label",
@@ -597,6 +675,12 @@
       ],
       "booleanAttributes": [
         "removable"
+      ],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "badge"
       ],
       "tokens": [
         "--color-accent-soft",
@@ -642,6 +726,8 @@
         "max"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
       "tokens": [],
       "vars": [],
       "inputs": [],
@@ -669,6 +755,8 @@
         "variant"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-danger",
         "--color-info",
@@ -713,6 +801,13 @@
         "selected"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "bivariate",
+        "matrix"
+      ],
       "tokens": [
         "--color-border",
         "--color-border-subtle",
@@ -754,6 +849,13 @@
       "states": [],
       "attributes": [],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "legend",
+        "matrix"
+      ],
       "tokens": [
         "--color-border",
         "--color-text-muted",
@@ -781,6 +883,12 @@
       "states": [],
       "attributes": [],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "box"
+      ],
       "tokens": [
         "--color-border",
         "--color-surface-1",
@@ -812,6 +920,15 @@
         "tag"
       ],
       "booleanAttributes": [],
+      "slots": [
+        "mark",
+        "name"
+      ],
+      "parts": [
+        "brand",
+        "mark",
+        "name"
+      ],
       "tokens": [
         "--color-border",
         "--color-text-strong",
@@ -865,6 +982,12 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "breadcrumb"
+      ],
       "tokens": [
         "--color-text-muted",
         "--color-text-strong",
@@ -899,6 +1022,12 @@
         "level"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "brownout"
+      ],
       "tokens": [
         "--color-text-muted",
         "--type-xs"
@@ -941,6 +1070,11 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [
+        "brush",
+        "selection"
+      ],
       "tokens": [
         "--color-border",
         "--color-primary",
@@ -1000,6 +1134,12 @@
       ],
       "booleanAttributes": [
         "disabled"
+      ],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "btn"
       ],
       "tokens": [
         "--color-accent",
@@ -1076,6 +1216,12 @@
         "title"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "btn-group"
+      ],
       "tokens": [
         "--radius-pill"
       ],
@@ -1109,6 +1255,8 @@
         "value"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-border",
         "--color-on-primary",
@@ -1158,6 +1306,16 @@
       ],
       "booleanAttributes": [
         "closable"
+      ],
+      "slots": [
+        "title",
+        ""
+      ],
+      "parts": [
+        "callout",
+        "title",
+        "body",
+        "close"
       ],
       "tokens": [
         "--color-accent",
@@ -1222,6 +1380,17 @@
         "heading"
       ],
       "booleanAttributes": [],
+      "slots": [
+        "title",
+        "",
+        "foot"
+      ],
+      "parts": [
+        "card",
+        "head",
+        "body",
+        "foot"
+      ],
       "tokens": [
         "--border-width-thick",
         "--color-border",
@@ -1273,6 +1442,8 @@
         "index"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-text-muted",
         "--space-sm",
@@ -1318,6 +1489,12 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "catchment"
+      ],
       "tokens": [
         "--color-border",
         "--color-primary",
@@ -1374,6 +1551,12 @@
         "sort"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "category"
+      ],
       "tokens": [
         "--color-primary",
         "--color-text-muted",
@@ -1467,6 +1650,13 @@
         "brush",
         "zoomable"
       ],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "chart",
+        "plot"
+      ],
       "tokens": [
         "--chart-1",
         "--chart-axis",
@@ -1555,6 +1745,12 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "chart-grid"
+      ],
       "tokens": [
         "--space-md"
       ],
@@ -1603,6 +1799,12 @@
         "disabled",
         "required"
       ],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "check"
+      ],
       "tokens": [
         "--color-border-strong",
         "--color-focus-ring",
@@ -1647,6 +1849,12 @@
         "value"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "chip"
+      ],
       "tokens": [
         "--border-width-thick",
         "--color-accent",
@@ -1682,6 +1890,12 @@
       "states": [],
       "attributes": [],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "cluster"
+      ],
       "tokens": [
         "--space-sm"
       ],
@@ -1711,6 +1925,13 @@
       ],
       "booleanAttributes": [
         "copyable"
+      ],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "code",
+        "copy"
       ],
       "tokens": [
         "--color-border",
@@ -1771,6 +1992,14 @@
         "persist"
       ],
       "booleanAttributes": [],
+      "slots": [
+        "tabs",
+        ""
+      ],
+      "parts": [
+        "code-tabs",
+        "list"
+      ],
       "tokens": [
         "--color-border",
         "--color-border-subtle",
@@ -1826,6 +2055,8 @@
         "alpha",
         "disabled"
       ],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-border",
         "--color-surface-1",
@@ -1884,6 +2115,14 @@
       "booleanAttributes": [
         "multiple",
         "virtual"
+      ],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "combobox",
+        "input",
+        "list"
       ],
       "tokens": [
         "--color-border",
@@ -1964,6 +2203,12 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "command"
+      ],
       "tokens": [
         "--color-border-strong",
         "--color-border-subtle",
@@ -2026,6 +2271,8 @@
       "booleanAttributes": [
         "open"
       ],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-border",
         "--color-primary-soft",
@@ -2078,6 +2325,12 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "compare"
+      ],
       "tokens": [
         "--color-border",
         "--color-border-subtle",
@@ -2133,6 +2386,12 @@
         "after"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "comparison"
+      ],
       "tokens": [
         "--color-border",
         "--color-primary",
@@ -2189,6 +2448,12 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "compass"
+      ],
       "tokens": [
         "--color-border",
         "--color-danger",
@@ -2222,6 +2487,12 @@
       ],
       "attributes": [],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "container"
+      ],
       "tokens": [
         "--color-control-edge",
         "--radius-pill",
@@ -2250,6 +2521,8 @@
         "items"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-border",
         "--color-surface-1",
@@ -2284,6 +2557,12 @@
       "states": [],
       "attributes": [],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "plot"
+      ],
       "tokens": [
         "--chart-2",
         "--chart-3",
@@ -2336,6 +2615,13 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [
+        "value"
+      ],
+      "parts": [
+        "coordinate",
+        "value"
+      ],
       "tokens": [
         "--color-border",
         "--color-primary",
@@ -2378,6 +2664,12 @@
         "heading"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "cta"
+      ],
       "tokens": [
         "--color-primary",
         "--color-surface-1",
@@ -2418,6 +2710,12 @@
         "locale"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "dash-freshness"
+      ],
       "tokens": [
         "--color-text-subtle",
         "--font-mono",
@@ -2445,6 +2743,12 @@
         "items"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "dash-kpi-row"
+      ],
       "tokens": [
         "--space-md"
       ],
@@ -2470,6 +2774,12 @@
         "title"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "dash-shell"
+      ],
       "tokens": [
         "--space-md"
       ],
@@ -2497,6 +2807,12 @@
         "actions"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "dash-toolbar"
+      ],
       "tokens": [
         "--color-border",
         "--color-canvas",
@@ -2546,6 +2862,8 @@
         "resizable",
         "virtual"
       ],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-border-subtle",
         "--space-2xs",
@@ -2572,6 +2890,8 @@
         "brush",
         "zoomable"
       ],
+      "slots": [],
+      "parts": [],
       "tokens": [],
       "vars": [],
       "inputs": [],
@@ -2606,6 +2926,12 @@
         "label"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "datamark"
+      ],
       "tokens": [
         "--chart-selection",
         "--color-border",
@@ -2664,6 +2990,8 @@
         "range",
         "time"
       ],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-border",
         "--color-primary-solid",
@@ -2712,6 +3040,8 @@
       "booleanAttributes": [
         "time"
       ],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-text-muted",
         "--space-2xs",
@@ -2758,6 +3088,12 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "delta"
+      ],
       "tokens": [
         "--color-danger-text",
         "--color-success-text",
@@ -2788,6 +3124,12 @@
         "text"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "destructive-hint"
+      ],
       "tokens": [
         "--color-danger-text",
         "--type-xs"
@@ -2825,6 +3167,8 @@
         "heading"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-border-strong",
         "--color-scrim",
@@ -2875,6 +3219,15 @@
         "after"
       ],
       "booleanAttributes": [],
+      "slots": [
+        "before",
+        "after"
+      ],
+      "parts": [
+        "diff",
+        "before",
+        "after"
+      ],
       "tokens": [
         "--color-border",
         "--color-code-bg",
@@ -2915,6 +3268,14 @@
         "icon"
       ],
       "booleanAttributes": [],
+      "slots": [
+        "summary",
+        ""
+      ],
+      "parts": [
+        "disclosure",
+        "body"
+      ],
       "tokens": [
         "--color-border",
         "--color-border-subtle",
@@ -2962,6 +3323,8 @@
         "orientation"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-border",
         "--color-text-subtle",
@@ -2996,6 +3359,15 @@
         "dont"
       ],
       "booleanAttributes": [],
+      "slots": [
+        "do",
+        "dont"
+      ],
+      "parts": [
+        "do-dont",
+        "do",
+        "dont"
+      ],
       "tokens": [
         "--color-border",
         "--color-danger",
@@ -3055,6 +3427,12 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "docs-nav"
+      ],
       "tokens": [
         "--color-border",
         "--color-primary-soft",
@@ -3108,6 +3486,12 @@
         "heading"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "docs-shell"
+      ],
       "tokens": [
         "--color-text-muted",
         "--color-text-strong",
@@ -3168,6 +3552,16 @@
         "note"
       ],
       "booleanAttributes": [],
+      "slots": [
+        "value",
+        ""
+      ],
+      "parts": [
+        "donut",
+        "ring",
+        "center",
+        "list"
+      ],
       "tokens": [
         "--color-text-muted",
         "--color-text-subtle",
@@ -3216,6 +3610,12 @@
       "booleanAttributes": [
         "live"
       ],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "dot"
+      ],
       "tokens": [
         "--color-accent",
         "--color-danger",
@@ -3258,6 +3658,12 @@
         "label"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "drag-handle"
+      ],
       "tokens": [
         "--color-focus-ring",
         "--color-text",
@@ -3290,6 +3696,12 @@
         "label"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "draggable"
+      ],
       "tokens": [
         "--dur-base",
         "--dur-fast",
@@ -3328,6 +3740,12 @@
         "size"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "drawer"
+      ],
       "tokens": [
         "--color-border",
         "--color-border-subtle",
@@ -3373,6 +3791,12 @@
         "label"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "drop-indicator"
+      ],
       "tokens": [
         "--color-primary",
         "--color-primary-soft",
@@ -3406,6 +3830,12 @@
         "label"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "drop-zone"
+      ],
       "tokens": [
         "--color-border",
         "--color-danger",
@@ -3441,6 +3871,8 @@
         "items"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--space-2xs",
         "--z-tooltip"
@@ -3469,6 +3901,12 @@
       ],
       "booleanAttributes": [
         "dismissible"
+      ],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "elevation"
       ],
       "tokens": [
         "--shadow-md"
@@ -3504,6 +3942,18 @@
         "heading"
       ],
       "booleanAttributes": [],
+      "slots": [
+        "illustration",
+        "title",
+        "",
+        "action"
+      ],
+      "parts": [
+        "empty",
+        "illustration",
+        "title",
+        "body"
+      ],
       "tokens": [
         "--color-border",
         "--color-primary",
@@ -3544,6 +3994,8 @@
         "error"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-border",
         "--color-surface-raised",
@@ -3577,6 +4029,14 @@
         "summary"
       ],
       "booleanAttributes": [],
+      "slots": [
+        "summary",
+        ""
+      ],
+      "parts": [
+        "expandable",
+        "body"
+      ],
       "tokens": [
         "--color-text-strong",
         "--font-display",
@@ -3605,6 +4065,8 @@
         "icon"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-on-primary",
         "--color-primary",
@@ -3655,6 +4117,15 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [
+        "question",
+        "answer"
+      ],
+      "parts": [
+        "faq",
+        "question",
+        "answer"
+      ],
       "tokens": [
         "--color-border",
         "--color-primary",
@@ -3705,6 +4176,17 @@
         "heading"
       ],
       "booleanAttributes": [],
+      "slots": [
+        "index",
+        "title",
+        ""
+      ],
+      "parts": [
+        "feature",
+        "index",
+        "title",
+        "body"
+      ],
       "tokens": [
         "--color-border",
         "--color-text-muted",
@@ -3757,6 +4239,16 @@
       "booleanAttributes": [
         "required"
       ],
+      "slots": [
+        "label",
+        "input",
+        "hint"
+      ],
+      "parts": [
+        "field",
+        "label",
+        "hint"
+      ],
       "tokens": [
         "--color-danger-text",
         "--color-text-muted",
@@ -3799,6 +4291,8 @@
       "booleanAttributes": [
         "required"
       ],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-control-edge",
         "--color-danger",
@@ -3839,6 +4333,8 @@
         "items"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-primary-text",
         "--color-text-muted",
@@ -3880,6 +4376,8 @@
       "booleanAttributes": [
         "multiple"
       ],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-border",
         "--color-border-strong",
@@ -3936,6 +4434,12 @@
         "clearable"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "filter-bar"
+      ],
       "tokens": [
         "--color-border",
         "--color-surface-1",
@@ -3979,6 +4483,13 @@
       "booleanAttributes": [
         "removable"
       ],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "filter-pill",
+        "remove"
+      ],
       "tokens": [
         "--color-border",
         "--color-danger-soft",
@@ -4020,6 +4531,12 @@
         "label"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "flag"
+      ],
       "tokens": [
         "--color-border",
         "--color-primary",
@@ -4074,6 +4591,12 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "flow-map"
+      ],
       "tokens": [
         "--chart-2",
         "--chart-3",
@@ -4130,6 +4653,16 @@
         "heading"
       ],
       "booleanAttributes": [],
+      "slots": [
+        "brand",
+        "links"
+      ],
+      "parts": [
+        "footer",
+        "grid",
+        "brand",
+        "links"
+      ],
       "tokens": [
         "--color-border",
         "--color-surface-1",
@@ -4180,6 +4713,8 @@
       "booleanAttributes": [
         "submitting"
       ],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-danger",
         "--color-danger-soft",
@@ -4242,6 +4777,19 @@
         "description"
       ],
       "booleanAttributes": [],
+      "slots": [
+        "value",
+        "band"
+      ],
+      "parts": [
+        "gauge",
+        "dial",
+        "track",
+        "needle",
+        "hub",
+        "value",
+        "band"
+      ],
       "tokens": [
         "--color-border",
         "--color-surface-1",
@@ -4297,6 +4845,8 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-border",
         "--color-border-subtle",
@@ -4344,6 +4894,18 @@
         "links"
       ],
       "booleanAttributes": [],
+      "slots": [
+        "brand",
+        "nav",
+        "actions"
+      ],
+      "parts": [
+        "header",
+        "inner",
+        "brand",
+        "nav",
+        "actions"
+      ],
       "tokens": [
         "--color-border-subtle",
         "--color-canvas",
@@ -4411,6 +4973,12 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "heatmap"
+      ],
       "tokens": [
         "--chart-tip-block-start",
         "--chart-tip-inline-start",
@@ -4472,6 +5040,12 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "hexbin"
+      ],
       "tokens": [
         "--chart-tip-block-start",
         "--chart-tip-inline-start",
@@ -4518,6 +5092,8 @@
         "anchor"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-border",
         "--color-surface-1",
@@ -4555,6 +5131,12 @@
         "icon"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "icon-badge"
+      ],
       "tokens": [
         "--color-accent",
         "--color-accent-soft",
@@ -4602,6 +5184,10 @@
         "disabled",
         "required"
       ],
+      "slots": [],
+      "parts": [
+        "input"
+      ],
       "tokens": [
         "--color-border-strong",
         "--color-border-subtle",
@@ -4647,6 +5233,12 @@
         "clearable",
         "submit"
       ],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "input-group"
+      ],
       "tokens": [
         "--color-text-subtle"
       ],
@@ -4676,6 +5268,16 @@
         "copyable"
       ],
       "booleanAttributes": [],
+      "slots": [
+        "prompt",
+        "command"
+      ],
+      "parts": [
+        "install",
+        "prompt",
+        "command",
+        "copy"
+      ],
       "tokens": [
         "--color-border",
         "--color-code-bg",
@@ -4726,6 +5328,12 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "instrument"
+      ],
       "tokens": [
         "--color-text",
         "--color-text-muted",
@@ -4780,6 +5388,12 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "isochrone"
+      ],
       "tokens": [
         "--chart-tip-block-start",
         "--chart-tip-inline-start",
@@ -4819,6 +5433,12 @@
         "key"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "kbd"
+      ],
       "tokens": [
         "--border-width-thick",
         "--color-border",
@@ -4885,6 +5505,18 @@
         "polarity"
       ],
       "booleanAttributes": [],
+      "slots": [
+        "value",
+        "label",
+        "delta",
+        "note"
+      ],
+      "parts": [
+        "kpi",
+        "value",
+        "label",
+        "foot"
+      ],
       "tokens": [
         "--color-border",
         "--color-surface-1",
@@ -4944,6 +5576,12 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "landing-features"
+      ],
       "tokens": [
         "--color-primary",
         "--color-primary-soft",
@@ -4990,6 +5628,12 @@
         "heading"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "landing-hero"
+      ],
       "tokens": [
         "--color-border",
         "--color-border-strong",
@@ -5066,6 +5710,12 @@
         "allow-zoom"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "layer-panel"
+      ],
       "tokens": [
         "--color-border",
         "--color-control-edge",
@@ -5128,6 +5778,12 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "layer-switch"
+      ],
       "tokens": [
         "--color-border",
         "--color-surface-1",
@@ -5238,6 +5894,12 @@
       "booleanAttributes": [
         "selectable"
       ],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "legend"
+      ],
       "tokens": [
         "--chart-1",
         "--chart-2",
@@ -5302,6 +5964,12 @@
         "label"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "link"
+      ],
       "tokens": [
         "--color-link",
         "--dur-fast",
@@ -5329,6 +5997,12 @@
       ],
       "attributes": [],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "linkish"
+      ],
       "tokens": [
         "--color-link"
       ],
@@ -5361,6 +6035,12 @@
       ],
       "booleanAttributes": [
         "live"
+      ],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "live-badge"
       ],
       "tokens": [
         "--color-accent",
@@ -5408,6 +6088,13 @@
       "booleanAttributes": [
         "dismissible"
       ],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "loading",
+        "spinner"
+      ],
       "tokens": [
         "--space-xs"
       ],
@@ -5433,6 +6120,12 @@
       ],
       "attributes": [],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "logos"
+      ],
       "tokens": [
         "--color-text-strong",
         "--color-text-subtle",
@@ -5470,6 +6163,12 @@
         "controls"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "map-area"
+      ],
       "tokens": [
         "--color-canvas"
       ],
@@ -5495,6 +6194,12 @@
         "brand"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "map-footer"
+      ],
       "tokens": [
         "--color-border",
         "--color-surface-1",
@@ -5528,6 +6233,12 @@
         "title"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "map-panel"
+      ],
       "tokens": [
         "--color-border",
         "--color-surface-1",
@@ -5569,6 +6280,8 @@
       "booleanAttributes": [
         "cluster-expanded"
       ],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-border",
         "--color-surface-1",
@@ -5612,6 +6325,12 @@
         "chrome"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "map-slot"
+      ],
       "tokens": [
         "--color-border",
         "--color-focus-ring",
@@ -5668,6 +6387,12 @@
       "booleanAttributes": [
         "dismissible"
       ],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "mark"
+      ],
       "tokens": [
         "--color-primary",
         "--color-primary-soft",
@@ -5717,6 +6442,12 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "measure"
+      ],
       "tokens": [
         "--color-border",
         "--color-primary",
@@ -5781,6 +6512,12 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "menu"
+      ],
       "tokens": [
         "--color-border-strong",
         "--color-border-subtle",
@@ -5854,6 +6591,16 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [
+        "value",
+        "label"
+      ],
+      "parts": [
+        "meter",
+        "core",
+        "value",
+        "label"
+      ],
       "tokens": [
         "--color-accent",
         "--color-data",
@@ -5908,6 +6655,12 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "metrics"
+      ],
       "tokens": [
         "--color-border",
         "--color-text-strong",
@@ -5957,6 +6710,12 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "minimap"
+      ],
       "tokens": [
         "--color-border",
         "--color-primary",
@@ -5997,6 +6756,8 @@
         "color"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-border",
         "--color-primary",
@@ -6040,6 +6801,8 @@
       "booleanAttributes": [
         "disabled"
       ],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-text-muted",
         "--space-2xs",
@@ -6073,6 +6836,12 @@
         "next"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "pager"
+      ],
       "tokens": [
         "--color-border",
         "--color-border-strong",
@@ -6137,6 +6906,12 @@
         "persist"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "pagination"
+      ],
       "tokens": [
         "--color-on-primary",
         "--color-primary",
@@ -6172,6 +6947,8 @@
         "colors"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-border",
         "--radius-sm",
@@ -6226,6 +7003,12 @@
       "booleanAttributes": [
         "collapsed",
         "collapsible"
+      ],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "panel"
       ],
       "tokens": [
         "--color-accent-text",
@@ -6284,6 +7067,12 @@
       ],
       "booleanAttributes": [
         "live"
+      ],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "pill"
       ],
       "tokens": [
         "--border-width-thick",
@@ -6345,6 +7134,8 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-border",
         "--color-surface-2",
@@ -6377,6 +7168,12 @@
       ],
       "attributes": [],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "plate"
+      ],
       "tokens": [
         "--color-border",
         "--color-primary",
@@ -6409,6 +7206,8 @@
         "content"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-border",
         "--color-surface-1",
@@ -6446,6 +7245,12 @@
       "booleanAttributes": [
         "disabled"
       ],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "pressable"
+      ],
       "tokens": [
         "--dur-fast",
         "--ease-standard"
@@ -6481,6 +7286,12 @@
         "locale"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "price"
+      ],
       "tokens": [
         "--color-border",
         "--color-primary",
@@ -6523,6 +7334,12 @@
       "states": [],
       "attributes": [],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "pricing"
+      ],
       "tokens": [
         "--space-md"
       ],
@@ -6560,6 +7377,12 @@
         "pausable",
         "paused"
       ],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "progress"
+      ],
       "tokens": [
         "--color-accent",
         "--color-primary",
@@ -6593,6 +7416,12 @@
       "booleanAttributes": [
         "collapsed",
         "collapsible"
+      ],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "prose"
       ],
       "tokens": [
         "--border-width-thick",
@@ -6639,6 +7468,12 @@
         "name"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "pullquote"
+      ],
       "tokens": [
         "--border-width-thick",
         "--color-primary",
@@ -6689,6 +7524,12 @@
         "disabled",
         "required"
       ],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "radio"
+      ],
       "tokens": [
         "--border-width-thick",
         "--color-control-edge",
@@ -6737,6 +7578,12 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "radio-list"
+      ],
       "tokens": [
         "--color-text-muted",
         "--space-3xs",
@@ -6784,6 +7631,12 @@
       "booleanAttributes": [
         "disabled"
       ],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "range"
+      ],
       "tokens": [
         "--border-width-thick",
         "--color-focus-halo",
@@ -6821,6 +7674,12 @@
         "ticks"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "range-scale"
+      ],
       "tokens": [
         "--color-text-subtle",
         "--font-mono",
@@ -6852,6 +7711,8 @@
         "color"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-text-subtle",
         "--color-warning",
@@ -6908,6 +7769,12 @@
         "locale"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "readout"
+      ],
       "tokens": [
         "--color-accent-text",
         "--color-border-subtle",
@@ -6958,6 +7825,12 @@
         "heading"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "recipe"
+      ],
       "tokens": [
         "--color-border",
         "--color-border-strong",
@@ -7005,6 +7878,12 @@
         "title"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "reserved"
+      ],
       "tokens": [],
       "vars": [],
       "inputs": [],
@@ -7034,6 +7913,12 @@
         "value"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "resizable"
+      ],
       "tokens": [],
       "vars": [],
       "inputs": [],
@@ -7065,6 +7950,12 @@
         "shortcut"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "resize-handle"
+      ],
       "tokens": [
         "--color-border",
         "--color-control-edge",
@@ -7096,6 +7987,8 @@
         "debounce"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
       "tokens": [],
       "vars": [],
       "inputs": [],
@@ -7119,6 +8012,8 @@
         "breakpoint"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--type-sm"
       ],
@@ -7140,6 +8035,12 @@
       "states": [],
       "attributes": [],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "row"
+      ],
       "tokens": [
         "--space-sm"
       ],
@@ -7169,6 +8070,12 @@
       ],
       "booleanAttributes": [
         "disabled"
+      ],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "row-action"
       ],
       "tokens": [],
       "vars": [],
@@ -7211,6 +8118,12 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "scale-bar"
+      ],
       "tokens": [
         "--color-text-muted",
         "--font-mono",
@@ -7246,6 +8159,12 @@
       "booleanAttributes": [
         "collapsed"
       ],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "scheme-toggle"
+      ],
       "tokens": [
         "--dur-base",
         "--dur-fast",
@@ -7280,6 +8199,12 @@
       ],
       "attributes": [],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "scrim"
+      ],
       "tokens": [
         "--color-scrim",
         "--z-drawer"
@@ -7307,6 +8232,12 @@
         "title"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "scroll-area"
+      ],
       "tokens": [],
       "vars": [],
       "inputs": [
@@ -7336,6 +8267,13 @@
         "shortcut"
       ],
       "booleanAttributes": [],
+      "slots": [
+        "label",
+        "shortcut"
+      ],
+      "parts": [
+        "trigger"
+      ],
       "tokens": [
         "--color-border",
         "--color-border-strong",
@@ -7372,6 +8310,15 @@
         "heading"
       ],
       "booleanAttributes": [],
+      "slots": [
+        "title",
+        "desc"
+      ],
+      "parts": [
+        "head",
+        "title",
+        "desc"
+      ],
       "tokens": [
         "--color-text-muted",
         "--color-text-strong",
@@ -7422,6 +8369,12 @@
         "value"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "segmented"
+      ],
       "tokens": [
         "--color-border",
         "--color-focus-ring",
@@ -7477,6 +8430,12 @@
         "disabled",
         "required"
       ],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "select"
+      ],
       "tokens": [
         "--color-border-strong",
         "--color-border-subtle",
@@ -7527,6 +8486,12 @@
         "size"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "sheet"
+      ],
       "tokens": [
         "--color-border",
         "--color-border-subtle",
@@ -7535,6 +8500,7 @@
         "--color-surface-3",
         "--color-text-strong",
         "--color-text-subtle",
+        "--dur-base",
         "--dur-fast",
         "--ease-standard",
         "--font-display",
@@ -7543,7 +8509,8 @@
         "--space-md",
         "--space-sm",
         "--type-h4",
-        "--weight-semibold"
+        "--weight-semibold",
+        "--z-modal"
       ],
       "vars": [],
       "inputs": [],
@@ -7568,6 +8535,8 @@
         "label"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-surface-3",
         "--font-mono",
@@ -7596,6 +8565,12 @@
         "title"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "shortcut-list"
+      ],
       "tokens": [
         "--space-xs"
       ],
@@ -7624,6 +8599,12 @@
       "booleanAttributes": [
         "open"
       ],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "shortcut-overlay"
+      ],
       "tokens": [
         "--color-surface-1",
         "--z-toast"
@@ -7650,6 +8631,12 @@
         "title"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "shortcut-panel"
+      ],
       "tokens": [
         "--color-border",
         "--color-surface-1",
@@ -7685,6 +8672,12 @@
         "key"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "shortcut-row"
+      ],
       "tokens": [
         "--color-text",
         "--space-2xs",
@@ -7734,6 +8727,12 @@
         "heading"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "showcase"
+      ],
       "tokens": [
         "--color-border",
         "--color-primary",
@@ -7787,6 +8786,8 @@
       "booleanAttributes": [
         "open"
       ],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-surface-1",
         "--dur-base",
@@ -7824,6 +8825,12 @@
       ],
       "booleanAttributes": [
         "collapsed"
+      ],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "sidebar"
       ],
       "tokens": [
         "--color-text-strong",
@@ -7863,6 +8870,12 @@
       "booleanAttributes": [
         "shimmer"
       ],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "skeleton"
+      ],
       "tokens": [
         "--color-skeleton",
         "--color-text-strong",
@@ -7890,6 +8903,8 @@
         "count"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--space-2xs"
       ],
@@ -7918,6 +8933,8 @@
         "items"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-border",
         "--color-text-muted",
@@ -7961,6 +8978,12 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "sparkline"
+      ],
       "tokens": [
         "--chart-tip-block-start",
         "--chart-tip-inline-start",
@@ -8013,6 +9036,8 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-accent",
         "--space-2xs"
@@ -8039,6 +9064,10 @@
         "size"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [
+        "spinner"
+      ],
       "tokens": [
         "--color-primary",
         "--color-track",
@@ -8071,6 +9100,8 @@
         "menu"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-border",
         "--space-2xs",
@@ -8094,6 +9125,12 @@
       "states": [],
       "attributes": [],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "stack"
+      ],
       "tokens": [
         "--space-sm"
       ],
@@ -8134,6 +9171,12 @@
         "normalize"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "bar"
+      ],
       "tokens": [
         "--color-text-muted",
         "--color-track",
@@ -8182,6 +9225,17 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [
+        "value",
+        "label",
+        "delta"
+      ],
+      "parts": [
+        "stat",
+        "value",
+        "label",
+        "delta"
+      ],
       "tokens": [
         "--color-success-text",
         "--color-text-muted",
@@ -8224,6 +9278,8 @@
         "label"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-danger",
         "--color-info",
@@ -8263,6 +9319,8 @@
         "current"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-primary",
         "--color-success",
@@ -8313,6 +9371,12 @@
         "heading"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "steps"
+      ],
       "tokens": [
         "--color-border",
         "--color-primary",
@@ -8370,6 +9434,12 @@
       "booleanAttributes": [
         "pause"
       ],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "streaming-chart"
+      ],
       "tokens": [
         "--color-accent",
         "--color-border",
@@ -8426,6 +9496,8 @@
         "property"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-border",
         "--color-primary",
@@ -8462,6 +9534,8 @@
         "value"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-primary-soft",
         "--color-primary-text",
@@ -8503,6 +9577,12 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "survey"
+      ],
       "tokens": [
         "--color-text-muted",
         "--color-text-strong",
@@ -8545,6 +9625,8 @@
       "booleanAttributes": [
         "selected"
       ],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-border",
         "--color-primary",
@@ -8590,6 +9672,12 @@
         "checked",
         "disabled",
         "required"
+      ],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "switch"
       ],
       "tokens": [
         "--color-border-strong",
@@ -8666,6 +9754,14 @@
         "persist"
       ],
       "booleanAttributes": [],
+      "slots": [
+        "head",
+        ""
+      ],
+      "parts": [
+        "wrap",
+        "table"
+      ],
       "tokens": [
         "--chart-selection",
         "--color-border",
@@ -8715,6 +9811,12 @@
       "states": [],
       "attributes": [],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "table-wrap"
+      ],
       "tokens": [
         "--color-border",
         "--color-surface-1",
@@ -8781,6 +9883,14 @@
         "closable",
         "pause"
       ],
+      "slots": [
+        "tabs",
+        ""
+      ],
+      "parts": [
+        "tabs",
+        "list"
+      ],
       "tokens": [
         "--color-border",
         "--color-focus-ring",
@@ -8829,6 +9939,13 @@
       "booleanAttributes": [
         "removable"
       ],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "tag",
+        "remove"
+      ],
       "tokens": [
         "--color-border",
         "--color-primary",
@@ -8874,6 +9991,8 @@
       "booleanAttributes": [
         "disabled"
       ],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-border",
         "--color-text",
@@ -8909,6 +10028,18 @@
         "role"
       ],
       "booleanAttributes": [],
+      "slots": [
+        "quote",
+        "name",
+        "role"
+      ],
+      "parts": [
+        "testimonial",
+        "quote",
+        "byline",
+        "name",
+        "role"
+      ],
       "tokens": [
         "--color-border",
         "--color-surface-1",
@@ -8959,6 +10090,10 @@
         "disabled",
         "required"
       ],
+      "slots": [],
+      "parts": [
+        "textarea"
+      ],
       "tokens": [
         "--color-border-strong",
         "--color-border-subtle",
@@ -9003,6 +10138,12 @@
         "title"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "theme-scope"
+      ],
       "tokens": [
         "--basalt-1000",
         "--brand-200",
@@ -9056,6 +10197,12 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [
+        "threshold",
+        "value",
+        "target"
+      ],
       "tokens": [
         "--color-danger",
         "--color-primary",
@@ -9100,6 +10247,8 @@
       "booleanAttributes": [
         "disabled"
       ],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-text-muted",
         "--space-2xs",
@@ -9127,6 +10276,12 @@
         "ticks"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "time-range"
+      ],
       "tokens": [
         "--color-text-subtle",
         "--font-mono",
@@ -9171,6 +10326,8 @@
         "style"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-primary",
         "--color-text-muted",
@@ -9224,6 +10381,12 @@
         "is-playing",
         "loop",
         "show-loop"
+      ],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "time-slider"
       ],
       "tokens": [
         "--color-border",
@@ -9280,6 +10443,12 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "timeline"
+      ],
       "tokens": [
         "--border-width-thick",
         "--color-border",
@@ -9318,6 +10487,12 @@
         "duration"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "toast"
+      ],
       "tokens": [
         "--color-border-strong",
         "--color-surface-2",
@@ -9345,6 +10520,12 @@
       "states": [],
       "attributes": [],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "toast-host"
+      ],
       "tokens": [
         "--space-2xs",
         "--space-md",
@@ -9390,6 +10571,15 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [
+        "title",
+        ""
+      ],
+      "parts": [
+        "toc",
+        "title",
+        "list"
+      ],
       "tokens": [
         "--color-border",
         "--color-primary",
@@ -9435,6 +10625,12 @@
         "overflow"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "toolbar"
+      ],
       "tokens": [
         "--color-border",
         "--color-on-primary",
@@ -9474,6 +10670,12 @@
         "trigger"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "tooltip"
+      ],
       "tokens": [
         "--color-border-strong",
         "--color-tooltip-bg",
@@ -9508,6 +10710,8 @@
         "current"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-border",
         "--color-surface-2",
@@ -9571,6 +10775,12 @@
         "selectable"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "tree"
+      ],
       "tokens": [
         "--color-surface-2",
         "--color-text-muted",
@@ -9608,6 +10818,8 @@
         "expanded"
       ],
       "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
       "tokens": [],
       "vars": [],
       "inputs": [],
@@ -9632,6 +10844,12 @@
         "options"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "version"
+      ],
       "tokens": [
         "--color-border",
         "--color-border-strong",
@@ -9669,6 +10887,12 @@
       ],
       "booleanAttributes": [
         "dismissible"
+      ],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "banner"
       ],
       "tokens": [
         "--color-warning-soft",
@@ -9708,6 +10932,8 @@
       "booleanAttributes": [
         "sticky"
       ],
+      "slots": [],
+      "parts": [],
       "tokens": [
         "--color-border",
         "--radius-md",
@@ -9748,6 +10974,12 @@
         "skeleton"
       ],
       "booleanAttributes": [],
+      "slots": [
+        ""
+      ],
+      "parts": [
+        "widget-state"
+      ],
       "tokens": [
         "--color-text-muted",
         "--space-md",
@@ -10963,6 +12195,7 @@
       "c-faq",
       "c-logos",
       "c-scheme-toggle",
+      "c-sheet",
       "c-side-sheet",
       "c-switch",
       "c-tabs",
@@ -12199,6 +13432,9 @@
     ],
     "--z-header": [
       "c-header"
+    ],
+    "--z-modal": [
+      "c-sheet"
     ],
     "--z-raised": [
       "c-map-panel",

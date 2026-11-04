@@ -184,4 +184,4 @@ part of the component contract and nothing in an installed package defines them:
 
 ---
 
-Source `index.html` @ `89164adf826b1812` · last committed 2026-11-03T18:38:35+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `5cccf136c267c6ad` · last committed 2026-11-04T11:55:08+01:00 · no URL: the project is private until v1.0.

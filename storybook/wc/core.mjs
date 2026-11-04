@@ -114,6 +114,7 @@
     "contour:btn-group-change": { payload: ["index", "label"], composed: true },
     "contour:brush-start": { payload: ["end", "start", "value"], composed: true },
     "contour:brush-end": { payload: ["end", "start", "value"], composed: true },
+    "contour:brush": { payload: ["end", "start", "value"], composed: true },
     "contour:change": { payload: ["checked", "color", "direction", "end", "files", "high", "index", "low", "month", "name", "speed", "start", "unit", "value", "year"], composed: true },
     "contour:collapse": { payload: ["collapsed"], composed: true },
       "contour:cluster-toggle": { payload: ["count", "expanded"], composed: true },
@@ -311,7 +312,18 @@
       return "scaffold";
     }
 
-    // How many times this host has run `render()`, counting the first connect.
+    // Brownout helpers (G-16): components read their degraded level from the
+    // `brownout` / `brownout-level` attribute and shed non-essential chrome
+    // above a threshold. Centralised here so a new component does not
+    // re-implement the attribute lookup.
+    brownoutLevel() {
+      const raw = this.getAttribute("brownout-level") || this.getAttribute("brownout") || "0";
+      const n = parseInt(raw, 10);
+      return Number.isFinite(n) ? n : 0;
+    }
+    shed(kind, threshold) {
+      return this.brownoutLevel() >= (threshold || 1);
+    }
     // Read-only and diagnostic: it exists so a page can show that `batch()` did
     // what it claims instead of asking the reader to believe it, and so a test can
     // assert a re-render happened without watching for a specific node. A consumer
@@ -903,6 +915,22 @@
       }
       return node;
     }
+  }
+
+  // Brownout mixin (G-16): opt-in base for components that shed non-essential
+  // chrome under degraded conditions. Merges `brownout` / `brownout-level`
+  // into the subclass observed list and exposes the helpers already on
+  // ContourBase. Usage: `class Foo extends withBrownout(ContourBase) { ... }`.
+  export function withBrownout(Base) {
+    return class extends Base {
+      static get observed() {
+        const base = (super.observed && Array.isArray(super.observed)) ? super.observed : [];
+        const extra = ["brownout", "brownout-level"];
+        return Array.from(new Set(base.concat(extra)));
+      }
+      brownoutLevel() { return super.brownoutLevel ? super.brownoutLevel() : (parseInt(this.getAttribute("brownout-level") || this.getAttribute("brownout") || "0", 10) || 0); }
+      shed(kind, threshold) { return this.brownoutLevel() >= (threshold || 1); }
+    };
   }
 
   // Simple component: just adds CSS classes.

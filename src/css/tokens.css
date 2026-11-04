@@ -228,8 +228,9 @@
 
     --z-raised: 10;
     --z-sticky: 100;
-    --z-drawer: 500;
     --z-header: 400;
+    --z-drawer: 500;
+    --z-modal: 600;
     --z-toast: 700;
     --z-tooltip: 800;
 

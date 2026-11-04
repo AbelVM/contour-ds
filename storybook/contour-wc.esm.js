@@ -114,6 +114,7 @@
     "contour:btn-group-change": { payload: ["index", "label"], composed: true },
     "contour:brush-start": { payload: ["end", "start", "value"], composed: true },
     "contour:brush-end": { payload: ["end", "start", "value"], composed: true },
+    "contour:brush": { payload: ["end", "start", "value"], composed: true },
     "contour:change": { payload: ["checked", "color", "direction", "end", "files", "high", "index", "low", "month", "name", "speed", "start", "unit", "value", "year"], composed: true },
     "contour:collapse": { payload: ["collapsed"], composed: true },
       "contour:cluster-toggle": { payload: ["count", "expanded"], composed: true },
@@ -311,7 +312,18 @@
       return "scaffold";
     }
 
-    // How many times this host has run `render()`, counting the first connect.
+    // Brownout helpers (G-16): components read their degraded level from the
+    // `brownout` / `brownout-level` attribute and shed non-essential chrome
+    // above a threshold. Centralised here so a new component does not
+    // re-implement the attribute lookup.
+    brownoutLevel() {
+      const raw = this.getAttribute("brownout-level") || this.getAttribute("brownout") || "0";
+      const n = parseInt(raw, 10);
+      return Number.isFinite(n) ? n : 0;
+    }
+    shed(kind, threshold) {
+      return this.brownoutLevel() >= (threshold || 1);
+    }
     // Read-only and diagnostic: it exists so a page can show that `batch()` did
     // what it claims instead of asking the reader to believe it, and so a test can
     // assert a re-render happened without watching for a specific node. A consumer
@@ -903,6 +915,22 @@
       }
       return node;
     }
+  }
+
+  // Brownout mixin (G-16): opt-in base for components that shed non-essential
+  // chrome under degraded conditions. Merges `brownout` / `brownout-level`
+  // into the subclass observed list and exposes the helpers already on
+  // ContourBase. Usage: `class Foo extends withBrownout(ContourBase) { ... }`.
+  export function withBrownout(Base) {
+    return class extends Base {
+      static get observed() {
+        const base = (super.observed && Array.isArray(super.observed)) ? super.observed : [];
+        const extra = ["brownout", "brownout-level"];
+        return Array.from(new Set(base.concat(extra)));
+      }
+      brownoutLevel() { return super.brownoutLevel ? super.brownoutLevel() : (parseInt(this.getAttribute("brownout-level") || this.getAttribute("brownout") || "0", 10) || 0); }
+      shed(kind, threshold) { return this.brownoutLevel() >= (threshold || 1); }
+    };
   }
 
   // Simple component: just adds CSS classes.
@@ -5682,7 +5710,7 @@ class ContourGauge extends ContourBase {
       const showHeader = this.getAttribute("show-header") !== "false";
       const description = this.getAttribute("description");
       const noDataMessage = this.getAttribute("no-data-message") || "No readings in view";
-      const brownoutLevel = parseInt(this.getAttribute("brownout-level") || this.getAttribute("brownout") || "0", 10) || 0;
+      const brownoutLevel = this.brownoutLevel();
       // empty state
       if (!hasValue) {
         if (heading && showHeader) {
@@ -5716,7 +5744,7 @@ class ContourGauge extends ContourBase {
         }
       }
       // dial (unless brownout >= 3)
-      const shedDial = brownoutLevel >= 3;
+      const shedDial = this.shed("dial", 3);
       let dial = this.querySelector(".c-gauge__dial");
       if (shedDial) {
         if (dial) dial.remove();
@@ -5947,6 +5975,7 @@ class ContourBrush extends ContourBase {
         if (eh) eh.style.insetInlineStart = (((ne - mn) / range) * 100) + "%";
         // stash pending values
         this._brushPending = { start: ns, end: ne };
+        this.dispatchEvent(new CustomEvent("contour:brush", { bubbles: true, composed: true, detail: { start: ns, end: ne, value: ns } }));
       });
       this.addEventListener("pointerup", (e) => {
         if (!dragging) return;
@@ -5958,6 +5987,7 @@ class ContourBrush extends ContourBase {
           this._brushPending = null;
         }
         this.dispatchEvent(new CustomEvent("contour:brush-end", { bubbles: true, composed: true, detail: { value: this.getAttribute("end"), start: this.getAttribute("start"), end: this.getAttribute("end") } }));
+        this.dispatchEvent(new CustomEvent("contour:brush", { bubbles: true, composed: true, detail: { start: this.getAttribute("start"), end: this.getAttribute("end"), value: this.getAttribute("end") } }));
       });
       // Keyboard: Enter/Space emits brush-start/brush-end (WC-P1-08).
       if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
@@ -5993,7 +6023,7 @@ class ContourStackedBar extends ContourBase {
         segments = authoredSegments.map((el) => ({
           label: el.getAttribute("title") || el.textContent || "",
           value: parseFloat(el.style.inlineSize) || 0,
-          color: el.style.background || undefined,
+          color: (el.dataset && el.dataset.color) || el.style.background || undefined,
         }));
         authoredSegments.forEach((el) => el.remove());
       } else {
@@ -6010,6 +6040,7 @@ class ContourStackedBar extends ContourBase {
         el.className = "c-stacked-bar__segment";
         el.style.inlineSize = ((v / denom) * 100) + "%";
         el.style.background = (typeof seg === "object" && seg.color) ? seg.color : "var(--chart-" + ((i % 8) + 1) + ")";
+        el.dataset.color = (typeof seg === "object" && seg.color) ? seg.color : el.style.background;
         el.setAttribute("title", (typeof seg === "object" ? (seg.label || "") : "") + " " + v);
         this.appendChild(el);
       });
@@ -6163,7 +6194,7 @@ class ContourDonut extends ContourBase {
           const lbl = el.querySelector("span:last-child");
           const text = lbl ? lbl.textContent : el.textContent;
           const match = text.match(/—\s*(\d+(?:\.\d+)?)$/);
-          items.push({ label: text.replace(/—\s*\d+(?:\.\d+)?$/, "").trim(), value: match ? Number(match[1]) : 0, color: sw ? sw.style.background : undefined });
+          items.push({ label: text.replace(/—\s*\d+(?:\.\d+)?$/, "").trim(), value: match ? Number(match[1]) : 0, color: sw ? (sw.dataset && sw.dataset.color) || sw.style.background : undefined });
         });
         // remove authored items from DOM (they will be regenerated below)
         authoredItems.forEach((el) => el.remove());
@@ -6173,8 +6204,8 @@ class ContourDonut extends ContourBase {
       }
       const values = items.map((it) => (typeof it === "object" ? (it.value || 0) : Number(it) || 0));
       const total = values.reduce((a, b) => a + b, 0) || 1;
-      const brownoutLevel = parseInt(this.getAttribute("brownout-level") || this.getAttribute("brownout") || "0", 10) || 0;
-      const shedRing = brownoutLevel >= 3;
+      const brownoutLevel = this.brownoutLevel();
+      const shedRing = this.shed("ring", 3);
       if (!shedRing) {
         const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         svg.setAttribute("class", "c-donut__ring");
@@ -6215,6 +6246,7 @@ class ContourDonut extends ContourBase {
         const sw = document.createElement("span");
         sw.className = "c-donut__swatch";
         sw.style.background = (typeof it === "object" && it.color) ? it.color : "var(--chart-" + ((i % 8) + 1) + ")";
+            if (sw.style.background) sw.dataset.color = (typeof it === "object" && it.color) ? it.color : sw.style.background;
         row.appendChild(sw);
         const lbl = document.createElement("span");
         lbl.textContent = (typeof it === "object" ? (it.label || "") : String(it)) + " — " + values[i];
@@ -6433,6 +6465,7 @@ class ContourPivot extends ContourBase {
       const corner = document.createElement("th");
       corner.textContent = "";
       corner.setAttribute("role", "columnheader");
+      corner.setAttribute("aria-label", "Row");
       hr.appendChild(corner);
       visibleCols.forEach((c) => { const th = document.createElement("th"); th.textContent = c; th.setAttribute("role", "columnheader"); th.setAttribute("tabindex", "0"); hr.appendChild(th); });
       thead.appendChild(hr);
@@ -6460,6 +6493,7 @@ class ContourPivot extends ContourBase {
           } else {
             td.textContent = "";
           }
+          if (!td.textContent.trim()) td.setAttribute("aria-label", "Empty");
           tr.appendChild(td);
         });
         tbody.appendChild(tr);
@@ -6624,7 +6658,7 @@ class ContourBivariate extends ContourBase {
             // Palette runs from bottom-left (low/low) to top-right (high/high):
             // reverse the row order so the first palette row sits at the bottom.
             const srcIndex = (size - 1 - r) * size + c;
-            if (colors[srcIndex]) cell.style.background = colors[srcIndex];
+            if (colors[srcIndex]) { cell.style.background = colors[srcIndex]; cell.dataset.color = colors[srcIndex]; }
             matrix.appendChild(cell);
           }
         }
@@ -6885,7 +6919,7 @@ class ContourLegend extends ContourBase {
         items = JSON.stringify(authoredLegendItems.map((el) => {
           const sw = el.querySelector(".c-legend__swatch");
           const lbl = el.querySelector(".c-legend__label") || el;
-          return { label: lbl ? lbl.textContent.trim() : el.textContent.trim(), color: sw ? sw.style.background || undefined : undefined };
+          return { label: lbl ? lbl.textContent.trim() : el.textContent.trim(), color: sw ? (sw.dataset && sw.dataset.color) || sw.style.background || undefined : undefined };
         }));
         authoredLegendItems.forEach((el) => el.remove());
       }
@@ -6901,19 +6935,18 @@ class ContourLegend extends ContourBase {
         try {
           const parsed = JSON.parse(items);
           const list = this.ensure(".c-legend__items", () => { const el = document.createElement("div"); el.className = "c-legend__items"; return el; });
-          list.setAttribute("role", selectable ? "group" : "listbox");
+          list.setAttribute("role", "listbox");
           if (title) list.setAttribute("aria-label", title);
           list.innerHTML = "";
           parsed.forEach((it) => {
             const label = typeof it === "string" ? it : (it.label || String(it));
             const key = typeof it === "string" ? it : (it.key || it.label || String(it));
-            const item = document.createElement(selectable ? "button" : "div");
+            const item = document.createElement("div");
             item.className = "c-legend__item";
             item.setAttribute("tabindex", "-1");
             if (selectable) {
-              item.type = "button";
-              item.setAttribute("role", "button");
-              item.setAttribute("aria-pressed", "true");
+              item.setAttribute("role", "option");
+              item.setAttribute("aria-selected", "true");
               item.dataset.key = key;
             } else {
               item.setAttribute("role", "option");
@@ -6921,7 +6954,7 @@ class ContourLegend extends ContourBase {
             }
             const sw = document.createElement("span");
             sw.className = "c-legend__swatch";
-            if (it && it.color) sw.style.background = it.color;
+            if (it && it.color) { sw.style.background = it.color; sw.dataset.color = it.color; }
             item.appendChild(sw);
             // geometry glyph
              const glyphShape = (it && (it.shape || it.marker || it.glyph)) || this.getAttribute("glyphs");
@@ -6994,6 +7027,7 @@ class ContourLegend extends ContourBase {
          const glyph = document.createElement("span");
          glyph.className = "glyph";
          glyph.style.background = ndColor;
+         glyph.dataset.color = ndColor;
          nd.prepend(glyph);
        } else {
          const nd = this.querySelector(".c-legend__no-data");
@@ -7130,10 +7164,10 @@ class ContourLegend extends ContourBase {
       this.addEventListener("click", (e) => {
         const btn = e.target && e.target.closest ? e.target.closest(".c-legend__item") : null;
         if (!btn || !this.contains(btn)) return;
-        const pressed = btn.getAttribute("aria-pressed") !== "true";
-        btn.setAttribute("aria-pressed", String(pressed));
+        const selected = btn.getAttribute("aria-selected") !== "true";
+        btn.setAttribute("aria-selected", String(selected));
         this.dispatchEvent(new CustomEvent("contour:legend-toggle", {
-          detail: { label: btn.textContent.trim(), key: btn.dataset.key || btn.textContent.trim(), pressed },
+          detail: { label: btn.textContent.trim(), key: btn.dataset.key || btn.textContent.trim(), pressed: selected },
           bubbles: true,
           composed: true,
         }));
@@ -13078,7 +13112,7 @@ class ContourFilterBar extends ContourBase {
        if (modesAttr) { try { modes = JSON.parse(modesAttr); } catch (e) { modes = modesAttr.split(",").map((s) => s.trim()); } }
        if (modes || this.hasAttribute("mode")) {
          let bar = this.querySelector(".c-filter-bar__modes");
-         if (!bar) { bar = document.createElement("div"); bar.className = "c-filter-bar__modes"; bar.setAttribute("role", "toolbar"); this.appendChild(bar); }
+         if (!bar) { bar = document.createElement("div"); bar.className = "c-filter-bar__modes"; bar.setAttribute("role", "toolbar"); bar.setAttribute("aria-label", label || "Filter modes"); this.appendChild(bar); }
          bar.innerHTML = "";
          const current = this.getAttribute("mode");
          const list = Array.isArray(modes) ? modes : ["draw", "erase", "select"];
@@ -14776,7 +14810,9 @@ class ContourStylePanel extends ContourBase {
            const breaksWrap = document.createElement("div"); breaksWrap.className = "c-style-panel__breaks";
            breaksArr.forEach((b, i) => {
              const br = document.createElement("div"); br.className = "break";
-             br.textContent = String(b);
+             const span = document.createElement("span"); span.textContent = String(b); br.appendChild(span);
+             const inp = document.createElement("input"); inp.type = "number"; inp.className = "c-style-panel__breaks c-input"; inp.setAttribute("aria-label", "Class lower bound"); inp.value = String(b);
+             br.appendChild(inp);
              breaksWrap.appendChild(br);
            });
            body.appendChild(breaksWrap);
@@ -14951,7 +14987,7 @@ class ContourAvatarGroup extends ContourBase {
             av.className = "c-avatar";
             const name = typeof it === "string" ? it : (it.name || it.label || "");
             av.textContent = name.slice(0, 2).toUpperCase();
-            if (typeof it === "object" && it.color) av.style.background = it.color;
+            if (typeof it === "object" && it.color) { av.style.background = it.color; av.dataset.color = it.color; }
             this.appendChild(av);
           });
           if (parsed.length > max) {
@@ -15096,6 +15132,7 @@ class ContourPaletteEditor extends ContourBase {
             sw.className = "c-palette-editor__swatch c-swatch";
             sw.type = "button";
             sw.style.background = typeof c === "string" ? c : (c.color || c.value || "");
+            sw.dataset.color = typeof c === "string" ? c : (c.color || c.value || "");
             sw.setAttribute("aria-label", typeof c === "string" ? c : (c.name || c.label || "color"));
             this.appendChild(sw);
           });
@@ -15108,7 +15145,7 @@ class ContourPaletteEditor extends ContourBase {
       this.addEventListener("click", (e) => {
         const sw = e.target && e.target.closest ? e.target.closest(".c-palette-editor__swatch") : null;
         if (sw && this.contains(sw)) {
-          this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { color: sw.style.background } }));
+          this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { color: (sw.dataset && sw.dataset.color) || sw.style.background } }));
         }
       });
       this.addEventListener("keydown", (e) => {
@@ -15544,8 +15581,8 @@ class ContourColorPicker extends ContourBase {
           btn.type = "button";
           btn.className = "c-color-picker__preset";
           btn.style.background = c;
-          btn.setAttribute("aria-label", "Preset " + c);
           btn.dataset.color = c;
+          btn.setAttribute("aria-label", "Preset " + c);
           wrap.appendChild(btn);
         });
         this.appendChild(wrap);
@@ -15902,7 +15939,7 @@ class ContourNotificationCenter extends ContourBase {
       const btn = this.ensure(".c-notification-center__trigger", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-notification-center__trigger"; el.type = "button"; el.innerHTML = '<span class="c-notification-center__bullet" aria-hidden="true"></span>'; el.setAttribute("aria-haspopup", "dialog"); el.setAttribute("aria-expanded", "false"); return el; });
       const color = this.getAttribute("color");
       const bullet = btn.querySelector(".c-notification-center__bullet");
-      if (bullet && color) bullet.style.background = color;
+      if (bullet && color) { bullet.style.background = color; bullet.dataset.color = color; }
       const count = this.getAttribute("count");
       let badge = btn.querySelector(".c-notification-center__badge");
       if (count && Number(count) > 0) {
@@ -16917,6 +16954,7 @@ class ContourDataGrid extends ContourBase {
             td.setAttribute("role", "gridcell");
             td.setAttribute("tabindex", "0");
             td.textContent = r && r[key] != null ? r[key] : "";
+            if (!String(td.textContent).trim()) td.setAttribute("aria-label", "Empty");
             tr.appendChild(td);
           });
           tbody.appendChild(tr);
@@ -16966,6 +17004,7 @@ class ContourDataGrid extends ContourBase {
           td.setAttribute("role", "gridcell");
           td.setAttribute("tabindex", "0");
           td.textContent = r && r[key] != null ? r[key] : "";
+          if (!String(td.textContent).trim()) td.setAttribute("aria-label", "Empty");
           tr.appendChild(td);
         });
         tbody.appendChild(tr);

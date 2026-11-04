@@ -81,6 +81,9 @@ export function buildComponentsDocument(inv) {
       // CSS-only blocks that have no contour-* wrapper.
       attributes: (inv.wcObserved && inv.wcObserved[name]) || [],
       booleanAttributes: (inv.wcBoolean && inv.wcBoolean[name]) || [],
+      // Shadow DOM slots and parts published by the wrapper (BY2-I13).
+      slots: (inv.wcSlots && inv.wcSlots[name]) || [],
+      parts: (inv.wcParts && inv.wcParts[name]) || [],
       // The system's own vocabulary: retune it in tokens.css and this moves.
       tokens,
       // A property the system defines a default for, on the block itself.

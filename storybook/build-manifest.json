@@ -1,6 +1,6 @@
 {
-  "builtAt": "2026-11-03T17:58:19.832Z",
-  "sourceRevision": "2b7d48b89ca8efdc24c3bea81f19ede95e89c0af",
+  "builtAt": "2026-11-04T11:51:54.350Z",
+  "sourceRevision": "2bc1a8e40c51e0cb2414c38965fabfb9edd0058d",
   "sources": {
     "src/css/base.css": {
       "bytes": 11735,
@@ -28,9 +28,9 @@
       "sha256": "8d9d17fcf6ce739a"
     },
     "src/css/components.css": {
-      "bytes": 118297,
-      "mtimeMs": 1793723185303.296,
-      "sha256": "bec261a35fa781ae"
+      "bytes": 118870,
+      "mtimeMs": 1793790369966.4734,
+      "sha256": "d0029594cc00beec"
     },
     "src/css/ds.css": {
       "bytes": 2463,
@@ -63,9 +63,9 @@
       "sha256": "fc8fc0695d5053c0"
     },
     "src/css/tokens.css": {
-      "bytes": 32355,
-      "mtimeMs": 1793638300635.9612,
-      "sha256": "ce42e9ad1db19234"
+      "bytes": 32375,
+      "mtimeMs": 1793790364966.505,
+      "sha256": "d3a2ec049fe800cc"
     },
     "src/css/utilities.css": {
       "bytes": 15584,
@@ -128,9 +128,9 @@
       "sha256": "c01ed860cba95f50"
     },
     "src/js/wc/core.mjs": {
-      "bytes": 55259,
-      "mtimeMs": 1793715788311.3003,
-      "sha256": "b897bac74914f6e3"
+      "bytes": 56702,
+      "mtimeMs": 1793788756179.116,
+      "sha256": "aead793fb5967aee"
     },
     "src/js/wc/dashboard.mjs": {
       "bytes": 9519,
@@ -138,9 +138,9 @@
       "sha256": "4358e4e821859c8a"
     },
     "src/js/wc/data.mjs": {
-      "bytes": 191039,
-      "mtimeMs": 1793725369887.0288,
-      "sha256": "41d67c3445c17de5"
+      "bytes": 191753,
+      "mtimeMs": 1793788737154.7388,
+      "sha256": "da2ebc00f93860c7"
     },
     "src/js/wc/docs.mjs": {
       "bytes": 7549,
@@ -158,9 +158,9 @@
       "sha256": "fc926efb9d9b53ea"
     },
     "src/js/wc/index.mjs": {
-      "bytes": 1132,
-      "mtimeMs": 1793665574378.9905,
-      "sha256": "b27310746b27fdc6"
+      "bytes": 2474,
+      "mtimeMs": 1793789841545.7883,
+      "sha256": "0d76bde6b431379b"
     },
     "src/js/wc/interaction.mjs": {
       "bytes": 25492,
@@ -183,9 +183,9 @@
       "sha256": "636f9341019a702b"
     },
     "src/js/wc/navigation.mjs": {
-      "bytes": 81296,
-      "mtimeMs": 1793726961907.3982,
-      "sha256": "61127e8a6348a9c2"
+      "bytes": 81353,
+      "mtimeMs": 1793786230325.7625,
+      "sha256": "b13f6dd04a858180"
     },
     "src/js/wc/registration.mjs": {
       "bytes": 876,
@@ -208,9 +208,9 @@
       "sha256": "e7a7fce22d5518f1"
     },
     "src/js/wc/ui.mjs": {
-      "bytes": 188012,
-      "mtimeMs": 1793727176816.4736,
-      "sha256": "9dbbc81e13142730"
+      "bytes": 188683,
+      "mtimeMs": 1793788390295.7502,
+      "sha256": "89a588c384a11fc9"
     },
     "src/svg/contour-mark.svg": {
       "bytes": 1727,
@@ -218,25 +218,25 @@
       "sha256": "e3c004dac0dd251e"
     },
     "index.html": {
-      "bytes": 1385830,
-      "mtimeMs": 1793728210496.3,
-      "sha256": "89164adf826b1812"
+      "bytes": 1386014,
+      "mtimeMs": 1793789882285.535,
+      "sha256": "5cccf136c267c6ad"
     }
   },
   "outputs": {
-    "contour.css": 353290,
-    "contour.min.css": 218444,
+    "contour.css": 353883,
+    "contour.min.css": 218674,
     "contour.js": 63873,
     "contour.min.js": 38776,
-    "contour.tokens.json": 51610,
+    "contour.tokens.json": 51677,
     "contour.themes.json": 23019,
-    "contour.components.json": 248420,
+    "contour.components.json": 266326,
     "docs/index.json": 6695,
     "registry/registry.json": 8952,
     "svg/contour-mark.svg": 1727,
-    "surfaces/contour-core.min.css": 147913,
-    "surfaces/contour-docs.min.css": 161786,
-    "surfaces/contour-data.min.css": 196498,
-    "surfaces/contour-landing.min.css": 155786
+    "surfaces/contour-core.min.css": 148143,
+    "surfaces/contour-docs.min.css": 162016,
+    "surfaces/contour-data.min.css": 196728,
+    "surfaces/contour-landing.min.css": 156016
   }
 }

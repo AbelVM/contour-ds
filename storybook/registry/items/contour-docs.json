@@ -3,7 +3,7 @@
   "name": "contour-docs",
   "type": "registry:style",
   "title": "Contour docs",
-  "description": "Contour docs surface: 158.0 kB of layered CSS, self-contained (the core layer is already inside it), 221 blocks and 300 custom properties declared under src/.",
+  "description": "Contour docs surface: 158.2 kB of layered CSS, self-contained (the core layer is already inside it), 221 blocks and 301 custom properties declared under src/.",
   "registryDependencies": [],
   "files": [
     {
@@ -35,7 +35,7 @@
   "meta": {
     "distribution": "pointer",
     "selfContained": true,
-    "bundleBytes": 161786,
+    "bundleBytes": 162016,
     "shared": [
       {
         "path": "contour.tokens.json",

@@ -1092,7 +1092,9 @@ class ContourStylePanel extends ContourBase {
            const breaksWrap = document.createElement("div"); breaksWrap.className = "c-style-panel__breaks";
            breaksArr.forEach((b, i) => {
              const br = document.createElement("div"); br.className = "break";
-             br.textContent = String(b);
+             const span = document.createElement("span"); span.textContent = String(b); br.appendChild(span);
+             const inp = document.createElement("input"); inp.type = "number"; inp.className = "c-style-panel__breaks c-input"; inp.setAttribute("aria-label", "Class lower bound"); inp.value = String(b);
+             br.appendChild(inp);
              breaksWrap.appendChild(br);
            });
            body.appendChild(breaksWrap);
@@ -1267,7 +1269,7 @@ class ContourAvatarGroup extends ContourBase {
             av.className = "c-avatar";
             const name = typeof it === "string" ? it : (it.name || it.label || "");
             av.textContent = name.slice(0, 2).toUpperCase();
-            if (typeof it === "object" && it.color) av.style.background = it.color;
+            if (typeof it === "object" && it.color) { av.style.background = it.color; av.dataset.color = it.color; }
             this.appendChild(av);
           });
           if (parsed.length > max) {
@@ -1412,6 +1414,7 @@ class ContourPaletteEditor extends ContourBase {
             sw.className = "c-palette-editor__swatch c-swatch";
             sw.type = "button";
             sw.style.background = typeof c === "string" ? c : (c.color || c.value || "");
+            sw.dataset.color = typeof c === "string" ? c : (c.color || c.value || "");
             sw.setAttribute("aria-label", typeof c === "string" ? c : (c.name || c.label || "color"));
             this.appendChild(sw);
           });
@@ -1424,7 +1427,7 @@ class ContourPaletteEditor extends ContourBase {
       this.addEventListener("click", (e) => {
         const sw = e.target && e.target.closest ? e.target.closest(".c-palette-editor__swatch") : null;
         if (sw && this.contains(sw)) {
-          this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { color: sw.style.background } }));
+          this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { color: (sw.dataset && sw.dataset.color) || sw.style.background } }));
         }
       });
       this.addEventListener("keydown", (e) => {
@@ -1860,8 +1863,8 @@ class ContourColorPicker extends ContourBase {
           btn.type = "button";
           btn.className = "c-color-picker__preset";
           btn.style.background = c;
-          btn.setAttribute("aria-label", "Preset " + c);
           btn.dataset.color = c;
+          btn.setAttribute("aria-label", "Preset " + c);
           wrap.appendChild(btn);
         });
         this.appendChild(wrap);
@@ -2218,7 +2221,7 @@ class ContourNotificationCenter extends ContourBase {
       const btn = this.ensure(".c-notification-center__trigger", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-notification-center__trigger"; el.type = "button"; el.innerHTML = '<span class="c-notification-center__bullet" aria-hidden="true"></span>'; el.setAttribute("aria-haspopup", "dialog"); el.setAttribute("aria-expanded", "false"); return el; });
       const color = this.getAttribute("color");
       const bullet = btn.querySelector(".c-notification-center__bullet");
-      if (bullet && color) bullet.style.background = color;
+      if (bullet && color) { bullet.style.background = color; bullet.dataset.color = color; }
       const count = this.getAttribute("count");
       let badge = btn.querySelector(".c-notification-center__badge");
       if (count && Number(count) > 0) {
@@ -3233,6 +3236,7 @@ class ContourDataGrid extends ContourBase {
             td.setAttribute("role", "gridcell");
             td.setAttribute("tabindex", "0");
             td.textContent = r && r[key] != null ? r[key] : "";
+            if (!String(td.textContent).trim()) td.setAttribute("aria-label", "Empty");
             tr.appendChild(td);
           });
           tbody.appendChild(tr);
@@ -3282,6 +3286,7 @@ class ContourDataGrid extends ContourBase {
           td.setAttribute("role", "gridcell");
           td.setAttribute("tabindex", "0");
           td.textContent = r && r[key] != null ? r[key] : "";
+          if (!String(td.textContent).trim()) td.setAttribute("aria-label", "Empty");
           tr.appendChild(td);
         });
         tbody.appendChild(tr);

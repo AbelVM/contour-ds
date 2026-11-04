@@ -3448,6 +3448,7 @@
      ======================================================================= */
   .c-sheet {
     display: none;
+    z-index: var(--z-modal);
     flex-direction: column;
     inline-size: min(24rem, 100%);
     block-size: 100%;

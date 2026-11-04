@@ -1,8 +1,8 @@
 {
   "version": "1.0",
   "source": "index.html",
-  "sourceSha256": "89164adf826b1812",
-  "lastUpdated": "2026-11-03T18:38:35+01:00",
+  "sourceSha256": "5cccf136c267c6ad",
+  "lastUpdated": "2026-11-04T11:55:08+01:00",
   "generatedBy": "tools/build.mjs, from index.html",
   "statement": "Machine-readable copy of the style guide's prose, generated and never hand-edited. Sections are listed in guide order; titles, prose and counts are quoted or counted, not authored. Prose is verbatim: a paragraph here is the guide's own sentence, never a sentence this generator wrote. Contains no URL: the project is private until v1.0.",
   "counts": {
@@ -233,7 +233,7 @@
     "components": "../contour.components.json"
   },
   "tables": {
-    "taxonomy-table": "| Group | Count | Read | Unread | Covers |\n|---|---|---|---|---|\n| Colour ramps | 53 | 53 | — | `--basalt-…`, `--tidal-…`, `--lumen-…`, `--plasma-…`, `--sol-…`, `--clay-…` |\n| Brand ramp | 8 | 8 | — | `--brand-hue` and the ramp derived from it |\n| Semantic colours | 69 | 69 | — | `--color-…` — text, surface, border, primary; every one `light-dark()` |\n| Chart | 45 | 45 | — | categorical, sequential, diverging, dash patterns, chart chrome |\n| Fill patterns | 6 | 6 | — | `--fill-hatch-…`, `--fill-dot` — the shape branch of a filled mark |\n| Gradients | 4 | 4 | — | canvas, plate, heat, rule |\n| Typography | 31 | 31 | — | families, sizes, weights, leading, tracking, measures |\n| Space and layout | 22 | 22 | — | the 4 px scale, containers, gutter, header height, target sizes |\n| Shape | 20 | 20 | — | radii, borders, hairline, shadows, elevation |\n| Motion | 16 | 14 | 2 | durations and easings |\n| Z-index | 6 | 6 | — | `--z-raised` … `--z-tooltip` |\n| Density | 6 | 6 | — | row height, cell padding, label size |\n| Focus | 1 | 1 | — | the focus ring perimeter |\n| Miscellaneous | 13 | 12 | 1 | no documented prefix — fix the taxonomy |\n| **Total** | **300** | **297** | **3** | unique custom properties in `src/css/tokens.css` |"
+    "taxonomy-table": "| Group | Count | Read | Unread | Covers |\n|---|---|---|---|---|\n| Colour ramps | 53 | 53 | — | `--basalt-…`, `--tidal-…`, `--lumen-…`, `--plasma-…`, `--sol-…`, `--clay-…` |\n| Brand ramp | 8 | 8 | — | `--brand-hue` and the ramp derived from it |\n| Semantic colours | 69 | 69 | — | `--color-…` — text, surface, border, primary; every one `light-dark()` |\n| Chart | 45 | 45 | — | categorical, sequential, diverging, dash patterns, chart chrome |\n| Fill patterns | 6 | 6 | — | `--fill-hatch-…`, `--fill-dot` — the shape branch of a filled mark |\n| Gradients | 4 | 4 | — | canvas, plate, heat, rule |\n| Typography | 31 | 31 | — | families, sizes, weights, leading, tracking, measures |\n| Space and layout | 22 | 22 | — | the 4 px scale, containers, gutter, header height, target sizes |\n| Shape | 20 | 20 | — | radii, borders, hairline, shadows, elevation |\n| Motion | 16 | 14 | 2 | durations and easings |\n| Z-index | 7 | 7 | — | `--z-raised` … `--z-tooltip` |\n| Density | 6 | 6 | — | row height, cell padding, label size |\n| Focus | 1 | 1 | — | the focus ring perimeter |\n| Miscellaneous | 13 | 12 | 1 | no documented prefix — fix the taxonomy |\n| **Total** | **301** | **298** | **3** | unique custom properties in `src/css/tokens.css` |"
   },
   "missingRail": []
 }

@@ -327,6 +327,77 @@ export function inventory() {
       }
     }
   }
+  // ---- wc shadow slots and parts -----------------------------------------
+  // Parse src/js/wc/shadow.mjs to extract the slots and parts published by
+  // each shadow wrapper, keyed by the CSS block name (contour-shadow-callout
+  // -> c-callout). Feeds the component contract's `slots` and `parts` fields
+  // (BY2-I13).
+  const wcSlots = {};
+  const wcParts = {};
+  const shadowFile = join(wcDir, "shadow.mjs");
+  if (existsSync(shadowFile)) {
+    const shadowSrc = readFileSync(shadowFile, "utf8");
+    // SHADOW_PARTS overrides
+    const partsOverride = {};
+    const poMatch = shadowSrc.match(/const SHADOW_PARTS = \{([\s\S]*?)\};/);
+    if (poMatch) {
+      for (const m of poMatch[1].matchAll(/"([^"]+)"\s*:\s*"([^"]+)"/g)) {
+        partsOverride[m[1]] = m[2];
+      }
+    }
+    // slotWrapper loop: for (const [tag, blocks] of Object.entries(SHADOW_SLOTS))
+    //   for (const block of blocks) { part = SHADOW_PARTS[block] || block; shadow(...); }
+    // Template: <tag class="c-block" part="part"><slot></slot></tag> (default slot)
+    const slotsMatch = shadowSrc.match(/const SHADOW_SLOTS = \{([\s\S]*?)\};/);
+    if (slotsMatch) {
+      // Parse tag -> [blocks] mapping
+      const tagBlocks = {};
+      let currentTag = null;
+      for (const line of slotsMatch[1].split("\n")) {
+        const tagM = line.match(/^\s*(\w+):\s*\[/);
+        if (tagM) { currentTag = tagM[1]; tagBlocks[currentTag] = []; continue; }
+        const blockM = line.match(/"([a-z0-9-]+)"/g);
+        if (blockM && currentTag) {
+          for (const b of blockM) {
+            tagBlocks[currentTag].push(b.replace(/"/g, ""));
+          }
+        }
+        if (line.includes("]")) currentTag = null;
+      }
+      for (const [tag, blocks] of Object.entries(tagBlocks)) {
+        for (const block of blocks) {
+          const part = partsOverride[block] || block;
+          const blockName = "c-" + block;
+          if (!wcParts[blockName]) wcParts[blockName] = [];
+          if (!wcParts[blockName].includes(part)) wcParts[blockName].push(part);
+          if (!wcSlots[blockName]) wcSlots[blockName] = [];
+          if (!wcSlots[blockName].includes("")) wcSlots[blockName].push("");
+        }
+      }
+    }
+    // Structured templates: shadow("name", `template`)
+    for (const m of shadowSrc.matchAll(/shadow\("(contour-shadow-[a-z0-9-]+)",\s*`([^`]+)`\)/g)) {
+      const tag = m[1].replace("contour-shadow-", "");
+      const template = m[2];
+      const blockName = "c-" + tag;
+      // Extract parts
+      const parts = [...template.matchAll(/part="([^"]+)"/g)].map((p) => p[1]);
+      if (parts.length) {
+        if (!wcParts[blockName]) wcParts[blockName] = [];
+        for (const p of parts) {
+          if (!wcParts[blockName].includes(p)) wcParts[blockName].push(p);
+        }
+      }
+      // Extract slots (named and default)
+      const slots = [...template.matchAll(/<slot(?:\s+name="([^"]*)")?\s*\/?>/g)].map((s) => s[1] || "");
+      if (slots.length) {
+        if (!wcSlots[blockName]) wcSlots[blockName] = [];
+        for (const s of slots) {
+          if (!wcSlots[blockName].includes(s)) wcSlots[blockName].push(s);
+        }
+      }
+    }
+  }
 
   return {
     root: ROOT,
@@ -354,6 +425,8 @@ export function inventory() {
     },
     wcObserved,
     wcBoolean,
+    wcSlots,
+    wcParts,
     // Every custom property defined in src/css, with the sheets that define it.
     // `{}` rather than a Map so a consumer can JSON-dump it without converting.
     props: Object.fromEntries([...definedProps.entries()].sort((a, b) => a[0].localeCompare(b[0]))),
