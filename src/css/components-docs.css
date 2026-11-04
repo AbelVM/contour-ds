@@ -526,35 +526,35 @@
     font-family: var(--font-mono);
     font-size: 0.8125rem;
     line-height: 1.7;
-  }
 
-  .c-diff__line {
-    display: grid;
-    grid-template-columns: 2.5rem 2.5rem minmax(0, 1fr);
-    white-space: pre;
-    overflow: hidden;
-  }
+    .c-diff__line {
+      display: grid;
+      grid-template-columns: 2.5rem 2.5rem minmax(0, 1fr);
+      white-space: pre;
+      overflow: hidden;
 
-   .c-diff__line--add {
-     background: color-mix(in oklab, var(--color-success) 4%, transparent);
-   }
+      &.c-diff__line--add {
+        background: color-mix(in oklab, var(--color-success) 4%, transparent);
 
-   .c-diff__line--del {
-     background: color-mix(in oklab, var(--color-danger) 4%, transparent);
-   }
+        .c-diff__sign {
+          color: var(--color-success-text);
+        }
+      }
 
-  .c-diff__sign {
-    color: var(--color-text-subtle);
-    text-align: center;
-    user-select: none;
-  }
+      &.c-diff__line--del {
+        background: color-mix(in oklab, var(--color-danger) 4%, transparent);
 
-  .c-diff__line--add .c-diff__sign {
-    color: var(--color-success-text);
-  }
+        .c-diff__sign {
+          color: var(--color-danger-text);
+        }
+      }
+    }
 
-  .c-diff__line--del .c-diff__sign {
-    color: var(--color-danger-text);
+    .c-diff__sign {
+      color: var(--color-text-subtle);
+      text-align: center;
+      user-select: none;
+    }
   }
 
   /* =======================================================================
