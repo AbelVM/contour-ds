@@ -1263,7 +1263,13 @@
       off-screen sections to their 800px intrinsic size and made the estimated
       position of a later section (e.g. #webcomponents) land far above its real
       top, so rail clicks stopped short. Removed so anchor navigation and the
-      section spy use real layout. */
+      section spy use real layout. Re-applied here on `.ds-example` (a contained
+      wrapper, not the section) so off-screen specimens skip layout/paint without
+      breaking anchor navigation (BY3-J). */
+   .ds-example {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 200px;
+  }
 
   .section--sunken,
   .section--raised,

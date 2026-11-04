@@ -1,3 +1,11 @@
+## [1.6.0] - 2026-11-04
+
+### Added
+- `content-visibility: auto` on `.ds-example` (contained wrapper) for off-screen specimen optimization, without breaking anchor navigation (BY3-J).
+
+### Changed
+- Deferred task backlog (BY2-B1/B2/B3, BY2-I13, BY3-I13) remains behind 1.0; requires dedicated sessions or a stated 1.0 goal to activate.
+
 ## [1.5.1] - 2026-11-04
 
 ### Added
