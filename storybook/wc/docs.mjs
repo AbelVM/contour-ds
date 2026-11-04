@@ -157,3 +157,120 @@ class ContourFileTree extends ContourBase {
     }
   }
   define("contour-file-tree", ContourFileTree);
+
+class ContourChangelog extends ContourBase {
+    static get observed() { return ["src", "max", "loading", "error"]; }
+    static get properties() { return { src: { attribute: "src" }, max: { attribute: "max", type: Number } }; }
+    render() {
+      this.classList.add("c-changelog");
+      const src = this.getAttribute("src");
+      if (src) {
+        if (this.dataset.loaded === src) return;
+        this.dataset.loaded = "";
+        const loading = this.ensure(".c-changelog__loading", () => { const el = document.createElement("div"); el.className = "c-changelog__loading"; el.textContent = "Loading…"; return el; });
+        // clear
+        Array.from(this.querySelectorAll(".c-changelog__entry, .c-changelog__error")).forEach((n) => n.remove());
+        if (!this.querySelector(".c-changelog__loading")) this.appendChild(loading);
+        fetch(src).then((r) => {
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          return r.text();
+        }).then((text) => {
+          const ld = this.querySelector(".c-changelog__loading");
+          if (ld) ld.remove();
+          this.dataset.loaded = src;
+          const entries = parseChangelog(text);
+          const max = parseInt(this.getAttribute("max") || "0", 10);
+          const list = (max > 0) ? entries.slice(0, max) : entries;
+          if (!list.length) {
+            const empty = document.createElement("div");
+            empty.className = "c-changelog__empty";
+            empty.textContent = "No releases found.";
+            this.appendChild(empty);
+            return;
+          }
+          list.forEach((e) => {
+            const det = document.createElement("details");
+            det.className = "c-changelog__entry";
+            const sum = document.createElement("summary");
+            sum.className = "c-changelog__summary";
+            const ver = document.createElement("span");
+            ver.className = "c-changelog__version";
+            ver.textContent = e.version;
+            sum.appendChild(ver);
+            if (e.date) {
+              const d = document.createElement("span");
+              d.className = "c-changelog__date";
+              d.textContent = e.date;
+              sum.appendChild(d);
+            }
+            det.appendChild(sum);
+            const body = document.createElement("div");
+            body.className = "c-changelog__body";
+            body.innerHTML = renderChangelogBody(e.body);
+            det.appendChild(body);
+            this.appendChild(det);
+          });
+        }).catch((err) => {
+          const ld = this.querySelector(".c-changelog__loading");
+          if (ld) ld.remove();
+          const er = document.createElement("div");
+          er.className = "c-changelog__error";
+          er.textContent = "Failed to load changelog: " + (err && err.message ? err.message : err);
+          this.appendChild(er);
+        });
+      }
+    }
+  }
+  define("contour-changelog", ContourChangelog);
+
+  function parseChangelog(text) {
+    const lines = String(text).split(/\r?\n/);
+    const entries = [];
+    let cur = null;
+    for (const line of lines) {
+      const m = line.match(/^##\s+\[?([^\]\n]+)\]?\s*[-–—]?\s*(.*)$/);
+      if (m && (line.startsWith("## ") )) {
+        // only treat as version header if it looks like a version or "Unreleased"
+        const ver = m[1].trim();
+        const rest = m[2].trim();
+        if (/^\d|unreleased/i.test(ver)) {
+          if (cur) entries.push(cur);
+          cur = { version: ver, date: rest.replace(/^[-–—]\s*/, "").trim(), body: "" };
+          continue;
+        }
+      }
+      if (cur) cur.body += line + "\n";
+    }
+    if (cur) entries.push(cur);
+    return entries;
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  function renderChangelogBody(body) {
+    const lines = String(body).trim().split(/\r?\n/);
+    const out = [];
+    let inList = false;
+    for (const raw of lines) {
+      const line = raw.trimEnd();
+      if (/^###\s+/.test(line)) {
+        if (inList) { out.push("</ul>"); inList = false; }
+        out.push("<h4>" + escapeHtml(line.replace(/^###\s+/, "")) + "</h4>");
+      } else if (/^##\s+/.test(line)) {
+        if (inList) { out.push("</ul>"); inList = false; }
+        out.push("<h3>" + escapeHtml(line.replace(/^##\s+/, "")) + "</h3>");
+      } else if (/^[-*]\s+/.test(line)) {
+        if (!inList) { out.push("<ul>"); inList = true; }
+        out.push("<li>" + escapeHtml(line.replace(/^[-*]\s+/, "")) + "</li>");
+      } else if (line.trim() === "") {
+        if (inList) { out.push("</ul>"); inList = false; }
+      } else {
+        if (inList) { out.push("</ul>"); inList = false; }
+        out.push("<p>" + escapeHtml(line) + "</p>");
+      }
+    }
+    if (inList) out.push("</ul>");
+    return out.join("");
+  }

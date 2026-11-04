@@ -1,6 +1,6 @@
 # Playground
 
-Section `playground` — marker `20`, position 21 of 26 in the guide.
+Section `playground` — marker `20`, position 21 of 27 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -38,4 +38,4 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `5cccf136c267c6ad` · last committed 2026-11-04T11:55:08+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `10d181ea8e0eb659` · last committed 2026-11-04T18:12:14+01:00 · no URL: the project is private until v1.0.

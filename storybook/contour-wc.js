@@ -135,7 +135,9 @@ const CONTOUR_EVENTS = Object.freeze({
     "contour:drop": { payload: ["value", "label"], composed: true },
     "contour:empty-action": { payload: ["state"], composed: true },
     "contour:filter": { payload: ["query"], composed: true },
-    "contour:error": { payload: ["src", "message", "name", "status"], composed: true },
+     "contour:error": { payload: ["src", "message", "name", "status"], composed: true },
+     "contour:export": { payload: ["format"], composed: true },
+     "contour:refresh": { payload: [], composed: true },
     "contour:hide": { payload: [], composed: true },
     "contour:hover": { payload: ["row"], composed: true },
     "contour:input": { payload: ["name", "value", "checked"], composed: true },
@@ -235,7 +237,7 @@ function sanitizeHtml(input) {
 const OBSERVED = [
     "accept", "action", "actions", "active", "after", "allow-duplicate", "allow-remove", "allow-rename", "allow-zoom", "alpha", "anchor", "answer", "area", "article", "attribution", "attribution-mark", "audit", "autoplay", "axis", "axis-x", "axis-y", "brownout", "brownout-level", "before", "body", "brand", "breakpoint", "breaks", "brush", "brush-end", "brush-max", "brush-min", "brush-start", "cache-key", "canvas", "center", "clearable", "cols", "columns", "color", "command",
     "cells", "checked", "chrome", "debounce", "closable", "collapsed", "collapsible", "classification", "colors", "continuous", "content", "controls", "copyable", "count", "data", "data-table", "date", "delta", "description", "glyphs", "demo", "density", "desc", "dir", "direction", "disabled", "distance", "dismissible", "divider", "do", "dont", "dot", "ends", "high", "input", "layer", "low", "mode", "modes", "n", "opacity", "palette", "polarity", "precision", "range", "single",
-    "empty", "exclusive", "fallback", "format", "heading", "help", "hint", "href", "icon", "illustration", "instrument", "interval", "items", "key", "layers", "level", "range-end", "range-start",
+    "empty", "exclusive", "fallback", "filename", "format", "heading", "help", "hint", "href", "icon", "illustration", "instrument", "interval", "items", "key", "layers", "level", "range-end", "range-start",
     "label", "lazy", "lede", "legend", "line", "limit", "link", "links", "live", "loading", "locale", "loop", "max", "media", "message", "method", "menu", "min", "multiple", "name", "needle", "next", "no", "no-cache", "no-data-message", "nodes", "note", "norm", "normalize",
     "options", "orientation", "page-size", "pages", "pause", "paused", "pausable", "persist", "placeholder", "playing", "point", "points", "prev", "presets", "progress", "prompt", "question", "recent", "required",
     "quote", "ramp", "refresh", "removable", "resolution", "reverse", "rings", "retry", "results", "rows", "scale", "selectable", "segments", "show-header", "sparkline", "threshold", "thresholds", "selected", "separator", "series", "shortcut", "side", "size", "skeleton", "sort", "sort-dir", "speed", "status", "step", "submit", "submitting", "timeout", "trigger", "virtual", "sticky", "cluster-count", "cluster-expanded", "time", "resizable",
@@ -7804,6 +7806,54 @@ class ContourErrorBoundary extends ContourBase {
   }
   define("contour-error-boundary", ContourErrorBoundary);
 
+class ContourDataExport extends ContourBase {
+    static get observed() { return ["data", "format", "filename", "label"]; }
+    static get properties() { return { data: { attribute: "data" }, format: { attribute: "format" }, filename: { attribute: "filename" }, label: { attribute: "label" } }; }
+    render() {
+      this.classList.add("c-data-export");
+      const fmt = (this.getAttribute("format") || "json").toLowerCase();
+      const btn = this.ensure(".c-data-export__btn", () => {
+        const b = document.createElement("button");
+        b.className = "c-data-export__btn";
+        b.type = "button";
+        return b;
+      });
+      btn.textContent = this.getAttribute("label") || ("Export " + fmt.toUpperCase());
+      if (btn.parentNode !== this) this.appendChild(btn);
+    }
+    enhance() {
+      if (this._wiredDataExport) return;
+      this._wiredDataExport = true;
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest(".c-data-export__btn") : null;
+        if (!btn || !this.contains(btn)) return;
+        const fmt = (this.getAttribute("format") || "json").toLowerCase();
+        const raw = this.getAttribute("data") || "[]";
+        let text = raw;
+        if (fmt === "csv") {
+          try {
+            const arr = JSON.parse(raw);
+            if (Array.isArray(arr) && arr.length) {
+              const keys = Object.keys(arr[0]);
+              text = [keys.join(",")].concat(arr.map((r) => keys.map((k) => JSON.stringify(r[k] ?? "")).join(","))).join("\n");
+            }
+          } catch (e) {}
+        }
+        const blob = new Blob([text], { type: fmt === "csv" ? "text/csv" : "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = this.getAttribute("filename") || ("export." + fmt);
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        this.dispatchEvent(new CustomEvent("contour:export", { bubbles: true, composed: true, detail: { format: fmt } }));
+      });
+    }
+  }
+  define("contour-data-export", ContourDataExport);
+
 
 
 class ContourDocsNav extends ContourBase {
@@ -7963,6 +8013,123 @@ class ContourFileTree extends ContourBase {
     }
   }
   define("contour-file-tree", ContourFileTree);
+
+class ContourChangelog extends ContourBase {
+    static get observed() { return ["src", "max", "loading", "error"]; }
+    static get properties() { return { src: { attribute: "src" }, max: { attribute: "max", type: Number } }; }
+    render() {
+      this.classList.add("c-changelog");
+      const src = this.getAttribute("src");
+      if (src) {
+        if (this.dataset.loaded === src) return;
+        this.dataset.loaded = "";
+        const loading = this.ensure(".c-changelog__loading", () => { const el = document.createElement("div"); el.className = "c-changelog__loading"; el.textContent = "Loading…"; return el; });
+        // clear
+        Array.from(this.querySelectorAll(".c-changelog__entry, .c-changelog__error")).forEach((n) => n.remove());
+        if (!this.querySelector(".c-changelog__loading")) this.appendChild(loading);
+        fetch(src).then((r) => {
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          return r.text();
+        }).then((text) => {
+          const ld = this.querySelector(".c-changelog__loading");
+          if (ld) ld.remove();
+          this.dataset.loaded = src;
+          const entries = parseChangelog(text);
+          const max = parseInt(this.getAttribute("max") || "0", 10);
+          const list = (max > 0) ? entries.slice(0, max) : entries;
+          if (!list.length) {
+            const empty = document.createElement("div");
+            empty.className = "c-changelog__empty";
+            empty.textContent = "No releases found.";
+            this.appendChild(empty);
+            return;
+          }
+          list.forEach((e) => {
+            const det = document.createElement("details");
+            det.className = "c-changelog__entry";
+            const sum = document.createElement("summary");
+            sum.className = "c-changelog__summary";
+            const ver = document.createElement("span");
+            ver.className = "c-changelog__version";
+            ver.textContent = e.version;
+            sum.appendChild(ver);
+            if (e.date) {
+              const d = document.createElement("span");
+              d.className = "c-changelog__date";
+              d.textContent = e.date;
+              sum.appendChild(d);
+            }
+            det.appendChild(sum);
+            const body = document.createElement("div");
+            body.className = "c-changelog__body";
+            body.innerHTML = renderChangelogBody(e.body);
+            det.appendChild(body);
+            this.appendChild(det);
+          });
+        }).catch((err) => {
+          const ld = this.querySelector(".c-changelog__loading");
+          if (ld) ld.remove();
+          const er = document.createElement("div");
+          er.className = "c-changelog__error";
+          er.textContent = "Failed to load changelog: " + (err && err.message ? err.message : err);
+          this.appendChild(er);
+        });
+      }
+    }
+  }
+  define("contour-changelog", ContourChangelog);
+
+  function parseChangelog(text) {
+    const lines = String(text).split(/\r?\n/);
+    const entries = [];
+    let cur = null;
+    for (const line of lines) {
+      const m = line.match(/^##\s+\[?([^\]\n]+)\]?\s*[-–—]?\s*(.*)$/);
+      if (m && (line.startsWith("## ") )) {
+        // only treat as version header if it looks like a version or "Unreleased"
+        const ver = m[1].trim();
+        const rest = m[2].trim();
+        if (/^\d|unreleased/i.test(ver)) {
+          if (cur) entries.push(cur);
+          cur = { version: ver, date: rest.replace(/^[-–—]\s*/, "").trim(), body: "" };
+          continue;
+        }
+      }
+      if (cur) cur.body += line + "\n";
+    }
+    if (cur) entries.push(cur);
+    return entries;
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  function renderChangelogBody(body) {
+    const lines = String(body).trim().split(/\r?\n/);
+    const out = [];
+    let inList = false;
+    for (const raw of lines) {
+      const line = raw.trimEnd();
+      if (/^###\s+/.test(line)) {
+        if (inList) { out.push("</ul>"); inList = false; }
+        out.push("<h4>" + escapeHtml(line.replace(/^###\s+/, "")) + "</h4>");
+      } else if (/^##\s+/.test(line)) {
+        if (inList) { out.push("</ul>"); inList = false; }
+        out.push("<h3>" + escapeHtml(line.replace(/^##\s+/, "")) + "</h3>");
+      } else if (/^[-*]\s+/.test(line)) {
+        if (!inList) { out.push("<ul>"); inList = true; }
+        out.push("<li>" + escapeHtml(line.replace(/^[-*]\s+/, "")) + "</li>");
+      } else if (line.trim() === "") {
+        if (inList) { out.push("</ul>"); inList = false; }
+      } else {
+        if (inList) { out.push("</ul>"); inList = false; }
+        out.push("<p>" + escapeHtml(line) + "</p>");
+      }
+    }
+    if (inList) out.push("</ul>");
+    return out.join("");
+  }
 
 
 
@@ -11851,6 +12018,27 @@ class ContourScaleBar extends ContourBase {
     }
   }
 define("contour-scale-bar", ContourScaleBar);
+
+class ContourSplitMap extends ContourBase {
+    static get observed() { return ["left", "right"]; }
+    static get properties() { return { left: { attribute: "left" }, right: { attribute: "right" } }; }
+    render() {
+      this.classList.add("c-split-map");
+      const left = this.ensure(".c-split-map__pane--left", () => {
+        const e = document.createElement("div");
+        e.className = "c-split-map__pane c-split-map__pane--left";
+        return e;
+      });
+      const right = this.ensure(".c-split-map__pane--right", () => {
+        const e = document.createElement("div");
+        e.className = "c-split-map__pane c-split-map__pane--right";
+        return e;
+      });
+      if (left.parentNode !== this) this.appendChild(left);
+      if (right.parentNode !== this) this.appendChild(right);
+    }
+  }
+  define("contour-split-map", ContourSplitMap);
 
 class ContourResizeObserver extends ContourBase {
     static get observed() { return ["debounce"]; }
@@ -17224,6 +17412,55 @@ class ContourTreeGrid extends ContourBase {
     }
   }
   define("contour-tree-grid", ContourTreeGrid);
+
+class ContourPullToRefresh extends ContourBase {
+    static get observed() { return ["threshold"]; }
+    static get properties() { return { threshold: { attribute: "threshold" } }; }
+    render() {
+      this.classList.add("c-pull-to-refresh");
+      const ind = this.ensure(".c-pull-to-refresh__indicator", () => {
+        const e = document.createElement("div");
+        e.className = "c-pull-to-refresh__indicator";
+        e.textContent = "Pull to refresh";
+        return e;
+      });
+      if (ind.parentNode !== this) this.prepend(ind);
+    }
+    enhance() {
+      if (this._wiredPullToRefresh) return;
+      this._wiredPullToRefresh = true;
+      let startY = 0;
+      let pulling = false;
+      this.addEventListener("touchstart", (e) => {
+        if (this.scrollTop > 0) return;
+        const t = e.touches && e.touches[0];
+        if (t) { startY = t.clientY; pulling = true; }
+      }, { passive: true });
+      this.addEventListener("touchmove", (e) => {
+        if (!pulling) return;
+        const t = e.touches && e.touches[0];
+        if (!t) return;
+        const dy = t.clientY - startY;
+        if (dy > 0 && dy < 120) {
+          this.style.setProperty("--ptr-offset", dy + "px");
+        }
+      }, { passive: true });
+      this.addEventListener("touchend", (e) => {
+        if (!pulling) return;
+        pulling = false;
+        const t = e.changedTouches && e.changedTouches[0];
+        const dy = t ? t.clientY - startY : 0;
+        const thr = Number(this.getAttribute("threshold")) || 60;
+        if (dy >= thr) {
+          this.classList.add("is-refreshing");
+          this.dispatchEvent(new CustomEvent("contour:refresh", { bubbles: true, composed: true }));
+          setTimeout(() => this.classList.remove("is-refreshing"), 800);
+        }
+        this.style.removeProperty("--ptr-offset");
+      }, { passive: true });
+    }
+  }
+  define("contour-pull-to-refresh", ContourPullToRefresh);
 
 
   // ---- Registration: the class-only wrappers run last ------------------

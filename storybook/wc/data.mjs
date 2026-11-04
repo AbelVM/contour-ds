@@ -3637,3 +3637,51 @@ class ContourErrorBoundary extends ContourBase {
     }
   }
   define("contour-error-boundary", ContourErrorBoundary);
+
+class ContourDataExport extends ContourBase {
+    static get observed() { return ["data", "format", "filename", "label"]; }
+    static get properties() { return { data: { attribute: "data" }, format: { attribute: "format" }, filename: { attribute: "filename" }, label: { attribute: "label" } }; }
+    render() {
+      this.classList.add("c-data-export");
+      const fmt = (this.getAttribute("format") || "json").toLowerCase();
+      const btn = this.ensure(".c-data-export__btn", () => {
+        const b = document.createElement("button");
+        b.className = "c-data-export__btn";
+        b.type = "button";
+        return b;
+      });
+      btn.textContent = this.getAttribute("label") || ("Export " + fmt.toUpperCase());
+      if (btn.parentNode !== this) this.appendChild(btn);
+    }
+    enhance() {
+      if (this._wiredDataExport) return;
+      this._wiredDataExport = true;
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest(".c-data-export__btn") : null;
+        if (!btn || !this.contains(btn)) return;
+        const fmt = (this.getAttribute("format") || "json").toLowerCase();
+        const raw = this.getAttribute("data") || "[]";
+        let text = raw;
+        if (fmt === "csv") {
+          try {
+            const arr = JSON.parse(raw);
+            if (Array.isArray(arr) && arr.length) {
+              const keys = Object.keys(arr[0]);
+              text = [keys.join(",")].concat(arr.map((r) => keys.map((k) => JSON.stringify(r[k] ?? "")).join(","))).join("\n");
+            }
+          } catch (e) {}
+        }
+        const blob = new Blob([text], { type: fmt === "csv" ? "text/csv" : "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = this.getAttribute("filename") || ("export." + fmt);
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        this.dispatchEvent(new CustomEvent("contour:export", { bubbles: true, composed: true, detail: { format: fmt } }));
+      });
+    }
+  }
+  define("contour-data-export", ContourDataExport);

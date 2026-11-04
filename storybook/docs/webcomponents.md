@@ -1,6 +1,6 @@
 # Web components
 
-Section `webcomponents` — marker `23`, position 24 of 26 in the guide.
+Section `webcomponents` — marker `23`, position 24 of 27 in the guide.
 Generated from `index.html`; prose quoted, counts from the inventory, no URL (the project is
 private until v1.0). See `index.json` for the whole set and the shared statement.
 
@@ -34,8 +34,6 @@ The same table contract composes inside a stack, while an error boundary keeps a
 
 Every contour:* event the layer dispatches, the payload keys an emission site can carry, and the composed flag. Payload keys are the union of keys the emission sites pass; an empty payload is an event that carries no detail object. Composition here is what the flag is for: a component hosted inside another author's shadow root still surfaces its events to the document, and a consumer reads the same frozen list from window.ContourEvents.
 
-Per-element reference generated from contour.components.json: host-set inputs, sheet-defaulted vars, variants, element count and token count. Regenerate with node tools/gen-api-cards.mjs.
-
 One card, two ways to change it. Writing three attributes in turn rebuilds the card three times; the same three writes inside batch() rebuild it once. The count is the element's own renderCount, not a number this page keeps, so it cannot drift from what the layer did.
 
 Concise usage notes for the web-component layer. The generated API cards above cover structural inputs (observed attributes, properties, parts); these notes cover intent, composition and gotchas the cards cannot express. Full text: tmp/dx_notes.md.
@@ -62,7 +60,6 @@ Content behind the scrim.
 
 - Composition and states
 - Event vocabulary
-- Component API reference
 - Reactivity, counted
 - DX notes (per component)
 - Reactivity playground
@@ -71,14 +68,13 @@ Content behind the scrim.
 
 ## Blocks documented here
 
-23 block(s). Their facts live in `../contour.components.json`;
+22 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
 - `.c-btn`
 - `.c-card`
 - `.c-cluster`
-- `.c-disclosure`
 - `.c-geocoder`
 - `.c-icon-badge`
 - `.c-kbd`
@@ -101,4 +97,4 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `5cccf136c267c6ad` · last committed 2026-11-04T11:55:08+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `10d181ea8e0eb659` · last committed 2026-11-04T18:12:14+01:00 · no URL: the project is private until v1.0.

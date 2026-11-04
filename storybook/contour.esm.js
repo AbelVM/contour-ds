@@ -784,7 +784,10 @@
       setActive(0);
     };
 
+    let lastFocus = null;
+
     const open = () => {
+      lastFocus = document.activeElement;
       index = buildIndex();
       field.value = "";
       render();
@@ -799,6 +802,10 @@
       field.removeAttribute("aria-activedescendant");
       if (supportsPopover) palette.hidePopover();
       else palette.classList.remove("is-open");
+      if (lastFocus && typeof lastFocus.focus === "function" && document.contains(lastFocus)) {
+        try { lastFocus.focus(); } catch (e) {}
+      }
+      lastFocus = null;
     };
 
     const isOpen = () =>
