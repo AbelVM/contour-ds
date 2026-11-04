@@ -1811,6 +1811,7 @@ class ContourBrush extends ContourBase {
         if (eh) eh.style.insetInlineStart = (((ne - mn) / range) * 100) + "%";
         // stash pending values
         this._brushPending = { start: ns, end: ne };
+        this.dispatchEvent(new CustomEvent("contour:brush", { bubbles: true, composed: true, detail: { start: ns, end: ne, value: ns } }));
       });
       this.addEventListener("pointerup", (e) => {
         if (!dragging) return;
@@ -1822,6 +1823,7 @@ class ContourBrush extends ContourBase {
           this._brushPending = null;
         }
         this.dispatchEvent(new CustomEvent("contour:brush-end", { bubbles: true, composed: true, detail: { value: this.getAttribute("end"), start: this.getAttribute("start"), end: this.getAttribute("end") } }));
+        this.dispatchEvent(new CustomEvent("contour:brush", { bubbles: true, composed: true, detail: { start: this.getAttribute("start"), end: this.getAttribute("end"), value: this.getAttribute("end") } }));
       });
       // Keyboard: Enter/Space emits brush-start/brush-end (WC-P1-08).
       if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
@@ -1857,7 +1859,7 @@ class ContourStackedBar extends ContourBase {
         segments = authoredSegments.map((el) => ({
           label: el.getAttribute("title") || el.textContent || "",
           value: parseFloat(el.style.inlineSize) || 0,
-          color: el.style.background || undefined,
+          color: (el.dataset && el.dataset.color) || el.style.background || undefined,
         }));
         authoredSegments.forEach((el) => el.remove());
       } else {
@@ -1874,6 +1876,7 @@ class ContourStackedBar extends ContourBase {
         el.className = "c-stacked-bar__segment";
         el.style.inlineSize = ((v / denom) * 100) + "%";
         el.style.background = (typeof seg === "object" && seg.color) ? seg.color : "var(--chart-" + ((i % 8) + 1) + ")";
+        el.dataset.color = (typeof seg === "object" && seg.color) ? seg.color : el.style.background;
         el.setAttribute("title", (typeof seg === "object" ? (seg.label || "") : "") + " " + v);
         this.appendChild(el);
       });
@@ -2027,7 +2030,7 @@ class ContourDonut extends ContourBase {
           const lbl = el.querySelector("span:last-child");
           const text = lbl ? lbl.textContent : el.textContent;
           const match = text.match(/—\s*(\d+(?:\.\d+)?)$/);
-          items.push({ label: text.replace(/—\s*\d+(?:\.\d+)?$/, "").trim(), value: match ? Number(match[1]) : 0, color: sw ? sw.style.background : undefined });
+          items.push({ label: text.replace(/—\s*\d+(?:\.\d+)?$/, "").trim(), value: match ? Number(match[1]) : 0, color: sw ? (sw.dataset && sw.dataset.color) || sw.style.background : undefined });
         });
         // remove authored items from DOM (they will be regenerated below)
         authoredItems.forEach((el) => el.remove());
@@ -2079,6 +2082,7 @@ class ContourDonut extends ContourBase {
         const sw = document.createElement("span");
         sw.className = "c-donut__swatch";
         sw.style.background = (typeof it === "object" && it.color) ? it.color : "var(--chart-" + ((i % 8) + 1) + ")";
+            if (sw.style.background) sw.dataset.color = (typeof it === "object" && it.color) ? it.color : sw.style.background;
         row.appendChild(sw);
         const lbl = document.createElement("span");
         lbl.textContent = (typeof it === "object" ? (it.label || "") : String(it)) + " — " + values[i];
@@ -2297,6 +2301,7 @@ class ContourPivot extends ContourBase {
       const corner = document.createElement("th");
       corner.textContent = "";
       corner.setAttribute("role", "columnheader");
+      corner.setAttribute("aria-label", "Row");
       hr.appendChild(corner);
       visibleCols.forEach((c) => { const th = document.createElement("th"); th.textContent = c; th.setAttribute("role", "columnheader"); th.setAttribute("tabindex", "0"); hr.appendChild(th); });
       thead.appendChild(hr);
@@ -2324,6 +2329,7 @@ class ContourPivot extends ContourBase {
           } else {
             td.textContent = "";
           }
+          if (!td.textContent.trim()) td.setAttribute("aria-label", "Empty");
           tr.appendChild(td);
         });
         tbody.appendChild(tr);
@@ -2488,7 +2494,7 @@ class ContourBivariate extends ContourBase {
             // Palette runs from bottom-left (low/low) to top-right (high/high):
             // reverse the row order so the first palette row sits at the bottom.
             const srcIndex = (size - 1 - r) * size + c;
-            if (colors[srcIndex]) cell.style.background = colors[srcIndex];
+            if (colors[srcIndex]) { cell.style.background = colors[srcIndex]; cell.dataset.color = colors[srcIndex]; }
             matrix.appendChild(cell);
           }
         }
@@ -2749,7 +2755,7 @@ class ContourLegend extends ContourBase {
         items = JSON.stringify(authoredLegendItems.map((el) => {
           const sw = el.querySelector(".c-legend__swatch");
           const lbl = el.querySelector(".c-legend__label") || el;
-          return { label: lbl ? lbl.textContent.trim() : el.textContent.trim(), color: sw ? sw.style.background || undefined : undefined };
+          return { label: lbl ? lbl.textContent.trim() : el.textContent.trim(), color: sw ? (sw.dataset && sw.dataset.color) || sw.style.background || undefined : undefined };
         }));
         authoredLegendItems.forEach((el) => el.remove());
       }
@@ -2765,19 +2771,18 @@ class ContourLegend extends ContourBase {
         try {
           const parsed = JSON.parse(items);
           const list = this.ensure(".c-legend__items", () => { const el = document.createElement("div"); el.className = "c-legend__items"; return el; });
-          list.setAttribute("role", selectable ? "group" : "listbox");
+          list.setAttribute("role", "listbox");
           if (title) list.setAttribute("aria-label", title);
           list.innerHTML = "";
           parsed.forEach((it) => {
             const label = typeof it === "string" ? it : (it.label || String(it));
             const key = typeof it === "string" ? it : (it.key || it.label || String(it));
-            const item = document.createElement(selectable ? "button" : "div");
+            const item = document.createElement("div");
             item.className = "c-legend__item";
             item.setAttribute("tabindex", "-1");
             if (selectable) {
-              item.type = "button";
-              item.setAttribute("role", "button");
-              item.setAttribute("aria-pressed", "true");
+              item.setAttribute("role", "option");
+              item.setAttribute("aria-selected", "true");
               item.dataset.key = key;
             } else {
               item.setAttribute("role", "option");
@@ -2785,7 +2790,7 @@ class ContourLegend extends ContourBase {
             }
             const sw = document.createElement("span");
             sw.className = "c-legend__swatch";
-            if (it && it.color) sw.style.background = it.color;
+            if (it && it.color) { sw.style.background = it.color; sw.dataset.color = it.color; }
             item.appendChild(sw);
             // geometry glyph
              const glyphShape = (it && (it.shape || it.marker || it.glyph)) || this.getAttribute("glyphs");
@@ -2858,6 +2863,7 @@ class ContourLegend extends ContourBase {
          const glyph = document.createElement("span");
          glyph.className = "glyph";
          glyph.style.background = ndColor;
+         glyph.dataset.color = ndColor;
          nd.prepend(glyph);
        } else {
          const nd = this.querySelector(".c-legend__no-data");
@@ -2994,10 +3000,10 @@ class ContourLegend extends ContourBase {
       this.addEventListener("click", (e) => {
         const btn = e.target && e.target.closest ? e.target.closest(".c-legend__item") : null;
         if (!btn || !this.contains(btn)) return;
-        const pressed = btn.getAttribute("aria-pressed") !== "true";
-        btn.setAttribute("aria-pressed", String(pressed));
+        const selected = btn.getAttribute("aria-selected") !== "true";
+        btn.setAttribute("aria-selected", String(selected));
         this.dispatchEvent(new CustomEvent("contour:legend-toggle", {
-          detail: { label: btn.textContent.trim(), key: btn.dataset.key || btn.textContent.trim(), pressed },
+          detail: { label: btn.textContent.trim(), key: btn.dataset.key || btn.textContent.trim(), pressed: selected },
           bubbles: true,
           composed: true,
         }));

@@ -1032,7 +1032,7 @@ class ContourFilterBar extends ContourBase {
        if (modesAttr) { try { modes = JSON.parse(modesAttr); } catch (e) { modes = modesAttr.split(",").map((s) => s.trim()); } }
        if (modes || this.hasAttribute("mode")) {
          let bar = this.querySelector(".c-filter-bar__modes");
-         if (!bar) { bar = document.createElement("div"); bar.className = "c-filter-bar__modes"; bar.setAttribute("role", "toolbar"); this.appendChild(bar); }
+         if (!bar) { bar = document.createElement("div"); bar.className = "c-filter-bar__modes"; bar.setAttribute("role", "toolbar"); bar.setAttribute("aria-label", label || "Filter modes"); this.appendChild(bar); }
          bar.innerHTML = "";
          const current = this.getAttribute("mode");
          const list = Array.isArray(modes) ? modes : ["draw", "erase", "select"];
