@@ -1546,7 +1546,7 @@ class ContourGauge extends ContourBase {
       const showHeader = this.getAttribute("show-header") !== "false";
       const description = this.getAttribute("description");
       const noDataMessage = this.getAttribute("no-data-message") || "No readings in view";
-      const brownoutLevel = parseInt(this.getAttribute("brownout-level") || this.getAttribute("brownout") || "0", 10) || 0;
+      const brownoutLevel = this.brownoutLevel();
       // empty state
       if (!hasValue) {
         if (heading && showHeader) {
@@ -1580,7 +1580,7 @@ class ContourGauge extends ContourBase {
         }
       }
       // dial (unless brownout >= 3)
-      const shedDial = brownoutLevel >= 3;
+      const shedDial = this.shed("dial", 3);
       let dial = this.querySelector(".c-gauge__dial");
       if (shedDial) {
         if (dial) dial.remove();
@@ -2040,8 +2040,8 @@ class ContourDonut extends ContourBase {
       }
       const values = items.map((it) => (typeof it === "object" ? (it.value || 0) : Number(it) || 0));
       const total = values.reduce((a, b) => a + b, 0) || 1;
-      const brownoutLevel = parseInt(this.getAttribute("brownout-level") || this.getAttribute("brownout") || "0", 10) || 0;
-      const shedRing = brownoutLevel >= 3;
+      const brownoutLevel = this.brownoutLevel();
+      const shedRing = this.shed("ring", 3);
       if (!shedRing) {
         const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         svg.setAttribute("class", "c-donut__ring");

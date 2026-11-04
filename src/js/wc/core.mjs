@@ -917,6 +917,22 @@
     }
   }
 
+  // Brownout mixin (G-16): opt-in base for components that shed non-essential
+  // chrome under degraded conditions. Merges `brownout` / `brownout-level`
+  // into the subclass observed list and exposes the helpers already on
+  // ContourBase. Usage: `class Foo extends withBrownout(ContourBase) { ... }`.
+  export function withBrownout(Base) {
+    return class extends Base {
+      static get observed() {
+        const base = (super.observed && Array.isArray(super.observed)) ? super.observed : [];
+        const extra = ["brownout", "brownout-level"];
+        return Array.from(new Set(base.concat(extra)));
+      }
+      brownoutLevel() { return super.brownoutLevel ? super.brownoutLevel() : (parseInt(this.getAttribute("brownout-level") || this.getAttribute("brownout") || "0", 10) || 0); }
+      shed(kind, threshold) { return this.brownoutLevel() >= (threshold || 1); }
+    };
+  }
+
   // Simple component: just adds CSS classes.
   /** Create a light-DOM component that only applies block and modifier classes. */
   export const simple = (classes) => class extends ContourBase {
