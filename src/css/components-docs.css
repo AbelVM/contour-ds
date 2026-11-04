@@ -682,66 +682,66 @@
     color: var(--color-text);
     font-size: var(--type-body);
     line-height: var(--leading-relaxed);
-  }
 
-  .c-prose > * + * {
-    margin-block-start: var(--space-md);
-  }
+    & > * + * {
+      margin-block-start: var(--space-md);
+    }
 
-  .c-prose h2 {
-    font-family: var(--font-display);
-    font-size: var(--type-h2);
-    font-weight: var(--weight-bold);
-    letter-spacing: var(--tracking-heading);
-    color: var(--color-text-strong);
-    margin-block-start: var(--space-2xl);
-    scroll-margin-block-start: calc(var(--header-height) + 1.5rem);
-  }
+    h2 {
+      font-family: var(--font-display);
+      font-size: var(--type-h2);
+      font-weight: var(--weight-bold);
+      letter-spacing: var(--tracking-heading);
+      color: var(--color-text-strong);
+      margin-block-start: var(--space-2xl);
+      scroll-margin-block-start: calc(var(--header-height) + 1.5rem);
+    }
 
-  .c-prose h3 {
-    font-family: var(--font-display);
-    font-size: var(--type-h3);
-    font-weight: var(--weight-semibold);
-    color: var(--color-text-strong);
-    margin-block-start: var(--space-xl);
-    scroll-margin-block-start: calc(var(--header-height) + 1.5rem);
-  }
+    h3 {
+      font-family: var(--font-display);
+      font-size: var(--type-h3);
+      font-weight: var(--weight-semibold);
+      color: var(--color-text-strong);
+      margin-block-start: var(--space-xl);
+      scroll-margin-block-start: calc(var(--header-height) + 1.5rem);
+    }
 
-  .c-prose a {
-    text-decoration: underline;
-    text-decoration-color: color-mix(in oklab, var(--color-link) 40%, transparent);
-    text-underline-offset: 0.2em;
-    overflow-wrap: break-word;
-  }
+    a {
+      text-decoration: underline;
+      text-decoration-color: color-mix(in oklab, var(--color-link) 40%, transparent);
+      text-underline-offset: 0.2em;
+      overflow-wrap: break-word;
 
-  .c-prose a:hover {
-    text-decoration-color: currentColor;
-  }
+      &:hover {
+        text-decoration-color: currentColor;
+      }
+    }
 
-  .c-prose ul,
-  .c-prose ol {
-    padding-inline-start: 1.35rem;
-    color: var(--color-text-muted);
-  }
+    ul,
+    ol {
+      padding-inline-start: 1.35rem;
+      color: var(--color-text-muted);
+    }
 
-  .c-prose li + li {
-    margin-block-start: 0.35rem;
-  }
+    li + li {
+      margin-block-start: 0.35rem;
+    }
 
-  .c-prose code:not(pre code) {
-    padding: 0.12em 0.36em;
-    border-radius: var(--radius-xs);
-    background: var(--color-surface-3);
-    color: var(--color-text-strong);
-    font-size: 0.875em;
-    overflow-wrap: break-word;
-  }
+    code:not(pre code) {
+      padding: 0.12em 0.36em;
+      border-radius: var(--radius-xs);
+      background: var(--color-surface-3);
+      color: var(--color-text-strong);
+      font-size: 0.875em;
+      overflow-wrap: break-word;
+    }
 
-  .c-prose blockquote {
-    padding-inline-start: var(--space-md);
-    border-inline-start: var(--border-width-thick) solid var(--color-primary);
-    color: var(--color-text-muted);
-    font-style: italic;
+    blockquote {
+      padding-inline-start: var(--space-md);
+      border-inline-start: var(--border-width-thick) solid var(--color-primary);
+      color: var(--color-text-muted);
+      font-style: italic;
+    }
   }
 
   /* An anchor link that appears on hover next to a heading. */
