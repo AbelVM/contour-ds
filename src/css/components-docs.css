@@ -568,50 +568,50 @@
     margin-block-start: var(--space-2xl);
     padding-block-start: var(--space-lg);
     border-block-start: 1px solid var(--color-border);
-  }
 
-  .c-pager__link {
-    display: grid;
-    gap: 0.15rem;
-    padding: var(--space-md);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    background: var(--color-surface-1);
-    text-decoration: none;
-    transition:
-      border-color var(--dur-fast) var(--ease-standard),
-      background-color var(--dur-fast) var(--ease-standard);
-  }
+    .c-pager__link {
+      display: grid;
+      gap: 0.15rem;
+      padding: var(--space-md);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-surface-1);
+      text-decoration: none;
+      transition:
+        border-color var(--dur-fast) var(--ease-standard),
+        background-color var(--dur-fast) var(--ease-standard);
 
-  .c-pager__link:hover {
-    border-color: var(--color-border-strong);
-    background: var(--color-surface-2);
-  }
+      &:hover {
+        border-color: var(--color-border-strong);
+        background: var(--color-surface-2);
+      }
 
-  .c-pager__link--next {
-    text-align: end;
-  }
+      &.c-pager__link--next {
+        text-align: end;
+      }
+    }
 
-  .c-pager__dir {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    font-family: var(--font-mono);
-    font-size: var(--type-micro);
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
-    color: var(--color-text-subtle);
-  }
+    .c-pager__dir {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-family: var(--font-mono);
+      font-size: var(--type-micro);
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
+      color: var(--color-text-subtle);
+    }
 
-  .c-pager__link--next .c-pager__dir {
-    justify-content: flex-end;
-  }
+    .c-pager__link--next .c-pager__dir {
+      justify-content: flex-end;
+    }
 
-  .c-pager__title {
-    font-family: var(--font-display);
-    font-size: var(--type-h4);
-    font-weight: var(--weight-semibold);
-    color: var(--color-text-strong);
+    .c-pager__title {
+      font-family: var(--font-display);
+      font-size: var(--type-h4);
+      font-weight: var(--weight-semibold);
+      color: var(--color-text-strong);
+    }
   }
 
   /* =======================================================================
