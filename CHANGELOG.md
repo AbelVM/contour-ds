@@ -5,6 +5,7 @@
 - `window.Contour.format` and `window.Contour.markers` exposed from the web-component bundle.
 - `withBrownout(Base)` mixin and `brownoutLevel()`/`shed()` helpers on `ContourBase`.
 - Editable class-break inputs in single-mode `contour-style-panel`.
+- Open/close transition on `contour-sheet` (BY-50): `@starting-style` + `transition-behavior: allow-discrete`, matching command/drawer pattern.
 
 ### Fixed
 - Accessible names on the pivot corner header cell and empty data-grid cells.

@@ -3447,7 +3447,7 @@
      25. SHEET / PANEL (map side panel)
      ======================================================================= */
   .c-sheet {
-    display: flex;
+    display: none;
     flex-direction: column;
     inline-size: min(24rem, 100%);
     block-size: 100%;
@@ -3455,6 +3455,21 @@
     border-radius: var(--radius-xl);
     background: var(--color-surface-1);
     overflow: hidden;
+    /* Open/close transition (BY-50). Enhancement-only: an engine without
+       `transition-behavior: allow-discrete` drops the whole declaration and
+       keeps today's instant open. Fade, not translate: the sheet is a light
+       host in normal flow, so opacity is direction-neutral. */
+    opacity: 0;
+    transition: opacity var(--dur-base) var(--ease-standard),
+      display var(--dur-base) var(--ease-standard) allow-discrete;
+  }
+
+  .c-sheet.is-open {
+    display: flex;
+    opacity: 1;
+    @starting-style {
+      opacity: 0;
+    }
   }
 
   .c-sheet__head {
