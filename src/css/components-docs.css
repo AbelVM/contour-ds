@@ -136,7 +136,10 @@
     display: grid;
     gap: 0.6rem;
     font-size: var(--type-xs);
+  }
 
+  /* @scope pilot (PF2): scope element rules to .c-toc descendants. */
+  @scope (.c-toc) {
     .c-toc__empty,
     .c-toc__loading,
     .c-toc__error {
