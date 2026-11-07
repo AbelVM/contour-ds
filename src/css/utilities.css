@@ -477,7 +477,12 @@
   /* -- prefers-reduced-transparency ----------------------------------- */
   @media (prefers-reduced-transparency: reduce) {
     .u-backdrop,
-    .c-header {
+    .c-header,
+    .c-shortcut-overlay,
+    .c-dialog::backdrop,
+    .c-toolbar,
+    .c-command::backdrop,
+    .c-dash-toolbar {
       backdrop-filter: none;
     }
   }
