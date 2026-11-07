@@ -2700,6 +2700,7 @@ class ContourMetricsFull extends ContourBase {
     static get properties() { return { items: { attribute: "items" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-metrics");
+      this.setAttribute("role", "list");
       wireStates(this);
       loadRemote(this, "items");
       if (renderStates(this, "metrics")) return;
@@ -2712,6 +2713,7 @@ class ContourMetricsFull extends ContourBase {
         parsed.forEach((it) => {
           const item = document.createElement("div");
           item.className = "c-metrics__item";
+          item.setAttribute("role", "listitem");
           const v = document.createElement("div");
           v.className = "c-metrics__value";
           v.textContent = (typeof it === "object" && it !== null) ? (it.value ?? it.v ?? "") : String(it);

@@ -54,6 +54,7 @@ class ContourShortcutListFull extends ContourBase {
     static get properties() { return { title: { attribute: "title" } }; }
     render() {
       this.classList.add("c-shortcut-list");
+      this.setAttribute("role", "list");
       const title = this.getAttribute("title");
       if (title) {
         const t = this.ensure(".c-shortcut-list__title", () => { const el = document.createElement("div"); el.className = "c-shortcut-list__title"; el.style.padding = "var(--space-sm)"; el.style.fontWeight = "var(--weight-semibold)"; return el; });
@@ -67,6 +68,7 @@ class ContourShortcutRowFull extends ContourBase {
     static get properties() { return { desc: { attribute: "desc" }, key: { attribute: "key" } }; }
     render() {
       this.classList.add("c-shortcut-row");
+      this.setAttribute("role", "listitem");
       const key = this.getAttribute("key");
       const desc = this.getAttribute("desc");
       if (key) {
