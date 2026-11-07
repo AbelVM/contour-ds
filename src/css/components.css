@@ -2482,7 +2482,7 @@
   .c-error-boundary__message {
     font-size: var(--type-sm);
     color: var(--color-text-muted);
-    margin-block-start: var(--space-xs);
+    margin-block-start: calc(var(--space-xs) * var(--density, 1));
   }
 
   .c-resize-observer {
@@ -4437,9 +4437,9 @@
   .c-file-upload__dropzone { border: 2px dashed var(--color-border-strong); border-radius: var(--radius-md); padding: calc(var(--space-lg) * var(--density, 1)); text-align: center; cursor: pointer; color: var(--color-text-muted); }
   .c-file-upload__dropzone.is-dragover { border-color: var(--color-primary); background: var(--color-primary-soft); }
   .c-file-upload__input { display: none; }
-  .c-file-upload__progress { inline-size: 100%; margin-block-start: var(--space-xs); }
-  .c-file-upload__preview { display: flex; flex-wrap: wrap; gap: var(--space-xs); margin-block-start: var(--space-xs); }
-  .c-file-upload__preview-item { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--space-2xs); padding: calc(var(--space-2xs) * var(--density, 1)); border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-raised); }
+  .c-file-upload__progress { inline-size: 100%; margin-block-start: calc(var(--space-xs) * var(--density, 1)); }
+  .c-file-upload__preview { display: flex; flex-wrap: wrap; gap: calc(var(--space-xs) * var(--density, 1)); margin-block-start: calc(var(--space-xs) * var(--density, 1)); }
+  .c-file-upload__preview-item { display: inline-flex; flex-wrap: wrap; align-items: center; gap: calc(var(--space-2xs) * var(--density, 1)); padding: calc(var(--space-2xs) * var(--density, 1)); border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-raised); }
   .c-file-upload__preview-thumb { inline-size: 2.5rem; block-size: 2.5rem; object-fit: cover; border-radius: var(--radius-xs); }
   .c-file-upload__preview-name { font-size: var(--type-xs); color: var(--color-text-muted); max-inline-size: 8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   /* -- Notification center ----------------------------------------------- */
@@ -4449,7 +4449,7 @@
   .c-notification-center__badge { position: absolute; inset-block-start: -0.25rem; inset-inline-end: -0.25rem; z-index: 1; }
   /* -- Stepper (form) ---------------------------------------------------- */
   .c-stepper { display: block; }
-  .c-stepper__list { display: flex; flex-wrap: wrap; gap: var(--space-sm); list-style: none; padding: 0; margin: 0 0 var(--space-sm); }
+  .c-stepper__list { display: flex; flex-wrap: wrap; gap: calc(var(--space-sm) * var(--density, 1)); list-style: none; padding: 0; margin: 0 0 calc(var(--space-sm) * var(--density, 1)); }
   .c-stepper__list > * {
     min-inline-size: 0;
     overflow-wrap: anywhere;
@@ -4457,7 +4457,7 @@
   .c-stepper__step { font-size: var(--type-sm); color: var(--color-text-muted); }
   .c-stepper__step.is-current { color: var(--color-primary); font-weight: 600; }
   .c-stepper__step.is-done { color: var(--color-success); }
-  .c-stepper__nav { display: flex; flex-wrap: wrap; gap: var(--space-xs); }
+  .c-stepper__nav { display: flex; flex-wrap: wrap; gap: calc(var(--space-xs) * var(--density, 1)); }
   .c-stepper__nav > * {
     min-inline-size: 0;
     overflow-wrap: anywhere;
@@ -4483,7 +4483,7 @@
     .c-command-palette[popover] { display: none; }
     .c-command-palette[popover].is-open { display: block; }
   }
-  .c-command-palette__search { inline-size: 100%; margin-block-end: var(--space-xs); }
+  .c-command-palette__search { inline-size: 100%; margin-block-end: calc(var(--space-xs) * var(--density, 1)); }
   .c-command-palette__list { max-block-size: 16rem; overflow: auto; }
   .c-command-palette__item { padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1)); cursor: pointer; font-size: var(--type-sm); }
   .c-command-palette__item.is-active { background: var(--color-primary-soft); color: var(--color-primary-text); }
@@ -4503,7 +4503,7 @@
   }
   /* -- Tour -------------------------------------------------------------- */
   .c-tour { position: fixed; z-index: var(--z-tooltip); background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: calc(var(--space-sm) * var(--density, 1)); box-shadow: var(--shadow-md); max-inline-size: 18rem; }
-  .c-tour__tip { font-size: var(--type-sm); margin-block-end: var(--space-xs); }
+  .c-tour__tip { font-size: var(--type-sm); margin-block-end: calc(var(--space-xs) * var(--density, 1)); }
   .c-tour__nav { display: flex; flex-wrap: wrap; justify-content: flex-end; }
   .c-tour__nav > * {
     min-inline-size: 0;
@@ -4516,14 +4516,14 @@
     margin-block-end: var(--space-2xs);
   }
   /* -- Tags input -------------------------------------------------------- */
-  .c-tags-input { display: flex; flex-wrap: wrap; gap: var(--space-2xs); align-items: center; border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: calc(var(--space-2xs) * var(--density, 1)); transition: border-color var(--dur-fast) var(--ease-standard); }
+  .c-tags-input { display: flex; flex-wrap: wrap; gap: calc(var(--space-2xs) * var(--density, 1)); align-items: center; border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: calc(var(--space-2xs) * var(--density, 1)); transition: border-color var(--dur-fast) var(--ease-standard); }
   .c-tags-input__input { border: none; outline: none; flex: 1; min-inline-size: 6rem; font-size: var(--type-sm); background: transparent; color: var(--color-text); }
-  .c-tags-input__tag { display: inline-flex; align-items: center; gap: var(--space-2xs); }
+  .c-tags-input__tag { display: inline-flex; align-items: center; gap: calc(var(--space-2xs) * var(--density, 1)); }
   .c-tags-input__remove { background: none; border: none; cursor: pointer; color: var(--color-text-muted); }
   /* -- Sortable list ----------------------------------------------------- */
   .c-sortable-list { display: block; content-visibility: auto; contain-intrinsic-size: auto 200px; }
   .c-sortable-list__list { list-style: none; padding: 0; margin: 0; }
-  .c-sortable-list__item { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-xs); padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1)); border-block-end: 1px solid var(--color-border); }
+  .c-sortable-list__item { display: flex; flex-wrap: wrap; align-items: center; gap: calc(var(--space-xs) * var(--density, 1)); padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1)); border-block-end: 1px solid var(--color-border); }
   .c-sortable-list__item > * {
     min-inline-size: 0;
     overflow-wrap: anywhere;
@@ -4535,11 +4535,11 @@
   .c-swatch__btn { inline-size: 100%; block-size: 100%; border: none; background: transparent; cursor: pointer; }
   /* -- Calendar ---------------------------------------------------------- */
   .c-calendar { display: block; }
-  .c-calendar__grid { display: grid; grid-template-columns: repeat(7, minmax(2.75rem, 1fr)); gap: var(--space-2xs); }
+  .c-calendar__grid { display: grid; grid-template-columns: repeat(7, minmax(2.75rem, 1fr)); gap: calc(var(--space-2xs) * var(--density, 1)); }
   .c-calendar__day { aspect-ratio: 1; min-inline-size: var(--target-option); min-block-size: var(--target-option); border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-1); color: var(--color-text); cursor: pointer; font-size: var(--type-xs); }
   .c-calendar__day.is-selected { background: var(--color-primary); color: var(--color-on-primary); }
   .c-calendar__day--empty { border: none; background: transparent; }
-  .c-calendar__header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-xs); margin-block-end: var(--space-xs); }
+  .c-calendar__header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: calc(var(--space-xs) * var(--density, 1)); margin-block-end: calc(var(--space-xs) * var(--density, 1)); }
   .c-calendar__header > * {
     min-inline-size: 0;
     overflow-wrap: anywhere;
@@ -4548,7 +4548,7 @@
   .c-calendar__prev, .c-calendar__next { min-inline-size: 2rem; }
   /* -- Carousel ---------------------------------------------------------- */
   .c-carousel { display: block; position: relative; }
-  .c-carousel__track { display: flex; overflow: hidden; gap: var(--space-sm); }
+  .c-carousel__track { display: flex; overflow: hidden; gap: calc(var(--space-sm) * var(--density, 1)); }
   .c-carousel__status { font-size: var(--type-micro); color: var(--color-text-muted); }
   .c-carousel__slide { flex: 0 0 100%; }
   .c-carousel__prev, .c-carousel__next { position: absolute; inset-block-start: 50%; transform: translateY(-50%); }
