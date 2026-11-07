@@ -465,7 +465,12 @@
     .u-raised,
     .c-card,
     .c-panel,
-    .c-kpi {
+    .c-kpi,
+    .c-alert,
+    .c-toast,
+    .c-popover,
+    .c-tooltip,
+    .c-dropdown {
       box-shadow: none;
     }
     .u-fade-in {
