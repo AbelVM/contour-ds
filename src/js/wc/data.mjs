@@ -755,7 +755,7 @@ class ContourChart extends ContourBase {
           sk.style.display = "block";
           sk.style.inlineSize = "100%";
           sk.style.blockSize = "0.6rem";
-          sk.style.marginBlockEnd = "var(--space-2xs)";
+          sk.classList.add("u-mbe-2xs");
           plot.appendChild(sk);
         }
         const axis = this.getAttribute("axis");

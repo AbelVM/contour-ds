@@ -588,4 +588,5 @@
   /* Retry button spacing (replaces inline styles). */
   .u-ms-sm { margin-inline-start: var(--space-sm); }
   .u-mbs-sm { margin-block-start: var(--space-sm); }
+  .u-mbe-2xs { margin-block-end: var(--space-2xs); }
 }
