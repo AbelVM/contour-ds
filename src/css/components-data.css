@@ -2841,8 +2841,8 @@
   .c-pivot__toolbar {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-xs);
-    margin-block-end: var(--space-xs);
+    gap: 0.5rem;
+    margin-block-end: 0.5rem;
   }
   .c-pivot__toolbar > * {
     min-inline-size: 0;
