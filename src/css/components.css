@@ -2765,6 +2765,14 @@
     padding: calc(var(--space-md) * var(--density, 1));
   }
 
+  /* Container query: reduce padding when the legend is narrow. */
+  @container (inline-size < 16rem) {
+    .c-legend {
+      padding: calc(var(--space-sm) * var(--density, 1));
+      gap: calc(var(--space-3xs) * var(--density, 1));
+    }
+  }
+
   /* The inline legend: a wrapping row of keys that sits on the surface it
      belongs to — a panel foot, a chart caption. No box, no border, and never
      a name broken across two lines. */
