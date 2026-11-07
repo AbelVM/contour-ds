@@ -3853,7 +3853,7 @@
     background: var(--color-surface-1);
     border: 1px solid var(--color-border);
     box-shadow: var(--shadow-md);
-    max-inline-size: 20rem;
+    max-inline-size: 18rem;
   }
   @supports not (selector(:popover-open)) {
     .c-hover-card[popover] { display: none; }
@@ -3997,7 +3997,7 @@
     border-radius: var(--radius-md);
     background: var(--color-surface-1);
     box-shadow: var(--shadow-md);
-    max-inline-size: 18rem;
+    max-inline-size: 20rem;
   }
   .c-date-picker__calendar[hidden] { display: none; }
   .c-date-picker__calendar-header {
@@ -4013,7 +4013,7 @@
   }
   .c-date-picker__calendar-grid {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(7, minmax(2.75rem, 1fr));
     gap: 2px;
   }
   .c-date-picker__calendar-weekday {
@@ -4433,7 +4433,7 @@
   .c-swatch__btn { inline-size: 100%; block-size: 100%; border: none; background: transparent; cursor: pointer; }
   /* -- Calendar ---------------------------------------------------------- */
   .c-calendar { display: block; }
-  .c-calendar__grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: var(--space-2xs); }
+  .c-calendar__grid { display: grid; grid-template-columns: repeat(7, minmax(2.75rem, 1fr)); gap: var(--space-2xs); }
   .c-calendar__day { aspect-ratio: 1; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-1); color: var(--color-text); cursor: pointer; font-size: var(--type-xs); }
   .c-calendar__day.is-selected { background: var(--color-primary); color: var(--color-on-primary); }
   .c-calendar__day--empty { border: none; background: transparent; }
