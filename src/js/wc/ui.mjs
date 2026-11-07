@@ -28,6 +28,8 @@ class ContourAvatar extends ContourBase {
         img.className = "c-avatar__img";
         img.src = src;
         img.alt = name || "";
+        img.loading = "lazy";
+        img.decoding = "async";
         this.appendChild(img);
       } else if (name) {
         const initials = name.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2);
@@ -2189,6 +2191,8 @@ class ContourFileUpload extends ContourBase {
             const img = document.createElement("img");
             img.className = "c-file-upload__preview-thumb";
             img.alt = f.name;
+            img.loading = "lazy";
+            img.decoding = "async";
             try { img.src = URL.createObjectURL(f); } catch (e) {}
             item.appendChild(img);
           } else {
