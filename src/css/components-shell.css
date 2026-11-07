@@ -130,6 +130,9 @@
     padding: 0.85rem 0.9rem;
     border-block-end: 1px solid var(--color-border-subtle);
   }
+  .c-command__input > * {
+    min-inline-size: 0;
+  }
 
   .c-command__input svg {
     inline-size: 1.05rem;
@@ -293,6 +296,9 @@
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
+  }
+  .c-command__foot span > * {
+    min-inline-size: 0;
   }
 
   .c-command__foot {

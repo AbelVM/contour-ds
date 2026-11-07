@@ -337,6 +337,9 @@
     border-block-end: 1px solid var(--color-border-subtle);
     background: var(--color-surface-2);
   }
+  .c-recipe__frame-bar > * {
+    min-inline-size: 0;
+  }
 
   .c-recipe__frame-dot {
     inline-size: 0.55rem;
@@ -390,6 +393,9 @@
     padding: 0.5rem;
     border-radius: var(--radius-sm);
     background: var(--color-surface-2);
+  }
+  .c-affordance__demo > * {
+    min-inline-size: 0;
   }
 
   .c-affordance__name {

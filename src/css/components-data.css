@@ -1049,6 +1049,9 @@
     opacity: 0;
     transition: opacity var(--dur-fast) var(--ease-standard);
   }
+  .c-table__actions > * {
+    min-inline-size: 0;
+  }
 
   .c-table tbody tr:hover .c-table__actions,
   .c-table tbody tr:focus-within .c-table__actions {
@@ -3034,6 +3037,9 @@
     color: var(--color-text-strong);
     font: inherit;
     cursor: pointer;
+  }
+  .c-data-export__btn > * {
+    min-inline-size: 0;
   }
   .c-data-export__btn:hover { background: var(--color-surface-2); }
 
