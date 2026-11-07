@@ -1598,6 +1598,7 @@
     overflow-x: auto;
     overscroll-behavior-x: contain;
     scroll-padding-inline: 0.5rem;
+    scroll-snap-type: x mandatory;
     min-inline-size: 0;
     scrollbar-width: none;
   }
@@ -1613,6 +1614,7 @@
 
   .c-tabs__tab {
     position: relative;
+    scroll-snap-align: start;
     min-block-size: var(--target-control);
     padding: 0.85rem 0.9rem;
     background: none;
