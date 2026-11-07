@@ -423,6 +423,7 @@
 
     .c-code-tabs__list {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
       gap: 0.15rem;
       padding: 0.35rem 0.4rem 0;
@@ -789,6 +790,7 @@
    @scope (.c-file-tree) {
      .c-file-tree__row {
        display: flex;
+       flex-wrap: wrap;
        align-items: center;
        gap: 0.45rem;
        white-space: nowrap;

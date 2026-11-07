@@ -102,6 +102,7 @@
 
   .c-testimonial__byline {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 0.65rem;
   }
@@ -222,6 +223,7 @@
 
   .c-price__amount {
     display: flex;
+    flex-wrap: wrap;
     align-items: baseline;
     gap: 0.3rem;
     font-family: var(--font-display);
@@ -434,6 +436,7 @@
 
   .c-faq__question {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: calc(var(--space-sm) * var(--density, 1));
     padding: calc(var(--space-md) * var(--density, 1));

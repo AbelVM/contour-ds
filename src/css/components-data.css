@@ -958,6 +958,7 @@
   /* An active filter — removable, and always shows what it filters. */
   .c-filter-pill {
     display: inline-flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 0.4rem;
     padding: 0.2rem 0.3rem 0.2rem 0.55rem;
@@ -1063,6 +1064,7 @@
   /* Row actions stay hidden until the row is hovered or focused. */
   .c-table__actions {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: calc(var(--space-3xs) * var(--density, 1));
     justify-content: flex-end;
