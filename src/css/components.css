@@ -1919,7 +1919,7 @@
   .c-field-group {
     display: grid;
     gap: 0.6rem;
-    padding: 0.75rem;
+    padding: var(--space-xs);
     border: 1px solid var(--color-control-edge);
     border-radius: var(--radius-md);
     background: var(--color-surface-1);
@@ -2442,7 +2442,7 @@
 
   .c-table th,
   .c-table td {
-    padding: 0.75rem 1rem;
+    padding: var(--space-xs) 1rem;
     text-align: start;
     border-block-end: 1px solid var(--color-border-subtle);
     white-space: normal;
@@ -2942,7 +2942,7 @@
     display: flex;
     align-items: center;
     gap: 0.7rem;
-    padding: 0.75rem 0.9rem;
+    padding: var(--space-xs) 0.9rem;
     border: 1px solid var(--color-border-strong);
     border-radius: var(--radius-md);
     background: var(--color-surface-2);
@@ -3033,7 +3033,7 @@
     margin-inline-start: auto;
     color: var(--color-text-subtle);
     cursor: pointer;
-    padding: 0.25rem;
+    padding: var(--space-3xs);
     border-radius: var(--radius-xs);
     transition: color var(--dur-fast) var(--ease-standard), background-color var(--dur-fast) var(--ease-standard);
   }
@@ -3054,7 +3054,7 @@
     position: fixed;
     margin: 0;
     max-inline-size: 17rem;
-    padding: 0.5rem 0.7rem;
+    padding: var(--space-2xs) 0.7rem;
     border: 1px solid var(--color-border-strong);
     border-radius: var(--radius-sm);
     background: var(--color-tooltip-bg);
@@ -3538,7 +3538,7 @@
   }
 
   @container (inline-size < 16rem) {
-    .c-toolbar { gap: 0.2rem; padding: 0.25rem; }
+    .c-toolbar { gap: 0.2rem; padding: var(--space-3xs); }
     .c-toolbar__btn { inline-size: 2rem; block-size: 2rem; }
   }
 
@@ -3610,7 +3610,7 @@
     margin-inline-start: auto;
     color: var(--color-text-subtle);
     cursor: pointer;
-    padding: 0.25rem;
+    padding: var(--space-3xs);
     border-radius: var(--radius-xs);
     transition: color var(--dur-fast) var(--ease-standard), background-color var(--dur-fast) var(--ease-standard);
   }
@@ -3633,7 +3633,7 @@
     align-content: start;
     scrollbar-gutter: stable;
     overscroll-behavior: contain;
-    scroll-padding: 0.5rem;
+    scroll-padding: var(--space-2xs);
   }
 
   .c-sheet__foot {

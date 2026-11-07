@@ -164,7 +164,7 @@
 
     .c-toc__link {
       display: block;
-      padding: 0.25rem 0.65rem;
+      padding: var(--space-3xs) 0.65rem;
       margin-inline-start: -1px;
       border-inline-start: 1px solid transparent;
       color: var(--color-text-subtle);
@@ -238,7 +238,7 @@
     .c-callout__close {
       color: var(--color-text-subtle);
       cursor: pointer;
-      padding: 0.25rem;
+      padding: var(--space-3xs);
       border: none;
       background: transparent;
       border-radius: var(--radius-xs);
@@ -488,7 +488,7 @@
     display: flex;
     align-items: center;
     gap: var(--space-sm);
-    padding: 0.75rem 0.75rem 0.75rem 1rem;
+    padding: var(--space-xs) 0.75rem 0.75rem 1rem;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     background: var(--color-code-bg);

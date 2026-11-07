@@ -55,7 +55,7 @@ const DIST = join(ROOT, "dist");
  *  which the Format Module has no legal place for (C-43). It states values only —
  *  a token's meaning is published once, in the Format document. */
 const BUDGETS = {
-  "contour.min.css": 222 * 1024,  // raised 2026-11-07: +combobox clear affordance + layout fixes + skeleton margin + min-inline-size; measured 221.3 kB
+  "contour.min.css": 223 * 1024,  // raised 2026-11-07: +layout fixes; measured 222.0 kB
   "contour.min.js": 39 * 1024,  // raised 2026-11-04: focus restoration + changelog; measured 38.0 kB
   "contour.d.ts": 32 * 1024,  // raised 2026-11-04: +3 new components (data-export, pull-to-refresh, split-map)
   "contour.tokens.json": 51 * 1024,

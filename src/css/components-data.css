@@ -867,7 +867,7 @@
   .c-legend--interactive .c-legend__item {
     cursor: pointer;
     border-radius: var(--radius-xs);
-    padding: 0.25rem 0.4rem;
+    padding: var(--space-3xs) 0.4rem;
     min-block-size: 1.5rem;
     transition:
       opacity var(--dur-fast) var(--ease-standard),
@@ -922,7 +922,7 @@
     align-items: center;
     gap: var(--space-2xs);
     flex-wrap: wrap;
-    padding: 0.5rem 0.65rem;
+    padding: var(--space-2xs) 0.65rem;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     background: var(--color-surface-1);
@@ -1219,7 +1219,7 @@
     margin-inline-start: auto;
     color: var(--color-text-subtle);
     cursor: pointer;
-    padding: 0.25rem;
+    padding: var(--space-3xs);
     border-radius: var(--radius-xs);
   }
 
@@ -1241,7 +1241,7 @@
     align-content: start;
     scrollbar-gutter: stable;
     overscroll-behavior: contain;
-    scroll-padding: 0.5rem;
+    scroll-padding: var(--space-2xs);
   }
 
   .c-drawer__foot {
@@ -2157,7 +2157,7 @@
     max-block-size: calc(100% - var(--space-lg));
     overflow: auto;
     overscroll-behavior: contain;
-    scroll-padding: 0.5rem;
+    scroll-padding: var(--space-2xs);
     background: var(--color-surface-1);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
@@ -2225,7 +2225,7 @@
     min-block-size: 0;
     scrollbar-width: auto;
     overscroll-behavior: contain;
-    scroll-padding: 0.5rem;
+    scroll-padding: var(--space-2xs);
   }
   .c-container--scrollable::-webkit-scrollbar {
     width: 10px;
@@ -2274,7 +2274,7 @@
     min-inline-size: 0;
     overflow: auto;
     overscroll-behavior: contain;
-    scroll-padding: 0.5rem;
+    scroll-padding: var(--space-2xs);
   }
 
   .c-app-body {
@@ -2289,7 +2289,7 @@
     min-inline-size: 0;
     overflow: auto;
     overscroll-behavior: contain;
-    scroll-padding: 0.5rem;
+    scroll-padding: var(--space-2xs);
   }
 
   .c-app-body > .c-sidebar {
@@ -2304,7 +2304,7 @@
     min-inline-size: 0;
     overflow: auto;
     overscroll-behavior: contain;
-    scroll-padding: 0.5rem;
+    scroll-padding: var(--space-2xs);
   }
 
   .c-chart__control {
@@ -2753,7 +2753,7 @@
     grid-template-columns: auto 1fr auto;
     align-items: center;
     gap: var(--space-2xs);
-    padding: 0.25rem 0.5rem;
+    padding: var(--space-3xs) 0.5rem;
     border-radius: var(--radius-sm);
   }
   .c-category__bar {
@@ -2867,7 +2867,7 @@
     font-size: var(--type-sm);
   }
   .c-pivot th, .c-pivot td {
-    padding: 0.25rem 0.5rem;
+    padding: var(--space-3xs) 0.5rem;
     border: 1px solid var(--color-border);
   }
   .c-pivot th {
