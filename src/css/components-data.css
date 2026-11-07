@@ -1120,6 +1120,9 @@
     font-family: var(--font-mono);
     color: var(--color-text-subtle);
     white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-inline-size: 8rem;
   }
 
   /* =======================================================================
@@ -2645,7 +2648,7 @@
     align-items: center;
     gap: 0.25rem;
   }
-  .c-axis__label { white-space: nowrap; }
+  .c-axis__label { white-space: nowrap; text-overflow: ellipsis; overflow: hidden; max-inline-size: 6rem; }
   .c-axis__line {
     stroke: var(--chart-axis);
     stroke-width: 1;

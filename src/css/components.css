@@ -2745,6 +2745,9 @@
     gap: 0.55rem;
     color: var(--color-text-muted);
     white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-inline-size: 12rem;
   }
   .c-legend__item > * {
     min-inline-size: 0;
