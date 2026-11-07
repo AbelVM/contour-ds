@@ -73,6 +73,7 @@
   }
   .c-kpi__head > * {
     min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
 
   .c-kpi__label {
@@ -98,6 +99,7 @@
   }
   .c-kpi__value > * {
     min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
 
   .c-kpi__unit {
@@ -116,9 +118,7 @@
   }
   .c-kpi__foot > * {
     min-inline-size: 0;
-  }
-  .c-kpi__foot > * {
-    min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
 
   /* Delta — direction is carried by an arrow, not by colour alone. */
@@ -298,6 +298,7 @@
   }
   .c-panel__head > * {
     min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
 
   .c-panel__title {
@@ -324,6 +325,7 @@
   }
   .c-panel__actions > * {
     min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
 
   .c-panel__body {
@@ -1052,15 +1054,12 @@
     align-items: center;
     gap: 0.25rem;
     justify-content: flex-end;
-  }
-  .c-table__actions > * {
-    min-inline-size: 0;
-  }
     opacity: 0;
     transition: opacity var(--dur-fast) var(--ease-standard);
   }
   .c-table__actions > * {
     min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
 
   .c-table tbody tr:hover .c-table__actions,
@@ -1206,6 +1205,7 @@
   }
   .c-drawer__head > * {
     min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
 
   .c-drawer__title {
@@ -1487,6 +1487,7 @@
 
   .c-layer-panel__item > * {
     min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
 
   .c-layer-panel__item:hover {
@@ -2256,6 +2257,7 @@
   }
   .c-app__header > * {
     min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
 
   .c-app__title {
@@ -2412,12 +2414,7 @@
   }
   .c-instrument__item > * {
     min-inline-size: 0;
-  }
-  .c-instrument__item > * {
-    min-inline-size: 0;
-  }
-  .c-instrument__item > * {
-    min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
 
   .c-instrument__item::before {
@@ -2514,6 +2511,7 @@
   }
   .c-layer-switch__item > * {
     min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
 
   .c-layer-switch__item:hover {
@@ -2823,12 +2821,7 @@
   }
   .c-donut__item > * {
     min-inline-size: 0;
-  }
-  .c-donut__item > * {
-    min-inline-size: 0;
-  }
-  .c-donut__item > * {
-    min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
   .c-donut__swatch {
     inline-size: 0.75rem;
@@ -2890,6 +2883,7 @@
   }
   .c-pivot__toolbar > * {
     min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
   .c-pivot__filter {
     flex: 1 1 auto;
@@ -3000,6 +2994,7 @@
   }
   .c-spatial-filter__modes > * {
     min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
   .c-spatial-filter__mode {
     /* inherits c-btn */
@@ -3050,6 +3045,7 @@
   }
   .c-data-export > * {
     min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
   .c-data-export__btn {
     display: inline-flex;
@@ -3065,12 +3061,7 @@
   }
   .c-data-export__btn > * {
     min-inline-size: 0;
-  }
-  .c-data-export__btn > * {
-    min-inline-size: 0;
-  }
-  .c-data-export__btn > * {
-    min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
   .c-data-export__btn:hover { background: var(--color-surface-2); }
 

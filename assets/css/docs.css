@@ -1256,9 +1256,10 @@
      `.section--sunken` deliberately bleeds past its own box, and layout
      containment makes the section the containing block for a
      `position: fixed` descendant — so the scrim and the floating snippet body
-     stay inside one section instead of covering the page. Two exemptions,
-     both for mechanisms the guide owns: the bands that bleed, and whichever
-     section currently holds an open disclosure. */
+     stay inside one section instead of covering the page. Three exemptions,
+     all for mechanisms the guide owns: the bands that bleed, whichever
+     section currently holds an open disclosure, and the example that holds
+     the open disclosure (its floating body must not be clipped or skipped). */
    /* `.section` previously carried `content-visibility: auto`, which collapsed
       off-screen sections to their 800px intrinsic size and made the estimated
       position of a later section (e.g. #webcomponents) land far above its real
@@ -1273,8 +1274,10 @@
 
   .section--sunken,
   .section--raised,
-  .section:has(.ds-code[open]) {
+  .section:has(.ds-code[open]),
+  .ds-example:has(.ds-code[open]) {
     content-visibility: visible;
+    contain: none;
   }
 
 }

@@ -132,6 +132,7 @@
   }
   .c-command__input > * {
     min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
 
   .c-command__input svg {
@@ -198,6 +199,7 @@
   }
   .c-command__item > * {
     min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
 
   .c-command__item--active {
@@ -290,6 +292,7 @@
   }
   .c-command__foot > * {
     min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
 
   .c-command__foot span {
@@ -299,6 +302,7 @@
   }
   .c-command__foot span > * {
     min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
 
   .c-command__foot {
@@ -351,12 +355,7 @@
   }
   .c-menu__item > * {
     min-inline-size: 0;
-  }
-  .c-menu__item > * {
-    min-inline-size: 0;
-  }
-  .c-menu__item > * {
-    min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
 
   .c-menu__item:hover,

@@ -97,15 +97,7 @@
   }
   .c-header__nav > * {
     min-inline-size: 0;
-  }
-  .c-header__nav > * {
-    min-inline-size: 0;
-  }
-  .c-header__nav > * {
-    min-inline-size: 0;
-  }
-  .c-header__nav > * {
-    min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
 
   .c-header__nav a {
@@ -142,12 +134,7 @@
   }
   .c-header__actions > * {
     min-inline-size: 0;
-  }
-  .c-header__actions > * {
-    min-inline-size: 0;
-  }
-  .c-header__actions > * {
-    min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
 
   .c-header__nav + .c-header__actions {
@@ -649,6 +636,7 @@
   }
   .c-shortcut-row > * {
     min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
 
   .c-shortcut-row__label {
@@ -662,6 +650,7 @@
   }
   .c-shortcut-row__keys > * {
     min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
   /* Combobox: autocomplete input with dropdown. */
   .c-combobox {
@@ -707,6 +696,7 @@
   }
   .c-combobox__clear > * {
     min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
 
   .c-combobox__clear:hover {
@@ -810,6 +800,7 @@
   }
   .c-tree__row > * {
     min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
 
   .c-tree__row:hover {
@@ -833,12 +824,7 @@
   }
   .c-tree__toggle > * {
     min-inline-size: 0;
-  }
-  .c-tree__toggle > * {
-    min-inline-size: 0;
-  }
-  .c-tree__toggle > * {
-    min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
 
   .c-tree__toggle[aria-expanded="true"] {
@@ -1997,6 +1983,7 @@
   }
   .c-form__actions > * {
     min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
 
   .c-form.is-submitting .c-form__submit {
@@ -2324,9 +2311,7 @@
   }
   .c-code__head > * {
     min-inline-size: 0;
-  }
-  .c-code__head > * {
-    min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
 
   .c-code__title {
@@ -2779,15 +2764,7 @@
   }
   .c-legend__item > * {
     min-inline-size: 0;
-  }
-  .c-legend__item > * {
-    min-inline-size: 0;
-  }
-  .c-legend__item > * {
-    min-inline-size: 0;
-  }
-  .c-legend__item > * {
-    min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
 
   .c-legend__swatch {
@@ -2898,6 +2875,7 @@
   }
   .c-alert__actions > * {
     min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
 
   .c-alert--info {
@@ -3023,6 +3001,7 @@
   }
   .c-dialog__head > * {
     min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
 
   .c-dialog__title {
@@ -3047,6 +3026,7 @@
   }
   .c-dialog__foot > * {
     min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
 
   .c-dialog__close {
@@ -3616,6 +3596,7 @@
   }
   .c-sheet__head > * {
     min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
 
   .c-sheet__title {
@@ -3800,6 +3781,7 @@
   }
   .c-animation-controls > * {
     min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
   .c-animation-controls__play,
   .c-animation-controls__speed {
@@ -3962,6 +3944,7 @@
   }
   .c-rating > * {
     min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
   .c-rating__star {
     background: none;
@@ -3975,6 +3958,7 @@
   }
   .c-rating__star > * {
     min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
   .c-rating__swatch {
     display: inline-block;
@@ -4094,6 +4078,7 @@
   }
   .c-date-range > * {
     min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
   .c-date-range__label {
     font-size: var(--type-xs);
@@ -4195,6 +4180,7 @@
   }
   .c-style-panel__body > * {
     min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
   .c-style-panel__row {
     display: flex;
@@ -4205,6 +4191,7 @@
   }
   .c-style-panel__row > * {
     min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
   .c-style-panel__name {
     font-size: var(--type-sm);
@@ -4243,6 +4230,7 @@
   }
   .c-style-panel__actions > * {
     min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
 
   .c-style-panel__colors {
@@ -4360,15 +4348,18 @@
   /* -- Stepper (form) ---------------------------------------------------- */
   .c-stepper { display: block; }
   .c-stepper__list { display: flex; flex-wrap: wrap; gap: var(--space-sm); list-style: none; padding: 0; margin: 0 0 var(--space-sm); }
-  .c-stepper__list > * { min-inline-size: 0; }
+  .c-stepper__list > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
   .c-stepper__step { font-size: var(--type-sm); color: var(--color-text-muted); }
   .c-stepper__step.is-current { color: var(--color-primary); font-weight: 600; }
   .c-stepper__step.is-done { color: var(--color-success); }
   .c-stepper__nav { display: flex; gap: var(--space-xs); }
-  .c-stepper__nav > * { min-inline-size: 0; }
-  .c-stepper__nav > * { min-inline-size: 0; }
-  .c-stepper__nav > * { min-inline-size: 0; }
-  .c-stepper__nav > * { min-inline-size: 0; }
+  .c-stepper__nav > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
   /* -- Virtual list ------------------------------------------------------ */
   .c-virtual-list { display: block; }
   .c-virtual-list__scroller { max-block-size: 20rem; overflow: auto; border: 1px solid var(--color-border); border-radius: var(--radius-md); }
@@ -4412,10 +4403,10 @@
   .c-tour { position: fixed; z-index: var(--z-tooltip); background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-sm); box-shadow: var(--shadow-md); max-inline-size: 18rem; }
   .c-tour__tip { font-size: var(--type-sm); margin-block-end: var(--space-xs); }
   .c-tour__nav { display: flex; justify-content: flex-end; }
-  .c-tour__nav > * { min-inline-size: 0; }
-  .c-tour__nav > * { min-inline-size: 0; }
-  .c-tour__nav > * { min-inline-size: 0; }
-  .c-tour__nav > * { min-inline-size: 0; }
+  .c-tour__nav > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
 
   .c-tour__step {
     font-size: var(--type-xs);
@@ -4431,11 +4422,10 @@
   .c-sortable-list { display: block; }
   .c-sortable-list__list { list-style: none; padding: 0; margin: 0; }
   .c-sortable-list__item { display: flex; align-items: center; gap: var(--space-xs); padding: var(--space-2xs) var(--space-xs); border-block-end: 1px solid var(--color-border); }
-  .c-sortable-list__item > * { min-inline-size: 0; }
-  .c-sortable-list__item > * { min-inline-size: 0; }
-  .c-sortable-list__item > * { min-inline-size: 0; }
-  .c-sortable-list__item > * { min-inline-size: 0; }
-  .c-sortable-list__item > * { min-inline-size: 0; }
+  .c-sortable-list__item > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
   .c-sortable-list__handle { cursor: grab; color: var(--color-text-muted); }
   /* -- Swatch ------------------------------------------------------------ */
   .c-swatch { display: inline-block; inline-size: 1.5rem; block-size: 1.5rem; border-radius: var(--radius-sm); border: 1px solid var(--color-border); background: var(--swatch-color, #000); cursor: pointer; }
@@ -4448,11 +4438,10 @@
   .c-calendar__day.is-selected { background: var(--color-primary); color: var(--color-on-primary); }
   .c-calendar__day--empty { border: none; background: transparent; }
   .c-calendar__header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-xs); margin-block-end: var(--space-xs); }
-  .c-calendar__header > * { min-inline-size: 0; }
-  .c-calendar__header > * { min-inline-size: 0; }
-  .c-calendar__header > * { min-inline-size: 0; }
-  .c-calendar__header > * { min-inline-size: 0; }
-  .c-calendar__header > * { min-inline-size: 0; }
+  .c-calendar__header > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
   .c-calendar__title { font-weight: 600; font-size: var(--type-sm); }
   .c-calendar__prev, .c-calendar__next { min-inline-size: 2rem; }
   /* -- Carousel ---------------------------------------------------------- */
@@ -4477,9 +4466,7 @@
   }
   .c-data-grid__row > * {
     min-inline-size: 0;
-  }
-  .c-data-grid__row > * {
-    min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
   /* -- Tree grid --------------------------------------------------------- */
   .c-tree-grid { display: block; overflow: auto; }
