@@ -490,7 +490,11 @@
     .c-notification-center__panel {
       box-shadow: none;
     }
-    .u-fade-in {
+    .u-fade-in,
+    .c-skeleton::after,
+    .c-spinner,
+    .c-live-badge::before,
+    .c-streaming-chart__live-dot {
       animation: none;
     }
     .c-field::before,
