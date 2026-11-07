@@ -458,7 +458,9 @@
     .c-tag,
     .c-tabs__tab,
     .c-segmented__option,
-    .c-menu__item {
+    .c-menu__item,
+    .c-filter-pill,
+    .c-badge-overflow {
       border-width: var(--border-width-thick);
     }
     .c-card, .c-panel, .c-input, .c-select, .c-textarea {
