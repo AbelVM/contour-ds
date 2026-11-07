@@ -919,7 +919,18 @@
   @media (pointer: coarse) {
     .c-btn,
     .c-tabs__tab,
-    .c-segmented__option {
+    .c-segmented__option,
+    .c-chip,
+    .c-pill,
+    .c-badge,
+    .c-tag,
+    .c-menu__item,
+    .c-filter-pill,
+    .c-pagination__link,
+    .c-rating__star,
+    .c-calendar__day,
+    .c-palette-editor__swatch,
+    .c-color-picker__preset {
       min-block-size: var(--target-control);
     }
 
