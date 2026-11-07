@@ -3966,10 +3966,6 @@
   .c-rating__star > * {
     min-inline-size: 0;
   }
-  }
-  .c-rating__star > * {
-    min-inline-size: 0;
-  }
   .c-rating__swatch {
     display: inline-block;
     inline-size: 1rem;

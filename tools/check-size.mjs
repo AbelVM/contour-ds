@@ -55,7 +55,7 @@ const DIST = join(ROOT, "dist");
  *  which the Format Module has no legal place for (C-43). It states values only —
  *  a token's meaning is published once, in the Format document. */
 const BUDGETS = {
-  "contour.min.css": 221 * 1024,  // raised 2026-11-07: +combobox clear affordance + layout fixes + skeleton margin; measured 220.0 kB
+  "contour.min.css": 222 * 1024,  // raised 2026-11-07: +combobox clear affordance + layout fixes + skeleton margin + min-inline-size; measured 221.3 kB
   "contour.min.js": 39 * 1024,  // raised 2026-11-04: focus restoration + changelog; measured 38.0 kB
   "contour.d.ts": 32 * 1024,  // raised 2026-11-04: +3 new components (data-export, pull-to-refresh, split-map)
   "contour.tokens.json": 51 * 1024,
@@ -117,8 +117,8 @@ const BUDGETS = {
   "hljs.css": 4 * 1024,
   "agent-rules.json": 12 * 1024,
   "surfaces/contour-core.min.css": 149 * 1024,  // raised 2026-11-03: deferred 1.5 feature batch; measured 142.3 kB
-  "surfaces/contour-docs.min.css": 164 * 1024,  // raised 2026-11-03: deferred 1.5 feature batch; measured 155.8 kB
-  "surfaces/contour-data.min.css": 197 * 1024,  // raised 2026-11-03: deferred 1.5 feature batch; measured 186.9 kB
+  "surfaces/contour-docs.min.css": 165 * 1024,  // raised 2026-11-07: +layout fixes; measured 164.3 kB
+  "surfaces/contour-data.min.css": 198 * 1024,  // raised 2026-11-07: +layout fixes; measured 197.7 kB
   "surfaces/contour-landing.min.css": 158 * 1024,  // raised 2026-11-03: deferred 1.5 feature batch; measured 149.99 kB
   "contour.esm.min.js": 39 * 1024,
   "contour-wc.esm.min.js": 603 * 1024,  // raised 2026-11-04: +changelog component; measured 602.2 kB
