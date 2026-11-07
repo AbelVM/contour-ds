@@ -117,7 +117,7 @@ const BUDGETS = {
   "hljs.css": 4 * 1024,
   "agent-rules.json": 12 * 1024,
   "surfaces/contour-core.min.css": 157 * 1024,  // raised 2026-11-07: +layout fixes; measured 156.7 kB
-  "surfaces/contour-docs.min.css": 173 * 1024,  // raised 2026-11-07: +layout fixes; measured 172.8 kB
+  "surfaces/contour-docs.min.css": 174 * 1024,  // raised 2026-11-07: +layout fixes; measured 173.1 kB
   "surfaces/contour-data.min.css": 210 * 1024,  // raised 2026-11-07: +layout fixes; measured 209.6 kB
   "surfaces/contour-landing.min.css": 166 * 1024,  // raised 2026-11-07: +layout fixes; measured 165.1 kB
   "contour.esm.min.js": 39 * 1024,

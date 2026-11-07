@@ -879,7 +879,7 @@
   .c-legend--interactive .c-legend__item {
     cursor: pointer;
     border-radius: var(--radius-xs);
-    padding: var(--space-3xs) 0.4rem;
+    padding: calc(var(--space-3xs) * var(--density, 1)) 0.4rem;
     min-block-size: 1.5rem;
     transition:
       opacity var(--dur-fast) var(--ease-standard),
@@ -934,7 +934,7 @@
     align-items: center;
     gap: calc(var(--space-2xs) * var(--density, 1));
     flex-wrap: wrap;
-    padding: var(--space-2xs) 0.65rem;
+    padding: calc(var(--space-2xs) * var(--density, 1)) 0.65rem;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     background: var(--color-surface-1);
@@ -2785,7 +2785,7 @@
     grid-template-columns: auto 1fr auto;
     align-items: center;
     gap: calc(var(--space-2xs) * var(--density, 1));
-    padding: var(--space-3xs) 0.5rem;
+    padding: calc(var(--space-3xs) * var(--density, 1)) 0.5rem;
     border-radius: var(--radius-sm);
   }
   .c-category__bar {
@@ -2899,7 +2899,7 @@
     font-size: var(--type-sm);
   }
   .c-pivot th, .c-pivot td {
-    padding: var(--space-3xs) 0.5rem;
+    padding: calc(var(--space-3xs) * var(--density, 1)) 0.5rem;
     border: 1px solid var(--color-border);
   }
   .c-pivot th {
