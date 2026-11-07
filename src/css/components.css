@@ -98,6 +98,9 @@
   .c-header__nav > * {
     min-inline-size: 0;
   }
+  .c-header__nav > * {
+    min-inline-size: 0;
+  }
 
   .c-header__nav a {
     padding: 0.45rem 0.7rem;
@@ -2300,6 +2303,9 @@
   .c-code__head > * {
     min-inline-size: 0;
   }
+  .c-code__head > * {
+    min-inline-size: 0;
+  }
 
   .c-code__title {
     font-family: var(--font-mono);
@@ -2748,6 +2754,9 @@
     text-overflow: ellipsis;
     overflow: hidden;
     max-inline-size: 12rem;
+  }
+  .c-legend__item > * {
+    min-inline-size: 0;
   }
   .c-legend__item > * {
     min-inline-size: 0;
