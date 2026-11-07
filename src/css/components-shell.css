@@ -193,6 +193,9 @@
     text-align: start;
     cursor: pointer;
   }
+  .c-command__item > * {
+    min-inline-size: 0;
+  }
 
   .c-command__item--active {
     background: var(--color-primary-soft);
@@ -339,6 +342,9 @@
     text-decoration: none;
     cursor: pointer;
     transition: background-color var(--dur-fast) var(--ease-standard);
+  }
+  .c-menu__item > * {
+    min-inline-size: 0;
   }
 
   .c-menu__item:hover,
