@@ -104,6 +104,9 @@
     color: var(--color-text-muted);
     text-decoration: none;
     white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-inline-size: 12rem;
     transition:
       color var(--dur-fast) var(--ease-standard),
       background-color var(--dur-fast) var(--ease-standard);
@@ -613,10 +616,14 @@
 
   .c-shortcut-row {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: var(--space-md);
     padding: var(--space-2xs) 0;
+  }
+  .c-shortcut-row > * {
+    min-inline-size: 0;
   }
 
   .c-shortcut-row__label {
@@ -625,7 +632,11 @@
 
   .c-shortcut-row__keys {
     display: flex;
+    flex-wrap: wrap;
     gap: var(--space-2xs);
+  }
+  .c-shortcut-row__keys > * {
+    min-inline-size: 0;
   }
   /* Combobox: autocomplete input with dropdown. */
   .c-combobox {
@@ -647,6 +658,41 @@
     transition:
       border-color var(--dur-fast) var(--ease-standard),
       box-shadow var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-combobox__clear {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-end: 0.5rem;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--color-text-muted);
+    font-size: var(--type-sm);
+    line-height: 1;
+    cursor: pointer;
+    transition: color var(--dur-fast) var(--ease-standard), background-color var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-combobox__clear:hover {
+    color: var(--color-text);
+    background: var(--color-surface-2);
+  }
+
+  .c-combobox__clear:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 1px;
+  }
+
+  .c-combobox:has(.c-combobox__clear) .c-combobox__input {
+    padding-inline-end: 2.2rem;
   }
 
   .c-combobox__input:focus {
@@ -1546,6 +1592,9 @@
     color: var(--color-text-subtle);
     cursor: pointer;
     white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-inline-size: 12rem;
     transition: color var(--dur-fast) var(--ease-standard);
   }
 
@@ -2087,6 +2136,7 @@
 
   .c-range-scale {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     font-family: var(--font-mono);
     font-size: var(--type-micro);
@@ -2656,6 +2706,7 @@
 
   .c-legend__scale {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     font-family: var(--font-mono);
     font-size: var(--type-micro);
@@ -2898,9 +2949,13 @@
 
   .c-dialog__head {
     display: flex;
+    flex-wrap: wrap;
     align-items: flex-start;
     gap: var(--space-sm);
     padding: 1.25rem 1.35rem 0.75rem;
+  }
+  .c-dialog__head > * {
+    min-inline-size: 0;
   }
 
   .c-dialog__title {
@@ -2919,9 +2974,12 @@
 
   .c-dialog__foot {
     display: flex;
+    flex-wrap: wrap;
     justify-content: flex-end;
     gap: 0.5rem;
-    padding: 1rem 1.35rem 1.25rem;
+  }
+  .c-dialog__foot > * {
+    min-inline-size: 0;
   }
 
   .c-dialog__close {
@@ -3666,8 +3724,12 @@
   /* -- Animation controls ------------------------------------------------- */
   .c-animation-controls {
     display: inline-flex;
+    flex-wrap: wrap;
     gap: var(--space-2xs);
     align-items: center;
+  }
+  .c-animation-controls > * {
+    min-inline-size: 0;
   }
   .c-animation-controls__play,
   .c-animation-controls__speed {
@@ -3825,7 +3887,11 @@
   }
   .c-rating {
     display: inline-flex;
+    flex-wrap: wrap;
     gap: var(--space-2xs);
+  }
+  .c-rating > * {
+    min-inline-size: 0;
   }
   .c-rating__star {
     background: none;
@@ -3879,6 +3945,7 @@
   .c-date-picker__calendar[hidden] { display: none; }
   .c-date-picker__calendar-header {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     gap: var(--space-2xs);
@@ -3948,8 +4015,12 @@
   }
   .c-date-range {
     display: inline-flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: var(--space-2xs);
+  }
+  .c-date-range > * {
+    min-inline-size: 0;
   }
   .c-date-range__label {
     font-size: var(--type-xs);
@@ -4051,9 +4122,13 @@
   }
   .c-style-panel__row {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: var(--space-sm);
     justify-content: space-between;
+  }
+  .c-style-panel__row > * {
+    min-inline-size: 0;
   }
   .c-style-panel__name {
     font-size: var(--type-sm);
@@ -4086,8 +4161,12 @@
 
   .c-style-panel__actions {
     display: flex;
+    flex-wrap: wrap;
     gap: var(--space-xs);
     justify-content: flex-end;
+  }
+  .c-style-panel__actions > * {
+    min-inline-size: 0;
   }
 
   .c-style-panel__colors {
@@ -4204,7 +4283,8 @@
   .c-notification-center__badge { position: absolute; inset-block-start: -0.25rem; inset-inline-end: -0.25rem; z-index: 1; }
   /* -- Stepper (form) ---------------------------------------------------- */
   .c-stepper { display: block; }
-  .c-stepper__list { display: flex; gap: var(--space-sm); list-style: none; padding: 0; margin: 0 0 var(--space-sm); }
+  .c-stepper__list { display: flex; flex-wrap: wrap; gap: var(--space-sm); list-style: none; padding: 0; margin: 0 0 var(--space-sm); }
+  .c-stepper__list > * { min-inline-size: 0; }
   .c-stepper__step { font-size: var(--type-sm); color: var(--color-text-muted); }
   .c-stepper__step.is-current { color: var(--color-primary); font-weight: 600; }
   .c-stepper__step.is-done { color: var(--color-success); }
@@ -4278,7 +4358,7 @@
   .c-calendar__day { aspect-ratio: 1; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-1); color: var(--color-text); cursor: pointer; font-size: var(--type-xs); }
   .c-calendar__day.is-selected { background: var(--color-primary); color: var(--color-on-primary); }
   .c-calendar__day--empty { border: none; background: transparent; }
-  .c-calendar__header { display: flex; align-items: center; justify-content: space-between; gap: var(--space-xs); margin-block-end: var(--space-xs); }
+  .c-calendar__header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-xs); margin-block-end: var(--space-xs); }
   .c-calendar__title { font-weight: 600; font-size: var(--type-sm); }
   .c-calendar__prev, .c-calendar__next { min-inline-size: 2rem; }
   /* -- Carousel ---------------------------------------------------------- */

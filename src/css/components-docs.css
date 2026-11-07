@@ -845,8 +845,13 @@
 
     .c-changelog__summary {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
       gap: var(--space-sm);
+    }
+    .c-changelog__summary > * {
+      min-inline-size: 0;
+    }
       padding: var(--space-sm) var(--space-md);
       cursor: pointer;
       list-style: none;
