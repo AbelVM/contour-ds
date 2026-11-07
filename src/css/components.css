@@ -4304,6 +4304,7 @@
   .c-stepper__nav > * { min-inline-size: 0; }
   .c-stepper__nav > * { min-inline-size: 0; }
   .c-stepper__nav > * { min-inline-size: 0; }
+  .c-stepper__nav > * { min-inline-size: 0; }
   /* -- Virtual list ------------------------------------------------------ */
   .c-virtual-list { display: block; }
   .c-virtual-list__scroller { max-block-size: 20rem; overflow: auto; border: 1px solid var(--color-border); border-radius: var(--radius-md); }
@@ -4347,6 +4348,7 @@
   .c-tour { position: fixed; z-index: var(--z-tooltip); background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-sm); box-shadow: var(--shadow-md); max-inline-size: 18rem; }
   .c-tour__tip { font-size: var(--type-sm); margin-block-end: var(--space-xs); }
   .c-tour__nav { display: flex; justify-content: flex-end; }
+  .c-tour__nav > * { min-inline-size: 0; }
   .c-tour__nav > * { min-inline-size: 0; }
   .c-tour__nav > * { min-inline-size: 0; }
   .c-tour__nav > * { min-inline-size: 0; }
