@@ -1116,7 +1116,7 @@ class ContourStylePanel extends ContourBase {
            body.appendChild(list);
          }
          // Apply/Revert buttons
-         const actions = document.createElement("div"); actions.className = "c-style-panel__actions";
+         const actions = document.createElement("div"); actions.className = "c-style-panel__actions c-btn-group";
          const applyBtn = document.createElement("button"); applyBtn.type = "button"; applyBtn.className = "c-btn c-btn--primary"; applyBtn.textContent = "Apply";
          const revertBtn = document.createElement("button"); revertBtn.type = "button"; revertBtn.className = "c-btn"; revertBtn.textContent = "Revert";
          actions.appendChild(applyBtn); actions.appendChild(revertBtn);
@@ -2325,7 +2325,7 @@ class ContourStepper extends ContourBase {
         li.textContent = typeof s === "string" ? s : (s.title || s.label || "");
         list.appendChild(li);
       });
-      const nav = this.ensure(".c-stepper__nav", () => { const el = document.createElement("div"); el.className = "c-stepper__nav"; return el; });
+      const nav = this.ensure(".c-stepper__nav", () => { const el = document.createElement("div"); el.className = "c-stepper__nav c-btn-group"; return el; });
       const prev = this.ensure(".c-stepper__prev", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-stepper__prev"; el.type = "button"; el.textContent = "Back"; return el; });
       const next = this.ensure(".c-stepper__next", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-stepper__next"; el.type = "button"; el.textContent = "Next"; return el; });
       if (!nav.contains(prev)) nav.appendChild(prev);
@@ -2723,7 +2723,7 @@ class ContourTour extends ContourBase {
       const step = parsed[current] || {};
       const tip = this.ensure(".c-tour__tip", () => { const el = document.createElement("div"); el.className = "c-tour__tip"; return el; });
       tip.textContent = typeof step === "string" ? step : (step.text || step.title || "");
-      const nav = this.ensure(".c-tour__nav", () => { const el = document.createElement("div"); el.className = "c-tour__nav"; return el; });
+      const nav = this.ensure(".c-tour__nav", () => { const el = document.createElement("div"); el.className = "c-tour__nav c-btn-group"; return el; });
       const next = this.ensure(".c-tour__next", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-tour__next"; el.type = "button"; el.textContent = "Next"; return el; });
       if (!nav.contains(next)) nav.appendChild(next);
     }
