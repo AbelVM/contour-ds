@@ -1358,7 +1358,7 @@
   .c-plate {
     position: relative;
     overflow: clip;
-    padding: var(--space-xl);
+    padding: calc(var(--space-xl) * var(--density, 1));
     border: 1px solid var(--color-border);
     border-radius: var(--radius-2xl);
     background: var(--gradient-plate);
@@ -2472,7 +2472,7 @@
     contain: layout;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
-    padding: var(--space-md);
+    padding: calc(var(--space-md) * var(--density, 1));
     background: var(--color-surface-raised);
   }
 
