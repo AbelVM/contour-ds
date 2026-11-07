@@ -1086,6 +1086,10 @@
     letter-spacing: 0.04em;
     color: var(--color-text-subtle);
   }
+  .c-time-range > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
 
   /* =======================================================================
      9. ACTIVITY FEED
@@ -2056,6 +2060,10 @@
     flex-direction: column;
     gap: var(--map-ctrl-gap);
   }
+  .c-map-slot__controls > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
 
   .c-map-slot__control {
     inline-size: var(--map-ctrl-size);
@@ -2987,6 +2995,10 @@
     align-items: center;
     gap: var(--space-2xs);
   }
+  .c-spatial-filter > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
   .c-spatial-filter--active {
     outline: 2px solid var(--color-accent);
     outline-offset: 2px;
@@ -3010,6 +3022,10 @@
     flex-wrap: wrap;
     flex-direction: column;
     gap: var(--space-xs);
+  }
+  .c-geocoder > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
   .c-geocoder__input {
     inline-size: 100%;
