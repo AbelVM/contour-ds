@@ -3945,6 +3945,9 @@
     align-items: center;
     justify-content: center;
   }
+  .c-rating__star > * {
+    min-inline-size: 0;
+  }
   .c-rating__swatch {
     display: inline-block;
     inline-size: 1rem;
@@ -4161,6 +4164,9 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-2xs);
+  }
+  .c-style-panel__body > * {
+    min-inline-size: 0;
   }
   .c-style-panel__row {
     display: flex;
