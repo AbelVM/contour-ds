@@ -490,10 +490,31 @@
     .c-command,
     .c-command-palette,
     .c-combobox__list,
-    .c-date-picker__calendar {
+    .c-date-picker__calendar,
+    .c-input,
+    .c-select,
+    .c-textarea,
+    .c-kpi,
+    .c-legend,
+    .c-menu,
+    .c-toolbar,
+    .c-tabs,
+    .c-segmented,
+    .c-chart,
+    .c-meter,
+    .c-price,
+    .c-pivot,
+    .c-annotation,
+    .c-table,
+    .c-switch,
+    .c-check,
+    .c-radio,
+    .c-dash-toolbar,
+    .c-error-boundary,
+    .c-affordance {
       border-width: var(--border-width-thick);
     }
-    .c-card, .c-panel, .c-input, .c-select, .c-textarea, .c-input-group, .c-number-field, .c-combobox, .c-alert, .c-callout, .c-dialog, .c-popover, .c-tooltip, .c-dropdown, .c-context-menu, .c-hover-card, .c-map-popup, .c-toast, .c-empty, .c-drawer, .c-sheet, .c-side-sheet, .c-command, .c-command-palette {
+    .c-card, .c-panel, .c-input, .c-select, .c-textarea, .c-input-group, .c-number-field, .c-combobox, .c-alert, .c-callout, .c-dialog, .c-popover, .c-tooltip, .c-dropdown, .c-context-menu, .c-hover-card, .c-map-popup, .c-toast, .c-empty, .c-drawer, .c-sheet, .c-side-sheet, .c-command, .c-command-palette, .c-kpi, .c-legend, .c-menu, .c-toolbar, .c-tabs, .c-segmented, .c-chart, .c-meter, .c-price, .c-pivot, .c-annotation, .c-table, .c-switch, .c-check, .c-radio, .c-dash-toolbar, .c-error-boundary, .c-affordance {
       background: var(--color-surface-1);
     }
   }
