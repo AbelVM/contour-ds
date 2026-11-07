@@ -487,7 +487,10 @@
     }
 
     /* Avoid breaking inside components. */
-    tr {
+    tr,
+    .c-chart,
+    .c-card,
+    .c-panel {
       break-inside: avoid;
     }
 

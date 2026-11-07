@@ -2073,6 +2073,7 @@
   .c-select {
     appearance: none;
     overflow: hidden;
+    min-block-size: var(--target-control);
     padding-inline-end: 2.25rem;
     text-overflow: ellipsis;
     white-space: nowrap;
