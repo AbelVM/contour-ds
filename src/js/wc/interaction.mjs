@@ -111,7 +111,7 @@ class ContourShortcutPanelFull extends ContourBase {
       this.classList.add("c-shortcut-overlay");
       const title = this.getAttribute("title");
       if (title) {
-        const t = this.ensure(".c-shortcut-overlay__title", () => { const el = document.createElement("div"); el.className = "c-shortcut-overlay__title"; el.style.padding = "var(--space-sm)"; return el; });
+        const t = this.ensure(".c-shortcut-overlay__title", () => { const el = document.createElement("div"); el.className = "c-shortcut-overlay__title"; return el; });
         t.textContent = title;
       }
       if (this.hasAttribute("open")) this.removeAttribute("hidden");

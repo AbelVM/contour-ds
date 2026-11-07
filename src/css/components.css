@@ -591,6 +591,10 @@
   }
 
   /* Keyboard shortcut help overlay. */
+  .c-shortcut-overlay__title {
+    padding: var(--space-sm);
+  }
+
   .c-shortcut-overlay {
     position: fixed;
     inset: 0;
