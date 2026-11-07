@@ -957,6 +957,7 @@
 
   /* An active filter — removable, and always shows what it filters. */
   .c-filter-pill {
+    min-block-size: var(--target-control);
     display: inline-flex;
     flex-wrap: wrap;
     align-items: center;
