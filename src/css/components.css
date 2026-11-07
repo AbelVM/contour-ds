@@ -687,10 +687,6 @@
 
   .c-combobox__clear {
     position: absolute;
-  }
-  .c-combobox__clear > * {
-    min-inline-size: 0;
-  }
     inset-block-start: 50%;
     inset-inline-end: 0.5rem;
     transform: translateY(-50%);
@@ -708,9 +704,6 @@
     line-height: 1;
     cursor: pointer;
     transition: color var(--dur-fast) var(--ease-standard), background-color var(--dur-fast) var(--ease-standard);
-  }
-  .c-combobox__clear > * {
-    min-inline-size: 0;
   }
   .c-combobox__clear > * {
     min-inline-size: 0;
@@ -814,12 +807,6 @@
     cursor: pointer;
     font-size: var(--type-sm);
     transition: background-color var(--dur-fast) var(--ease-standard);
-  }
-  .c-tree__row > * {
-    min-inline-size: 0;
-  }
-  .c-tree__row > * {
-    min-inline-size: 0;
   }
   .c-tree__row > * {
     min-inline-size: 0;

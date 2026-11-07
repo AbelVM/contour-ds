@@ -1647,6 +1647,9 @@
     inline-size: auto;
     padding-inline: var(--space-sm);
     white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-inline-size: 8rem;
   }
 
   /* =======================================================================
@@ -3053,16 +3056,15 @@
     align-items: center;
     gap: var(--space-xs);
     padding: var(--space-xs) var(--space-sm);
-  }
-  .c-data-export__btn > * {
-    min-inline-size: 0;
-  }
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
     background: var(--color-surface-1);
     color: var(--color-text-strong);
     font: inherit;
     cursor: pointer;
+  }
+  .c-data-export__btn > * {
+    min-inline-size: 0;
   }
   .c-data-export__btn > * {
     min-inline-size: 0;
