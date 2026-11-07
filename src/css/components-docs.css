@@ -507,6 +507,9 @@
 
     .c-install__command {
       white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      max-inline-size: 20rem;
     }
 
     .c-install__copy {
