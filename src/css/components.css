@@ -504,6 +504,7 @@
   .c-chip {
     contain: layout;
     display: inline-flex;
+    min-block-size: var(--target-option);
     align-items: center;
     gap: var(--space-2xs);
     padding: 0.35rem 0.7rem;
@@ -545,6 +546,7 @@
   .c-pill {
     contain: layout;
     display: inline-flex;
+    min-block-size: var(--target-option);
     align-items: center;
     gap: 0.45rem;
     padding: 0.3rem 0.7rem;
@@ -1610,6 +1612,7 @@
 
   .c-tabs__tab {
     position: relative;
+    min-block-size: var(--target-control);
     padding: 0.85rem 0.9rem;
     background: none;
     border: none;
