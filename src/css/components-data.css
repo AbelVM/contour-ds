@@ -1097,6 +1097,8 @@
   .c-activity {
     display: grid;
     gap: var(--space-sm);
+    content-visibility: auto;
+    contain-intrinsic-size: auto 200px;
   }
 
   .c-activity__empty,

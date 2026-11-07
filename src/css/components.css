@@ -2759,6 +2759,8 @@
   .c-legend__items {
     display: grid;
     gap: 0.4rem;
+    content-visibility: auto;
+    contain-intrinsic-size: auto 120px;
   }
 
   .c-legend__item {
@@ -3377,6 +3379,8 @@
   .c-timeline {
     display: grid;
     gap: 0;
+    content-visibility: auto;
+    contain-intrinsic-size: auto 200px;
   }
 
   .c-timeline__item {
@@ -4371,7 +4375,7 @@
     overflow-wrap: anywhere;
   }
   /* -- Virtual list ------------------------------------------------------ */
-  .c-virtual-list { display: block; }
+  .c-virtual-list { display: block; content-visibility: auto; contain-intrinsic-size: auto 200px; }
   .c-virtual-list__scroller { max-block-size: 20rem; overflow: auto; border: 1px solid var(--color-border); border-radius: var(--radius-md); }
   .c-virtual-list__inner { position: relative; }
   .c-virtual-list__spacer { display: block; }
@@ -4429,7 +4433,7 @@
   .c-tags-input__tag { display: inline-flex; align-items: center; gap: var(--space-2xs); }
   .c-tags-input__remove { background: none; border: none; cursor: pointer; color: var(--color-text-muted); }
   /* -- Sortable list ----------------------------------------------------- */
-  .c-sortable-list { display: block; }
+  .c-sortable-list { display: block; content-visibility: auto; contain-intrinsic-size: auto 200px; }
   .c-sortable-list__list { list-style: none; padding: 0; margin: 0; }
   .c-sortable-list__item { display: flex; align-items: center; gap: var(--space-xs); padding: var(--space-2xs) var(--space-xs); border-block-end: 1px solid var(--color-border); }
   .c-sortable-list__item > * {
