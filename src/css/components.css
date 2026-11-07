@@ -462,6 +462,7 @@
     gap: 0.35rem;
     padding: 0.2rem 0.5rem;
     border-radius: var(--radius-xs);
+    transition: background-color var(--dur-fast) var(--ease-standard), color var(--dur-fast) var(--ease-standard);
     background: var(--color-surface-3);
     color: var(--color-text-muted);
     font-family: var(--font-mono);
@@ -516,6 +517,7 @@
     align-items: center;
     gap: var(--space-2xs);
     padding: 0.35rem 0.7rem;
+    transition: background-color var(--dur-fast) var(--ease-standard), color var(--dur-fast) var(--ease-standard);
     border-radius: var(--radius-pill);
     border: 1px solid var(--color-border);
     background: var(--color-surface-1);
@@ -558,6 +560,7 @@
     align-items: center;
     gap: 0.45rem;
     padding: 0.3rem 0.7rem;
+    transition: background-color var(--dur-fast) var(--ease-standard), color var(--dur-fast) var(--ease-standard);
     border-radius: var(--radius-pill);
     border: 1px solid var(--color-border);
     background: var(--color-surface-2);
@@ -3970,6 +3973,7 @@
     border: none;
     cursor: pointer;
     padding: 0;
+    transition: color var(--dur-fast) var(--ease-standard), transform var(--dur-fast) var(--ease-standard);
     line-height: 1;
     display: inline-flex;
     align-items: center;
@@ -4433,7 +4437,7 @@
     margin-block-end: var(--space-2xs);
   }
   /* -- Tags input -------------------------------------------------------- */
-  .c-tags-input { display: flex; flex-wrap: wrap; gap: var(--space-2xs); align-items: center; border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-2xs); }
+  .c-tags-input { display: flex; flex-wrap: wrap; gap: var(--space-2xs); align-items: center; border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-2xs); transition: border-color var(--dur-fast) var(--ease-standard); }
   .c-tags-input__input { border: none; outline: none; flex: 1; min-inline-size: 6rem; font-size: var(--type-sm); background: transparent; color: var(--color-text); }
   .c-tags-input__tag { display: inline-flex; align-items: center; gap: var(--space-2xs); }
   .c-tags-input__remove { background: none; border: none; cursor: pointer; color: var(--color-text-muted); }
@@ -4559,5 +4563,15 @@
   .c-split-map__pane--left,
   .c-split-map__pane--right {
     position: relative;
+  }
+
+  /* Press language: press moves the control down 1px (AGENTS.md). */
+  .c-chip:active,
+  .c-pill:active,
+  .c-tag:active,
+  .c-badge:active,
+  .c-tabs__tab:active,
+  .c-segmented__option:active {
+    transform: translateY(1px);
   }
 }

@@ -438,6 +438,7 @@
     gap: 0.35rem;
     padding: 0.15rem 0.5rem;
     border-radius: var(--radius-xs);
+    transition: background-color var(--dur-fast) var(--ease-standard), color var(--dur-fast) var(--ease-standard);
     border: 1px solid var(--color-border);
     background: var(--color-surface-2);
     color: var(--color-text);
@@ -647,5 +648,10 @@
   .c-destructive-hint {
     font-size: var(--type-xs);
     color: var(--color-danger-text);
+  }
+
+  /* Press language: press moves the control down 1px (AGENTS.md). */
+  .c-menu__item:active {
+    transform: translateY(1px);
   }
 }
