@@ -104,6 +104,9 @@
   .c-header__nav > * {
     min-inline-size: 0;
   }
+  .c-header__nav > * {
+    min-inline-size: 0;
+  }
 
   .c-header__nav a {
     padding: 0.45rem 0.7rem;
@@ -136,6 +139,9 @@
     align-items: center;
     gap: 0.5rem;
     margin-inline-start: auto;
+  }
+  .c-header__actions > * {
+    min-inline-size: 0;
   }
   .c-header__actions > * {
     min-inline-size: 0;
@@ -681,6 +687,10 @@
 
   .c-combobox__clear {
     position: absolute;
+  }
+  .c-combobox__clear > * {
+    min-inline-size: 0;
+  }
     inset-block-start: 50%;
     inset-inline-end: 0.5rem;
     transform: translateY(-50%);
@@ -811,6 +821,9 @@
   .c-tree__row > * {
     min-inline-size: 0;
   }
+  .c-tree__row > * {
+    min-inline-size: 0;
+  }
 
   .c-tree__row:hover {
     background: var(--color-surface-2);
@@ -830,6 +843,9 @@
     flex: none;
     color: var(--color-text-subtle);
     transition: transform var(--dur-fast) var(--ease-standard);
+  }
+  .c-tree__toggle > * {
+    min-inline-size: 0;
   }
   .c-tree__toggle > * {
     min-inline-size: 0;
@@ -2783,6 +2799,9 @@
   .c-legend__item > * {
     min-inline-size: 0;
   }
+  .c-legend__item > * {
+    min-inline-size: 0;
+  }
 
   .c-legend__swatch {
     display: inline-block;
@@ -4429,6 +4448,7 @@
   .c-sortable-list__item > * { min-inline-size: 0; }
   .c-sortable-list__item > * { min-inline-size: 0; }
   .c-sortable-list__item > * { min-inline-size: 0; }
+  .c-sortable-list__item > * { min-inline-size: 0; }
   .c-sortable-list__handle { cursor: grab; color: var(--color-text-muted); }
   /* -- Swatch ------------------------------------------------------------ */
   .c-swatch { display: inline-block; inline-size: 1.5rem; block-size: 1.5rem; border-radius: var(--radius-sm); border: 1px solid var(--color-border); background: var(--swatch-color, #000); cursor: pointer; }
@@ -4441,6 +4461,7 @@
   .c-calendar__day.is-selected { background: var(--color-primary); color: var(--color-on-primary); }
   .c-calendar__day--empty { border: none; background: transparent; }
   .c-calendar__header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-xs); margin-block-end: var(--space-xs); }
+  .c-calendar__header > * { min-inline-size: 0; }
   .c-calendar__header > * { min-inline-size: 0; }
   .c-calendar__header > * { min-inline-size: 0; }
   .c-calendar__header > * { min-inline-size: 0; }
@@ -4466,6 +4487,9 @@
     gap: var(--space-xs);
     padding: var(--space-2xs) var(--space-xs);
     border-block-end: 1px solid var(--color-border-subtle);
+  }
+  .c-data-grid__row > * {
+    min-inline-size: 0;
   }
   .c-data-grid__row > * {
     min-inline-size: 0;
