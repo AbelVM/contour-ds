@@ -4170,6 +4170,10 @@
     gap: calc(var(--space-2xs) * var(--density, 1));
     font-size: var(--type-xs);
   }
+  .c-shortcut > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
   .c-shortcut__key {
     padding: 0.1rem 0.35rem;
     border-radius: var(--radius-xs);
