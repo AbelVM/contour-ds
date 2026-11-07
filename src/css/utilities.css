@@ -460,10 +460,16 @@
     .c-segmented__option,
     .c-menu__item,
     .c-filter-pill,
-    .c-badge-overflow {
+    .c-badge-overflow,
+    .c-input-group,
+    .c-number-field,
+    .c-date-picker,
+    .c-date-range,
+    .c-combobox,
+    .c-field {
       border-width: var(--border-width-thick);
     }
-    .c-card, .c-panel, .c-input, .c-select, .c-textarea {
+    .c-card, .c-panel, .c-input, .c-select, .c-textarea, .c-input-group, .c-number-field, .c-combobox {
       background: var(--color-surface-1);
     }
   }
