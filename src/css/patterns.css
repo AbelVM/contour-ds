@@ -98,7 +98,7 @@
 
   .c-landing-features__item {
     display: grid;
-    gap: 0.5rem;
+    gap: var(--space-2xs);
     align-content: start;
   }
 
@@ -388,7 +388,7 @@
   .c-affordance__demo {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--space-2xs);
     min-block-size: 2.75rem;
     padding: 0.5rem;
     border-radius: var(--radius-sm);

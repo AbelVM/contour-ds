@@ -255,7 +255,7 @@
   .c-price__features li {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
-    gap: 0.5rem;
+    gap: var(--space-2xs);
     align-items: start;
   }
 
@@ -414,7 +414,7 @@
      ======================================================================= */
   .c-faq {
     display: grid;
-    gap: 0.5rem;
+    gap: var(--space-2xs);
     max-inline-size: 68ch;
   }
 

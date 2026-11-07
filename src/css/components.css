@@ -92,7 +92,7 @@
   .c-header__nav {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: var(--space-3xs);
     margin-inline-start: auto;
   }
   .c-header__nav > * {
@@ -129,7 +129,7 @@
   .c-header__actions {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--space-2xs);
     margin-inline-start: auto;
   }
   .c-header__actions > * {
@@ -212,7 +212,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
+    gap: var(--space-2xs);
     padding: 0.6rem 1.05rem;
     min-block-size: var(--target-control);
     border: 1px solid var(--btn-border);
@@ -373,7 +373,7 @@
   .c-btn-group {
     display: inline-flex;
     align-items: stretch;
-    gap: 0.5rem;
+    gap: var(--space-2xs);
     flex-wrap: wrap;
   }
 
@@ -505,7 +505,7 @@
     contain: layout;
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--space-2xs);
     padding: 0.35rem 0.7rem;
     border-radius: var(--radius-pill);
     border: 1px solid var(--color-border);
@@ -2679,7 +2679,7 @@
   .c-legend {
     container-type: inline-size;
     display: grid;
-    gap: 0.5rem;
+    gap: var(--space-2xs);
     padding: 1rem 1.1rem;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
@@ -2828,7 +2828,7 @@
     contain-intrinsic-size: auto 120px;
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
-    gap: 0.75rem;
+    gap: var(--space-xs);
     align-items: start;
     padding: 0.9rem 1rem;
     border: 1px solid var(--color-border);
@@ -3022,7 +3022,7 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-end;
-    gap: 0.5rem;
+    gap: var(--space-2xs);
   }
   .c-dialog__foot > * {
     min-inline-size: 0;
@@ -3187,7 +3187,7 @@
     contain-intrinsic-size: auto 200px;
     display: grid;
     justify-items: center;
-    gap: 0.5rem;
+    gap: var(--space-2xs);
     padding: var(--space-xl) var(--space-lg);
     border: 1px dashed var(--color-border);
     border-radius: var(--radius-lg);
@@ -3314,7 +3314,7 @@
   .c-pagination {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: var(--space-3xs);
     flex-wrap: wrap;
   }
 
