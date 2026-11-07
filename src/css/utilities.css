@@ -462,7 +462,10 @@
 
   /* -- prefers-reduced-data ------------------------------------------- */
   @media (prefers-reduced-data: reduce) {
-    .u-raised {
+    .u-raised,
+    .c-card,
+    .c-panel,
+    .c-kpi {
       box-shadow: none;
     }
     .u-fade-in {
