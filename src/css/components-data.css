@@ -1178,6 +1178,9 @@
     padding: calc(var(--space-md) * var(--density, 1));
     border-block-end: 1px solid var(--color-border-subtle);
   }
+  .c-drawer__head > * {
+    min-inline-size: 0;
+  }
 
   .c-drawer__title {
     font-family: var(--font-display);
@@ -2221,6 +2224,9 @@
     gap: var(--space-sm);
     padding: var(--space-md);
     border-block-end: var(--hairline);
+  }
+  .c-app__header > * {
+    min-inline-size: 0;
   }
 
   .c-app__main {

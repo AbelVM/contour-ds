@@ -184,6 +184,9 @@
   .c-docs-shell__header > * {
     min-inline-size: 0;
   }
+  .c-docs-shell__header > * {
+    min-inline-size: 0;
+  }
 
   .c-docs-shell__title {
     font-family: var(--font-display);

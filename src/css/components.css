@@ -1952,12 +1952,11 @@
 
   .c-form__actions {
     display: flex;
+    gap: var(--space-sm);
+    align-items: center;
   }
   .c-form__actions > * {
     min-inline-size: 0;
-  }
-    gap: var(--space-sm);
-    align-items: center;
   }
 
   .c-form.is-submitting .c-form__submit {
@@ -2277,15 +2276,14 @@
 
   .c-code__head {
     display: flex;
-  }
-  .c-code__head > * {
-    min-inline-size: 0;
-  }
     align-items: center;
     gap: var(--space-sm);
     padding: 0.55rem 0.6rem 0.55rem 1rem;
     background: var(--color-code-header-bg);
     border-block-end: 1px solid var(--color-border-subtle);
+  }
+  .c-code__head > * {
+    min-inline-size: 0;
   }
 
   .c-code__title {
@@ -2837,12 +2835,11 @@
 
   .c-alert__actions {
     display: flex;
+    gap: var(--space-xs);
+    align-items: center;
   }
   .c-alert__actions > * {
     min-inline-size: 0;
-  }
-    gap: var(--space-xs);
-    align-items: center;
   }
 
   .c-alert--info {
@@ -3554,14 +3551,13 @@
 
   .c-sheet__head {
     display: flex;
-  }
-  .c-sheet__head > * {
-    min-inline-size: 0;
-  }
     align-items: center;
     gap: var(--space-sm);
     padding: 1rem 1.1rem;
     border-block-end: 1px solid var(--color-border-subtle);
+  }
+  .c-sheet__head > * {
+    min-inline-size: 0;
   }
 
   .c-sheet__title {
