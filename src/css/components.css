@@ -89,6 +89,11 @@
     min-block-size: var(--header-height);
   }
 
+  @container (inline-size < 32rem) {
+    .c-header__inner { gap: var(--space-sm); }
+    .c-header__nav a { padding: 0.35rem 0.5rem; font-size: var(--type-xs); }
+  }
+
   .c-header__nav {
     display: flex;
     flex-wrap: wrap;

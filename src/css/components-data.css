@@ -76,6 +76,11 @@
     overflow-wrap: anywhere;
   }
 
+  @container (inline-size < 12rem) {
+    .c-kpi { padding: var(--space-sm); gap: var(--space-2xs); }
+    .c-kpi__value { font-size: 1.4rem; }
+  }
+
   .c-kpi__label {
     font-family: var(--font-mono);
     font-size: var(--type-micro);
