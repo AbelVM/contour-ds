@@ -1078,6 +1078,7 @@
      ======================================================================= */
   .c-time-range {
     display: inline-flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 0.4rem;
     font-family: var(--font-mono);
@@ -1198,6 +1199,7 @@
 
   .c-drawer__head {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: var(--space-sm);
     padding: calc(var(--space-md) * var(--density, 1));
@@ -2050,6 +2052,7 @@
     inset-block-start: var(--space-sm);
     inset-inline-end: var(--space-sm);
     display: flex;
+    flex-wrap: wrap;
     flex-direction: column;
     gap: var(--map-ctrl-gap);
   }
@@ -2980,6 +2983,7 @@
   /* Spatial filter (CARTO-inspired): draw-on-map mode toolbar. */
   .c-spatial-filter {
     display: inline-flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: var(--space-2xs);
   }
@@ -3003,6 +3007,7 @@
   /* Geocoder (CARTO-inspired): search input + result list. */
   .c-geocoder {
     display: flex;
+    flex-wrap: wrap;
     flex-direction: column;
     gap: var(--space-xs);
   }
