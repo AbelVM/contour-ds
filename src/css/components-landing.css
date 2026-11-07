@@ -105,6 +105,9 @@
     align-items: center;
     gap: 0.65rem;
   }
+  .c-testimonial__byline > * {
+    min-inline-size: 0;
+  }
 
   .c-testimonial__name {
     font-size: var(--type-sm);
