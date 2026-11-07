@@ -452,7 +452,10 @@
     .u-bordered,
     .c-card,
     .c-chip,
-    .c-pill {
+    .c-pill,
+    .c-btn,
+    .c-badge,
+    .c-tag {
       border-width: var(--border-width-thick);
     }
     .c-card, .c-panel, .c-input, .c-select, .c-textarea {
