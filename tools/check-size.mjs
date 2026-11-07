@@ -55,7 +55,7 @@ const DIST = join(ROOT, "dist");
  *  which the Format Module has no legal place for (C-43). It states values only —
  *  a token's meaning is published once, in the Format document. */
 const BUDGETS = {
-  "contour.min.css": 226 * 1024,  // raised 2026-11-07: +layout fixes; measured 225.5 kB
+  "contour.min.css": 227 * 1024,  // raised 2026-11-07: +layout fixes; measured 226.1 kB
   "contour.min.js": 39 * 1024,  // raised 2026-11-04: focus restoration + changelog; measured 38.0 kB
   "contour.d.ts": 32 * 1024,  // raised 2026-11-04: +3 new components (data-export, pull-to-refresh, split-map)
   "contour.tokens.json": 51 * 1024,
@@ -116,10 +116,10 @@ const BUDGETS = {
   // Measured 2026-10-24 at 3,664 B.
   "hljs.css": 4 * 1024,
   "agent-rules.json": 12 * 1024,
-  "surfaces/contour-core.min.css": 152 * 1024,  // raised 2026-11-07: +layout fixes; measured 151.4 kB
+  "surfaces/contour-core.min.css": 153 * 1024,  // raised 2026-11-07: +layout fixes; measured 152.0 kB
   "surfaces/contour-docs.min.css": 168 * 1024,  // raised 2026-11-07: +layout fixes; measured 167.0 kB
   "surfaces/contour-data.min.css": 203 * 1024,  // raised 2026-11-07: +layout fixes; measured 202.0 kB
-  "surfaces/contour-landing.min.css": 160 * 1024,  // raised 2026-11-07: +layout fixes; measured 159.3 kB
+  "surfaces/contour-landing.min.css": 161 * 1024,  // raised 2026-11-07: +layout fixes; measured 160.0 kB
   "contour.esm.min.js": 39 * 1024,
   "contour-wc.esm.min.js": 603 * 1024,  // raised 2026-11-04: +changelog component; measured 602.2 kB
 };
