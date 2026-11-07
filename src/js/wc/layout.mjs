@@ -7,7 +7,7 @@ import { ContourBase, define } from './core.mjs';
       const header = this.ensure(".c-app__header", () => { const el = document.createElement("header"); el.className = "c-app__header"; return el; });
       const title = this.getAttribute("title");
       if (title) {
-        const t = this.ensure(".c-app__title", () => { const el = document.createElement("div"); el.className = "c-app__title"; el.style.padding = "var(--space-md)"; el.style.fontWeight = "var(--weight-semibold)"; return el; });
+        const t = this.ensure(".c-app__title", () => { const el = document.createElement("div"); el.className = "c-app__title"; return el; });
         t.textContent = title;
         if (t.parentNode !== header) header.appendChild(t);
       }
@@ -25,7 +25,7 @@ import { ContourBase, define } from './core.mjs';
       const main = this.ensure(".c-app-body__main", () => { const el = document.createElement("main"); el.className = "c-app-body__main"; return el; });
       const title = this.getAttribute("title");
       if (title) {
-        const t = this.ensure(".c-app-body__title", () => { const el = document.createElement("div"); el.className = "c-app-body__title"; el.style.padding = "var(--space-md)"; return el; });
+        const t = this.ensure(".c-app-body__title", () => { const el = document.createElement("div"); el.className = "c-app-body__title"; return el; });
         t.textContent = title;
         if (t.parentNode !== main) main.appendChild(t);
       }

@@ -2238,6 +2238,15 @@
     min-inline-size: 0;
   }
 
+  .c-app__title {
+    padding: var(--space-md);
+    font-weight: var(--weight-semibold);
+  }
+
+  .c-app-body__title {
+    padding: var(--space-md);
+  }
+
   .c-app__main {
     flex: 1 1 auto;
     min-inline-size: 0;

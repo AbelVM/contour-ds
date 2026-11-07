@@ -258,7 +258,7 @@ class ContourTable extends ContourBase {
               btn.className = "c-btn c-btn--ghost c-btn--sm";
               btn.type = "button";
               btn.textContent = this.getAttribute("retry") || "Retry";
-              btn.style.marginInlineStart = "var(--space-sm)";
+              btn.classList.add("u-ms-sm");
               btn.dataset.action = "retry";
               td.appendChild(btn);
             }
@@ -734,7 +734,7 @@ class ContourChart extends ContourBase {
           btn.type = "button";
           btn.textContent = this.getAttribute("retry") || "Retry";
           btn.dataset.action = "retry";
-          btn.style.marginBlockStart = "var(--space-sm)";
+          btn.classList.add("u-mbs-sm");
           err.appendChild(btn);
         }
         plot.appendChild(err);
@@ -2263,8 +2263,6 @@ class ContourPivot extends ContourBase {
       const toolbar = document.createElement("div");
       toolbar.className = "c-pivot__toolbar";
       toolbar.style.display = "flex";
-      toolbar.style.gap = "0.5rem";
-      toolbar.style.marginBlockEnd = "0.5rem";
       const filterInput = document.createElement("input");
       filterInput.type = "search";
       filterInput.className = "c-input c-pivot__filter";
@@ -3374,7 +3372,7 @@ class ContourCompare extends ContourBase {
       this.classList.add("c-compare");
       this.setAttribute("role", "group");
       this.setAttribute("aria-label", "Comparison");
-      this.style.padding = "var(--space-md)";
+
       wireStates(this);
       loadRemote(this, ["no", "text", "yes"]);
       if (renderStates(this, "compare")) return;
