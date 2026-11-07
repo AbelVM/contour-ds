@@ -89,6 +89,10 @@
     align-items: baseline;
     gap: 0.35rem;
     font-family: var(--font-display);
+  }
+  .c-kpi__value > * {
+    min-inline-size: 0;
+  }
     font-size: clamp(1.6rem, 1.3rem + 1.2vw, 2.25rem);
     font-weight: var(--weight-bold);
     letter-spacing: -0.03em;
@@ -113,6 +117,9 @@
     gap: 0.5rem;
     flex-wrap: wrap;
     margin-block-start: 0.15rem;
+  }
+  .c-kpi__foot > * {
+    min-inline-size: 0;
   }
   .c-kpi__foot > * {
     min-inline-size: 0;
@@ -1046,6 +1053,10 @@
     align-items: center;
     gap: 0.25rem;
     justify-content: flex-end;
+  }
+  .c-table__actions > * {
+    min-inline-size: 0;
+  }
     opacity: 0;
     transition: opacity var(--dur-fast) var(--ease-standard);
   }
@@ -2400,6 +2411,9 @@
   .c-instrument__item > * {
     min-inline-size: 0;
   }
+  .c-instrument__item > * {
+    min-inline-size: 0;
+  }
 
   .c-instrument__item::before {
     content: "·";
@@ -2805,6 +2819,9 @@
   .c-donut__item > * {
     min-inline-size: 0;
   }
+  .c-donut__item > * {
+    min-inline-size: 0;
+  }
   .c-donut__swatch {
     inline-size: 0.75rem;
     block-size: 0.75rem;
@@ -3031,6 +3048,10 @@
     align-items: center;
     gap: var(--space-xs);
     padding: var(--space-xs) var(--space-sm);
+  }
+  .c-data-export__btn > * {
+    min-inline-size: 0;
+  }
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
     background: var(--color-surface-1);

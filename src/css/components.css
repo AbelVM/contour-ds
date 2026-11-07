@@ -101,6 +101,9 @@
   .c-header__nav > * {
     min-inline-size: 0;
   }
+  .c-header__nav > * {
+    min-inline-size: 0;
+  }
 
   .c-header__nav a {
     padding: 0.45rem 0.7rem;
@@ -133,6 +136,9 @@
     align-items: center;
     gap: 0.5rem;
     margin-inline-start: auto;
+  }
+  .c-header__actions > * {
+    min-inline-size: 0;
   }
   .c-header__actions > * {
     min-inline-size: 0;
@@ -692,6 +698,9 @@
   .c-combobox__clear > * {
     min-inline-size: 0;
   }
+  .c-combobox__clear > * {
+    min-inline-size: 0;
+  }
 
   .c-combobox__clear:hover {
     color: var(--color-text);
@@ -795,6 +804,9 @@
   .c-tree__row > * {
     min-inline-size: 0;
   }
+  .c-tree__row > * {
+    min-inline-size: 0;
+  }
 
   .c-tree__row:hover {
     background: var(--color-surface-2);
@@ -814,6 +826,9 @@
     flex: none;
     color: var(--color-text-subtle);
     transition: transform var(--dur-fast) var(--ease-standard);
+  }
+  .c-tree__toggle > * {
+    min-inline-size: 0;
   }
   .c-tree__toggle > * {
     min-inline-size: 0;
@@ -2761,6 +2776,9 @@
   .c-legend__item > * {
     min-inline-size: 0;
   }
+  .c-legend__item > * {
+    min-inline-size: 0;
+  }
 
   .c-legend__swatch {
     display: inline-block;
@@ -3948,6 +3966,10 @@
   .c-rating__star > * {
     min-inline-size: 0;
   }
+  }
+  .c-rating__star > * {
+    min-inline-size: 0;
+  }
   .c-rating__swatch {
     display: inline-block;
     inline-size: 1rem;
@@ -4406,6 +4428,7 @@
   .c-sortable-list__item > * { min-inline-size: 0; }
   .c-sortable-list__item > * { min-inline-size: 0; }
   .c-sortable-list__item > * { min-inline-size: 0; }
+  .c-sortable-list__item > * { min-inline-size: 0; }
   .c-sortable-list__handle { cursor: grab; color: var(--color-text-muted); }
   /* -- Swatch ------------------------------------------------------------ */
   .c-swatch { display: inline-block; inline-size: 1.5rem; block-size: 1.5rem; border-radius: var(--radius-sm); border: 1px solid var(--color-border); background: var(--swatch-color, #000); cursor: pointer; }
@@ -4418,6 +4441,7 @@
   .c-calendar__day.is-selected { background: var(--color-primary); color: var(--color-on-primary); }
   .c-calendar__day--empty { border: none; background: transparent; }
   .c-calendar__header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-xs); margin-block-end: var(--space-xs); }
+  .c-calendar__header > * { min-inline-size: 0; }
   .c-calendar__header > * { min-inline-size: 0; }
   .c-calendar__header > * { min-inline-size: 0; }
   .c-calendar__header > * { min-inline-size: 0; }
@@ -4436,11 +4460,6 @@
   .c-data-grid__table { inline-size: 100%; }
   .c-data-grid__wrap { max-block-size: 400px; overflow: auto; }
 
-  .c-data-grid__row {
-    display: flex;
-    align-items: center;
-    gap: var(--space-xs);
-  }
   .c-data-grid__row {
     display: flex;
     align-items: center;

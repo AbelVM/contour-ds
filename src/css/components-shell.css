@@ -352,6 +352,9 @@
   .c-menu__item > * {
     min-inline-size: 0;
   }
+  .c-menu__item > * {
+    min-inline-size: 0;
+  }
 
   .c-menu__item:hover,
   .c-menu__item:focus-visible {
