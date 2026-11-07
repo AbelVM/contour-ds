@@ -247,7 +247,7 @@
   .label {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
     font-family: var(--font-mono);
     font-size: var(--type-micro);
     font-weight: var(--weight-medium);
@@ -304,22 +304,22 @@
   .stack {
     display: flex;
     flex-direction: column;
-    gap: var(--space-stack);
+    gap: calc(var(--space-stack) * var(--density, 1));
   }
 
   .stack--tight {
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
   }
 
   .stack--loose {
-    gap: var(--space-cluster);
+    gap: calc(var(--space-cluster) * var(--density, 1));
   }
 
   .cluster {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
   }
 
   .section {
@@ -357,7 +357,7 @@
 
   .grid {
     display: grid;
-    gap: var(--space-cluster);
+    gap: calc(var(--space-cluster) * var(--density, 1));
   }
 
   .grid--2 {
@@ -375,7 +375,7 @@
   .split {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: var(--space-cluster);
+    gap: calc(var(--space-cluster) * var(--density, 1));
     align-items: center;
     /* The split is a page-level layout, so it responds to the viewport.
        Components that need to adapt to their own box use @container. */

@@ -15,7 +15,7 @@
      ======================================================================= */
   .c-docs-nav {
     display: grid;
-    gap: var(--space-lg);
+    gap: calc(var(--space-lg) * var(--density, 1));
     font-size: var(--type-xs);
 
     .c-docs-nav__empty,
@@ -44,7 +44,7 @@
     .c-docs-nav__link {
       display: flex;
       align-items: center;
-      gap: var(--space-2xs);
+      gap: calc(var(--space-2xs) * var(--density, 1));
       padding: 0.35rem 0.5rem;
       border-radius: var(--radius-sm);
       color: var(--color-text-muted);
@@ -294,7 +294,7 @@
   .c-do-dont {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
-    gap: var(--space-md);
+    gap: calc(var(--space-md) * var(--density, 1));
 
     .c-do-dont__item {
       padding: calc(var(--space-md) * var(--density, 1));
@@ -342,7 +342,7 @@
      ======================================================================= */
   .c-steps {
     display: grid;
-    gap: var(--space-lg);
+    gap: calc(var(--space-lg) * var(--density, 1));
     counter-reset: c-step;
 
     .c-steps__empty,
@@ -487,7 +487,7 @@
   .c-install {
     display: flex;
     align-items: center;
-    gap: var(--space-sm);
+    gap: calc(var(--space-sm) * var(--density, 1));
     padding: var(--space-xs) 0.75rem 0.75rem 1rem;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
@@ -570,7 +570,7 @@
   .c-pager {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
-    gap: var(--space-md);
+    gap: calc(var(--space-md) * var(--density, 1));
     margin-block-start: var(--space-2xl);
     padding-block-start: var(--space-lg);
     border-block-start: 1px solid var(--color-border);
@@ -837,7 +837,7 @@
      ======================================================================= */
   .c-changelog {
     display: grid;
-    gap: var(--space-md);
+    gap: calc(var(--space-md) * var(--density, 1));
 
     .c-changelog__entry {
       border: 1px solid var(--color-border);
@@ -850,7 +850,7 @@
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: var(--space-sm);
+      gap: calc(var(--space-sm) * var(--density, 1));
     }
     .c-changelog__summary > * {
       min-inline-size: 0;

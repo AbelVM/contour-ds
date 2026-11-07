@@ -13,7 +13,7 @@
      ======================================================================= */
   .c-compare {
     display: grid;
-    gap: var(--space-sm);
+    gap: calc(var(--space-sm) * var(--density, 1));
     font-size: var(--type-sm);
   }
 
@@ -84,7 +84,7 @@
      ======================================================================= */
   .c-testimonial {
     display: grid;
-    gap: var(--space-md);
+    gap: calc(var(--space-md) * var(--density, 1));
     padding: calc(var(--space-xl) * var(--density, 1));
     border: 1px solid var(--color-border);
     border-radius: var(--radius-xl);
@@ -130,7 +130,7 @@
     isolation: isolate;
     display: grid;
     justify-items: center;
-    gap: var(--space-md);
+    gap: calc(var(--space-md) * var(--density, 1));
     padding: var(--space-3xl) var(--gutter);
     text-align: center;
     overflow: hidden;
@@ -185,14 +185,14 @@
   .c-pricing {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
-    gap: var(--space-md);
+    gap: calc(var(--space-md) * var(--density, 1));
     align-items: start;
   }
 
   .c-price {
     display: flex;
     flex-direction: column;
-    gap: var(--space-md);
+    gap: calc(var(--space-md) * var(--density, 1));
     padding: calc(var(--space-lg) * var(--density, 1));
     border: 1px solid var(--color-border);
     border-radius: var(--radius-xl);
@@ -260,7 +260,7 @@
   .c-price__features li {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
     align-items: start;
   }
 
@@ -279,7 +279,7 @@
   .c-logos {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 6.5rem), 1fr));
-    gap: var(--space-lg);
+    gap: calc(var(--space-lg) * var(--density, 1));
     align-items: center;
     justify-items: center;
   }
@@ -310,7 +310,7 @@
     content-visibility: auto;
     contain-intrinsic-size: auto 300px;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
-    gap: var(--space-2xl);
+    gap: calc(var(--space-2xl) * var(--density, 1));
     align-items: center;
   }
 
@@ -388,7 +388,7 @@
   .c-metrics {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
-    gap: var(--space-lg);
+    gap: calc(var(--space-lg) * var(--density, 1));
     padding-block: var(--space-lg);
     border-block: 1px solid var(--color-border);
   }
@@ -421,7 +421,7 @@
      ======================================================================= */
   .c-faq {
     display: grid;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
     max-inline-size: 68ch;
   }
 
@@ -435,7 +435,7 @@
   .c-faq__question {
     display: flex;
     align-items: center;
-    gap: var(--space-sm);
+    gap: calc(var(--space-sm) * var(--density, 1));
     padding: calc(var(--space-md) * var(--density, 1));
     cursor: pointer;
     list-style: none;

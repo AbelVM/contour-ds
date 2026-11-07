@@ -55,7 +55,7 @@ const DIST = join(ROOT, "dist");
  *  which the Format Module has no legal place for (C-43). It states values only —
  *  a token's meaning is published once, in the Format document. */
 const BUDGETS = {
-  "contour.min.css": 232 * 1024,  // raised 2026-11-07: +layout fixes; measured 231.1 kB
+  "contour.min.css": 235 * 1024,  // raised 2026-11-07: +layout fixes; measured 234.4 kB
   "contour.min.js": 39 * 1024,  // raised 2026-11-04: focus restoration + changelog; measured 38.0 kB
   "contour.d.ts": 32 * 1024,  // raised 2026-11-04: +3 new components (data-export, pull-to-refresh, split-map)
   "contour.tokens.json": 51 * 1024,
@@ -67,7 +67,7 @@ const BUDGETS = {
   // exists to catch a jump nobody intended, not to keep the truth brief. A file
   // absent from this map is not budgeted at all, which is how an artifact can
   // grow without anyone noticing.
-  "contour.components.json": 272 * 1024,  // raised 2026-11-07: +layout fixes; measured 271.0 kB
+  "contour.components.json": 274 * 1024,  // raised 2026-11-07: +layout fixes; measured 273.5 kB
   // The docs package (C-45). Measured 2026-10-23 at 43.6 kB: 23 section files
   // (37.4 kB) plus the index (6.2 kB) — figures this gate recomputes and prints on
   // every run, so the numbers above are a dated record, not the thing enforced.
@@ -116,10 +116,10 @@ const BUDGETS = {
   // Measured 2026-10-24 at 3,664 B.
   "hljs.css": 4 * 1024,
   "agent-rules.json": 12 * 1024,
-  "surfaces/contour-core.min.css": 155 * 1024,  // raised 2026-11-07: +layout fixes; measured 154.0 kB
-  "surfaces/contour-docs.min.css": 171 * 1024,  // raised 2026-11-07: +layout fixes; measured 170.3 kB
-  "surfaces/contour-data.min.css": 207 * 1024,  // raised 2026-11-07: +layout fixes; measured 206.2 kB
-  "surfaces/contour-landing.min.css": 164 * 1024,  // raised 2026-11-07: +layout fixes; measured 163.1 kB
+  "surfaces/contour-core.min.css": 157 * 1024,  // raised 2026-11-07: +layout fixes; measured 156.7 kB
+  "surfaces/contour-docs.min.css": 173 * 1024,  // raised 2026-11-07: +layout fixes; measured 172.8 kB
+  "surfaces/contour-data.min.css": 210 * 1024,  // raised 2026-11-07: +layout fixes; measured 209.6 kB
+  "surfaces/contour-landing.min.css": 166 * 1024,  // raised 2026-11-07: +layout fixes; measured 165.1 kB
   "contour.esm.min.js": 39 * 1024,
   "contour-wc.esm.min.js": 603 * 1024,  // raised 2026-11-04: +changelog component; measured 602.2 kB
 };

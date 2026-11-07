@@ -22,7 +22,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: var(--space-sm);
+    gap: calc(var(--space-sm) * var(--density, 1));
   }
 
   .u-center {
@@ -202,14 +202,14 @@
   .u-cols-2 {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
-    gap: var(--space-cluster);
+    gap: calc(var(--space-cluster) * var(--density, 1));
   }
 
   /* @deprecated (C-35) — see .u-cols-2; `.grid--3` (min 17rem) is the used form. */
   .u-cols-3 {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
-    gap: var(--space-cluster);
+    gap: calc(var(--space-cluster) * var(--density, 1));
   }
 
   /* @deprecated (C-35) — auto-fill differs from auto-fit only where tracks are
@@ -218,7 +218,7 @@
   .u-auto-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
-    gap: var(--space-md);
+    gap: calc(var(--space-md) * var(--density, 1));
   }
 
 
@@ -585,7 +585,7 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: var(--space-sm);
+    gap: calc(var(--space-sm) * var(--density, 1));
     padding: calc(var(--space-sm) * var(--density, 1)) calc(var(--space-md) * var(--density, 1));
     font-size: var(--type-xs);
     color: var(--color-text-muted);
@@ -599,7 +599,7 @@
   .u-reset {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
     font-size: var(--type-xs);
     color: var(--color-text-muted);
     text-decoration: underline;

@@ -15,7 +15,7 @@
   .c-chart-grid {
     display: grid;
     grid-template-columns: repeat(12, minmax(0, 1fr));
-    gap: var(--space-md);
+    gap: calc(var(--space-md) * var(--density, 1));
   }
 
   .c-chart-grid > * {
@@ -117,7 +117,7 @@
   .c-kpi__foot {
     display: flex;
     align-items: center;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
     flex-wrap: wrap;
     margin-block-start: 0.15rem;
   }
@@ -129,8 +129,9 @@
   /* Delta — direction is carried by an arrow, not by colour alone. */
   .c-delta {
     display: inline-flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-3xs);
+    gap: calc(var(--space-3xs) * var(--density, 1));
     font-family: var(--font-mono);
     font-size: var(--type-xs);
     font-variant-numeric: tabular-nums;
@@ -297,7 +298,7 @@
     display: flex;
     flex-wrap: wrap;
     align-items: flex-start;
-    gap: var(--space-sm);
+    gap: calc(var(--space-sm) * var(--density, 1));
     padding: calc(var(--space-sm) * var(--density, 1)) calc(var(--space-md) * var(--density, 1));
     border-block-end: 1px solid var(--color-border-subtle);
   }
@@ -357,7 +358,7 @@
     color: var(--color-text-subtle);
     display: flex;
     align-items: center;
-    gap: var(--space-xs);
+    gap: calc(var(--space-xs) * var(--density, 1));
     flex-wrap: wrap;
   }
 
@@ -497,8 +498,9 @@
 
   .c-heatmap__legend {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-xs);
+    gap: calc(var(--space-xs) * var(--density, 1));
     font-size: var(--type-xs);
     color: var(--color-text-subtle);
   }
@@ -608,7 +610,7 @@
   .c-chart--histogram .c-chart__plot {
     display: flex;
     align-items: flex-end;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
   }
   .c-chart--histogram .c-chart__bar {
     flex: 1 1 0;
@@ -620,7 +622,7 @@
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: 1fr auto;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
   }
 
   /* Colour-vision preview (C-34): owned by the component root. The filter
@@ -930,7 +932,7 @@
   .c-filter-bar {
     display: flex;
     align-items: center;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
     flex-wrap: wrap;
     padding: var(--space-2xs) 0.65rem;
     border: 1px solid var(--color-border);
@@ -1062,7 +1064,7 @@
   .c-table__actions {
     display: flex;
     align-items: center;
-    gap: var(--space-3xs);
+    gap: calc(var(--space-3xs) * var(--density, 1));
     justify-content: flex-end;
     opacity: 0;
     transition: opacity var(--dur-fast) var(--ease-standard);
@@ -1106,7 +1108,7 @@
      ======================================================================= */
   .c-activity {
     display: grid;
-    gap: var(--space-sm);
+    gap: calc(var(--space-sm) * var(--density, 1));
     content-visibility: auto;
     contain-intrinsic-size: auto 200px;
   }
@@ -1217,7 +1219,7 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-sm);
+    gap: calc(var(--space-sm) * var(--density, 1));
     padding: calc(var(--space-md) * var(--density, 1));
     border-block-end: 1px solid var(--color-border-subtle);
   }
@@ -1255,7 +1257,7 @@
     overflow-y: auto;
     padding: calc(var(--space-md) * var(--density, 1));
     display: grid;
-    gap: var(--space-md);
+    gap: calc(var(--space-md) * var(--density, 1));
     align-content: start;
     scrollbar-gutter: stable;
     overscroll-behavior: contain;
@@ -1297,7 +1299,7 @@
     display: grid;
     grid-template-columns: auto 1fr;
     grid-template-rows: 1fr auto;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
     inline-size: fit-content;
   }
 
@@ -1438,7 +1440,7 @@
   .c-coordinate {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
     padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1));
     background: var(--color-surface-1);
     border: 1px solid var(--color-border);
@@ -1494,7 +1496,7 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-xs);
+    gap: calc(var(--space-xs) * var(--density, 1));
     padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1));
     border-radius: var(--radius-sm);
     font-size: var(--type-sm);
@@ -1611,7 +1613,7 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-sm);
+    gap: calc(var(--space-sm) * var(--density, 1));
     padding: calc(var(--space-xs) * var(--density, 1));
     background: var(--color-surface-1);
     border: 1px solid var(--color-border);
@@ -2179,7 +2181,7 @@
     position: absolute;
     display: flex;
     flex-direction: column;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
     padding: calc(var(--space-sm) * var(--density, 1));
     max-inline-size: calc(100% - var(--space-lg));
     max-block-size: calc(100% - var(--space-lg));
@@ -2244,7 +2246,7 @@
     flex: 0 0 auto;
     display: flex;
     flex-direction: column;
-    gap: var(--space-xs);
+    gap: calc(var(--space-xs) * var(--density, 1));
   }
 
   .c-container--scrollable {
@@ -2279,7 +2281,7 @@
     flex: 0 0 auto;
     display: flex;
     align-items: center;
-    gap: var(--space-sm);
+    gap: calc(var(--space-sm) * var(--density, 1));
     padding: calc(var(--space-md) * var(--density, 1));
     border-block-end: var(--hairline);
   }
@@ -2346,7 +2348,7 @@
   .c-survey {
     display: flex;
     align-items: baseline;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
     font-family: var(--font-mono);
     font-size: var(--type-micro);
     color: var(--color-text-subtle);
@@ -2378,7 +2380,7 @@
   .c-scale-bar {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
     font-family: var(--font-mono);
     font-size: var(--type-micro);
     color: var(--color-text-muted);
@@ -2420,7 +2422,7 @@
   .c-instrument {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-xs);
+    gap: calc(var(--space-xs) * var(--density, 1));
     font-family: var(--font-mono);
     font-size: var(--type-micro);
     letter-spacing: var(--tracking-wide);
@@ -2512,7 +2514,7 @@
      ======================================================================= */
   .c-layer-switch {
     display: grid;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
     padding: calc(var(--space-sm) * var(--density, 1));
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
@@ -2530,7 +2532,7 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-sm);
+    gap: calc(var(--space-sm) * var(--density, 1));
     padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1));
     border-radius: var(--radius-sm);
     cursor: pointer;
@@ -2644,7 +2646,7 @@
      ======================================================================= */
   .c-gauge {
     display: grid;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
     justify-items: center;
     padding: calc(var(--space-md) * var(--density, 1));
     border: 1px solid var(--color-border);
@@ -2710,7 +2712,7 @@
   .c-axis__tick {
     display: flex;
     align-items: center;
-    gap: var(--space-3xs);
+    gap: calc(var(--space-3xs) * var(--density, 1));
   }
   .c-axis__label { white-space: nowrap; text-overflow: ellipsis; overflow: hidden; max-inline-size: 6rem; }
   .c-axis__line {
@@ -2774,13 +2776,13 @@
      ======================================================================= */
   .c-category {
     display: grid;
-    gap: var(--space-3xs);
+    gap: calc(var(--space-3xs) * var(--density, 1));
   }
   .c-category__item {
     display: grid;
     grid-template-columns: auto 1fr auto;
     align-items: center;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
     padding: var(--space-3xs) 0.5rem;
     border-radius: var(--radius-sm);
   }
@@ -2812,7 +2814,7 @@
      ======================================================================= */
   .c-donut {
     display: grid;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
     justify-items: center;
   }
   .c-donut__ring {
@@ -2838,13 +2840,13 @@
   }
   .c-donut__list {
     display: grid;
-    gap: var(--space-3xs);
+    gap: calc(var(--space-3xs) * var(--density, 1));
     inline-size: 100%;
   }
   .c-donut__item {
     display: flex;
     align-items: center;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
     font-size: var(--type-sm);
   }
   .c-donut__item > * {
@@ -2862,7 +2864,7 @@
      ======================================================================= */
   .c-time-series {
     display: grid;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
   }
   .c-time-series__plot {
     display: flex;
@@ -2906,7 +2908,7 @@
   .c-pivot__toolbar {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
     margin-block-end: 0.5rem;
   }
   .c-pivot__toolbar > * {
@@ -2937,7 +2939,7 @@
      ======================================================================= */
   .c-widget-state {
     display: grid;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
   }
   .c-widget-state__empty, .c-widget-state__loading, .c-widget-state__error {
     color: var(--color-text-muted);
@@ -2967,7 +2969,7 @@
      ======================================================================= */
   .c-bivariate-legend {
     display: grid;
-    gap: var(--space-3xs);
+    gap: calc(var(--space-3xs) * var(--density, 1));
   }
   .c-bivariate-legend__matrix {
     display: grid;
@@ -3010,7 +3012,7 @@
     display: inline-flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
   }
   .c-spatial-filter > * {
     min-inline-size: 0;
@@ -3023,7 +3025,7 @@
   .c-spatial-filter__modes {
     display: inline-flex;
     flex-wrap: wrap;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
   }
   .c-spatial-filter__modes > * {
     min-inline-size: 0;
@@ -3038,7 +3040,7 @@
     display: flex;
     flex-wrap: wrap;
     flex-direction: column;
-    gap: var(--space-xs);
+    gap: calc(var(--space-xs) * var(--density, 1));
   }
   .c-geocoder > * {
     min-inline-size: 0;
@@ -3079,7 +3081,7 @@
     display: inline-flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-xs);
+    gap: calc(var(--space-xs) * var(--density, 1));
   }
   .c-data-export > * {
     min-inline-size: 0;
@@ -3088,7 +3090,7 @@
   .c-data-export__btn {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-xs);
+    gap: calc(var(--space-xs) * var(--density, 1));
     padding: calc(var(--space-xs) * var(--density, 1)) calc(var(--space-sm) * var(--density, 1));
     border: 1px solid var(--color-border);
     transition: background-color var(--dur-fast) var(--ease-standard), border-color var(--dur-fast) var(--ease-standard);

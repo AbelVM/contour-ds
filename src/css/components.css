@@ -2021,7 +2021,7 @@
 
   .c-form {
     display: grid;
-    gap: var(--space-md);
+    gap: calc(var(--space-md) * var(--density, 1));
   }
 
   .c-form__summary {
@@ -2750,7 +2750,7 @@
   .c-legend {
     container-type: inline-size;
     display: grid;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
     padding: 1rem 1.1rem;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
@@ -2902,7 +2902,7 @@
     contain-intrinsic-size: auto 120px;
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
-    gap: var(--space-xs);
+    gap: calc(var(--space-xs) * var(--density, 1));
     align-items: start;
     padding: calc(0.9rem * var(--density, 1)) calc(1rem * var(--density, 1));
     border: 1px solid var(--color-border);
@@ -2945,7 +2945,7 @@
   .c-alert__actions {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-xs);
+    gap: calc(var(--space-xs) * var(--density, 1));
     align-items: center;
   }
   .c-alert__actions > * {
@@ -3072,7 +3072,7 @@
     display: flex;
     flex-wrap: wrap;
     align-items: flex-start;
-    gap: var(--space-sm);
+    gap: calc(var(--space-sm) * var(--density, 1));
     padding: 1.25rem 1.35rem 0.75rem;
   }
   .c-dialog__head > * {
@@ -3098,7 +3098,7 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-end;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
   }
   .c-dialog__foot > * {
     min-inline-size: 0;
@@ -3168,7 +3168,7 @@
   .c-skeleton-group {
     display: flex;
     flex-direction: column;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
   }
 
   .c-skeleton {
@@ -3220,7 +3220,7 @@
   .c-loading {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-xs);
+    gap: calc(var(--space-xs) * var(--density, 1));
   }
 
   .c-spinner {
@@ -3263,7 +3263,7 @@
     contain-intrinsic-size: auto 200px;
     display: grid;
     justify-items: center;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
     padding: calc(var(--space-xl) * var(--density, 1)) calc(var(--space-lg) * var(--density, 1));
     border: 1px dashed var(--color-border);
     border-radius: var(--radius-lg);
@@ -3390,7 +3390,7 @@
   .c-pagination {
     display: flex;
     align-items: center;
-    gap: var(--space-3xs);
+    gap: calc(var(--space-3xs) * var(--density, 1));
     flex-wrap: wrap;
   }
 
@@ -3532,7 +3532,7 @@
   .c-footer__grid {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-xl);
+    gap: calc(var(--space-xl) * var(--density, 1));
     justify-content: space-between;
   }
 
@@ -3549,7 +3549,7 @@
 
   .c-footer__links {
     display: flex;
-    gap: var(--space-lg);
+    gap: calc(var(--space-lg) * var(--density, 1));
     flex-wrap: wrap;
   }
 
@@ -3707,7 +3707,7 @@
     overflow-y: auto;
     padding: 1.1rem;
     display: grid;
-    gap: var(--space-md);
+    gap: calc(var(--space-md) * var(--density, 1));
     align-content: start;
     scrollbar-gutter: stable;
     overscroll-behavior: contain;
@@ -3725,7 +3725,7 @@
   .c-radio {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
     cursor: pointer;
     font-size: var(--type-sm);
   }
@@ -3756,7 +3756,7 @@
   .c-radio-list {
     display: flex;
     flex-direction: column;
-    gap: var(--space-3xs);
+    gap: calc(var(--space-3xs) * var(--density, 1));
   }
 
   .c-radio-list__empty,
@@ -3774,7 +3774,7 @@
   .c-flag {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
     padding: 0.15rem 0.5rem;
     border-radius: var(--radius-sm);
     font-size: var(--type-xs);
@@ -3811,7 +3811,7 @@
   inset-inline-end: var(--space-md);
   z-index: var(--z-toast);
   display: grid;
-  gap: var(--space-2xs);
+  gap: calc(var(--space-2xs) * var(--density, 1));
   pointer-events: none;
 }
   /* -- Dropdown ----------------------------------------------------------- */
@@ -3860,7 +3860,7 @@
   .c-animation-controls {
     display: inline-flex;
     flex-wrap: wrap;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
     align-items: center;
   }
   .c-animation-controls > * {
@@ -3874,7 +3874,7 @@
   /* -- Style switcher ---------------------------------------------------- */
   .c-style-switcher {
     display: inline-flex;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
     flex-wrap: wrap;
   }
   .c-style-switcher__option--active {
@@ -3960,7 +3960,7 @@
     display: inline-flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
   }
   .c-number-field__label {
     font-size: var(--type-xs);
@@ -3973,7 +3973,7 @@
     display: inline-flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
   }
   .c-color-picker__label {
     font-size: var(--type-xs);
@@ -3992,7 +3992,7 @@
   }
   .c-color-picker__presets {
     display: inline-flex;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
     flex-wrap: wrap;
   }
   .c-color-picker__preset {
@@ -4015,7 +4015,7 @@
     display: inline-flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
   }
   .c-time-picker__label {
     font-size: var(--type-xs);
@@ -4027,7 +4027,7 @@
   .c-rating {
     display: inline-flex;
     flex-wrap: wrap;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
   }
   .c-rating > * {
     min-inline-size: 0;
@@ -4066,7 +4066,7 @@
     display: inline-flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
     max-inline-size: 100%;
   }
   .c-date-picker__label {
@@ -4081,7 +4081,7 @@
   }
   .c-date-picker__calendar {
     display: grid;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
     padding: calc(var(--space-xs) * var(--density, 1));
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
@@ -4095,7 +4095,7 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
   }
   .c-date-picker__calendar-title {
     font-size: var(--type-sm);
@@ -4151,7 +4151,7 @@
     display: inline-flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
     font-size: var(--type-xs);
   }
   .c-shortcut__key {
@@ -4165,7 +4165,7 @@
     display: inline-flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
   }
   .c-date-range > * {
     min-inline-size: 0;
@@ -4181,7 +4181,7 @@
   }
   .c-palette-editor {
     display: inline-flex;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
     flex-wrap: wrap;
   }
   .c-palette-editor__swatch {
@@ -4196,7 +4196,7 @@
     display: inline-flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
     font-size: var(--type-xs);
   }
   .c-status-light > * {
@@ -4266,7 +4266,7 @@
   .c-style-panel {
     display: flex;
     flex-direction: column;
-    gap: var(--space-sm);
+    gap: calc(var(--space-sm) * var(--density, 1));
     padding: calc(var(--space-md) * var(--density, 1));
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
@@ -4278,7 +4278,7 @@
   .c-style-panel__body {
     display: flex;
     flex-direction: column;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
   }
   .c-style-panel__body > * {
     min-inline-size: 0;
@@ -4288,7 +4288,7 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-sm);
+    gap: calc(var(--space-sm) * var(--density, 1));
     justify-content: space-between;
   }
   .c-style-panel__row > * {
@@ -4327,7 +4327,7 @@
   .c-style-panel__actions {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-xs);
+    gap: calc(var(--space-xs) * var(--density, 1));
     justify-content: flex-end;
   }
   .c-style-panel__actions > * {
@@ -4337,7 +4337,7 @@
 
   .c-style-panel__colors {
     display: flex;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
     flex-wrap: wrap;
   }
 
@@ -4398,26 +4398,26 @@
   .c-row {
     display: flex;
     align-items: center;
-    gap: var(--space-sm);
+    gap: calc(var(--space-sm) * var(--density, 1));
   }
 
   .c-stack {
     display: flex;
     flex-direction: column;
-    gap: var(--space-sm);
+    gap: calc(var(--space-sm) * var(--density, 1));
   }
 
   .c-cluster {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-sm);
+    gap: calc(var(--space-sm) * var(--density, 1));
     align-items: center;
   }
 
   .c-sidebar {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(16rem, 24rem);
-    gap: var(--space-lg);
+    gap: calc(var(--space-lg) * var(--density, 1));
   }
 
   .c-sidebar__title {
@@ -4439,7 +4439,7 @@
   .c-file-upload__input { display: none; }
   .c-file-upload__progress { inline-size: 100%; margin-block-start: var(--space-xs); }
   .c-file-upload__preview { display: flex; flex-wrap: wrap; gap: var(--space-xs); margin-block-start: var(--space-xs); }
-  .c-file-upload__preview-item { display: inline-flex; align-items: center; gap: var(--space-2xs); padding: calc(var(--space-2xs) * var(--density, 1)); border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-raised); }
+  .c-file-upload__preview-item { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--space-2xs); padding: calc(var(--space-2xs) * var(--density, 1)); border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-raised); }
   .c-file-upload__preview-thumb { inline-size: 2.5rem; block-size: 2.5rem; object-fit: cover; border-radius: var(--radius-xs); }
   .c-file-upload__preview-name { font-size: var(--type-xs); color: var(--color-text-muted); max-inline-size: 8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   /* -- Notification center ----------------------------------------------- */
@@ -4499,7 +4499,7 @@
   .c-side-sheet__panel {
     display: flex;
     flex-direction: column;
-    gap: var(--space-sm);
+    gap: calc(var(--space-sm) * var(--density, 1));
   }
   /* -- Tour -------------------------------------------------------------- */
   .c-tour { position: fixed; z-index: var(--z-tooltip); background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: calc(var(--space-sm) * var(--density, 1)); box-shadow: var(--shadow-md); max-inline-size: 18rem; }
@@ -4523,7 +4523,7 @@
   /* -- Sortable list ----------------------------------------------------- */
   .c-sortable-list { display: block; content-visibility: auto; contain-intrinsic-size: auto 200px; }
   .c-sortable-list__list { list-style: none; padding: 0; margin: 0; }
-  .c-sortable-list__item { display: flex; align-items: center; gap: var(--space-xs); padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1)); border-block-end: 1px solid var(--color-border); }
+  .c-sortable-list__item { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-xs); padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1)); border-block-end: 1px solid var(--color-border); }
   .c-sortable-list__item > * {
     min-inline-size: 0;
     overflow-wrap: anywhere;
@@ -4561,8 +4561,9 @@
 
   .c-data-grid__row {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-xs);
+    gap: calc(var(--space-xs) * var(--density, 1));
     padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1));
     border-block-end: 1px solid var(--color-border-subtle);
   }
@@ -4616,6 +4617,7 @@
   }
   .c-pull-to-refresh__indicator {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
     block-size: 0;
@@ -4630,7 +4632,7 @@
   .c-split-map {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: var(--space-sm);
+    gap: calc(var(--space-sm) * var(--density, 1));
   }
   .c-split-map__pane {
     position: relative;

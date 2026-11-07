@@ -17,7 +17,7 @@
   .c-landing-hero {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
-    gap: var(--space-2xl);
+    gap: calc(var(--space-2xl) * var(--density, 1));
     align-items: center;
     padding-block: var(--space-3xl) var(--space-2xl);
   }
@@ -79,14 +79,14 @@
   .c-landing-hero__preview-body {
     padding: calc(var(--space-md) * var(--density, 1));
     display: grid;
-    gap: var(--space-sm);
+    gap: calc(var(--space-sm) * var(--density, 1));
   }
 
   /* Feature grid — deliberately not a uniform card grid. */
   .c-landing-features {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
-    gap: var(--space-xl) var(--space-lg);
+    gap: calc(var(--space-xl) * var(--density, 1)) calc(var(--space-lg) * var(--density, 1));
   }
 
   .c-landing-features__empty,
@@ -98,7 +98,7 @@
 
   .c-landing-features__item {
     display: grid;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
     align-content: start;
   }
 
@@ -138,7 +138,7 @@
   .c-docs-shell {
     display: grid;
     grid-template-columns: 15rem minmax(0, 1fr) 13rem;
-    gap: var(--space-2xl);
+    gap: calc(var(--space-2xl) * var(--density, 1));
     align-items: start;
   }
 
@@ -177,7 +177,7 @@
   .c-docs-shell__header {
     display: flex;
     align-items: flex-start;
-    gap: var(--space-md);
+    gap: calc(var(--space-md) * var(--density, 1));
     flex-wrap: wrap;
     margin-block-end: var(--space-lg);
   }
@@ -210,7 +210,7 @@
      ======================================================================= */
   .c-dash-shell {
     display: grid;
-    gap: var(--space-md);
+    gap: calc(var(--space-md) * var(--density, 1));
   }
 
   .c-dash-toolbar {
@@ -219,7 +219,7 @@
     z-index: var(--z-sticky);
     display: flex;
     align-items: center;
-    gap: var(--space-sm);
+    gap: calc(var(--space-sm) * var(--density, 1));
     flex-wrap: wrap;
     padding: 0.7rem var(--space-md);
     border: 1px solid var(--color-border);
@@ -249,7 +249,7 @@
   .c-dash-kpi-row {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
-    gap: var(--space-md);
+    gap: calc(var(--space-md) * var(--density, 1));
   }
 
   /* A live indicator that says when the data was last refreshed. */
@@ -269,14 +269,14 @@
      ======================================================================= */
   .c-recipe {
     display: grid;
-    gap: var(--space-md);
+    gap: calc(var(--space-md) * var(--density, 1));
     margin-block-start: var(--space-2xl);
   }
 
   .c-recipe__head {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
-    gap: var(--space-md);
+    gap: calc(var(--space-md) * var(--density, 1));
     align-items: start;
   }
 
@@ -372,7 +372,7 @@
   .c-affordances {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
-    gap: var(--space-md);
+    gap: calc(var(--space-md) * var(--density, 1));
   }
 
   .c-affordance {
@@ -388,7 +388,7 @@
   .c-affordance__demo {
     display: flex;
     align-items: center;
-    gap: var(--space-2xs);
+    gap: calc(var(--space-2xs) * var(--density, 1));
     min-block-size: 2.75rem;
     padding: calc(var(--space-2xs) * var(--density, 1));
     border-radius: var(--radius-sm);
