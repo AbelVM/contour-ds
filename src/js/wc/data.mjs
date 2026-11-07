@@ -2076,9 +2076,11 @@ class ContourDonut extends ContourBase {
       // text list
       const list = document.createElement("div");
       list.className = "c-donut__list";
+      list.setAttribute("role", "list");
       items.forEach((it, i) => {
         const row = document.createElement("div");
         row.className = "c-donut__item";
+        row.setAttribute("role", "listitem");
         const sw = document.createElement("span");
         sw.className = "c-donut__swatch";
         sw.style.background = (typeof it === "object" && it.color) ? it.color : "var(--chart-" + ((i % 8) + 1) + ")";
@@ -2740,6 +2742,7 @@ class ContourLegend extends ContourBase {
     static get properties() { return { title: { attribute: "title" }, ramp: { attribute: "ramp" }, scale: { attribute: "scale" }, items: { attribute: "items" }, method: { attribute: "method" }, norm: { attribute: "norm" }, selectable: { attribute: "selectable", type: Boolean }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-legend");
+      this.setAttribute("role", "list");
       wireStates(this);
       loadRemote(this, "items");
       if (renderStates(this, "legend")) return;

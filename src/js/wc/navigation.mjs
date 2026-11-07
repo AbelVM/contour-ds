@@ -913,6 +913,7 @@ class ContourTocFull extends ContourBase {
     static get properties() { return { title: { attribute: "title" }, items: { attribute: "items" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-toc");
+      this.setAttribute("role", "list");
       wireStates(this);
       loadRemote(this, "items");
       if (renderStates(this, "toc")) return;

@@ -455,7 +455,10 @@
     .c-pill,
     .c-btn,
     .c-badge,
-    .c-tag {
+    .c-tag,
+    .c-tabs__tab,
+    .c-segmented__option,
+    .c-menu__item {
       border-width: var(--border-width-thick);
     }
     .c-card, .c-panel, .c-input, .c-select, .c-textarea {
@@ -473,7 +476,10 @@
     .c-toast,
     .c-popover,
     .c-tooltip,
-    .c-dropdown {
+    .c-dropdown,
+    .c-side-sheet,
+    .c-tour,
+    .c-notification-center__panel {
       box-shadow: none;
     }
     .u-fade-in {
@@ -580,7 +586,7 @@
     align-items: center;
     justify-content: space-between;
     gap: var(--space-sm);
-    padding: var(--space-sm) var(--space-md);
+    padding: calc(var(--space-sm) * var(--density, 1)) calc(var(--space-md) * var(--density, 1));
     font-size: var(--type-xs);
     color: var(--color-text-muted);
   }

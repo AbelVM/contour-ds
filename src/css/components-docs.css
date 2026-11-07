@@ -22,7 +22,7 @@
     .c-docs-nav__loading,
     .c-docs-nav__error {
       color: var(--color-text-muted);
-      padding: var(--space-md);
+      padding: calc(var(--space-md) * var(--density, 1));
     }
 
     .c-docs-nav__group-title {
@@ -144,7 +144,7 @@
     .c-toc__loading,
     .c-toc__error {
       color: var(--color-text-muted);
-      padding: var(--space-md);
+      padding: calc(var(--space-md) * var(--density, 1));
     }
 
     .c-toc__title {
@@ -197,7 +197,7 @@
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
     gap: 0.7rem;
-    padding: var(--space-md);
+    padding: calc(var(--space-md) * var(--density, 1));
     border: 1px solid var(--color-border);
     border-inline-start: 3px solid var(--color-text-subtle);
     border-radius: var(--radius-md);
@@ -238,7 +238,7 @@
     .c-callout__close {
       color: var(--color-text-subtle);
       cursor: pointer;
-      padding: var(--space-3xs);
+      padding: calc(var(--space-3xs) * var(--density, 1));
       border: none;
       background: transparent;
       border-radius: var(--radius-xs);
@@ -297,7 +297,7 @@
     gap: var(--space-md);
 
     .c-do-dont__item {
-      padding: var(--space-md);
+      padding: calc(var(--space-md) * var(--density, 1));
       border: 1px solid var(--color-border);
       border-radius: var(--radius-md);
       background: var(--color-surface-1);
@@ -349,7 +349,7 @@
     .c-steps__loading,
     .c-steps__error {
       color: var(--color-text-muted);
-      padding: var(--space-md);
+      padding: calc(var(--space-md) * var(--density, 1));
     }
 
     .c-steps__item {
@@ -418,7 +418,7 @@
     .c-code-tabs__loading,
     .c-code-tabs__error {
       color: var(--color-text-muted);
-      padding: var(--space-md);
+      padding: calc(var(--space-md) * var(--density, 1));
     }
 
     .c-code-tabs__list {
@@ -578,7 +578,7 @@
     .c-pager__link {
       display: grid;
       gap: 0.15rem;
-      padding: var(--space-md);
+      padding: calc(var(--space-md) * var(--density, 1));
       border: 1px solid var(--color-border);
       border-radius: var(--radius-md);
       background: var(--color-surface-1);
@@ -855,7 +855,7 @@
     .c-changelog__summary > * {
       min-inline-size: 0;
     }
-      padding: var(--space-sm) var(--space-md);
+      padding: calc(var(--space-sm) * var(--density, 1)) calc(var(--space-md) * var(--density, 1));
       cursor: pointer;
       list-style: none;
       font-weight: var(--weight-medium);
@@ -877,7 +877,7 @@
     }
 
     .c-changelog__body {
-      padding: var(--space-md);
+      padding: calc(var(--space-md) * var(--density, 1));
       border-block-start: 1px solid var(--color-border);
       font-size: var(--type-sm);
       line-height: var(--leading-relaxed);
@@ -899,7 +899,7 @@
     .c-changelog__loading,
     .c-changelog__error {
       color: var(--color-text-muted);
-      padding: var(--space-md);
+      padding: calc(var(--space-md) * var(--density, 1));
       font-size: var(--type-sm);
     }
   }

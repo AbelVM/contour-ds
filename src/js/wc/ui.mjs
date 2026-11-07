@@ -2222,6 +2222,7 @@ class ContourNotificationCenter extends ContourBase {
     static get properties() { return { count: { attribute: "count" }, items: { attribute: "items" }, color: { attribute: "color" } }; }
     render() {
       this.classList.add("c-notification-center");
+      this.setAttribute("role", "list");
       const btn = this.ensure(".c-notification-center__trigger", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-notification-center__trigger"; el.type = "button"; el.innerHTML = '<span class="c-notification-center__bullet" aria-hidden="true"></span>'; el.setAttribute("aria-haspopup", "dialog"); el.setAttribute("aria-expanded", "false"); return el; });
       const color = this.getAttribute("color");
       const bullet = btn.querySelector(".c-notification-center__bullet");

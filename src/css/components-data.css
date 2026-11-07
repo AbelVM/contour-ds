@@ -62,7 +62,7 @@
   .c-kpi__loading,
   .c-kpi__error {
     color: var(--color-text-muted);
-    padding: var(--space-md);
+    padding: calc(var(--space-md) * var(--density, 1));
   }
 
   .c-kpi__head {
@@ -77,7 +77,7 @@
   }
 
   @container (inline-size < 12rem) {
-    .c-kpi { padding: var(--space-sm); gap: var(--space-2xs); }
+    .c-kpi { padding: calc(var(--space-sm) * var(--density, 1)); gap: calc(var(--space-2xs) * var(--density, 1)); }
     .c-kpi__value { font-size: 1.4rem; }
   }
 
@@ -197,7 +197,7 @@
   .c-threshold__loading,
   .c-threshold__error {
     color: var(--color-text-muted);
-    padding: var(--space-md);
+    padding: calc(var(--space-md) * var(--density, 1));
   }
 
   .c-threshold__fill {
@@ -256,7 +256,7 @@
      inset-block-start: var(--chart-tip-block-start);
      inset-inline-start: var(--chart-tip-inline-start);
      z-index: var(--z-tooltip);
-     padding: var(--space-2xs) var(--space-xs);
+     padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1));
      border-radius: var(--radius-xs);
      background: var(--color-surface-3);
      color: var(--color-text);
@@ -366,7 +366,7 @@
     .c-panel__head,
     .c-panel__body,
     .c-panel__foot {
-      padding: var(--space-sm);
+      padding: calc(var(--space-sm) * var(--density, 1));
     }
   }
 
@@ -375,7 +375,7 @@
     display: grid;
     justify-items: center;
     gap: 0.4rem;
-    padding: var(--space-xl) var(--space-md);
+    padding: calc(var(--space-xl) * var(--density, 1)) calc(var(--space-md) * var(--density, 1));
     text-align: center;
     color: var(--color-text-subtle);
     font-size: var(--type-xs);
@@ -410,7 +410,7 @@
   .c-measure__loading,
   .c-measure__error {
     color: var(--color-text-muted);
-    padding: var(--space-md);
+    padding: calc(var(--space-md) * var(--density, 1));
   }
 
   .c-measure__line {
@@ -435,7 +435,7 @@
     background: var(--color-surface-1);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
-    padding: var(--space-2xs) var(--space-xs);
+    padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1));
     font-family: var(--font-mono);
     font-size: var(--type-xs);
     color: var(--color-text);
@@ -451,7 +451,7 @@
     background: var(--color-surface-1);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
-    padding: var(--space-xs) var(--space-sm);
+    padding: calc(var(--space-xs) * var(--density, 1)) calc(var(--space-sm) * var(--density, 1));
     font-family: var(--font-mono);
     font-size: var(--type-sm);
     color: var(--color-text);
@@ -486,7 +486,7 @@
      inset-block-start: var(--chart-tip-block-start);
      inset-inline-start: var(--chart-tip-inline-start);
      z-index: var(--z-tooltip);
-     padding: var(--space-2xs) var(--space-xs);
+     padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1));
      border-radius: var(--radius-xs);
      background: var(--color-surface-3);
      color: var(--color-text);
@@ -773,7 +773,7 @@
     inset-block-start: var(--chart-tip-block-start);
     inset-inline-start: var(--chart-tip-inline-start);
     z-index: var(--z-tooltip);
-    padding: var(--space-2xs) var(--space-xs);
+    padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1));
     border-radius: var(--radius-xs);
     background: var(--chart-tooltip-bg);
     color: var(--chart-tooltip-fg);
@@ -1115,7 +1115,7 @@
   .c-activity__loading,
   .c-activity__error {
     color: var(--color-text-muted);
-    padding: var(--space-md);
+    padding: calc(var(--space-md) * var(--density, 1));
   }
 
   .c-activity__item {
@@ -1237,7 +1237,7 @@
     margin-inline-start: auto;
     color: var(--color-text-subtle);
     cursor: pointer;
-    padding: var(--space-3xs);
+    padding: calc(var(--space-3xs) * var(--density, 1));
     border-radius: var(--radius-xs);
   }
 
@@ -1439,7 +1439,7 @@
     display: inline-flex;
     align-items: center;
     gap: var(--space-2xs);
-    padding: var(--space-2xs) var(--space-xs);
+    padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1));
     background: var(--color-surface-1);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
@@ -1485,7 +1485,7 @@
     background: var(--color-surface-1);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
-    padding: var(--space-xs);
+    padding: calc(var(--space-xs) * var(--density, 1));
     max-block-size: 16rem;
     overflow-y: auto;
   }
@@ -1495,7 +1495,7 @@
     flex-wrap: wrap;
     align-items: center;
     gap: var(--space-xs);
-    padding: var(--space-2xs) var(--space-xs);
+    padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1));
     border-radius: var(--radius-sm);
     font-size: var(--type-sm);
     cursor: grab;
@@ -1580,7 +1580,7 @@
   .c-layer-panel__remove {
     flex: 0 0 auto;
     font-size: var(--type-xs);
-    padding: var(--space-3xs) var(--space-2xs);
+    padding: calc(var(--space-3xs) * var(--density, 1)) calc(var(--space-2xs) * var(--density, 1));
     border: 1px solid var(--color-control-edge);
     border-radius: var(--radius-xs);
     background: var(--color-surface-2);
@@ -1590,7 +1590,7 @@
 
   .c-layer-panel__rename-input {
     font-size: var(--type-sm);
-    padding: var(--space-3xs) var(--space-2xs);
+    padding: calc(var(--space-3xs) * var(--density, 1)) calc(var(--space-2xs) * var(--density, 1));
     border: 1px solid var(--color-control-edge);
     border-radius: var(--radius-xs);
     background: var(--color-surface-1);
@@ -1601,7 +1601,7 @@
   .c-layer-panel__loading,
   .c-layer-panel__error {
     color: var(--color-text-muted);
-    padding: var(--space-md);
+    padding: calc(var(--space-md) * var(--density, 1));
   }
 
   /* =======================================================================
@@ -1612,7 +1612,7 @@
     flex-wrap: wrap;
     align-items: center;
     gap: var(--space-sm);
-    padding: var(--space-xs);
+    padding: calc(var(--space-xs) * var(--density, 1));
     background: var(--color-surface-1);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
@@ -1687,7 +1687,7 @@
     overflow: hidden;
     display: flex;
     align-items: flex-start;
-    padding: var(--space-sm);
+    padding: calc(var(--space-sm) * var(--density, 1));
   }
   .c-comparison__pane > * {
     min-inline-size: 0;
@@ -1750,7 +1750,7 @@
   .c-comparison__label {
     position: absolute;
     inset-block-start: var(--space-sm);
-    padding: var(--space-xs) var(--space-sm);
+    padding: calc(var(--space-xs) * var(--density, 1)) calc(var(--space-sm) * var(--density, 1));
     background: var(--color-surface-1);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
@@ -1793,7 +1793,7 @@
      inset-block-start: var(--chart-tip-block-start);
      inset-inline-start: var(--chart-tip-inline-start);
      z-index: var(--z-tooltip);
-     padding: var(--space-2xs) var(--space-xs);
+     padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1));
      border-radius: var(--radius-xs);
      background: var(--color-surface-3);
      color: var(--color-text);
@@ -1870,7 +1870,7 @@
      inset-block-start: var(--chart-tip-block-start);
      inset-inline-start: var(--chart-tip-inline-start);
      z-index: var(--z-tooltip);
-     padding: var(--space-2xs) var(--space-xs);
+     padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1));
      border-radius: var(--radius-xs);
      background: var(--color-surface-3);
      color: var(--color-text);
@@ -1929,7 +1929,7 @@
     inset-block-start: var(--chart-tip-block-start);
     inset-inline-start: var(--chart-tip-inline-start);
     z-index: var(--z-tooltip);
-    padding: var(--space-2xs) var(--space-xs);
+    padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1));
     border-radius: var(--radius-xs);
     background: var(--color-surface-3);
     color: var(--color-text);
@@ -1979,7 +1979,7 @@
   .c-catchment__tooltip {
     position: absolute;
     z-index: var(--z-tooltip);
-    padding: var(--space-2xs) var(--space-xs);
+    padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1));
     border-radius: var(--radius-xs);
     background: var(--color-surface-3);
     color: var(--color-text);
@@ -2011,7 +2011,7 @@
   .c-streaming-chart__loading,
   .c-streaming-chart__error {
     color: var(--color-text-muted);
-    padding: var(--space-md);
+    padding: calc(var(--space-md) * var(--density, 1));
   }
 
   .c-streaming-chart svg {
@@ -2180,7 +2180,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-2xs);
-    padding: var(--space-sm);
+    padding: calc(var(--space-sm) * var(--density, 1));
     max-inline-size: calc(100% - var(--space-lg));
     max-block-size: calc(100% - var(--space-lg));
     overflow: auto;
@@ -2219,7 +2219,7 @@
   .c-map-footer > * {
     flex: 1 1 0;
     min-inline-size: 0;
-    padding: var(--space-sm);
+    padding: calc(var(--space-sm) * var(--density, 1));
   }
 
   /* =======================================================================
@@ -2289,12 +2289,12 @@
   }
 
   .c-app__title {
-    padding: var(--space-md);
+    padding: calc(var(--space-md) * var(--density, 1));
     font-weight: var(--weight-semibold);
   }
 
   .c-app-body__title {
-    padding: var(--space-md);
+    padding: calc(var(--space-md) * var(--density, 1));
   }
 
   .c-app__main {
@@ -2432,7 +2432,7 @@
   .c-instrument__loading,
   .c-instrument__error {
     color: var(--color-text-muted);
-    padding: var(--space-md);
+    padding: calc(var(--space-md) * var(--density, 1));
   }
 
   .c-instrument__item {
@@ -2513,7 +2513,7 @@
   .c-layer-switch {
     display: grid;
     gap: var(--space-2xs);
-    padding: var(--space-sm);
+    padding: calc(var(--space-sm) * var(--density, 1));
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     background: var(--color-surface-1);
@@ -2523,7 +2523,7 @@
   .c-layer-switch__loading,
   .c-layer-switch__error {
     color: var(--color-text-muted);
-    padding: var(--space-md);
+    padding: calc(var(--space-md) * var(--density, 1));
   }
 
   .c-layer-switch__item {
@@ -2531,7 +2531,7 @@
     flex-wrap: wrap;
     align-items: center;
     gap: var(--space-sm);
-    padding: var(--space-2xs) var(--space-xs);
+    padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1));
     border-radius: var(--radius-sm);
     cursor: pointer;
     font-size: var(--type-sm);
@@ -2630,7 +2630,7 @@
   .c-catchment__tooltip {
     position: absolute;
     z-index: var(--z-tooltip);
-    padding: var(--space-2xs) var(--space-xs);
+    padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1));
     border-radius: var(--radius-xs);
     background: var(--color-surface-3);
     color: var(--color-text);
@@ -2693,7 +2693,7 @@
   }
   .c-gauge__empty, .c-gauge__loading, .c-gauge__error {
     color: var(--color-text-muted);
-    padding: var(--space-md);
+    padding: calc(var(--space-md) * var(--density, 1));
   }
 
   /* =======================================================================
@@ -2929,7 +2929,7 @@
   }
   .c-category__empty, .c-donut__empty, .c-pivot__empty, .c-stacked-bar__empty, .c-time-series__empty {
     color: var(--color-text-muted);
-    padding: var(--space-md);
+    padding: calc(var(--space-md) * var(--density, 1));
   }
 
   /* =======================================================================
@@ -2941,7 +2941,7 @@
   }
   .c-widget-state__empty, .c-widget-state__loading, .c-widget-state__error {
     color: var(--color-text-muted);
-    padding: var(--space-md);
+    padding: calc(var(--space-md) * var(--density, 1));
   }
 
   .c-widget-state__label {
@@ -3046,7 +3046,7 @@
   }
   .c-geocoder__input {
     inline-size: 100%;
-    padding: var(--space-xs) var(--space-sm);
+    padding: calc(var(--space-xs) * var(--density, 1)) calc(var(--space-sm) * var(--density, 1));
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
     background: var(--color-surface-0);
@@ -3063,7 +3063,7 @@
     overflow: auto;
   }
   .c-geocoder__result {
-    padding: var(--space-xs) var(--space-sm);
+    padding: calc(var(--space-xs) * var(--density, 1)) calc(var(--space-sm) * var(--density, 1));
     cursor: pointer;
   }
   .c-geocoder__result:hover,
@@ -3071,7 +3071,7 @@
     background: var(--color-surface-2);
   }
   .c-geocoder__empty {
-    padding: var(--space-sm);
+    padding: calc(var(--space-sm) * var(--density, 1));
     color: var(--color-text-muted);
     text-align: center;
   }
@@ -3089,7 +3089,7 @@
     display: inline-flex;
     align-items: center;
     gap: var(--space-xs);
-    padding: var(--space-xs) var(--space-sm);
+    padding: calc(var(--space-xs) * var(--density, 1)) calc(var(--space-sm) * var(--density, 1));
     border: 1px solid var(--color-border);
     transition: background-color var(--dur-fast) var(--ease-standard), border-color var(--dur-fast) var(--ease-standard);
     border-radius: var(--radius-sm);
