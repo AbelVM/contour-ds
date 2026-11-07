@@ -342,8 +342,8 @@
     content: "";
     position: absolute;
     inset-block: 0;
-    left: var(--bleed-left, 0);
-    right: var(--bleed-right, 0);
+    inset-inline-start: var(--bleed-left, 0);
+    inset-inline-end: var(--bleed-right, 0);
     z-index: -1;
   }
 

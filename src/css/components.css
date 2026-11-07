@@ -1113,7 +1113,7 @@
   /* BY-26: scroll-driven edge affordance (progressive enhancement). */
   @supports (animation-timeline: scroll()) {
     .c-scroll-area::before, .c-scroll-area::after { content: ""; position: sticky; left: 0; right: 0; block-size: 1rem; pointer-events: none; z-index: 1; }
-    .c-scroll-area::before { top: 0; background: linear-gradient(to bottom, var(--color-surface-0), transparent); animation: c-sa-t linear both; animation-timeline: scroll(self); animation-range: 0% 10%; }
+    .c-scroll-area::before { inset-block-start: 0; background: linear-gradient(to bottom, var(--color-surface-0), transparent); animation: c-sa-t linear both; animation-timeline: scroll(self); animation-range: 0% 10%; }
     .c-scroll-area::after { bottom: 0; background: linear-gradient(to top, var(--color-surface-0), transparent); animation: c-sa-b linear both; animation-timeline: scroll(self); animation-range: 90% 100%; }
   }
   @keyframes c-sa-t { from { opacity: 1; } to { opacity: 0; } }
@@ -2387,13 +2387,13 @@
   /* Sticky header (F-09): keep the header visible while scrolling a tall table. */
   .c-table thead th {
     position: sticky;
-    top: 0;
+    inset-block-start: 0;
     z-index: 2;
     background: var(--color-surface-1);
   }
   .c-table--virtual thead th {
     position: sticky;
-    top: 0;
+    inset-block-start: 0;
   }
 
   .c-table-wrap {
@@ -4270,8 +4270,8 @@
 
   .c-annotation {
     position: absolute;
-    left: var(--annotation-x, 50%);
-    top: var(--annotation-y, 50%);
+    inset-inline-start: var(--annotation-x, 50%);
+    inset-block-start: var(--annotation-y, 50%);
     transform: translate(-50%, -100%);
     padding: var(--space-2xs) var(--space-xs);
     background: var(--color-surface-1);
