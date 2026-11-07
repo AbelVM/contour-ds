@@ -172,6 +172,10 @@
     justify-content: center;
     margin-block-start: 0.5rem;
   }
+  .c-cta__actions > * {
+    min-inline-size: 0;
+  }
+  }
 
   /* =======================================================================
      4. PRICING

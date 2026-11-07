@@ -1952,6 +1952,10 @@
 
   .c-form__actions {
     display: flex;
+  }
+  .c-form__actions > * {
+    min-inline-size: 0;
+  }
     gap: var(--space-sm);
     align-items: center;
   }
@@ -2273,6 +2277,10 @@
 
   .c-code__head {
     display: flex;
+  }
+  .c-code__head > * {
+    min-inline-size: 0;
+  }
     align-items: center;
     gap: var(--space-sm);
     padding: 0.55rem 0.6rem 0.55rem 1rem;
@@ -2829,6 +2837,10 @@
 
   .c-alert__actions {
     display: flex;
+  }
+  .c-alert__actions > * {
+    min-inline-size: 0;
+  }
     gap: var(--space-xs);
     align-items: center;
   }
@@ -3542,6 +3554,10 @@
 
   .c-sheet__head {
     display: flex;
+  }
+  .c-sheet__head > * {
+    min-inline-size: 0;
+  }
     align-items: center;
     gap: var(--space-sm);
     padding: 1rem 1.1rem;
@@ -4289,6 +4305,9 @@
   .c-stepper__step.is-current { color: var(--color-primary); font-weight: 600; }
   .c-stepper__step.is-done { color: var(--color-success); }
   .c-stepper__nav { display: flex; gap: var(--space-xs); }
+  .c-stepper__nav > * { min-inline-size: 0; }
+  .c-stepper__nav > * { min-inline-size: 0; }
+  .c-stepper__nav > * { min-inline-size: 0; }
   /* -- Virtual list ------------------------------------------------------ */
   .c-virtual-list { display: block; }
   .c-virtual-list__scroller { max-block-size: 20rem; overflow: auto; border: 1px solid var(--color-border); border-radius: var(--radius-md); }
@@ -4332,6 +4351,9 @@
   .c-tour { position: fixed; z-index: var(--z-tooltip); background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: var(--space-sm); box-shadow: var(--shadow-md); max-inline-size: 18rem; }
   .c-tour__tip { font-size: var(--type-sm); margin-block-end: var(--space-xs); }
   .c-tour__nav { display: flex; justify-content: flex-end; }
+  .c-tour__nav > * { min-inline-size: 0; }
+  .c-tour__nav > * { min-inline-size: 0; }
+  .c-tour__nav > * { min-inline-size: 0; }
 
   .c-tour__step {
     font-size: var(--type-xs);
