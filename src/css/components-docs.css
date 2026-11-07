@@ -343,6 +343,7 @@
   .c-steps {
     display: grid;
     gap: calc(var(--space-lg) * var(--density, 1));
+    padding-block-start: calc(var(--space-2xs) * var(--density, 1));
     counter-reset: c-step;
 
     .c-steps__empty,
