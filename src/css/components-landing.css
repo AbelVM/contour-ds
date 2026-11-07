@@ -245,6 +245,11 @@
     line-height: var(--leading-normal);
   }
 
+  .c-price__amount > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+
   .c-price__features {
     display: grid;
     gap: 0.55rem;
@@ -438,6 +443,11 @@
     font-size: var(--type-h4);
     font-weight: var(--weight-semibold);
     color: var(--color-text-strong);
+  }
+
+  .c-faq__question > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
 
   .c-faq__question::-webkit-details-marker {

@@ -490,7 +490,9 @@
     tr,
     .c-chart,
     .c-card,
-    .c-panel {
+    .c-panel,
+    .c-data-grid,
+    .c-tree {
       break-inside: avoid;
     }
 

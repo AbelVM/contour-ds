@@ -503,6 +503,11 @@
     color: var(--color-text-subtle);
   }
 
+  .c-heatmap__legend > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+
   .c-heatmap__legend-bar {
     inline-size: 6rem;
     block-size: 0.5rem;
@@ -1684,6 +1689,11 @@
     align-items: flex-start;
     padding: var(--space-sm);
   }
+  .c-comparison__pane > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+
   .c-comparison__pane--before {
     justify-content: flex-start;
   }

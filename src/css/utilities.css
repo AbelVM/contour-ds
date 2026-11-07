@@ -576,6 +576,10 @@
     font-size: var(--type-xs);
     color: var(--color-text-muted);
   }
+  .c-table__pagination > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
 
   /* -- Undo / reset affordance (T-48) -------------------------------- */
   .u-reset {
