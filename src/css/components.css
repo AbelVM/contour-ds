@@ -4588,7 +4588,7 @@
     overflow-wrap: anywhere;
   }
   /* -- Tree grid --------------------------------------------------------- */
-  .c-tree-grid { display: block; overflow: auto; }
+  .c-tree-grid { display: block; overflow: auto; content-visibility: auto; contain-intrinsic-size: auto 300px; }
   .c-tree-grid__table { inline-size: 100%; }
 
 

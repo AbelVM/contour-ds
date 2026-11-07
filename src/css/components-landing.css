@@ -364,6 +364,8 @@
     display: grid;
     gap: 0.6rem;
     margin-block-start: var(--space-md);
+    content-visibility: auto;
+    contain-intrinsic-size: auto 200px;
   }
 
   .c-showcase__list li {
