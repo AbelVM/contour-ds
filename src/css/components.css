@@ -713,7 +713,7 @@
     padding-inline-end: 2.2rem;
   }
 
-  .c-combobox__input:focus {
+  .c-combobox__input:focus-visible {
     border-color: var(--color-primary);
     box-shadow: 0 0 0 2px var(--color-focus-ring),
       0 0 0 4px var(--color-focus-halo);
@@ -2032,9 +2032,9 @@
     border-color: var(--color-border-strong);
   }
 
-  .c-input:focus,
-  .c-select:focus,
-  .c-textarea:focus {
+  .c-input:focus-visible,
+  .c-select:focus-visible,
+  .c-textarea:focus-visible {
     outline: none;
     border-color: var(--color-primary);
     box-shadow: 0 0 0 2px var(--color-focus-ring),
@@ -2046,8 +2046,8 @@
     border-color: var(--color-danger);
   }
 
-  .c-input[aria-invalid="true"]:focus,
-  .c-textarea[aria-invalid="true"]:focus {
+  .c-input[aria-invalid="true"]:focus-visible,
+  .c-textarea[aria-invalid="true"]:focus-visible {
     outline: none;
     box-shadow: 0 0 0 3px
       color-mix(in oklab, var(--color-danger) 25%, transparent);
