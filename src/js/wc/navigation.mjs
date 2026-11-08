@@ -333,6 +333,7 @@ class ContourHeader extends ContourBase {
         if (!nav) return;
         const open = nav.classList.toggle("is-open");
         toggle.setAttribute("aria-expanded", String(open));
+        this.dispatchEvent(new CustomEvent("contour:toggle", { bubbles: true, composed: true, detail: { open } }));
       });
       this.addEventListener("keydown", (e) => {
         if (e.key !== "Escape") return;
@@ -608,6 +609,7 @@ render() {
           toggle.setAttribute("aria-expanded", String(!expanded));
           const row = toggle.closest(".c-tree__row");
           if (row) row.setAttribute("aria-expanded", String(!expanded));
+          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { path, expanded: !expanded } }));
           if (this.hasAttribute("virtual") && this._treeRoot) {
             const s = this._treeRoot;
             this._treeScrollTop = s.scrollTop || 0;
@@ -780,6 +782,7 @@ class ContourBreadcrumb extends ContourBase {
               // (the arm-7 trap), so the flag lives outside OBSERVED.
               this._overflowExpanded = true;
               this.requestRender();
+              this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { expanded: true } }));
             });
             n.appendChild(btn);
           }
@@ -990,6 +993,7 @@ class ContourTocFull extends ContourBase {
           if (!target) return;
           e.preventDefault();
           try { target.scrollIntoView({ behavior: "smooth", block: "start" }); } catch (err) { target.scrollIntoView(); }
+          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { href } }));
         });
       }
     }
@@ -1435,7 +1439,7 @@ class ContourFooter extends ContourBase {
   define("contour-footer", ContourFooter);
 class ContourSchemeToggle extends ContourBase {
     static get observed() { return []; }
-    render() { this.classList.add("c-scheme-toggle"); }
+    render() { this.classList.add("c-scheme-toggle"); if (!this.hasAttribute("role")) this.setAttribute("role", "button"); if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0"); if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Toggle color scheme"); }
     enhance() {
       if (this._wiredScheme) return;
       this._wiredScheme = true;
@@ -1448,6 +1452,12 @@ class ContourSchemeToggle extends ContourBase {
         try { localStorage.setItem("contour-theme", next); } catch (e) {}
         requestAnimationFrame(() => requestAnimationFrame(() => root.classList.remove("is-theme-switching")));
         this.dispatchEvent(new CustomEvent("contour:theme-change", { detail: { theme: next }, bubbles: true, composed: true }));
+      });
+      this.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          this.click();
+        }
       });
       // restore persisted theme on connect
       try {
@@ -1462,6 +1472,8 @@ class ContourSidebar extends ContourBase {
     static get properties() { return { title: { attribute: "title" }, items: { attribute: "items" }, collapsed: { attribute: "collapsed", type: Boolean } }; }
     render() {
       this.classList.add("c-sidebar");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "navigation");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("title") || "Sidebar");
       if (this.hasAttribute("collapsed")) this.classList.add("c-sidebar--collapsed"); else this.classList.remove("c-sidebar--collapsed");
       const title = this.getAttribute("title");
       if (title) {
@@ -1494,6 +1506,7 @@ class ContourSidebar extends ContourBase {
         const btn = e.target && e.target.closest ? e.target.closest(".c-sidebar__toggle") : null;
         if (!btn || !this.contains(btn)) return;
         this.toggleAttribute("collapsed");
+        this.dispatchEvent(new CustomEvent("contour:toggle", { bubbles: true, composed: true, detail: { collapsed: this.hasAttribute("collapsed") } }));
       });
     }
   }
@@ -1553,12 +1566,19 @@ class ContourToolbar extends ContourBase {
       this._wiredToolbar = true;
       this.addEventListener("click", (e) => {
         const btn = e.target && e.target.closest ? e.target.closest(".c-toolbar__overflow-btn") : null;
-        if (!btn || !this.contains(btn)) return;
-        const menu = btn.parentElement && btn.parentElement.querySelector(".c-toolbar__overflow-menu");
-        if (!menu) return;
-        const open = menu.hasAttribute("hidden");
-        if (open) menu.removeAttribute("hidden"); else menu.setAttribute("hidden", "");
-        btn.setAttribute("aria-expanded", String(open));
+        if (btn && this.contains(btn)) {
+          const menu = btn.parentElement && btn.parentElement.querySelector(".c-toolbar__overflow-menu");
+          if (menu) {
+            const open = menu.hasAttribute("hidden");
+            if (open) menu.removeAttribute("hidden"); else menu.setAttribute("hidden", "");
+            btn.setAttribute("aria-expanded", String(open));
+          }
+          return;
+        }
+        const actionBtn = e.target && e.target.closest ? e.target.closest(".c-toolbar__btn") : null;
+        if (actionBtn && this.contains(actionBtn)) {
+          this.dispatchEvent(new CustomEvent("contour:activate", { bubbles: true, composed: true, detail: { label: actionBtn.textContent.trim() } }));
+        }
       });
     }
   }

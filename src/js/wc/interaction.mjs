@@ -111,6 +111,9 @@ class ContourShortcutPanelFull extends ContourBase {
     static get properties() { return { title: { attribute: "title" }, open: { attribute: "open", type: Boolean } }; }
     render() {
       this.classList.add("c-shortcut-overlay");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "dialog");
+      if (!this.hasAttribute("aria-modal")) this.setAttribute("aria-modal", "true");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("title") || "Keyboard shortcuts");
       const title = this.getAttribute("title");
       if (title) {
         const t = this.ensure(".c-shortcut-overlay__title", () => { const el = document.createElement("div"); el.className = "c-shortcut-overlay__title"; return el; });
@@ -296,6 +299,8 @@ class ContourDropZone extends ContourBase {
     static get properties() { return { label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-drop-zone");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "region");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("label") || "Drop zone");
       Array.from(this.childNodes).forEach((n) => { if (n.nodeType === Node.TEXT_NODE) n.remove(); else if (n.nodeType === Node.ELEMENT_NODE && n.tagName === "SPAN") n.remove(); });
       const label = this.getAttribute("label");
       if (label) {
@@ -398,6 +403,8 @@ class ContourResizable extends ContourBase {
         if (!this._resizing) return;
         this._resizing = false;
         if (this._splitValue) { this.setAttribute("value", this._splitValue); this._splitValue = null; }
+        const rect = this.getBoundingClientRect();
+        this.dispatchEvent(new CustomEvent("contour:resize", { bubbles: true, composed: true, detail: { width: Math.round(rect.width), height: Math.round(rect.height) } }));
         const handle = this.querySelector(".c-resize-handle");
         if (handle) {
           handle.classList.remove("c-resize-handle--dragging");
@@ -415,6 +422,8 @@ class ContourResizable extends ContourBase {
         const cur = parseFloat(this.getAttribute("value")) || 50;
         if (e.key === "ArrowLeft" || e.key === "ArrowDown") { e.preventDefault(); setSplit && setSplit; const p1 = this.querySelector(".c-resizable__pane"); if (p1) { const nv = Math.max(10, cur - 5); p1.style.flex = `0 0 ${nv}%`; this.setAttribute("value", String(nv)); } }
         else if (e.key === "ArrowRight" || e.key === "ArrowUp") { e.preventDefault(); const p1 = this.querySelector(".c-resizable__pane"); if (p1) { const nv = Math.min(90, cur + 5); p1.style.flex = `0 0 ${nv}%`; this.setAttribute("value", String(nv)); } }
+        const r = this.getBoundingClientRect();
+        this.dispatchEvent(new CustomEvent("contour:resize", { bubbles: true, composed: true, detail: { width: Math.round(r.width), height: Math.round(r.height) } }));
       });
     }
   }

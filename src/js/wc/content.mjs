@@ -509,6 +509,16 @@ class ContourShowcaseFull extends ContourBase {
           this.dispatchEvent(new CustomEvent("contour:showcase-activate", { bubbles: true, composed: true, detail: { title } }));
         }
       });
+      this.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          const media = this.querySelector(".c-showcase__media");
+          if (media) {
+            e.preventDefault();
+            const title = this.getAttribute("title") || "";
+            this.dispatchEvent(new CustomEvent("contour:showcase-activate", { bubbles: true, composed: true, detail: { title } }));
+          }
+        }
+      });
     }
   }
 define("contour-showcase", ContourShowcaseFull);

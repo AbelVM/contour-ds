@@ -1,3 +1,15 @@
+## [1.8.0] - 2026-11-08
+
+### Added
+- Form association for `contour-color-picker`, `contour-date-picker`, `contour-time-picker`, `contour-number-field`, `contour-file-upload`, and `contour-tags-input` (R16-06): these controls now participate in native form submission via `ElementInternals`, with `_syncFormValue()` overrides for tags (JSON array) and file upload (FormData).
+- Forced-colors fallbacks for the six form controls above (R16-08): border list extended and selected-state handling added for date-picker calendar day, color-picker preset, and tags-input tag.
+- ARIA attributes added to ~12 interactive components that previously lacked them (R16-03): `contour-drop-zone`, `contour-map-area`, `contour-scheme-toggle`, `contour-style-switcher`, `contour-shortcut`, `contour-pull-to-refresh`, `contour-accordion`, `contour-expandable`, `contour-data-export`, `contour-shortcut-overlay`, `contour-textarea`, `contour-sidebar`.
+- Event emission added to ~9 components that previously had listeners but no `dispatchEvent` (R16-05): `contour-resizable` (`contour:resize`), `contour-error-boundary` (`contour:error`), `contour-header`/`contour-sidebar` (`contour:toggle`), `contour-tree`/`contour-breadcrumb`/`contour-toc` (`contour:select`), `contour-toolbar` (`contour:activate`), `contour-side-sheet` (`contour:open`/`contour:close`).
+- `contour-map-footer` brand selector migrated from `[data-map-footer-brand]` to `.c-map-footer__brand` for robustness (R16-55).
+
+### Changed
+- Size budgets raised: `contour-wc.esm.min.js` 604→609 kB, `contour.components.json` 278→279 kB, `surfaces/contour-landing.min.css` 168→169 kB.
+
 ## [1.7.2] - 2026-11-08
 
 ### Changed

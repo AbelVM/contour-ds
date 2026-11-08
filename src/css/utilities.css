@@ -289,6 +289,12 @@
     .c-toolbar,
     .c-pagination,
     .c-combobox,
+    .c-color-picker,
+    .c-date-picker,
+    .c-time-picker,
+    .c-number-field,
+    .c-file-upload,
+    .c-tags-input,
     .c-tree,
     .c-alert__close,
     .c-dialog__close,
@@ -336,6 +342,21 @@
     .c-tabs__tab[aria-selected="true"] {
       border-color: Highlight;
       color: Highlight;
+    }
+
+    /* Selected states for the newer form controls (R16-08). */
+    .c-date-picker__calendar-day.is-selected {
+      background: Highlight;
+      color: HighlightText;
+      border-color: Highlight;
+    }
+    .c-color-picker__preset[aria-pressed="true"],
+    .c-color-picker__preset.is-selected {
+      border-color: Highlight;
+      outline: 2px solid Highlight;
+    }
+    .c-tags-input__tag {
+      border-color: Highlight;
     }
   }
 

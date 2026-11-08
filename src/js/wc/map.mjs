@@ -1016,6 +1016,8 @@ class ContourMapArea extends ContourBase {
     static get properties() { return { attribution: { attribute: "attribution" }, "attribution-mark": { attribute: "attribution-mark" }, scale: { attribute: "scale" }, controls: { attribute: "controls" } }; }
     render() {
       this.classList.add("c-map-area");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "region");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Map area");
       const attribution = this.getAttribute("attribution");
       if (attribution) {
         const a = this.ensure(".c-map-slot__attribution", () => { const el = document.createElement("div"); el.className = "c-map-slot__attribution"; return el; });
@@ -1117,10 +1119,10 @@ class ContourMapFooter extends ContourBase {
       // The footer's own rule is `.c-map-footer > *`, which reaches any direct
       // child, so the brand is a plain span: visible, and inventing no name.
       if (brand) {
-        const b = this.ensure("[data-map-footer-brand]", () => { const el = document.createElement("span"); el.setAttribute("data-map-footer-brand", ""); return el; });
+        const b = this.ensure(".c-map-footer__brand", () => { const el = document.createElement("span"); el.className = "c-map-footer__brand"; return el; });
         b.textContent = brand;
       } else {
-        const b = this.querySelector("[data-map-footer-brand]");
+        const b = this.querySelector(".c-map-footer__brand");
         if (b) b.remove();
       }
     }

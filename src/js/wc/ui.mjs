@@ -1009,6 +1009,8 @@ class ContourStyleSwitcher extends ContourBase {
     static get properties() { return { items: { attribute: "items" }, value: { attribute: "value" } }; }
     render() {
       this.classList.add("c-style-switcher");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "group");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Style switcher");
       const items = this.getAttribute("items");
       const value = this.getAttribute("value");
       Array.from(this.querySelectorAll(".c-style-switcher__option")).forEach((n) => n.remove());
@@ -1021,7 +1023,8 @@ class ContourStyleSwitcher extends ContourBase {
             btn.className = "c-style-switcher__option c-btn c-btn--sm";
             btn.type = "button";
             btn.textContent = name;
-            if (name === value) btn.classList.add("c-style-switcher__option--active");
+            if (name === value) { btn.classList.add("c-style-switcher__option--active"); btn.setAttribute("aria-pressed", "true"); }
+            else btn.setAttribute("aria-pressed", "false");
             btn.dataset.value = name;
             this.appendChild(btn);
           });
@@ -1034,6 +1037,26 @@ class ContourStyleSwitcher extends ContourBase {
       this.addEventListener("click", (e) => {
         const btn = e.target && e.target.closest ? e.target.closest(".c-style-switcher__option") : null;
         if (btn && this.contains(btn)) {
+          this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: btn.dataset.value } }));
+        }
+      });
+      this.addEventListener("keydown", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest(".c-style-switcher__option") : null;
+        if (!btn || !this.contains(btn)) return;
+        const opts = Array.from(this.querySelectorAll(".c-style-switcher__option"));
+        const idx = opts.indexOf(btn);
+        if (idx < 0) return;
+        let next = -1;
+        if (e.key === "ArrowRight" || e.key === "ArrowDown") next = (idx + 1) % opts.length;
+        else if (e.key === "ArrowLeft" || e.key === "ArrowUp") next = (idx - 1 + opts.length) % opts.length;
+        else if (e.key === "Home") next = 0;
+        else if (e.key === "End") next = opts.length - 1;
+        if (next >= 0) {
+          e.preventDefault();
+          try { opts[next].focus(); } catch (err) { /* detached */ }
+        }
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
           this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: btn.dataset.value } }));
         }
       });
@@ -1496,6 +1519,8 @@ class ContourShortcut extends ContourBase {
     static get properties() { return { key: { attribute: "key" }, label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-shortcut");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "group");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("label") || "Keyboard shortcut");
       const key = this.getAttribute("key") || "";
       const label = this.getAttribute("label") || "";
       if (key) {
@@ -1593,6 +1618,7 @@ class ContourPopover extends ContourBase {
  * Attributes: `value`, `range`, `range-start`, `range-end`, `label`, `disabled`, `error`, `help`, `time`, `min`, `max`, `locale`.
  */
 class ContourDatePicker extends ContourBase {
+  static get formAssociated() { return true; }
   static get observed() { return ["value", "range", "range-start", "range-end", "label", "disabled", "error", "help", "time", "min", "max", "locale"]; }
   static get properties() { return { value: { attribute: "value" }, range: { attribute: "range", type: Boolean }, rangeStart: { attribute: "range-start" }, rangeEnd: { attribute: "range-end" }, label: { attribute: "label" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" }, time: { attribute: "time", type: Boolean }, min: { attribute: "min" }, max: { attribute: "max" }, locale: { attribute: "locale" } }; }
     render() {
@@ -1684,10 +1710,13 @@ class ContourDatePicker extends ContourBase {
       cal.appendChild(grid);
       prev.addEventListener("click", () => { this._calMonth = new Date(y, m - 1, 1); this._renderCalendar(); });
       next.addEventListener("click", () => { this._calMonth = new Date(y, m + 1, 1); this._renderCalendar(); });
+      if (this._internals) this._syncFormValue();
     }
     enhance() {
       if (this._wiredDatePicker) return;
       this._wiredDatePicker = true;
+      this._syncFormValue();
+      this.addEventListener("change", () => { this._syncFormValue(); });
       this.addEventListener("change", (e) => {
         const t = e.target;
         if (t && t.classList.contains("c-date-picker__input")) {
@@ -1778,6 +1807,7 @@ class ContourRating extends ContourBase {
  * Attributes: `value`, `label`, `disabled`, `error`, `help`.
  */
 class ContourTimePicker extends ContourBase {
+    static get formAssociated() { return true; }
     static get observed() { return ["value", "label", "disabled", "error", "help"]; }
     static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" } }; }
     render() {
@@ -1806,10 +1836,13 @@ class ContourTimePicker extends ContourBase {
       const toggle = this.ensure(".c-date-picker__calendar-toggle", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-date-picker__calendar-toggle"; el.type = "button"; el.textContent = "📅"; el.setAttribute("aria-label", "Open calendar"); el.setAttribute("aria-expanded", "false"); return el; });
       let cal = this.querySelector(".c-date-picker__calendar");
       if (!cal) { cal = document.createElement("div"); cal.className = "c-date-picker__calendar"; cal.setAttribute("hidden", ""); cal.setAttribute("role", "dialog"); cal.setAttribute("aria-label", "Calendar"); this.appendChild(cal); }
+      if (this._internals) this._syncFormValue();
     }
     enhance() {
       if (this._wiredTimePicker) return;
       this._wiredTimePicker = true;
+      this._syncFormValue();
+      this.addEventListener("change", () => { this._syncFormValue(); });
       this.addEventListener("change", (e) => {
         const t = e.target;
         if (t && t.classList.contains("c-time-picker__input")) {
@@ -1825,6 +1858,7 @@ class ContourTimePicker extends ContourBase {
  * Attributes: `value`, `label`, `disabled`, `error`, `help`, `alpha`, `presets`.
  */
 class ContourColorPicker extends ContourBase {
+    static get formAssociated() { return true; }
     static get observed() { return ["value", "label", "disabled", "error", "help", "alpha", "presets"]; }
     static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" }, alpha: { attribute: "alpha", type: Boolean }, presets: { attribute: "presets" } }; }
     render() {
@@ -1893,10 +1927,14 @@ class ContourColorPicker extends ContourBase {
       const toggle = this.ensure(".c-date-picker__calendar-toggle", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-date-picker__calendar-toggle"; el.type = "button"; el.textContent = "📅"; el.setAttribute("aria-label", "Open calendar"); el.setAttribute("aria-expanded", "false"); return el; });
       let cal = this.querySelector(".c-date-picker__calendar");
       if (!cal) { cal = document.createElement("div"); cal.className = "c-date-picker__calendar"; cal.setAttribute("hidden", ""); cal.setAttribute("role", "dialog"); cal.setAttribute("aria-label", "Calendar"); this.appendChild(cal); }
+      if (this._internals) this._syncFormValue();
     }
     enhance() {
       if (this._wiredColorPicker) return;
       this._wiredColorPicker = true;
+      this._syncFormValue();
+      this.addEventListener("change", () => { this._syncFormValue(); });
+      this.addEventListener("contour:change", () => { this._syncFormValue(); });
       this.addEventListener("change", (e) => {
         const t = e.target;
         if (t && t.classList.contains("c-color-picker__input")) {
@@ -1944,6 +1982,7 @@ class ContourColorPicker extends ContourBase {
  * Attributes: `value`, `min`, `max`, `step`, `label`, `disabled`, `error`, `help`.
  */
 class ContourNumberField extends ContourBase {
+    static get formAssociated() { return true; }
     static get observed() { return ["value", "min", "max", "step", "label", "disabled", "error", "help"]; }
     static get properties() { return { value: { attribute: "value" }, min: { attribute: "min" }, max: { attribute: "max" }, step: { attribute: "step" }, label: { attribute: "label" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" } }; }
     render() {
@@ -1977,10 +2016,13 @@ class ContourNumberField extends ContourBase {
       const toggle = this.ensure(".c-date-picker__calendar-toggle", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-date-picker__calendar-toggle"; el.type = "button"; el.textContent = "📅"; el.setAttribute("aria-label", "Open calendar"); el.setAttribute("aria-expanded", "false"); return el; });
       let cal = this.querySelector(".c-date-picker__calendar");
       if (!cal) { cal = document.createElement("div"); cal.className = "c-date-picker__calendar"; cal.setAttribute("hidden", ""); cal.setAttribute("role", "dialog"); cal.setAttribute("aria-label", "Calendar"); this.appendChild(cal); }
+      if (this._internals) this._syncFormValue();
     }
     enhance() {
       if (this._wiredNumberField) return;
       this._wiredNumberField = true;
+      this._syncFormValue();
+      this.addEventListener("change", () => { this._syncFormValue(); });
       this.addEventListener("change", (e) => {
         const t = e.target;
         if (t && t.classList.contains("c-number-field__input")) {
@@ -2150,6 +2192,7 @@ class ContourFab extends ContourBase {
  * Attributes: `label`, `accept`, `multiple`, `progress`.
  */
 class ContourFileUpload extends ContourBase {
+    static get formAssociated() { return true; }
     static get observed() { return ["label", "accept", "multiple", "progress"]; }
     static get properties() { return { label: { attribute: "label" }, accept: { attribute: "accept" }, multiple: { attribute: "multiple", type: Boolean }, progress: { attribute: "progress" } }; }
     render() {
@@ -2171,10 +2214,13 @@ class ContourFileUpload extends ContourBase {
       }
       const preview = this.ensure(".c-file-upload__preview", () => { const el = document.createElement("div"); el.className = "c-file-upload__preview"; return el; });
       if (!preview) {}
+      if (this._internals) this._syncFormValue();
     }
     enhance() {
       if (this._wiredFileUpload) return;
       this._wiredFileUpload = true;
+      this._syncFormValue();
+      this.addEventListener("change", () => { this._syncFormValue(); });
       const dz = () => this.querySelector(".c-file-upload__dropzone");
       const input = () => this.querySelector(".c-file-upload__input");
       const activate = () => { const i = input(); if (i) i.click(); };
@@ -2209,6 +2255,19 @@ class ContourFileUpload extends ContourBase {
       this.addEventListener("dragover", (e) => { e.preventDefault(); this.classList.add("is-dragover"); });
       this.addEventListener("dragleave", () => this.classList.remove("is-dragover"));
       this.addEventListener("drop", (e) => { e.preventDefault(); this.classList.remove("is-dragover"); const i = input(); if (i && e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) { try { i.files = e.dataTransfer.files; } catch (err) { /* some browsers disallow */ } const preview = this.querySelector(".c-file-upload__preview"); if (preview) { preview.innerHTML = ""; Array.from(e.dataTransfer.files).forEach((f) => { const item = document.createElement("div"); item.className = "c-file-upload__preview-item"; if (f.type && f.type.startsWith("image/")) { const img = document.createElement("img"); img.className = "c-file-upload__preview-thumb"; img.alt = f.name; try { img.src = URL.createObjectURL(f); } catch (err2) {} item.appendChild(img); } else { const name = document.createElement("span"); name.className = "c-file-upload__preview-name"; name.textContent = f.name; item.appendChild(name); } preview.appendChild(item); }); } this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { files: e.dataTransfer.files } })); } });
+    }
+    // Form-value sync override (R16-06): submit the selected File(s) via
+    // FormData rather than the input's (useless) path string.
+    _syncFormValue() {
+      if (!this._internals) return;
+      const inp = this.querySelector(".c-file-upload__input");
+      if (inp && inp.files && inp.files.length) {
+        const fd = new FormData();
+        Array.from(inp.files).forEach((f) => fd.append("file", f));
+        this._internals.setFormValue(fd);
+      } else {
+        this._internals.setFormValue(null);
+      }
     }
   }
   define("contour-file-upload", ContourFileUpload);
@@ -2672,7 +2731,7 @@ class ContourSideSheet extends ContourBase {
       if (this._wiredSideSheet) return;
       this._wiredSideSheet = true;
       let lastFocus = null;
-      const close = () => this.removeAttribute("open");
+      const close = () => { this.removeAttribute("open"); this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true })); };
       const keyHandler = (e) => {
         if (e.key === "Escape" && this.hasAttribute("open")) { e.preventDefault(); close(); return; }
         if (e.key === "Tab" && this.hasAttribute("open")) {
@@ -2691,6 +2750,7 @@ class ContourSideSheet extends ContourBase {
       // Focus management: capture focus on open, restore on close.
       const obs = new MutationObserver(() => {
         if (this.hasAttribute("open")) {
+          this.dispatchEvent(new CustomEvent("contour:open", { bubbles: true, composed: true }));
           lastFocus = document.activeElement;
           const first = this.querySelector("button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])");
           if (first) try { first.focus(); } catch (err) {}
@@ -2749,6 +2809,7 @@ class ContourTour extends ContourBase {
  * Attributes: `value`, `placeholder`, `disabled`, `error`, `help`.
  */
 class ContourTagsInput extends ContourBase {
+    static get formAssociated() { return true; }
     static get observed() { return ["value", "placeholder", "disabled", "error", "help"]; }
     static get properties() { return { value: { attribute: "value" }, placeholder: { attribute: "placeholder" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" } }; }
     render() {
@@ -2782,10 +2843,14 @@ class ContourTagsInput extends ContourBase {
         chip.appendChild(rm);
         this.insertBefore(chip, input);
       });
+      if (this._internals) this._syncFormValue();
     }
     enhance() {
       if (this._wiredTagsInput) return;
       this._wiredTagsInput = true;
+      this._syncFormValue();
+      this.addEventListener("contour:add", () => { this._syncFormValue(); });
+      this.addEventListener("contour:remove", () => { this._syncFormValue(); });
       let live = this.querySelector(".c-tags-input__live");
       if (!live) { live = document.createElement("span"); live.className = "c-tags-input__live visually-hidden"; live.setAttribute("aria-live", "polite"); live.setAttribute("aria-atomic", "true"); this.appendChild(live); }
       const announce = (msg) => { if (live) live.textContent = msg; };
@@ -2830,6 +2895,14 @@ class ContourTagsInput extends ContourBase {
           this.dispatchEvent(new CustomEvent("contour:remove", { bubbles: true, composed: true, detail: { value: val } }));
         }
       });
+    }
+    // Form-value sync override (R16-06): tags are stored as a JSON array on the
+    // host, not in the inner input, so the base class's generic sync would read
+    // the empty add-tag input. Submit the host's value instead.
+    _syncFormValue() {
+      if (!this._internals) return;
+      this._internals.setFormValue(this.getAttribute("value") || "[]");
+      this._syncValidity(this.hasAttribute("required") && !(this.getAttribute("value")));
     }
   }
   define("contour-tags-input", ContourTagsInput);
@@ -3516,6 +3589,8 @@ class ContourPullToRefresh extends ContourBase {
     static get properties() { return { threshold: { attribute: "threshold" } }; }
     render() {
       this.classList.add("c-pull-to-refresh");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "region");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Pull to refresh");
       const ind = this.ensure(".c-pull-to-refresh__indicator", () => {
         const e = document.createElement("div");
         e.className = "c-pull-to-refresh__indicator";

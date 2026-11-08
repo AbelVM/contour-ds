@@ -158,6 +158,22 @@ class ContourDashKpiRow extends ContourBase {
           this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index: idx } }));
         }
       });
+      this.addEventListener("keydown", (e) => {
+        const kpis = Array.from(this.querySelectorAll("contour-kpi"));
+        const active = document.activeElement;
+        const idx = kpis.indexOf(active);
+        if (idx < 0) return;
+        let next = -1;
+        if (e.key === "ArrowRight" || e.key === "ArrowDown") next = (idx + 1) % kpis.length;
+        else if (e.key === "ArrowLeft" || e.key === "ArrowUp") next = (idx - 1 + kpis.length) % kpis.length;
+        else if (e.key === "Home") next = 0;
+        else if (e.key === "End") next = kpis.length - 1;
+        if (next >= 0) {
+          e.preventDefault();
+          try { kpis[next].focus(); } catch (err) { /* detached */ }
+          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index: next } }));
+        }
+      });
     }
   }
   define("contour-dash-kpi-row", ContourDashKpiRow);

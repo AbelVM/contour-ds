@@ -871,6 +871,8 @@ class ContourTextarea extends ContourBase {
     render() {
       const ta = this.ensure("textarea", () => { const el = document.createElement("textarea"); el.className = "c-textarea"; return el; });
       ta.className = "c-textarea";
+      if (this.hasAttribute("aria-label") && !ta.hasAttribute("aria-label")) ta.setAttribute("aria-label", this.getAttribute("aria-label"));
+      if (this.hasAttribute("label") && !ta.hasAttribute("aria-label")) ta.setAttribute("aria-label", this.getAttribute("label"));
       ta.placeholder = this.getAttribute("placeholder") || "";
       if (this.hasAttribute("required")) ta.setAttribute("required", "");
       else ta.removeAttribute("required");

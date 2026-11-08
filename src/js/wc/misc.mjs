@@ -199,6 +199,13 @@ class ContourAffordance extends ContourBase {
         const name = this.getAttribute("name") || "";
         this.dispatchEvent(new CustomEvent("contour:affordance-activate", { bubbles: true, composed: true, detail: { name } }));
       });
+      this.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          const name = this.getAttribute("name") || "";
+          this.dispatchEvent(new CustomEvent("contour:affordance-activate", { bubbles: true, composed: true, detail: { name } }));
+        }
+      });
     }
   }
   define("contour-affordance", ContourAffordance);

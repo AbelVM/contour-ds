@@ -67,7 +67,7 @@ const BUDGETS = {
   // exists to catch a jump nobody intended, not to keep the truth brief. A file
   // absent from this map is not budgeted at all, which is how an artifact can
   // grow without anyone noticing.
-  "contour.components.json": 278 * 1024,  // raised 2026-11-07: +layout fixes; measured 274.3 kB
+  "contour.components.json": 279 * 1024,  // raised 2026-11-08: +forced-colors form controls; measured 278.0 kB
   // The docs package (C-45). Measured 2026-10-23 at 43.6 kB: 23 section files
   // (37.4 kB) plus the index (6.2 kB) — figures this gate recomputes and prints on
   // every run, so the numbers above are a dated record, not the thing enforced.
@@ -119,9 +119,9 @@ const BUDGETS = {
   "surfaces/contour-core.min.css": 160 * 1024,  // raised 2026-11-07: +layout fixes; measured 157.3 kB
   "surfaces/contour-docs.min.css": 176 * 1024,  // raised 2026-11-07: +layout fixes; measured 173.1 kB
   "surfaces/contour-data.min.css": 213 * 1024,  // raised 2026-11-07: +layout fixes; measured 212.0 kB
-  "surfaces/contour-landing.min.css": 168 * 1024,  // raised 2026-11-07: +layout fixes; measured 165.1 kB
+  "surfaces/contour-landing.min.css": 169 * 1024,  // raised 2026-11-08: +forced-colors form controls; measured 168.1 kB
   "contour.esm.min.js": 39 * 1024,
-  "contour-wc.esm.min.js": 604 * 1024,  // raised 2026-11-08: +legend aria-pressed/aria-selected; measured 603.0 kB
+  "contour-wc.esm.min.js": 609 * 1024,  // raised 2026-11-08: +event emission (batch); measured 608.3 kB
 };
 
 const kB = (n) => `${(n / 1024).toFixed(1)} kB`;

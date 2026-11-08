@@ -466,6 +466,8 @@ class ContourAccordion extends ContourBase {
       // The host is a plain container; the children carry .c-disclosure, which
       // is the block that owns the styling. No .c-accordion rule exists, so the
       // host class is dropped rather than invented.
+      if (!this.hasAttribute("role")) this.setAttribute("role", "region");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Accordion");
       const authored = Array.from(this.children).filter((n) => n.tagName === "DETAILS");
       wireStates(this);
       loadRemote(this, "items");
@@ -792,6 +794,8 @@ class ContourExpandable extends ContourBase {
     }
     render() {
       this.classList.add("c-expandable");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "region");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("summary") || "Expandable");
       const summary = this.getAttribute("summary");
       if (summary) {
         let captured = this.innerHTML.trim() ? this.innerHTML : (this._expandableContent || "");

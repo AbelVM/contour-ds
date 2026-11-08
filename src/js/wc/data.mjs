@@ -3654,6 +3654,7 @@ class ContourErrorBoundary extends ContourBase {
         e.stopPropagation();
         const msg = (e && e.error && e.error.message) ? e.error.message : (e && e.message) ? e.message : "Unknown error";
         this.setAttribute("error", msg);
+        this.dispatchEvent(new CustomEvent("contour:error", { bubbles: true, composed: true, detail: { message: msg } }));
       }, true);
     }
   }
@@ -3664,6 +3665,8 @@ class ContourDataExport extends ContourBase {
     static get properties() { return { data: { attribute: "data" }, format: { attribute: "format" }, filename: { attribute: "filename" }, label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-data-export");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "group");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Data export");
       const fmt = (this.getAttribute("format") || "json").toLowerCase();
       const btn = this.ensure(".c-data-export__btn", () => {
         const b = document.createElement("button");
