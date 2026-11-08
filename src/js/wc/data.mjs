@@ -1010,24 +1010,23 @@ const series = this.getAttribute("series");
             return;
           }
           const point = e.target && e.target.closest ? e.target.closest(".c-chart__point") : null;
-          if (point && plot2.contains(point)) {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              const series = parseInt(point.getAttribute("data-series") || "1", 10);
-              const index = parseInt(point.dataset.index || "0", 10);
-              this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { series, index } }));
-            } else if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
-              e.preventDefault();
-              const points = Array.from(plot2.querySelectorAll('.c-chart__point[data-series="' + point.getAttribute("data-series") + '"]'));
-              const idx = points.indexOf(point);
-              const next = e.key === "ArrowRight" ? Math.min(idx + 1, points.length - 1) : Math.max(idx - 1, 0);
-              if (next !== idx && points[next]) {
-                points.forEach((p, i) => p.setAttribute("tabindex", i === next ? "0" : "-1"));
-                try { points[next].focus(); } catch (err) {}
-              }
-            }
+          if (!point || !plot2.contains(point)) return;
+          const series = parseInt(point.getAttribute("data-series") || "1", 10);
+          const points = Array.from(plot2.querySelectorAll('.c-chart__point[data-series="' + series + '"]'));
+          const idx = points.indexOf(point);
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            const index = parseInt(point.dataset.index || "0", 10);
+            this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { series, index } }));
+            return;
           }
-       });
+          navKey(e, points, {
+            wrap: false,
+            rtl: isRtl(this),
+            onNavigate: (i) => points.forEach((p, j) => p.setAttribute("tabindex", j === i ? "0" : "-1")),
+            onKey: () => {}
+          });
+        });
       this.addEventListener("keydown", (e) => {
         // Only the host itself drives series switching; marks handle their own
         // keys (B3-03). Without this gate one Enter fires contour:select twice.
@@ -2091,15 +2090,13 @@ class ContourTimeSeries extends ContourBase {
           this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index: idx, value: bar.getAttribute("title") } }));
           return;
         }
-        let next = -1;
-        if (e.key === "ArrowRight" || e.key === "ArrowDown") next = Math.min(idx + 1, all.length - 1);
-        else if (e.key === "ArrowLeft" || e.key === "ArrowUp") next = Math.max(idx - 1, 0);
-        else if (e.key === "Home") next = 0;
-        else if (e.key === "End") next = all.length - 1;
-        if (next < 0 || next === idx) return;
-        e.preventDefault();
-        all.forEach((b, i) => b.setAttribute("tabindex", i === next ? "0" : "-1"));
-        try { all[next].focus(); } catch (err) {}
+        navKey(e, all, {
+          wrap: false,
+          homeEnd: true,
+          rtl: isRtl(this),
+          onNavigate: (i) => all.forEach((b, j) => b.setAttribute("tabindex", j === i ? "0" : "-1")),
+          onKey: () => {}
+        });
       });
       // focus tooltip
       this.addEventListener("focusin", (e) => {
@@ -2935,24 +2932,15 @@ class ContourLegend extends ContourBase {
       this.addEventListener("keydown", (e) => {
         const items = Array.from(this.querySelectorAll(".c-legend__item"));
         if (!items.length) return;
-        const idx = items.indexOf(document.activeElement);
-        if (e.key === "ArrowDown" || e.key === "ArrowRight") {
-          e.preventDefault();
-          const next = items[(idx + 1) % items.length];
-          if (next) { next.focus(); items.forEach((o,i)=>o.setAttribute("tabindex", o===next?"0":"-1")); }
-        } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
-          e.preventDefault();
-          const prev = items[(idx - 1 + items.length) % items.length];
-          if (prev) { prev.focus(); items.forEach((o)=>o.setAttribute("tabindex", o===prev?"0":"-1")); }
-        } else if (e.key === "Home") {
-          if (items.length > 4) { e.preventDefault(); items[0].focus(); items.forEach((o,i)=>o.setAttribute("tabindex", i===0?"0":"-1")); }
-        } else if (e.key === "End") {
-          if (items.length > 4) { e.preventDefault(); const last = items[items.length-1]; last.focus(); items.forEach((o)=>o.setAttribute("tabindex", o===last?"0":"-1")); }
-        } else if (e.key === "Escape") {
+        const active = document.activeElement;
+        const idx = items.indexOf(active);
+        if (e.key === "Escape") {
           // clear selection
           items.forEach((o) => { if (o.getAttribute("role") === "option") o.setAttribute("aria-selected", "false"); else o.setAttribute("aria-pressed", "false"); });
           this.dispatchEvent(new CustomEvent("contour:clear", { bubbles: true, composed: true }));
-        } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+          return;
+        }
+        if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
           // type-ahead
           if (items.length > 7) {
             const start = idx >= 0 ? idx + 1 : 0;
@@ -2967,12 +2955,22 @@ class ContourLegend extends ContourBase {
               }
             }
           }
-        } else if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          if (document.activeElement && document.activeElement.classList.contains("c-legend__item")) {
-            document.activeElement.click();
-          }
+          return;
         }
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          if (active && active.classList.contains("c-legend__item")) {
+            active.click();
+          }
+          return;
+        }
+        navKey(e, items, {
+          wrap: true,
+          homeEnd: true,
+          rtl: isRtl(this),
+          onNavigate: (i) => items.forEach((o, j) => o.setAttribute("tabindex", j === i ? "0" : "-1")),
+          onKey: () => {}
+        });
       });
     }
   }
