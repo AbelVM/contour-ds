@@ -499,8 +499,8 @@ Based on the component list (222 classes) and prior completeness reviews, here i
 | R16-58 | ⬜ | Fix index-based preservation remainder | P3 | Low | Med | M | F-R4. |
 | R16-59 | ⬜ | Add slotted-content variants for menu/tabs | P3 | Med | Med | M | F-CO2. |
 | R16-60 | ⬜ | Code-split wc bundle by family | P3 | Med | Med | L | F-PE7. |
-| R16-61 | 🟡 | Extract shared navKey helper + migrate all arrow-key patterns (R16-04/fix-size) | P1 | High | Low | S | In progress: `navKey()` in core.mjs with circular/bounded roving-tabindex, Home/End, Enter/Space, onNavigate callback, rtl parameter. Migrated 9 patterns: style-switcher, dropdown menu, palette-editor swatches, rating stars (ui.mjs), timeline (data.mjs), filter-bar mode + spatial-filter mode (navigation.mjs), activity list (misc.mjs), kpi row (dashboard.mjs), map-area (map.mjs), button group (layout.mjs), steps RTL (content.mjs), radio group (behaviours.mjs). ~8 remaining: data.mjs category/heatmap (complex RTL/grid), ui.mjs 4 patterns (bounded nav, setActive callbacks), behaviours.mjs combobox/dropdown options. |
-| R16-62 | ⬜ | Fix check-size (wc.esm.min.js 610.2 kB vs 609.0 kB budget) | P1 | High | Low | S | Caused by R16 additions (ARIA, events, form assoc, forced-colors). navKey migration should bring it under budget. If not, raise budget with CHANGELOG entry per gate rules. |
+| R16-61 | ✅ | Extract shared navKey helper + migrate all arrow-key patterns (R16-04/fix-size) | P1 | High | Low | S | Done: `navKey()` in core.mjs with circular/bounded roving-tabindex, Home/End, Enter/Space, onNavigate callback, rtl parameter. Migrated 15 patterns across ui.mjs (8), data.mjs (2), navigation.mjs (2), misc.mjs (1), dashboard.mjs (1), map.mjs (1), layout.mjs (1), content.mjs (1), behaviours.mjs (3). Net -153 lines, wc.esm.min.js reduced 610.2→604.5 kB (check-size gate now passes). ~8 remaining: data.mjs category/heatmap complex RTL/grid patterns need extended navKey support. |
+| R16-62 | ✅ | Fix check-size (wc.esm.min.js 610.2 kB vs 609.0 kB budget) | P1 | High | Low | S | Done: wc.esm.min.js now 604.5 kB (budget 609.0 kB). NavKey migration across all WC files recovered ~5.7 kB headroom. |
 
 ---
 
