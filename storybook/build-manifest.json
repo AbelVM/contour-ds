@@ -1,36 +1,36 @@
 {
-  "builtAt": "2026-11-04T19:46:44.327Z",
-  "sourceRevision": "3eb9e0a49fbbff40f118253220a20419e34b6eb0",
+  "builtAt": "2026-11-08T11:24:55.958Z",
+  "sourceRevision": "43167c857c546f5fa609566c4d1a43562fb2b55c",
   "sources": {
     "src/css/base.css": {
-      "bytes": 11735,
-      "mtimeMs": 1793615422447.2854,
-      "sha256": "9bf1615a1a084e6e"
+      "bytes": 12014,
+      "mtimeMs": 1794066800586.4963,
+      "sha256": "016f695235a92d35"
     },
     "src/css/components-data.css": {
-      "bytes": 82833,
-      "mtimeMs": 1793798766125.4224,
-      "sha256": "acfa6154cf835840"
+      "bytes": 89207,
+      "mtimeMs": 1794133716160.2607,
+      "sha256": "8c3eca7b3cc35142"
     },
     "src/css/components-docs.css": {
-      "bytes": 24638,
-      "mtimeMs": 1793818715895.3699,
-      "sha256": "67ab0e48ac8ebcd7"
+      "bytes": 25540,
+      "mtimeMs": 1794070214344.0266,
+      "sha256": "b7f828d796273450"
     },
     "src/css/components-landing.css": {
-      "bytes": 12326,
-      "mtimeMs": 1793615079427.4856,
-      "sha256": "679d4cde72bc03c5"
+      "bytes": 13346,
+      "mtimeMs": 1794069203260.5918,
+      "sha256": "4340aabc7a122498"
     },
     "src/css/components-shell.css": {
-      "bytes": 17444,
-      "mtimeMs": 1793279736682.0605,
-      "sha256": "8d9d17fcf6ce739a"
+      "bytes": 18390,
+      "mtimeMs": 1794068752508.9558,
+      "sha256": "ab65a3d0c80fd6ed"
     },
     "src/css/components.css": {
-      "bytes": 119931,
-      "mtimeMs": 1793819478288.0083,
-      "sha256": "d3305cffc86e5df1"
+      "bytes": 132060,
+      "mtimeMs": 1794133716160.6199,
+      "sha256": "aef17aba75a84f0d"
     },
     "src/css/ds.css": {
       "bytes": 2463,
@@ -58,9 +58,9 @@
       "sha256": "ae1f4a637a45c654"
     },
     "src/css/patterns.css": {
-      "bytes": 10454,
-      "mtimeMs": 1793126882236.2822,
-      "sha256": "fc8fc0695d5053c0"
+      "bytes": 11600,
+      "mtimeMs": 1794069577637.285,
+      "sha256": "5be454a1a62e5d69"
     },
     "src/css/tokens.css": {
       "bytes": 32375,
@@ -68,9 +68,9 @@
       "sha256": "d3a2ec049fe800cc"
     },
     "src/css/utilities.css": {
-      "bytes": 15584,
-      "mtimeMs": 1793287767011.3933,
-      "sha256": "11bd9ec14531b5d8"
+      "bytes": 18339,
+      "mtimeMs": 1794068232641.1895,
+      "sha256": "08a9513d95959f73"
     },
     "src/css/fonts/OFL.txt": {
       "bytes": 4360,
@@ -123,9 +123,9 @@
       "sha256": "4a7c08eb750ba3ae"
     },
     "src/js/wc/content.mjs": {
-      "bytes": 47101,
-      "mtimeMs": 1793726961906.7947,
-      "sha256": "c01ed860cba95f50"
+      "bytes": 47142,
+      "mtimeMs": 1794060378226.52,
+      "sha256": "9b8eec69bd6a4ecc"
     },
     "src/js/wc/core.mjs": {
       "bytes": 56836,
@@ -138,9 +138,9 @@
       "sha256": "4358e4e821859c8a"
     },
     "src/js/wc/data.mjs": {
-      "bytes": 193942,
-      "mtimeMs": 1793798766127.0847,
-      "sha256": "f5b0ddbcba73e6e0"
+      "bytes": 194662,
+      "mtimeMs": 1794135461198.3801,
+      "sha256": "ac465b1fedb6873f"
     },
     "src/js/wc/docs.mjs": {
       "bytes": 12380,
@@ -153,9 +153,9 @@
       "sha256": "8b72bcd369a96757"
     },
     "src/js/wc/forms.mjs": {
-      "bytes": 59892,
-      "mtimeMs": 1793725835993.131,
-      "sha256": "fc926efb9d9b53ea"
+      "bytes": 60048,
+      "mtimeMs": 1794133980569.3723,
+      "sha256": "ffc2eb6cdfe62fb4"
     },
     "src/js/wc/index.mjs": {
       "bytes": 2474,
@@ -163,14 +163,14 @@
       "sha256": "3edffe7c30be7b0c"
     },
     "src/js/wc/interaction.mjs": {
-      "bytes": 25492,
-      "mtimeMs": 1793656498740.6355,
-      "sha256": "c184740568ece722"
+      "bytes": 25540,
+      "mtimeMs": 1794055717157.0818,
+      "sha256": "18a0b60ff1b2d3e6"
     },
     "src/js/wc/layout.mjs": {
-      "bytes": 8161,
-      "mtimeMs": 1793630648349.4324,
-      "sha256": "b2ce6108858c8310"
+      "bytes": 8037,
+      "mtimeMs": 1794045343076.4202,
+      "sha256": "ed37e769dcb4bf4b"
     },
     "src/js/wc/map.mjs": {
       "bytes": 65345,
@@ -183,9 +183,9 @@
       "sha256": "636f9341019a702b"
     },
     "src/js/wc/navigation.mjs": {
-      "bytes": 81353,
-      "mtimeMs": 1793786230325.7625,
-      "sha256": "b13f6dd04a858180"
+      "bytes": 81394,
+      "mtimeMs": 1794060378240.52,
+      "sha256": "927853eff17ba1ca"
     },
     "src/js/wc/registration.mjs": {
       "bytes": 876,
@@ -208,9 +208,9 @@
       "sha256": "e7a7fce22d5518f1"
     },
     "src/js/wc/ui.mjs": {
-      "bytes": 190605,
-      "mtimeMs": 1793798766128.5288,
-      "sha256": "110baa3424831620"
+      "bytes": 190814,
+      "mtimeMs": 1794060378253.6572,
+      "sha256": "9ff57f1d44334ce3"
     },
     "src/svg/contour-mark.svg": {
       "bytes": 1727,
@@ -218,25 +218,25 @@
       "sha256": "e3c004dac0dd251e"
     },
     "index.html": {
-      "bytes": 1388607,
-      "mtimeMs": 1793808973493.5303,
-      "sha256": "10d181ea8e0eb659"
+      "bytes": 1389189,
+      "mtimeMs": 1794134938804.84,
+      "sha256": "1beb0033376e73f1"
     }
   },
   "outputs": {
-    "contour.css": 358528,
-    "contour.min.css": 221598,
+    "contour.css": 384079,
+    "contour.min.css": 242990,
     "contour.js": 64118,
     "contour.min.js": 38957,
     "contour.tokens.json": 51941,
     "contour.themes.json": 23019,
-    "contour.components.json": 269947,
+    "contour.components.json": 284480,
     "docs/index.json": 6965,
     "registry/registry.json": 8952,
     "svg/contour-mark.svg": 1727,
-    "surfaces/contour-core.min.css": 148611,
-    "surfaces/contour-docs.min.css": 164577,
-    "surfaces/contour-data.min.css": 197559,
-    "surfaces/contour-landing.min.css": 156484
+    "surfaces/contour-core.min.css": 162908,
+    "surfaces/contour-docs.min.css": 179584,
+    "surfaces/contour-data.min.css": 217357,
+    "surfaces/contour-landing.min.css": 171665
   }
 }

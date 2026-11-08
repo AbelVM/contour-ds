@@ -1144,7 +1144,7 @@
   @supports (animation-timeline: scroll()) {
     .c-scroll-area::before, .c-scroll-area::after { content: ""; position: sticky; inset-inline: 0; block-size: 1rem; pointer-events: none; z-index: 1; }
     .c-scroll-area::before { inset-block-start: 0; background: linear-gradient(to bottom, var(--color-surface-0), transparent); animation: c-sa-t linear both; animation-timeline: scroll(self); animation-range: 0% 10%; }
-    .c-scroll-area::after { bottom: 0; background: linear-gradient(to top, var(--color-surface-0), transparent); animation: c-sa-b linear both; animation-timeline: scroll(self); animation-range: 90% 100%; }
+    .c-scroll-area::after { inset-block-end: 0; background: linear-gradient(to top, var(--color-surface-0), transparent); animation: c-sa-b linear both; animation-timeline: scroll(self); animation-range: 90% 100%; }
   }
   @keyframes c-sa-t { from { opacity: 1; } to { opacity: 0; } }
   @keyframes c-sa-b { from { opacity: 1; } to { opacity: 0; } }

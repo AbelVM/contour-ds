@@ -3,7 +3,7 @@
   "name": "contour-core",
   "type": "registry:style",
   "title": "Contour core",
-  "description": "Contour core surface: 145.1 kB of layered CSS, self-contained (the core layer is already inside it), 225 blocks and 301 custom properties declared under src/.",
+  "description": "Contour core surface: 159.1 kB of layered CSS, self-contained (the core layer is already inside it), 225 blocks and 301 custom properties declared under src/.",
   "registryDependencies": [],
   "files": [
     {
@@ -35,7 +35,7 @@
   "meta": {
     "distribution": "pointer",
     "selfContained": true,
-    "bundleBytes": 148611,
+    "bundleBytes": 162908,
     "shared": [
       {
         "path": "contour.tokens.json",

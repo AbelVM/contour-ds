@@ -1,3 +1,14 @@
+## [1.7.2] - 2026-11-08
+
+### Changed
+- `contour-legend` selectable items now use `role="button"` with `aria-pressed` (button-in-group pattern) instead of `role="option"`/`aria-selected` (listbox pattern), resolving an `aria-allowed-attr` violation where `aria-selected` is not permitted on `role="button"` elements. Container role switches to `group` for selectable/continuous variants.
+- Size budget for `contour-wc.esm.min.js` raised to 604 kB.
+
+### Fixed
+- Input (`contour-input`) now inherits its label from a parent `contour-field` or defaults to "Input", resolving a "form elements must have labels" a11y violation.
+- RTL: scroll-area fade rule uses `inset-block-end` instead of physical `bottom`.
+- Responsive: `.c-chart__axis--centered` collapses from 5 columns to auto-fit below 40rem.
+
 ## [1.7.1] - 2026-11-04
 
 ### Added

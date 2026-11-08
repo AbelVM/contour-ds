@@ -1966,12 +1966,12 @@ try {
       await wait(50);
       const buttons = Array.from(legend.querySelectorAll(".c-legend__item"));
       results.legendButtons = buttons.length;
-      results.legendPressedBefore = buttons[0] ? buttons[0].getAttribute("aria-selected") : null;
+      results.legendPressedBefore = buttons[0] ? buttons[0].getAttribute("aria-pressed") : null;
       const heard = [];
       legend.addEventListener("contour:legend-toggle", (e) => heard.push(e.detail));
       if (buttons[0]) buttons[0].click();
       await wait(20);
-      results.legendPressedAfter = buttons[0] ? buttons[0].getAttribute("aria-selected") : null;
+      results.legendPressedAfter = buttons[0] ? buttons[0].getAttribute("aria-pressed") : null;
       results.legendEvent = heard[0] || null;
       // BY-27: time-slider play advances the track and announces each move.
       const slider = document.createElement("contour-time-slider");
@@ -2014,7 +2014,7 @@ try {
     if (out.stateStarted !== true) bad.push(`streaming chart never emitted stream-state running:true`);
     if (out.ticksAfterPause !== 0) bad.push(`streaming chart kept ticking after pause (+${out.ticksAfterPause})`);
     if (out.legendButtons !== 2) bad.push(`selectable legend rendered ${out.legendButtons} items (want 2 buttons)`);
-    if (out.legendPressedBefore !== "true" || out.legendPressedAfter !== "false") bad.push(`legend aria-selected ${out.legendPressedBefore} -> ${out.legendPressedAfter} (want true -> false)`);
+    if (out.legendPressedBefore !== "true" || out.legendPressedAfter !== "false") bad.push(`legend aria-pressed ${out.legendPressedBefore} -> ${out.legendPressedAfter} (want true -> false)`);
     if (!out.legendEvent || out.legendEvent.label !== "Routes" || out.legendEvent.pressed !== false) bad.push(`legend-toggle detail=${JSON.stringify(out.legendEvent)}`);
     if (!(Number(out.sliderValueAfter) > Number(out.sliderValueBefore))) bad.push(`time-slider value ${out.sliderValueBefore} -> ${out.sliderValueAfter} (want advance on play)`);
     if (out.timeChanges < 1) bad.push(`time-slider emitted ${out.timeChanges} contour:time-change (want >= 1)`);

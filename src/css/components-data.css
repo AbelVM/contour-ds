@@ -669,6 +669,12 @@
     text-align: center;
   }
 
+  @media (width < 40rem) {
+    .c-chart__axis--centered {
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 4rem), 1fr));
+    }
+  }
+
   .c-chart__bar {
     position: absolute;
     inset-block-end: 0;

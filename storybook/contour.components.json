@@ -5,10 +5,10 @@
   "statement": "Generated, never hand-edited. Every block, element, variant, state and token below is read from src/css by the same inventory that publishes every count in this repository, and tools/check-components.mjs fails if the shipped bytes are not that derivation. `tokens` lists the custom properties a block's rules read; a rule naming two blocks (`.c-alert, .c-callout`) is credited to both, because that is what a retune does.",
   "counts": {
     "blocks": 225,
-    "elements": 737,
+    "elements": 741,
     "variants": 115,
-    "states": 297,
-    "tokens": 2106,
+    "states": 305,
+    "tokens": 2403,
     "vars": 19,
     "inputs": 18,
     "tokensIndexed": 198
@@ -17,9 +17,10 @@
     {
       "name": "c-accordion",
       "sheets": [
-        "components.css"
+        "components.css",
+        "utilities.css"
       ],
-      "rules": 4,
+      "rules": 5,
       "elements": [
         "c-accordion__empty",
         "c-accordion__error",
@@ -51,7 +52,9 @@
         "accordion"
       ],
       "tokens": [
+        "--border-width-thick",
         "--color-text-muted",
+        "--density",
         "--space-md",
         "--space-sm"
       ],
@@ -108,6 +111,7 @@
         "--color-text",
         "--color-text-muted",
         "--color-text-subtle",
+        "--density",
         "--font-mono",
         "--space-md",
         "--space-sm",
@@ -157,9 +161,10 @@
     {
       "name": "c-affordance",
       "sheets": [
-        "patterns.css"
+        "patterns.css",
+        "utilities.css"
       ],
-      "rules": 5,
+      "rules": 8,
       "elements": [
         "c-affordance__demo",
         "c-affordance__name",
@@ -180,16 +185,19 @@
         "affordance"
       ],
       "tokens": [
+        "--border-width-thick",
         "--color-border",
         "--color-surface-1",
         "--color-surface-2",
         "--color-text",
         "--color-text-muted",
         "--color-text-strong",
+        "--density",
         "--font-display",
         "--leading-normal",
         "--radius-md",
         "--radius-sm",
+        "--space-2xs",
         "--space-md",
         "--type-h4",
         "--type-xs",
@@ -223,6 +231,7 @@
         "affordances"
       ],
       "tokens": [
+        "--density",
         "--space-md"
       ],
       "vars": [],
@@ -238,7 +247,7 @@
         "components.css",
         "utilities.css"
       ],
-      "rules": 28,
+      "rules": 32,
       "elements": [
         "c-alert__actions",
         "c-alert__body",
@@ -293,6 +302,7 @@
         "close"
       ],
       "tokens": [
+        "--border-width-thick",
         "--color-accent",
         "--color-accent-soft",
         "--color-accent-text",
@@ -314,6 +324,7 @@
         "--color-warning",
         "--color-warning-soft",
         "--color-warning-text",
+        "--density",
         "--dur-fast",
         "--ease-standard",
         "--leading-normal",
@@ -376,7 +387,7 @@
         "components-data.css",
         "components.css"
       ],
-      "rules": 6,
+      "rules": 7,
       "elements": [
         "c-animation-controls__scrubber",
         "c-animation-controls__scrubber--thumb"
@@ -403,6 +414,7 @@
       "slots": [],
       "parts": [],
       "tokens": [
+        "--density",
         "--space-2xs"
       ],
       "vars": [],
@@ -415,9 +427,10 @@
     {
       "name": "c-annotation",
       "sheets": [
-        "components.css"
+        "components.css",
+        "utilities.css"
       ],
-      "rules": 2,
+      "rules": 5,
       "elements": [
         "c-annotation__label"
       ],
@@ -432,9 +445,11 @@
       "slots": [],
       "parts": [],
       "tokens": [
+        "--border-width-thick",
         "--color-border",
         "--color-surface-1",
         "--color-text",
+        "--density",
         "--radius-sm",
         "--shadow-sm",
         "--space-2xs",
@@ -457,10 +472,11 @@
       "sheets": [
         "components-data.css"
       ],
-      "rules": 3,
+      "rules": 5,
       "elements": [
         "c-app__header",
-        "c-app__main"
+        "c-app__main",
+        "c-app__title"
       ],
       "variants": [],
       "states": [],
@@ -477,9 +493,12 @@
       "tokens": [
         "--color-canvas",
         "--color-text",
+        "--density",
         "--hairline",
+        "--space-2xs",
         "--space-md",
-        "--space-sm"
+        "--space-sm",
+        "--weight-semibold"
       ],
       "vars": [],
       "inputs": [],
@@ -493,9 +512,10 @@
       "sheets": [
         "components-data.css"
       ],
-      "rules": 4,
+      "rules": 5,
       "elements": [
-        "c-app-body__main"
+        "c-app-body__main",
+        "c-app-body__title"
       ],
       "variants": [],
       "states": [],
@@ -509,7 +529,11 @@
       "parts": [
         "app-body"
       ],
-      "tokens": [],
+      "tokens": [
+        "--density",
+        "--space-2xs",
+        "--space-md"
+      ],
       "vars": [],
       "inputs": [],
       "renderedIn": {
@@ -637,7 +661,9 @@
       "tokens": [
         "--chart-axis",
         "--chart-label",
+        "--density",
         "--font-mono",
+        "--space-3xs",
         "--type-micro"
       ],
       "vars": [],
@@ -653,7 +679,7 @@
         "components.css",
         "utilities.css"
       ],
-      "rules": 9,
+      "rules": 12,
       "elements": [],
       "variants": [
         "c-badge--accent",
@@ -664,7 +690,9 @@
         "c-badge--success",
         "c-badge--warning"
       ],
-      "states": [],
+      "states": [
+        ":active"
+      ],
       "attributes": [
         "variant",
         "label",
@@ -681,6 +709,7 @@
         "badge"
       ],
       "tokens": [
+        "--border-width-thick",
         "--color-accent-soft",
         "--color-accent-text",
         "--color-control-edge",
@@ -696,8 +725,11 @@
         "--color-text-muted",
         "--color-warning-soft",
         "--color-warning-text",
+        "--dur-fast",
+        "--ease-standard",
         "--font-mono",
         "--radius-xs",
+        "--target-control",
         "--type-micro",
         "--weight-medium"
       ],
@@ -713,9 +745,10 @@
     {
       "name": "c-badge-overflow",
       "sheets": [
-        "components.css"
+        "components.css",
+        "utilities.css"
       ],
-      "rules": 1,
+      "rules": 2,
       "elements": [],
       "variants": [],
       "states": [],
@@ -726,7 +759,9 @@
       "booleanAttributes": [],
       "slots": [],
       "parts": [],
-      "tokens": [],
+      "tokens": [
+        "--border-width-thick"
+      ],
       "vars": [],
       "inputs": [],
       "renderedIn": {
@@ -739,7 +774,7 @@
       "sheets": [
         "components.css"
       ],
-      "rules": 5,
+      "rules": 6,
       "elements": [],
       "variants": [
         "c-banner--danger",
@@ -763,6 +798,7 @@
         "--color-surface-2",
         "--color-text",
         "--color-warning",
+        "--density",
         "--radius-sm",
         "--space-md",
         "--space-sm",
@@ -811,6 +847,7 @@
         "--color-border-subtle",
         "--color-surface-2",
         "--color-text-muted",
+        "--density",
         "--font-mono",
         "--radius-sm",
         "--space-2xs",
@@ -857,8 +894,10 @@
       "tokens": [
         "--color-border",
         "--color-text-muted",
+        "--density",
         "--font-mono",
         "--radius-xs",
+        "--space-3xs",
         "--type-micro"
       ],
       "vars": [],
@@ -906,7 +945,7 @@
       "sheets": [
         "components.css"
       ],
-      "rules": 4,
+      "rules": 5,
       "elements": [
         "c-brand__name",
         "c-brand__tag"
@@ -990,6 +1029,7 @@
         "--color-text-muted",
         "--color-text-strong",
         "--color-text-subtle",
+        "--density",
         "--space-md",
         "--type-xs"
       ],
@@ -1096,7 +1136,7 @@
         "components.css",
         "utilities.css"
       ],
-      "rules": 41,
+      "rules": 43,
       "elements": [],
       "variants": [
         "c-btn--accent",
@@ -1140,6 +1180,7 @@
         "btn"
       ],
       "tokens": [
+        "--border-width-thick",
         "--color-accent",
         "--color-accent-hover",
         "--color-border",
@@ -1162,6 +1203,7 @@
         "--color-text",
         "--color-text-muted",
         "--color-text-strong",
+        "--density",
         "--dur-copy-tick",
         "--dur-fast",
         "--dur-spin",
@@ -1173,6 +1215,7 @@
         "--shadow-color-accent",
         "--shadow-color-highlight",
         "--shadow-color-primary",
+        "--space-2xs",
         "--target-control",
         "--type-body",
         "--type-micro",
@@ -1221,7 +1264,9 @@
         "btn-group"
       ],
       "tokens": [
-        "--radius-pill"
+        "--density",
+        "--radius-pill",
+        "--space-2xs"
       ],
       "vars": [],
       "inputs": [],
@@ -1235,7 +1280,7 @@
       "sheets": [
         "components.css"
       ],
-      "rules": 9,
+      "rules": 11,
       "elements": [
         "c-calendar__day",
         "c-calendar__day--empty",
@@ -1261,9 +1306,12 @@
         "--color-primary",
         "--color-surface-1",
         "--color-text",
+        "--density",
         "--radius-sm",
         "--space-2xs",
         "--space-xs",
+        "--target-control",
+        "--target-option",
         "--type-sm",
         "--type-xs"
       ],
@@ -1277,9 +1325,10 @@
     {
       "name": "c-callout",
       "sheets": [
-        "components-docs.css"
+        "components-docs.css",
+        "utilities.css"
       ],
-      "rules": 23,
+      "rules": 25,
       "elements": [
         "c-callout__body",
         "c-callout__close",
@@ -1316,6 +1365,7 @@
         "close"
       ],
       "tokens": [
+        "--border-width-thick",
         "--color-accent",
         "--color-accent-soft",
         "--color-accent-text",
@@ -1337,9 +1387,11 @@
         "--color-warning",
         "--color-warning-soft",
         "--color-warning-text",
+        "--density",
         "--leading-relaxed",
         "--radius-md",
         "--radius-xs",
+        "--space-3xs",
         "--space-md",
         "--type-sm",
         "--weight-semibold"
@@ -1360,7 +1412,7 @@
         "components.css",
         "utilities.css"
       ],
-      "rules": 15,
+      "rules": 17,
       "elements": [
         "c-card__body",
         "c-card__foot",
@@ -1398,6 +1450,7 @@
         "--color-surface-2",
         "--color-text-muted",
         "--color-text-strong",
+        "--density",
         "--dur-base",
         "--ease-standard",
         "--font-display",
@@ -1445,6 +1498,7 @@
       "parts": [],
       "tokens": [
         "--color-text-muted",
+        "--density",
         "--space-sm",
         "--space-xs",
         "--type-micro"
@@ -1502,6 +1556,7 @@
         "--color-text",
         "--color-text-muted",
         "--color-text-subtle",
+        "--density",
         "--font-mono",
         "--radius-md",
         "--radius-xs",
@@ -1560,9 +1615,12 @@
         "--color-primary",
         "--color-text-muted",
         "--color-text-subtle",
+        "--density",
         "--font-mono",
         "--radius-pill",
         "--radius-sm",
+        "--space-2xs",
+        "--space-3xs",
         "--space-md",
         "--space-xs",
         "--type-sm",
@@ -1580,7 +1638,7 @@
       "sheets": [
         "components-docs.css"
       ],
-      "rules": 21,
+      "rules": 16,
       "elements": [
         "c-changelog__body",
         "c-changelog__date",
@@ -1611,6 +1669,7 @@
         "--color-surface-1",
         "--color-text",
         "--color-text-muted",
+        "--density",
         "--font-mono",
         "--leading-relaxed",
         "--radius-md",
@@ -1633,10 +1692,11 @@
     {
       "name": "c-chart",
       "sheets": [
+        "base.css",
         "components-data.css",
         "utilities.css"
       ],
-      "rules": 48,
+      "rules": 52,
       "elements": [
         "c-chart__axis",
         "c-chart__axis--centered",
@@ -1712,6 +1772,7 @@
         "plot"
       ],
       "tokens": [
+        "--border-width-thick",
         "--chart-1",
         "--chart-axis",
         "--chart-dash-1",
@@ -1742,9 +1803,11 @@
         "--chart-tooltip-bg",
         "--chart-tooltip-fg",
         "--color-danger",
+        "--color-surface-1",
         "--color-text",
         "--color-text-muted",
         "--color-text-subtle",
+        "--density",
         "--font-mono",
         "--radius-xs",
         "--space-2xs",
@@ -1806,6 +1869,7 @@
         "chart-grid"
       ],
       "tokens": [
+        "--density",
         "--space-md"
       ],
       "vars": [],
@@ -1823,7 +1887,7 @@
         "components.css",
         "utilities.css"
       ],
-      "rules": 15,
+      "rules": 17,
       "elements": [
         "c-check__box",
         "c-check__input"
@@ -1860,6 +1924,7 @@
         "check"
       ],
       "tokens": [
+        "--border-width-thick",
         "--color-border-strong",
         "--color-focus-ring",
         "--color-on-primary",
@@ -1885,7 +1950,7 @@
         "components.css",
         "utilities.css"
       ],
-      "rules": 12,
+      "rules": 14,
       "elements": [
         "c-chip__key",
         "c-chip__value"
@@ -1895,6 +1960,7 @@
         "c-chip--primary"
       ],
       "states": [
+        ":active",
         ":disabled"
       ],
       "attributes": [
@@ -1921,8 +1987,14 @@
         "--color-surface-1",
         "--color-text",
         "--color-text-subtle",
+        "--density",
+        "--dur-fast",
+        "--ease-standard",
         "--font-mono",
         "--radius-pill",
+        "--space-2xs",
+        "--target-control",
+        "--target-option",
         "--type-xs",
         "--weight-semibold"
       ],
@@ -1951,6 +2023,7 @@
         "cluster"
       ],
       "tokens": [
+        "--density",
         "--space-sm"
       ],
       "vars": [],
@@ -1965,7 +2038,7 @@
       "sheets": [
         "components.css"
       ],
-      "rules": 6,
+      "rules": 7,
       "elements": [
         "c-code__copy",
         "c-code__head",
@@ -1994,6 +2067,7 @@
         "--color-code-header-bg",
         "--color-text",
         "--color-text-subtle",
+        "--density",
         "--font-mono",
         "--radius-lg",
         "--space-sm",
@@ -2063,6 +2137,7 @@
         "--color-text-muted",
         "--color-text-strong",
         "--color-text-subtle",
+        "--density",
         "--dur-fast",
         "--ease-standard",
         "--font-mono",
@@ -2085,7 +2160,7 @@
       "sheets": [
         "components.css"
       ],
-      "rules": 7,
+      "rules": 8,
       "elements": [
         "c-color-picker__alpha",
         "c-color-picker__eyedropper",
@@ -2115,8 +2190,10 @@
         "--color-border",
         "--color-surface-1",
         "--color-text-muted",
+        "--density",
         "--radius-xs",
         "--space-2xs",
+        "--target-control",
         "--type-xs"
       ],
       "vars": [],
@@ -2132,8 +2209,9 @@
         "components.css",
         "utilities.css"
       ],
-      "rules": 13,
+      "rules": 24,
       "elements": [
+        "c-combobox__clear",
         "c-combobox__empty",
         "c-combobox__error",
         "c-combobox__input",
@@ -2144,7 +2222,8 @@
       ],
       "variants": [],
       "states": [
-        ":focus",
+        ":focus-visible",
+        ":has(.c-combobox__clear)",
         ":hover",
         "[aria-selected=\"true\"]",
         "[hidden]"
@@ -2179,6 +2258,7 @@
         "list"
       ],
       "tokens": [
+        "--border-width-thick",
         "--color-border",
         "--color-control-edge",
         "--color-focus-halo",
@@ -2216,7 +2296,7 @@
         "components-shell.css",
         "utilities.css"
       ],
-      "rules": 34,
+      "rules": 41,
       "elements": [
         "c-command__empty",
         "c-command__field",
@@ -2266,6 +2346,7 @@
         "command"
       ],
       "tokens": [
+        "--border-width-thick",
         "--color-border-strong",
         "--color-border-subtle",
         "--color-focus-ring",
@@ -2281,6 +2362,7 @@
         "--color-text-muted",
         "--color-text-strong",
         "--color-text-subtle",
+        "--density",
         "--dur-base",
         "--ease-standard",
         "--font-mono",
@@ -2288,6 +2370,7 @@
         "--radius-xl",
         "--radius-xs",
         "--shadow-xl",
+        "--space-2xs",
         "--space-md",
         "--space-xl",
         "--tracking-label",
@@ -2306,9 +2389,10 @@
     {
       "name": "c-command-palette",
       "sheets": [
-        "components.css"
+        "components.css",
+        "utilities.css"
       ],
-      "rules": 7,
+      "rules": 10,
       "elements": [
         "c-command-palette__item",
         "c-command-palette__list",
@@ -2330,10 +2414,12 @@
       "slots": [],
       "parts": [],
       "tokens": [
+        "--border-width-thick",
         "--color-border",
         "--color-primary-soft",
         "--color-primary-text",
         "--color-surface-1",
+        "--density",
         "--radius-md",
         "--shadow-md",
         "--space-2xs",
@@ -2397,6 +2483,7 @@
         "--color-text-muted",
         "--color-text-strong",
         "--color-text-subtle",
+        "--density",
         "--font-display",
         "--space-md",
         "--space-sm",
@@ -2420,7 +2507,7 @@
       "sheets": [
         "components-data.css"
       ],
-      "rules": 16,
+      "rules": 17,
       "elements": [
         "c-comparison__divider",
         "c-comparison__label",
@@ -2454,6 +2541,7 @@
         "--color-surface-1",
         "--color-text",
         "--color-text-muted",
+        "--density",
         "--radius-md",
         "--radius-sm",
         "--space-sm",
@@ -2551,7 +2639,9 @@
       ],
       "tokens": [
         "--color-control-edge",
+        "--density",
         "--radius-pill",
+        "--space-2xs",
         "--space-xs"
       ],
       "vars": [],
@@ -2564,9 +2654,10 @@
     {
       "name": "c-context-menu",
       "sheets": [
-        "components.css"
+        "components.css",
+        "utilities.css"
       ],
-      "rules": 3,
+      "rules": 6,
       "elements": [],
       "variants": [],
       "states": [
@@ -2580,8 +2671,10 @@
       "slots": [],
       "parts": [],
       "tokens": [
+        "--border-width-thick",
         "--color-border",
         "--color-surface-1",
+        "--density",
         "--radius-md",
         "--shadow-md",
         "--space-2xs"
@@ -2685,6 +2778,7 @@
         "--color-text",
         "--color-text-muted",
         "--color-text-subtle",
+        "--density",
         "--font-mono",
         "--radius-sm",
         "--space-2xs",
@@ -2703,7 +2797,7 @@
       "sheets": [
         "components-landing.css"
       ],
-      "rules": 5,
+      "rules": 6,
       "elements": [
         "c-cta__actions",
         "c-cta__text",
@@ -2731,6 +2825,7 @@
         "--color-surface-1",
         "--color-text-muted",
         "--color-text-strong",
+        "--density",
         "--font-display",
         "--gutter",
         "--leading-relaxed",
@@ -2806,6 +2901,7 @@
         "dash-kpi-row"
       ],
       "tokens": [
+        "--density",
         "--space-md"
       ],
       "vars": [],
@@ -2837,6 +2933,7 @@
         "dash-shell"
       ],
       "tokens": [
+        "--density",
         "--space-md"
       ],
       "vars": [],
@@ -2849,9 +2946,10 @@
     {
       "name": "c-dash-toolbar",
       "sheets": [
-        "patterns.css"
+        "patterns.css",
+        "utilities.css"
       ],
-      "rules": 3,
+      "rules": 7,
       "elements": [
         "c-dash-toolbar__actions",
         "c-dash-toolbar__title"
@@ -2870,9 +2968,12 @@
         "dash-toolbar"
       ],
       "tokens": [
+        "--border-width-thick",
         "--color-border",
         "--color-canvas",
+        "--color-surface-1",
         "--color-text-strong",
+        "--density",
         "--font-display",
         "--header-height",
         "--radius-lg",
@@ -2896,7 +2997,7 @@
       "sheets": [
         "components-data.css"
       ],
-      "rules": 3,
+      "rules": 5,
       "elements": [
         "c-data-export__btn"
       ],
@@ -2918,6 +3019,9 @@
         "--color-surface-1",
         "--color-surface-2",
         "--color-text-strong",
+        "--density",
+        "--dur-fast",
+        "--ease-standard",
         "--radius-sm",
         "--space-sm",
         "--space-xs"
@@ -2934,9 +3038,10 @@
     {
       "name": "c-data-grid",
       "sheets": [
+        "base.css",
         "components.css"
       ],
-      "rules": 4,
+      "rules": 6,
       "elements": [
         "c-data-grid__row",
         "c-data-grid__table",
@@ -2962,6 +3067,7 @@
       "parts": [],
       "tokens": [
         "--color-border-subtle",
+        "--density",
         "--space-2xs",
         "--space-xs"
       ],
@@ -3047,9 +3153,10 @@
     {
       "name": "c-date-picker",
       "sheets": [
-        "components.css"
+        "components.css",
+        "utilities.css"
       ],
-      "rules": 11,
+      "rules": 14,
       "elements": [
         "c-date-picker__calendar",
         "c-date-picker__calendar-day",
@@ -3087,11 +3194,13 @@
       "slots": [],
       "parts": [],
       "tokens": [
+        "--border-width-thick",
         "--color-border",
         "--color-primary-solid",
         "--color-primary-text",
         "--color-surface-1",
         "--color-text-muted",
+        "--density",
         "--radius-md",
         "--radius-sm",
         "--shadow-md",
@@ -3112,9 +3221,10 @@
     {
       "name": "c-date-range",
       "sheets": [
-        "components.css"
+        "components.css",
+        "utilities.css"
       ],
-      "rules": 2,
+      "rules": 4,
       "elements": [
         "c-date-range__label"
       ],
@@ -3135,7 +3245,9 @@
       "slots": [],
       "parts": [],
       "tokens": [
+        "--border-width-thick",
         "--color-text-muted",
+        "--density",
         "--space-2xs",
         "--type-xs"
       ],
@@ -3191,7 +3303,9 @@
         "--color-success-text",
         "--color-text-muted",
         "--color-text-subtle",
+        "--density",
         "--font-mono",
+        "--space-3xs",
         "--type-xs"
       ],
       "vars": [],
@@ -3239,7 +3353,7 @@
         "components.css",
         "utilities.css"
       ],
-      "rules": 12,
+      "rules": 18,
       "elements": [
         "c-dialog__body",
         "c-dialog__close",
@@ -3263,6 +3377,7 @@
       "slots": [],
       "parts": [],
       "tokens": [
+        "--border-width-thick",
         "--color-border-strong",
         "--color-scrim",
         "--color-surface-1",
@@ -3271,6 +3386,7 @@
         "--color-text-muted",
         "--color-text-strong",
         "--color-text-subtle",
+        "--density",
         "--dur-base",
         "--dur-fast",
         "--ease-standard",
@@ -3279,6 +3395,8 @@
         "--radius-xl",
         "--radius-xs",
         "--shadow-xl",
+        "--space-2xs",
+        "--space-3xs",
         "--space-sm",
         "--type-h3",
         "--type-sm",
@@ -3342,9 +3460,10 @@
     {
       "name": "c-disclosure",
       "sheets": [
-        "components.css"
+        "components.css",
+        "utilities.css"
       ],
-      "rules": 9,
+      "rules": 11,
       "elements": [
         "c-disclosure__body",
         "c-disclosure__icon",
@@ -3370,6 +3489,7 @@
         "body"
       ],
       "tokens": [
+        "--border-width-thick",
         "--color-border",
         "--color-border-subtle",
         "--color-primary",
@@ -3377,6 +3497,7 @@
         "--color-primary-text",
         "--color-text-muted",
         "--color-text-strong",
+        "--density",
         "--dur-base",
         "--dur-fast",
         "--ease-out-expo",
@@ -3401,7 +3522,7 @@
       "sheets": [
         "components.css"
       ],
-      "rules": 6,
+      "rules": 7,
       "elements": [],
       "variants": [
         "c-divider--horizontal",
@@ -3421,6 +3542,7 @@
       "tokens": [
         "--color-border",
         "--color-text-subtle",
+        "--density",
         "--space-sm",
         "--type-xs"
       ],
@@ -3468,6 +3590,7 @@
         "--color-success",
         "--color-success-text",
         "--color-surface-1",
+        "--density",
         "--font-mono",
         "--radius-md",
         "--space-md",
@@ -3533,12 +3656,14 @@
         "--color-text-muted",
         "--color-text-strong",
         "--color-text-subtle",
+        "--density",
         "--dur-base",
         "--dur-fast",
         "--ease-out-expo",
         "--ease-standard",
         "--font-mono",
         "--radius-sm",
+        "--space-2xs",
         "--space-lg",
         "--space-md",
         "--tracking-label",
@@ -3561,7 +3686,7 @@
       "sheets": [
         "patterns.css"
       ],
-      "rules": 11,
+      "rules": 13,
       "elements": [
         "c-docs-shell__article",
         "c-docs-shell__header",
@@ -3588,6 +3713,7 @@
       "tokens": [
         "--color-text-muted",
         "--color-text-strong",
+        "--density",
         "--font-display",
         "--header-height",
         "--leading-normal",
@@ -3613,7 +3739,7 @@
       "sheets": [
         "components-data.css"
       ],
-      "rules": 10,
+      "rules": 11,
       "elements": [
         "c-donut__center",
         "c-donut__empty",
@@ -3658,8 +3784,11 @@
       "tokens": [
         "--color-text-muted",
         "--color-text-subtle",
+        "--density",
         "--font-display",
         "--radius-xs",
+        "--space-2xs",
+        "--space-3xs",
         "--space-md",
         "--space-xs",
         "--type-h3",
@@ -3761,8 +3890,10 @@
         "--color-focus-ring",
         "--color-text",
         "--color-text-subtle",
+        "--density",
         "--focus-width",
-        "--radius-xs"
+        "--radius-xs",
+        "--space-2xs"
       ],
       "vars": [],
       "inputs": [],
@@ -3810,9 +3941,10 @@
     {
       "name": "c-drawer",
       "sheets": [
-        "components-data.css"
+        "components-data.css",
+        "utilities.css"
       ],
-      "rules": 13,
+      "rules": 17,
       "elements": [
         "c-drawer__body",
         "c-drawer__close",
@@ -3842,6 +3974,7 @@
         "drawer"
       ],
       "tokens": [
+        "--border-width-thick",
         "--color-border",
         "--color-border-subtle",
         "--color-surface-1",
@@ -3856,6 +3989,8 @@
         "--radius-lg",
         "--radius-xs",
         "--shadow-xl",
+        "--space-2xs",
+        "--space-3xs",
         "--space-md",
         "--space-sm",
         "--type-h4",
@@ -3874,7 +4009,7 @@
       "sheets": [
         "components.css"
       ],
-      "rules": 4,
+      "rules": 5,
       "elements": [],
       "variants": [
         "c-drop-indicator--visible"
@@ -3895,6 +4030,7 @@
       "tokens": [
         "--color-primary",
         "--color-primary-soft",
+        "--density",
         "--dur-fast",
         "--ease-standard",
         "--font-mono",
@@ -3952,9 +4088,10 @@
     {
       "name": "c-dropdown",
       "sheets": [
-        "components.css"
+        "components.css",
+        "utilities.css"
       ],
-      "rules": 2,
+      "rules": 5,
       "elements": [
         "c-dropdown__menu"
       ],
@@ -3968,6 +4105,8 @@
       "slots": [],
       "parts": [],
       "tokens": [
+        "--border-width-thick",
+        "--color-surface-1",
         "--space-2xs",
         "--z-tooltip"
       ],
@@ -3981,9 +4120,10 @@
     {
       "name": "c-elevation",
       "sheets": [
-        "components.css"
+        "components.css",
+        "utilities.css"
       ],
-      "rules": 1,
+      "rules": 2,
       "elements": [],
       "variants": [],
       "states": [],
@@ -4015,9 +4155,10 @@
     {
       "name": "c-empty",
       "sheets": [
-        "components.css"
+        "components.css",
+        "utilities.css"
       ],
-      "rules": 6,
+      "rules": 8,
       "elements": [
         "c-empty__icon",
         "c-empty__illustration",
@@ -4049,15 +4190,18 @@
         "body"
       ],
       "tokens": [
+        "--border-width-thick",
         "--color-border",
         "--color-primary",
         "--color-primary-soft",
         "--color-surface-1",
         "--color-text-muted",
         "--color-text-strong",
+        "--density",
         "--font-display",
         "--radius-lg",
         "--radius-md",
+        "--space-2xs",
         "--space-lg",
         "--space-sm",
         "--space-xl",
@@ -4075,9 +4219,10 @@
     {
       "name": "c-error-boundary",
       "sheets": [
-        "components.css"
+        "components.css",
+        "utilities.css"
       ],
-      "rules": 2,
+      "rules": 4,
       "elements": [
         "c-error-boundary__message"
       ],
@@ -4091,9 +4236,12 @@
       "slots": [],
       "parts": [],
       "tokens": [
+        "--border-width-thick",
         "--color-border",
+        "--color-surface-1",
         "--color-surface-raised",
         "--color-text-muted",
+        "--density",
         "--radius-md",
         "--space-md",
         "--space-xs",
@@ -4110,9 +4258,10 @@
       "name": "c-expandable",
       "sheets": [
         "components-shell.css",
-        "components.css"
+        "components.css",
+        "utilities.css"
       ],
-      "rules": 3,
+      "rules": 5,
       "elements": [
         "c-expandable__body",
         "c-expandable__summary"
@@ -4132,7 +4281,9 @@
         "body"
       ],
       "tokens": [
+        "--border-width-thick",
         "--color-text-strong",
+        "--density",
         "--font-display",
         "--space-sm",
         "--type-h4",
@@ -4148,9 +4299,10 @@
     {
       "name": "c-fab",
       "sheets": [
-        "components.css"
+        "components.css",
+        "utilities.css"
       ],
-      "rules": 1,
+      "rules": 2,
       "elements": [],
       "variants": [],
       "states": [],
@@ -4179,9 +4331,10 @@
     {
       "name": "c-faq",
       "sheets": [
-        "components-landing.css"
+        "components-landing.css",
+        "utilities.css"
       ],
-      "rules": 12,
+      "rules": 14,
       "elements": [
         "c-faq__answer",
         "c-faq__empty",
@@ -4221,6 +4374,7 @@
         "answer"
       ],
       "tokens": [
+        "--border-width-thick",
         "--color-border",
         "--color-primary",
         "--color-primary-soft",
@@ -4228,6 +4382,7 @@
         "--color-surface-1",
         "--color-text-muted",
         "--color-text-strong",
+        "--density",
         "--dur-base",
         "--dur-fast",
         "--ease-out-expo",
@@ -4235,6 +4390,7 @@
         "--font-display",
         "--leading-relaxed",
         "--radius-md",
+        "--space-2xs",
         "--space-md",
         "--space-sm",
         "--type-h4",
@@ -4286,6 +4442,7 @@
         "--color-text-muted",
         "--color-text-strong",
         "--color-text-subtle",
+        "--density",
         "--font-display",
         "--font-mono",
         "--leading-normal",
@@ -4312,7 +4469,7 @@
         "components.css",
         "utilities.css"
       ],
-      "rules": 5,
+      "rules": 7,
       "elements": [
         "c-field__error",
         "c-field__hint",
@@ -4344,6 +4501,7 @@
         "hint"
       ],
       "tokens": [
+        "--border-width-thick",
         "--color-danger-text",
         "--color-text-muted",
         "--color-text-subtle",
@@ -4363,9 +4521,10 @@
     {
       "name": "c-field-group",
       "sheets": [
-        "components.css"
+        "components.css",
+        "utilities.css"
       ],
-      "rules": 6,
+      "rules": 8,
       "elements": [
         "c-field-group__error",
         "c-field-group__fields",
@@ -4388,12 +4547,14 @@
       "slots": [],
       "parts": [],
       "tokens": [
+        "--border-width-thick",
         "--color-control-edge",
         "--color-danger",
         "--color-danger-text",
         "--color-surface-1",
         "--color-text-muted",
         "--color-text-subtle",
+        "--density",
         "--font-mono",
         "--radius-md",
         "--space-xs",
@@ -4479,6 +4640,7 @@
         "--color-primary-soft",
         "--color-surface-raised",
         "--color-text-muted",
+        "--density",
         "--radius-md",
         "--radius-sm",
         "--radius-xs",
@@ -4538,8 +4700,10 @@
         "--color-border",
         "--color-surface-1",
         "--color-text-subtle",
+        "--density",
         "--font-mono",
         "--radius-lg",
+        "--space-2xs",
         "--tracking-label",
         "--type-micro"
       ],
@@ -4558,7 +4722,7 @@
         "components-data.css",
         "utilities.css"
       ],
-      "rules": 7,
+      "rules": 8,
       "elements": [
         "c-filter-pill__key",
         "c-filter-pill__remove",
@@ -4585,6 +4749,7 @@
         "remove"
       ],
       "tokens": [
+        "--border-width-thick",
         "--color-border",
         "--color-danger-soft",
         "--color-danger-text",
@@ -4596,6 +4761,7 @@
         "--ease-standard",
         "--font-mono",
         "--radius-pill",
+        "--target-control",
         "--target-option",
         "--type-micro",
         "--weight-medium"
@@ -4638,6 +4804,7 @@
         "--color-primary-text",
         "--color-surface-2",
         "--color-text-muted",
+        "--density",
         "--radius-sm",
         "--space-2xs",
         "--type-xs",
@@ -4703,6 +4870,7 @@
         "--color-text",
         "--color-text-muted",
         "--color-text-subtle",
+        "--density",
         "--dur-fast",
         "--ease-standard",
         "--radius-md",
@@ -4763,6 +4931,7 @@
         "--color-text-muted",
         "--color-text-strong",
         "--color-text-subtle",
+        "--density",
         "--font-mono",
         "--leading-normal",
         "--space-2xl",
@@ -4788,7 +4957,7 @@
       "sheets": [
         "components.css"
       ],
-      "rules": 6,
+      "rules": 7,
       "elements": [
         "c-form__actions",
         "c-form__submit",
@@ -4813,6 +4982,7 @@
         "--color-danger",
         "--color-danger-soft",
         "--color-danger-text",
+        "--density",
         "--radius-md",
         "--space-md",
         "--space-sm",
@@ -4891,9 +5061,11 @@
         "--color-text-strong",
         "--color-text-subtle",
         "--color-track",
+        "--density",
         "--font-display",
         "--font-mono",
         "--radius-lg",
+        "--space-2xs",
         "--space-md",
         "--type-lg",
         "--type-micro",
@@ -4912,7 +5084,7 @@
       "sheets": [
         "components-data.css"
       ],
-      "rules": 7,
+      "rules": 8,
       "elements": [
         "c-geocoder__empty",
         "c-geocoder__input",
@@ -4947,6 +5119,7 @@
         "--color-surface-2",
         "--color-text",
         "--color-text-muted",
+        "--density",
         "--radius-sm",
         "--space-sm",
         "--space-xs"
@@ -4967,7 +5140,7 @@
         "components.css",
         "utilities.css"
       ],
-      "rules": 20,
+      "rules": 26,
       "elements": [
         "c-header__actions",
         "c-header__inner",
@@ -5008,13 +5181,16 @@
         "--color-surface-2",
         "--color-text-muted",
         "--color-text-strong",
+        "--density",
         "--dur-fast",
         "--ease-standard",
         "--header-height",
         "--radius-sm",
         "--shadow-sm",
         "--space-2xs",
+        "--space-3xs",
         "--space-md",
+        "--space-sm",
         "--space-xs",
         "--target-control",
         "--type-xs",
@@ -5037,7 +5213,7 @@
       "sheets": [
         "components-data.css"
       ],
-      "rules": 9,
+      "rules": 10,
       "elements": [
         "c-heatmap__cell",
         "c-heatmap__empty",
@@ -5083,6 +5259,7 @@
         "--color-text",
         "--color-text-muted",
         "--color-text-subtle",
+        "--density",
         "--dur-fast",
         "--ease-standard",
         "--gradient-heat",
@@ -5148,6 +5325,7 @@
         "--color-text",
         "--color-text-muted",
         "--color-text-subtle",
+        "--density",
         "--dur-fast",
         "--ease-standard",
         "--radius-xs",
@@ -5167,9 +5345,10 @@
     {
       "name": "c-hover-card",
       "sheets": [
-        "components.css"
+        "components.css",
+        "utilities.css"
       ],
-      "rules": 6,
+      "rules": 9,
       "elements": [
         "c-hover-card__body",
         "c-hover-card__content",
@@ -5189,10 +5368,12 @@
       "slots": [],
       "parts": [],
       "tokens": [
+        "--border-width-thick",
         "--color-border",
         "--color-surface-1",
         "--color-text",
         "--color-text-muted",
+        "--density",
         "--radius-md",
         "--shadow-md",
         "--space-2xs",
@@ -5255,12 +5436,12 @@
         "components.css",
         "utilities.css"
       ],
-      "rules": 9,
+      "rules": 10,
       "elements": [],
       "variants": [],
       "states": [
         ":disabled",
-        ":focus",
+        ":focus-visible",
         ":hover",
         "[aria-invalid=\"true\"]"
       ],
@@ -5283,6 +5464,7 @@
         "input"
       ],
       "tokens": [
+        "--border-width-thick",
         "--color-border-strong",
         "--color-border-subtle",
         "--color-control-edge",
@@ -5311,9 +5493,10 @@
     {
       "name": "c-input-group",
       "sheets": [
-        "components.css"
+        "components.css",
+        "utilities.css"
       ],
-      "rules": 3,
+      "rules": 6,
       "elements": [],
       "variants": [],
       "states": [],
@@ -5334,6 +5517,8 @@
         "input-group"
       ],
       "tokens": [
+        "--border-width-thick",
+        "--color-surface-1",
         "--color-text-subtle"
       ],
       "vars": [],
@@ -5377,9 +5562,11 @@
         "--color-code-bg",
         "--color-primary-text",
         "--color-text",
+        "--density",
         "--font-mono",
         "--radius-md",
-        "--space-sm"
+        "--space-sm",
+        "--space-xs"
       ],
       "vars": [],
       "inputs": [],
@@ -5396,7 +5583,7 @@
       "sheets": [
         "components-data.css"
       ],
-      "rules": 8,
+      "rules": 9,
       "elements": [
         "c-instrument__empty",
         "c-instrument__error",
@@ -5432,6 +5619,7 @@
         "--color-text",
         "--color-text-muted",
         "--color-text-subtle",
+        "--density",
         "--font-mono",
         "--space-md",
         "--space-xs",
@@ -5499,6 +5687,7 @@
         "--color-text",
         "--color-text-muted",
         "--color-text-subtle",
+        "--density",
         "--radius-md",
         "--radius-xs",
         "--space-2xs",
@@ -5558,7 +5747,7 @@
         "components-data.css",
         "utilities.css"
       ],
-      "rules": 14,
+      "rules": 22,
       "elements": [
         "c-kpi__empty",
         "c-kpi__error",
@@ -5612,6 +5801,7 @@
         "foot"
       ],
       "tokens": [
+        "--border-width-thick",
         "--color-border",
         "--color-surface-1",
         "--color-surface-2",
@@ -5623,7 +5813,9 @@
         "--font-mono",
         "--radius-lg",
         "--radius-pill",
+        "--space-2xs",
         "--space-md",
+        "--space-sm",
         "--tracking-label",
         "--type-micro",
         "--type-xs",
@@ -5681,9 +5873,11 @@
         "--color-primary-soft",
         "--color-text-muted",
         "--color-text-strong",
+        "--density",
         "--font-display",
         "--leading-relaxed",
         "--radius-md",
+        "--space-2xs",
         "--space-lg",
         "--space-md",
         "--space-xl",
@@ -5701,9 +5895,10 @@
     {
       "name": "c-landing-hero",
       "sheets": [
-        "patterns.css"
+        "patterns.css",
+        "utilities.css"
       ],
-      "rules": 8,
+      "rules": 11,
       "elements": [
         "c-landing-hero__actions",
         "c-landing-hero__preview",
@@ -5736,6 +5931,7 @@
         "--color-surface-2",
         "--color-text-muted",
         "--color-text-strong",
+        "--density",
         "--font-display",
         "--leading-normal",
         "--leading-tight",
@@ -5818,6 +6014,7 @@
         "--color-surface-2",
         "--color-text",
         "--color-text-muted",
+        "--density",
         "--radius-md",
         "--radius-sm",
         "--radius-xs",
@@ -5843,7 +6040,7 @@
         "components-data.css",
         "components.css"
       ],
-      "rules": 13,
+      "rules": 14,
       "elements": [
         "c-layer-switch__count",
         "c-layer-switch__empty",
@@ -5886,6 +6083,7 @@
         "--color-text",
         "--color-text-muted",
         "--color-text-subtle",
+        "--density",
         "--dur-fast",
         "--ease-standard",
         "--font-mono",
@@ -5915,7 +6113,7 @@
         "components.css",
         "utilities.css"
       ],
-      "rules": 42,
+      "rules": 46,
       "elements": [
         "c-legend__audit",
         "c-legend__caption",
@@ -5995,6 +6193,7 @@
         "legend"
       ],
       "tokens": [
+        "--border-width-thick",
         "--chart-1",
         "--chart-2",
         "--chart-3",
@@ -6017,6 +6216,7 @@
         "--color-surface-2",
         "--color-text-muted",
         "--color-text-subtle",
+        "--density",
         "--dur-fast",
         "--ease-standard",
         "--font-mono",
@@ -6025,7 +6225,9 @@
         "--radius-sm",
         "--radius-xs",
         "--space-2xs",
+        "--space-3xs",
         "--space-md",
+        "--space-sm",
         "--space-xs",
         "--tracking-label",
         "--type-micro",
@@ -6110,9 +6312,10 @@
     {
       "name": "c-live-badge",
       "sheets": [
-        "components.css"
+        "components.css",
+        "utilities.css"
       ],
-      "rules": 5,
+      "rules": 6,
       "elements": [],
       "variants": [
         "c-live-badge--connected",
@@ -6145,6 +6348,7 @@
         "--color-success-text",
         "--color-warning",
         "--color-warning-text",
+        "--density",
         "--dur-ping",
         "--ease-out-expo",
         "--radius-pill",
@@ -6190,6 +6394,7 @@
         "spinner"
       ],
       "tokens": [
+        "--density",
         "--space-xs"
       ],
       "vars": [],
@@ -6223,6 +6428,7 @@
       "tokens": [
         "--color-text-strong",
         "--color-text-subtle",
+        "--density",
         "--dur-base",
         "--ease-standard",
         "--font-display",
@@ -6297,6 +6503,7 @@
       "tokens": [
         "--color-border",
         "--color-surface-1",
+        "--density",
         "--space-sm"
       ],
       "vars": [],
@@ -6314,7 +6521,7 @@
         "components-data.css",
         "utilities.css"
       ],
-      "rules": 6,
+      "rules": 7,
       "elements": [],
       "variants": [
         "c-map-panel--bottom",
@@ -6336,6 +6543,7 @@
       "tokens": [
         "--color-border",
         "--color-surface-1",
+        "--density",
         "--radius-md",
         "--shadow-lg",
         "--space-2xs",
@@ -6355,9 +6563,10 @@
     {
       "name": "c-map-popup",
       "sheets": [
-        "components.css"
+        "components.css",
+        "utilities.css"
       ],
-      "rules": 3,
+      "rules": 6,
       "elements": [
         "c-map-popup__body",
         "c-map-popup__title"
@@ -6377,9 +6586,11 @@
       "slots": [],
       "parts": [],
       "tokens": [
+        "--border-width-thick",
         "--color-border",
         "--color-surface-1",
         "--color-text-muted",
+        "--density",
         "--radius-md",
         "--shadow-md",
         "--space-2xs",
@@ -6400,7 +6611,7 @@
       "sheets": [
         "components-data.css"
       ],
-      "rules": 11,
+      "rules": 12,
       "elements": [
         "c-map-slot__attribution",
         "c-map-slot__attribution-mark",
@@ -6548,6 +6759,7 @@
         "--color-surface-1",
         "--color-text",
         "--color-text-muted",
+        "--density",
         "--font-mono",
         "--radius-md",
         "--radius-sm",
@@ -6573,7 +6785,7 @@
         "components.css",
         "utilities.css"
       ],
-      "rules": 24,
+      "rules": 30,
       "elements": [
         "c-menu__empty",
         "c-menu__error",
@@ -6586,6 +6798,7 @@
       ],
       "variants": [],
       "states": [
+        ":active",
         ":disabled",
         ":focus-visible",
         ":hover",
@@ -6613,6 +6826,7 @@
         "menu"
       ],
       "tokens": [
+        "--border-width-thick",
         "--color-border-strong",
         "--color-border-subtle",
         "--color-danger-soft",
@@ -6623,6 +6837,7 @@
         "--color-text-muted",
         "--color-text-strong",
         "--color-text-subtle",
+        "--density",
         "--dur-fast",
         "--ease-standard",
         "--font-mono",
@@ -6648,7 +6863,7 @@
         "components.css",
         "utilities.css"
       ],
-      "rules": 12,
+      "rules": 14,
       "elements": [
         "c-meter__core",
         "c-meter__empty",
@@ -6696,12 +6911,15 @@
         "label"
       ],
       "tokens": [
+        "--border-width-thick",
         "--color-accent",
         "--color-data",
         "--color-primary",
+        "--color-surface-1",
         "--color-text-muted",
         "--color-text-strong",
         "--color-text-subtle",
+        "--density",
         "--font-display",
         "--font-mono",
         "--space-md",
@@ -6759,6 +6977,7 @@
         "--color-border",
         "--color-text-strong",
         "--color-text-subtle",
+        "--density",
         "--font-display",
         "--font-mono",
         "--space-lg",
@@ -6832,9 +7051,10 @@
     {
       "name": "c-notification-center",
       "sheets": [
-        "components.css"
+        "components.css",
+        "utilities.css"
       ],
-      "rules": 7,
+      "rules": 8,
       "elements": [
         "c-notification-center__badge",
         "c-notification-center__bullet",
@@ -6856,6 +7076,7 @@
         "--color-border",
         "--color-primary",
         "--color-surface-2",
+        "--density",
         "--radius-md",
         "--shadow-md",
         "--space-2xs",
@@ -6873,9 +7094,10 @@
     {
       "name": "c-number-field",
       "sheets": [
-        "components.css"
+        "components.css",
+        "utilities.css"
       ],
-      "rules": 2,
+      "rules": 4,
       "elements": [
         "c-number-field__label"
       ],
@@ -6897,7 +7119,10 @@
       "slots": [],
       "parts": [],
       "tokens": [
+        "--border-width-thick",
+        "--color-surface-1",
         "--color-text-muted",
+        "--density",
         "--space-2xs",
         "--type-xs"
       ],
@@ -6942,6 +7167,7 @@
         "--color-surface-2",
         "--color-text-strong",
         "--color-text-subtle",
+        "--density",
         "--dur-fast",
         "--ease-standard",
         "--font-display",
@@ -6971,7 +7197,7 @@
         "components.css",
         "utilities.css"
       ],
-      "rules": 9,
+      "rules": 10,
       "elements": [
         "c-pagination__empty",
         "c-pagination__error",
@@ -7011,11 +7237,14 @@
         "--color-surface-2",
         "--color-text-muted",
         "--color-text-strong",
+        "--density",
         "--dur-fast",
         "--ease-standard",
         "--font-mono",
         "--radius-sm",
+        "--space-3xs",
         "--space-md",
+        "--target-control",
         "--type-xs"
       ],
       "vars": [],
@@ -7030,7 +7259,7 @@
       "sheets": [
         "components.css"
       ],
-      "rules": 2,
+      "rules": 3,
       "elements": [
         "c-palette-editor__swatch"
       ],
@@ -7044,8 +7273,10 @@
       "parts": [],
       "tokens": [
         "--color-border",
+        "--density",
         "--radius-sm",
-        "--space-2xs"
+        "--space-2xs",
+        "--target-control"
       ],
       "vars": [],
       "inputs": [],
@@ -7062,7 +7293,7 @@
         "components-shell.css",
         "utilities.css"
       ],
-      "rules": 27,
+      "rules": 32,
       "elements": [
         "c-panel__actions",
         "c-panel__body",
@@ -7104,6 +7335,7 @@
         "panel"
       ],
       "tokens": [
+        "--border-width-thick",
         "--color-accent-text",
         "--color-border",
         "--color-border-subtle",
@@ -7124,6 +7356,7 @@
         "--space-md",
         "--space-sm",
         "--space-xl",
+        "--space-xs",
         "--type-h4",
         "--type-micro",
         "--type-xs",
@@ -7144,7 +7377,7 @@
         "components.css",
         "utilities.css"
       ],
-      "rules": 7,
+      "rules": 9,
       "elements": [],
       "variants": [
         "c-pill--danger",
@@ -7152,7 +7385,9 @@
         "c-pill--success",
         "c-pill--warning"
       ],
-      "states": [],
+      "states": [
+        ":active"
+      ],
       "attributes": [
         "label",
         "live",
@@ -7184,8 +7419,12 @@
         "--color-warning",
         "--color-warning-soft",
         "--color-warning-text",
+        "--dur-fast",
+        "--ease-standard",
         "--font-mono",
         "--radius-pill",
+        "--target-control",
+        "--target-option",
         "--tracking-label",
         "--type-micro",
         "--weight-medium"
@@ -7200,9 +7439,10 @@
     {
       "name": "c-pivot",
       "sheets": [
-        "components-data.css"
+        "components-data.css",
+        "utilities.css"
       ],
-      "rules": 9,
+      "rules": 12,
       "elements": [
         "c-pivot__aggregate",
         "c-pivot__empty",
@@ -7230,12 +7470,16 @@
       "slots": [],
       "parts": [],
       "tokens": [
+        "--border-width-thick",
         "--color-border",
+        "--color-surface-1",
         "--color-surface-2",
         "--color-text-muted",
+        "--density",
         "--font-mono",
+        "--space-2xs",
+        "--space-3xs",
         "--space-md",
-        "--space-xs",
         "--type-micro",
         "--type-sm"
       ],
@@ -7270,6 +7514,7 @@
       "tokens": [
         "--color-border",
         "--color-primary",
+        "--density",
         "--gradient-plate",
         "--radius-2xl",
         "--space-xl"
@@ -7284,9 +7529,10 @@
     {
       "name": "c-popover",
       "sheets": [
-        "components.css"
+        "components.css",
+        "utilities.css"
       ],
-      "rules": 4,
+      "rules": 7,
       "elements": [
         "c-popover__body",
         "c-popover__content",
@@ -7302,10 +7548,12 @@
       "slots": [],
       "parts": [],
       "tokens": [
+        "--border-width-thick",
         "--color-border",
         "--color-surface-1",
         "--color-text",
         "--color-text-muted",
+        "--density",
         "--radius-md",
         "--shadow-md",
         "--space-2xs",
@@ -7358,9 +7606,10 @@
     {
       "name": "c-price",
       "sheets": [
-        "components-landing.css"
+        "components-landing.css",
+        "utilities.css"
       ],
-      "rules": 10,
+      "rules": 14,
       "elements": [
         "c-price__amount",
         "c-price__desc",
@@ -7386,6 +7635,7 @@
         "price"
       ],
       "tokens": [
+        "--border-width-thick",
         "--color-border",
         "--color-primary",
         "--color-primary-text",
@@ -7393,10 +7643,12 @@
         "--color-text-muted",
         "--color-text-strong",
         "--color-text-subtle",
+        "--density",
         "--font-display",
         "--font-mono",
         "--leading-normal",
         "--radius-xl",
+        "--space-2xs",
         "--space-lg",
         "--space-md",
         "--tracking-label",
@@ -7434,6 +7686,7 @@
         "pricing"
       ],
       "tokens": [
+        "--density",
         "--space-md"
       ],
       "vars": [],
@@ -7624,7 +7877,7 @@
         "components.css",
         "utilities.css"
       ],
-      "rules": 8,
+      "rules": 10,
       "elements": [
         "c-radio__input"
       ],
@@ -7662,6 +7915,7 @@
         "--color-focus-ring",
         "--color-primary",
         "--color-surface-1",
+        "--density",
         "--dur-fast",
         "--ease-standard",
         "--focus-width",
@@ -7712,6 +7966,7 @@
       ],
       "tokens": [
         "--color-text-muted",
+        "--density",
         "--space-3xs",
         "--space-md"
       ],
@@ -7823,7 +8078,7 @@
       "sheets": [
         "components.css"
       ],
-      "rules": 4,
+      "rules": 7,
       "elements": [
         "c-rating__star",
         "c-rating__swatch",
@@ -7842,7 +8097,12 @@
       "tokens": [
         "--color-text-subtle",
         "--color-warning",
-        "--space-2xs"
+        "--density",
+        "--dur-fast",
+        "--ease-standard",
+        "--space-2xs",
+        "--target-control",
+        "--target-option"
       ],
       "vars": [],
       "inputs": [],
@@ -7908,6 +8168,7 @@
         "--color-text-muted",
         "--color-text-strong",
         "--color-text-subtle",
+        "--density",
         "--font-mono",
         "--space-md",
         "--space-sm",
@@ -7929,7 +8190,7 @@
       "sheets": [
         "patterns.css"
       ],
-      "rules": 12,
+      "rules": 14,
       "elements": [
         "c-recipe__canvas",
         "c-recipe__desc",
@@ -7968,12 +8229,14 @@
         "--color-text-muted",
         "--color-text-strong",
         "--color-text-subtle",
+        "--density",
         "--font-display",
         "--font-mono",
         "--leading-relaxed",
         "--radius-md",
         "--radius-xl",
         "--space-2xl",
+        "--space-2xs",
         "--space-lg",
         "--space-md",
         "--tracking-heading",
@@ -8168,6 +8431,7 @@
         "row"
       ],
       "tokens": [
+        "--density",
         "--space-sm"
       ],
       "vars": [],
@@ -8252,6 +8516,7 @@
       ],
       "tokens": [
         "--color-text-muted",
+        "--density",
         "--font-mono",
         "--radius-pill",
         "--space-2xs",
@@ -8406,9 +8671,11 @@
         "--color-surface-1",
         "--color-surface-2",
         "--color-text-subtle",
+        "--density",
         "--dur-fast",
         "--ease-standard",
         "--radius-pill",
+        "--space-2xs",
         "--type-xs"
       ],
       "vars": [],
@@ -8448,6 +8715,7 @@
       "tokens": [
         "--color-text-muted",
         "--color-text-strong",
+        "--density",
         "--font-display",
         "--leading-relaxed",
         "--measure-tight",
@@ -8474,12 +8742,13 @@
         "components.css",
         "utilities.css"
       ],
-      "rules": 14,
+      "rules": 19,
       "elements": [
         "c-segmented__option"
       ],
       "variants": [],
       "states": [
+        ":active",
         ":has(> input[type=\"radio\"])",
         ":has(> input[type=\"radio\"]:checked)",
         ":has(> input[type=\"radio\"]:focus-visible)",
@@ -8502,6 +8771,7 @@
         "segmented"
       ],
       "tokens": [
+        "--border-width-thick",
         "--color-border",
         "--color-focus-ring",
         "--color-on-primary",
@@ -8515,6 +8785,8 @@
         "--ease-standard",
         "--focus-width",
         "--radius-pill",
+        "--target-control",
+        "--target-option",
         "--type-micro",
         "--weight-semibold"
       ],
@@ -8533,13 +8805,13 @@
         "components.css",
         "utilities.css"
       ],
-      "rules": 9,
+      "rules": 10,
       "elements": [],
       "variants": [],
       "states": [
         ":dir(rtl)",
         ":disabled",
-        ":focus",
+        ":focus-visible",
         ":hover",
         "[dir=\"rtl\"]"
       ],
@@ -8563,6 +8835,7 @@
         "select"
       ],
       "tokens": [
+        "--border-width-thick",
         "--color-border-strong",
         "--color-border-subtle",
         "--color-control-edge",
@@ -8593,7 +8866,7 @@
         "components.css",
         "utilities.css"
       ],
-      "rules": 11,
+      "rules": 14,
       "elements": [
         "c-sheet__body",
         "c-sheet__close",
@@ -8620,6 +8893,7 @@
         "sheet"
       ],
       "tokens": [
+        "--border-width-thick",
         "--color-border",
         "--color-border-subtle",
         "--color-surface-1",
@@ -8627,12 +8901,15 @@
         "--color-surface-3",
         "--color-text-strong",
         "--color-text-subtle",
+        "--density",
         "--dur-base",
         "--dur-fast",
         "--ease-standard",
         "--font-display",
         "--radius-xl",
         "--radius-xs",
+        "--space-2xs",
+        "--space-3xs",
         "--space-md",
         "--space-sm",
         "--type-h4",
@@ -8651,7 +8928,7 @@
       "sheets": [
         "components.css"
       ],
-      "rules": 2,
+      "rules": 3,
       "elements": [
         "c-shortcut__key"
       ],
@@ -8666,6 +8943,7 @@
       "parts": [],
       "tokens": [
         "--color-surface-3",
+        "--density",
         "--font-mono",
         "--radius-xs",
         "--space-2xs",
@@ -8699,6 +8977,7 @@
         "shortcut-list"
       ],
       "tokens": [
+        "--density",
         "--space-xs"
       ],
       "vars": [],
@@ -8711,10 +8990,13 @@
     {
       "name": "c-shortcut-overlay",
       "sheets": [
-        "components.css"
+        "components.css",
+        "utilities.css"
       ],
-      "rules": 2,
-      "elements": [],
+      "rules": 4,
+      "elements": [
+        "c-shortcut-overlay__title"
+      ],
       "variants": [],
       "states": [
         "[hidden]"
@@ -8734,6 +9016,8 @@
       ],
       "tokens": [
         "--color-surface-1",
+        "--density",
+        "--space-sm",
         "--z-toast"
       ],
       "vars": [],
@@ -8746,9 +9030,10 @@
     {
       "name": "c-shortcut-panel",
       "sheets": [
-        "components.css"
+        "components.css",
+        "utilities.css"
       ],
-      "rules": 2,
+      "rules": 3,
       "elements": [
         "c-shortcut-panel__title"
       ],
@@ -8787,7 +9072,7 @@
       "sheets": [
         "components.css"
       ],
-      "rules": 3,
+      "rules": 5,
       "elements": [
         "c-shortcut-row__keys",
         "c-shortcut-row__label"
@@ -8807,6 +9092,7 @@
       ],
       "tokens": [
         "--color-text",
+        "--density",
         "--space-2xs",
         "--space-md"
       ],
@@ -8868,6 +9154,7 @@
         "--color-text",
         "--color-text-muted",
         "--color-text-strong",
+        "--density",
         "--font-display",
         "--leading-relaxed",
         "--radius-xl",
@@ -8891,9 +9178,10 @@
     {
       "name": "c-side-sheet",
       "sheets": [
-        "components.css"
+        "components.css",
+        "utilities.css"
       ],
-      "rules": 6,
+      "rules": 9,
       "elements": [
         "c-side-sheet__panel",
         "c-side-sheet__title"
@@ -8916,7 +9204,9 @@
       "slots": [],
       "parts": [],
       "tokens": [
+        "--border-width-thick",
         "--color-surface-1",
+        "--density",
         "--dur-base",
         "--ease-standard",
         "--shadow-lg",
@@ -8961,6 +9251,7 @@
       ],
       "tokens": [
         "--color-text-strong",
+        "--density",
         "--font-display",
         "--space-lg",
         "--space-sm",
@@ -8977,9 +9268,10 @@
     {
       "name": "c-skeleton",
       "sheets": [
-        "components.css"
+        "components.css",
+        "utilities.css"
       ],
-      "rules": 6,
+      "rules": 7,
       "elements": [],
       "variants": [
         "c-skeleton--static",
@@ -9033,6 +9325,7 @@
       "slots": [],
       "parts": [],
       "tokens": [
+        "--density",
         "--space-2xs"
       ],
       "vars": [],
@@ -9047,7 +9340,7 @@
       "sheets": [
         "components.css"
       ],
-      "rules": 5,
+      "rules": 6,
       "elements": [
         "c-sortable-list__handle",
         "c-sortable-list__item",
@@ -9065,6 +9358,7 @@
       "tokens": [
         "--color-border",
         "--color-text-muted",
+        "--density",
         "--space-2xs",
         "--space-xs"
       ],
@@ -9119,6 +9413,7 @@
         "--color-surface-3",
         "--color-text",
         "--color-text-muted",
+        "--density",
         "--radius-xs",
         "--space-2xs",
         "--space-xs",
@@ -9139,7 +9434,7 @@
       "sheets": [
         "components-data.css"
       ],
-      "rules": 3,
+      "rules": 5,
       "elements": [
         "c-spatial-filter__modes"
       ],
@@ -9166,6 +9461,7 @@
       "parts": [],
       "tokens": [
         "--color-accent",
+        "--density",
         "--space-2xs"
       ],
       "vars": [],
@@ -9178,9 +9474,10 @@
     {
       "name": "c-spinner",
       "sheets": [
-        "components.css"
+        "components.css",
+        "utilities.css"
       ],
-      "rules": 2,
+      "rules": 3,
       "elements": [],
       "variants": [
         "c-spinner--lg"
@@ -9262,6 +9559,7 @@
       "parts": [],
       "tokens": [
         "--color-border",
+        "--density",
         "--radius-md",
         "--space-sm"
       ],
@@ -9292,6 +9590,7 @@
         "stack"
       ],
       "tokens": [
+        "--density",
         "--space-sm"
       ],
       "vars": [],
@@ -9340,6 +9639,7 @@
       "tokens": [
         "--color-text-muted",
         "--color-track",
+        "--density",
         "--radius-sm",
         "--space-md"
       ],
@@ -9355,7 +9655,7 @@
       "sheets": [
         "components.css"
       ],
-      "rules": 8,
+      "rules": 9,
       "elements": [
         "c-stat__delta",
         "c-stat__empty",
@@ -9401,6 +9701,7 @@
         "--color-text-muted",
         "--color-text-strong",
         "--color-text-subtle",
+        "--density",
         "--font-display",
         "--font-mono",
         "--space-md",
@@ -9421,7 +9722,7 @@
       "sheets": [
         "components.css"
       ],
-      "rules": 7,
+      "rules": 8,
       "elements": [],
       "variants": [
         "c-status-light--danger",
@@ -9446,6 +9747,7 @@
         "--color-success",
         "--color-text-subtle",
         "--color-warning",
+        "--density",
         "--space-2xs",
         "--type-xs"
       ],
@@ -9461,7 +9763,7 @@
       "sheets": [
         "components.css"
       ],
-      "rules": 6,
+      "rules": 8,
       "elements": [
         "c-stepper__list",
         "c-stepper__nav",
@@ -9483,6 +9785,7 @@
         "--color-primary",
         "--color-success",
         "--color-text-muted",
+        "--density",
         "--space-sm",
         "--space-xs",
         "--type-sm"
@@ -9542,9 +9845,11 @@
         "--color-primary-text",
         "--color-text-muted",
         "--color-text-strong",
+        "--density",
         "--font-display",
         "--font-mono",
         "--leading-relaxed",
+        "--space-2xs",
         "--space-lg",
         "--space-md",
         "--type-h4",
@@ -9562,9 +9867,10 @@
     {
       "name": "c-streaming-chart",
       "sheets": [
-        "components-data.css"
+        "components-data.css",
+        "utilities.css"
       ],
-      "rules": 7,
+      "rules": 8,
       "elements": [
         "c-streaming-chart__empty",
         "c-streaming-chart__error",
@@ -9604,6 +9910,7 @@
         "--color-primary",
         "--color-surface-1",
         "--color-text-muted",
+        "--density",
         "--dur-fast",
         "--dur-ping",
         "--ease-out-expo",
@@ -9623,7 +9930,7 @@
       "sheets": [
         "components.css"
       ],
-      "rules": 14,
+      "rules": 17,
       "elements": [
         "c-style-panel__actions",
         "c-style-panel__body",
@@ -9660,6 +9967,7 @@
         "--color-border",
         "--color-primary",
         "--color-surface-1",
+        "--density",
         "--radius-md",
         "--radius-xs",
         "--space-2xs",
@@ -9697,6 +10005,7 @@
       "tokens": [
         "--color-primary-soft",
         "--color-primary-text",
+        "--density",
         "--space-2xs"
       ],
       "vars": [],
@@ -9745,6 +10054,7 @@
         "--color-text-muted",
         "--color-text-strong",
         "--color-text-subtle",
+        "--density",
         "--font-mono",
         "--space-2xs",
         "--tracking-body",
@@ -9805,7 +10115,7 @@
         "components.css",
         "utilities.css"
       ],
-      "rules": 13,
+      "rules": 15,
       "elements": [
         "c-switch__input",
         "c-switch__track"
@@ -9838,6 +10148,7 @@
         "switch"
       ],
       "tokens": [
+        "--border-width-thick",
         "--color-border-strong",
         "--color-control-edge",
         "--color-focus-ring",
@@ -9868,7 +10179,7 @@
         "components.css",
         "utilities.css"
       ],
-      "rules": 48,
+      "rules": 52,
       "elements": [
         "c-table__actions",
         "c-table__loading",
@@ -9921,6 +10232,7 @@
         "table"
       ],
       "tokens": [
+        "--border-width-thick",
         "--chart-selection",
         "--color-border",
         "--color-border-subtle",
@@ -9932,13 +10244,16 @@
         "--color-text-muted",
         "--color-text-strong",
         "--color-text-subtle",
+        "--density",
         "--density-row",
         "--density-type",
         "--dur-fast",
         "--ease-standard",
         "--font-mono",
+        "--space-3xs",
         "--space-md",
         "--space-sm",
+        "--space-xs",
         "--tracking-label",
         "--type-micro",
         "--type-sm",
@@ -9997,7 +10312,7 @@
         "components.css",
         "utilities.css"
       ],
-      "rules": 29,
+      "rules": 34,
       "elements": [
         "c-tabs__close",
         "c-tabs__empty",
@@ -10014,6 +10329,7 @@
       "states": [
         "::-webkit-scrollbar",
         "::after",
+        ":active",
         ":disabled",
         ":focus-visible",
         ":hover",
@@ -10050,12 +10366,15 @@
         "list"
       ],
       "tokens": [
+        "--border-width-thick",
         "--color-border",
         "--color-focus-ring",
         "--color-primary",
+        "--color-surface-1",
         "--color-text-muted",
         "--color-text-strong",
         "--color-text-subtle",
+        "--density",
         "--dur-base",
         "--dur-fast",
         "--ease-out-expo",
@@ -10064,6 +10383,7 @@
         "--space-lg",
         "--space-md",
         "--space-xs",
+        "--target-control",
         "--type-xs",
         "--weight-semibold"
       ],
@@ -10077,9 +10397,11 @@
     {
       "name": "c-tag",
       "sheets": [
-        "components-shell.css"
+        "components-shell.css",
+        "components.css",
+        "utilities.css"
       ],
-      "rules": 5,
+      "rules": 7,
       "elements": [
         "c-tag__remove"
       ],
@@ -10087,6 +10409,7 @@
         "c-tag--primary"
       ],
       "states": [
+        ":active",
         ":hover"
       ],
       "attributes": [
@@ -10105,6 +10428,7 @@
         "remove"
       ],
       "tokens": [
+        "--border-width-thick",
         "--color-border",
         "--color-primary",
         "--color-primary-soft",
@@ -10115,6 +10439,7 @@
         "--ease-standard",
         "--font-mono",
         "--radius-xs",
+        "--target-control",
         "--target-option",
         "--type-micro"
       ],
@@ -10155,6 +10480,9 @@
         "--color-border",
         "--color-text",
         "--color-text-muted",
+        "--density",
+        "--dur-fast",
+        "--ease-standard",
         "--radius-md",
         "--space-2xs",
         "--type-sm"
@@ -10171,7 +10499,7 @@
       "sheets": [
         "components-landing.css"
       ],
-      "rules": 5,
+      "rules": 6,
       "elements": [
         "c-testimonial__byline",
         "c-testimonial__name",
@@ -10203,6 +10531,7 @@
         "--color-surface-1",
         "--color-text-strong",
         "--color-text-subtle",
+        "--density",
         "--font-display",
         "--font-mono",
         "--radius-xl",
@@ -10228,12 +10557,12 @@
         "components.css",
         "utilities.css"
       ],
-      "rules": 9,
+      "rules": 10,
       "elements": [],
       "variants": [],
       "states": [
         ":disabled",
-        ":focus",
+        ":focus-visible",
         ":hover",
         "[aria-invalid=\"true\"]"
       ],
@@ -10253,6 +10582,7 @@
         "textarea"
       ],
       "tokens": [
+        "--border-width-thick",
         "--color-border-strong",
         "--color-border-subtle",
         "--color-control-edge",
@@ -10368,6 +10698,7 @@
         "--color-text-strong",
         "--color-track",
         "--color-warning",
+        "--density",
         "--radius-pill",
         "--space-md"
       ],
@@ -10408,6 +10739,7 @@
       "parts": [],
       "tokens": [
         "--color-text-muted",
+        "--density",
         "--space-2xs",
         "--type-xs"
       ],
@@ -10423,7 +10755,7 @@
       "sheets": [
         "components-data.css"
       ],
-      "rules": 1,
+      "rules": 2,
       "elements": [],
       "variants": [],
       "states": [],
@@ -10489,7 +10821,9 @@
         "--color-primary",
         "--color-text-muted",
         "--color-text-subtle",
+        "--density",
         "--radius-xs",
+        "--space-2xs",
         "--space-md",
         "--space-xs",
         "--type-xs"
@@ -10552,6 +10886,7 @@
         "--color-primary-hover",
         "--color-surface-1",
         "--color-text-subtle",
+        "--density",
         "--font-mono",
         "--radius-md",
         "--space-sm",
@@ -10632,9 +10967,10 @@
     {
       "name": "c-toast",
       "sheets": [
-        "components.css"
+        "components.css",
+        "utilities.css"
       ],
-      "rules": 1,
+      "rules": 4,
       "elements": [],
       "variants": [],
       "states": [],
@@ -10651,11 +10987,15 @@
         "toast"
       ],
       "tokens": [
+        "--border-width-thick",
         "--color-border-strong",
+        "--color-surface-1",
         "--color-surface-2",
         "--color-text",
+        "--density",
         "--radius-md",
         "--shadow-lg",
+        "--space-xs",
         "--type-sm"
       ],
       "vars": [],
@@ -10684,6 +11024,7 @@
         "toast-host"
       ],
       "tokens": [
+        "--density",
         "--space-2xs",
         "--space-md",
         "--z-toast"
@@ -10743,9 +11084,11 @@
         "--color-text-muted",
         "--color-text-strong",
         "--color-text-subtle",
+        "--density",
         "--dur-fast",
         "--ease-standard",
         "--font-mono",
+        "--space-3xs",
         "--space-md",
         "--tracking-label",
         "--type-micro",
@@ -10767,7 +11110,7 @@
         "components.css",
         "utilities.css"
       ],
-      "rules": 8,
+      "rules": 12,
       "elements": [
         "c-toolbar__btn"
       ],
@@ -10789,6 +11132,7 @@
         "toolbar"
       ],
       "tokens": [
+        "--border-width-thick",
         "--color-border",
         "--color-on-primary",
         "--color-primary",
@@ -10796,10 +11140,12 @@
         "--color-surface-3",
         "--color-text-muted",
         "--color-text-strong",
+        "--density",
         "--dur-fast",
         "--ease-standard",
         "--radius-pill",
-        "--shadow-md"
+        "--shadow-md",
+        "--space-3xs"
       ],
       "vars": [],
       "inputs": [],
@@ -10811,9 +11157,10 @@
     {
       "name": "c-tooltip",
       "sheets": [
-        "components.css"
+        "components.css",
+        "utilities.css"
       ],
-      "rules": 5,
+      "rules": 8,
       "elements": [],
       "variants": [],
       "states": [
@@ -10834,11 +11181,15 @@
         "tooltip"
       ],
       "tokens": [
+        "--border-width-thick",
         "--color-border-strong",
+        "--color-surface-1",
         "--color-tooltip-bg",
         "--color-tooltip-fg",
+        "--density",
         "--radius-sm",
         "--shadow-md",
+        "--space-2xs",
         "--type-xs"
       ],
       "vars": [],
@@ -10851,9 +11202,10 @@
     {
       "name": "c-tour",
       "sheets": [
-        "components.css"
+        "components.css",
+        "utilities.css"
       ],
-      "rules": 4,
+      "rules": 6,
       "elements": [
         "c-tour__nav",
         "c-tour__step",
@@ -10872,6 +11224,7 @@
         "--color-border",
         "--color-surface-2",
         "--color-text-muted",
+        "--density",
         "--radius-md",
         "--shadow-md",
         "--space-2xs",
@@ -10891,10 +11244,11 @@
     {
       "name": "c-tree",
       "sheets": [
+        "base.css",
         "components.css",
         "utilities.css"
       ],
-      "rules": 18,
+      "rules": 21,
       "elements": [
         "c-tree__children",
         "c-tree__empty",
@@ -10941,6 +11295,7 @@
         "--color-surface-2",
         "--color-text-muted",
         "--color-text-subtle",
+        "--density",
         "--dur-base",
         "--dur-fast",
         "--ease-standard",
@@ -11092,6 +11447,7 @@
       "parts": [],
       "tokens": [
         "--color-border",
+        "--density",
         "--radius-md",
         "--space-2xs",
         "--space-sm",
@@ -11138,6 +11494,8 @@
       ],
       "tokens": [
         "--color-text-muted",
+        "--density",
+        "--space-2xs",
         "--space-md",
         "--type-sm"
       ],
@@ -11154,15 +11512,68 @@
       "c-theme-scope"
     ],
     "--border-width-thick": [
+      "c-accordion",
+      "c-affordance",
+      "c-alert",
+      "c-annotation",
+      "c-badge",
+      "c-badge-overflow",
+      "c-btn",
+      "c-callout",
       "c-card",
+      "c-chart",
+      "c-check",
       "c-chip",
+      "c-combobox",
+      "c-command",
+      "c-command-palette",
+      "c-context-menu",
+      "c-dash-toolbar",
+      "c-date-picker",
+      "c-date-range",
+      "c-dialog",
+      "c-disclosure",
+      "c-drawer",
+      "c-dropdown",
+      "c-empty",
+      "c-error-boundary",
+      "c-expandable",
+      "c-faq",
+      "c-field",
+      "c-field-group",
+      "c-filter-pill",
+      "c-hover-card",
+      "c-input",
+      "c-input-group",
       "c-kbd",
+      "c-kpi",
+      "c-legend",
+      "c-map-popup",
+      "c-menu",
+      "c-meter",
+      "c-number-field",
+      "c-panel",
       "c-pill",
+      "c-pivot",
+      "c-popover",
+      "c-price",
       "c-prose",
       "c-pullquote",
       "c-radio",
       "c-range",
-      "c-timeline"
+      "c-segmented",
+      "c-select",
+      "c-sheet",
+      "c-side-sheet",
+      "c-switch",
+      "c-table",
+      "c-tabs",
+      "c-tag",
+      "c-textarea",
+      "c-timeline",
+      "c-toast",
+      "c-toolbar",
+      "c-tooltip"
     ],
     "--brand-200": [
       "c-theme-scope"
@@ -11864,6 +12275,7 @@
       "c-card",
       "c-catchment",
       "c-changelog",
+      "c-chart",
       "c-check",
       "c-chip",
       "c-color-picker",
@@ -11876,12 +12288,15 @@
       "c-contour-plot",
       "c-coordinate",
       "c-cta",
+      "c-dash-toolbar",
       "c-data-export",
       "c-date-picker",
       "c-dialog",
       "c-do-dont",
       "c-drawer",
+      "c-dropdown",
       "c-empty",
+      "c-error-boundary",
       "c-faq",
       "c-field-group",
       "c-filter-bar",
@@ -11891,6 +12306,7 @@
       "c-heatmap",
       "c-hover-card",
       "c-input",
+      "c-input-group",
       "c-isochrone",
       "c-kpi",
       "c-landing-hero",
@@ -11903,9 +12319,12 @@
       "c-map-slot",
       "c-measure",
       "c-menu",
+      "c-meter",
       "c-minimap",
+      "c-number-field",
       "c-pager",
       "c-panel",
+      "c-pivot",
       "c-popover",
       "c-price",
       "c-radio",
@@ -11923,11 +12342,14 @@
       "c-switch",
       "c-table",
       "c-table-wrap",
+      "c-tabs",
       "c-testimonial",
       "c-textarea",
       "c-time-slider",
       "c-timeline",
+      "c-toast",
       "c-toolbar",
+      "c-tooltip",
       "c-version"
     ],
     "--color-surface-2": [
@@ -12333,16 +12755,166 @@
       "c-version-banner"
     ],
     "--density": [
+      "c-accordion",
+      "c-activity",
+      "c-affordance",
+      "c-affordances",
+      "c-alert",
+      "c-animation-controls",
+      "c-annotation",
+      "c-app",
+      "c-app-body",
+      "c-axis",
+      "c-banner",
+      "c-bivariate",
+      "c-bivariate-legend",
       "c-box",
+      "c-breadcrumb",
+      "c-btn",
+      "c-btn-group",
+      "c-calendar",
+      "c-callout",
+      "c-card",
+      "c-carousel",
+      "c-catchment",
+      "c-category",
+      "c-changelog",
+      "c-chart",
+      "c-chart-grid",
+      "c-chip",
+      "c-cluster",
+      "c-code",
+      "c-code-tabs",
+      "c-color-picker",
       "c-combobox",
+      "c-command",
+      "c-command-palette",
+      "c-compare",
+      "c-comparison",
+      "c-container",
+      "c-context-menu",
+      "c-coordinate",
+      "c-cta",
+      "c-dash-kpi-row",
+      "c-dash-shell",
+      "c-dash-toolbar",
+      "c-data-export",
+      "c-data-grid",
+      "c-date-picker",
+      "c-date-range",
+      "c-delta",
+      "c-dialog",
+      "c-disclosure",
+      "c-divider",
+      "c-do-dont",
+      "c-docs-nav",
+      "c-docs-shell",
+      "c-donut",
+      "c-drag-handle",
       "c-drawer",
+      "c-drop-indicator",
       "c-drop-zone",
+      "c-empty",
+      "c-error-boundary",
+      "c-expandable",
+      "c-faq",
+      "c-feature",
+      "c-field-group",
+      "c-file-upload",
+      "c-filter-bar",
+      "c-flag",
+      "c-flow-map",
+      "c-footer",
+      "c-form",
+      "c-gauge",
+      "c-geocoder",
+      "c-header",
+      "c-heatmap",
+      "c-hexbin",
+      "c-hover-card",
       "c-input",
+      "c-install",
+      "c-instrument",
+      "c-isochrone",
       "c-kpi",
+      "c-landing-features",
+      "c-landing-hero",
+      "c-layer-panel",
+      "c-layer-switch",
+      "c-legend",
+      "c-live-badge",
+      "c-loading",
+      "c-logos",
+      "c-map-footer",
+      "c-map-panel",
+      "c-map-popup",
+      "c-measure",
+      "c-menu",
+      "c-meter",
+      "c-metrics",
+      "c-notification-center",
+      "c-number-field",
+      "c-pager",
+      "c-pagination",
+      "c-palette-editor",
       "c-panel",
+      "c-pivot",
+      "c-plate",
+      "c-popover",
+      "c-price",
+      "c-pricing",
+      "c-radio",
+      "c-radio-list",
+      "c-rating",
+      "c-readout",
+      "c-recipe",
+      "c-row",
+      "c-scale-bar",
+      "c-search-trigger",
+      "c-section-head",
       "c-select",
+      "c-sheet",
+      "c-shortcut",
+      "c-shortcut-list",
+      "c-shortcut-overlay",
       "c-shortcut-panel",
-      "c-textarea"
+      "c-shortcut-row",
+      "c-showcase",
+      "c-side-sheet",
+      "c-sidebar",
+      "c-skeleton-group",
+      "c-sortable-list",
+      "c-sparkline",
+      "c-spatial-filter",
+      "c-split-map",
+      "c-stack",
+      "c-stacked-bar",
+      "c-stat",
+      "c-status-light",
+      "c-stepper",
+      "c-steps",
+      "c-streaming-chart",
+      "c-style-panel",
+      "c-style-switcher",
+      "c-survey",
+      "c-table",
+      "c-tabs",
+      "c-tags-input",
+      "c-testimonial",
+      "c-textarea",
+      "c-threshold",
+      "c-time-picker",
+      "c-time-series",
+      "c-time-slider",
+      "c-toast",
+      "c-toast-host",
+      "c-toc",
+      "c-toolbar",
+      "c-tooltip",
+      "c-tour",
+      "c-tree",
+      "c-virtual-list",
+      "c-widget-state"
     ],
     "--density-row": [
       "c-table"
@@ -12373,10 +12945,13 @@
     "--dur-fast": [
       "c-alert",
       "c-anchor",
+      "c-badge",
       "c-btn",
       "c-check",
+      "c-chip",
       "c-code-tabs",
       "c-combobox",
+      "c-data-export",
       "c-dialog",
       "c-disclosure",
       "c-docs-nav",
@@ -12397,10 +12972,12 @@
       "c-pager",
       "c-pagination",
       "c-panel",
+      "c-pill",
       "c-pressable",
       "c-pull-to-refresh",
       "c-radio",
       "c-range",
+      "c-rating",
       "c-resize-handle",
       "c-scheme-toggle",
       "c-search-trigger",
@@ -12411,6 +12988,7 @@
       "c-table",
       "c-tabs",
       "c-tag",
+      "c-tags-input",
       "c-textarea",
       "c-toc",
       "c-toolbar",
@@ -12456,12 +13034,15 @@
     "--ease-standard": [
       "c-alert",
       "c-anchor",
+      "c-badge",
       "c-btn",
       "c-card",
       "c-check",
+      "c-chip",
       "c-code-tabs",
       "c-combobox",
       "c-command",
+      "c-data-export",
       "c-dialog",
       "c-disclosure",
       "c-docs-nav",
@@ -12484,10 +13065,12 @@
       "c-pager",
       "c-pagination",
       "c-panel",
+      "c-pill",
       "c-pressable",
       "c-pull-to-refresh",
       "c-radio",
       "c-range",
+      "c-rating",
       "c-resize-handle",
       "c-scheme-toggle",
       "c-search-trigger",
@@ -12500,6 +13083,7 @@
       "c-table",
       "c-tabs",
       "c-tag",
+      "c-tags-input",
       "c-textarea",
       "c-toc",
       "c-toolbar",
@@ -12932,32 +13516,52 @@
       "c-showcase"
     ],
     "--space-2xs": [
+      "c-affordance",
       "c-animation-controls",
       "c-annotation",
+      "c-app",
+      "c-app-body",
       "c-bivariate",
       "c-brush",
+      "c-btn",
+      "c-btn-group",
       "c-calendar",
       "c-card",
       "c-catchment",
+      "c-category",
       "c-chart",
+      "c-chip",
       "c-color-picker",
       "c-combobox",
+      "c-command",
       "c-command-palette",
+      "c-container",
       "c-context-menu",
       "c-coordinate",
       "c-data-grid",
       "c-date-picker",
       "c-date-range",
+      "c-dialog",
+      "c-docs-nav",
+      "c-donut",
+      "c-drag-handle",
+      "c-drawer",
       "c-drop-indicator",
       "c-dropdown",
+      "c-empty",
+      "c-faq",
       "c-file-upload",
+      "c-filter-bar",
       "c-flag",
       "c-flow-map",
+      "c-gauge",
       "c-header",
       "c-heatmap",
       "c-hexbin",
       "c-hover-card",
       "c-isochrone",
+      "c-kpi",
+      "c-landing-features",
       "c-layer-panel",
       "c-layer-switch",
       "c-legend",
@@ -12969,10 +13573,15 @@
       "c-notification-center",
       "c-number-field",
       "c-palette-editor",
+      "c-pivot",
       "c-popover",
+      "c-price",
       "c-radio",
       "c-rating",
+      "c-recipe",
       "c-scale-bar",
+      "c-search-trigger",
+      "c-sheet",
       "c-shortcut",
       "c-shortcut-row",
       "c-skeleton-group",
@@ -12981,27 +13590,47 @@
       "c-spatial-filter",
       "c-split-button",
       "c-status-light",
+      "c-steps",
       "c-style-panel",
       "c-style-switcher",
       "c-survey",
       "c-tabs",
       "c-tags-input",
       "c-time-picker",
+      "c-time-series",
       "c-toast-host",
+      "c-tooltip",
       "c-tour",
       "c-tree",
-      "c-virtual-list"
+      "c-virtual-list",
+      "c-widget-state"
     ],
     "--space-3xl": [
       "c-cta",
       "c-landing-hero"
     ],
     "--space-3xs": [
+      "c-axis",
+      "c-bivariate-legend",
+      "c-callout",
+      "c-category",
       "c-date-picker",
+      "c-delta",
+      "c-dialog",
+      "c-donut",
+      "c-drawer",
+      "c-header",
       "c-layer-panel",
+      "c-legend",
       "c-map-slot",
+      "c-pagination",
+      "c-pivot",
       "c-radio",
-      "c-radio-list"
+      "c-radio-list",
+      "c-sheet",
+      "c-table",
+      "c-toc",
+      "c-toolbar"
     ],
     "--space-lg": [
       "c-card",
@@ -13033,6 +13662,7 @@
       "c-affordances",
       "c-alert",
       "c-app",
+      "c-app-body",
       "c-banner",
       "c-box",
       "c-breadcrumb",
@@ -13126,10 +13756,13 @@
       "c-faq",
       "c-form",
       "c-geocoder",
+      "c-header",
       "c-hover-card",
       "c-install",
+      "c-kpi",
       "c-landing-hero",
       "c-layer-switch",
+      "c-legend",
       "c-map-footer",
       "c-map-panel",
       "c-map-popup",
@@ -13141,6 +13774,7 @@
       "c-readout",
       "c-row",
       "c-sheet",
+      "c-shortcut-overlay",
       "c-side-sheet",
       "c-sidebar",
       "c-split-map",
@@ -13190,6 +13824,7 @@
       "c-header",
       "c-heatmap",
       "c-hexbin",
+      "c-install",
       "c-instrument",
       "c-isochrone",
       "c-layer-panel",
@@ -13199,15 +13834,17 @@
       "c-loading",
       "c-measure",
       "c-notification-center",
-      "c-pivot",
+      "c-panel",
       "c-shortcut-list",
       "c-sortable-list",
       "c-sparkline",
       "c-stepper",
       "c-style-panel",
+      "c-table",
       "c-tabs",
       "c-time-series",
       "c-time-slider",
+      "c-toast",
       "c-tour",
       "c-tree"
     ],
@@ -13215,11 +13852,23 @@
       "c-chart"
     ],
     "--target-control": [
+      "c-badge",
       "c-btn",
+      "c-calendar",
+      "c-chip",
+      "c-color-picker",
       "c-combobox",
+      "c-filter-pill",
       "c-header",
       "c-input",
+      "c-pagination",
+      "c-palette-editor",
+      "c-pill",
+      "c-rating",
+      "c-segmented",
       "c-select",
+      "c-tabs",
+      "c-tag",
       "c-textarea"
     ],
     "--target-mark": [
@@ -13227,9 +13876,14 @@
     ],
     "--target-option": [
       "c-alert",
+      "c-calendar",
+      "c-chip",
       "c-filter-pill",
       "c-menu",
+      "c-pill",
       "c-radio",
+      "c-rating",
+      "c-segmented",
       "c-tag"
     ],
     "--tracking-body": [
@@ -13570,6 +14224,7 @@
     "--weight-semibold": [
       "c-affordance",
       "c-alert",
+      "c-app",
       "c-avatar",
       "c-btn",
       "c-callout",

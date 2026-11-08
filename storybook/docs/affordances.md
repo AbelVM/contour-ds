@@ -66,6 +66,8 @@ RTL specimen — chevron flips to the inline-start side.
 
 The spatial dashboard skeleton: an app shell, a map area with floating panels, a footer for charts, and the containers that fill them.
 
+Grouping helpers: use .c-row for a non-wrapping horizontal line, .c-cluster when items may wrap, .c-stack for vertical rhythm, .c-btn-group / .c-btn-group--attached for button rows, .c-segmented for option sets, and .c-toolbar for icon toolbars. Components adopt these internally; prefer them over ad-hoc flex when composing.
+
 .c-row — horizontal flex, items centered
 
 .c-stack — vertical, gap scales with --space-md
@@ -184,4 +186,4 @@ part of the component contract and nothing in an installed package defines them:
 
 ---
 
-Source `index.html` @ `10d181ea8e0eb659` · last committed 2026-11-04T18:12:14+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `1beb0033376e73f1` · last committed 2026-11-07T12:44:19+01:00 · no URL: the project is private until v1.0.

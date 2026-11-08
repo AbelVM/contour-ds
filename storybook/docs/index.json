@@ -1,8 +1,8 @@
 {
   "version": "1.0",
   "source": "index.html",
-  "sourceSha256": "10d181ea8e0eb659",
-  "lastUpdated": "2026-11-04T18:12:14+01:00",
+  "sourceSha256": "1beb0033376e73f1",
+  "lastUpdated": "2026-11-07T12:44:19+01:00",
   "generatedBy": "tools/build.mjs, from index.html",
   "statement": "Machine-readable copy of the style guide's prose, generated and never hand-edited. Sections are listed in guide order; titles, prose and counts are quoted or counted, not authored. Prose is verbatim: a paragraph here is the guide's own sentence, never a sentence this generator wrote. Contains no URL: the project is private until v1.0.",
   "counts": {

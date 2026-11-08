@@ -2742,7 +2742,12 @@ class ContourLegend extends ContourBase {
     static get properties() { return { title: { attribute: "title" }, ramp: { attribute: "ramp" }, scale: { attribute: "scale" }, items: { attribute: "items" }, method: { attribute: "method" }, norm: { attribute: "norm" }, selectable: { attribute: "selectable", type: Boolean }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-legend");
-      this.setAttribute("role", "list");
+      const continuous = this.hasAttribute("continuous");
+      if (continuous || this.hasAttribute("selectable")) {
+        this.setAttribute("role", "group");
+      } else {
+        this.setAttribute("role", "list");
+      }
       wireStates(this);
       loadRemote(this, "items");
       if (renderStates(this, "legend")) return;
@@ -2774,7 +2779,11 @@ class ContourLegend extends ContourBase {
         try {
           const parsed = JSON.parse(items);
           const list = this.ensure(".c-legend__items", () => { const el = document.createElement("div"); el.className = "c-legend__items"; return el; });
-          list.setAttribute("role", "listbox");
+          if (this.hasAttribute("selectable")) {
+            list.setAttribute("role", "group");
+          } else {
+            list.setAttribute("role", "listbox");
+          }
           if (title) list.setAttribute("aria-label", title);
           list.innerHTML = "";
           parsed.forEach((it) => {
@@ -2784,8 +2793,8 @@ class ContourLegend extends ContourBase {
             item.className = "c-legend__item";
             item.setAttribute("tabindex", "-1");
             if (selectable) {
-              item.setAttribute("role", "option");
-              item.setAttribute("aria-selected", "true");
+              item.setAttribute("role", "button");
+              item.setAttribute("aria-pressed", "true");
               item.dataset.key = key;
             } else {
               item.setAttribute("role", "option");
@@ -3003,8 +3012,17 @@ class ContourLegend extends ContourBase {
       this.addEventListener("click", (e) => {
         const btn = e.target && e.target.closest ? e.target.closest(".c-legend__item") : null;
         if (!btn || !this.contains(btn)) return;
-        const selected = btn.getAttribute("aria-selected") !== "true";
-        btn.setAttribute("aria-selected", String(selected));
+        let selected;
+        const isPressed = btn.getAttribute("aria-pressed");
+        if (btn.getAttribute("aria-pressed") !== null) {
+          const pressed = btn.getAttribute("aria-pressed") !== "true";
+          btn.setAttribute("aria-pressed", String(pressed));
+          selected = pressed;
+        } else {
+          const selected2 = btn.getAttribute("aria-selected") !== "true";
+          btn.setAttribute("aria-selected", String(selected2));
+          selected = selected2;
+        }
         this.dispatchEvent(new CustomEvent("contour:legend-toggle", {
           detail: { label: btn.textContent.trim(), key: btn.dataset.key || btn.textContent.trim(), pressed: selected },
           bubbles: true,

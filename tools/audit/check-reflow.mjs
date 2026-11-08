@@ -97,6 +97,25 @@ const MEASURE = () => {
     if (aU !== bU) return aU - bU;
     return b.right - a.right;
   });
+  // Component-level reflow (WC-L-29): track which component roots overflow unclipped.
+  const componentSelectors = [".c-header", ".c-tabs", ".c-stepper", ".c-tour", ".c-shortcut-row", ".c-kpi", ".c-panel", ".c-dialog", ".c-alert", ".c-command", ".c-pivot", ".c-data-export", ".c-date-picker", ".c-date-range", ".c-rating", ".c-number-field", ".c-input-group", ".c-layer-switch", ".c-spatial-filter", ".c-map-slot", ".c-dash-kpi-row", ".c-file-tree", ".c-changelog", ".c-range-scale", ".c-time-range", ".c-avatar-group", ".c-style-panel", ".c-animation-controls"];
+  const overflowingComponents = [];
+  for (const sel of componentSelectors) {
+    for (const el of document.querySelectorAll(sel)) {
+      const r = el.getBoundingClientRect();
+      if (!r.width) continue;
+      const cs = getComputedStyle(el);
+      if (cs.display === "none" || cs.visibility === "hidden") continue;
+      if (r.right <= vw + 1.5) continue;
+      // unclipped only
+      let clipped = false;
+      for (let pp = el.parentElement; pp; pp = pp.parentElement) {
+        const o = getComputedStyle(pp).overflowX;
+        if (/auto|scroll|hidden|clip/.test(o)) { clipped = true; break; }
+      }
+      if (!clipped) overflowingComponents.push(sel);
+    }
+  }
   return {
     overflow: de.scrollWidth - vw,
     scrollW: de.scrollWidth,
@@ -104,6 +123,7 @@ const MEASURE = () => {
     bare,
     wide: wide.slice(0, 3),
     mask: getComputedStyle(document.body).overflowX,
+    overflowingComponents: [...new Set(overflowingComponents)],
     bodyBg: getComputedStyle(document.body).backgroundColor,
   };
 };
@@ -151,6 +171,9 @@ try {
         }
         for (const t of r.bare) {
           failures.push(`${page_path} ${theme} ${view.label}: table.c-table in #${t.id} has no .c-table-wrap (right edge ${t.right}px vs ${r.clientW}px)`);
+        }
+        if (view.contract && r.overflowingComponents && r.overflowingComponents.length) {
+          failures.push(`${page_path} ${theme} ${view.label}: component roots overflow unclipped: ${r.overflowingComponents.join(", ")}`);
         }
       }
       await ctx.close();

@@ -925,9 +925,13 @@ class ContourInputFull extends ContourBase {
       input.className = "c-input";
       input.type = this.getAttribute("type") || "text";
        input.placeholder = this.getAttribute("placeholder") || "";
-       const label = this.getAttribute("label");
+       let label = this.getAttribute("label");
+       if (!label) {
+         const field = this.closest("contour-field");
+         if (field) label = field.getAttribute("label");
+       }
        if (label) input.setAttribute("aria-label", label);
-       // else: keep any aria-label set by an ancestor (e.g. contour-field).
+       else if (!input.getAttribute("aria-label")) input.setAttribute("aria-label", "Input");
       if (this.hasAttribute("value")) input.value = this.getAttribute("value");
       if (this.hasAttribute("required")) input.setAttribute("required", "");
       else input.removeAttribute("required");

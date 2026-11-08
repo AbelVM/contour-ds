@@ -258,7 +258,7 @@ class ContourTable extends ContourBase {
               btn.className = "c-btn c-btn--ghost c-btn--sm";
               btn.type = "button";
               btn.textContent = this.getAttribute("retry") || "Retry";
-              btn.style.marginInlineStart = "var(--space-sm)";
+              btn.classList.add("u-ms-sm");
               btn.dataset.action = "retry";
               td.appendChild(btn);
             }
@@ -734,7 +734,7 @@ class ContourChart extends ContourBase {
           btn.type = "button";
           btn.textContent = this.getAttribute("retry") || "Retry";
           btn.dataset.action = "retry";
-          btn.style.marginBlockStart = "var(--space-sm)";
+          btn.classList.add("u-mbs-sm");
           err.appendChild(btn);
         }
         plot.appendChild(err);
@@ -755,7 +755,7 @@ class ContourChart extends ContourBase {
           sk.style.display = "block";
           sk.style.inlineSize = "100%";
           sk.style.blockSize = "0.6rem";
-          sk.style.marginBlockEnd = "var(--space-2xs)";
+          sk.classList.add("u-mbe-2xs");
           plot.appendChild(sk);
         }
         const axis = this.getAttribute("axis");
@@ -2076,9 +2076,11 @@ class ContourDonut extends ContourBase {
       // text list
       const list = document.createElement("div");
       list.className = "c-donut__list";
+      list.setAttribute("role", "list");
       items.forEach((it, i) => {
         const row = document.createElement("div");
         row.className = "c-donut__item";
+        row.setAttribute("role", "listitem");
         const sw = document.createElement("span");
         sw.className = "c-donut__swatch";
         sw.style.background = (typeof it === "object" && it.color) ? it.color : "var(--chart-" + ((i % 8) + 1) + ")";
@@ -2263,8 +2265,6 @@ class ContourPivot extends ContourBase {
       const toolbar = document.createElement("div");
       toolbar.className = "c-pivot__toolbar";
       toolbar.style.display = "flex";
-      toolbar.style.gap = "0.5rem";
-      toolbar.style.marginBlockEnd = "0.5rem";
       const filterInput = document.createElement("input");
       filterInput.type = "search";
       filterInput.className = "c-input c-pivot__filter";
@@ -2702,6 +2702,7 @@ class ContourMetricsFull extends ContourBase {
     static get properties() { return { items: { attribute: "items" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-metrics");
+      this.setAttribute("role", "list");
       wireStates(this);
       loadRemote(this, "items");
       if (renderStates(this, "metrics")) return;
@@ -2714,6 +2715,7 @@ class ContourMetricsFull extends ContourBase {
         parsed.forEach((it) => {
           const item = document.createElement("div");
           item.className = "c-metrics__item";
+          item.setAttribute("role", "listitem");
           const v = document.createElement("div");
           v.className = "c-metrics__value";
           v.textContent = (typeof it === "object" && it !== null) ? (it.value ?? it.v ?? "") : String(it);
@@ -2740,6 +2742,12 @@ class ContourLegend extends ContourBase {
     static get properties() { return { title: { attribute: "title" }, ramp: { attribute: "ramp" }, scale: { attribute: "scale" }, items: { attribute: "items" }, method: { attribute: "method" }, norm: { attribute: "norm" }, selectable: { attribute: "selectable", type: Boolean }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-legend");
+      const continuous = this.hasAttribute("continuous");
+      if (continuous || this.hasAttribute("selectable")) {
+        this.setAttribute("role", "group");
+      } else {
+        this.setAttribute("role", "list");
+      }
       wireStates(this);
       loadRemote(this, "items");
       if (renderStates(this, "legend")) return;
@@ -2771,7 +2779,11 @@ class ContourLegend extends ContourBase {
         try {
           const parsed = JSON.parse(items);
           const list = this.ensure(".c-legend__items", () => { const el = document.createElement("div"); el.className = "c-legend__items"; return el; });
-          list.setAttribute("role", "listbox");
+          if (this.hasAttribute("selectable")) {
+            list.setAttribute("role", "group");
+          } else {
+            list.setAttribute("role", "listbox");
+          }
           if (title) list.setAttribute("aria-label", title);
           list.innerHTML = "";
           parsed.forEach((it) => {
@@ -2781,8 +2793,8 @@ class ContourLegend extends ContourBase {
             item.className = "c-legend__item";
             item.setAttribute("tabindex", "-1");
             if (selectable) {
-              item.setAttribute("role", "option");
-              item.setAttribute("aria-selected", "true");
+              item.setAttribute("role", "button");
+              item.setAttribute("aria-pressed", "true");
               item.dataset.key = key;
             } else {
               item.setAttribute("role", "option");
@@ -3000,8 +3012,17 @@ class ContourLegend extends ContourBase {
       this.addEventListener("click", (e) => {
         const btn = e.target && e.target.closest ? e.target.closest(".c-legend__item") : null;
         if (!btn || !this.contains(btn)) return;
-        const selected = btn.getAttribute("aria-selected") !== "true";
-        btn.setAttribute("aria-selected", String(selected));
+        let selected;
+        const isPressed = btn.getAttribute("aria-pressed");
+        if (btn.getAttribute("aria-pressed") !== null) {
+          const pressed = btn.getAttribute("aria-pressed") !== "true";
+          btn.setAttribute("aria-pressed", String(pressed));
+          selected = pressed;
+        } else {
+          const selected2 = btn.getAttribute("aria-selected") !== "true";
+          btn.setAttribute("aria-selected", String(selected2));
+          selected = selected2;
+        }
         this.dispatchEvent(new CustomEvent("contour:legend-toggle", {
           detail: { label: btn.textContent.trim(), key: btn.dataset.key || btn.textContent.trim(), pressed: selected },
           bubbles: true,
@@ -3374,7 +3395,7 @@ class ContourCompare extends ContourBase {
       this.classList.add("c-compare");
       this.setAttribute("role", "group");
       this.setAttribute("aria-label", "Comparison");
-      this.style.padding = "var(--space-md)";
+
       wireStates(this);
       loadRemote(this, ["no", "text", "yes"]);
       if (renderStates(this, "compare")) return;

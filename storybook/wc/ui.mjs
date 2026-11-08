@@ -28,6 +28,8 @@ class ContourAvatar extends ContourBase {
         img.className = "c-avatar__img";
         img.src = src;
         img.alt = name || "";
+        img.loading = "lazy";
+        img.decoding = "async";
         this.appendChild(img);
       } else if (name) {
         const initials = name.split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2);
@@ -1114,7 +1116,7 @@ class ContourStylePanel extends ContourBase {
            body.appendChild(list);
          }
          // Apply/Revert buttons
-         const actions = document.createElement("div"); actions.className = "c-style-panel__actions";
+         const actions = document.createElement("div"); actions.className = "c-style-panel__actions c-btn-group";
          const applyBtn = document.createElement("button"); applyBtn.type = "button"; applyBtn.className = "c-btn c-btn--primary"; applyBtn.textContent = "Apply";
          const revertBtn = document.createElement("button"); revertBtn.type = "button"; revertBtn.className = "c-btn"; revertBtn.textContent = "Revert";
          actions.appendChild(applyBtn); actions.appendChild(revertBtn);
@@ -2189,6 +2191,8 @@ class ContourFileUpload extends ContourBase {
             const img = document.createElement("img");
             img.className = "c-file-upload__preview-thumb";
             img.alt = f.name;
+            img.loading = "lazy";
+            img.decoding = "async";
             try { img.src = URL.createObjectURL(f); } catch (e) {}
             item.appendChild(img);
           } else {
@@ -2218,6 +2222,7 @@ class ContourNotificationCenter extends ContourBase {
     static get properties() { return { count: { attribute: "count" }, items: { attribute: "items" }, color: { attribute: "color" } }; }
     render() {
       this.classList.add("c-notification-center");
+      this.setAttribute("role", "list");
       const btn = this.ensure(".c-notification-center__trigger", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-notification-center__trigger"; el.type = "button"; el.innerHTML = '<span class="c-notification-center__bullet" aria-hidden="true"></span>'; el.setAttribute("aria-haspopup", "dialog"); el.setAttribute("aria-expanded", "false"); return el; });
       const color = this.getAttribute("color");
       const bullet = btn.querySelector(".c-notification-center__bullet");
@@ -2321,7 +2326,7 @@ class ContourStepper extends ContourBase {
         li.textContent = typeof s === "string" ? s : (s.title || s.label || "");
         list.appendChild(li);
       });
-      const nav = this.ensure(".c-stepper__nav", () => { const el = document.createElement("div"); el.className = "c-stepper__nav"; return el; });
+      const nav = this.ensure(".c-stepper__nav", () => { const el = document.createElement("div"); el.className = "c-stepper__nav c-btn-group"; return el; });
       const prev = this.ensure(".c-stepper__prev", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-stepper__prev"; el.type = "button"; el.textContent = "Back"; return el; });
       const next = this.ensure(".c-stepper__next", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-stepper__next"; el.type = "button"; el.textContent = "Next"; return el; });
       if (!nav.contains(prev)) nav.appendChild(prev);
@@ -2719,7 +2724,7 @@ class ContourTour extends ContourBase {
       const step = parsed[current] || {};
       const tip = this.ensure(".c-tour__tip", () => { const el = document.createElement("div"); el.className = "c-tour__tip"; return el; });
       tip.textContent = typeof step === "string" ? step : (step.text || step.title || "");
-      const nav = this.ensure(".c-tour__nav", () => { const el = document.createElement("div"); el.className = "c-tour__nav"; return el; });
+      const nav = this.ensure(".c-tour__nav", () => { const el = document.createElement("div"); el.className = "c-tour__nav c-btn-group"; return el; });
       const next = this.ensure(".c-tour__next", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-tour__next"; el.type = "button"; el.textContent = "Next"; return el; });
       if (!nav.contains(next)) nav.appendChild(next);
     }

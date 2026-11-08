@@ -107,4 +107,4 @@ part of the component contract and nothing in an installed package defines them:
 
 ---
 
-Source `index.html` @ `10d181ea8e0eb659` · last committed 2026-11-04T18:12:14+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `1beb0033376e73f1` · last committed 2026-11-07T12:44:19+01:00 · no URL: the project is private until v1.0.
