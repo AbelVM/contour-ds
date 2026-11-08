@@ -61,6 +61,7 @@ class ContourSteps extends ContourBase {
     render() {
       this.classList.add("c-steps");
       this.setAttribute("role", "list");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Steps");
       wireStates(this);
       loadRemote(this, "steps");
       if (renderStates(this, "steps")) return;
@@ -649,6 +650,8 @@ class ContourPanel extends ContourBase {
     static get properties() { return { title: { attribute: "title" }, subtitle: { attribute: "subtitle" }, status: { attribute: "status" }, collapsible: { attribute: "collapsible", type: Boolean }, collapsed: { attribute: "collapsed", type: Boolean } }; }
     render() {
       this.classList.add("c-panel");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "region");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("title") || "Panel");
       const title = this.getAttribute("title");
       const subtitle = this.getAttribute("subtitle");
       const status = this.getAttribute("status");

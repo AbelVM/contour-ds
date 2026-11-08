@@ -417,6 +417,8 @@ class ContourTimeSlider extends ContourBase {
     static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" }, distance: { attribute: "distance" }, resolution: { attribute: "resolution" }, latitude: { attribute: "latitude" }, src: { attribute: "src" }, loop: { attribute: "loop", type: Boolean }, speed: { attribute: "speed" }, speeds: { attribute: "speeds" }, showLoop: { attribute: "show-loop", type: Boolean }, loopLabel: { attribute: "loop-label" }, currentTime: { attribute: "current-time" }, timeFormat: { attribute: "time-format" }, isPlaying: { attribute: "is-playing", type: Boolean }, playLabel: { attribute: "play-label" }, pauseLabel: { attribute: "pause-label" }, timeLabel: { attribute: "time-label" }, speedLabel: { attribute: "speed-label" } }; }
     render() {
       this.classList.add("c-time-slider");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "group");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("label") || "Time slider");
       const play = this.ensure(".c-time-slider__play", () => {
         const el = document.createElement("button");
         el.className = "c-time-slider__play";
@@ -807,6 +809,7 @@ class ContourCompassFull extends ContourBase {
     static get properties() { return { label: { attribute: "label" }, needle: { attribute: "needle" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-compass");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("label") || "Compass");
       const label = this.getAttribute("label") || (this._remoteData && this._remoteData.label);
       wireStates(this);
       loadRemote(this, "needle");

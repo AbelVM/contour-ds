@@ -7,6 +7,7 @@
 - Event emission added to ~9 components that previously had listeners but no `dispatchEvent` (R16-05): `contour-resizable` (`contour:resize`), `contour-error-boundary` (`contour:error`), `contour-header`/`contour-sidebar` (`contour:toggle`), `contour-tree`/`contour-breadcrumb`/`contour-toc` (`contour:select`), `contour-toolbar` (`contour:activate`), `contour-side-sheet` (`contour:open`/`contour:close`).
 - `contour-map-footer` brand selector migrated from `[data-map-footer-brand]` to `.c-map-footer__brand` for robustness (R16-55).
 - ARIA attributes added to `contour-draggable`, `contour-drop-indicator`, `contour-drag-handle`, and `contour-geocoder` input; `contour-activity` items upgraded from `role="listitem"` to `role="button"` with aria-label (R16-03).
+- ARIA attributes added to 21 more interactive components (R16-03): `contour-panel`, `contour-callout`, `contour-time-slider`, `contour-header`, `contour-breadcrumb`, `contour-version-banner`, `contour-palette-editor`, `contour-tags-input`, `contour-swatch`, `contour-steps`, `contour-dash-kpi-row`, `contour-timeline`, `contour-toast-host`, `contour-compass`, `contour-spatial-filter`, `contour-tooltip`, `contour-dropdown`, `contour-context-menu`, `contour-file-upload`, `contour-stepper`, `contour-virtual-list`.
 
 ### Fixed
 - Input (`contour-input`) now inherits its label from a parent `contour-field` or defaults to "Input", resolving a "form elements must have labels" a11y violation.

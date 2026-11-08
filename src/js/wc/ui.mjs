@@ -268,6 +268,7 @@ class ContourTooltip extends ContourBase {
     static get properties() { return { text: { attribute: "text" }, anchor: { attribute: "anchor" }, delay: { attribute: "delay", type: Number }, trigger: { attribute: "trigger" } }; }
     render() {
       this.classList.add("c-tooltip");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Tooltip");
       if (!this.hasAttribute("popover")) this.setAttribute("popover", "auto");
       if (!this.hasAttribute("role")) this.setAttribute("role", "tooltip");
       if (!this.id) this.id = contourId("tip");
@@ -479,6 +480,8 @@ class ContourVersionBannerFull extends ContourBase {
     static get properties() { return { message: { attribute: "message" }, link: { attribute: "link" }, href: { attribute: "href" }, dismissible: { attribute: "dismissible", type: Boolean } }; }
     render() {
       this.classList.add("c-version-banner");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "status");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("message") || "Version banner");
       Array.from(this.children).forEach((n) => n.remove());
       const message = this.getAttribute("message");
       if (message) {
@@ -894,6 +897,7 @@ class ContourDropdown extends ContourBase {
     static get properties() { return { label: { attribute: "label" }, items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-dropdown");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Dropdown");
       const btn = this.ensure(".c-dropdown__trigger", () => { const el = document.createElement("button"); el.className = "c-dropdown__trigger c-btn c-btn--sm"; el.type = "button"; return el; });
       btn.textContent = this.getAttribute("label") || "Menu";
       const menu = this.ensure(".c-dropdown__menu", () => { const el = document.createElement("div"); el.className = "c-dropdown__menu c-menu"; el.setAttribute("role", "menu"); el.hidden = true; return el; });
@@ -1407,6 +1411,8 @@ class ContourPaletteEditor extends ContourBase {
     static get properties() { return { colors: { attribute: "colors" } }; }
     render() {
       this.classList.add("c-palette-editor");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "group");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Palette editor");
       const colors = this.getAttribute("colors");
       Array.from(this.querySelectorAll(".c-palette-editor__swatch")).forEach((n) => n.remove());
       if (colors) {
@@ -2071,6 +2077,7 @@ class ContourContextMenu extends ContourBase {
     render() {
       this.classList.add("c-context-menu");
       if (!this.hasAttribute("role")) this.setAttribute("role", "menu");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Context menu");
       if (!this.hasAttribute("popover")) this.setAttribute("popover", "auto");
       if (!this.id) this.id = contourId("context-menu");
       const items = this.getAttribute("items");
@@ -2152,6 +2159,7 @@ class ContourFileUpload extends ContourBase {
     static get properties() { return { label: { attribute: "label" }, accept: { attribute: "accept" }, multiple: { attribute: "multiple", type: Boolean }, progress: { attribute: "progress" } }; }
     render() {
       this.classList.add("c-file-upload");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("label") || "File upload");
       const label = this.getAttribute("label") || "Drop files here or click to browse";
       const dz = this.ensure(".c-file-upload__dropzone", () => { const el = document.createElement("div"); el.className = "c-file-upload__dropzone"; el.setAttribute("role", "button"); el.tabIndex = 0; return el; });
       dz.textContent = label;
@@ -2317,6 +2325,8 @@ class ContourStepper extends ContourBase {
     static get properties() { return { steps: { attribute: "steps" }, current: { attribute: "current" } }; }
     render() {
       this.classList.add("c-stepper");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "group");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Stepper");
       const steps = this.getAttribute("steps");
       const current = Number(this.getAttribute("current") || 0);
       const list = this.ensure(".c-stepper__list", () => { const el = document.createElement("ol"); el.className = "c-stepper__list"; return el; });
@@ -2395,6 +2405,7 @@ class ContourVirtualList extends ContourBase {
     render() {
       this.classList.add("c-virtual-list");
       this.setAttribute("role", "list");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Virtual list");
       const scroller = this.ensure(".c-virtual-list__scroller", () => { const el = document.createElement("div"); el.className = "c-virtual-list__scroller"; return el; });
       scroller.setAttribute("role", "presentation");
       const horizontal = this.getAttribute("orientation") === "horizontal";
@@ -2743,6 +2754,8 @@ class ContourTagsInput extends ContourBase {
     static get properties() { return { value: { attribute: "value" }, placeholder: { attribute: "placeholder" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" } }; }
     render() {
       this.classList.add("c-tags-input");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "group");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Tags input");
       const input = this.ensure(".c-tags-input__input", () => { const el = document.createElement("input"); el.className = "c-input c-tags-input__input"; el.type = "text"; el.setAttribute("aria-label", "Add tag"); return el; });
       input.placeholder = this.getAttribute("placeholder") || "Add tag…";
       if (this.hasAttribute("disabled")) { input.setAttribute("disabled", ""); this.classList.add("is-disabled"); }
@@ -2955,6 +2968,8 @@ class ContourSwatch extends ContourBase {
     static get properties() { return { color: { attribute: "color" }, selected: { attribute: "selected", type: Boolean }, label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-swatch");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "button");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("label") || this.getAttribute("color") || "Swatch");
       const color = this.getAttribute("color") || "#000";
       this.style.setProperty("--swatch-color", color);
       if (this.hasAttribute("selected")) this.classList.add("is-selected");

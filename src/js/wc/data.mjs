@@ -3177,6 +3177,7 @@ class ContourTimeline extends ContourBase {
     render() {
       this.classList.add("c-timeline");
       this.setAttribute("role", "list");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Timeline");
       wireStates(this);
       loadRemote(this, "items");
       if (renderStates(this, "timeline")) return;

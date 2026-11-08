@@ -441,7 +441,7 @@ Based on the component list (222 classes) and prior completeness reviews, here i
 |---|---|---|---|---|---|---|---|
 | R16-01 | 🟡 | Add guide specimens for all 50 blocks without specimens | P1 | Very high | Low | L | Partial: inventory gate now reports 0 no-specimen and 0 templates-only. Added raw-class specimens for c-changelog, c-data-export, c-pull-to-refresh, c-split-map (§26). The "50 blocks" claim was stale — only 4 were actually missing. |
 | R16-02 | ⬜ | Wire empty/loading/error states into ~30 data/map components | P1 | High | Med | L | Use wireStates/renderStates/loadRemote helpers. |
-| R16-03 | 🟡 | Add ARIA attributes to ~20 interactive components | P1 | High | Low | M | Partial: ~12 components gained ARIA (drop-zone, map-area, scheme-toggle, style-switcher, shortcut, pull-to-refresh, accordion, expandable, data-export, shortcut-overlay, textarea, sidebar). Remaining ~8 need audit. |
+| R16-03 | 🟡 | Add ARIA attributes to ~20 interactive components | P1 | High | Low | M | Partial: ~33 components gained ARIA across two batches (drop-zone, map-area, scheme-toggle, style-switcher, shortcut, pull-to-refresh, accordion, expandable, data-export, shortcut-overlay, textarea, sidebar, draggable, drop-indicator, drag-handle, geocoder input, activity items, panel, callout, time-slider, header, breadcrumb, version-banner, palette-editor, tags-input, swatch, steps, dash-kpi-row, timeline, toast-host, compass, spatial-filter, tooltip, dropdown, context-menu, file-upload, stepper, virtual-list). Remaining ~0-3 need audit. |
 | R16-04 | 🟡 | Add keyboard navigation to ~15 components | P1 | High | Med | M | Partial: added keyboard nav to style-switcher, scheme-toggle, dash-kpi-row, showcase media, affordance. Shared `navKey()` helper extracted to core.mjs for reuse across all WC files. Remaining composite components need audit. |
 | R16-05 | 🟡 | Add event emission to ~10 components | P1 | High | Low | M | Partial: ~9 components gained events (resizable, error-boundary, header/sidebar toggle, tree/breadcrumb/toc select, toolbar activate, side-sheet open/close). |
 | R16-06 | ✅ | Add form association to ~8 form controls | P1 | High | Med | M | Done: 22 form-associated components (16 original + color-picker, date-picker, time-picker, number-field, file-upload, tags-input). |
@@ -482,7 +482,7 @@ Based on the component list (222 classes) and prior completeness reviews, here i
 | R16-41 | ⬜ | Fix 320px reflow on guide | P3 | Low | Low | S | BR3-1. |
 | R16-42 | ✅ | Fix README (tarball ships src/, map.html) | P2 | Med | Low | S | README already states src/ is NOT in the tarball and map.html is a CSS demo; claim was stale. |
 | R16-43 | ✅ | Add check-wc/doctor/gen-llms to CI | P2 | Med | Low | S | check-wc and doctor already in CI; gen-llms already wired into build.mjs. |
-| R16-44 | ⬜ | Add CHANGELOG entry for expansion | P2 | Med | Low | S | BY-12. |
+| R16-44 | ✅ | Add CHANGELOG entry for expansion | P2 | Med | Low | S | CHANGELOG 1.8.0 Added section updated with ARIA batch (33 components) and prior batches. |
 | R16-45 | ✅ | Wire gen-llms into build | P3 | Low | Low | S | Already wired (build.mjs lines 569-583). |
 | R16-46 | ✅ | Update STORYBOOK.md measured counts | P3 | Low | Low | S | Already 50 story files / 587 stories (matches coverage report). |
 | R16-47 | ⬜ | Classify all components by maturity in Storybook | P3 | Low | Low | M | 175 unclassified. |

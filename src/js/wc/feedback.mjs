@@ -288,6 +288,8 @@ class ContourCallout extends ContourBase {
     static get properties() { return { variant: { attribute: "variant" }, title: { attribute: "title" }, icon: { attribute: "icon" }, closable: { attribute: "closable", type: Boolean } }; }
     render() {
       this.classList.add("c-callout");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "note");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("title") || "Callout");
       Array.from(this.classList).forEach((c) => { if (c.startsWith("c-callout--")) this.classList.remove(c); });
       const variant = this.getAttribute("variant");
       if (variant) this.classList.add("c-callout--" + variant);
@@ -839,6 +841,7 @@ class ContourToastHost extends ContourBase {
     render() {
       this.classList.add("c-toast-host");
       if (!this.hasAttribute("role")) this.setAttribute("role", "status");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Toast host");
       if (!this.hasAttribute("aria-live")) this.setAttribute("aria-live", "polite");
       if (!this.hasAttribute("aria-atomic")) this.setAttribute("aria-atomic", "true");
     }

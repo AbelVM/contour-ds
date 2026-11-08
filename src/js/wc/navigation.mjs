@@ -232,6 +232,8 @@ class ContourHeader extends ContourBase {
     static get properties() { return { brand: { attribute: "brand" }, links: { attribute: "links" } }; }
     render() {
       this.classList.add("c-header");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "banner");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("brand") || "Header");
       const brand = this.getAttribute("brand");
       const links = this.getAttribute("links");
       const inner = this.ensure(".c-header__inner", () => { const el = document.createElement("div"); el.className = "container c-header__inner"; return el; });
@@ -748,6 +750,8 @@ class ContourBreadcrumb extends ContourBase {
     static get properties() { return { items: { attribute: "items" }, separator: { attribute: "separator" }, max: { attribute: "max", type: Number }, src: { attribute: "src" } } };
     render() {
       this.classList.add("c-breadcrumb");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "navigation");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Breadcrumb");
       wireStates(this);
       loadRemote(this, "items");
       if (renderStates(this, "breadcrumb")) return;
@@ -1590,6 +1594,7 @@ class ContourSpatialFilter extends ContourBase {
     static get properties() { return { modes: { attribute: "modes" }, mode: { attribute: "mode" }, active: { attribute: "active" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-spatial-filter");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Spatial filter");
       wireStates(this);
       loadRemote(this, []);
       if (renderStates(this, "spatial-filter")) return;

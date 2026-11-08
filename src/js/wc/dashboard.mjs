@@ -123,6 +123,7 @@ class ContourDashKpiRow extends ContourBase {
     render() {
       this.classList.add("c-dash-kpi-row");
       this.setAttribute("role", "group");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "KPI row");
       // Drop previously generated kpis so re-render doesn't stack.
       Array.from(this.querySelectorAll("contour-kpi")).forEach((n) => n.remove());
       const items = this.getAttribute("items");
