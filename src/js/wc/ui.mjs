@@ -1,4 +1,4 @@
-import { ContourBase, define, contourId, onDispose } from './core.mjs';
+import { ContourBase, define, contourId, onDispose, navKey } from './core.mjs';
 import { wireRemovable } from './behaviours.mjs';
 /**
  * Avatar: a circular avatar with initials (from `name`) or an image (`src`),
@@ -957,18 +957,12 @@ class ContourDropdown extends ContourBase {
       };
       document.addEventListener("click", docClick);
       onDispose(this, () => document.removeEventListener("click", docClick));
-      const keyHandler = (e) => {
+       const keyHandler = (e) => {
         const m = menu(); const b = btn();
         if (e.key === "Escape" && m && !m.hidden) { e.preventDefault(); m.hidden = true; if (b) { b.setAttribute("aria-expanded", "false"); try { b.focus(); } catch (err) {} } return; }
         if (!m || m.hidden) return;
         const items = Array.from(m.querySelectorAll(".c-menu__item"));
-        const active = document.activeElement;
-        const idx = items.indexOf(active);
-        if (e.key === "ArrowDown") { e.preventDefault(); const next = items[Math.min(items.length - 1, idx + 1)] || items[0]; if (next) try { next.focus(); } catch (err) {} }
-        else if (e.key === "ArrowUp") { e.preventDefault(); const prev = items[Math.max(0, idx - 1)] || items[items.length - 1]; if (prev) try { prev.focus(); } catch (err) {} }
-        else if (e.key === "Enter" || e.key === " ") {
-          if (active && items.includes(active)) { e.preventDefault(); active.click(); }
-        }
+        navKey(e, items, { wrap: true, enter: false, onKey: (k) => { if (k === "Enter" || k === " ") document.activeElement.click(); } });
       };
       document.addEventListener("keydown", keyHandler);
       onDispose(this, () => document.removeEventListener("keydown", keyHandler));
@@ -1041,24 +1035,8 @@ class ContourStyleSwitcher extends ContourBase {
         }
       });
       this.addEventListener("keydown", (e) => {
-        const btn = e.target && e.target.closest ? e.target.closest(".c-style-switcher__option") : null;
-        if (!btn || !this.contains(btn)) return;
         const opts = Array.from(this.querySelectorAll(".c-style-switcher__option"));
-        const idx = opts.indexOf(btn);
-        if (idx < 0) return;
-        let next = -1;
-        if (e.key === "ArrowRight" || e.key === "ArrowDown") next = (idx + 1) % opts.length;
-        else if (e.key === "ArrowLeft" || e.key === "ArrowUp") next = (idx - 1 + opts.length) % opts.length;
-        else if (e.key === "Home") next = 0;
-        else if (e.key === "End") next = opts.length - 1;
-        if (next >= 0) {
-          e.preventDefault();
-          try { opts[next].focus(); } catch (err) { /* detached */ }
-        }
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: btn.dataset.value } }));
-        }
+        navKey(e, opts, { onKey: (k) => { if (k === "Enter" || k === " ") { const btn = document.activeElement; if (btn && btn.dataset.value != null) this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: btn.dataset.value } })); } } });
       });
     }
   }
@@ -1457,11 +1435,7 @@ class ContourPaletteEditor extends ContourBase {
       });
       this.addEventListener("keydown", (e) => {
         const swatches = Array.from(this.querySelectorAll(".c-palette-editor__swatch"));
-        const active = document.activeElement;
-        const idx = swatches.indexOf(active);
-        if (e.key === "ArrowRight") { e.preventDefault(); const next = swatches[Math.min(swatches.length - 1, idx + 1)] || swatches[0]; if (next) try { next.focus(); } catch (err) {} }
-        else if (e.key === "ArrowLeft") { e.preventDefault(); const prev = swatches[Math.max(0, idx - 1)] || swatches[swatches.length - 1]; if (prev) try { prev.focus(); } catch (err) {} }
-        else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); if (active && active.classList.contains("c-palette-editor__swatch")) active.click(); }
+        navKey(e, swatches, { wrap: true, enter: true, onKey: () => { if (document.activeElement.classList.contains("c-palette-editor__swatch")) document.activeElement.click(); } });
       });
     }
   }
@@ -1781,22 +1755,7 @@ class ContourRating extends ContourBase {
       });
       this.addEventListener("keydown", (e) => {
         const stars = Array.from(this.querySelectorAll(".c-rating__star"));
-        const active = document.activeElement;
-        const idx = stars.indexOf(active);
-        if (e.key === "ArrowRight" || e.key === "ArrowUp") {
-          e.preventDefault();
-          const next = stars[Math.min(stars.length - 1, idx + 1)] || stars[0];
-          if (next) { try { next.focus(); } catch (err) {} }
-        } else if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
-          e.preventDefault();
-          const prev = stars[Math.max(0, idx - 1)] || stars[stars.length - 1];
-          if (prev) { try { prev.focus(); } catch (err) {} }
-        } else if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          if (active && active.classList.contains("c-rating__star")) {
-            this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: parseInt(active.dataset.value, 10) } }));
-          }
-        }
+        navKey(e, stars, { wrap: false, onKey: () => { const s = document.activeElement; if (s && s.classList.contains("c-rating__star")) this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: parseInt(s.dataset.value, 10) } })); } });
       });
     }
   }

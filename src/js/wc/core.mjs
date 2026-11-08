@@ -1024,6 +1024,29 @@
     catch (e) { return value; }
   }
 
+  // Shared keyboard navigation for roving-tabindex patterns.
+  // `items`: array of focusable elements, `e`: KeyboardEvent.
+  // Options: `{ wrap (default true), enter (default true), homeEnd (false),
+  //           onKey(key, idx, item) }` — return truthy to preventDefault.
+  /** Navigate a roving-tabindex group with arrow keys, Home/End, Enter/Space. */
+  export function navKey(e, items, { wrap = true, enter = true, homeEnd = false, onKey } = {}) {
+    const idx = items.indexOf(document.activeElement);
+    if (idx < 0) return;
+    let next = -1;
+    if (e.key === "ArrowRight" || e.key === "ArrowDown") next = wrap ? (idx + 1) % items.length : Math.min(idx + 1, items.length - 1);
+    else if (e.key === "ArrowLeft" || e.key === "ArrowUp") next = wrap ? (idx - 1 + items.length) % items.length : Math.max(0, idx - 1);
+    else if ((homeEnd || wrap) && e.key === "Home") next = 0;
+    else if ((homeEnd || wrap) && e.key === "End") next = items.length - 1;
+    if (next >= 0) {
+      e.preventDefault();
+      try { items[next].focus(); } catch (_) {}
+      if (onKey) onKey(e.key, idx, items[idx]);
+    } else if ((enter || wrap) && (e.key === "Enter" || e.key === " ")) {
+      e.preventDefault();
+      if (onKey) onKey(e.key, idx, items[idx]);
+    }
+  }
+
   // Spatial maths (BY-23): pure functions on the host's own attributes.
   // Haversine distance in meters between two lat/lon points.
   /** Return the great-circle distance between two latitude/longitude points. */
