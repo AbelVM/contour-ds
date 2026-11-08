@@ -70,8 +70,9 @@ class ContourActivity extends ContourBase {
           parsed.forEach((it, i) => {
             const item = document.createElement("div");
             item.className = "c-activity__item";
-            item.setAttribute("role", "listitem");
-            item.tabIndex = -1;
+            item.setAttribute("role", "button");
+            item.setAttribute("tabindex", "-1");
+            if (!item.hasAttribute("aria-label")) item.setAttribute("aria-label", text.textContent);
             const dot = document.createElement("span");
             dot.className = "c-activity__dot c-activity__dot--" + (it.variant || "primary");
             dot.setAttribute("aria-hidden", "true");

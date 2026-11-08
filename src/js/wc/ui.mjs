@@ -2507,7 +2507,7 @@ class ContourVirtualList extends ContourBase {
       this.addEventListener("keydown", (e) => {
         const rows = Array.from(this.querySelectorAll(".c-virtual-list__item"));
         if (!rows.length) return;
-        navKey(e, rows, { wrap: false, homeEnd: true, onNavigate: (i) => rows.forEach((r, j) => r.setAttribute("tabindex", j === i ? "0" : "-1")), onKey: () => { if (e.key === "Enter" || e.key === " ") const i = Number(document.activeElement.dataset.index); this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index: i, value: document.activeElement.textContent } })); } });
+        navKey(e, rows, { wrap: false, homeEnd: true, onNavigate: (i) => rows.forEach((r, j) => r.setAttribute("tabindex", j === i ? "0" : "-1")), onKey: () => { if (e.key === "Enter" || e.key === " ") { const i = Number(document.activeElement.dataset.index); this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index: i, value: document.activeElement.textContent } })); } } });
       });
       this.addEventListener("click", (e) => {
         const row = e.target && e.target.closest ? e.target.closest(".c-virtual-list__item") : null;

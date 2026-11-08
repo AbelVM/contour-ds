@@ -118,7 +118,6 @@ class ContourSteps extends ContourBase {
           if (!items.length) return;
           navKey(e, items, { wrap: false, homeEnd: true, rtl: isRtl(this), onNavigate: (i) => { this._current = i; items.forEach((it, j) => { it.setAttribute("aria-current", j === i ? "step" : ""); it.tabIndex = j === i ? 0 : -1; }); const title = items[i].querySelector(".c-steps__title")?.textContent || ""; this.dispatchEvent(new CustomEvent("contour:step-change", { bubbles: true, composed: true, detail: { index: i, title } })); }, onKey: () => { if (e.key === "Enter" || e.key === " ") { const idx = items.indexOf(document.activeElement); const title = document.activeElement.querySelector(".c-steps__title")?.textContent || ""; this.dispatchEvent(new CustomEvent("contour:step-activate", { bubbles: true, composed: true, detail: { index: idx, title } })); } } });
         });
-        });
         this.addEventListener("click", (e) => {
           const item = e.target && e.target.closest ? e.target.closest(".c-steps__item") : null;
           if (!item || !this.contains(item)) return;
@@ -900,6 +899,7 @@ class ContourGeocoder extends ContourBase {
         inp = document.createElement("input");
         inp.type = "search";
         inp.className = "c-geocoder__input";
+        if (!inp.hasAttribute("aria-label")) inp.setAttribute("aria-label", this.getAttribute("placeholder") || "Search location");
         this.appendChild(inp);
       }
       const ph = this.getAttribute("placeholder");

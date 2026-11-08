@@ -1057,8 +1057,14 @@
   // Resolve RTL direction from element or document. Returns true for RTL layout.
   /** Check whether the given element uses right-to-left text direction. */
   export function isRtl(el) {
-    const d = el && el.getAttribute ? (el.getAttribute("dir") || "") : "";
-    return d.toLowerCase() === "rtl" || (!d && typeof document !== "undefined" && document.documentElement.getAttribute("dir") === "rtl");
+    let node = el;
+    while (node && node.nodeType === 1) {
+      const d = node.getAttribute && node.getAttribute("dir");
+      if (d) return d.toLowerCase() === "rtl";
+      node = node.parentElement;
+    }
+    try { return (typeof document !== "undefined" && (document.documentElement.getAttribute("dir") || "").toLowerCase() === "rtl"); }
+    catch (e) { return false; }
   }
 
   // Spatial maths (BY-23): pure functions on the host's own attributes.

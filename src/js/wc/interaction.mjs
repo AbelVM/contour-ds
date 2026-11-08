@@ -212,6 +212,7 @@ class ContourDraggable extends ContourBase {
       if (!this.hasAttribute("role")) this.setAttribute("role", "button");
       if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
       if (!this.hasAttribute("draggable")) this.setAttribute("draggable", "true");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("label") || "Draggable item");
     }
     // The value a drop partner receives: the authored `value` attribute, else
     // the `label`, else the element's own text. One shape, so a consumer's
@@ -261,6 +262,7 @@ class ContourDragHandle extends ContourBase {
       this.classList.add("c-drag-handle");
       if (!this.hasAttribute("role")) this.setAttribute("role", "separator");
       if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("label") || "Drag handle");
       if (!this.hasAttribute("aria-orientation")) this.setAttribute("aria-orientation", "horizontal");
     }
     enhance() {
@@ -285,6 +287,7 @@ class ContourDropIndicator extends ContourBase {
     render() {
       this.classList.add("c-drop-indicator");
       this.classList.add("c-drop-indicator--visible");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "presentation");
       Array.from(this.childNodes).forEach((n) => { if (n.nodeType === Node.TEXT_NODE) n.remove(); else if (n.nodeType === Node.ELEMENT_NODE && n.tagName === "SPAN") n.remove(); });
       const label = this.getAttribute("label");
       if (label) {
