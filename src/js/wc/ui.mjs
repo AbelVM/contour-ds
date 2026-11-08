@@ -2614,8 +2614,13 @@ class ContourCommandPalette extends ContourBase {
       // focus return on close
       let lastFocus = null;
       this.addEventListener("beforetoggle", (e) => {
-        if (e.newState === "open") lastFocus = document.activeElement;
-        else if (lastFocus && typeof lastFocus.focus === "function") { try { lastFocus.focus(); } catch (err) {} }
+        if (e.newState === "open") {
+          lastFocus = document.activeElement;
+          this.dispatchEvent(new CustomEvent("contour:open", { bubbles: true, composed: true }));
+        } else if (lastFocus && typeof lastFocus.focus === "function") {
+          this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true }));
+          try { lastFocus.focus(); } catch (err) {}
+        }
       });
       // Escape via popover light dismiss is handled by keydown above; also close on outside handled by popover.
       setActive(0);
