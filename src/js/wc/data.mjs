@@ -1,4 +1,4 @@
-import { ContourBase, define, onDispose, formatValue, contourId, navKey } from './core.mjs';
+import { ContourBase, define, onDispose, formatValue, contourId, navKey, isRtl } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates, remoteInvalidate, watchViewport } from './states.mjs';
 import { donutSlices, barRects, smoothPath, polylinePoints } from './svg.mjs';
 /**
@@ -1862,18 +1862,28 @@ class ContourCategory extends ContourBase {
           this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index: idx, label: item.querySelector(".c-category__label") ? item.querySelector(".c-category__label").textContent : item.textContent.trim() } }));
           return;
         }
-        let next = -1;
-        const rtl = (this.getAttribute("dir") || document.documentElement.getAttribute("dir") || "").toLowerCase() === "rtl";
-        if (e.key === "ArrowDown") next = Math.min(idx + 1, all.length - 1);
-        else if (e.key === "ArrowUp") next = Math.max(idx - 1, 0);
-        else if (e.key === "ArrowRight") next = rtl ? Math.max(idx - 1, 0) : Math.min(idx + 1, all.length - 1);
-        else if (e.key === "ArrowLeft") next = rtl ? Math.min(idx + 1, all.length - 1) : Math.max(idx - 1, 0);
-        else if (e.key === "Home") next = 0;
-        else if (e.key === "End") next = all.length - 1;
-        if (next < 0 || next === idx) return;
-        e.preventDefault();
-        all.forEach((c, i) => c.setAttribute("tabindex", i === next ? "0" : "-1"));
-        try { all[next].focus(); } catch (err) {}
+        navKey(e, all, {
+          wrap: false,
+          homeEnd: true,
+          rtl: isRtl(this),
+          onNavigate: (i) => all.forEach((it, j) => it.setAttribute("tabindex", j === i ? "0" : "-1")),
+          onKey: () => {
+            if (e.key === "Enter" || e.key === " ") {
+              const idx2 = all.indexOf(document.activeElement);
+              all.forEach((o, j) => o.setAttribute("aria-selected", j === idx2 ? "true" : "false"));
+              this.dispatchEvent(new CustomEvent("contour:select", {
+                bubbles: true,
+                composed: true,
+                detail: {
+                  index: idx2,
+                  label: document.activeElement.querySelector(".c-category__label")
+                    ? document.activeElement.querySelector(".c-category__label").textContent
+                    : document.activeElement.textContent.trim()
+                }
+              }));
+            }
+          }
+        });
       });
     }
   }
