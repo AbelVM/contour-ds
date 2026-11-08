@@ -323,6 +323,48 @@ const wcEsm = `${wcEsmBody}\n`;
 writeFileSync(join(dist, "contour-wc.esm.js"), wcEsm, "utf-8");
 writeFileSync(join(dist, "contour-wc.esm.min.js"), `${minifyJs(wcEsm)}\n`, "utf-8");
 
+// -- Web components (per-family ESM bundles, tree-shakeable) --------------
+// Each family bundle = core infrastructure + that family's components,
+// so a consumer who doesn't use a bundler can load just one family instead
+// of the whole 600 kB monolith. Core is duplicated in each family bundle
+// so each is self-contained; the monolithic contour-wc.esm.min.js above
+// remains the full bundle for consumers who want everything.
+const WC_CORE = ["core.mjs", "svg.mjs", "behaviours.mjs", "states.mjs", "registration.mjs", "shadow.mjs"];
+
+const WC_FAMILIES = {
+  navigation: ["navigation.mjs"],
+  data: ["data.mjs"],
+  map: ["map.mjs"],
+  forms: ["forms.mjs"],
+  ui: ["ui.mjs"],
+  content: ["content.mjs"],
+  dashboard: ["dashboard.mjs"],
+  docs: ["docs.mjs"],
+  feedback: ["feedback.mjs"],
+  interaction: ["interaction.mjs"],
+  layout: ["layout.mjs"],
+  misc: ["misc.mjs"],
+};
+
+// Verify the family map covers every fragment exactly once.
+const allFamilyFiles = [...WC_CORE, ...Object.values(WC_FAMILIES).flat()].sort();
+if (JSON.stringify(allFamilyFiles) !== JSON.stringify([...wcFragNames].sort())) {
+  console.error("build: WC_FAMILIES does not cover wcFragNames exactly once:");
+  console.error("  missing:", wcFragNames.filter((f) => !allFamilyFiles.includes(f)));
+  console.error("  extra:", allFamilyFiles.filter((f) => !wcFragNames.includes(f)));
+  process.exit(1);
+}
+
+const familySizes = {};
+for (const [family, files] of Object.entries(WC_FAMILIES)) {
+  const familyBody = [...WC_CORE, ...files].map((f) => stripWcEsm(readFileSync(join(root, "src/js/wc", f), "utf-8"))).join("\n");
+  const familyEsm = `${familyBody}\n`;
+  writeFileSync(join(dist, `contour-wc-${family}.esm.js`), familyEsm, "utf-8");
+  const familyMin = `${minifyJs(familyEsm)}\n`;
+  writeFileSync(join(dist, `contour-wc-${family}.esm.min.js`), familyMin, "utf-8");
+  familySizes[`contour-wc-${family}.esm.min.js`] = Buffer.byteLength(familyMin, "utf8");
+}
+
 // -- TypeScript definitions ------------------------------------------------
 const { inventory: invFn } = await import("./lib/inventory.mjs");
 const inv = invFn();
@@ -549,6 +591,7 @@ const manifest = {
       ["contour.css", "contour.min.css", "contour.js", "contour.min.js", "contour.tokens.json", "contour.themes.json", "contour.components.json", "docs/index.json", "registry/registry.json", "svg/contour-mark.svg"].map((f) => [f, statSync(join(dist, f)).size]),
     ),
     ...surfaceSizes,
+    ...familySizes,
   },
 };
 writeFileSync(join(dist, "build-manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`, "utf-8");
@@ -564,6 +607,10 @@ console.log(`  contour.min.js      ${size(join(dist, "contour.min.js"))}`);
 console.log(`  contour.tokens.json ${size(join(dist, "contour.tokens.json"))}`);
 console.log(`  contour.themes.json ${size(join(dist, "contour.themes.json"))}`);
 console.log(`  svg/contour-mark.svg ${size(join(dist, "svg/contour-mark.svg"))}`);
+console.log(`  contour-wc.esm.min.js ${size(join(dist, "contour-wc.esm.min.js"))}`);
+for (const family of Object.keys(WC_FAMILIES)) {
+  console.log(`  contour-wc-${family}.esm.min.js ${size(join(dist, `contour-wc-${family}.esm.min.js`))}`);
+}
 // The export accounting, printed from the build rather than from a note: every
 // declared token must land on one side of this sum or the export is partial.
 // Regenerate llms-full.txt and .well-known/llms.txt from dist/docs/ (C-49).

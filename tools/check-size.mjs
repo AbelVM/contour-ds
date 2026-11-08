@@ -122,6 +122,20 @@ const BUDGETS = {
   "surfaces/contour-landing.min.css": 169 * 1024,  // raised 2026-11-08: +forced-colors form controls; measured 168.1 kB
   "contour.esm.min.js": 39 * 1024,
   "contour-wc.esm.min.js": 609 * 1024,  // raised 2026-11-08: +event emission (batch); measured 608.3 kB
+  // Per-family wc bundles (R16-60): each = core infrastructure + one family's
+  // components, so a consumer who doesn't use a bundler can load just one family.
+  "contour-wc-navigation.esm.min.js": 146 * 1024,  // measured 145.3 kB
+  "contour-wc-data.esm.min.js": 213 * 1024,  // measured 212.5 kB
+  "contour-wc-map.esm.min.js": 135 * 1024,  // measured 134.0 kB
+  "contour-wc-forms.esm.min.js": 129 * 1024,  // measured 128.2 kB
+  "contour-wc-ui.esm.min.js": 227 * 1024,  // measured 226.2 kB
+  "contour-wc-content.esm.min.js": 124 * 1024,  // measured 120.4 kB
+  "contour-wc-dashboard.esm.min.js": 96 * 1024,  // measured 93.2 kB
+  "contour-wc-docs.esm.min.js": 97 * 1024,  // measured 96.7 kB
+  "contour-wc-feedback.esm.min.js": 124 * 1024,  // measured 120.5 kB
+  "contour-wc-interaction.esm.min.js": 108 * 1024,  // measured 107.0 kB
+  "contour-wc-layout.esm.min.js": 96 * 1024,  // measured 93.2 kB
+  "contour-wc-misc.esm.min.js": 96 * 1024,  // measured 95.4 kB
 };
 
 const kB = (n) => `${(n / 1024).toFixed(1)} kB`;
@@ -247,6 +261,30 @@ const NAMED_UNBUDGETED = {
   "contour-wc.min.js": "optional progressive enhancement; not loaded by the guide",
   "contour.esm.js": "unminified twin of contour.esm.min.js",
   "contour-wc.esm.js": "unminified twin of contour-wc.esm.min.js",
+  "contour-wc-navigation.esm.js": "unminified twin of contour-wc-navigation.esm.min.js",
+  "contour-wc-data.esm.js": "unminified twin of contour-wc-data.esm.min.js",
+  "contour-wc-map.esm.js": "unminified twin of contour-wc-map.esm.min.js",
+  "contour-wc-forms.esm.js": "unminified twin of contour-wc-forms.esm.min.js",
+  "contour-wc-ui.esm.js": "unminified twin of contour-wc-ui.esm.min.js",
+  "contour-wc-content.esm.js": "unminified twin of contour-wc-content.esm.min.js",
+  "contour-wc-dashboard.esm.js": "unminified twin of contour-wc-dashboard.esm.min.js",
+  "contour-wc-docs.esm.js": "unminified twin of contour-wc-docs.esm.min.js",
+  "contour-wc-feedback.esm.js": "unminified twin of contour-wc-feedback.esm.min.js",
+  "contour-wc-interaction.esm.js": "unminified twin of contour-wc-interaction.esm.min.js",
+  "contour-wc-layout.esm.js": "unminified twin of contour-wc-layout.esm.min.js",
+  "contour-wc-misc.esm.js": "unminified twin of contour-wc-misc.esm.min.js",
+  "contour-wc-navigation.esm.min.js": "per-family wc bundle: navigation components + core",
+  "contour-wc-data.esm.min.js": "per-family wc bundle: data components + core",
+  "contour-wc-map.esm.min.js": "per-family wc bundle: map components + core",
+  "contour-wc-forms.esm.min.js": "per-family wc bundle: form controls + core",
+  "contour-wc-ui.esm.min.js": "per-family wc bundle: UI components + core",
+  "contour-wc-content.esm.min.js": "per-family wc bundle: content components + core",
+  "contour-wc-dashboard.esm.min.js": "per-family wc bundle: dashboard widgets + core",
+  "contour-wc-docs.esm.min.js": "per-family wc bundle: documentation components + core",
+  "contour-wc-feedback.esm.min.js": "per-family wc bundle: feedback components + core",
+  "contour-wc-interaction.esm.min.js": "per-family wc bundle: interaction components + core",
+  "contour-wc-layout.esm.min.js": "per-family wc bundle: layout primitives + core",
+  "contour-wc-misc.esm.min.js": "per-family wc bundle: miscellaneous components + core",
   "wc": "ESM modules preserved for tree-shaking; presence is check-dist's job",
   "build-manifest.json": "this gate's own input",
   "map-chrome-contract.json": "the vendor-control contract; read by check-dist",
