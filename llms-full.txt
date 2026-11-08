@@ -27,7 +27,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `598e4b16df77a264` · last committed 2026-11-08T13:14:50+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `f1c14818da763825` · last committed 2026-11-08T22:40:58+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -78,7 +78,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `598e4b16df77a264` · last committed 2026-11-08T13:14:50+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `f1c14818da763825` · last committed 2026-11-08T22:40:58+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -128,7 +128,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `598e4b16df77a264` · last committed 2026-11-08T13:14:50+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `f1c14818da763825` · last committed 2026-11-08T22:40:58+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -165,7 +165,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `598e4b16df77a264` · last committed 2026-11-08T13:14:50+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `f1c14818da763825` · last committed 2026-11-08T22:40:58+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -209,7 +209,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `598e4b16df77a264` · last committed 2026-11-08T13:14:50+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `f1c14818da763825` · last committed 2026-11-08T22:40:58+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -265,7 +265,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `598e4b16df77a264` · last committed 2026-11-08T13:14:50+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `f1c14818da763825` · last committed 2026-11-08T22:40:58+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -290,12 +290,13 @@ The same blocks as contour-* elements live in §23.
 
 ## Blocks documented here
 
-8 block(s). Their facts live in `../contour.components.json`;
+9 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
 - `.c-btn`
 - `.c-btn-group`
+- `.c-cluster`
 - `.c-expandable`
 - `.c-icon-badge`
 - `.c-kbd`
@@ -305,7 +306,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `598e4b16df77a264` · last committed 2026-11-08T13:14:50+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `f1c14818da763825` · last committed 2026-11-08T22:40:58+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -383,7 +384,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `598e4b16df77a264` · last committed 2026-11-08T13:14:50+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `f1c14818da763825` · last committed 2026-11-08T22:40:58+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -435,7 +436,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `598e4b16df77a264` · last committed 2026-11-08T13:14:50+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `f1c14818da763825` · last committed 2026-11-08T22:40:58+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -513,7 +514,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `598e4b16df77a264` · last committed 2026-11-08T13:14:50+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `f1c14818da763825` · last committed 2026-11-08T22:40:58+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -579,7 +580,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `598e4b16df77a264` · last committed 2026-11-08T13:14:50+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `f1c14818da763825` · last committed 2026-11-08T22:40:58+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -660,7 +661,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `598e4b16df77a264` · last committed 2026-11-08T13:14:50+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `f1c14818da763825` · last committed 2026-11-08T22:40:58+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -749,7 +750,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `598e4b16df77a264` · last committed 2026-11-08T13:14:50+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `f1c14818da763825` · last committed 2026-11-08T22:40:58+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -851,7 +852,7 @@ A migration aid: the names a consumer may already know, and the Contour class th
 
 ## Blocks documented here
 
-38 block(s). Their facts live in `../contour.components.json`;
+39 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
@@ -867,6 +868,7 @@ starts disagreeing with itself.
 - `.c-catchment`
 - `.c-category`
 - `.c-chart`
+- `.c-cluster`
 - `.c-contour-plot`
 - `.c-data-grid`
 - `.c-data-table`
@@ -896,7 +898,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `598e4b16df77a264` · last committed 2026-11-08T13:14:50+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `f1c14818da763825` · last committed 2026-11-08T22:40:58+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -967,7 +969,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `598e4b16df77a264` · last committed 2026-11-08T13:14:50+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `f1c14818da763825` · last committed 2026-11-08T22:40:58+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1079,7 +1081,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `598e4b16df77a264` · last committed 2026-11-08T13:14:50+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `f1c14818da763825` · last committed 2026-11-08T22:40:58+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1155,7 +1157,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `598e4b16df77a264` · last committed 2026-11-08T13:14:50+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `f1c14818da763825` · last committed 2026-11-08T22:40:58+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1231,7 +1233,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `598e4b16df77a264` · last committed 2026-11-08T13:14:50+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `f1c14818da763825` · last committed 2026-11-08T22:40:58+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1426,7 +1428,7 @@ part of the component contract and nothing in an installed package defines them:
 
 ---
 
-Source `index.html` @ `598e4b16df77a264` · last committed 2026-11-08T13:14:50+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `f1c14818da763825` · last committed 2026-11-08T22:40:58+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1542,7 +1544,7 @@ part of the component contract and nothing in an installed package defines them:
 
 ---
 
-Source `index.html` @ `598e4b16df77a264` · last committed 2026-11-08T13:14:50+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `f1c14818da763825` · last committed 2026-11-08T22:40:58+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1589,7 +1591,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `598e4b16df77a264` · last committed 2026-11-08T13:14:50+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `f1c14818da763825` · last committed 2026-11-08T22:40:58+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1666,7 +1668,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `598e4b16df77a264` · last committed 2026-11-08T13:14:50+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `f1c14818da763825` · last committed 2026-11-08T22:40:58+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1704,7 +1706,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `598e4b16df77a264` · last committed 2026-11-08T13:14:50+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `f1c14818da763825` · last committed 2026-11-08T22:40:58+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1810,7 +1812,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `598e4b16df77a264` · last committed 2026-11-08T13:14:50+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `f1c14818da763825` · last committed 2026-11-08T22:40:58+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1846,7 +1848,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `598e4b16df77a264` · last committed 2026-11-08T13:14:50+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `f1c14818da763825` · last committed 2026-11-08T22:40:58+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1888,7 +1890,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `598e4b16df77a264` · last committed 2026-11-08T13:14:50+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `f1c14818da763825` · last committed 2026-11-08T22:40:58+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1937,5 +1939,5 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `598e4b16df77a264` · last committed 2026-11-08T13:14:50+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `f1c14818da763825` · last committed 2026-11-08T22:40:58+01:00 · no URL: the project is private until v1.0.
 

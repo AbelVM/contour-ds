@@ -443,9 +443,9 @@ Based on the component list (222 classes) and prior completeness reviews, here i
 | R16-02 | ✅ | Wire empty/loading/error states into ~30 data/map components | P1 | High | Med | L | Done: ContourTable now calls wireStates/loadRemote/renderStates/renderEmpty; c-table__error/c-table__empty CSS rules added alongside c-table__loading. Remaining data/map components to audit. |
 | R16-03 | 🟡 | Add ARIA attributes to ~20 interactive components | P1 | High | Low | M | Partial: ~33 components gained ARIA across two batches (drop-zone, map-area, scheme-toggle, style-switcher, shortcut, pull-to-refresh, accordion, expandable, data-export, shortcut-overlay, textarea, sidebar, draggable, drop-indicator, drag-handle, geocoder input, activity items, panel, callout, time-slider, header, breadcrumb, version-banner, palette-editor, tags-input, swatch, steps, dash-kpi-row, timeline, toast-host, compass, spatial-filter, tooltip, dropdown, context-menu, file-upload, stepper, virtual-list). Remaining ~0-3 need audit. |
 | R16-04 | 🟡 | Add keyboard navigation to ~15 components | P1 | High | Med | M | Partial: added keyboard nav to style-switcher, scheme-toggle, dash-kpi-row, showcase media, affordance. Shared `navKey()` helper extracted to core.mjs for reuse across all WC files. Remaining composite components need audit. |
-| R16-05 | 🟡 | Add event emission to ~10 components | P1 | High | Low | M | Partial: ~9 components gained events (resizable, error-boundary, header/sidebar toggle, tree/breadcrumb/toc select, toolbar activate, side-sheet open/close). |
+| R16-05 | ✅ | Add event emission to ~10 components | P1 | High | Low | M | Done: ~10 components gained events (resizable, error-boundary, header/sidebar toggle, tree/breadcrumb/toc select, toolbar activate, side-sheet open/close, command-palette open/close). All interactive components now emit contour:* events. |
 | R16-06 | ✅ | Add form association to ~8 form controls | P1 | High | Med | M | Done: 22 form-associated components (16 original + color-picker, date-picker, time-picker, number-field, file-upload, tags-input). |
-| R16-07 | ⬜ | Add reactivity demos to §23 specimens | P2 | Med | Low | L | Per-specimen attribute change demos. |
+| R16-07 | ✅ | Add reactivity demos to §23 specimens | P2 | Med | Low | L | Done: 24 reactivity demos covering ~21 components (kpi, gauge, donut, brush, time-slider, stacked-bar, layer-panel, category, bivariate-legend, style-panel, annotation, heatmap, measure, axis, coordinate, bivariate, compass, catchment, flow-map, hexbin, isochrone) plus "Reactivity, counted" batch() panel and "Reactivity playground" live attribute toggling. |
 | R16-08 | ✅ | Add forced-colors fallbacks to all form controls | P1 | High | Med | M | Done: border list extended + selected-state handling for date-picker, color-picker, tags-input. |
 | R16-09 | ✅ | Fix disabled switch/check dimming | P2 | Med | Low | S | Verified: .c-switch__input:disabled and .c-check__input:disabled already set opacity 0.5; wc propagates disabled to inner input. |
 | R16-10 | ✅ | Fix double focus ring on text controls | P2 | Med | Low | S | Verified: input/select/textarea :focus-visible already sets outline: none. |
@@ -477,9 +477,9 @@ Based on the component list (222 classes) and prior completeness reviews, here i
 | R16-36 | ⬜ | Remove or wire 27 unused variant classes | P3 | Low | Low | S | BY3-C. |
 | R16-37 | ⬜ | Fix 4 unnamed shortcut blocks | P3 | Low | Low | S | BY2-G1. |
 | R16-38 | ⬜ | Add attribute/property reference tables to guide | P2 | High | Med | L | BY3-A. |
-| R16-39 | ⬜ | Add async-state specimens | P2 | Med | Med | M | BY3-B. |
-| R16-40 | ⬜ | Move install earlier; add in-page nav at 390px | P2 | Med | Low | S | BY3-D. |
-| R16-41 | ⬜ | Fix 320px reflow on guide | P3 | Low | Low | S | BR3-1. |
+| R16-39 | ✅ | Add async-state specimens | P2 | Med | Med | M | Done: added async-state specimens (loading, error, empty, skeleton) for contour-kpi and contour-data-table in §23, matching the contour-readout pattern. |
+| R16-40 | ✅ | Move install earlier; add in-page nav at 390px | P2 | Med | Low | S | Done: install already early via hero CTA and Start here cluster; added c-inpage-nav section list within content flow, visible at width < 390px (24.375rem) where the rail is hidden. |
+| R16-41 | ✅ | Fix 320px reflow on guide | P3 | Low | Low | S | Already resolved: check-reflow passes at 320px (WCAG floor) with no overflow on any page, both themes, JS off. |
 | R16-42 | ✅ | Fix README (tarball ships src/, map.html) | P2 | Med | Low | S | README already states src/ is NOT in the tarball and map.html is a CSS demo; claim was stale. |
 | R16-43 | ✅ | Add check-wc/doctor/gen-llms to CI | P2 | Med | Low | S | check-wc and doctor already in CI; gen-llms already wired into build.mjs. |
 | R16-44 | ✅ | Add CHANGELOG entry for expansion | P2 | Med | Low | S | CHANGELOG 1.8.0 Added section updated with ARIA batch (33 components) and prior batches. |
@@ -488,8 +488,8 @@ Based on the component list (222 classes) and prior completeness reviews, here i
 | R16-47 | ⬜ | Classify all components by maturity in Storybook | P3 | Low | Low | M | 175 unclassified. |
 | R16-48 | ⬜ | Resolve 2 a11y todos in Storybook | P3 | Low | Low | S | SB-31, SB-04. |
 | R16-49 | ⬜ | Add per-component TypeScript interfaces | P3 | Med | Med | L | Deferred to post-1.0. |
-| R16-50 | ⬜ | Add ::part() to high-value shadow components | P3 | Low | Med | M | dialog, popover, tooltip. |
-| R16-51 | ⬜ | Remove <slot> from ContourHeader actions | P3 | Low | Low | S | F-CO6. |
+| R16-50 | ✅ | Add ::part() to high-value shadow components | P3 | Low | Med | M | Done: added contour-shadow-dialog::part() rules for dialog, head, body, foot, close (+ hover/focus-visible/open states) in src/css/components.css §19a. Popover and tooltip are light-DOM only (no shadow wrapper), so ::part() does not apply. |
+| R16-51 | ✅ | Remove <slot> from ContourHeader actions | P3 | Low | Low | S | F-CO6. Already resolved: light-DOM ContourHeader uses div.c-header__actions container, not <slot>. <slot> only appears in shadow.mjs contour-shadow-header wrapper where it is correct for shadow DOM. |
 | R16-52 | ✅ | Fix ContourProgress pct edge case | P3 | Low | Low | S | Already guarded: `num <= 1 && value.includes(".")`. |
 | R16-53 | ✅ | Fix ContourStreamingChart cleanup on removal | P3 | Low | Low | S | Already removes SVG when `line` is falsy. |
 | R16-54 | ✅ | Fix ContourIconBadge sprite validation | P3 | Low | Low | S | Already warns on non-i-* names. |

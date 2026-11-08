@@ -3142,6 +3142,20 @@
   }
 
   /* =======================================================================
+     19a. DIALOG shadow parts (::part) — R16-50
+     ======================================================================= */
+  /* Expose shadow-dialog root for consumer styling via ::part().
+     Internal parts (head, body, foot, close) are already styled by the
+     adopted .c-dialog__* class rules inside the shadow root. */
+  contour-shadow-dialog::part(dialog) {
+    padding: 0;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-xl);
+    background: var(--color-surface-1);
+    color: var(--color-text);
+  }
+
+  /* =======================================================================
      20. TOOLTIP (popover hint)
      ======================================================================= */
   .c-tooltip {
