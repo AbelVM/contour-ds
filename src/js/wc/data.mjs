@@ -174,147 +174,19 @@ class ContourTable extends ContourBase {
     render() {
       this.setAttribute("role", "region");
       this.setAttribute("aria-label", "Table");
+      wireStates(this);
+      loadRemote(this, "rows");
+      if (renderStates(this, "table")) return;
       // The host is not a <table>, so it carries no table rule. The scroller the
       // reflow contract requires is a real block element inside it.
       const columns = this.getAttribute("columns");
-      const rows = this.getAttribute("rows");
+      const rows = remoteData(this, "rows");
       // Slot composition: an authored table wins over the JSON attributes.
       const authored = Array.from(this.children).filter((n) => !n.classList || !n.classList.contains("c-table-wrap"));
       if (columns && rows && !authored.length) {
         try {
           const cols = JSON.parse(columns);
           const data = JSON.parse(rows);
-          // Loading state: show a spinner row instead of data.
-          if (this.hasAttribute("loading")) {
-            const wrap = this.ensure(".c-table-wrap", () => { const el = document.createElement("div"); el.className = "c-table-wrap"; return el; });
-            const colsKey = JSON.stringify(cols);
-            const table = (wrap.querySelector("table.c-table") && this._tableCols === colsKey)
-              ? wrap.querySelector("table.c-table")
-              : (() => {
-                  const t = document.createElement("table");
-                  t.className = "c-table";
-                  const thead = document.createElement("thead");
-                  const tr = document.createElement("tr");
-                  cols.forEach((c) => {
-                    const colLabel = typeof c === "string" ? c : (c.label || c.title || c);
-                    const th = document.createElement("th");
-                    th.textContent = colLabel;
-                    tr.appendChild(th);
-                  });
-                  thead.appendChild(tr);
-                  t.appendChild(thead);
-                  t.appendChild(document.createElement("tbody"));
-                  return t;
-                })();
-            this._tableCols = colsKey;
-            const tbody = table.querySelector("tbody");
-            tbody.innerHTML = "";
-            const tr = document.createElement("tr");
-            const td = document.createElement("td");
-            td.colSpan = cols.length;
-            td.style.textAlign = "center";
-            td.style.color = "var(--color-text-muted)";
-            td.textContent = this.getAttribute("loading") || "Loading…";
-            tr.appendChild(td);
-            tbody.appendChild(tr);
-            if (table.parentNode !== wrap) { wrap.innerHTML = ""; wrap.appendChild(table); }
-            if (wrap.parentNode !== this) this.appendChild(wrap);
-            const footer = this.querySelector(".c-table__pagination");
-            if (footer) footer.remove();
-            return;
-          }
-          if (this.hasAttribute("error")) {
-            const wrap = this.ensure(".c-table-wrap", () => { const el = document.createElement("div"); el.className = "c-table-wrap"; return el; });
-            const colsKey = JSON.stringify(cols);
-            const table = (wrap.querySelector("table.c-table") && this._tableCols === colsKey)
-              ? wrap.querySelector("table.c-table")
-              : (() => {
-                  const t = document.createElement("table");
-                  t.className = "c-table";
-                  const thead = document.createElement("thead");
-                  const tr = document.createElement("tr");
-                  cols.forEach((c) => {
-                    const colLabel = typeof c === "string" ? c : (c.label || c.title || c);
-                    const th = document.createElement("th");
-                    th.textContent = colLabel;
-                    tr.appendChild(th);
-                  });
-                  thead.appendChild(tr);
-                  t.appendChild(thead);
-                  t.appendChild(document.createElement("tbody"));
-                  return t;
-                })();
-            this._tableCols = colsKey;
-            const tbody = table.querySelector("tbody");
-            tbody.innerHTML = "";
-            const tr = document.createElement("tr");
-            const td = document.createElement("td");
-            td.colSpan = cols.length;
-            td.textContent = this.getAttribute("error") || "Error";
-            td.style.textAlign = "center";
-            td.style.color = "var(--color-danger, var(--color-text))";
-            if (this.hasAttribute("retry")) {
-              const btn = document.createElement("button");
-              btn.className = "c-btn c-btn--ghost c-btn--sm";
-              btn.type = "button";
-              btn.textContent = this.getAttribute("retry") || "Retry";
-              btn.classList.add("u-ms-sm");
-              btn.dataset.action = "retry";
-              td.appendChild(btn);
-            }
-            tr.appendChild(td);
-            tbody.appendChild(tr);
-            if (table.parentNode !== wrap) { wrap.innerHTML = ""; wrap.appendChild(table); }
-            if (wrap.parentNode !== this) this.appendChild(wrap);
-            const footer = this.querySelector(".c-table__pagination");
-            if (footer) footer.remove();
-            return;
-          }
-          if (this.hasAttribute("skeleton")) {
-            const wrap = this.ensure(".c-table-wrap", () => { const el = document.createElement("div"); el.className = "c-table-wrap"; return el; });
-            const colsKey = JSON.stringify(cols);
-            const table = (wrap.querySelector("table.c-table") && this._tableCols === colsKey)
-              ? wrap.querySelector("table.c-table")
-              : (() => {
-                  const t = document.createElement("table");
-                  t.className = "c-table";
-                  const thead = document.createElement("thead");
-                  const tr = document.createElement("tr");
-                  cols.forEach((c) => {
-                    const colLabel = typeof c === "string" ? c : (c.label || c.title || c);
-                    const th = document.createElement("th");
-                    th.textContent = colLabel;
-                    tr.appendChild(th);
-                  });
-                  thead.appendChild(tr);
-                  t.appendChild(thead);
-                  t.appendChild(document.createElement("tbody"));
-                  return t;
-                })();
-            this._tableCols = colsKey;
-            const tbody = table.querySelector("tbody");
-            tbody.innerHTML = "";
-            const count = Math.min(5, Math.max(1, parseInt(this.getAttribute("skeleton") || "3", 10) || 3));
-            for (let i = 0; i < count; i++) {
-              const tr = document.createElement("tr");
-              cols.forEach(() => {
-                const td = document.createElement("td");
-                const sk = document.createElement("span");
-                sk.className = "c-skeleton";
-                sk.style.display = "inline-block";
-                sk.style.inlineSize = "60%";
-                sk.style.blockSize = "0.8rem";
-                td.appendChild(sk);
-                tr.appendChild(td);
-              });
-              tbody.appendChild(tr);
-            }
-            if (table.parentNode !== wrap) { wrap.innerHTML = ""; wrap.appendChild(table); }
-            if (wrap.parentNode !== this) this.appendChild(wrap);
-            const footer = this.querySelector(".c-table__pagination");
-            if (footer) footer.remove();
-            return;
-          }
           // Initialise sort state from attributes on first render.
           if (this._sortCol === undefined) {
             const sortAttr = this.getAttribute("sort");
@@ -554,6 +426,8 @@ class ContourTable extends ContourBase {
             if (footer) footer.remove();
           }
         } catch (e) { /* keep existing */ }
+      } else if (!rows && !authored.length) {
+        renderEmpty(this, "table");
       }
     }
     enhance() {

@@ -2615,7 +2615,8 @@
   .c-heatmap__loading,
   .c-sparkline__loading,
   .c-timeline__loading,
-  .c-table__loading {
+  .c-table__loading,
+  .c-table__empty {
     color: var(--color-text-muted);
   }
 
@@ -2623,7 +2624,8 @@
   .c-chart__error,
   .c-heatmap__error,
   .c-sparkline__error,
-  .c-timeline__error {
+  .c-timeline__error,
+  .c-table__error {
     color: var(--color-danger, var(--color-text));
   }
 
