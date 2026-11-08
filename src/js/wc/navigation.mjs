@@ -12,16 +12,42 @@ class ContourMenu extends ContourBase {
       if (renderStates(this, "menu")) return;
       const items = remoteData(this, "items");
       // Slot composition wins over the JSON attribute.
-       const authored = Array.from(this.children).filter((n) => !n.classList || !n.classList.contains("c-menu"));
-       if (authored.length) {
-         if (this.querySelector("ul.c-menu")) return;
-         const ul = document.createElement("ul");
-         ul.className = "c-menu";
-         ul.setAttribute("role", "menu");
-         this.appendChild(ul);
-         return;
-       }
-       if (items) {
+      // Authored menu items (li[role="menuitem"] or li.c-menu__item in light DOM)
+      // are used as-is; the JSON `items` attribute only fills in when the host
+      // has no authored menu content.
+      const authoredItems = Array.from(this.querySelectorAll("li[role='menuitem'], li.c-menu__item, [role='menuitem']"));
+      const authoredUl = this.querySelector("ul.c-menu");
+      if (authoredItems.length) {
+        // Ensure authored items are inside a ul.c-menu wrapper.
+        if (!authoredUl) {
+          const ul = document.createElement("ul");
+          ul.className = "c-menu";
+          ul.setAttribute("role", "menu");
+          // Re-parent authored items into the wrapper, preserving order.
+          for (const item of authoredItems) {
+            if (item.parentElement === this) ul.appendChild(item);
+          }
+          this.appendChild(ul);
+        } else {
+          // Ensure classes/roles on authored items inside the existing wrapper.
+          for (const item of authoredItems) {
+            if (!item.classList.contains("c-menu__item")) item.classList.add("c-menu__item");
+            if (!item.getAttribute("role")) item.setAttribute("role", "menuitem");
+            if (!item.hasAttribute("tabindex")) item.setAttribute("tabindex", "-1");
+          }
+        }
+        // Set the first enabled item to tabindex 0 for roving focus.
+        const first = authoredItems.find((it) => it.getAttribute("aria-disabled") !== "true");
+        if (first) first.setAttribute("tabindex", "0");
+        this.classList.remove("c-menu");
+        if (authoredUl) authoredUl.classList.add("c-menu");
+        return;
+      }
+      if (authoredUl) {
+        // Authored ul.c-menu exists but no menu items yet: keep it, don't generate.
+        return;
+      }
+      if (items) {
          try {
            const parsed = JSON.parse(items);
            const ul = this.ensure("ul.c-menu", () => { const el = document.createElement("ul"); el.className = "c-menu"; el.setAttribute("role", "menu"); return el; });
@@ -115,10 +141,59 @@ class ContourTabs extends ContourBase {
       if (renderStates(this, "tabs")) return;
       const tabs = remoteData(this, "tabs");
       // Slot composition wins over the JSON attribute, same as ContourMenu:
-      // authored tab buttons and panels stay across re-renders and the
-      // JSON scaffolding only fills in when the host is empty.
-      const authored = Array.from(this.children).filter((n) => !n.classList || !n.classList.contains("c-tabs__list"));
-      if (tabs && !authored.length) {
+      // authored tab buttons ([role='tab']) and panels (.c-tabs__panel) in light
+      // DOM are used as-is; the JSON `tabs` attribute only fills in when the host
+      // has no authored tab content.
+      const authoredTabs = Array.from(this.querySelectorAll("[role='tab']"));
+      const authoredList = this.querySelector(".c-tabs__list");
+      const authoredPanels = Array.from(this.querySelectorAll(".c-tabs__panel"));
+
+      if (authoredTabs.length) {
+        // Ensure authored tabs are inside a .c-tabs__list wrapper.
+        if (!authoredList) {
+          const list = document.createElement("div");
+          list.className = "c-tabs__list";
+          list.setAttribute("role", "tablist");
+          const orientation = this.getAttribute("orientation") === "vertical" ? "vertical" : "horizontal";
+          list.setAttribute("aria-orientation", orientation);
+          if (orientation === "vertical") this.classList.add("c-tabs--vertical"); else this.classList.remove("c-tabs--vertical");
+          for (const tab of authoredTabs) {
+            if (tab.parentElement === this) list.appendChild(tab);
+          }
+          this.prepend(list);
+        }
+        // Normalise attributes on authored tabs and link panels.
+        const orientation = this.getAttribute("orientation") === "vertical" ? "vertical" : "horizontal";
+        if (authoredList) authoredList.setAttribute("aria-orientation", orientation);
+        if (orientation === "vertical") this.classList.add("c-tabs--vertical"); else this.classList.remove("c-tabs--vertical");
+
+        authoredTabs.forEach((tab, i) => {
+          if (!tab.classList.contains("c-tabs__tab")) tab.classList.add("c-tabs__tab");
+          if (!tab.getAttribute("role")) tab.setAttribute("role", "tab");
+          let panelId = tab.getAttribute("aria-controls");
+          if (!panelId) {
+            panelId = contourId("c-tabs-panel");
+            tab.setAttribute("aria-controls", panelId);
+            let panel = authoredPanels.find((p) => p.id === panelId);
+            if (!panel) {
+              panel = document.createElement("div");
+              panel.className = "c-tabs__panel";
+              panel.id = panelId;
+              panel.setAttribute("role", "tabpanel");
+              this.appendChild(panel);
+            }
+          }
+          const selected = i === 0 || tab.getAttribute("aria-selected") === "true";
+          tab.setAttribute("aria-selected", String(selected));
+          tab.tabIndex = selected ? 0 : -1;
+          const ctrl = tab.getAttribute("aria-controls");
+          const panel = ctrl ? document.getElementById(ctrl) : null;
+          if (panel) panel.hidden = !selected;
+        });
+        return;
+      }
+
+      if (tabs && !authoredTabs.length) {
          try {
            const parsed = JSON.parse(tabs);
             const list = this.ensure(".c-tabs__list", () => { const el = document.createElement("div"); el.className = "c-tabs__list"; el.setAttribute("role", "tablist"); return el; });
@@ -178,7 +253,7 @@ class ContourTabs extends ContourBase {
             });
             if (list.parentNode !== this) this.prepend(list);
          } catch (e) { /* keep existing */ }
-        } else if (!tabs && !authored.length) {
+        } else if (!tabs && !authoredTabs.length) {
           const list = this.querySelector(".c-tabs__list");
           if (list) list.remove();
           renderEmpty(this, "tabs");
