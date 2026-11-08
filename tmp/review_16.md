@@ -499,7 +499,7 @@ Based on the component list (222 classes) and prior completeness reviews, here i
 | R16-58 | ⬜ | Fix index-based preservation remainder | P3 | Low | Med | M | F-R4. |
 | R16-59 | ⬜ | Add slotted-content variants for menu/tabs | P3 | Med | Med | M | F-CO2. |
 | R16-60 | ⬜ | Code-split wc bundle by family | P3 | Med | Med | L | F-PE7. |
-| R16-61 | 🟡 | Extract shared navKey helper + migrate all arrow-key patterns (R16-04/fix-size) | P1 | High | Low | S | In progress: added `navKey()` to core.mjs, migrated 4 instances in ui.mjs. ~20+ remaining across data.mjs, navigation.mjs, content.mjs, layout.mjs, map.mjs, misc.mjs, dashboard.mjs, behaviours.mjs. Estimated -300–500 bytes bundle reduction. |
+| R16-61 | 🟡 | Extract shared navKey helper + migrate all arrow-key patterns (R16-04/fix-size) | P1 | High | Low | S | In progress: `navKey()` in core.mjs with circular/bounded roving-tabindex, Home/End, Enter/Space, onNavigate callback, rtl parameter. Migrated 9 patterns: style-switcher, dropdown menu, palette-editor swatches, rating stars (ui.mjs), timeline (data.mjs), filter-bar mode + spatial-filter mode (navigation.mjs), activity list (misc.mjs), kpi row (dashboard.mjs), map-area (map.mjs), button group (layout.mjs), steps RTL (content.mjs), radio group (behaviours.mjs). ~8 remaining: data.mjs category/heatmap (complex RTL/grid), ui.mjs 4 patterns (bounded nav, setActive callbacks), behaviours.mjs combobox/dropdown options. |
 | R16-62 | ⬜ | Fix check-size (wc.esm.min.js 610.2 kB vs 609.0 kB budget) | P1 | High | Low | S | Caused by R16 additions (ARIA, events, form assoc, forced-colors). navKey migration should bring it under budget. If not, raise budget with CHANGELOG entry per gate rules. |
 
 ---
@@ -541,9 +541,9 @@ After each task batch:
 - The `ensure()` pattern is used in ~60% of components. The remaining 40% use `if (!querySelector)` guards or direct append. This is inconsistent.
 - The snapshot/restore model preserves authored nodes, but components that use direct `appendChild` without tracking (link, anchor, cta) leak nodes. This is a design tension: the base class preserves authored content, but render bodies that don't track generated nodes can't clean them up. Fixed in prior milestones.
 - The guide's §23 specimens are comprehensive (187 specimens, all 162 tags) but don't exercise reactivity (attribute changes) beyond the "Reactivity, counted" panel.
-- No code was changed to produce this document (research + planning only). **Update 2026-11-08:** `navKey()` helper added to core.mjs; 4 arrow-key patterns in ui.mjs migrated. check-size gate now fails (wc.esm.min.js 610.2 kB vs 609.0 kB budget) due to R16 additions — navKey migration across all files expected to bring it under budget.
+- No code was changed to produce this document (research + planning only). **Update 2026-11-08:** `navKey()` helper added to core.mjs with RTL support and onNavigate callback; migrated 9 arrow-key patterns across ui.mjs, data.mjs, navigation.mjs, misc.mjs, dashboard.mjs, map.mjs, layout.mjs, content.mjs, behaviours.mjs. ~8 remaining (data.mjs category/heatmap complex RTL, ui.mjs 4 bounded nav). check-size gate now fails (wc.esm.min.js 610.2 kB vs 609.0 kB budget) due to R16 additions — full navKey migration expected to bring it under budget.
 - The class-name audit found **zero invented classes** — every `c-*` token in `src/js/wc/` resolves to a real rule in `src/css/`. This is a significant achievement.
-- The `check-size` gate passes (bundles within budget). This is an improvement from prior milestones. **Update 2026-11-08:** FAIL — wc.esm.min.js over budget by ~1 kB after R16 additions; navKey migration underway to recover headroom.
+- The `check-size` gate passes (bundles within budget). This is an improvement from prior milestones. **Update 2026-11-08:** FAIL — wc.esm.min.js over budget by ~1 kB after R16 additions; navKey migration underway to recover headroom. **Update 2026-11-08b:** 9 patterns migrated, ~8 remaining.
 - The `component-inventory` gate passes (0 blocks without specimens). This is an improvement from prior milestones.
 - The `execute-docs` gate passes (566/567 valid, 0 failures).
 - The `contrast-and-aria` gate passes (both themes).
@@ -581,7 +581,7 @@ After each task batch:
 
 A second pass over the system, focusing on the "half-baked" components and the CARTO/Kibana-inspired gaps, confirms the findings in §3. The system is genuinely SOTA for a zero-dependency, token-driven design system. The main work for 1.9 is feature completeness (states, ARIA, keyboard, events, form association) and documentation (specimens, attribute references, async-state demos).
 
-**Update 2026-11-08:** Shared `navKey()` helper extracted to core.mjs; 4 arrow-key patterns in ui.mjs migrated. check-size gate now fails (wc.esm.min.js 610.2 kB vs 609.0 kB budget) — navKey migration across all WC files expected to bring it under budget.
+**Update 2026-11-08:** Shared `navKey()` helper extracted to core.mjs with RTL support + onNavigate callback; migrated 9 arrow-key patterns across ui.mjs, data.mjs, navigation.mjs, misc.mjs, dashboard.mjs, map.mjs, layout.mjs, content.mjs, behaviours.mjs. ~8 remaining (data.mjs category/heatmap complex RTL, ui.mjs 4 bounded nav patterns). check-size gate now FAILING (wc.esm.min.js 610.2 kB vs 609.0 kB budget) — full navKey migration expected to recover headroom.
 
 ### S1. Feature-completeness matrix (selected gaps)
 
