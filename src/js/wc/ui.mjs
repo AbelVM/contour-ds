@@ -2965,6 +2965,7 @@ class ContourSwatch extends ContourBase {
         const btn = document.createElement("button");
         btn.className = "c-swatch__btn";
         btn.type = "button";
+        btn.setAttribute("aria-label", this.getAttribute("label") || this.getAttribute("color") || "Swatch");
         this.appendChild(btn);
       }
     }
