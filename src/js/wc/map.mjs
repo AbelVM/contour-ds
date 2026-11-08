@@ -1,4 +1,4 @@
-import { ContourBase, define, onDispose, formatValue } from './core.mjs';
+import { ContourBase, define, onDispose, formatValue, navKey, isRtl } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { compassNeedle, scaleBarTicks } from './svg.mjs';
 
@@ -48,25 +48,11 @@ function wireMapItems(host, itemSelector, tooltipClass) {
       e.preventDefault();
       const all = items();
       const index = all.indexOf(item);
-      if (index < 0) return;
-      host.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index, label: item.getAttribute("title") || item.textContent.trim() } }));
+      if (index >= 0) host.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index, label: item.getAttribute("title") || item.textContent.trim() } }));
+    } else {
+      const all = items();
+      navKey(e, all, { wrap: false, homeEnd: true, rtl: isRtl(host), onNavigate: (i) => all.forEach((c, j) => c.setAttribute("tabindex", j === i ? "0" : "-1")) });
     }
-    // Roving tabindex keyboard nav.
-    const all = items();
-    const idx = all.indexOf(item);
-    if (idx < 0) return;
-    let next = -1;
-    const rtl = (host.getAttribute("dir") || document.documentElement.getAttribute("dir") || "").toLowerCase() === "rtl";
-    if (e.key === "ArrowDown") next = Math.min(idx + 1, all.length - 1);
-    else if (e.key === "ArrowUp") next = Math.max(idx - 1, 0);
-    else if (e.key === "ArrowRight") next = rtl ? Math.max(idx - 1, 0) : Math.min(idx + 1, all.length - 1);
-    else if (e.key === "ArrowLeft") next = rtl ? Math.min(idx + 1, all.length - 1) : Math.max(idx - 1, 0);
-    else if (e.key === "Home") next = 0;
-    else if (e.key === "End") next = all.length - 1;
-    if (next < 0 || next === idx) return;
-    e.preventDefault();
-    all.forEach((c, i) => c.setAttribute("tabindex", i === next ? "0" : "-1"));
-    try { all[next].focus(); } catch (err) {}
   });
 }
 

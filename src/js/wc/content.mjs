@@ -1,4 +1,4 @@
-import { ContourBase, define, sanitizeHtml, headingTag, formatValue } from './core.mjs';
+import { ContourBase, define, sanitizeHtml, headingTag, formatValue, navKey, isRtl } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { wireCopy } from './behaviours.mjs';
 class ContourCard extends ContourBase {
@@ -116,34 +116,8 @@ class ContourSteps extends ContourBase {
         this.addEventListener("keydown", (e) => {
           const items = Array.from(this.querySelectorAll(".c-steps__item"));
           if (!items.length) return;
-          const active = document.activeElement;
-          const idx = items.indexOf(active);
-          let next = -1;
-          const rtl = (this.getAttribute("dir") || document.documentElement.getAttribute("dir") || "").toLowerCase() === "rtl";
-          if (e.key === "ArrowDown") next = idx < 0 ? 0 : Math.min(items.length - 1, idx + 1);
-          else if (e.key === "ArrowUp") next = idx < 0 ? 0 : Math.max(0, idx - 1);
-          else if (e.key === "ArrowRight") next = rtl ? (idx < 0 ? 0 : Math.max(0, idx - 1)) : (idx < 0 ? 0 : Math.min(items.length - 1, idx + 1));
-          else if (e.key === "ArrowLeft") next = rtl ? (idx < 0 ? 0 : Math.min(items.length - 1, idx + 1)) : (idx < 0 ? 0 : Math.max(0, idx - 1));
-          else if (e.key === "Home") next = 0;
-          else if (e.key === "End") next = items.length - 1;
-          if (next >= 0 && next !== idx) {
-            e.preventDefault();
-            items[next].focus();
-            this._current = next;
-            items.forEach((it, i) => {
-              if (i === next) it.setAttribute("aria-current", "step");
-              else it.removeAttribute("aria-current");
-              it.tabIndex = i === next ? 0 : -1;
-            });
-            if (idx >= 0) items[idx].tabIndex = -1;
-            const title = items[next].querySelector(".c-steps__title")?.textContent || "";
-            this.dispatchEvent(new CustomEvent("contour:step-change", { bubbles: true, composed: true, detail: { index: next, title } }));
-          }
-          if ((e.key === "Enter" || e.key === " ") && idx >= 0) {
-            e.preventDefault();
-            const title = items[idx].querySelector(".c-steps__title")?.textContent || "";
-            this.dispatchEvent(new CustomEvent("contour:step-activate", { bubbles: true, composed: true, detail: { index: idx, title } }));
-          }
+          navKey(e, items, { wrap: false, homeEnd: true, rtl: isRtl(this), onNavigate: (i) => { this._current = i; items.forEach((it, j) => { it.setAttribute("aria-current", j === i ? "step" : ""); it.tabIndex = j === i ? 0 : -1; }); const title = items[i].querySelector(".c-steps__title")?.textContent || ""; this.dispatchEvent(new CustomEvent("contour:step-change", { bubbles: true, composed: true, detail: { index: i, title } })); }, onKey: () => { if (e.key === "Enter" || e.key === " ") { const idx = items.indexOf(document.activeElement); const title = document.activeElement.querySelector(".c-steps__title")?.textContent || ""; this.dispatchEvent(new CustomEvent("contour:step-activate", { bubbles: true, composed: true, detail: { index: idx, title } })); } } });
+        });
         });
         this.addEventListener("click", (e) => {
           const item = e.target && e.target.closest ? e.target.closest(".c-steps__item") : null;

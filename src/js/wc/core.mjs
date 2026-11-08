@@ -1028,23 +1028,37 @@
   // `items`: array of focusable elements, `e`: KeyboardEvent.
   // Options: `{ wrap (default true), enter (default true), homeEnd (false),
   //           onKey(key, idx, item) }` — return truthy to preventDefault.
+  //           `onNavigate(newIdx)` — called after focus moves with new index.
+  //           `rtl` — if true, ArrowRight/Left swap direction; defaults to dir attribute.
   /** Navigate a roving-tabindex group with arrow keys, Home/End, Enter/Space. */
-  export function navKey(e, items, { wrap = true, enter = true, homeEnd = false, onKey } = {}) {
+  export function navKey(e, items, { wrap = true, enter = true, homeEnd = false, onKey, onNavigate, rtl } = {}) {
     const idx = items.indexOf(document.activeElement);
     if (idx < 0) return;
     let next = -1;
-    if (e.key === "ArrowRight" || e.key === "ArrowDown") next = wrap ? (idx + 1) % items.length : Math.min(idx + 1, items.length - 1);
-    else if (e.key === "ArrowLeft" || e.key === "ArrowUp") next = wrap ? (idx - 1 + items.length) % items.length : Math.max(0, idx - 1);
+    // Determine direction: ArrowRight/Down always advance forward in LTR.
+    // With RTL, ArrowRight goes back and ArrowLeft goes forward.
+    const fwdKey = rtl ? "ArrowLeft" : "ArrowRight";
+    const revKey = rtl ? "ArrowRight" : "ArrowLeft";
+    if (e.key === fwdKey || e.key === "ArrowDown") next = wrap ? (idx + 1) % items.length : Math.min(idx + 1, items.length - 1);
+    else if (e.key === revKey || e.key === "ArrowUp") next = wrap ? (idx - 1 + items.length) % items.length : Math.max(0, idx - 1);
     else if ((homeEnd || wrap) && e.key === "Home") next = 0;
     else if ((homeEnd || wrap) && e.key === "End") next = items.length - 1;
-    if (next >= 0) {
+    if (next >= 0 && next !== idx) {
       e.preventDefault();
       try { items[next].focus(); } catch (_) {}
+      if (onNavigate) onNavigate(next);
       if (onKey) onKey(e.key, idx, items[idx]);
     } else if ((enter || wrap) && (e.key === "Enter" || e.key === " ")) {
       e.preventDefault();
       if (onKey) onKey(e.key, idx, items[idx]);
     }
+  }
+
+  // Resolve RTL direction from element or document. Returns true for RTL layout.
+  /** Check whether the given element uses right-to-left text direction. */
+  export function isRtl(el) {
+    const d = el && el.getAttribute ? (el.getAttribute("dir") || "") : "";
+    return d.toLowerCase() === "rtl" || (!d && typeof document !== "undefined" && document.documentElement.getAttribute("dir") === "rtl");
   }
 
   // Spatial maths (BY-23): pure functions on the host's own attributes.

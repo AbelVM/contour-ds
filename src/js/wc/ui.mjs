@@ -2106,12 +2106,8 @@ class ContourContextMenu extends ContourBase {
       });
       this.addEventListener("keydown", (e) => {
         const items = Array.from(this.querySelectorAll(".c-menu__item"));
-        const active = document.activeElement;
-        const idx = items.indexOf(active);
-        if (e.key === "ArrowDown") { e.preventDefault(); const next = items[Math.min(items.length - 1, idx + 1)] || items[0]; if (next) try { next.focus(); } catch (err) {} }
-        else if (e.key === "ArrowUp") { e.preventDefault(); const prev = items[Math.max(0, idx - 1)] || items[items.length - 1]; if (prev) try { prev.focus(); } catch (err) {} }
-        else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); if (active && active.classList.contains("c-menu__item")) active.click(); }
-        else if (e.key === "Escape") { e.preventDefault(); if (typeof this.hidePopover === "function") { try { this.hidePopover(); } catch (err) {} } this.classList.remove("is-open"); }
+        navKey(e, items, { wrap: true, onKey: () => { if (e.key === "Enter" || e.key === " ") document.activeElement.click(); } });
+        if (e.key === "Escape") { e.preventDefault(); if (typeof this.hidePopover === "function") { try { this.hidePopover(); } catch (err) {} } this.classList.remove("is-open"); }
       });
     }
   }
@@ -2304,10 +2300,7 @@ class ContourNotificationCenter extends ContourBase {
         if (!panel || panel.hidden) return;
         const items = Array.from(panel.querySelectorAll(".c-notification-center__item"));
         if (!items.length) return;
-        const active = document.activeElement;
-        const idx = items.indexOf(active);
-        if (e.key === "ArrowDown") { e.preventDefault(); const next = items[Math.min(items.length - 1, idx + 1)] || items[0]; if (next) try { next.focus(); } catch (err) {} }
-        else if (e.key === "ArrowUp") { e.preventDefault(); const prev = items[Math.max(0, idx - 1)] || items[items.length - 1]; if (prev) try { prev.focus(); } catch (err) {} }
+        navKey(e, items, { wrap: true });
       };
       document.addEventListener("keydown", keyHandler);
       onDispose(this, () => document.removeEventListener("keydown", keyHandler));
@@ -2514,23 +2507,7 @@ class ContourVirtualList extends ContourBase {
       this.addEventListener("keydown", (e) => {
         const rows = Array.from(this.querySelectorAll(".c-virtual-list__item"));
         if (!rows.length) return;
-        const active = this.querySelector(".c-virtual-list__item:focus") || rows[0];
-        const idx = rows.indexOf(active);
-        let next = -1;
-        if (e.key === "ArrowDown") next = Math.min(idx + 1, rows.length - 1);
-        else if (e.key === "ArrowUp") next = Math.max(idx - 1, 0);
-        else if (e.key === "Home") next = 0;
-        else if (e.key === "End") next = rows.length - 1;
-        else if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          const i = Number(active.dataset.index);
-          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index: i, value: active.textContent } }));
-          return;
-        }
-        if (next < 0 || next === idx) return;
-        e.preventDefault();
-        rows.forEach((r, i) => r.setAttribute("tabindex", i === next ? "0" : "-1"));
-        try { rows[next].focus(); } catch (err) {}
+        navKey(e, rows, { wrap: false, homeEnd: true, onNavigate: (i) => rows.forEach((r, j) => r.setAttribute("tabindex", j === i ? "0" : "-1")), onKey: () => { if (e.key === "Enter" || e.key === " ") const i = Number(document.activeElement.dataset.index); this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index: i, value: document.activeElement.textContent } })); } });
       });
       this.addEventListener("click", (e) => {
         const row = e.target && e.target.closest ? e.target.closest(".c-virtual-list__item") : null;
@@ -2615,14 +2592,7 @@ class ContourCommandPalette extends ContourBase {
         s.addEventListener("input", (e) => filter(e.target.value));
         s.addEventListener("keydown", (e) => {
           const vis = visibleItems();
-          const active = this.querySelector(".c-command-palette__item.is-active");
-          let idx = active ? vis.indexOf(active) : -1;
-          if (e.key === "ArrowDown") { e.preventDefault(); idx = Math.min(vis.length - 1, idx + 1); if (idx < 0) idx = 0; setActive(idx); }
-          else if (e.key === "ArrowUp") { e.preventDefault(); idx = Math.max(0, idx - 1); if (vis.length && idx < 0) idx = 0; setActive(idx); }
-          else if (e.key === "Home") { e.preventDefault(); setActive(0); }
-          else if (e.key === "End") { e.preventDefault(); setActive(vis.length - 1); }
-          else if (e.key === "Enter") { e.preventDefault(); if (active) select(active); }
-          else if (e.key === "Escape") { e.preventDefault(); try { this.hidePopover(); } catch (e) {} this.classList.remove("is-open"); }
+          navKey(e, vis, { wrap: false, homeEnd: true, onNavigate: (i) => setActive(i), onKey: () => { if (e.key === "Enter") { const active = this.querySelector(".c-command-palette__item.is-active"); if (active) select(active); } else if (e.key === "Escape") { e.preventDefault(); try { this.hidePopover(); } catch (err) {} this.classList.remove("is-open"); } } });
         });
       }
       // click selection

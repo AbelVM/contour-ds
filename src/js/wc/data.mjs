@@ -1,4 +1,4 @@
-import { ContourBase, define, onDispose, formatValue, contourId } from './core.mjs';
+import { ContourBase, define, onDispose, formatValue, contourId, navKey } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates, remoteInvalidate, watchViewport } from './states.mjs';
 import { donutSlices, barRects, smoothPath, polylinePoints } from './svg.mjs';
 /**
@@ -3228,26 +3228,11 @@ class ContourTimeline extends ContourBase {
          const idx = items.indexOf(item);
          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index: idx } }));
        });
-       this.addEventListener("keydown", (e) => {
-         const items = Array.from(this.querySelectorAll(".c-timeline__item"));
-         if (!items.length) return;
-         const active = this.querySelector(".c-timeline__item:focus") || items[0];
-         const idx = items.indexOf(active);
-         let next = -1;
-         if (e.key === "ArrowDown") next = Math.min(idx + 1, items.length - 1);
-         else if (e.key === "ArrowUp") next = Math.max(idx - 1, 0);
-         else if (e.key === "Home") next = 0;
-         else if (e.key === "End") next = items.length - 1;
-         else if (e.key === "Enter" || e.key === " ") {
-           e.preventDefault();
-           this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index: idx } }));
-           return;
-         }
-         if (next < 0 || next === idx) return;
-         e.preventDefault();
-         items.forEach((it, i) => it.setAttribute("tabindex", i === next ? "0" : "-1"));
-         try { items[next].focus(); } catch (err) {}
-       });
+        this.addEventListener("keydown", (e) => {
+          const items = Array.from(this.querySelectorAll(".c-timeline__item"));
+          if (!items.length) return;
+          navKey(e, items, { wrap: false, homeEnd: true, onNavigate: (i) => items.forEach((it, j) => it.setAttribute("tabindex", j === i ? "0" : "-1")), onKey: () => { if (e.key === "Enter" || e.key === " ") this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index: items.indexOf(document.activeElement) } })); } });
+        });
      }
   }
 define("contour-timeline", ContourTimeline);

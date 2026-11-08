@@ -1,4 +1,4 @@
-import { ContourBase, define, onDispose, supportsUntilFound, contourId, headingTag } from './core.mjs';
+import { ContourBase, define, onDispose, supportsUntilFound, contourId, headingTag, navKey } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { wireMenu, wirePagination, wireTabs, wireTree, wireRemovable } from './behaviours.mjs';
 class ContourMenu extends ContourBase {
@@ -1106,17 +1106,10 @@ class ContourFilterBar extends ContourBase {
          Array.from(this.querySelectorAll(".c-filter-bar__mode")).forEach((b) => b.setAttribute("aria-pressed", String(b === btn)));
          this.dispatchEvent(new CustomEvent("contour:mode-change", { bubbles: true, composed: true, detail: { mode } }));
        });
-       this.addEventListener("keydown", (e) => {
-         const btn = e.target && e.target.closest ? e.target.closest(".c-filter-bar__mode") : null;
-         if (!btn || !this.contains(btn)) return;
-         const modes = Array.from(this.querySelectorAll(".c-filter-bar__mode"));
-         const idx = modes.indexOf(btn);
-         let next = -1;
-         if (e.key === "ArrowRight") next = Math.min(modes.length - 1, idx + 1);
-         else if (e.key === "ArrowLeft") next = Math.max(0, idx - 1);
-         if (next >= 0) { e.preventDefault(); try { modes[next].focus(); } catch (err) {} }
-         else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); btn.click(); }
-       });
+        this.addEventListener("keydown", (e) => {
+          const modes = Array.from(this.querySelectorAll(".c-filter-bar__mode"));
+          navKey(e, modes, { wrap: false, onKey: () => { document.activeElement.click(); } });
+        });
        // text input
        const inp = this.querySelector(".c-filter-bar__input");
        if (inp && !inp._wiredFilterInput) {
@@ -1643,15 +1636,8 @@ class ContourSpatialFilter extends ContourBase {
         this.dispatchEvent(new CustomEvent("contour:draw-start", { bubbles: true, composed: true, detail: { mode } }));
       });
       this.addEventListener("keydown", (e) => {
-        const btn = e.target && e.target.closest ? e.target.closest(".c-spatial-filter__mode") : null;
-        if (!btn || !this.contains(btn)) return;
         const modes = Array.from(this.querySelectorAll(".c-spatial-filter__mode"));
-        const idx = modes.indexOf(btn);
-        let next = -1;
-        if (e.key === "ArrowRight") next = Math.min(modes.length - 1, idx + 1);
-        else if (e.key === "ArrowLeft") next = Math.max(0, idx - 1);
-        if (next >= 0) { e.preventDefault(); try { modes[next].focus(); } catch (err) {} }
-        else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); btn.click(); }
+        navKey(e, modes, { wrap: false, onKey: () => { document.activeElement.click(); } });
       });
     }
   }

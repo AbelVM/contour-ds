@@ -25,7 +25,7 @@ class ContourResizeObserver extends ContourBase {
     }
   }
   define("contour-resize-observer", ContourResizeObserver);
-import { ContourBase, define, onDispose } from './core.mjs';
+import { ContourBase, define, onDispose, navKey } from './core.mjs';
 import { loadRemote, remoteData, remoteRefresh, renderStates, renderEmpty, wireStates } from './states.mjs';
 class ContourReservedFull extends ContourBase {
     static get observed() { return ["title"]; }
@@ -108,24 +108,7 @@ class ContourActivity extends ContourBase {
       this.addEventListener("keydown", (e) => {
         const items = Array.from(this.querySelectorAll(".c-activity__item"));
         if (!items.length) return;
-        const active = document.activeElement;
-        const idx = items.indexOf(active);
-        let next = -1;
-        if (e.key === "ArrowDown") next = idx < 0 ? 0 : Math.min(items.length - 1, idx + 1);
-        else if (e.key === "ArrowUp") next = idx < 0 ? 0 : Math.max(0, idx - 1);
-        else if (e.key === "Home") next = 0;
-        else if (e.key === "End") next = items.length - 1;
-        if (next >= 0 && next !== idx) {
-          e.preventDefault();
-          items[next].focus();
-          items[next].tabIndex = 0;
-          if (idx >= 0) items[idx].tabIndex = -1;
-        }
-        if ((e.key === "Enter" || e.key === " ") && idx >= 0) {
-          e.preventDefault();
-          const text = items[idx].querySelector(".c-activity__text")?.textContent || "";
-          this.dispatchEvent(new CustomEvent("contour:activity-select", { bubbles: true, composed: true, detail: { index: idx, text } }));
-        }
+        navKey(e, items, { wrap: false, homeEnd: true, onNavigate: (i) => { items.forEach((it, j) => it.tabIndex = j === i ? 0 : -1); }, onKey: () => { if (e.key === "Enter" || e.key === " ") { const idx = items.indexOf(document.activeElement); this.dispatchEvent(new CustomEvent("contour:activity-select", { bubbles: true, composed: true, detail: { index: idx, text: document.activeElement.querySelector(".c-activity__text")?.textContent || "" } })); } } });
       });
     }
   }

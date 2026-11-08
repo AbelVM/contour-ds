@@ -1,4 +1,4 @@
-import { ContourBase, define, formatValue } from './core.mjs';
+import { ContourBase, define, formatValue, navKey } from './core.mjs';
 
 /**
  * Dashboard state machine (R13-06).
@@ -160,19 +160,8 @@ class ContourDashKpiRow extends ContourBase {
       });
       this.addEventListener("keydown", (e) => {
         const kpis = Array.from(this.querySelectorAll("contour-kpi"));
-        const active = document.activeElement;
-        const idx = kpis.indexOf(active);
-        if (idx < 0) return;
-        let next = -1;
-        if (e.key === "ArrowRight" || e.key === "ArrowDown") next = (idx + 1) % kpis.length;
-        else if (e.key === "ArrowLeft" || e.key === "ArrowUp") next = (idx - 1 + kpis.length) % kpis.length;
-        else if (e.key === "Home") next = 0;
-        else if (e.key === "End") next = kpis.length - 1;
-        if (next >= 0) {
-          e.preventDefault();
-          try { kpis[next].focus(); } catch (err) { /* detached */ }
-          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index: next } }));
-        }
+        if (!kpis.length) return;
+        navKey(e, kpis, { wrap: true, homeEnd: true, onNavigate: (i) => this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index: i } })), onKey: () => {} });
       });
     }
   }
