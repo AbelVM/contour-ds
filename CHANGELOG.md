@@ -6,20 +6,14 @@
 - ARIA attributes added to ~12 interactive components that previously lacked them (R16-03): `contour-drop-zone`, `contour-map-area`, `contour-scheme-toggle`, `contour-style-switcher`, `contour-shortcut`, `contour-pull-to-refresh`, `contour-accordion`, `contour-expandable`, `contour-data-export`, `contour-shortcut-overlay`, `contour-textarea`, `contour-sidebar`.
 - Event emission added to ~9 components that previously had listeners but no `dispatchEvent` (R16-05): `contour-resizable` (`contour:resize`), `contour-error-boundary` (`contour:error`), `contour-header`/`contour-sidebar` (`contour:toggle`), `contour-tree`/`contour-breadcrumb`/`contour-toc` (`contour:select`), `contour-toolbar` (`contour:activate`), `contour-side-sheet` (`contour:open`/`contour:close`).
 - `contour-map-footer` brand selector migrated from `[data-map-footer-brand]` to `.c-map-footer__brand` for robustness (R16-55).
-
-### Changed
-- Size budgets raised: `contour-wc.esm.min.js` 604→609 kB, `contour.components.json` 278→279 kB, `surfaces/contour-landing.min.css` 168→169 kB.
-
-## [1.7.2] - 2026-11-08
-
-### Changed
-- `contour-legend` selectable items now use `role="button"` with `aria-pressed` (button-in-group pattern) instead of `role="option"`/`aria-selected` (listbox pattern), resolving an `aria-allowed-attr` violation where `aria-selected` is not permitted on `role="button"` elements. Container role switches to `group` for selectable/continuous variants.
-- Size budget for `contour-wc.esm.min.js` raised to 604 kB.
+- ARIA attributes added to `contour-draggable`, `contour-drop-indicator`, `contour-drag-handle`, and `contour-geocoder` input; `contour-activity` items upgraded from `role="listitem"` to `role="button"` with aria-label (R16-03).
 
 ### Fixed
 - Input (`contour-input`) now inherits its label from a parent `contour-field` or defaults to "Input", resolving a "form elements must have labels" a11y violation.
 - RTL: scroll-area fade rule uses `inset-block-end` instead of physical `bottom`.
 - Responsive: `.c-chart__axis--centered` collapses from 5 columns to auto-fit below 40rem.
+- `wireMenu`: fixed index lookup bug (`items`→`its`) in navKey onKey callback.
+- `contour-virtual-list`: fixed missing braces in navKey onKey callback that caused unconditional dispatchEvent.
 
 ## [1.7.1] - 2026-11-04
 
