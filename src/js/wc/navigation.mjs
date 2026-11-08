@@ -937,11 +937,12 @@ class ContourTocFull extends ContourBase {
           l.className = "c-toc__list";
           l.setAttribute("aria-label", title);
           l.innerHTML = "";
-          parsed.forEach((item) => {
+          parsed.forEach((item, i) => {
             const a = document.createElement("a");
             a.className = "c-toc__link" + (item.sub ? " c-toc__link--sub" : "");
             a.href = item.href || "#";
             a.textContent = item.label || item;
+            a.tabIndex = i === 0 ? 0 : -1;
             if (item.current) a.setAttribute("aria-current", "true");
             l.appendChild(a);
           });
@@ -998,6 +999,12 @@ class ContourTocFull extends ContourBase {
           e.preventDefault();
           try { target.scrollIntoView({ behavior: "smooth", block: "start" }); } catch (err) { target.scrollIntoView(); }
           this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { href } }));
+        });
+        // Keyboard: roving tabindex over TOC links, Enter follows the link.
+        this.addEventListener("keydown", (e) => {
+          const links = Array.from(this.querySelectorAll(".c-toc__link"));
+          if (!links.length) return;
+          navKey(e, links, { wrap: true, homeEnd: true, onNavigate: (i) => { links.forEach((a, j) => a.tabIndex = j === i ? 0 : -1); }, onKey: (k) => { if (k === "Enter") { const a = document.activeElement; if (a) { e.preventDefault(); a.click(); } } } });
         });
       }
     }
@@ -1486,11 +1493,12 @@ class ContourSidebar extends ContourBase {
           const parsed = JSON.parse(items);
           const nav = this.ensure("nav.c-sidebar__nav", () => { const el = document.createElement("nav"); el.className = "c-sidebar__nav"; return el; });
           nav.innerHTML = "";
-          parsed.forEach((it) => {
+          parsed.forEach((it, i) => {
             const a = document.createElement("a");
             a.className = "c-sidebar__link";
             a.href = (it && it.href) || "#";
             a.textContent = (it && (it.label || it)) || "";
+            a.tabIndex = i === 0 ? 0 : -1;
             nav.appendChild(a);
           });
         } catch (e) { /* keep existing */ }
@@ -1504,6 +1512,14 @@ class ContourSidebar extends ContourBase {
         if (!btn || !this.contains(btn)) return;
         this.toggleAttribute("collapsed");
         this.dispatchEvent(new CustomEvent("contour:toggle", { bubbles: true, composed: true, detail: { collapsed: this.hasAttribute("collapsed") } }));
+      });
+      // Keyboard: roving tabindex over sidebar links, Enter follows the link.
+      this.addEventListener("keydown", (e) => {
+        const nav = this.querySelector("nav.c-sidebar__nav");
+        if (!nav) return;
+        const links = Array.from(nav.querySelectorAll(".c-sidebar__link"));
+        if (!links.length) return;
+        navKey(e, links, { wrap: true, homeEnd: true, onNavigate: (i) => { links.forEach((l, j) => l.tabIndex = j === i ? 0 : -1); }, onKey: (k) => { if (k === "Enter") { const a = document.activeElement; if (a) { e.preventDefault(); a.click(); } } } });
       });
     }
   }
@@ -1523,10 +1539,11 @@ class ContourToolbar extends ContourBase {
           const limit = this.overflow && this.overflow > 0 ? this.overflow : parsed.length;
           const visible = parsed.slice(0, limit);
           const excess = parsed.slice(limit);
-          visible.forEach((a) => {
+          visible.forEach((a, i) => {
             const btn = document.createElement("button");
             btn.className = "c-toolbar__btn";
             btn.type = "button";
+            btn.tabIndex = i === 0 ? 0 : -1;
             btn.textContent = typeof a === "string" ? a : (a.label || a);
             this.appendChild(btn);
           });
@@ -1576,6 +1593,12 @@ class ContourToolbar extends ContourBase {
         if (actionBtn && this.contains(actionBtn)) {
           this.dispatchEvent(new CustomEvent("contour:activate", { bubbles: true, composed: true, detail: { label: actionBtn.textContent.trim() } }));
         }
+      });
+      // Keyboard: roving tabindex over visible toolbar buttons, Enter/Space activates.
+      this.addEventListener("keydown", (e) => {
+        const btns = Array.from(this.querySelectorAll(":scope > .c-toolbar__btn:not(.c-toolbar__overflow-btn)"));
+        if (!btns.length) return;
+        navKey(e, btns, { wrap: true, homeEnd: true, onNavigate: (i) => { btns.forEach((b, j) => b.tabIndex = j === i ? 0 : -1); }, onKey: (k) => { if (k === "Enter" || k === " ") { const b = document.activeElement; if (b) { e.preventDefault(); b.click(); } } } });
       });
     }
   }
