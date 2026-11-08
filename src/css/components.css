@@ -2851,6 +2851,8 @@
     text-overflow: ellipsis;
     overflow: hidden;
     max-inline-size: 12rem;
+    min-block-size: var(--target-option);
+    min-inline-size: var(--target-option);
   }
   .c-legend__item > * {
     min-inline-size: 0;
