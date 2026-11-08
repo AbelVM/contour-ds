@@ -66,9 +66,6 @@ jobs:
         run: |
           node -e "const fs=require('fs');const c=fs.readFileSync('dist/contour.single.min.css','utf8');if(/fonts\//.test(c)){console.error('single bundle still references fonts/');process.exit(1);}console.log('single bundle: fonts inlined, no external font references');"
 
-      - name: Smoke-test the single-file drop in a browser
-        run: node tools/smoke-single.mjs
-
       - name: Check size budget and that dist is current
         run: node tools/check-size.mjs
 
@@ -187,7 +184,9 @@ jobs:
       # previous dist/ in place, and a lane after it would then certify bytes
       # that were never produced from the current src/.
       - name: Build the artifacts the token contract reads
-        run: node tools/build.mjs
+        run: |
+          node tools/build.mjs
+          node tools/build.mjs --single
       # Every other token gate counts declarations. This one asks an independent
       # implementation of DTCG 2025.10 whether the shipped documents conform, and
       # confirms each published colour against the declaration it came from.
@@ -236,6 +235,13 @@ jobs:
       # them and installed a driver.
       - name: Web components contract (registry, scope leak, shadow styling)
         run: node tools/audit/wc-contract.mjs
+      # The single-file drop is built in the validate job, which has no browser
+      # driver. It is smoke-tested here, where chromium is installed, and the
+      # harness discovers the driver rather than assuming where it lives — so a
+      # job that has not installed it fails with a clear message instead of a
+      # MODULE_NOT_FOUND that looks like a missing feature.
+      - name: Smoke-test the single-file drop in a browser
+        run: node tools/smoke-single.mjs
 
   test:
     runs-on: ubuntu-latest
@@ -246,8 +252,8 @@ jobs:
           node-version: 24
       - name: Install dependencies
         run: npm install
-      - name: Install chromium
-        run: npx playwright install --with-deps chromium
+      - name: Install browsers
+        run: npx playwright install --with-deps chromium firefox
       - name: Build
         run: node tools/build.mjs
       - name: Run unit tests

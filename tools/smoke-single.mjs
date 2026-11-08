@@ -1,7 +1,10 @@
 #!/usr/bin/env node
-import { createRequire } from "node:module";
-const require_ = createRequire(import.meta.url);
-const { chromium } = require_(require_.resolve("playwright-core", { paths: ["tools/audit/node_modules"] }));
+// The browser driver is discovered, never assumed: the shared harness in
+// tools/audit/lib/browser.mjs tries the audit package store, a sibling store
+// and an explicit CONTOUR_PLAYWRIGHT override, and exits rather than skipping
+// when none is found. smoke-single used to hard-code the audit store path
+// itself, which threw a MODULE_NOT_FOUND in any job that had not installed it.
+import { chromium } from "./audit/lib/browser.mjs";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 
