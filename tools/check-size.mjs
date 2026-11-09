@@ -121,21 +121,21 @@ const BUDGETS = {
   "surfaces/contour-data.min.css": 214 * 1024,  // raised 2026-11-07: +layout fixes; raised 2026-11-09: +c-split-map CSS block; measured 213.3 kB
   "surfaces/contour-landing.min.css": 169 * 1024,  // raised 2026-11-08: +forced-colors form controls; measured 168.1 kB
   "contour.esm.min.js": 39 * 1024,
-  "contour-wc.esm.min.js": 609 * 1024,  // raised 2026-11-08: +event emission (batch); measured 608.3 kB
+  "contour-wc.esm.min.js": 610 * 1024,  // raised 2026-11-08: +event emission (batch); raised 2026-11-09: +data-contour-preserve-key; measured 609.6 kB
   // Per-family wc bundles (R16-60): each = core infrastructure + one family's
   // components, so a consumer who doesn't use a bundler can load just one family.
-  "contour-wc-navigation.esm.min.js": 146 * 1024,  // measured 145.3 kB
-  "contour-wc-data.esm.min.js": 213 * 1024,  // measured 212.5 kB
+  "contour-wc-navigation.esm.min.js": 147 * 1024,  // measured 145.3 kB; raised 2026-11-09: +data-contour-preserve-key; measured 146.2 kB
+  "contour-wc-data.esm.min.js": 214 * 1024,  // measured 212.5 kB; raised 2026-11-09: +data-contour-preserve-key; measured 213.8 kB
   "contour-wc-map.esm.min.js": 135 * 1024,  // measured 134.0 kB
-  "contour-wc-forms.esm.min.js": 129 * 1024,  // measured 128.2 kB
-  "contour-wc-ui.esm.min.js": 227 * 1024,  // measured 226.2 kB
+  "contour-wc-forms.esm.min.js": 130 * 1024,  // measured 128.2 kB; raised 2026-11-09: +data-contour-preserve-key; measured 129.8 kB
+  "contour-wc-ui.esm.min.js": 228 * 1024,  // measured 226.2 kB; raised 2026-11-09: +data-contour-preserve-key; measured 227.9 kB
   "contour-wc-content.esm.min.js": 124 * 1024,  // measured 120.4 kB
   "contour-wc-dashboard.esm.min.js": 96 * 1024,  // measured 93.2 kB
-  "contour-wc-docs.esm.min.js": 97 * 1024,  // measured 96.7 kB
+  "contour-wc-docs.esm.min.js": 98 * 1024,  // measured 96.7 kB; raised 2026-11-09: +data-contour-preserve-key; measured 97.6 kB
   "contour-wc-feedback.esm.min.js": 124 * 1024,  // measured 120.5 kB
-  "contour-wc-interaction.esm.min.js": 108 * 1024,  // measured 107.0 kB
+  "contour-wc-interaction.esm.min.js": 109 * 1024,  // measured 107.0 kB; raised 2026-11-09: +data-contour-preserve-key; measured 108.3 kB
   "contour-wc-layout.esm.min.js": 96 * 1024,  // measured 93.2 kB
-  "contour-wc-misc.esm.min.js": 96 * 1024,  // measured 95.4 kB
+  "contour-wc-misc.esm.min.js": 97 * 1024,  // measured 95.4 kB; raised 2026-11-09: +data-contour-preserve-key; measured 96.3 kB
 };
 
 const kB = (n) => `${(n / 1024).toFixed(1)} kB`;
