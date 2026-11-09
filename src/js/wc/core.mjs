@@ -246,6 +246,7 @@
     "variant", "values", "viewport", "yes", "zoomable", "x", "y",
     "caption", "current-time", "is-playing", "loop-label", "no-data-color", "property", "show-loop", "show-thumb", "show-thumb-caption", "speeds", "item-height", "pause-label", "play-label", "speed-label", "time-label", "shimmer",
     "search",
+    "bucket-count", "limit-values",
   ];
 
   /** Resolve an authored heading level while keeping the fallback valid. */

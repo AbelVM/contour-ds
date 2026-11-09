@@ -24136,9 +24136,384 @@ area.addEventListener("contour:map-control", (e) =&gt; {
             </div>
           </div>
 
-             </div>
+              </div>
 
-         </section>
+          <!-- ===================== 25b · LIBRESHIP SUPPORT ===================== -->
+          <div class="ds-spec" style="margin-block-start: var(--space-cluster)">
+            <div class="ds-spec__head">
+              <span class="ds-spec__name">Shared field / filter / query state contract</span>
+              <span class="ds-spec__token">contour:filter-change · contour:clear-all</span>
+            </div>
+            <div class="ds-panel">
+              <div class="ds-example" data-generated="wrap"><div class="c-table-wrap" data-snippet>
+                <table class="c-table">
+                  <thead><tr><th>Source</th><th>Event</th><th>Detail</th></tr></thead>
+                  <tbody>
+                    <tr><td>table</td><td><code>contour:filter-change</code></td><td>{ sort, sortDir, page, filters, selectedRows }</td></tr>
+                    <tr><td>chart</td><td><code>contour:filter-change</code></td><td>{ brush }</td></tr>
+                    <tr><td>brush</td><td><code>contour:filter-change</code></td><td>{ start, end }</td></tr>
+                    <tr><td>threshold</td><td><code>contour:filter-change</code></td><td>{ norm, value }</td></tr>
+                    <tr><td>legend</td><td><code>contour:filter-change</code></td><td>{ selection }</td></tr>
+                    <tr><td>pivot</td><td><code>contour:filter-change</code></td><td>{ filter }</td></tr>
+                    <tr><td>category</td><td><code>contour:filter-change</code></td><td>{ search }</td></tr>
+                    <tr><td>global</td><td><code>contour:clear-all</code></td><td>—</td></tr>
+                  </tbody>
+                </table>
+              </div><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-522" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-522">&lt;div class="c-table-wrap"&gt;
+  &lt;table class="c-table"&gt;
+    &lt;thead&gt;
+      &lt;tr&gt;
+        &lt;th&gt;Source&lt;/th&gt;
+        &lt;th&gt;Event&lt;/th&gt;
+        &lt;th&gt;Detail&lt;/th&gt;
+      &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+      &lt;tr&gt;
+        &lt;td&gt;table&lt;/td&gt;
+        &lt;td&gt;
+          &lt;code&gt;contour:filter-change&lt;/code&gt;
+        &lt;/td&gt;
+        &lt;td&gt;{ sort, sortDir, page, filters, selectedRows }&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+        &lt;td&gt;chart&lt;/td&gt;
+        &lt;td&gt;
+          &lt;code&gt;contour:filter-change&lt;/code&gt;
+        &lt;/td&gt;
+        &lt;td&gt;{ brush }&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+        &lt;td&gt;brush&lt;/td&gt;
+        &lt;td&gt;
+          &lt;code&gt;contour:filter-change&lt;/code&gt;
+        &lt;/td&gt;
+        &lt;td&gt;{ start, end }&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+        &lt;td&gt;threshold&lt;/td&gt;
+        &lt;td&gt;
+          &lt;code&gt;contour:filter-change&lt;/code&gt;
+        &lt;/td&gt;
+        &lt;td&gt;{ norm, value }&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+        &lt;td&gt;legend&lt;/td&gt;
+        &lt;td&gt;
+          &lt;code&gt;contour:filter-change&lt;/code&gt;
+        &lt;/td&gt;
+        &lt;td&gt;{ selection }&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+        &lt;td&gt;pivot&lt;/td&gt;
+        &lt;td&gt;
+          &lt;code&gt;contour:filter-change&lt;/code&gt;
+        &lt;/td&gt;
+        &lt;td&gt;{ filter }&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+        &lt;td&gt;category&lt;/td&gt;
+        &lt;td&gt;
+          &lt;code&gt;contour:filter-change&lt;/code&gt;
+        &lt;/td&gt;
+        &lt;td&gt;{ search }&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+        &lt;td&gt;global&lt;/td&gt;
+        &lt;td&gt;
+          &lt;code&gt;contour:clear-all&lt;/code&gt;
+        &lt;/td&gt;
+        &lt;td&gt;—&lt;/td&gt;
+      &lt;/tr&gt;
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+&lt;/div&gt;</code></pre>
+                      </div>
+                    </details></div>
+              <p class="muted" style="font-size: var(--type-xs); margin-block-start: var(--space-sm)">
+                <strong>Contract (R16-25):</strong> data components announce filter changes via
+                <code>contour:filter-change</code> (bubbling, composed) with <code>{ source, filter }</code>
+                detail. A global <code>contour:clear-all</code> resets every filterable component to its
+                default state. Contour owns the event contract; libreship owns the state store and
+                re-applies filters by setting attributes.
+              </p>
+            </div>
+          </div>
+
+          <div class="ds-spec" style="margin-block-start: var(--space-cluster)">
+            <div class="ds-spec__head">
+              <span class="ds-spec__name">Table / map selection identity</span>
+              <span class="ds-spec__token">contour:zoom · data-row</span>
+            </div>
+            <div class="ds-panel">
+              <div class="ds-example" data-generated="wrap"><contour-table data-snippet>
+                <tbody>
+                  <tr data-row="{&quot;lat&quot;:51.5,&quot;lon&quot;:-0.1,&quot;name&quot;:&quot;London&quot;}">
+                    <td>London</td>
+                  </tr>
+                </tbody>
+              </contour-table><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-523" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-523">&lt;contour-table&gt;
+  &lt;tbody&gt;
+    &lt;tr data-row="{&amp;quot;lat&amp;quot;:51.5,&amp;quot;lon&amp;quot;:-0.1,&amp;quot;name&amp;quot;:&amp;quot;London&amp;quot;}"&gt;
+      &lt;td&gt;London&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/contour-table&gt;</code></pre>
+                      </div>
+                    </details></div>
+              <p class="muted" style="font-size: var(--type-xs); margin-block-start: var(--space-sm)">
+                <strong>Contract (R16-26):</strong> a table row carries its identity in
+                <code>data-row</code> (JSON row data) and emits <code>contour:zoom</code> with
+                <code>{ row, index, data }</code> on click. A map consumer listens for
+                <code>contour:zoom</code> and zooms to the corresponding feature. Contour stays
+                engine-agnostic: it announces the row and data, never touches the map canvas.
+              </p>
+            </div>
+          </div>
+
+          <div class="ds-spec" style="margin-block-start: var(--space-cluster)">
+            <div class="ds-spec__head">
+              <span class="ds-spec__name">Time-series playback contract</span>
+              <span class="ds-spec__token">current-time · is-playing · speeds · contour:step-change</span>
+            </div>
+            <div class="ds-panel">
+              <div class="ds-example" data-generated="wrap"><contour-time-series data-snippet current-time="0" is-playing="false" speeds="[0.5, 1, 2, 4]"></contour-time-series><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-524" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-524">&lt;contour-time-series current-time="0" is-playing="false" speeds="[0.5, 1, 2, 4]"&gt;&lt;/contour-time-series&gt;</code></pre>
+                      </div>
+                    </details></div>
+              <p class="muted" style="font-size: var(--type-xs); margin-block-start: var(--space-sm)">
+                <strong>Contract (R16-27):</strong> time-series components expose playback state
+                (<code>current-time</code>, <code>is-playing</code>, <code>speeds</code>) and emit
+                <code>contour:step-change</code> / <code>contour:step-activate</code> on navigation.
+                libreship drives playback by setting attributes; Contour announces state changes.
+              </p>
+            </div>
+          </div>
+
+          <div class="ds-spec" style="margin-block-start: var(--space-cluster)">
+            <div class="ds-spec__head">
+              <span class="ds-spec__name">Layer-panel ownership and map adapter</span>
+              <span class="ds-spec__token">contour-map-area · attachMap · getViewport</span>
+            </div>
+            <div class="ds-panel">
+              <div class="ds-example" data-generated="wrap"><contour-map-area data-snippet style="min-block-size: 8rem; border: 1px solid var(--color-border); border-radius: var(--radius-md)"></contour-map-area><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-525" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-525">&lt;contour-map-area style="min-block-size: 8rem; border: 1px solid var(--color-border); border-radius: var(--radius-md)"&gt;&lt;/contour-map-area&gt;</code></pre>
+                      </div>
+                    </details></div>
+              <p class="muted" style="font-size: var(--type-xs); margin-block-start: var(--space-sm)">
+                <strong>Contract (R16-28):</strong> the layer panel owns layer visibility, order, and
+                styling; the map adapter (Contour's <code>contour-map-area</code>) owns the engine
+                bridge. The panel never touches the engine directly — it sets attributes on
+                <code>contour-map-area</code>, which forwards to the live engine instance via
+                <code>attachMap()</code>.
+              </p>
+            </div>
+          </div>
+
+          <div class="ds-spec" style="margin-block-start: var(--space-cluster)">
+            <div class="ds-spec__head">
+              <span class="ds-spec__name">Spatial data accessible fallback</span>
+              <span class="ds-spec__token">data-table · visually-hidden · role="img"</span>
+            </div>
+            <div class="ds-panel">
+              <div class="ds-example" data-generated="wrap"><contour-chart data-snippet data-table series="[{&quot;label&quot;:&quot;Rivers&quot;,&quot;values&quot;:[10,20,30]}]"></contour-chart><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-526" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-526">&lt;contour-chart data-table series="[{&amp;quot;label&amp;quot;:&amp;quot;Rivers&amp;quot;,&amp;quot;values&amp;quot;:[10,20,30]}]"&gt;&lt;/contour-chart&gt;</code></pre>
+                      </div>
+                    </details></div>
+              <p class="muted" style="font-size: var(--type-xs); margin-block-start: var(--space-sm)">
+                <strong>Contract (R16-29):</strong> every chart and map component offers an
+                opt-in accessible data table via <code>data-table</code>. The graphic remains the
+                primary presentation (<code>role="img"</code>); the visually-hidden table carries the
+                same data for screen readers and no-JS consumers.
+              </p>
+            </div>
+          </div>
+
+          <div class="ds-spec" style="margin-block-start: var(--space-cluster)">
+            <div class="ds-spec__head">
+              <span class="ds-spec__name">Resizable map / data split pane</span>
+              <span class="ds-spec__token">contour-resizable · contour:resize</span>
+            </div>
+            <div class="ds-panel">
+              <div class="ds-example" data-generated="wrap"><div class="c-split-pane" data-snippet style="display: flex; gap: var(--space-sm); min-block-size: 12rem;">
+                <contour-map-area style="flex: 1; border: 1px solid var(--color-border); border-radius: var(--radius-md)"></contour-map-area>
+                <contour-resizable style="width: 1rem; cursor: ew-resize"></contour-resizable>
+                <contour-table style="flex: 1; border: 1px solid var(--color-border); border-radius: var(--radius-md)"></contour-table>
+              </div><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-527" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-527">&lt;div class="c-split-pane" style="display: flex; gap: var(--space-sm); min-block-size: 12rem;"&gt;
+  &lt;contour-map-area style="flex: 1; border: 1px solid var(--color-border); border-radius: var(--radius-md)"&gt;&lt;/contour-map-area&gt;
+  &lt;contour-resizable style="width: 1rem; cursor: ew-resize"&gt;&lt;/contour-resizable&gt;
+  &lt;contour-table style="flex: 1; border: 1px solid var(--color-border); border-radius: var(--radius-md)"&gt;&lt;/contour-table&gt;
+&lt;/div&gt;</code></pre>
+                      </div>
+                    </details></div>
+              <p class="muted" style="font-size: var(--type-xs); margin-block-start: var(--space-sm)">
+                <strong>Contract (R16-30):</strong> a resizable split pane between map and data
+                panels uses <code>contour-resizable</code> on the divider. It emits
+                <code>contour:resize</code> with the new split ratio so both panels can reflow.
+                Consumers wire the resize to their map's <code>resize()</code> and their table's
+                virtual scroll.
+              </p>
+            </div>
+          </div>
+
+          <div class="ds-spec" style="margin-block-start: var(--space-cluster)">
+            <div class="ds-spec__head">
+              <span class="ds-spec__name">Wiring recipes (5 import quickstarts)</span>
+              <span class="ds-spec__token">per-family bundles · contour-wc-*.esm.min.js</span>
+            </div>
+            <div class="ds-panel">
+              <div class="ds-example" data-generated="wrap"><table class="c-table" data-snippet>
+                <thead><tr><th>Recipe</th><th>Bundle</th><th>Use case</th></tr></thead>
+                <tbody>
+                  <tr><td>Map-only dashboard</td><td><code>contour-wc-map.esm.min.js</code></td><td>Map area, popup, spatial filter, geocoder</td></tr>
+                  <tr><td>Data exploration</td><td><code>contour-wc-data.esm.min.js</code></td><td>Table, chart, category, pivot, time-series, brush, threshold, legend</td></tr>
+                  <tr><td>Forms &amp; filters</td><td><code>contour-wc-forms.esm.min.js</code></td><td>Input, select, checkbox, radio, switch, date-picker, tags-input</td></tr>
+                  <tr><td>UI shells</td><td><code>contour-wc-ui.esm.min.js</code></td><td>Button, card, dialog, drawer, tooltip, popover, command palette</td></tr>
+                  <tr><td>Full system</td><td><code>contour-wc.esm.min.js</code></td><td>All families + core infrastructure</td></tr>
+                </tbody>
+              </table><details class="ds-code" data-generated="code">
+                      <summary class="ds-code__summary">
+                        <span class="ds-code__chevron">
+                          <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
+                        </span>
+                        <span>HTML</span>
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-528" aria-label="Copy code">
+                          <svg aria-hidden="true"><use href="#i-copy" /></svg>
+                          Copy
+                        </button>
+                      </summary>
+                      <div class="ds-code__body">
+                        <pre class="ds-code__pre"><code id="ds-code-528">&lt;table class="c-table"&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Recipe&lt;/th&gt;
+      &lt;th&gt;Bundle&lt;/th&gt;
+      &lt;th&gt;Use case&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Map-only dashboard&lt;/td&gt;
+      &lt;td&gt;
+        &lt;code&gt;contour-wc-map.esm.min.js&lt;/code&gt;
+      &lt;/td&gt;
+      &lt;td&gt;Map area, popup, spatial filter, geocoder&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Data exploration&lt;/td&gt;
+      &lt;td&gt;
+        &lt;code&gt;contour-wc-data.esm.min.js&lt;/code&gt;
+      &lt;/td&gt;
+      &lt;td&gt;
+        Table, chart, category, pivot, time-series, brush, threshold, legend
+      &lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Forms &amp; filters&lt;/td&gt;
+      &lt;td&gt;
+        &lt;code&gt;contour-wc-forms.esm.min.js&lt;/code&gt;
+      &lt;/td&gt;
+      &lt;td&gt;
+        Input, select, checkbox, radio, switch, date-picker, tags-input
+      &lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;UI shells&lt;/td&gt;
+      &lt;td&gt;
+        &lt;code&gt;contour-wc-ui.esm.min.js&lt;/code&gt;
+      &lt;/td&gt;
+      &lt;td&gt;
+        Button, card, dialog, drawer, tooltip, popover, command palette
+      &lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Full system&lt;/td&gt;
+      &lt;td&gt;
+        &lt;code&gt;contour-wc.esm.min.js&lt;/code&gt;
+      &lt;/td&gt;
+      &lt;td&gt;All families + core infrastructure&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</code></pre>
+                      </div>
+                    </details></div>
+              <p class="muted" style="font-size: var(--type-xs); margin-block-start: var(--space-sm)">
+                <strong>Recipes (R16-32):</strong> import only the family you need. Each per-family
+                bundle includes the shared core plus that family's components.
+              </p>
+            </div>
+          </div>
+
+          </section>
 
          <!-- ===================== 26 · COMPONENT INDEX ===================== -->
          <section class="section" id="componentindex">
@@ -24163,13 +24538,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-522" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-529" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-522">&lt;contour-animation-controls playing speed="1x" progress="40" min="0" max="100" caption="Playhead" show-thumb show-thumb-caption&gt;&lt;/contour-animation-controls&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-529">&lt;contour-animation-controls playing speed="1x" progress="40" min="0" max="100" caption="Playhead" show-thumb show-thumb-caption&gt;&lt;/contour-animation-controls&gt;</code></pre>
                       </div>
                     </details></div></div>
              </div>
@@ -24186,13 +24561,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-523" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-530" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-523">&lt;contour-annotation label="Note" x="10" y="20"&gt;&lt;/contour-annotation&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-530">&lt;contour-annotation label="Note" x="10" y="20"&gt;&lt;/contour-annotation&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -24209,13 +24584,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-524" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-531" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-524">&lt;div class="c-avatar-group"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-531">&lt;div class="c-avatar-group"&gt;
   &lt;span class="c-avatar"&gt;AB&lt;/span&gt;
   &lt;span class="c-avatar"&gt;CD&lt;/span&gt;
   &lt;span class="c-avatar"&gt;+3&lt;/span&gt;
@@ -24236,13 +24611,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-525" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-532" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-525">&lt;contour-axis min="0" max="100" ticks="5"&gt;&lt;/contour-axis&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-532">&lt;contour-axis min="0" max="100" ticks="5"&gt;&lt;/contour-axis&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -24259,13 +24634,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-526" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-533" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-526">&lt;contour-badge-overflow count="8" max="3"&gt;&lt;/contour-badge-overflow&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-533">&lt;contour-badge-overflow count="8" max="3"&gt;&lt;/contour-badge-overflow&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -24282,13 +24657,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-527" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-534" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-527">&lt;div class="c-banner c-banner--info"&gt;Banner message&lt;/div&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-534">&lt;div class="c-banner c-banner--info"&gt;Banner message&lt;/div&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -24305,13 +24680,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-528" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-535" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-528">&lt;contour-bivariate-legend x-label="X" y-label="Y"&gt;&lt;/contour-bivariate-legend&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-535">&lt;contour-bivariate-legend x-label="X" y-label="Y"&gt;&lt;/contour-bivariate-legend&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -24328,13 +24703,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-529" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-536" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-529">&lt;contour-brownout level="1"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-536">&lt;contour-brownout level="1"&gt;
   &lt;span&gt;Brownout content&lt;/span&gt;
 &lt;/contour-brownout&gt;</code></pre>
                       </div>
@@ -24353,13 +24728,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-530" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-537" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-530">&lt;contour-brush&gt;&lt;/contour-brush&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-537">&lt;contour-brush&gt;&lt;/contour-brush&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -24376,13 +24751,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-531" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-538" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-531">&lt;div class="c-calendar"&gt;November 2026&lt;/div&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-538">&lt;div class="c-calendar"&gt;November 2026&lt;/div&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -24399,13 +24774,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-532" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-539" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-532">&lt;div class="c-carousel"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-539">&lt;div class="c-carousel"&gt;
   &lt;div class="c-carousel__track"&gt;
     &lt;div class="c-carousel__slide"&gt;Slide 1&lt;/div&gt;
   &lt;/div&gt;
@@ -24426,13 +24801,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-533" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-540" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-533">&lt;contour-category items="[&amp;quot;A&amp;quot;,&amp;quot;B&amp;quot;,&amp;quot;C&amp;quot;]"&gt;&lt;/contour-category&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-540">&lt;contour-category items="[&amp;quot;A&amp;quot;,&amp;quot;B&amp;quot;,&amp;quot;C&amp;quot;]"&gt;&lt;/contour-category&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -24449,13 +24824,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-534" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-541" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-534">&lt;contour-color-picker value="#377eb8"&gt;&lt;/contour-color-picker&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-541">&lt;contour-color-picker value="#377eb8"&gt;&lt;/contour-color-picker&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -24472,13 +24847,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-535" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-542" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-535">&lt;contour-command-palette items="[&amp;quot;Open file&amp;quot;,&amp;quot;Save&amp;quot;,&amp;quot;Quit&amp;quot;]"&gt;&lt;/contour-command-palette&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-542">&lt;contour-command-palette items="[&amp;quot;Open file&amp;quot;,&amp;quot;Save&amp;quot;,&amp;quot;Quit&amp;quot;]"&gt;&lt;/contour-command-palette&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -24495,13 +24870,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-536" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-543" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-536">&lt;contour-context-menu items="[&amp;quot;Copy&amp;quot;,&amp;quot;Paste&amp;quot;,&amp;quot;Delete&amp;quot;]"&gt;&lt;/contour-context-menu&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-543">&lt;contour-context-menu items="[&amp;quot;Copy&amp;quot;,&amp;quot;Paste&amp;quot;,&amp;quot;Delete&amp;quot;]"&gt;&lt;/contour-context-menu&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -24518,13 +24893,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-537" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-544" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-537">&lt;contour-data-grid columns="[&amp;quot;Name&amp;quot;,&amp;quot;Value&amp;quot;]" rows="[[&amp;quot;Alpha&amp;quot;,&amp;quot;1&amp;quot;],[&amp;quot;Beta&amp;quot;,&amp;quot;2&amp;quot;]]"&gt;&lt;/contour-data-grid&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-544">&lt;contour-data-grid columns="[&amp;quot;Name&amp;quot;,&amp;quot;Value&amp;quot;]" rows="[[&amp;quot;Alpha&amp;quot;,&amp;quot;1&amp;quot;],[&amp;quot;Beta&amp;quot;,&amp;quot;2&amp;quot;]]"&gt;&lt;/contour-data-grid&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -24541,13 +24916,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-538" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-545" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-538">&lt;contour-date-picker range time locale="en-GB" range-start="2026-11-01T09:00" range-end="2026-11-03T17:00"&gt;&lt;/contour-date-picker&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-545">&lt;contour-date-picker range time locale="en-GB" range-start="2026-11-01T09:00" range-end="2026-11-03T17:00"&gt;&lt;/contour-date-picker&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -24564,13 +24939,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-539" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-546" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-539">&lt;contour-date-range start="2026-11-01" end="2026-11-30"&gt;&lt;/contour-date-range&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-546">&lt;contour-date-range start="2026-11-01" end="2026-11-30"&gt;&lt;/contour-date-range&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -24587,13 +24962,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-540" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-547" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-540">&lt;div class="c-divider" role="separator"&gt;&lt;/div&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-547">&lt;div class="c-divider" role="separator"&gt;&lt;/div&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -24610,13 +24985,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-541" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-548" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-541">&lt;contour-donut value="60" max="100"&gt;&lt;/contour-donut&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-548">&lt;contour-donut value="60" max="100"&gt;&lt;/contour-donut&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -24633,13 +25008,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-542" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-549" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-542">&lt;contour-dropdown label="Menu" items="[&amp;quot;Edit&amp;quot;,&amp;quot;Duplicate&amp;quot;,&amp;quot;Delete&amp;quot;]"&gt;&lt;/contour-dropdown&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-549">&lt;contour-dropdown label="Menu" items="[&amp;quot;Edit&amp;quot;,&amp;quot;Duplicate&amp;quot;,&amp;quot;Delete&amp;quot;]"&gt;&lt;/contour-dropdown&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -24656,13 +25031,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-543" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-550" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-543">&lt;button class="c-fab c-btn" type="button" aria-label="Add"&gt;+&lt;/button&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-550">&lt;button class="c-fab c-btn" type="button" aria-label="Add"&gt;+&lt;/button&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -24679,13 +25054,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-544" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-551" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-544">&lt;contour-file-upload label="Drop files here or click to browse" accept=".csv,.json" multiple&gt;&lt;/contour-file-upload&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-551">&lt;contour-file-upload label="Drop files here or click to browse" accept=".csv,.json" multiple&gt;&lt;/contour-file-upload&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -24702,13 +25077,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-545" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-552" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-545">&lt;contour-gauge value="72" min="0" max="100"&gt;&lt;/contour-gauge&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-552">&lt;contour-gauge value="72" min="0" max="100"&gt;&lt;/contour-gauge&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -24725,13 +25100,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-546" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-553" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-546">&lt;contour-hover-card title="Hover card" content="Hover card body." anchor="#hc-trigger"&gt;&lt;/contour-hover-card&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-553">&lt;contour-hover-card title="Hover card" content="Hover card body." anchor="#hc-trigger"&gt;&lt;/contour-hover-card&gt;
 &lt;button id="hc-trigger" class="c-btn c-btn--sm" type="button"&gt;Hover me&lt;/button&gt;</code></pre>
                       </div>
                     </details></div></div>
@@ -24749,13 +25124,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-547" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-554" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-547">&lt;contour-map-popup title="Location" content="Popup body."&gt;&lt;/contour-map-popup&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-554">&lt;contour-map-popup title="Location" content="Popup body."&gt;&lt;/contour-map-popup&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -24772,13 +25147,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-548" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-555" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-548">&lt;contour-notification-center count="3" color="var(--color-danger)" items="[&amp;quot;New message&amp;quot;,&amp;quot;Build done&amp;quot;,&amp;quot;Alert&amp;quot;]"&gt;&lt;/contour-notification-center&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-555">&lt;contour-notification-center count="3" color="var(--color-danger)" items="[&amp;quot;New message&amp;quot;,&amp;quot;Build done&amp;quot;,&amp;quot;Alert&amp;quot;]"&gt;&lt;/contour-notification-center&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -24795,13 +25170,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-549" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-556" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-549">&lt;contour-number-field value="42" min="0" max="100"&gt;&lt;/contour-number-field&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-556">&lt;contour-number-field value="42" min="0" max="100"&gt;&lt;/contour-number-field&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -24818,13 +25193,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-550" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-557" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-550">&lt;contour-palette-editor colors="[&amp;quot;#e41a1c&amp;quot;,&amp;quot;#377eb8&amp;quot;,&amp;quot;#4daf4a&amp;quot;]"&gt;&lt;/contour-palette-editor&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-557">&lt;contour-palette-editor colors="[&amp;quot;#e41a1c&amp;quot;,&amp;quot;#377eb8&amp;quot;,&amp;quot;#4daf4a&amp;quot;]"&gt;&lt;/contour-palette-editor&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -24841,13 +25216,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-551" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-558" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-551">&lt;div class="c-pivot"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-558">&lt;div class="c-pivot"&gt;
   &lt;table&gt;
     &lt;thead&gt;
       &lt;tr&gt;
@@ -24879,13 +25254,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-552" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-559" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-552">&lt;contour-popover title="Details" content="Popover body text."&gt;&lt;/contour-popover&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-559">&lt;contour-popover title="Details" content="Popover body text."&gt;&lt;/contour-popover&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -24902,13 +25277,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-553" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-560" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-553">&lt;contour-rating value="3" max="5"&gt;&lt;/contour-rating&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-560">&lt;contour-rating value="3" max="5"&gt;&lt;/contour-rating&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -24925,13 +25300,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-554" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-561" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-554">&lt;div class="c-responsive-content"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-561">&lt;div class="c-responsive-content"&gt;
   &lt;p&gt;Responsive content&lt;/p&gt;
 &lt;/div&gt;</code></pre>
                       </div>
@@ -24950,13 +25325,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-555" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-562" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-555">&lt;contour-side-sheet title="Filters" side="end"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-562">&lt;contour-side-sheet title="Filters" side="end"&gt;
   &lt;p&gt;Sheet body content.&lt;/p&gt;
 &lt;/contour-side-sheet&gt;</code></pre>
                       </div>
@@ -24975,13 +25350,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-556" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-563" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-556">&lt;div class="c-skeleton-group"&gt;
+                        <pre class="ds-code__pre"><code id="ds-code-563">&lt;div class="c-skeleton-group"&gt;
   &lt;div class="c-skeleton"&gt;&lt;/div&gt;
   &lt;div class="c-skeleton"&gt;&lt;/div&gt;
 &lt;/div&gt;</code></pre>
@@ -25001,13 +25376,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-557" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-564" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-557">&lt;contour-sortable-list items="[&amp;quot;First&amp;quot;,&amp;quot;Second&amp;quot;,&amp;quot;Third&amp;quot;]"&gt;&lt;/contour-sortable-list&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-564">&lt;contour-sortable-list items="[&amp;quot;First&amp;quot;,&amp;quot;Second&amp;quot;,&amp;quot;Third&amp;quot;]"&gt;&lt;/contour-sortable-list&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -25024,13 +25399,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-558" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-565" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-558">&lt;contour-split-button label="Save" items="[&amp;quot;Save as&amp;quot;,&amp;quot;Export&amp;quot;]"&gt;&lt;/contour-split-button&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-565">&lt;contour-split-button label="Save" items="[&amp;quot;Save as&amp;quot;,&amp;quot;Export&amp;quot;]"&gt;&lt;/contour-split-button&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -25047,13 +25422,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-559" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-566" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-559">&lt;contour-stacked-bar values="[30,50,20]"&gt;&lt;/contour-stacked-bar&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-566">&lt;contour-stacked-bar values="[30,50,20]"&gt;&lt;/contour-stacked-bar&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -25070,13 +25445,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-560" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-567" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-560">&lt;span class="c-status-light c-status-light--success" role="status" aria-label="OK"&gt;&lt;/span&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-567">&lt;span class="c-status-light c-status-light--success" role="status" aria-label="OK"&gt;&lt;/span&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -25093,13 +25468,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-561" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-568" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-561">&lt;contour-stepper steps="[&amp;quot;Step 1&amp;quot;,&amp;quot;Step 2&amp;quot;,&amp;quot;Step 3&amp;quot;]" current="1"&gt;&lt;/contour-stepper&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-568">&lt;contour-stepper steps="[&amp;quot;Step 1&amp;quot;,&amp;quot;Step 2&amp;quot;,&amp;quot;Step 3&amp;quot;]" current="1"&gt;&lt;/contour-stepper&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -25116,13 +25491,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-562" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-569" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-562">&lt;contour-style-panel title="Layer style" single property="population" classification="quantile" palette="viridis" n="5" opacity="80"&gt;&lt;/contour-style-panel&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-569">&lt;contour-style-panel title="Layer style" single property="population" classification="quantile" palette="viridis" n="5" opacity="80"&gt;&lt;/contour-style-panel&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -25139,13 +25514,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-563" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-570" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-563">&lt;contour-style-switcher options="[&amp;quot;light&amp;quot;,&amp;quot;dark&amp;quot;]" value="light"&gt;&lt;/contour-style-switcher&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-570">&lt;contour-style-switcher options="[&amp;quot;light&amp;quot;,&amp;quot;dark&amp;quot;]" value="light"&gt;&lt;/contour-style-switcher&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -25162,13 +25537,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-564" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-571" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-564">&lt;span class="c-swatch" style="background: var(--color-primary)"&gt;&lt;/span&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-571">&lt;span class="c-swatch" style="background: var(--color-primary)"&gt;&lt;/span&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -25185,13 +25560,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-565" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-572" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-565">&lt;contour-tags-input value="[&amp;quot;alpha&amp;quot;,&amp;quot;beta&amp;quot;]" placeholder="Add tag…"&gt;&lt;/contour-tags-input&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-572">&lt;contour-tags-input value="[&amp;quot;alpha&amp;quot;,&amp;quot;beta&amp;quot;]" placeholder="Add tag…"&gt;&lt;/contour-tags-input&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -25208,13 +25583,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-566" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-573" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-566">&lt;contour-time-picker value="14:30"&gt;&lt;/contour-time-picker&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-573">&lt;contour-time-picker value="14:30"&gt;&lt;/contour-time-picker&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -25231,13 +25606,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-567" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-574" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-567">&lt;contour-time-series data="[1,2,3,4,5]"&gt;&lt;/contour-time-series&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-574">&lt;contour-time-series data="[1,2,3,4,5]"&gt;&lt;/contour-time-series&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -25254,13 +25629,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-568" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-575" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-568">&lt;contour-tour steps="[&amp;quot;Step one&amp;quot;,&amp;quot;Step two&amp;quot;,&amp;quot;Step three&amp;quot;]" current="0"&gt;&lt;/contour-tour&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-575">&lt;contour-tour steps="[&amp;quot;Step one&amp;quot;,&amp;quot;Step two&amp;quot;,&amp;quot;Step three&amp;quot;]" current="0"&gt;&lt;/contour-tour&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -25277,13 +25652,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-569" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-576" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-569">&lt;contour-tree-grid rows="[{&amp;quot;name&amp;quot;:&amp;quot;Root&amp;quot;,&amp;quot;children&amp;quot;:[{&amp;quot;name&amp;quot;:&amp;quot;Child&amp;quot;}]}]"&gt;&lt;/contour-tree-grid&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-576">&lt;contour-tree-grid rows="[{&amp;quot;name&amp;quot;:&amp;quot;Root&amp;quot;,&amp;quot;children&amp;quot;:[{&amp;quot;name&amp;quot;:&amp;quot;Child&amp;quot;}]}]"&gt;&lt;/contour-tree-grid&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -25300,13 +25675,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-570" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-577" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-570">&lt;contour-virtual-list items="[&amp;quot;Row 1&amp;quot;,&amp;quot;Row 2&amp;quot;,&amp;quot;Row 3&amp;quot;,&amp;quot;Row 4&amp;quot;,&amp;quot;Row 5&amp;quot;]" item-height="28"&gt;&lt;/contour-virtual-list&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-577">&lt;contour-virtual-list items="[&amp;quot;Row 1&amp;quot;,&amp;quot;Row 2&amp;quot;,&amp;quot;Row 3&amp;quot;,&amp;quot;Row 4&amp;quot;,&amp;quot;Row 5&amp;quot;]" item-height="28"&gt;&lt;/contour-virtual-list&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -25323,13 +25698,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-571" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-578" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-571">&lt;contour-widget-state state="loading"&gt;&lt;/contour-widget-state&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-578">&lt;contour-widget-state state="loading"&gt;&lt;/contour-widget-state&gt;</code></pre>
                       </div>
                     </details></div></div>
 
@@ -25346,13 +25721,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-572" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-579" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-572">&lt;contour-changelog class="c-changelog" src="../CHANGELOG.md" max="3"&gt;&lt;/contour-changelog&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-579">&lt;contour-changelog class="c-changelog" src="../CHANGELOG.md" max="3"&gt;&lt;/contour-changelog&gt;</code></pre>
                       </div>
                     </details></div>
                <div class="ds-spec" style="margin-block-start: var(--space-cluster)">
@@ -25368,13 +25743,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-573" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-580" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-573">&lt;contour-data-export class="c-data-export" data="[{&amp;quot;a&amp;quot;:1},{&amp;quot;a&amp;quot;:2}]" format="json" label="Export JSON"&gt;&lt;/contour-data-export&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-580">&lt;contour-data-export class="c-data-export" data="[{&amp;quot;a&amp;quot;:1},{&amp;quot;a&amp;quot;:2}]" format="json" label="Export JSON"&gt;&lt;/contour-data-export&gt;</code></pre>
                       </div>
                     </details></div>
                </div>
@@ -25392,13 +25767,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-574" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-581" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-574">&lt;contour-pull-to-refresh class="c-pull-to-refresh" threshold="60" style="block-size: 8rem; overflow: auto;"&gt;Pull to refresh&lt;/contour-pull-to-refresh&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-581">&lt;contour-pull-to-refresh class="c-pull-to-refresh" threshold="60" style="block-size: 8rem; overflow: auto;"&gt;Pull to refresh&lt;/contour-pull-to-refresh&gt;</code></pre>
                       </div>
                     </details></div>
                </div>
@@ -25416,13 +25791,13 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <svg aria-hidden="true"><use href="#i-chevron-right" /></svg>
                         </span>
                         <span>HTML</span>
-                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-575" aria-label="Copy code">
+                        <button class="c-btn c-btn--ghost c-btn--sm ds-code__copy" type="button" data-copy="#ds-code-582" aria-label="Copy code">
                           <svg aria-hidden="true"><use href="#i-copy" /></svg>
                           Copy
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-575">&lt;contour-split-map class="c-split-map" style="block-size: 8rem;"&gt;&lt;/contour-split-map&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-582">&lt;contour-split-map class="c-split-map" style="block-size: 8rem;"&gt;&lt;/contour-split-map&gt;</code></pre>
                       </div>
                     </details></div>
                </div>
