@@ -12,7 +12,7 @@ export interface ContourDataElement extends ContourElement{data?:S;series?:S;src
 export interface ContourAccordionElement extends ContourElement{exclusive?:boolean;src?:S;}
 export interface ContourActivityElement extends ContourElement{src?:S;}
 export interface ContourActivityFeedElement extends ContourElement{filter?:S;"unread-only"?:boolean;}
-export interface ContourAnimationControlsElement extends ContourElement{playing?:boolean;speed?:S;progress?:S;}
+export interface ContourAnimationControlsElement extends ContourElement{playing?:boolean;speed?:S;progress?:S;loop?:boolean;step?:S;markers?:S;}
 export interface ContourAnnotationElement extends ContourElement{x?:S;y?:S;}
 export interface ContourAvatarElement extends ContourElement{src?:S;}
 export interface ContourAxisElement extends ContourDataElement{orientation?:S;values?:S;ticks?:S;format?:S;locale?:S;padding?:S;min?:S;max?:S;}

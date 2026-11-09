@@ -833,8 +833,8 @@ class ContourMapPopup extends ContourBase {
  * `caption`, `show-thumb`, `show-thumb-caption`.
  */
 class ContourAnimationControls extends ContourBase {
-    static get observed() { return ["playing", "speed", "progress", "min", "max", "caption", "show-thumb", "show-thumb-caption"]; }
-    static get properties() { return { playing: { attribute: "playing", type: Boolean }, speed: { attribute: "speed" }, progress: { attribute: "progress" }, min: { attribute: "min" }, max: { attribute: "max" } }; }
+    static get observed() { return ["playing", "speed", "progress", "min", "max", "caption", "show-thumb", "show-thumb-caption", "loop", "step", "markers"]; }
+    static get properties() { return { playing: { attribute: "playing", type: Boolean }, speed: { attribute: "speed" }, progress: { attribute: "progress" }, min: { attribute: "min" }, max: { attribute: "max" }, loop: { attribute: "loop", type: Boolean }, step: { attribute: "step" }, markers: { attribute: "markers" } }; }
     render() {
       this.classList.add("c-animation-controls");
       this.setAttribute("role", "toolbar");
@@ -851,7 +851,17 @@ class ContourAnimationControls extends ContourBase {
       else scrubber.classList.add("c-animation-controls__scrubber--thumb");
       scrubber.min = this.getAttribute("min") || "0";
       scrubber.max = this.getAttribute("max") || "100";
+      scrubber.step = this.getAttribute("step") || "1";
       scrubber.value = this.getAttribute("progress") || "0";
+      // Accessible time values: expose current position as aria-valuenow and a
+      // human-readable label as aria-valuetext so screen readers announce it.
+      const min = Number(scrubber.min) || 0;
+      const max = Number(scrubber.max) || 100;
+      const v = Number(scrubber.value) || min;
+      scrubber.setAttribute("aria-valuenow", String(v));
+      scrubber.setAttribute("aria-valuetext", String(Math.round(v)));
+      scrubber.setAttribute("aria-valuemin", String(min));
+      scrubber.setAttribute("aria-valuemax", String(max));
       const caption = this.getAttribute("caption");
       if (caption) scrubber.setAttribute("aria-label", caption);
       else if (!scrubber.getAttribute("aria-label")) scrubber.setAttribute("aria-label", "Playhead");
@@ -863,6 +873,10 @@ class ContourAnimationControls extends ContourBase {
       } else {
         const cap = this.querySelector(".c-animation-controls__caption");
         if (cap) cap.remove();
+      }
+      // loop indicator
+      if (this.hasAttribute("loop")) {
+        this.setAttribute("aria-label", "Animation controls, loop");
       }
       // showThumb: hide thumb via attribute? keep default
     }
@@ -894,8 +908,24 @@ class ContourAnimationControls extends ContourBase {
           const scrubber = this.querySelector(".c-animation-controls__scrubber");
           if (scrubber) {
             e.preventDefault();
-            const step = e.key === "ArrowRight" ? 1 : -1;
-            scrubber.value = String(Number(scrubber.value) + step);
+            const step = Number(scrubber.step || 1);
+            const delta = e.key === "ArrowRight" ? step : -step;
+            scrubber.value = String(Math.min(Number(scrubber.max || 100), Math.max(Number(scrubber.min || 0), Number(scrubber.value || 0) + delta)));
+            scrubber.dispatchEvent(new Event("input", { bubbles: true }));
+          }
+        } else if (e.key === "Home") {
+          const scrubber = this.querySelector(".c-animation-controls__scrubber");
+          if (scrubber) { e.preventDefault(); scrubber.value = scrubber.min || "0"; scrubber.dispatchEvent(new Event("input", { bubbles: true })); }
+        } else if (e.key === "End") {
+          const scrubber = this.querySelector(".c-animation-controls__scrubber");
+          if (scrubber) { e.preventDefault(); scrubber.value = scrubber.max || "100"; scrubber.dispatchEvent(new Event("input", { bubbles: true })); }
+        } else if (e.key === "PageUp" || e.key === "PageDown") {
+          const scrubber = this.querySelector(".c-animation-controls__scrubber");
+          if (scrubber) {
+            e.preventDefault();
+            const step = Number(scrubber.step || 1) * 10;
+            const delta = e.key === "PageUp" ? step : -step;
+            scrubber.value = String(Math.min(Number(scrubber.max || 100), Math.max(Number(scrubber.min || 0), Number(scrubber.value || 0) + delta)));
             scrubber.dispatchEvent(new Event("input", { bubbles: true }));
           }
         }
@@ -914,7 +944,10 @@ class ContourAnimationControls extends ContourBase {
         const min = Number(scrubber.min || 0);
         const max = Number(scrubber.max || 100);
         let v = Number(scrubber.value || 0) + speedFactor();
-        if (v > max) v = min;
+        if (v > max) {
+          if (this.hasAttribute("loop")) v = min;
+          else { v = max; stop(); }
+        }
         scrubber.value = String(v);
         this.dispatchEvent(new CustomEvent("contour:time-change", { bubbles: true, composed: true, detail: { progress: v, value: v } }));
       };
