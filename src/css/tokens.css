@@ -89,6 +89,18 @@
     --clay-800: oklch(36% 0.1 28);
 
     /* ---------------------------------------------------------------------
+       6b. COLOR ALIASES — brand primitives exposed as color tokens
+       Tailwind v4 bridge and Style Dictionary consumers reference brand
+       colors as --color-*; these aliases make them first-class color tokens
+       and export them under color.* in the DTCG document.
+       --------------------------------------------------------------------- */
+    --color-tidal-500: var(--tidal-500);
+    --color-plasma-500: var(--plasma-500);
+    --color-lumen-500: var(--lumen-500);
+    --color-sol-500: var(--sol-500);
+    --color-clay-500: var(--clay-500);
+
+    /* ---------------------------------------------------------------------
        7. TYPOGRAPHY
        --------------------------------------------------------------------- */
     --font-display: "Contour Plex Sans Condensed", "Contour Plex Sans", ui-sans-serif,

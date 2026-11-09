@@ -84,4 +84,5 @@ const html = `
           </div>
 `;
 
-process.stdout.write(html);
+// Strip trailing whitespace from every line so html-validate passes.
+process.stdout.write(html.split("\n").map((line) => line.replace(/\s+$/, "")).join("\n"));

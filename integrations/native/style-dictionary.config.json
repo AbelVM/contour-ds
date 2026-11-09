@@ -1,5 +1,5 @@
 {
-  "source": ["../../dist/contour.tokens.json"],
+  "source": ["./dist/contour.tokens.json"],
   "usesDtcg": true,
   "platforms": {
     "ios": {

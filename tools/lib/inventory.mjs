@@ -165,8 +165,19 @@ export function blocks(css) {
  */
 export const CLASS_RE = /\.(c-[a-z0-9_-]+)/g;
 
-/** Fold an element or variant suffix away to reach the block it belongs to. */
-export const blockOf = (cls) => cls.replace(/__.*$/, "").replace(/--.*$/, "");
+/** Fold an element or variant suffix away to reach the block it belongs to.
+ *  Accepts either a bare class name (`c-shortcut__key`) or a full selector
+ *  (`.c-shortcut > *`, `.c-shortcut-overlay[hidden]`). Strips child
+ *  combinators, attribute selectors, pseudo-classes and pseudo-elements
+ *  before folding `__` and `--` suffixes, so selectors like `.c-shortcut > *`
+ *  resolve to their block rather than staying "unnamed". */
+export const blockOf = (cls) => cls
+  .replace(/^\./, "")
+  .replace(/\s*>.*$/, "")
+  .replace(/\[.*\]$/, "")
+  .replace(/:.*$/, "")
+  .replace(/__.*$/, "")
+  .replace(/--.*$/, "");
 
 /** The source areas the census searches, keyed by the label a report prints. */
 function areas() {

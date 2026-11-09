@@ -463,20 +463,20 @@ Based on the component list (222 classes) and prior completeness reviews, here i
 | R16-22 | ✅ | Add top-N/sort to c-category | P3 | Low | Low | S | CARTO-inspired. Already implemented: limit and sort attributes in ContourCategory observed/properties with full sort logic (value-desc/asc, alpha-asc/desc) and top-N slicing. |
 | R16-23 | ✅ | Add bucket-count/limit-values to c-chart--histogram | P3 | Low | Low | S | CARTO-inspired. Done: bucket-count bins values into equal-width buckets; limit-values truncates input array; both added to ContourChart observed/properties (commit 7038cb1). |
 | R16-24 | ⬜ | Add color binding to layer for donut/pie | P3 | Low | Low | S | CARTO-inspired. |
-| R16-25 | ⬜ | Define shared field/filter/query state contract | P2 | High | Med | M | Libreship support. |
-| R16-26 | ⬜ | Define table/map selection identity | P2 | High | Med | M | Libreship support. |
-| R16-27 | ⬜ | Define time-series playback contract | P2 | High | Med | M | Libreship support. |
-| R16-28 | ⬜ | Document layer-panel ownership and map adapter | P2 | Med | Low | S | Libreship support. |
-| R16-29 | ⬜ | Ensure spatial data accessible fallbacks | P2 | High | Med | M | Libreship support. |
-| R16-30 | ⬜ | Ensure resizable map/data split pane | P2 | Med | Low | S | Libreship support. |
-| R16-31 | ⬜ | Document map-engine seam | P2 | Med | Low | S | Libreship support. |
-| R16-32 | ⬜ | Add wiring recipes (5 import quickstarts) | P3 | Med | Low | M | Libreship support. |
+| R16-25 | ✅ | Define shared field/filter/query state contract | P2 | High | Med | M | Libreship support. Done: contour:filter-change + contour:clear-all contract documented in §25 (commit a4d2904). |
+| R16-26 | ✅ | Define table/map selection identity | P2 | High | Med | M | Libreship support. Done: contour:zoom + data-row contract documented in §25 (commit a4d2904). |
+| R16-27 | ✅ | Define time-series playback contract | P2 | High | Med | M | Libreship support. Done: current-time, is-playing, speeds, contour:step-change documented in §25 (commit a4d2904). |
+| R16-28 | ✅ | Document layer-panel ownership and map adapter | P2 | Med | Low | S | Libreship support. Done: contour-map-area, attachMap, getViewport documented in §25 (commit a4d2904). |
+| R16-29 | ✅ | Ensure spatial data accessible fallbacks | P2 | High | Med | M | Libreship support. Done: data-table accessible fallback documented in §25 (commit a4d2904). |
+| R16-30 | ✅ | Ensure resizable map/data split pane | P2 | Med | Low | S | Libreship support. Done: contour-resizable, contour:resize documented in §25 (commit a4d2904). |
+| R16-31 | ✅ | Document map-engine seam | P2 | Med | Low | S | Libreship support. Already exists: §25 Map engine section documents duck-typed event-driven seam, attachMap/getViewport, contour:map-control/attach/detach events. |
+| R16-32 | ✅ | Add wiring recipes (5 import quickstarts) | P3 | Med | Low | M | Libreship support. Done: per-family bundle recipes table documented in §25 (commit a4d2904). |
 | R16-33 | ⬜ | Fix Tailwind v4 bridge (5 non-existent tokens) | P3 | Low | Low | S | BY3-I1. |
 | R16-34 | ⬜ | Fix Style Dictionary config (DTCG parse) | P3 | Low | Low | S | BY3-I2. |
 | R16-35 | ⬜ | Audit density token usage across all components | P2 | Med | Low | M | Token-based density. |
 | R16-36 | ⬜ | Remove or wire 27 unused variant classes | P3 | Low | Low | S | BY3-C. |
-| R16-37 | ⬜ | Fix 4 unnamed shortcut blocks | P3 | Low | Low | S | BY2-G1. |
-| R16-38 | ⬜ | Add attribute/property reference tables to guide | P2 | High | Med | L | BY3-A. |
+| R16-37 | ✅ | Fix 4 unnamed shortcut blocks | P3 | Low | Low | S | BY2-G1. Fixed `blockOf()` in `tools/lib/inventory.mjs` to strip child combinators (`> *`), attribute selectors (`[hidden]`), pseudo-classes (`:hover`) and pseudo-elements (`::before`) before folding `__`/`--` suffixes. The 4 affected selectors were `.c-shortcut > *`, `.c-shortcut-overlay[hidden]`, `.c-shortcut-row > *`, `.c-shortcut-row__keys > *`. |
+| R16-38 | ✅ | Add attribute/property reference tables to guide | P2 | High | Med | L | BY3-A. Ran `tools/gen-attr-tables.mjs` (211 blocks with attributes) and `tools/insert-attr-tables.mjs` to insert the table into §23 of index.html. Fixed `gen-attr-tables.mjs` to strip trailing whitespace (html-validate). Rebuilt, all gates pass. |
 | R16-39 | ✅ | Add async-state specimens | P2 | Med | Med | M | Done: added async-state specimens (loading, error, empty, skeleton) for contour-kpi and contour-data-table in §23, matching the contour-readout pattern. |
 | R16-40 | ✅ | Move install earlier; add in-page nav at 390px | P2 | Med | Low | S | Done: install already early via hero CTA and Start here cluster; added c-inpage-nav section list within content flow, visible at width < 390px (24.375rem) where the rail is hidden. |
 | R16-41 | ✅ | Fix 320px reflow on guide | P3 | Low | Low | S | Already resolved: check-reflow passes at 320px (WCAG floor) with no overflow on any page, both themes, JS off. |

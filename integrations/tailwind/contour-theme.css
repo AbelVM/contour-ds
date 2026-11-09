@@ -32,11 +32,11 @@
   --color-info: var(--color-info);
 
   /* Colour — brand families (for data viz / accents) */
-  --color-tidal-500: var(--tidal-500);
-  --color-plasma-500: var(--plasma-500);
-  --color-lumen-500: var(--lumen-500);
-  --color-sol-500: var(--sol-500);
-  --color-clay-500: var(--clay-500);
+  --color-tidal-500: var(--color-tidal-500);
+  --color-plasma-500: var(--color-plasma-500);
+  --color-lumen-500: var(--color-lumen-500);
+  --color-sol-500: var(--color-sol-500);
+  --color-clay-500: var(--color-clay-500);
 
   /* Radius */
   --radius-sm: var(--radius-sm);

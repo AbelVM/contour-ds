@@ -52,6 +52,11 @@ const LEDGER = {
   "--dur-reveal": { action: "wire", task: "R11-23", verified: false, note: "motion foundation reveal duration; consumer pending" },
   "--ease-reveal": { action: "wire", task: "R11-23", verified: false, note: "motion foundation reveal easing; consumer pending" },
   "--reveal-distance": { action: "wire", task: "R11-23", verified: false, note: "motion foundation reveal distance; consumer pending" },
+  "--color-tidal-500": { action: "wire", task: "R16-33", verified: true, note: "Tailwind v4 bridge color alias; read by integrations/tailwind/contour-theme.css" },
+  "--color-plasma-500": { action: "wire", task: "R16-33", verified: true, note: "Tailwind v4 bridge color alias; read by integrations/tailwind/contour-theme.css" },
+  "--color-lumen-500": { action: "wire", task: "R16-33", verified: true, note: "Tailwind v4 bridge color alias; read by integrations/tailwind/contour-theme.css" },
+  "--color-sol-500": { action: "wire", task: "R16-33", verified: true, note: "Tailwind v4 bridge color alias; read by integrations/tailwind/contour-theme.css" },
+  "--color-clay-500": { action: "wire", task: "R16-33", verified: true, note: "Tailwind v4 bridge color alias; read by integrations/tailwind/contour-theme.css" },
 };
 
 // Referenced-but-undefined tokens that are deliberate author hooks (component-scoped

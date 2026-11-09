@@ -58,7 +58,7 @@ const BUDGETS = {
   "contour.min.css": 240 * 1024,  // raised 2026-11-07: +layout fixes; raised 2026-11-09: +c-scheme-toggle, c-split-map CSS blocks; raised 2026-11-09: +c-filter-bar__mode scope toggle CSS; measured 239.6 kB
   "contour.min.js": 39 * 1024,  // raised 2026-11-04: focus restoration + changelog; measured 38.0 kB
   "contour.d.ts": 32 * 1024,  // raised 2026-11-04: +3 new components (data-export, pull-to-refresh, split-map)
-  "contour.tokens.json": 51 * 1024,
+  "contour.tokens.json": 52 * 1024,  // raised 2026-11-09: +5 brand color aliases (--color-tidal-500 etc.) for Tailwind v4 bridge; measured 51.3 kB
   "contour.themes.json": 23 * 1024,
   // Measured 2026-10-23 at 128.4 kB (C-44), ~3% headroom. Large and correct:
   // the contract carries every block's elements, variants, states and the three
