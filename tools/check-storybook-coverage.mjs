@@ -69,21 +69,33 @@ const inventedTags = new Set();
 
 for (const f of files) {
   const src = readFileSync(f, "utf8");
-  const exports = [...src.matchAll(/export\s+(?:const|function)\s+(\w+)/g)].map((m) => m[1]);
-  const stories = exports.filter((n) => n !== "default");
-  storyCount += stories.length;
+  const exportMatches = [...src.matchAll(/export\s+(?:const|function)\s+(\w+)\s*=/g)];
+  const storyNames = exportMatches.map((m) => m[1]).filter((n) => n !== "default");
+  storyCount += storyNames.length;
 
   const titleMatch = src.match(/title\s*:\s*["'`]([^"'`]+)["'`]/);
   const title = titleMatch ? titleMatch[1] : "(untitled)";
   if (titleMatch) titles.push(title);
 
-  const maturityMatch = src.match(/maturity\s*:\s*["'`]([^"'`]+)["'`]/);
-  const maturity = maturityMatch ? maturityMatch[1] : "unspecified";
-  maturityCounts[maturity] = (maturityCounts[maturity] || 0) + 1;
-  const ALLOWED_MATURITY = new Set(["primitive", "scaffold", "complete-widget", "composition", "unspecified"]);
-  if (!ALLOWED_MATURITY.has(maturity)) errors.push(`${relative(ROOT, f)} uses unknown maturity: ${maturity}`);
+  // File-level maturity (fallback for stories without per-story maturity)
+  const fileMaturityMatch = src.match(/maturity\s*:\s*["'`]([^"'`]+)["'`]/);
+  const fileMaturity = fileMaturityMatch ? fileMaturityMatch[1] : "unspecified";
 
-
+  // Per-story maturity: find each story block and search for maturity within it
+  for (let i = 0; i < exportMatches.length; i++) {
+    const storyName = exportMatches[i][1];
+    if (storyName === "default") continue;
+    const start = exportMatches[i].index;
+    const end = i + 1 < exportMatches.length ? exportMatches[i + 1].index : src.length;
+    const block = src.slice(start, end);
+    const m = block.match(/maturity\s*:\s*["'`]([^"'`]+)["'`]/);
+    const storyMaturity = m ? m[1] : fileMaturity;
+    const ALLOWED_MATURITY = new Set(["primitive", "scaffold", "complete-widget", "composition", "unspecified"]);
+    if (!ALLOWED_MATURITY.has(storyMaturity)) {
+      errors.push(`${relative(ROOT, f)} story "${storyName}" uses unknown maturity: ${storyMaturity}`);
+    }
+    maturityCounts[storyMaturity] = (maturityCounts[storyMaturity] || 0) + 1;
+  }
 
   // a11y status for this file
   let a11y = "error";
@@ -107,7 +119,7 @@ for (const f of files) {
 
   // play functions: count stories that contain a play property in the file (heuristic)
   const hasPlay = /play\s*:/.test(src) || /play\s*\(/.test(src);
-  const filePlayCount = hasPlay ? stories.length : 0;
+  const filePlayCount = hasPlay ? storyNames.length : 0;
   playCount += filePlayCount;
 
   // invented tags check
@@ -185,7 +197,7 @@ for (const f of files) {
     errors.push(`${relative(ROOT, f)} does not reference a shipped dist/ asset`);
   }
 
-  perStory.push({ file: relative(ROOT, f), title, stories: stories.length, maturity, a11y, play: filePlayCount });
+  perStory.push({ file: relative(ROOT, f), title, stories: storyNames.length, maturity: fileMaturity, a11y, play: filePlayCount });
 }
 
 if (inventedTags.size) {
