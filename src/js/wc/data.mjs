@@ -874,7 +874,6 @@ const series = this.getAttribute("series");
     enhance() {
       if (this._wiredChart) return;
       this._wiredChart = true;
-      if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
       // Series toggle responding to legend (F-10): hide/show series when a
       // legend item is toggled.
       this.addEventListener("contour:legend-toggle", (e) => {
@@ -1533,6 +1532,7 @@ class ContourGauge extends ContourBase {
       } else {
         valueEl.removeAttribute("aria-labelledby");
         if (heading) valueEl.setAttribute("aria-label", heading);
+        else valueEl.setAttribute("aria-label", valueEl.textContent || "Gauge");
       }
       // band word
       const bandEl = this.querySelector(".c-gauge__band");
@@ -2663,7 +2663,7 @@ class ContourLegend extends ContourBase {
           if (this.hasAttribute("selectable")) {
             list.setAttribute("role", "group");
           } else {
-            list.setAttribute("role", "listbox");
+            list.setAttribute("role", "list");
           }
           if (title) list.setAttribute("aria-label", title);
           list.innerHTML = "";
@@ -2678,7 +2678,7 @@ class ContourLegend extends ContourBase {
               item.setAttribute("aria-pressed", "true");
               item.dataset.key = key;
             } else {
-              item.setAttribute("role", "option");
+              item.setAttribute("role", "listitem");
               item.setAttribute("aria-selected", "false");
             }
             const sw = document.createElement("span");
@@ -3140,6 +3140,17 @@ class ContourHeatmap extends ContourBase {
         const cols = Math.ceil(Math.sqrt(authoredCells.length));
         this.style.gridTemplateColumns = "repeat(" + cols + ", 1fr)";
         this.style.inlineSize = "16rem";
+        // Wrap authored cells in rows so gridcells have a required row parent
+        let row = null;
+        let col = 0;
+        const newRow = () => { row = document.createElement("div"); row.setAttribute("role", "row"); this.appendChild(row); col = 0; };
+        newRow();
+        authoredCells.forEach((cell) => {
+          cell.setAttribute("role", "gridcell");
+          row.appendChild(cell);
+          col++;
+          if (col === cols) newRow();
+        });
       } else {
         Array.from(this.querySelectorAll(".c-heatmap__cell")).forEach((n) => n.remove());
         const count = Math.min(200, Math.max(0, parseInt(this.getAttribute("cells") || this.getAttribute("count") || "0", 10) || 0));
@@ -3149,15 +3160,21 @@ class ContourHeatmap extends ContourBase {
         if (count > 0) {
          let values = [];
          try { values = JSON.parse(this.getAttribute("values") || "[]"); } catch (e) { values = []; }
-         for (let i = 0; i < count; i++) {
-           const cell = document.createElement("div");
-           cell.className = "c-heatmap__cell";
-           cell.setAttribute("role", "gridcell");
-           cell.setAttribute("tabindex", i === 0 ? "0" : "-1");
-           cell.dataset.index = String(i);
-           if (values[i] !== undefined) cell.setAttribute("title", String(values[i]));
-           this.appendChild(cell);
-         }
+         let row = null;
+         let col = 0;
+         const newRow = () => { row = document.createElement("div"); row.setAttribute("role", "row"); this.appendChild(row); col = 0; };
+         newRow();
+           for (let i = 0; i < count; i++) {
+            const cell = document.createElement("div");
+            cell.className = "c-heatmap__cell";
+            cell.setAttribute("role", "gridcell");
+            cell.setAttribute("tabindex", i === 0 ? "0" : "-1");
+            cell.dataset.index = String(i);
+            if (values[i] !== undefined) cell.setAttribute("title", String(values[i]));
+            row.appendChild(cell);
+            col++;
+            if (col === cols && i < count - 1) newRow();
+          }
          const tip = this.ensure(".c-heatmap__tooltip", () => { const el = document.createElement("div"); el.className = "c-heatmap__tooltip"; el.setAttribute("role", "tooltip"); el.setAttribute("hidden", ""); return el; });
          tip.setAttribute("hidden", "");
        } else if (!authoredCells.length) {

@@ -28,7 +28,7 @@ export default defineConfig({
       },
       {
         plugins: [
-          storybookTest({ configDir: path.join(dirname, ".storybook") }),
+          storybookTest({ configDir: path.join(dirname, ".storybook"), storybookUrl: "http://localhost:6006" }),
         ],
         test: {
           name: "storybook",
@@ -37,6 +37,14 @@ export default defineConfig({
             headless: true,
             provider: playwright({}),
             instances: [{ browser: "chromium" }],
+          },
+          server: {
+            deps: {
+              inline: [
+                "@storybook/addon-vitest",
+                "@storybook/addon-vitest/dist/vitest-plugin/setup-file-with-project-annotations.js",
+              ],
+            },
           },
         },
       },

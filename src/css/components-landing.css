@@ -292,14 +292,11 @@
     font-weight: var(--weight-semibold);
     letter-spacing: -0.01em;
     color: var(--color-text-subtle);
-    opacity: 0.7;
     transition:
-      opacity var(--dur-base) var(--ease-standard),
       color var(--dur-base) var(--ease-standard);
   }
 
   .c-logos__item:hover {
-    opacity: 1;
     color: var(--color-text-strong);
   }
 

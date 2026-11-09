@@ -410,7 +410,7 @@ class ContourProgress extends ContourBase {
       this.ensure(".c-progress__bar", () => { const el = document.createElement("span"); el.className = "c-progress__bar"; return el; });
        if (!this.hasAttribute("role")) this.setAttribute("role", "progressbar");
        const label = this.getAttribute("label");
-       if (label && !this.hasAttribute("aria-label")) this.setAttribute("aria-label", label);
+       if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", label || "Progress");
       const min = this.getAttribute("min");
       const max = this.getAttribute("max");
       if (min !== null) this.setAttribute("aria-valuemin", min);
@@ -1466,9 +1466,11 @@ class ContourDateRange extends ContourBase {
       const start = this.ensure(".c-date-range__start", () => { const el = document.createElement("input"); el.className = "c-input c-date-range__start"; return el; });
       start.type = this.hasAttribute("time") ? "datetime-local" : "date";
       start.value = this.getAttribute("start") || "";
+      start.setAttribute("aria-label", this.getAttribute("label") || "Start date");
       const end = this.ensure(".c-date-range__end", () => { const el = document.createElement("input"); el.className = "c-input c-date-range__end"; return el; });
       end.type = start.type;
       end.value = this.getAttribute("end") || "";
+      end.setAttribute("aria-label", this.getAttribute("label") || "End date");
       const min = this.getAttribute("min");
       const max = this.getAttribute("max");
       [start, end].forEach((input) => {
@@ -1784,7 +1786,7 @@ class ContourTimePicker extends ContourBase {
         const l = this.ensure(".c-time-picker__label", () => { const el = document.createElement("label"); el.className = "c-time-picker__label"; return el; });
         l.textContent = label;
       }
-      const input = this.ensure(".c-time-picker__input", () => { const el = document.createElement("input"); el.className = "c-input c-time-picker__input"; el.type = "time"; return el; });
+      const input = this.ensure(".c-time-picker__input", () => { const el = document.createElement("input"); el.className = "c-input c-time-picker__input"; el.type = "time"; el.setAttribute("aria-label", this.getAttribute("label") || "Time picker"); return el; });
       input.value = this.getAttribute("value") || "";
       if (this.hasAttribute("disabled")) { input.setAttribute("disabled", ""); this.classList.add("is-disabled"); }
       else { input.removeAttribute("disabled"); this.classList.remove("is-disabled"); }
@@ -1837,6 +1839,7 @@ class ContourColorPicker extends ContourBase {
       }
       const input = this.ensure(".c-color-picker__input", () => { const el = document.createElement("input"); el.className = "c-color-picker__input"; el.type = "color"; return el; });
       input.value = (this.getAttribute("value") || "#000000").slice(0, 7);
+      if (!input.hasAttribute("aria-label")) input.setAttribute("aria-label", label || "Color");
       if (this.hasAttribute("disabled")) { input.setAttribute("disabled", ""); this.classList.add("is-disabled"); }
       else { input.removeAttribute("disabled"); this.classList.remove("is-disabled"); }
       // Alpha channel (optional).
@@ -1966,6 +1969,7 @@ class ContourNumberField extends ContourBase {
       input.setAttribute("aria-valuenow", v === "" ? "" : v);
       if (input.min !== "") input.setAttribute("aria-valuemin", input.min);
       if (input.max !== "") input.setAttribute("aria-valuemax", input.max);
+      if (!input.hasAttribute("aria-label")) input.setAttribute("aria-label", label || "Number");
       if (this.hasAttribute("disabled")) { input.setAttribute("disabled", ""); this.classList.add("is-disabled"); }
       else { input.removeAttribute("disabled"); this.classList.remove("is-disabled"); }
       const err = this.getAttribute("error");
@@ -2244,8 +2248,8 @@ class ContourNotificationCenter extends ContourBase {
     static get properties() { return { count: { attribute: "count" }, items: { attribute: "items" }, color: { attribute: "color" } }; }
     render() {
       this.classList.add("c-notification-center");
-      this.setAttribute("role", "list");
-      const btn = this.ensure(".c-notification-center__trigger", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-notification-center__trigger"; el.type = "button"; el.innerHTML = '<span class="c-notification-center__bullet" aria-hidden="true"></span>'; el.setAttribute("aria-haspopup", "dialog"); el.setAttribute("aria-expanded", "false"); return el; });
+      this.setAttribute("role", "group");
+      const btn = this.ensure(".c-notification-center__trigger", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-notification-center__trigger"; el.type = "button"; el.innerHTML = '<span class="c-notification-center__bullet" aria-hidden="true"></span>'; el.setAttribute("aria-haspopup", "dialog"); el.setAttribute("aria-expanded", "false"); el.setAttribute("aria-label", "Notifications"); return el; });
       const color = this.getAttribute("color");
       const bullet = btn.querySelector(".c-notification-center__bullet");
       if (bullet && color) { bullet.style.background = color; bullet.dataset.color = color; }
@@ -2542,7 +2546,7 @@ class ContourCommandPalette extends ContourBase {
       if (!this.hasAttribute("role")) this.setAttribute("role", "dialog");
       if (!this.hasAttribute("aria-modal")) this.setAttribute("aria-modal", "true");
       if (!this.hasAttribute("popover")) this.setAttribute("popover", "auto");
-      const search = this.ensure(".c-command-palette__search", () => { const el = document.createElement("input"); el.className = "c-input c-command-palette__search"; el.type = "search"; el.placeholder = "Search…"; el.setAttribute("aria-label", "Search commands"); return el; });
+      const search = this.ensure(".c-command-palette__search", () => { const el = document.createElement("input"); el.className = "c-input c-command-palette__search"; el.type = "search"; el.placeholder = "Search…"; el.setAttribute("aria-label", "Search commands"); el.setAttribute("aria-expanded", "false"); el.setAttribute("aria-controls", ""); return el; });
       const list = this.ensure(".c-command-palette__list", () => { const el = document.createElement("div"); el.className = "c-command-palette__list"; el.setAttribute("role", "listbox"); return el; });
       const items = this.getAttribute("items");
       if (items) {
@@ -2562,8 +2566,8 @@ class ContourCommandPalette extends ContourBase {
         } catch (e) { /* keep */ }
       }
     }
-    show() { if (typeof this.showPopover === "function") { try { this.showPopover(); } catch (e) {} } this.classList.add("is-open"); }
-    hide() { if (typeof this.hidePopover === "function") { try { this.hidePopover(); } catch (e) {} } this.classList.remove("is-open"); }
+    show() { if (typeof this.showPopover === "function") { try { this.showPopover(); } catch (e) {} } this.classList.add("is-open"); const s = this.querySelector(".c-command-palette__search"); if (s) s.setAttribute("aria-expanded", "true"); }
+    hide() { if (typeof this.hidePopover === "function") { try { this.hidePopover(); } catch (e) {} } this.classList.remove("is-open"); const s = this.querySelector(".c-command-palette__search"); if (s) s.setAttribute("aria-expanded", "false"); }
     toggle() { if (this.classList.contains("is-open") || this.matches(":popover-open")) this.hide(); else this.show(); }
     enhance() {
       this._wiredCmdPalette = true;
@@ -2984,11 +2988,10 @@ class ContourSwatch extends ContourBase {
         this.setAttribute("aria-label", label);
       }
       if (!this.querySelector("button") && !this.querySelector("span")) {
-        const btn = document.createElement("button");
-        btn.className = "c-swatch__btn";
-        btn.type = "button";
-        btn.setAttribute("aria-label", this.getAttribute("label") || this.getAttribute("color") || "Swatch");
-        this.appendChild(btn);
+        const span = document.createElement("span");
+        span.className = "c-swatch__btn";
+        span.setAttribute("aria-hidden", "true");
+        this.appendChild(span);
       }
     }
     enhance() {
@@ -3030,10 +3033,16 @@ class ContourCalendar extends ContourBase {
       const startDay = first.getDay();
       const daysInMonth = new Date(year, month + 1, 0).getDate();
       const selected = this.getAttribute("value");
+      let row = null;
+      let col = 0;
+      const newRow = () => { row = document.createElement("div"); row.setAttribute("role", "row"); grid.appendChild(row); col = 0; };
+      newRow();
       for (let i = 0; i < startDay; i++) {
         const empty = document.createElement("div");
         empty.className = "c-calendar__day c-calendar__day--empty";
-        grid.appendChild(empty);
+        row.appendChild(empty);
+        col++;
+        if (col === 7) newRow();
       }
       for (let d = 1; d <= daysInMonth; d++) {
         const cell = document.createElement("button");
@@ -3048,7 +3057,9 @@ class ContourCalendar extends ContourBase {
         const todayIso = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0") + "-" + String(now.getDate()).padStart(2, "0");
         if (iso === todayIso) cell.setAttribute("aria-current", "date");
         cell.dataset.value = iso;
-        grid.appendChild(cell);
+        row.appendChild(cell);
+        col++;
+        if (col === 7) newRow();
       }
       if (header.parentNode !== this) this.insertBefore(header, grid);
     }

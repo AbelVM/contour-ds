@@ -6,6 +6,7 @@ class ContourPressableFull extends ContourBase {
     render() {
       this.classList.add("c-pressable");
       if (!this.hasAttribute("role")) this.setAttribute("role", "button");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("label") || "Pressable");
       if (this.hasAttribute("disabled")) {
         this.setAttribute("aria-disabled", "true");
         this.setAttribute("tabindex", "-1");
@@ -27,6 +28,7 @@ class ContourResizeHandleFull extends ContourBase {
     render() {
       this.classList.add("c-resize-handle");
       if (!this.hasAttribute("role")) this.setAttribute("role", "separator");
+      if (!this.hasAttribute("aria-valuenow")) this.setAttribute("aria-valuenow", "0");
       if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Resize handle");
       if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
       if (!this.hasAttribute("aria-orientation")) this.setAttribute("aria-orientation", "horizontal");
@@ -68,7 +70,6 @@ class ContourShortcutRowFull extends ContourBase {
     static get properties() { return { desc: { attribute: "desc" }, key: { attribute: "key" } }; }
     render() {
       this.classList.add("c-shortcut-row");
-      this.setAttribute("role", "listitem");
       const key = this.getAttribute("key");
       const desc = this.getAttribute("desc");
       if (key) {
@@ -162,6 +163,7 @@ class ContourRowActionFull extends ContourBase {
       }
       const label = this.getAttribute("label");
       if (label && !this.hasChildNodes()) this.textContent = label;
+      if (label && !this.hasAttribute("aria-label")) this.setAttribute("aria-label", label);
     }
     enhance() {
       if (this._wiredRowAction) return;
@@ -261,6 +263,7 @@ class ContourDragHandle extends ContourBase {
     render() {
       this.classList.add("c-drag-handle");
       if (!this.hasAttribute("role")) this.setAttribute("role", "separator");
+      if (!this.hasAttribute("aria-valuenow")) this.setAttribute("aria-valuenow", "0");
       if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
       if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("label") || "Drag handle");
       if (!this.hasAttribute("aria-orientation")) this.setAttribute("aria-orientation", "horizontal");
@@ -288,6 +291,12 @@ class ContourDropIndicator extends ContourBase {
       this.classList.add("c-drop-indicator");
       this.classList.add("c-drop-indicator--visible");
       if (!this.hasAttribute("role")) this.setAttribute("role", "presentation");
+      // A presentation role is purely decorative: strip any accessible name
+      // so axe does not flag aria-label/aria-labelledby as prohibited.
+      if (this.getAttribute("role") === "presentation") {
+        this.removeAttribute("aria-label");
+        this.removeAttribute("aria-labelledby");
+      }
       Array.from(this.childNodes).forEach((n) => { if (n.nodeType === Node.TEXT_NODE) n.remove(); else if (n.nodeType === Node.ELEMENT_NODE && n.tagName === "SPAN") n.remove(); });
       const label = this.getAttribute("label");
       if (label) {
@@ -360,6 +369,7 @@ class ContourResizable extends ContourBase {
         handle.className = "c-resize-handle";
         handle.setAttribute("tabindex", "0");
         handle.setAttribute("role", "separator");
+        handle.setAttribute("aria-valuenow", "0");
         const p2 = document.createElement("div");
         p2.className = "c-resizable__pane";
         p2.textContent = "Pane B";
