@@ -1,0 +1,794 @@
+/* ============================================================================
+   CONTOUR — Data & dashboard components
+   ----------------------------------------------------------------------------
+   For technical dashboards: KPI tiles, panels, filter bars, dense tables,
+   chart frames and legends. These components read data; they are tuned for
+   scanning and comparison rather than for narrative.
+   ========================================================================= */
+
+@layer components {
+
+  /* =======================================================================
+     4a. HEATMAP
+     2D grid with colour-encoded cells for density or magnitude.
+     ======================================================================= */
+  .c-heatmap {
+    display: grid;
+    gap: 1px;
+    background: var(--color-border);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .c-heatmap__cell {
+    aspect-ratio: 1;
+    background: var(--color-surface-1);
+    transition: opacity var(--dur-fast) var(--ease-standard);
+  }
+
+   .c-heatmap__cell:hover {
+     opacity: 0.8;
+   }
+
+   .c-heatmap__tooltip {
+     position: absolute;
+     inset-block-start: var(--chart-tip-block-start);
+     inset-inline-start: var(--chart-tip-inline-start);
+     z-index: var(--z-tooltip);
+     padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1));
+     border-radius: var(--radius-xs);
+     background: var(--color-surface-3);
+     color: var(--color-text);
+     font-size: var(--type-micro);
+     pointer-events: none;
+     white-space: nowrap;
+   }
+
+  .c-heatmap__legend {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(var(--space-xs) * var(--density, 1));
+    font-size: var(--type-xs);
+    color: var(--color-text-subtle);
+  }
+
+  .c-heatmap__legend > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .c-heatmap__legend-bar {
+    inline-size: calc(6rem * var(--density, 1));
+    block-size: calc(0.5rem * var(--density, 1));
+    border-radius: var(--radius-pill);
+    background: var(--gradient-heat);
+  }
+
+  /* =======================================================================
+     4b. CONTOUR PLOT
+     2D density with isoline overlay — the signature motif as function.
+     ======================================================================= */
+  .c-contour-plot {
+    position: relative;
+    inline-size: 100%;
+    aspect-ratio: 1;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .c-contour-plot svg {
+    inline-size: 100%;
+    block-size: 100%;
+    display: block;
+  }
+
+  .c-contour-plot__contour {
+    fill: none;
+    stroke: var(--color-primary);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+    opacity: 0.8;
+  }
+
+  .c-contour-plot__contour--level-2 { stroke: var(--chart-2, var(--color-primary)); }
+  .c-contour-plot__contour--level-3 { stroke: var(--chart-3, var(--color-primary)); }
+  .c-contour-plot__contour--level-4 { stroke: var(--chart-4, var(--color-primary)); }
+  .c-contour-plot__contour--level-5 { stroke: var(--chart-5, var(--color-primary)); }
+
+  .c-contour-plot__fill {
+    opacity: 0.12;
+  }
+
+  .c-contour-plot__axis {
+    stroke: var(--color-border);
+    stroke-width: 1;
+    opacity: 0.4;
+  }
+
+  .c-contour-plot__label {
+    font-family: var(--font-mono);
+    font-size: calc(0.6rem * var(--density, 1));
+    fill: var(--color-text-subtle);
+  }
+
+  /* =======================================================================
+     5. CHART FRAME
+     A slot for a visualisation: grid lines, axis labels, and a legend.
+     ======================================================================= */
+  .c-chart__plot {
+    position: relative;
+    aspect-ratio: 16 / 7;
+    min-block-size: 0;
+    min-inline-size: 0;
+    max-inline-size: 100%;
+    overflow: hidden;
+    border-block-end: 1px solid var(--chart-axis);
+    /* One band per VALUE-axis interval, so a gridline lands on every value tick
+       BY CONSTRUCTION: a band is `100% / (ticks - 1)` tall. `--chart-ticks` is
+       how many values the author's scale produces — `Contour.chart.ticks()`
+       returns them — and a y-axis element, when the vocabulary grows one, uses
+       that same count, which is the whole point of making it a number rather
+       than a literal 25%.
+
+       It is NOT the category axis. `.c-chart__axis` below runs left-to-right
+       with `space-between` category labels (Mon…Sun); the bands are horizontal,
+       so they mark the value axis and never the category one. Measured: seven
+       category labels sit at 1.03…98.97% across, while the bands step 25% up —
+       two different axes, and no count of category labels can align with them. */
+    background-image: repeating-linear-gradient(
+      to top,
+      var(--chart-grid) 0 1px,
+      transparent 1px calc(100% / (var(--chart-ticks, 5) - 1))
+    );
+  }
+
+    .c-chart--donut {
+    display: grid;
+    place-items: center;
+  }
+  .c-chart--donut .c-chart__plot {
+    aspect-ratio: 1 / 1;
+    min-block-size: 0;
+    border-block-end: none;
+  }
+  .c-chart--histogram .c-chart__plot {
+    display: flex;
+    align-items: flex-end;
+    gap: calc(var(--space-2xs) * var(--density, 1));
+  }
+  .c-chart--histogram .c-chart__bar {
+    flex: 1 1 0;
+  }
+
+  .c-chart {
+    container-type: inline-size;
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 1fr auto;
+    gap: calc(var(--space-2xs) * var(--density, 1));
+  }
+
+  /* Colour-vision preview (C-34): owned by the component root. The filter
+     keys on the element's own [data-cvd] attribute, set by ds.js, so no
+     descendant selector reaches into another component. */
+  .u-cvd-target[data-cvd="deuteranopia"],
+  .c-chart[data-cvd="deuteranopia"],
+  .c-datamark[data-cvd="deuteranopia"] {
+    filter: url(#contour-cvd-deuteranopia);
+  }
+
+  .u-cvd-target[data-cvd="protanopia"],
+  .c-chart[data-cvd="protanopia"],
+  .c-datamark[data-cvd="protanopia"] {
+    filter: url(#contour-cvd-protanopia);
+  }
+
+  .u-cvd-target[data-cvd="tritanopia"],
+  .c-chart[data-cvd="tritanopia"],
+  .c-datamark[data-cvd="tritanopia"] {
+    filter: url(#contour-cvd-tritanopia);
+  }
+
+  .u-cvd-target[data-cvd="achromatopsia"],
+  .c-chart[data-cvd="achromatopsia"],
+  .c-datamark[data-cvd="achromatopsia"] {
+    filter: grayscale(1);
+  }
+
+
+  .c-chart__axis {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--chart-label);
+  }
+
+  .c-chart__axis--centered {
+    justify-content: initial;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    text-align: center;
+  }
+
+  @media (width < 40rem) {
+    .c-chart__axis--centered {
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 4rem), 1fr));
+    }
+  }
+
+  .c-chart__bar {
+    position: absolute;
+    inset-block-end: 0;
+    inline-size: var(--w, 30%);
+    inset-inline-start: var(--x, 0%);
+    block-size: var(--h, 50%);
+    border-radius: var(--radius-xs) var(--radius-xs) 0 0;
+    background: var(--c, var(--chart-1));
+  }
+
+  .c-chart__line {
+    fill: none;
+    stroke: var(--c, var(--chart-1));
+    stroke-width: 1.75;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  /* Series redundancy. The palette separates eight hues by hue, not by
+     lightness, so a line also carries a dash pattern. One rule, applied by
+     series index — the chart never asks the reader to tell two colours
+     apart. */
+  .c-chart__line[data-series="1"] {
+    stroke-dasharray: var(--chart-dash-1);
+  }
+  .c-chart__line[data-series="2"] {
+    stroke-dasharray: var(--chart-dash-2);
+  }
+  .c-chart__line[data-series="3"] {
+    stroke-dasharray: var(--chart-dash-3);
+  }
+  .c-chart__line[data-series="4"] {
+    stroke-dasharray: var(--chart-dash-4);
+  }
+  .c-chart__line[data-series="5"] {
+    stroke-dasharray: var(--chart-dash-5);
+  }
+  .c-chart__line[data-series="6"] {
+    stroke-dasharray: var(--chart-dash-6);
+  }
+
+  .c-chart__line[data-series="7"] {
+    stroke-dasharray: var(--chart-dash-7);
+  }
+  .c-chart__line[data-series="8"] {
+    stroke-dasharray: var(--chart-dash-8);
+  }
+
+  /* -- Chart geometry contract (T-136, superseded by C-24) -------------
+     The band is derived from `--chart-ticks`, so a gridline lands on every
+     value tick by construction; a literal 25% could only ever agree with one
+     particular tick count, which is what the earlier version of this note
+     called a permanent ceiling. It was not permanent, only un-parameterised.
+
+     Still the honest limit, and it is a different one: the frame ships the
+     vocabulary (plot, axis, line, bar, point, band, missing, hover, tooltip)
+     and the VALUE ticks are the consumer's, computed from
+     Contour.chart.ticks(). There is no y-axis element, so the number lives in
+     `--chart-ticks` and nothing renders it; the category axis is a separate
+     axis and is not what the bands measure. `node
+     tools/check-chart-geometry.mjs` asserts the derivation.
+     ------------------------------------------------------------------ */
+
+  /* -- Chart states -------------------------------------------------- */
+  /* These tokens were declared and never read. They are the vocabulary the
+     chart frame needs for the states a real chart has: missing data, hover,
+     and a tooltip. Wiring them here makes them live. */
+  .c-chart__missing {
+    /* The pattern is a def the host inlines (src/svg/chart-patterns.svg). SVG
+       paint takes a fallback colour, so a page that never inlines the sprite
+       still paints missing data instead of falling through to initial black.
+       `node tools/check-defs.mjs` requires both: a definition inside src/, and
+       a fallback on a paint property. */
+    fill: url(#contour-hatch-missing) var(--chart-missing);
+  }
+
+  .c-chart__zero {
+    fill: var(--chart-missing);
+  }
+
+  /* Hover is a STATE, not a class. `.c-chart__hover` was declared with zero
+     consumers in the guide, the templates and ds.js — a rule no author could
+     reach, which is the same failure as a token nobody reads. So the highlight
+     hangs off the marks themselves: it works with no script at all, and the two
+     paint routes are covered because a bar is a div (background) and a point is
+     an SVG mark (fill). A `fill` on a div and a `background` on an SVG element
+     are both ignored, so one rule serves both. */
+  .c-chart__bar:hover,
+  .c-chart__point:hover,
+  .c-chart__band:hover {
+    fill: var(--chart-hover);
+    background: var(--chart-hover);
+  }
+
+  /* The tooltip is positioned by its plot, not by a script: --chart-tip-* are
+     the anchors a consumer sets from the datum it is showing, declared in
+     tokens.css rather than invented here — a var() to a token that exists
+     nowhere is what check-tokens fails the build on. Before this the class
+     carried only a colour pair, so a tooltip had no size, no offset and no
+     stacking — it could not appear on top of the mark it describes. */
+  .c-chart__tooltip {
+    position: absolute;
+    inset-block-start: var(--chart-tip-block-start);
+    inset-inline-start: var(--chart-tip-inline-start);
+    z-index: var(--z-tooltip);
+    padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1));
+    border-radius: var(--radius-xs);
+    background: var(--chart-tooltip-bg);
+    color: var(--chart-tooltip-fg);
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    white-space: nowrap;
+    /* The tooltip follows the pointer; it must not become the target. A tip that
+       captures pointer events sits over its own mark, cancels the :hover that
+       opened it, and flickers. */
+    pointer-events: none;
+  }
+
+  /* -- Sequential and diverging bands -------------------------------- */
+  /* The sequential ramp is for ordered data (isolines, density, choropleth
+     classes). The diverging ramp is for data with a real midpoint. Both
+     were declared and never consumed; they are the vocabulary the spatial
+     marks (T-50) will be built on. */
+  .c-chart__band--seq-1 { fill: var(--chart-seq-1); }
+  .c-chart__band--seq-2 { fill: var(--chart-seq-2); }
+  .c-chart__band--seq-3 { fill: var(--chart-seq-3); }
+  .c-chart__band--seq-4 { fill: var(--chart-seq-4); }
+  .c-chart__band--seq-5 { fill: var(--chart-seq-5); }
+  .c-chart__band--seq-6 { fill: var(--chart-seq-6); }
+  .c-chart__band--seq-7 { fill: var(--chart-seq-7); }
+
+  .c-chart__band--div-neg { fill: var(--chart-div-neg); }
+  .c-chart__band--div-mid { fill: var(--chart-div-mid); }
+  .c-chart__band--div-pos { fill: var(--chart-div-pos); }
+
+  /* The legend previews the pattern, so the key and the chart agree. */
+  /* Series 1 is the solid line — --chart-dash-1 is `none` — so its key is a
+     solid bar, not a pattern. Painted with background-color, because the base
+     .c-legend__swatch--line is deliberately transparent to let a dashed key
+     show the surface through its gaps. */
+  .c-legend__swatch--line[data-series="1"] {
+    background-color: var(--c, var(--chart-1));
+  }
+  .c-legend__swatch--line[data-series="2"] {
+    background-image: repeating-linear-gradient(
+      90deg,
+      var(--c, var(--chart-2)) 0 7px,
+      transparent 7px 11px
+    );
+  }
+  .c-legend__swatch--line[data-series="3"] {
+    background-image: repeating-linear-gradient(
+      90deg,
+      var(--c, var(--chart-3)) 0 2px,
+      transparent 2px 6px
+    );
+  }
+  .c-legend__swatch--line[data-series="4"] {
+    background-image: repeating-linear-gradient(
+      90deg,
+      var(--c, var(--chart-4)) 0 9px,
+      transparent 9px 13px,
+      var(--c, var(--chart-4)) 13px 15px,
+      transparent 15px 19px
+    );
+  }
+  .c-legend__swatch--line[data-series="5"] {
+    background-image: repeating-linear-gradient(
+      90deg,
+      var(--c, var(--chart-5)) 0 15px,
+      transparent 15px 20px
+    );
+  }
+  .c-legend__swatch--line[data-series="6"] {
+    background-image: repeating-linear-gradient(
+      90deg,
+      var(--c, var(--chart-6)) 0 6px,
+      transparent 6px 9px,
+      var(--c, var(--chart-6)) 9px 10px,
+      transparent 10px 13px
+    );
+  }
+  .c-legend__swatch--line[data-series="7"] {
+    /* --chart-dash-7: 3 3 9 3 */
+    background-image: repeating-linear-gradient(
+      90deg,
+      var(--c, var(--chart-7)) 0 3px,
+      transparent 3px 6px,
+      var(--c, var(--chart-7)) 6px 15px,
+      transparent 15px 18px
+    );
+  }
+  .c-legend__swatch--line[data-series="8"] {
+    /* --chart-dash-8: 1 3 */
+    background-image: repeating-linear-gradient(
+      90deg,
+      var(--c, var(--chart-8)) 0 1px,
+      transparent 1px 4px
+    );
+  }
+
+  .c-chart__point {
+    fill: var(--c, var(--chart-1));
+  }
+
+  /* Interactive legend */
+  .c-legend--interactive .c-legend__item {
+    cursor: pointer;
+    border-radius: var(--radius-xs);
+    padding: calc(var(--space-3xs) * var(--density, 1)) calc(0.4rem * var(--density, 1));
+    min-block-size: calc(1.5rem * var(--density, 1));
+    transition:
+      opacity var(--dur-fast) var(--ease-standard),
+      color var(--dur-fast) var(--ease-standard),
+      background-color var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-legend--interactive .c-legend__item:hover {
+    background: var(--color-surface-2);
+  }
+
+  .c-legend__item[aria-pressed="false"] {
+    color: var(--color-text-muted);
+  }
+
+  .c-legend__item[aria-pressed="false"] .c-legend__swatch {
+    opacity: 0.4;
+  }
+
+  .c-legend__swatch--line {
+    block-size: 3px;
+    border-radius: var(--radius-pill);
+    inline-size: calc(2rem * var(--density, 1));
+    background-color: transparent;
+  }
+
+  /* Classification disclosure (C-13). A choropleth is a claim about the data,
+     not a picture of it: identical hues mean different places under equal
+     intervals and under quantiles, and an unnormalised count reads as density
+     wherever the population happens to be. So the method and the normalisation
+     are part of the legend rather than a caption an author might skip — and a
+     classified specimen that omits either is refused by the spatial contract
+     gate, which is the only way this rule survives the next refactor. */
+  .c-legend__method,
+  .c-legend__norm {
+    grid-column: 1 / -1;
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--color-text-subtle);
+  }
+
+  /* The method carries the claim, so it is not printed as a footnote. */
+  .c-legend__method {
+    color: var(--color-text-muted);
+  }
+
+  /* =======================================================================
+     8l. STREAMING CHART — chart that appends data points
+     ======================================================================= */
+  .c-streaming-chart {
+    position: relative;
+    inline-size: 100%;
+    block-size: calc(12rem * var(--density, 1));
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .c-streaming-chart__empty,
+  .c-streaming-chart__loading,
+  .c-streaming-chart__error {
+    color: var(--color-text-muted);
+    padding: calc(var(--space-md) * var(--density, 1));
+  }
+
+  .c-streaming-chart svg {
+    inline-size: 100%;
+    block-size: 100%;
+    display: block;
+  }
+
+  .c-streaming-chart__line {
+    fill: none;
+    stroke: var(--color-primary);
+    stroke-width: 2;
+    stroke-linecap: round;
+    transition: d var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-streaming-chart__live-dot {
+    fill: var(--color-accent);
+    animation: c-ping var(--dur-ping) var(--ease-out-expo) infinite;
+    /* The ping scales about the SVG origin by default, which for a dot at
+       cx=300 in a 300-wide viewBox flings it off the right edge of its own
+       chart and out of the page at narrow widths. Scaling about the dot's
+       own fill keeps the pulse inside the chart. */
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  /* =======================================================================
+     GAUGE — threshold-zoned dial
+     ======================================================================= */
+  .c-gauge {
+    display: grid;
+    gap: calc(var(--space-2xs) * var(--density, 1));
+    justify-items: center;
+    padding: calc(var(--space-md) * var(--density, 1));
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-1);
+  }
+  .c-gauge__dial {
+    inline-size: calc(8rem * var(--density, 1));
+    block-size: calc(8rem * var(--density, 1));
+  }
+  .c-gauge__track {
+    fill: none;
+    stroke: var(--color-track);
+    stroke-width: 8;
+  }
+  .c-gauge__zone {
+    fill: none;
+    stroke-width: 8;
+    stroke-linecap: round;
+  }
+  .c-gauge__needle {
+    stroke: var(--color-text-strong);
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+  .c-gauge__hub {
+    fill: var(--color-text-strong);
+  }
+  .c-gauge__value {
+    font-family: var(--font-display);
+    font-size: var(--type-lg);
+    font-weight: var(--weight-bold);
+    font-variant-numeric: tabular-nums;
+    color: var(--color-text-strong);
+  }
+  .c-gauge__band {
+    font-family: var(--font-mono);
+    font-size: var(--type-xs);
+    color: var(--color-text-muted);
+  }
+  .c-gauge__title {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+  .c-gauge__empty, .c-gauge__loading, .c-gauge__error {
+    color: var(--color-text-muted);
+    padding: calc(var(--space-md) * var(--density, 1));
+  }
+
+  /* =======================================================================
+     AXIS — chart axis with ticks
+     ======================================================================= */
+  .c-axis {
+    display: flex;
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--chart-label);
+  }
+  .c-axis--horizontal { flex-direction: row; justify-content: space-between; }
+  .c-axis--vertical { flex-direction: column; justify-content: space-between; }
+  .c-axis__tick {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--space-3xs) * var(--density, 1));
+  }
+  .c-axis__label { white-space: nowrap; text-overflow: ellipsis; overflow: hidden;     max-inline-size: calc(6rem * var(--density, 1)); }
+  .c-axis__line {
+    stroke: var(--chart-axis);
+    stroke-width: 1;
+  }
+
+  /* =======================================================================
+     BRUSH — range-selection overlay
+     ======================================================================= */
+  .c-brush {
+    position: relative;
+    display: block;
+    inline-size: 100%;
+    block-size: calc(2rem * var(--density, 1));
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    cursor: crosshair;
+  }
+  .c-brush__selection {
+    position: absolute;
+    inset-block: 0;
+    background: color-mix(in oklab, var(--color-primary) 24%, transparent);
+    border-inline: 2px solid var(--color-primary);
+  }
+
+  .c-brush__range {
+    display: block;
+    font-size: var(--type-xs);
+    color: var(--color-text-muted);
+    margin-block-start: var(--space-2xs);
+  }
+  .c-brush__handle {
+    position: absolute;
+    inset-block: 0;
+    inline-size: 6px;
+    background: var(--color-primary);
+    cursor: ew-resize;
+  }
+
+  /* =======================================================================
+     STACKED BAR — segmented bar chart
+     ======================================================================= */
+  .c-stacked-bar {
+    display: flex;
+    inline-size: 100%;
+    block-size: calc(1.5rem * var(--density, 1));
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background: var(--color-track);
+  }
+  .c-stacked-bar__segment {
+    block-size: 100%;
+    min-inline-size: 2px;
+  }
+
+  /* =======================================================================
+     CATEGORY — listbox with bar tracks
+     ======================================================================= */
+  .c-category {
+    display: grid;
+    gap: calc(var(--space-3xs) * var(--density, 1));
+  }
+  .c-category__item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: calc(var(--space-2xs) * var(--density, 1));
+    padding: calc(var(--space-3xs) * var(--density, 1)) 0.5rem;
+    border-radius: var(--radius-sm);
+  }
+  .c-category__bar {
+    block-size: 6px;
+    border-radius: var(--radius-pill);
+    background: var(--color-primary);
+  }
+  .c-category__label { font-size: var(--type-sm); }
+  .c-category__value { font-family: var(--font-mono); font-size: var(--type-xs); color: var(--color-text-muted); }
+
+  /* =======================================================================
+     DONUT — ring chart
+     ======================================================================= */
+  .c-donut {
+    display: grid;
+    gap: calc(var(--space-2xs) * var(--density, 1));
+    justify-items: center;
+  }
+  .c-donut__ring {
+    inline-size: calc(8rem * var(--density, 1));
+    block-size: calc(8rem * var(--density, 1));
+    --donut-stroke-width: 6;
+  }
+  .c-donut__ring circle {
+    stroke-width: var(--donut-stroke-width);
+  }
+  .c-donut__center {
+    font-family: var(--font-display);
+    font-size: var(--type-lg);
+    font-weight: var(--weight-bold);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .c-donut__value {
+    font-family: var(--font-display);
+    font-size: var(--type-h3);
+    font-weight: var(--weight-bold);
+    font-variant-numeric: tabular-nums;
+  }
+  .c-donut__list {
+    display: grid;
+    gap: calc(var(--space-3xs) * var(--density, 1));
+    inline-size: 100%;
+  }
+  .c-donut__item {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--space-2xs) * var(--density, 1));
+    font-size: var(--type-sm);
+  }
+  .c-donut__item > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+  .c-donut__swatch {
+    inline-size: calc(0.75rem * var(--density, 1));
+    block-size: calc(0.75rem * var(--density, 1));
+    border-radius: var(--radius-xs);
+  }
+
+  /* =======================================================================
+     TIME SERIES — bar/point chart with axis
+     ======================================================================= */
+  .c-time-series {
+    display: grid;
+    gap: calc(var(--space-2xs) * var(--density, 1));
+  }
+  .c-time-series__plot {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    block-size: calc(6rem * var(--density, 1));
+  }
+  .c-time-series__bar {
+    flex: 1;
+    background: var(--color-primary);
+    border-radius: var(--radius-xs) var(--radius-xs) 0 0;
+    min-inline-size: 2px;
+  }
+  .c-time-series__point {
+    inline-size: 6px;
+    block-size: 6px;
+    border-radius: 50%;
+    background: var(--color-primary);
+  }
+
+  /* =======================================================================
+     PIVOT — cross-tab
+     ======================================================================= */
+  .c-pivot {
+    display: grid;
+    overflow: auto;
+  }
+  .c-pivot table {
+    border-collapse: collapse;
+    font-size: var(--type-sm);
+  }
+  .c-pivot th, .c-pivot td {
+    padding: calc(var(--space-3xs) * var(--density, 1)) 0.5rem;
+    border: 1px solid var(--color-border);
+  }
+  .c-pivot th {
+    background: var(--color-surface-2);
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+  }
+  .c-pivot__toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--space-2xs) * var(--density, 1));
+    margin-block-end: calc(0.5rem * var(--density, 1));
+  }
+  .c-pivot__toolbar > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+  .c-pivot__filter {
+    flex: 1 1 auto;
+  }
+  .c-pivot__aggregate {
+    flex: 0 0 auto;
+  }
+}

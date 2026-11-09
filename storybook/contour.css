@@ -8,10 +8,21 @@
    For bundlers, prefer importing the layers directly so the CSS is inlined:
      @import "contour/tokens.css" layer(tokens);
      @import "contour/base.css" layer(base);
-     @import "contour/components.css" layer(components);
-     @import "contour/components-shell.css" layer(components);
-     @import "contour/components-data.css" layer(components);
-     @import "contour/components-docs.css" layer(components);
+      @import "contour/components-brand.css" layer(components);
+      @import "contour/components-buttons.css" layer(components);
+      @import "contour/components-cards.css" layer(components);
+      @import "contour/components-navigation.css" layer(components);
+      @import "contour/components-forms.css" layer(components);
+      @import "contour/components-display.css" layer(components);
+      @import "contour/components-overlay.css" layer(components);
+      @import "contour/components-misc.css" layer(components);
+      @import "contour/components-shell.css" layer(components);
+      @import "contour/components-data-dashboard.css" layer(components);
+      @import "contour/components-data-charts.css" layer(components);
+      @import "contour/components-data-tables.css" layer(components);
+      @import "contour/components-data-maps.css" layer(components);
+      @import "contour/components-data-widgets.css" layer(components);
+      @import "contour/components-docs.css" layer(components);
      @import "contour/components-landing.css" layer(components);
      @import "contour/patterns.css" layer(components);
      @import "contour/utilities.css" layer(utilities);

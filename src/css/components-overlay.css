@@ -1,0 +1,172 @@
+/* ============================================================================
+   CONTOUR — Components: Dialog, Tooltip
+   ----------------------------------------------------------------------------
+   Naming: .c-<block> for the block, .c-<block>__<element> for parts,
+   .c-<block>--<variant> for variants.
+   ========================================================================= */
+
+@layer components {
+  /* =======================================================================
+     19. DIALOG
+     ======================================================================= */
+  .c-dialog {
+    /* The reset zeroes every margin, and that also removes the `margin: auto`
+       the platform uses to centre a modal dialog. Put it back. */
+    margin: auto;
+    max-block-size: calc(100dvh - calc(3rem * var(--density, 1)));
+    inline-size: min(calc(34rem * var(--density, 1)), calc(100vw - calc(2rem * var(--density, 1))));
+    padding: 0;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-xl);
+    background: var(--color-surface-1);
+    color: var(--color-text);
+    box-shadow: var(--shadow-xl);
+    /* Open/close transition (BY-50). Enhancement-only: native <dialog> owns
+       display via showModal()/close(), so the base declares the closed opacity
+       and a transition over opacity + display + overlay with allow-discrete;
+       the [open] rule carries opacity 1 and an @starting-style frame. An
+       engine without allow-discrete drops the whole transition and keeps
+       today's instant open. */
+    opacity: 0;
+    transition: opacity var(--dur-base) var(--ease-standard),
+      display var(--dur-base) var(--ease-standard) allow-discrete,
+      overlay var(--dur-base) var(--ease-standard) allow-discrete;
+  }
+
+  .c-dialog[open] {
+    opacity: 1;
+    @starting-style {
+      opacity: 0;
+    }
+  }
+
+  .c-dialog::backdrop {
+    background: var(--color-scrim);
+    backdrop-filter: blur(3px);
+  }
+
+  .c-dialog__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: calc(var(--space-sm) * var(--density, 1));
+    padding: calc(1.25rem * var(--density, 1)) calc(1.35rem * var(--density, 1)) calc(0.75rem * var(--density, 1));
+  }
+  .c-dialog__head > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .c-dialog__title {
+    font-family: var(--font-display);
+    font-size: var(--type-h3);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-strong);
+  }
+
+  .c-dialog__body {
+    padding: 0 calc(1.35rem * var(--density, 1)) calc(0.5rem * var(--density, 1));
+    font-size: var(--type-sm);
+    color: var(--color-text-muted);
+    line-height: var(--leading-relaxed);
+  }
+
+  .c-dialog__foot {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: calc(var(--space-2xs) * var(--density, 1));
+  }
+  .c-dialog__foot > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .c-dialog__close {
+    margin-inline-start: auto;
+    color: var(--color-text-subtle);
+    cursor: pointer;
+    padding: calc(var(--space-3xs) * var(--density, 1));
+    border-radius: var(--radius-xs);
+    transition: color var(--dur-fast) var(--ease-standard), background-color var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-dialog__close:hover {
+    color: var(--color-text-strong);
+    background: var(--color-surface-3);
+  }
+
+  .c-dialog__close:focus-visible {
+    outline-offset: -2px;
+  }
+
+  /* =======================================================================
+     19a. DIALOG shadow parts (::part) — R16-50
+     ======================================================================= */
+  /* Expose shadow-dialog root for consumer styling via ::part().
+     Internal parts (head, body, foot, close) are already styled by the
+     adopted .c-dialog__* class rules inside the shadow root. */
+  contour-shadow-dialog::part(dialog) {
+    padding: 0;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-xl);
+    background: var(--color-surface-1);
+    color: var(--color-text);
+  }
+
+  /* Expose shadow-input root for consumer styling via ::part().
+     Mirrors .c-input so the shadow input is styleable at the same seam. */
+  contour-shadow-input::part(input) {
+    box-sizing: border-box;
+    inline-size: 100%;
+    min-inline-size: 0;
+    max-inline-size: 100%;
+    min-block-size: var(--target-control);
+    padding: calc(0.6rem * var(--density, 1)) calc(0.85rem * var(--density, 1));
+    border: 1px solid var(--color-control-edge);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-1);
+    color: var(--color-text);
+    font-size: var(--type-sm);
+    line-height: 1.4;
+  }
+
+  /* =======================================================================
+     20. TOOLTIP (popover hint)
+     ======================================================================= */
+  .c-tooltip {
+    position: fixed;
+    margin: 0;
+    max-inline-size: calc(17rem * var(--density, 1));
+    padding: calc(var(--space-2xs) * var(--density, 1)) calc(0.7rem * var(--density, 1));
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--color-tooltip-bg);
+    color: var(--color-tooltip-fg);
+    font-size: var(--type-xs);
+    line-height: 1.45;
+    box-shadow: var(--shadow-md);
+  }
+
+  .c-tooltip::backdrop {
+    background: transparent;
+  }
+
+  /* Popover API fallback: when the API is unavailable, toggle visibility
+     via .is-open instead of relying on the UA popover stylesheet. */
+  @supports not (selector(:popover-open)) {
+    .c-tooltip { display: none; }
+    .c-tooltip.is-open { display: block; }
+  }
+
+  /* Static-position fallback: when anchor positioning is unsupported, the
+     tooltip falls back to absolute positioning with inset (base rule above).
+     Anchor positioning is enhancement-only (Limited support). */
+  @supports (anchor-name: --x) {
+    .c-tooltip {
+      position-area: block-start;
+      position-try-fallbacks: flip-block;
+      position-try-order: most-block-size;
+    }
+  }
+}

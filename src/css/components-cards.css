@@ -1,0 +1,351 @@
+/* ============================================================================
+   CONTOUR — Components: Cards, Section Header, Data Readout, Stat
+   ----------------------------------------------------------------------------
+   Naming: .c-<block> for the block, .c-<block>__<element> for parts,
+   .c-<block>--<variant> for variants.
+   ========================================================================= */
+
+@layer components {
+  /* =======================================================================
+     5. CARD & PLATE
+     ======================================================================= */
+  .c-elevation {
+    box-shadow: var(--shadow-md);
+  }
+
+  .c-card {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 200px;
+    container-type: inline-size;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--space-2xs) * var(--density, 1));
+    padding: calc(var(--space-lg) * var(--density, 1));
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-1);
+    transition:
+      border-color var(--dur-base) var(--ease-standard),
+      background-color var(--dur-base) var(--ease-standard),
+      transform var(--dur-base) var(--ease-standard);
+
+    /* A hairline "trace" that runs along the top edge and lights up on hover.
+       This replaces the reflex of adding a coloured left border. */
+    &::before {
+      content: "";
+      position: absolute;
+      inset-block-start: -1px;
+      inset-inline: 22%;
+      block-size: 1px;
+      background: var(--color-primary);
+      opacity: 0;
+      transition: opacity var(--dur-base) var(--ease-standard);
+    }
+
+    &:hover,
+    &:focus-within {
+      border-color: var(--color-border-strong);
+      background: var(--color-surface-2);
+    }
+
+    &:hover::before,
+    &:focus-within::before {
+      opacity: 0.8;
+    }
+  }
+
+  /* @scope pilot (PF2): scope element rules to .c-card descendants. */
+  @scope (.c-card) {
+    .c-card__title {
+      font-family: var(--font-display);
+      font-size: var(--type-h4);
+      font-weight: var(--weight-semibold);
+      letter-spacing: -0.012em;
+      color: var(--color-text-strong);
+    }
+  }
+
+  /* Container query: reduce padding when the card is narrow. */
+  @container (inline-size < 16rem) {
+    .c-card {
+      padding: calc(var(--space-md) * var(--density, 1));
+    }
+  }
+
+  @supports (font-size: 1cqi) {
+    .c-card__title {
+      font-size: clamp(var(--type-body), 4cqi, var(--type-h4));
+    }
+  }
+
+  .c-card__body {
+    color: var(--color-text-muted);
+    font-size: var(--type-sm);
+    line-height: var(--leading-normal);
+  }
+
+  .c-card__foot {
+    margin-block-start: auto;
+    padding-block-start: var(--space-sm);
+  }
+
+  /* Plate: a raised, gradient-backed specimen surface */
+  .c-plate {
+    position: relative;
+    overflow: clip;
+    padding: calc(var(--space-xl) * var(--density, 1));
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-2xl);
+    background: var(--gradient-plate);
+  }
+
+  .c-plate--contour::after {
+    content: "";
+    position: absolute;
+    inset-block-start: -30%;
+    inset-inline-start: 0;
+    inline-size: calc(22rem * var(--density, 1));
+    max-inline-size: 100%;
+    block-size: calc(22rem * var(--density, 1));
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      color-mix(in oklab, var(--color-primary) 22%, transparent),
+      transparent 62%
+    );
+    pointer-events: none;
+  }
+
+  /* Feature card: icon above a title, but with a mono index — the grid
+     monotony breaker used across the system. */
+  .c-feature {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--space-xs) * var(--density, 1));
+    padding-block-start: var(--space-lg);
+    border-block-start: 1px solid var(--color-border);
+  }
+
+  .c-feature__index {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-label);
+    color: var(--color-text-subtle);
+  }
+
+  .c-feature__title {
+    font-family: var(--font-display);
+    font-size: var(--type-h3);
+    font-weight: var(--weight-semibold);
+    letter-spacing: -0.015em;
+    color: var(--color-text-strong);
+  }
+
+  .c-feature__body {
+    color: var(--color-text-muted);
+    font-size: var(--type-sm);
+    line-height: var(--leading-normal);
+  }
+
+  /* Icon badge: rounded square, tinted — the reference's shape language */
+  .c-icon-badge {
+    display: grid;
+    place-items: center;
+    inline-size: calc(2.75rem * var(--density, 1));
+    block-size: calc(2.75rem * var(--density, 1));
+    border-radius: var(--radius-md);
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+    flex: none;
+  }
+
+  .c-icon-badge svg {
+    inline-size: 1.35rem;
+    block-size: 1.35rem;
+  }
+
+  .c-icon-badge--accent {
+    background: var(--color-accent-soft);
+    color: var(--color-accent);
+  }
+
+  .c-icon-badge--data {
+    background: var(--color-data-soft);
+    color: var(--color-data);
+  }
+
+  .c-icon-badge--warning {
+    background: var(--color-warning-soft);
+    color: var(--color-warning);
+  }
+
+  /* =======================================================================
+     6. SECTION HEADER
+     ======================================================================= */
+  .c-section-head {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: calc(var(--space-md) * var(--density, 1));
+    align-items: start;
+    margin-block-end: var(--space-xl);
+    max-inline-size: calc(54rem * var(--density, 1));
+  }
+
+  .c-section-head__title {
+    font-family: var(--font-display);
+    font-size: var(--type-h2);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-heading);
+    color: var(--color-text-strong);
+    margin-block: calc(0.5rem * var(--density, 1)) 0;
+  }
+
+  .c-section-head__desc {
+    color: var(--color-text-muted);
+    font-size: var(--type-body);
+    line-height: var(--leading-relaxed);
+    max-inline-size: var(--measure-tight);
+  }
+
+  @media (width < 40rem) {
+    .c-section-head {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  /* =======================================================================
+     7. DATA READOUT
+     ======================================================================= */
+  .c-readout {
+    display: grid;
+    gap: 0;
+    font-family: var(--font-mono);
+    font-size: var(--type-xs);
+  }
+
+  .c-readout__empty,
+  .c-readout__loading,
+  .c-readout__error {
+    color: var(--color-text-muted);
+    padding: calc(var(--space-md) * var(--density, 1));
+  }
+
+  .c-readout__row {
+    display: grid;
+    grid-template-columns: minmax(calc(6rem * var(--density, 1)), auto) minmax(0, 1fr);
+    gap: calc(var(--space-sm) * var(--density, 1));
+    align-items: baseline;
+    padding-block: calc(0.55rem * var(--density, 1));
+    border-block-end: 1px dashed var(--color-border-subtle);
+  }
+
+  .c-readout__row:last-child {
+    border-block-end: none;
+  }
+
+  .c-readout__key {
+    color: var(--color-text-subtle);
+    letter-spacing: 0.02em;
+  }
+
+  .c-readout__value {
+    color: var(--color-text-strong);
+    font-variant-numeric: tabular-nums;
+    text-align: end;
+  }
+
+  .c-readout__value--accent {
+    color: var(--color-accent-text);
+  }
+
+  .c-readout__value--primary {
+    color: var(--color-primary-text);
+  }
+
+  /* Precision ladder (C-14). A coordinate stream repaints as the fix changes,
+     and a value column sized to its content reflows the whole panel one decimal
+     at a time. `data-precision` declares how many decimals the consumer prints;
+     the column reserves exactly that width, so the ladder is a layout contract
+     and not luck. The widest case is a signed three-digit longitude: sign,
+     three digits, the point, then the decimals — precision + 5 `ch`.
+     RFC 7946 §3.1.10 is why the digits themselves are not a quality claim:
+     "the number of digits of the values in coordinate positions MUST NOT be
+     interpreted as an indication to the level of uncertainty". So the badge
+     beside the value states the ORDER (§3.1.1 makes longitude first normative),
+     never how good the fix is. §11.2 puts six decimals at about ten centimetres,
+     which is what the guide's ladder table publishes. */
+  .c-readout[data-precision] .c-readout__value--coord {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .c-readout[data-precision="2"] .c-readout__value--coord { min-inline-size: 7ch; }
+  .c-readout[data-precision="3"] .c-readout__value--coord { min-inline-size: 8ch; }
+  .c-readout[data-precision="4"] .c-readout__value--coord { min-inline-size: 9ch; }
+  .c-readout[data-precision="5"] .c-readout__value--coord { min-inline-size: 10ch; }
+  .c-readout[data-precision="6"] .c-readout__value--coord { min-inline-size: 11ch; }
+  .c-readout[data-precision="7"] .c-readout__value--coord { min-inline-size: 12ch; }
+
+  .c-readout__order {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  /* =======================================================================
+     8. STAT / METRIC
+     ======================================================================= */
+  .c-stat {
+    display: grid;
+    gap: calc(0.2rem * var(--density, 1));
+    align-content: start;
+  }
+
+  .c-stat__empty,
+  .c-stat__loading,
+  .c-stat__error {
+    color: var(--color-text-muted);
+    padding: calc(var(--space-md) * var(--density, 1));
+  }
+
+  .c-stat__label {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  .c-stat__value {
+    font-family: var(--font-display);
+    font-size: clamp(calc(1.75rem * var(--density, 1)), calc(1.4rem * var(--density, 1)) + 1.4vw, calc(2.5rem * var(--density, 1)));
+    font-weight: var(--weight-bold);
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    color: var(--color-text-strong);
+    font-variant-numeric: tabular-nums;
+    max-inline-size: 12ch;
+    overflow-wrap: anywhere;
+  }
+
+  .c-stat__unit {
+    font-size: 0.5em;
+    color: var(--color-text-subtle);
+    margin-inline-start: 0.15em;
+  }
+
+  .c-stat__delta {
+    display: inline-flex;
+    align-items: center;
+    gap: calc(0.3rem * var(--density, 1));
+    font-family: var(--font-mono);
+    font-size: var(--type-xs);
+    color: var(--color-success-text);
+  }
+  .c-stat__delta > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+}

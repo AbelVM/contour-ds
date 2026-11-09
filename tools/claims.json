@@ -45,7 +45,7 @@
     },
     {
       "id": "C-06-j",
-      "doc": "src/css/components-data.css",
+      "doc": "src/css/components-data-charts.css",
       "sentence": "The pattern is a def the host inlines",
       "owner": "node tools/check-defs.mjs",
       "threshold": "every url(#id) in src/css resolves to a def inside src/, with a fallback on a paint"

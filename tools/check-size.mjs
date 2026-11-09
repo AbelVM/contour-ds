@@ -92,7 +92,7 @@ const BUDGETS = {
   // partition — and a directory key is measured by summing the files under it,
   // because `statSync` on a directory reports the inode's size, which would make
   // this budget a pass at 4 kB over a 42 kB package.
-  "docs/": 65 * 1024,  // raised 2026-11-08: +grouping-helper reference paragraph; measured 64.1 kB
+  "docs/": 66 * 1024,  // raised 2026-11-09: CSS split documentation lists all 13 component files; measured 65.7 kB
   "docs/index.json": 8 * 1024,
   // The registry (C-46). Measured 2026-10-24 at 16,443 bytes across 5 files:
   // registry.json 8,952 B plus four item files of 1,869–1,884 B — figures this gate

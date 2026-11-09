@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Contour — a design system for spatial interfaces</title>
-    <meta name="description" content="Contour is a token-driven design system for spatial interfaces. Dark and light themes, 225 components, 301 design tokens, zero runtime dependencies." />
+    <meta name="description" content="Contour is a token-driven design system for spatial interfaces. Dark and light themes, 216 components, 301 design tokens, zero runtime dependencies." />
     <!-- One sentence, two readers: stamp.mjs generates BOTH descriptions from
          the same computed string, so the crawler copy can never fall a whole
          component count behind the search copy. `twitter:description` is
@@ -15,7 +15,7 @@
          that resolves — a card pointing at a dead image is a claim, not a
          fallback. -->
     <meta property="og:title" content="Contour — a design system for spatial interfaces" />
-    <meta property="og:description" content="Contour is a token-driven design system for spatial interfaces. Dark and light themes, 225 components, 301 design tokens, zero runtime dependencies." />
+    <meta property="og:description" content="Contour is a token-driven design system for spatial interfaces. Dark and light themes, 216 components, 301 design tokens, zero runtime dependencies." />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="Contour — a design system for spatial interfaces" />
@@ -526,7 +526,7 @@
                 <span>GRID 0.88 m</span>
                 <span>H3 · RES 15</span>
                 <span><!-- ds:tokens -->301<!-- /ds:tokens --> tokens</span>
-                <span><!-- ds:components -->225<!-- /ds:components --> components</span>
+                <span><!-- ds:components -->216<!-- /ds:components --> components</span>
                 <span>0 runtime deps</span>
                 <span>2 + system themes</span>
               </div>
@@ -6945,7 +6945,7 @@ means obvious.
               a specimen in the guide, and a snippet the tool extracts.
             </p>
             <ol style="font-size: var(--type-sm); line-height: 1.7; padding-inline-start: 1.25rem">
-              <li>Add the block to the correct file: <code>components.css</code>, <code>components-data.css</code>, <code>components-docs.css</code>, <code>components-landing.css</code> or <code>components-shell.css</code>, inside <code>@layer components</code>.</li>
+              <li>Add the block to the correct file: <code>components-brand.css</code>, <code>components-buttons.css</code>, <code>components-cards.css</code>, <code>components-navigation.css</code>, <code>components-forms.css</code>, <code>components-display.css</code>, <code>components-overlay.css</code>, <code>components-misc.css</code>, <code>components-data.css</code>, <code>components-docs.css</code>, <code>components-landing.css</code> or <code>components-shell.css</code>, inside <code>@layer components</code>.</li>
               <li>Name it <code>.c-&lt;block&gt;</code>, parts <code>.c-&lt;block&gt;__&lt;element&gt;</code>, variants <code>.c-&lt;block&gt;--&lt;variant&gt;</code>. No descendant selectors into another component.</li>
               <li>Use tokens only — no raw hex, no hard-coded durations. The census gate fails on an unread token; the family gate fails on a raw literal.</li>
               <li>Add a specimen in the guide section it belongs to, marked <code>data-snippet</code> if it is not a <code>.ds-panel</code> / <code>.ds-spec</code>.</li>
@@ -6966,7 +6966,21 @@ means obvious.
                         <pre class="ds-code__pre"><code id="ds-code-137">&lt;ol style="font-size: var(--type-sm); line-height: 1.7; padding-inline-start: 1.25rem"&gt;
   &lt;li&gt;
     Add the block to the correct file:
-    &lt;code&gt;components.css&lt;/code&gt;
+    &lt;code&gt;components-brand.css&lt;/code&gt;
+    ,
+    &lt;code&gt;components-buttons.css&lt;/code&gt;
+    ,
+    &lt;code&gt;components-cards.css&lt;/code&gt;
+    ,
+    &lt;code&gt;components-navigation.css&lt;/code&gt;
+    ,
+    &lt;code&gt;components-forms.css&lt;/code&gt;
+    ,
+    &lt;code&gt;components-display.css&lt;/code&gt;
+    ,
+    &lt;code&gt;components-overlay.css&lt;/code&gt;
+    ,
+    &lt;code&gt;components-misc.css&lt;/code&gt;
     ,
     &lt;code&gt;components-data.css&lt;/code&gt;
     ,
@@ -13665,7 +13679,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                 <code class="c-kbd">tokens.css</code> — primitives, semantic layer, type, space,
                 radius, motion, chart and density tokens.
                 <code class="c-kbd">base.css</code> — reset, theme bridge, typography.
-                <code class="c-kbd">components.css</code> — the core blocks.
+                <code class="c-kbd">components-brand.css</code>, <code class="c-kbd">components-buttons.css</code>, <code class="c-kbd">components-cards.css</code>, <code class="c-kbd">components-navigation.css</code>, <code class="c-kbd">components-forms.css</code>, <code class="c-kbd">components-display.css</code>, <code class="c-kbd">components-overlay.css</code>, <code class="c-kbd">components-misc.css</code> — the core blocks, split by concern.
                 <code class="c-kbd">components-shell.css</code>,
                 <code class="c-kbd">components-data.css</code>,
                 <code class="c-kbd">components-docs.css</code> and
@@ -20320,6 +20334,1656 @@ area.addEventListener("contour:map-control", (e) =&gt; {
 
           <!-- Guide-only shortcut overlay chrome (named here so the docs package counts it) -->
           <div class="c-shortcut-overlay c-shortcut-panel c-shortcut-list c-shortcut-row" hidden aria-hidden="true"></div>
+
+
+          <div class="c-panel">
+            <div class="c-panel__head">
+              <div>
+                <h3 class="c-panel__title">Attribute &amp; property reference</h3>
+                <p class="c-panel__desc">
+                  Every attribute, boolean attribute, slot and part declared by each block,
+                  counted from <code class="c-kbd">dist/contour.components.json</code>.
+                  Boolean attributes are set by presence; all others take a string value.
+                  Blocks with no declared attributes are omitted.
+                </p>
+              </div>
+            </div>
+            <div class="c-panel__body">
+              <div class="c-table-wrap">
+                <table class="c-table">
+                  <caption>Component attribute reference (202 blocks)</caption>
+                  <thead>
+                    <tr>
+                      <th>Block</th>
+                      <th>Attributes</th>
+                      <th>Boolean attributes</th>
+                      <th>Slots</th>
+                      <th>Parts</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    
+    <tr>
+      <td><code>c-accordion</code></td>
+      <td><code>items</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code>, <code>persist</code>, <code>exclusive</code></td>
+      <td><code>exclusive</code></td>
+      <td><code>(default)</code></td>
+      <td><code>accordion</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-activity</code></td>
+      <td><code>items</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>activity</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-advanced</code></td>
+      <td><code>title</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>advanced</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-affordance</code></td>
+      <td><code>name</code>, <code>note</code>, <code>demo</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>affordance</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-affordances</code></td>
+      <td><code>name</code>, <code>title</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>affordances</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-alert</code></td>
+      <td><code>title</code>, <code>body</code>, <code>variant</code>, <code>icon</code>, <code>closable</code>, <code>action</code>, <code>actions</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td><code>closable</code></td>
+      <td><code>title</code>, <code>(default)</code>, <code>action</code></td>
+      <td><code>alert</code>, <code>title</code>, <code>body</code>, <code>actions</code>, <code>close</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-anchor</code></td>
+      <td><code>href</code>, <code>label</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>anchor</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-animation-controls</code></td>
+      <td><code>playing</code>, <code>speed</code>, <code>progress</code>, <code>min</code>, <code>max</code>, <code>caption</code>, <code>show-thumb</code>, <code>show-thumb-caption</code></td>
+      <td><code>playing</code></td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-annotation</code></td>
+      <td><code>label</code>, <code>x</code>, <code>y</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-app</code></td>
+      <td><code>title</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>app</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-app-body</code></td>
+      <td><code>title</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>app-body</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-avatar</code></td>
+      <td><code>name</code>, <code>size</code>, <code>variant</code>, <code>src</code>, <code>status</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>avatar</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-avatar-group</code></td>
+      <td><code>items</code>, <code>max</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-axis</code></td>
+      <td><code>orientation</code>, <code>values</code>, <code>ticks</code>, <code>format</code>, <code>locale</code>, <code>padding</code>, <code>min</code>, <code>max</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>axis</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-badge</code></td>
+      <td><code>variant</code>, <code>label</code>, <code>size</code>, <code>removable</code></td>
+      <td><code>removable</code></td>
+      <td><code>(default)</code></td>
+      <td><code>badge</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-badge-overflow</code></td>
+      <td><code>count</code>, <code>max</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-banner</code></td>
+      <td><code>message</code>, <code>variant</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-bivariate</code></td>
+      <td><code>size</code>, <code>axis-x</code>, <code>axis-y</code>, <code>colors</code>, <code>selected</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>bivariate</code>, <code>matrix</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-brand</code></td>
+      <td><code>name</code>, <code>tag</code></td>
+      <td>—</td>
+      <td><code>mark</code>, <code>name</code></td>
+      <td><code>brand</code>, <code>mark</code>, <code>name</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-breadcrumb</code></td>
+      <td><code>items</code>, <code>separator</code>, <code>max</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>breadcrumb</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-brownout</code></td>
+      <td><code>level</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>brownout</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-brush</code></td>
+      <td><code>start</code>, <code>end</code>, <code>min</code>, <code>max</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td><code>brush</code>, <code>selection</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-btn</code></td>
+      <td><code>variant</code>, <code>size</code>, <code>color</code>, <code>label</code>, <code>disabled</code></td>
+      <td><code>disabled</code></td>
+      <td><code>(default)</code></td>
+      <td><code>btn</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-btn-group</code></td>
+      <td><code>title</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>btn-group</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-calendar</code></td>
+      <td><code>value</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-callout</code></td>
+      <td><code>variant</code>, <code>title</code>, <code>icon</code>, <code>closable</code></td>
+      <td><code>closable</code></td>
+      <td><code>title</code>, <code>(default)</code></td>
+      <td><code>callout</code>, <code>title</code>, <code>body</code>, <code>close</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-card</code></td>
+      <td><code>title</code>, <code>variant</code>, <code>heading</code></td>
+      <td>—</td>
+      <td><code>title</code>, <code>(default)</code>, <code>foot</code></td>
+      <td><code>card</code>, <code>head</code>, <code>body</code>, <code>foot</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-carousel</code></td>
+      <td><code>items</code>, <code>index</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-catchment</code></td>
+      <td><code>label</code>, <code>area</code>, <code>center</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>catchment</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-category</code></td>
+      <td><code>items</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code>, <code>search</code>, <code>note</code>, <code>limit</code>, <code>sort</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>category</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-changelog</code></td>
+      <td><code>src</code>, <code>max</code>, <code>loading</code>, <code>error</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-chart</code></td>
+      <td><code>series</code>, <code>axis</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>skeleton</code>, <code>zoomable</code>, <code>data-table</code>, <code>brush</code>, <code>brush-min</code>, <code>brush-max</code>, <code>brush-start</code>, <code>brush-end</code>, <code>note</code></td>
+      <td><code>brush</code>, <code>zoomable</code></td>
+      <td><code>(default)</code></td>
+      <td><code>chart</code>, <code>plot</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-chart-grid</code></td>
+      <td><code>title</code>, <code>series</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>chart-grid</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-check</code></td>
+      <td><code>label</code>, <code>name</code>, <code>value</code>, <code>required</code>, <code>type</code>, <code>checked</code>, <code>disabled</code>, <code>error</code>, <code>help</code></td>
+      <td><code>checked</code>, <code>disabled</code>, <code>required</code></td>
+      <td><code>(default)</code></td>
+      <td><code>check</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-chip</code></td>
+      <td><code>variant</code>, <code>key</code>, <code>value</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>chip</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-code</code></td>
+      <td><code>title</code>, <code>copyable</code></td>
+      <td><code>copyable</code></td>
+      <td><code>(default)</code></td>
+      <td><code>code</code>, <code>copy</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-code-tabs</code></td>
+      <td><code>tabs</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code>, <code>persist</code></td>
+      <td>—</td>
+      <td><code>tabs</code>, <code>(default)</code></td>
+      <td><code>code-tabs</code>, <code>list</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-color-picker</code></td>
+      <td><code>value</code>, <code>label</code>, <code>disabled</code>, <code>error</code>, <code>help</code>, <code>alpha</code>, <code>presets</code></td>
+      <td><code>alpha</code>, <code>disabled</code></td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-combobox</code></td>
+      <td><code>options</code>, <code>placeholder</code>, <code>label</code>, <code>value</code>, <code>multiple</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>empty</code>, <code>skeleton</code>, <code>virtual</code></td>
+      <td><code>multiple</code>, <code>virtual</code></td>
+      <td><code>(default)</code></td>
+      <td><code>combobox</code>, <code>input</code>, <code>list</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-command</code></td>
+      <td><code>placeholder</code>, <code>items</code>, <code>recent</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>command</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-command-palette</code></td>
+      <td><code>open</code>, <code>items</code></td>
+      <td><code>open</code></td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-compare</code></td>
+      <td><code>no</code>, <code>text</code>, <code>yes</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>compare</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-comparison</code></td>
+      <td><code>divider</code>, <code>value</code>, <code>before</code>, <code>after</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>comparison</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-compass</code></td>
+      <td><code>label</code>, <code>needle</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>compass</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-context-menu</code></td>
+      <td><code>items</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-coordinate</code></td>
+      <td><code>value</code>, <code>format</code>, <code>locale</code>, <code>precision</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td><code>value</code></td>
+      <td><code>coordinate</code>, <code>value</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-cta</code></td>
+      <td><code>title</code>, <code>text</code>, <code>actions</code>, <code>heading</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>cta</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-dash-freshness</code></td>
+      <td><code>label</code>, <code>value</code>, <code>format</code>, <code>locale</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>dash-freshness</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-dash-kpi-row</code></td>
+      <td><code>items</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>dash-kpi-row</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-dash-shell</code></td>
+      <td><code>title</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>dash-shell</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-dash-toolbar</code></td>
+      <td><code>title</code>, <code>actions</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>dash-toolbar</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-data-export</code></td>
+      <td><code>data</code>, <code>format</code>, <code>filename</code>, <code>label</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-data-grid</code></td>
+      <td><code>columns</code>, <code>rows</code>, <code>page</code>, <code>filter</code>, <code>page-size</code>, <code>resizable</code>, <code>virtual</code>, <code>row-height</code></td>
+      <td><code>resizable</code>, <code>virtual</code></td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-data-table</code></td>
+      <td>—</td>
+      <td><code>brush</code>, <code>zoomable</code></td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-datamark</code></td>
+      <td><code>value</code>, <code>unit</code>, <code>label</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>datamark</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-date-picker</code></td>
+      <td><code>value</code>, <code>range</code>, <code>range-start</code>, <code>range-end</code>, <code>label</code>, <code>disabled</code>, <code>error</code>, <code>help</code>, <code>time</code>, <code>min</code>, <code>max</code>, <code>locale</code></td>
+      <td><code>disabled</code>, <code>range</code>, <code>time</code></td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-date-range</code></td>
+      <td><code>start</code>, <code>end</code>, <code>label</code>, <code>time</code>, <code>min</code>, <code>max</code>, <code>locale</code></td>
+      <td><code>time</code></td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-delta</code></td>
+      <td><code>value</code>, <code>direction</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>delta</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-destructive-hint</code></td>
+      <td><code>text</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>destructive-hint</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-dialog</code></td>
+      <td><code>title</code>, <code>size</code>, <code>heading</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-diff</code></td>
+      <td><code>before</code>, <code>after</code></td>
+      <td>—</td>
+      <td><code>before</code>, <code>after</code></td>
+      <td><code>diff</code>, <code>before</code>, <code>after</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-disclosure</code></td>
+      <td><code>summary</code>, <code>icon</code></td>
+      <td>—</td>
+      <td><code>summary</code>, <code>(default)</code></td>
+      <td><code>disclosure</code>, <code>body</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-divider</code></td>
+      <td><code>label</code>, <code>orientation</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-do-dont</code></td>
+      <td><code>do</code>, <code>dont</code></td>
+      <td>—</td>
+      <td><code>do</code>, <code>dont</code></td>
+      <td><code>do-dont</code>, <code>do</code>, <code>dont</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-docs-nav</code></td>
+      <td><code>items</code>, <code>title</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>docs-nav</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-docs-shell</code></td>
+      <td><code>title</code>, <code>lede</code>, <code>article</code>, <code>heading</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>docs-shell</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-donut</code></td>
+      <td><code>value</code>, <code>values</code>, <code>items</code>, <code>label</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code>, <code>brownout</code>, <code>brownout-level</code>, <code>note</code></td>
+      <td>—</td>
+      <td><code>value</code>, <code>(default)</code></td>
+      <td><code>donut</code>, <code>ring</code>, <code>center</code>, <code>list</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-drag-handle</code></td>
+      <td><code>label</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>drag-handle</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-drawer</code></td>
+      <td><code>title</code>, <code>body</code>, <code>size</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>drawer</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-dropdown</code></td>
+      <td><code>label</code>, <code>items</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-elevation</code></td>
+      <td><code>message</code>, <code>link</code>, <code>href</code>, <code>dismissible</code></td>
+      <td><code>dismissible</code></td>
+      <td><code>(default)</code></td>
+      <td><code>elevation</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-empty</code></td>
+      <td><code>state</code>, <code>title</code>, <code>body</code>, <code>action</code>, <code>icon</code>, <code>illustration</code>, <code>heading</code></td>
+      <td>—</td>
+      <td><code>illustration</code>, <code>title</code>, <code>(default)</code>, <code>action</code></td>
+      <td><code>empty</code>, <code>illustration</code>, <code>title</code>, <code>body</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-error-boundary</code></td>
+      <td><code>fallback</code>, <code>error</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-expandable</code></td>
+      <td><code>summary</code></td>
+      <td>—</td>
+      <td><code>summary</code>, <code>(default)</code></td>
+      <td><code>expandable</code>, <code>body</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-fab</code></td>
+      <td><code>label</code>, <code>icon</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-faq</code></td>
+      <td><code>question</code>, <code>answer</code>, <code>items</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td><code>question</code>, <code>answer</code></td>
+      <td><code>faq</code>, <code>question</code>, <code>answer</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-feature</code></td>
+      <td><code>index</code>, <code>title</code>, <code>body</code>, <code>heading</code></td>
+      <td>—</td>
+      <td><code>index</code>, <code>title</code>, <code>(default)</code></td>
+      <td><code>feature</code>, <code>index</code>, <code>title</code>, <code>body</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-field</code></td>
+      <td><code>label</code>, <code>hint</code>, <code>error</code>, <code>placeholder</code>, <code>type</code>, <code>required</code></td>
+      <td><code>required</code></td>
+      <td><code>label</code>, <code>input</code>, <code>hint</code></td>
+      <td><code>field</code>, <code>label</code>, <code>hint</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-field-group</code></td>
+      <td><code>label</code>, <code>hint</code>, <code>error</code>, <code>required</code></td>
+      <td><code>required</code></td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-file-tree</code></td>
+      <td><code>items</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-file-upload</code></td>
+      <td><code>label</code>, <code>accept</code>, <code>multiple</code>, <code>progress</code></td>
+      <td><code>multiple</code></td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-filter-bar</code></td>
+      <td><code>label</code>, <code>divider</code>, <code>items</code>, <code>input</code>, <code>placeholder</code>, <code>mode</code>, <code>modes</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code>, <code>count</code>, <code>clearable</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>filter-bar</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-filter-pill</code></td>
+      <td><code>key</code>, <code>value</code>, <code>removable</code></td>
+      <td><code>removable</code></td>
+      <td><code>(default)</code></td>
+      <td><code>filter-pill</code>, <code>remove</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-flag</code></td>
+      <td><code>variant</code>, <code>label</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>flag</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-flow-map</code></td>
+      <td><code>label</code>, <code>nodes</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>flow-map</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-footer</code></td>
+      <td><code>brand</code>, <code>note</code>, <code>links</code>, <code>cols</code>, <code>heading</code></td>
+      <td>—</td>
+      <td><code>brand</code>, <code>links</code></td>
+      <td><code>footer</code>, <code>grid</code>, <code>brand</code>, <code>links</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-form</code></td>
+      <td><code>submitting</code>, <code>error</code>, <code>summary</code></td>
+      <td><code>submitting</code></td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-gauge</code></td>
+      <td><code>value</code>, <code>min</code>, <code>max</code>, <code>heading</code>, <code>thresholds</code>, <code>format</code>, <code>locale</code>, <code>unit</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code>, <code>brownout</code>, <code>brownout-level</code>, <code>no-data-message</code>, <code>show-header</code>, <code>description</code></td>
+      <td>—</td>
+      <td><code>value</code>, <code>band</code></td>
+      <td><code>gauge</code>, <code>dial</code>, <code>track</code>, <code>needle</code>, <code>hub</code>, <code>value</code>, <code>band</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-geocoder</code></td>
+      <td><code>placeholder</code>, <code>value</code>, <code>results</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-header</code></td>
+      <td><code>brand</code>, <code>links</code></td>
+      <td>—</td>
+      <td><code>brand</code>, <code>nav</code>, <code>actions</code></td>
+      <td><code>header</code>, <code>inner</code>, <code>brand</code>, <code>nav</code>, <code>actions</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-heatmap</code></td>
+      <td><code>cells</code>, <code>count</code>, <code>legend</code>, <code>empty</code>, <code>loading</code>, <code>values</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>heatmap</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-hexbin</code></td>
+      <td><code>label</code>, <code>cells</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>hexbin</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-hover-card</code></td>
+      <td><code>title</code>, <code>content</code>, <code>anchor</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-icon-badge</code></td>
+      <td><code>icon</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>icon-badge</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-input</code></td>
+      <td><code>type</code>, <code>placeholder</code>, <code>required</code>, <code>value</code>, <code>disabled</code>, <code>error</code>, <code>help</code>, <code>label</code></td>
+      <td><code>disabled</code>, <code>required</code></td>
+      <td>—</td>
+      <td><code>input</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-input-group</code></td>
+      <td><code>label</code>, <code>placeholder</code>, <code>clearable</code>, <code>submit</code></td>
+      <td><code>clearable</code>, <code>submit</code></td>
+      <td><code>(default)</code></td>
+      <td><code>input-group</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-install</code></td>
+      <td><code>command</code>, <code>prompt</code>, <code>copyable</code></td>
+      <td>—</td>
+      <td><code>prompt</code>, <code>command</code></td>
+      <td><code>install</code>, <code>prompt</code>, <code>command</code>, <code>copy</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-instrument</code></td>
+      <td><code>rows</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>instrument</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-isochrone</code></td>
+      <td><code>label</code>, <code>center</code>, <code>rings</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>isochrone</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-kbd</code></td>
+      <td><code>key</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>kbd</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-kpi</code></td>
+      <td><code>value</code>, <code>label</code>, <code>delta</code>, <code>direction</code>, <code>note</code>, <code>variant</code>, <code>unit</code>, <code>format</code>, <code>locale</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code>, <code>thresholds</code>, <code>threshold</code>, <code>sparkline</code>, <code>polarity</code></td>
+      <td>—</td>
+      <td><code>value</code>, <code>label</code>, <code>delta</code>, <code>note</code></td>
+      <td><code>kpi</code>, <code>value</code>, <code>label</code>, <code>foot</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-landing-features</code></td>
+      <td><code>items</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>landing-features</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-landing-hero</code></td>
+      <td><code>actions</code>, <code>title</code>, <code>text</code>, <code>heading</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>landing-hero</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-layer-panel</code></td>
+      <td><code>label</code>, <code>items</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code>, <code>allow-rename</code>, <code>allow-remove</code>, <code>allow-duplicate</code>, <code>allow-zoom</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>layer-panel</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-layer-switch</code></td>
+      <td><code>items</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>layer-switch</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-legend</code></td>
+      <td><code>title</code>, <code>ramp</code>, <code>scale</code>, <code>items</code>, <code>method</code>, <code>norm</code>, <code>selectable</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code>, <code>glyphs</code>, <code>thresholds</code>, <code>breaks</code>, <code>no-data-color</code>, <code>size</code>, <code>table</code>, <code>classification</code>, <code>audit</code>, <code>continuous</code>, <code>ends</code>, <code>caption</code></td>
+      <td><code>selectable</code></td>
+      <td><code>(default)</code></td>
+      <td><code>legend</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-link</code></td>
+      <td><code>href</code>, <code>label</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>link</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-live-badge</code></td>
+      <td><code>label</code>, <code>state</code>, <code>live</code></td>
+      <td><code>live</code></td>
+      <td><code>(default)</code></td>
+      <td><code>live-badge</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-loading</code></td>
+      <td><code>message</code>, <code>link</code>, <code>href</code>, <code>dismissible</code></td>
+      <td><code>dismissible</code></td>
+      <td><code>(default)</code></td>
+      <td><code>loading</code>, <code>spinner</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-map-area</code></td>
+      <td><code>attribution</code>, <code>attribution-mark</code>, <code>scale</code>, <code>controls</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>map-area</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-map-footer</code></td>
+      <td><code>brand</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>map-footer</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-map-panel</code></td>
+      <td><code>title</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>map-panel</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-map-popup</code></td>
+      <td><code>title</code>, <code>content</code>, <code>cluster-count</code>, <code>cluster-expanded</code>, <code>cluster-items</code></td>
+      <td><code>cluster-expanded</code></td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-map-slot</code></td>
+      <td><code>attribution</code>, <code>scale</code>, <code>chrome</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>map-slot</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-mark</code></td>
+      <td><code>message</code>, <code>link</code>, <code>href</code>, <code>dismissible</code></td>
+      <td><code>dismissible</code></td>
+      <td><code>(default)</code></td>
+      <td><code>mark</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-measure</code></td>
+      <td><code>label</code>, <code>value</code>, <code>point</code>, <code>line</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>measure</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-menu</code></td>
+      <td><code>items</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>menu</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-meter</code></td>
+      <td><code>value</code>, <code>label</code>, <code>variant</code>, <code>min</code>, <code>max</code>, <code>low</code>, <code>high</code>, <code>optimum</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td><code>value</code>, <code>label</code></td>
+      <td><code>meter</code>, <code>core</code>, <code>value</code>, <code>label</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-metrics</code></td>
+      <td><code>items</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>metrics</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-minimap</code></td>
+      <td><code>label</code>, <code>viewport</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>minimap</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-notification-center</code></td>
+      <td><code>count</code>, <code>items</code>, <code>color</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-number-field</code></td>
+      <td><code>value</code>, <code>min</code>, <code>max</code>, <code>step</code>, <code>label</code>, <code>disabled</code>, <code>error</code>, <code>help</code></td>
+      <td><code>disabled</code></td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-pager</code></td>
+      <td><code>prev</code>, <code>next</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>pager</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-pagination</code></td>
+      <td><code>pages</code>, <code>current</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code>, <code>persist</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>pagination</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-palette-editor</code></td>
+      <td><code>colors</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-panel</code></td>
+      <td><code>title</code>, <code>subtitle</code>, <code>status</code>, <code>heading</code>, <code>collapsible</code>, <code>collapsed</code></td>
+      <td><code>collapsed</code>, <code>collapsible</code></td>
+      <td><code>(default)</code></td>
+      <td><code>panel</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-pill</code></td>
+      <td><code>label</code>, <code>live</code>, <code>variant</code></td>
+      <td><code>live</code></td>
+      <td><code>(default)</code></td>
+      <td><code>pill</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-pivot</code></td>
+      <td><code>rows</code>, <code>columns</code>, <code>values</code>, <code>data</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-popover</code></td>
+      <td><code>title</code>, <code>content</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-pressable</code></td>
+      <td><code>disabled</code></td>
+      <td><code>disabled</code></td>
+      <td><code>(default)</code></td>
+      <td><code>pressable</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-price</code></td>
+      <td><code>value</code>, <code>format</code>, <code>locale</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>price</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-progress</code></td>
+      <td><code>value</code>, <code>label</code>, <code>min</code>, <code>max</code>, <code>paused</code>, <code>pausable</code></td>
+      <td><code>pausable</code>, <code>paused</code></td>
+      <td><code>(default)</code></td>
+      <td><code>progress</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-prose</code></td>
+      <td>—</td>
+      <td><code>collapsed</code>, <code>collapsible</code></td>
+      <td><code>(default)</code></td>
+      <td><code>prose</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-pullquote</code></td>
+      <td><code>quote</code>, <code>name</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>pullquote</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-radio</code></td>
+      <td><code>label</code>, <code>name</code>, <code>value</code>, <code>required</code>, <code>checked</code>, <code>disabled</code>, <code>error</code>, <code>help</code></td>
+      <td><code>checked</code>, <code>disabled</code>, <code>required</code></td>
+      <td><code>(default)</code></td>
+      <td><code>radio</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-radio-list</code></td>
+      <td><code>items</code>, <code>name</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>radio-list</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-range</code></td>
+      <td><code>min</code>, <code>max</code>, <code>value</code>, <code>low</code>, <code>high</code>, <code>range</code>, <code>sparkline</code>, <code>label</code>, <code>disabled</code>, <code>error</code>, <code>help</code></td>
+      <td><code>disabled</code></td>
+      <td><code>(default)</code></td>
+      <td><code>range</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-range-scale</code></td>
+      <td><code>label</code>, <code>value</code>, <code>ticks</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>range-scale</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-rating</code></td>
+      <td><code>value</code>, <code>max</code>, <code>color</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-readout</code></td>
+      <td><code>rows</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code>, <code>format</code>, <code>locale</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>readout</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-recipe</code></td>
+      <td><code>title</code>, <code>body</code>, <code>canvas</code>, <code>heading</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>recipe</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-reserved</code></td>
+      <td><code>title</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>reserved</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-resize-handle</code></td>
+      <td><code>label</code>, <code>shortcut</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>resize-handle</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-resize-observer</code></td>
+      <td><code>debounce</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-responsive-content</code></td>
+      <td><code>breakpoint</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-row-action</code></td>
+      <td><code>label</code>, <code>disabled</code></td>
+      <td><code>disabled</code></td>
+      <td><code>(default)</code></td>
+      <td><code>row-action</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-scale-bar</code></td>
+      <td><code>label</code>, <code>value</code>, <code>distance</code>, <code>resolution</code>, <code>latitude</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>scale-bar</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-search-trigger</code></td>
+      <td><code>label</code>, <code>shortcut</code></td>
+      <td>—</td>
+      <td><code>label</code>, <code>shortcut</code></td>
+      <td><code>trigger</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-section-head</code></td>
+      <td><code>title</code>, <code>desc</code>, <code>heading</code></td>
+      <td>—</td>
+      <td><code>title</code>, <code>desc</code></td>
+      <td><code>head</code>, <code>title</code>, <code>desc</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-segmented</code></td>
+      <td><code>options</code>, <code>selected</code>, <code>label</code>, <code>value</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>segmented</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-select</code></td>
+      <td><code>options</code>, <code>required</code>, <code>label</code>, <code>placeholder</code>, <code>disabled</code>, <code>error</code>, <code>help</code></td>
+      <td><code>disabled</code>, <code>required</code></td>
+      <td><code>(default)</code></td>
+      <td><code>select</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-sheet</code></td>
+      <td><code>title</code>, <code>body</code>, <code>size</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>sheet</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-shortcut</code></td>
+      <td><code>key</code>, <code>label</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-shortcut-list</code></td>
+      <td><code>title</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>shortcut-list</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-shortcut-overlay</code></td>
+      <td><code>title</code>, <code>open</code></td>
+      <td><code>open</code></td>
+      <td><code>(default)</code></td>
+      <td><code>shortcut-overlay</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-shortcut-panel</code></td>
+      <td><code>title</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>shortcut-panel</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-shortcut-row</code></td>
+      <td><code>desc</code>, <code>key</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>shortcut-row</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-showcase</code></td>
+      <td><code>title</code>, <code>text</code>, <code>media</code>, <code>reverse</code>, <code>items</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code>, <code>heading</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>showcase</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-side-sheet</code></td>
+      <td><code>open</code>, <code>side</code>, <code>title</code></td>
+      <td><code>open</code></td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-sidebar</code></td>
+      <td><code>title</code>, <code>items</code>, <code>collapsed</code></td>
+      <td><code>collapsed</code></td>
+      <td><code>(default)</code></td>
+      <td><code>sidebar</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-skeleton</code></td>
+      <td><code>size</code>, <code>shimmer</code></td>
+      <td><code>shimmer</code></td>
+      <td><code>(default)</code></td>
+      <td><code>skeleton</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-skeleton-group</code></td>
+      <td><code>count</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-sortable-list</code></td>
+      <td><code>items</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-sparkline</code></td>
+      <td><code>points</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>sparkline</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-spatial-filter</code></td>
+      <td><code>modes</code>, <code>mode</code>, <code>active</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-spinner</code></td>
+      <td><code>size</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td><code>spinner</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-split-button</code></td>
+      <td><code>label</code>, <code>menu</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-stacked-bar</code></td>
+      <td><code>segments</code>, <code>values</code>, <code>colors</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code>, <code>normalize</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>bar</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-stat</code></td>
+      <td><code>value</code>, <code>label</code>, <code>delta</code>, <code>unit</code>, <code>format</code>, <code>locale</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td><code>value</code>, <code>label</code>, <code>delta</code></td>
+      <td><code>stat</code>, <code>value</code>, <code>label</code>, <code>delta</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-status-light</code></td>
+      <td><code>status</code>, <code>label</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-stepper</code></td>
+      <td><code>steps</code>, <code>current</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-steps</code></td>
+      <td><code>steps</code>, <code>current</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code>, <code>heading</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>steps</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-streaming-chart</code></td>
+      <td><code>line</code>, <code>dot</code>, <code>interval</code>, <code>pause</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td><code>pause</code></td>
+      <td><code>(default)</code></td>
+      <td><code>streaming-chart</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-style-panel</code></td>
+      <td><code>title</code>, <code>layers</code>, <code>layer</code>, <code>single</code>, <code>classification</code>, <code>palette</code>, <code>breaks</code>, <code>opacity</code>, <code>n</code>, <code>colors</code>, <code>property</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-style-switcher</code></td>
+      <td><code>items</code>, <code>value</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-survey</code></td>
+      <td><code>date</code>, <code>instrument</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>survey</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-swatch</code></td>
+      <td><code>color</code>, <code>selected</code>, <code>label</code></td>
+      <td><code>selected</code></td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-switch</code></td>
+      <td><code>label</code>, <code>required</code>, <code>checked</code>, <code>disabled</code>, <code>error</code>, <code>help</code></td>
+      <td><code>checked</code>, <code>disabled</code>, <code>required</code></td>
+      <td><code>(default)</code></td>
+      <td><code>switch</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-table</code></td>
+      <td><code>columns</code>, <code>rows</code>, <code>page</code>, <code>page-size</code>, <code>sort</code>, <code>sort-dir</code>, <code>virtual</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>skeleton</code>, <code>persist</code></td>
+      <td>—</td>
+      <td><code>head</code>, <code>(default)</code></td>
+      <td><code>wrap</code>, <code>table</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-tabs</code></td>
+      <td><code>tabs</code>, <code>autoplay</code>, <code>pause</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code>, <code>persist</code>, <code>orientation</code>, <code>closable</code></td>
+      <td><code>closable</code>, <code>pause</code></td>
+      <td><code>tabs</code>, <code>(default)</code></td>
+      <td><code>tabs</code>, <code>list</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-tag</code></td>
+      <td><code>label</code>, <code>removable</code>, <code>variant</code></td>
+      <td><code>removable</code></td>
+      <td><code>(default)</code></td>
+      <td><code>tag</code>, <code>remove</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-tags-input</code></td>
+      <td><code>value</code>, <code>placeholder</code>, <code>disabled</code>, <code>error</code>, <code>help</code></td>
+      <td><code>disabled</code></td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-testimonial</code></td>
+      <td><code>quote</code>, <code>name</code>, <code>role</code></td>
+      <td>—</td>
+      <td><code>quote</code>, <code>name</code>, <code>role</code></td>
+      <td><code>testimonial</code>, <code>quote</code>, <code>byline</code>, <code>name</code>, <code>role</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-textarea</code></td>
+      <td><code>placeholder</code>, <code>required</code>, <code>disabled</code>, <code>error</code>, <code>help</code></td>
+      <td><code>disabled</code>, <code>required</code></td>
+      <td>—</td>
+      <td><code>textarea</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-theme-scope</code></td>
+      <td><code>title</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>theme-scope</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-threshold</code></td>
+      <td><code>label</code>, <code>norm</code>, <code>state</code>, <code>value</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td><code>threshold</code>, <code>value</code>, <code>target</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-time-picker</code></td>
+      <td><code>value</code>, <code>label</code>, <code>disabled</code>, <code>error</code>, <code>help</code></td>
+      <td><code>disabled</code></td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-time-range</code></td>
+      <td><code>label</code>, <code>value</code>, <code>ticks</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>time-range</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-time-series</code></td>
+      <td><code>values</code>, <code>points</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code>, <code>annotations</code>, <code>note</code>, <code>style</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-time-slider</code></td>
+      <td><code>label</code>, <code>value</code>, <code>loop</code>, <code>speed</code>, <code>speeds</code>, <code>show-loop</code>, <code>loop-label</code>, <code>current-time</code>, <code>time-format</code>, <code>is-playing</code>, <code>play-label</code>, <code>pause-label</code>, <code>time-label</code>, <code>speed-label</code></td>
+      <td><code>is-playing</code>, <code>loop</code>, <code>show-loop</code></td>
+      <td><code>(default)</code></td>
+      <td><code>time-slider</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-timeline</code></td>
+      <td><code>items</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>timeline</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-toast</code></td>
+      <td><code>message</code>, <code>variant</code>, <code>duration</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>toast</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-toc</code></td>
+      <td><code>title</code>, <code>items</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td><code>title</code>, <code>(default)</code></td>
+      <td><code>toc</code>, <code>title</code>, <code>list</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-toolbar</code></td>
+      <td><code>title</code>, <code>actions</code>, <code>overflow</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>toolbar</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-tooltip</code></td>
+      <td><code>text</code>, <code>anchor</code>, <code>delay</code>, <code>trigger</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>tooltip</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-tour</code></td>
+      <td><code>steps</code>, <code>current</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-tree</code></td>
+      <td><code>items</code>, <code>virtual</code>, <code>item-height</code>, <code>empty</code>, <code>loading</code>, <code>error</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code>, <code>persist</code>, <code>selectable</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>tree</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-tree-grid</code></td>
+      <td><code>items</code>, <code>expanded</code></td>
+      <td>—</td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-version</code></td>
+      <td><code>options</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>version</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-version-banner</code></td>
+      <td><code>message</code>, <code>link</code>, <code>href</code>, <code>dismissible</code></td>
+      <td><code>dismissible</code></td>
+      <td><code>(default)</code></td>
+      <td><code>banner</code></td>
+    </tr>
+  
+    <tr>
+      <td><code>c-virtual-list</code></td>
+      <td><code>items</code>, <code>item-height</code>, <code>orientation</code>, <code>sticky</code></td>
+      <td><code>sticky</code></td>
+      <td>—</td>
+      <td>—</td>
+    </tr>
+  
+    <tr>
+      <td><code>c-widget-state</code></td>
+      <td><code>loading</code>, <code>error</code>, <code>empty</code>, <code>retry</code>, <code>src</code>, <code>lazy</code>, <code>refresh</code>, <code>timeout</code>, <code>skeleton</code></td>
+      <td>—</td>
+      <td><code>(default)</code></td>
+      <td><code>widget-state</code></td>
+    </tr>
+  
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
 
           </section>
 

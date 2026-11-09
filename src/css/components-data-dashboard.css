@@ -1,0 +1,480 @@
+/* ============================================================================
+   CONTOUR — Data & dashboard components
+   ----------------------------------------------------------------------------
+   For technical dashboards: KPI tiles, panels, filter bars, dense tables,
+   chart frames and legends. These components read data; they are tuned for
+   scanning and comparison rather than for narrative.
+   ========================================================================= */
+
+@layer components {
+
+  /* =======================================================================
+     1. DASHBOARD GRID
+     A twelve-column grid, the standard for analytical layouts. Panels span
+     whole columns; on narrow screens everything stacks.
+     ======================================================================= */
+  .c-chart-grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: calc(var(--space-md) * var(--density, 1));
+  }
+
+  .c-chart-grid > * {
+    grid-column: span 12;
+  }
+
+  @media (width >= 40rem) {
+    .c-chart-grid > [data-span="4"] {
+      grid-column: span 4;
+    }
+    .c-chart-grid > [data-span="6"] {
+      grid-column: span 6;
+    }
+    .c-chart-grid > [data-span="8"] {
+      grid-column: span 8;
+    }
+  }
+
+  @media (width >= 64rem) {
+    .c-chart-grid > [data-span="3"] {
+      grid-column: span 3;
+    }
+    .c-chart-grid > [data-span="9"] {
+      grid-column: span 9;
+    }
+  }
+
+
+  /* =======================================================================
+     2. KPI TILE
+     The headline number. Value leads, label follows, context last.
+     ======================================================================= */
+  .c-kpi {
+    container-type: inline-size;
+    display: grid;
+    gap: calc(0.35rem * var(--density, 1));
+    align-content: start;
+    padding: calc(var(--space-md) * var(--density, 1));
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-1);
+  }
+
+  .c-kpi__empty,
+  .c-kpi__loading,
+  .c-kpi__error {
+    color: var(--color-text-muted);
+    padding: calc(var(--space-md) * var(--density, 1));
+  }
+
+  .c-kpi__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(0.4rem * var(--density, 1));
+  }
+  .c-kpi__head > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+
+  @container (inline-size < 12rem) {
+    .c-kpi { padding: calc(var(--space-sm) * var(--density, 1)); gap: calc(var(--space-2xs) * var(--density, 1)); }
+    .c-kpi__value { font-size: 1.4rem; }
+  }
+
+  .c-kpi__label {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  .c-kpi__value {
+    display: flex;
+    align-items: baseline;
+    gap: calc(0.35rem * var(--density, 1));
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 1.3rem + 1.2vw, 2.25rem);
+    font-weight: var(--weight-bold);
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    color: var(--color-text-strong);
+    font-variant-numeric: tabular-nums;
+  }
+  .c-kpi__value > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .c-kpi__unit {
+    font-size: 0.5em;
+    font-weight: var(--weight-medium);
+    color: var(--color-text-subtle);
+    letter-spacing: 0;
+  }
+
+  .c-kpi__foot {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--space-2xs) * var(--density, 1));
+    flex-wrap: wrap;
+    margin-block-start: calc(0.15rem * var(--density, 1));
+  }
+  .c-kpi__foot > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+
+  /* Delta — direction is carried by an arrow, not by colour alone. */
+  .c-delta {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(var(--space-3xs) * var(--density, 1));
+    font-family: var(--font-mono);
+    font-size: var(--type-xs);
+    font-variant-numeric: tabular-nums;
+    color: var(--color-text-muted);
+  }
+
+  .c-delta__empty,
+  .c-delta__loading,
+  .c-delta__error {
+    color: var(--color-text-muted);
+  }
+
+  .c-delta svg {
+    inline-size: 0.8rem;
+    block-size: 0.8rem;
+  }
+
+  .c-delta--up {
+    color: var(--color-success-text);
+  }
+
+  .c-delta--down {
+    color: var(--color-danger-text);
+  }
+
+   .c-delta--flat {
+     color: var(--color-text-subtle);
+   }
+   .c-delta--good {
+     color: var(--color-success-text);
+   }
+   .c-delta--bad {
+     color: var(--color-danger-text);
+   }
+   .c-delta--neutral {
+     color: var(--color-text-muted);
+   }
+
+  .c-kpi__note {
+    font-size: var(--type-xs);
+    color: var(--color-text-subtle);
+  }
+
+  /* Notes (CARTO-inspired): optional annotation slot on data components. */
+  .c-chart__note,
+  .c-category__note,
+  .c-donut__note,
+  .c-time-series__note {
+    font-size: var(--type-xs);
+    color: var(--color-text-subtle);
+    margin-block-start: var(--space-xs);
+  }
+
+  /* Threshold bar — where the value sits against its target. */
+  .c-threshold {
+    position: relative;
+    block-size: 4px;
+    border-radius: var(--radius-pill);
+    background: var(--color-track);
+    overflow: hidden;
+  }
+
+  .c-threshold__empty,
+  .c-threshold__loading,
+  .c-threshold__error {
+    color: var(--color-text-muted);
+    padding: calc(var(--space-md) * var(--density, 1));
+  }
+
+  .c-threshold__fill {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    inline-size: var(--value, 0%);
+    border-radius: inherit;
+    background: var(--color-primary);
+  }
+
+  .c-threshold[data-state="warning"] .c-threshold__fill {
+    background: var(--color-warning);
+  }
+
+  .c-threshold[data-state="danger"] .c-threshold__fill {
+    background: var(--color-danger);
+  }
+
+  .c-threshold__target {
+    position: absolute;
+    inset-block: -2px;
+    inset-inline-start: var(--target, 50%);
+    inline-size: 1px;
+    background: var(--color-text-strong);
+    opacity: 0.55;
+  }
+
+  /* =======================================================================
+     3. SPARKLINE
+     A trend without axes. Always paired with a number.
+     ======================================================================= */
+  .c-sparkline {
+    display: block;
+    inline-size: 100%;
+    block-size: calc(2.25rem * var(--density, 1));
+    overflow: visible;
+  }
+
+  .c-sparkline__line {
+    fill: none;
+    stroke: var(--color-primary);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+   .c-sparkline__area {
+     fill: color-mix(in oklab, var(--color-primary) 16%, transparent);
+     stroke: none;
+   }
+
+   .c-sparkline__tooltip {
+     position: absolute;
+     inset-block-start: var(--chart-tip-block-start);
+     inset-inline-start: var(--chart-tip-inline-start);
+     z-index: var(--z-tooltip);
+     padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1));
+     border-radius: var(--radius-xs);
+     background: var(--color-surface-3);
+     color: var(--color-text);
+     font-size: var(--type-micro);
+     pointer-events: none;
+     white-space: nowrap;
+   }
+
+  .c-sparkline__dot {
+    fill: var(--color-primary);
+  }
+
+  /* =======================================================================
+     4. PANEL
+     The tile that holds a chart or a table. Header, body, and an optional
+     status — every panel reports its own state, so one broken widget never
+     blanks the screen.
+     ======================================================================= */
+  .c-panel {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 200px;
+    /* The grip is `position: absolute` with `inset-block: 0`, so it needs the
+       panel as its containing block. `container-type: inline-size` does not
+       provide one in Chromium — measured, the grip resolved against the
+       section instead and stretched to the section's full height, painting its
+       bar hundreds of pixels outside the panel. Say it explicitly. */
+    position: relative;
+    container-type: inline-size;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-1);
+    overflow: hidden;
+  }
+
+  .c-panel__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: calc(var(--space-sm) * var(--density, 1));
+    padding: calc(var(--space-sm) * var(--density, 1)) calc(var(--space-md) * var(--density, 1));
+    border-block-end: 1px solid var(--color-border-subtle);
+  }
+  .c-panel__head > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .c-panel__title {
+    font-family: var(--font-display);
+    font-size: var(--type-h4);
+    font-weight: var(--weight-semibold);
+    letter-spacing: -0.012em;
+    color: var(--color-text-strong);
+  }
+
+  .c-panel__subtitle {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--color-text-subtle);
+    margin-block-start: calc(0.1rem * var(--density, 1));
+  }
+
+  .c-panel__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(0.35rem * var(--density, 1));
+    margin-inline-start: auto;
+  }
+  .c-panel__actions > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .c-panel__body {
+    flex: 1;
+    padding: calc(var(--space-md) * var(--density, 1));
+    min-block-size: 0;
+  }
+
+  /* Collapsible widget chrome (CARTO-inspired): hide body when collapsed. */
+  .c-panel--collapsed .c-panel__body {
+    display: none;
+  }
+
+  .c-panel__body--flush {
+    padding: 0;
+  }
+
+  .c-panel__foot {
+    padding: calc(0.65rem * var(--density, 1)) calc(var(--space-md) * var(--density, 1));
+    border-block-start: 1px solid var(--color-border-subtle);
+    background: var(--color-surface-2);
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--color-text-subtle);
+    display: flex;
+    align-items: center;
+    gap: calc(var(--space-xs) * var(--density, 1));
+    flex-wrap: wrap;
+  }
+
+  /* Container query: reduce padding when the panel is narrow. */
+  @container (inline-size < 20rem) {
+    .c-panel__head,
+    .c-panel__body,
+    .c-panel__foot {
+      padding: calc(var(--space-sm) * var(--density, 1));
+    }
+  }
+
+  /* Per-panel status */
+  .c-panel__status {
+    display: grid;
+    justify-items: center;
+    gap: calc(0.4rem * var(--density, 1));
+    padding: calc(var(--space-xl) * var(--density, 1)) calc(var(--space-md) * var(--density, 1));
+    text-align: center;
+    color: var(--color-text-subtle);
+    font-size: var(--type-xs);
+  }
+
+  .c-panel__status svg {
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+    opacity: 0.7;
+  }
+
+  .c-panel__status--error {
+    color: var(--color-danger-text);
+  }
+
+  .c-panel__status--live {
+    color: var(--color-accent-text);
+  }
+
+
+  /* =======================================================================
+     3b. MEASURE OVERLAY
+     Distance/area measurement tool for maps.
+     ======================================================================= */
+  .c-measure {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: var(--z-raised, 10);
+  }
+
+  .c-measure__empty,
+  .c-measure__loading,
+  .c-measure__error {
+    color: var(--color-text-muted);
+    padding: calc(var(--space-md) * var(--density, 1));
+  }
+
+  .c-measure__line {
+    stroke: var(--color-primary);
+    stroke-width: 2;
+    stroke-dasharray: 6 4;
+    fill: none;
+  }
+
+  .c-measure__point {
+    fill: var(--color-primary);
+    stroke: var(--color-surface-1);
+    stroke-width: 2;
+  }
+
+  .c-measure__label {
+    position: absolute;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-inline-size: calc(8rem * var(--density, 1));
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1));
+    font-family: var(--font-mono);
+    font-size: var(--type-xs);
+    color: var(--color-text);
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  .c-measure__readout {
+    position: absolute;
+    inset-block-end: var(--space-sm);
+    inset-inline-start: 50%;
+    transform: translateX(-50%);
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: calc(var(--space-xs) * var(--density, 1)) calc(var(--space-sm) * var(--density, 1));
+    font-family: var(--font-mono);
+    font-size: var(--type-sm);
+    color: var(--color-text);
+    pointer-events: none;
+  }
+
+  /* KPI threshold badge & sparkline canvas — KPI elements, kept with KPI */
+  .c-kpi__threshold-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: calc(0.1rem * var(--density, 1)) calc(0.4rem * var(--density, 1));
+    border-radius: var(--radius-pill);
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    background: var(--color-surface-2);
+    color: var(--color-text-muted);
+  }
+  .c-kpi__sparkline-canvas {
+    inline-size: 100%;
+    block-size: calc(1.5rem * var(--density, 1));
+  }
+}

@@ -1,0 +1,688 @@
+/* ============================================================================
+   CONTOUR — Components: Code, Tables, Meter, Progress, Legend, Alerts, Toast
+   ----------------------------------------------------------------------------
+   Naming: .c-<block> for the block, .c-<block>__<element> for parts,
+   .c-<block>--<variant> for variants.
+   ========================================================================= */
+
+@layer components {
+  /* =======================================================================
+     12. CODE
+     ======================================================================= */
+  .c-code {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-code-bg);
+    overflow: hidden;
+  }
+
+  .c-code__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(var(--space-sm) * var(--density, 1));
+    padding: calc(0.55rem * var(--density, 1)) calc(0.6rem * var(--density, 1)) calc(0.55rem * var(--density, 1)) calc(1rem * var(--density, 1));
+    background: var(--color-code-header-bg);
+    border-block-end: 1px solid var(--color-border-subtle);
+  }
+  .c-code__head > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .c-code__title {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  .c-code__copy {
+    margin-inline-start: auto;
+  }
+
+  .c-code pre {
+    margin: 0;
+    padding: calc(1.15rem * var(--density, 1)) calc(1.25rem * var(--density, 1));
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-padding-inline: calc(0.5rem * var(--density, 1));
+    font-family: var(--font-mono);
+    font-size: calc(0.8125rem * var(--density, 1));
+    line-height: 1.75;
+    color: var(--color-text);
+    tab-size: 2;
+  }
+
+  .c-code code {
+    font-family: inherit;
+  }
+
+  .t-keyword {
+    color: var(--color-syntax-keyword);
+  }
+  .t-string {
+    color: var(--color-syntax-string);
+  }
+  .t-function {
+    color: var(--color-syntax-function);
+  }
+  .t-number {
+    color: var(--color-syntax-number);
+  }
+  .t-punct {
+    color: var(--color-syntax-punctuation);
+  }
+  .t-comment {
+    color: var(--color-syntax-comment);
+    font-style: italic;
+  }
+
+  /* =======================================================================
+     13. DATA TABLE
+     ======================================================================= */
+  /* Sticky header (F-09): keep the header visible while scrolling a tall table. */
+  .c-table thead th {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 2;
+    background: var(--color-surface-1);
+  }
+  .c-table--virtual thead th {
+    position: sticky;
+    inset-block-start: 0;
+  }
+
+  .c-table-wrap {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 300px;
+    position: relative;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-padding-inline: calc(0.5rem * var(--density, 1));
+    scroll-padding-block-start: calc(0.5rem * var(--density, 1));
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-1);
+    container: table / inline-size;
+  }
+
+
+  .c-data-table {
+    contain: layout;
+  }
+
+  .c-data-table .c-table-wrap {
+    min-block-size: calc(8rem * var(--density, 1));
+  }
+
+  .c-error-boundary {
+    display: block;
+    contain: layout;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: calc(var(--space-md) * var(--density, 1));
+    background: var(--color-surface-raised);
+  }
+
+  .c-error-boundary__message {
+    font-size: var(--type-sm);
+    color: var(--color-text-muted);
+    margin-block-start: calc(var(--space-xs) * var(--density, 1));
+  }
+
+  .c-resize-observer {
+    display: block;
+    contain: layout;
+  }
+
+  .c-resize-observer__target {
+    display: block;
+    min-block-size: calc(1rem * var(--density, 1));
+  }
+
+  /* Container query: the table drops its optional columns when the table
+     itself gets narrow — independent of the viewport. A wide table in a
+     narrow sidebar still loses them. */
+  @container table (inline-size < 40rem) {
+    .c-table [data-col="optional"] {
+      display: none;
+    }
+  }
+
+  .c-table {
+    inline-size: 100%;
+    border-collapse: collapse;
+    font-size: var(--type-sm);
+    table-layout: fixed;
+  }
+
+  .c-table th,
+  .c-table td {
+    padding: calc(var(--space-xs) * var(--density, 1)) calc(1rem * var(--density, 1));
+    text-align: start;
+    border-block-end: 1px solid var(--color-border-subtle);
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .c-table thead th {
+    position: sticky;
+    inset-block-start: 0;
+    background: var(--color-surface-2);
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+    z-index: var(--z-raised);
+  }
+
+  .c-table tbody tr:last-child td {
+    border-block-end: none;
+  }
+
+  .c-table tbody tr {
+    cursor: pointer;
+    transition: background-color var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-table tbody tr:hover,
+  .c-table tbody tr:focus-visible {
+    background: var(--color-surface-2);
+  }
+
+  .c-table td[data-numeric],
+  .c-table th[data-numeric] {
+    text-align: end;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .c-table td[data-mono] {
+    font-family: var(--font-mono);
+    font-size: var(--type-xs);
+  }
+
+  /* Density modes. Comfortable by default; compact for scanning.
+     Merged from components-data.css (C-36) so density no longer depends on
+     both files loading. */
+  [data-density="compact"] {
+    --density: var(--density-compact);
+    --density-type: var(--density-type-compact);
+  }
+
+  [data-density="roomy"] {
+    --density: var(--density-roomy);
+    --density-type: 1.08;
+  }
+
+  .c-table {
+    font-size: calc(var(--type-sm) * var(--density-type));
+  }
+
+  .c-table th,
+  .c-table td {
+    padding-block: var(--density-row);
+    padding-inline: var(--space-sm);
+  }
+
+  .c-table--dense {
+    font-size: var(--type-xs);
+  }
+
+  .c-table--compact th,
+  .c-table--compact td {
+    padding: calc(0.45rem * var(--density, 1)) calc(0.8rem * var(--density, 1));
+  }
+
+  /* =======================================================================
+     13b. ADVANCED DISCLOSURE — capability-gated block (C-34)
+     ======================================================================= */
+  .c-advanced {
+    display: block;
+    font-size: var(--type-sm);
+    color: var(--color-text);
+  }
+
+  /* =======================================================================
+     14. CONTOUR METER — progress drawn as elevation rings
+     ======================================================================= */
+  .c-meter {
+    container-type: inline-size;
+    --meter-value: 0.72;
+    --meter-color: var(--color-primary);
+    --meter-size: calc(6.5rem * var(--density, 1));
+    position: relative;
+    display: grid;
+    place-items: center;
+    inline-size: var(--meter-size);
+    block-size: var(--meter-size);
+    flex: none;
+  }
+
+  .c-meter__empty,
+  .c-meter__loading,
+  .c-meter__error {
+    color: var(--color-text-muted);
+    padding: calc(var(--space-md) * var(--density, 1));
+  }
+
+  .c-meter::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: conic-gradient(
+      from -90deg,
+      var(--meter-color) calc(var(--meter-value) * 360deg),
+      transparent 0
+    );
+    /* The ring carries the progress; the core carries the number. The ring
+       itself is invisible when there is no ring: at --meter-value 0 the
+       conic paints nothing, so an opaque ::before would read as a leftover.
+       The multiplier is 1000 (not 100): opacity is clamped to [0,1] by the
+       property, so clamp(0, value*100, 1) is an invalid 5 at value 0.05 and
+       gets ignored, leaving the ring fully visible. min(1, value*1000) stays
+       in range everywhere — 0 at 0, 1 at any value >= 0.001. */
+    opacity: min(1, calc(var(--meter-value) * 1000));
+    -webkit-mask: radial-gradient(
+      circle,
+      transparent 0 62%,
+      #000 63% 100%
+    );
+    mask: radial-gradient(circle, transparent 0 62%, #000 63% 100%);
+  }
+
+  .c-meter::after {
+    content: "";
+    position: absolute;
+    /* The end cap: a half-disc whose diameter equals the ring's stroke,
+       centred on the ring's mid-line where the arc stops. The flat edge lands
+       on the radius and the round bulge sweeps forward, so the arc terminates
+       in a round cap instead of a hard cut.
+       The ring's outer radius is half the meter (border-radius: 50%) and its
+       inner radius is the mask's 62% of the corner extent, so the stroke is
+       (0.5 - 0.62/√2) ≈ 0.0614 × size and the mid-line ≈ 0.47 × size.
+       The cap terminates the arc, so it is invisible when there is no arc:
+       at --meter-value 0 the conic paints nothing and a lone cap would be a
+       leftover. The multiplier is 1000 (not 100): opacity is clamped to
+       [0,1] by the property, so clamp(0, value*100, 1) is an invalid 5 at
+       value 0.05 and gets ignored, leaving the cap fully visible. min(1,
+       value*1000) stays in range everywhere — 0 at 0, 1 at any value >=
+       0.001. */
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    inline-size: calc(var(--meter-size) * 0.0614);
+    block-size: calc(var(--meter-size) * 0.0614);
+    border-radius: 50%;
+    background: var(--meter-color);
+    clip-path: inset(0 0 0 50%);
+    opacity: min(1, calc(var(--meter-value) * 1000));
+    transform:
+      translate(-50%, -50%)
+      rotate(calc(var(--meter-value) * 360deg - 90deg))
+      translateY(calc(var(--meter-size) * -0.47));
+    pointer-events: none;
+  }
+
+  /* No bullseye. Concentric hairlines across the dial read as noise, not
+     as contour: the ring itself carries the progress, and the core carries
+     the number. */
+
+  .c-meter__core {
+    position: relative;
+    z-index: var(--z-raised);
+    display: grid;
+    place-items: center;
+    gap: calc(0.1rem * var(--density, 1));
+    text-align: center;
+  }
+
+  .c-meter__value {
+    font-family: var(--font-display);
+    font-size: calc(1.5rem * var(--density, 1));
+    font-weight: var(--weight-bold);
+    letter-spacing: -0.03em;
+    color: var(--color-text-strong);
+    font-variant-numeric: tabular-nums;
+    max-inline-size: 8ch;
+    overflow-wrap: anywhere;
+  }
+
+  .c-meter__label {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  .c-meter--accent {
+    --meter-color: var(--color-accent);
+  }
+
+  .c-meter--data {
+    --meter-color: var(--color-data);
+  }
+
+  /* =======================================================================
+     15. PROGRESS BAR
+     ======================================================================= */
+  .c-progress {
+    display: block;
+    inline-size: 100%;
+    block-size: 6px;
+    border-radius: var(--radius-pill);
+    background: var(--color-track);
+    overflow: hidden;
+  }
+
+  .c-progress__bar {
+    block-size: 100%;
+    inline-size: var(--progress, 0%);
+    border-radius: inherit;
+    background: var(--color-primary);
+    transition: inline-size var(--dur-slow) var(--ease-out-expo);
+  }
+
+  .c-progress--accent .c-progress__bar {
+    background: var(--color-accent);
+  }
+
+  /* =======================================================================
+     16. LEGEND
+     ======================================================================= */
+  .c-legend {
+    container-type: inline-size;
+    display: grid;
+    gap: calc(var(--space-2xs) * var(--density, 1));
+    padding: calc(1rem * var(--density, 1)) calc(1.1rem * var(--density, 1));
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-1);
+    font-size: var(--type-xs);
+  }
+
+  .c-legend__empty,
+  .c-legend__loading,
+  .c-legend__error {
+    color: var(--color-text-muted);
+    padding: calc(var(--space-md) * var(--density, 1));
+  }
+
+  /* Container query: reduce padding when the legend is narrow. */
+  @container (inline-size < 16rem) {
+    .c-legend {
+      padding: calc(var(--space-sm) * var(--density, 1));
+      gap: calc(var(--space-3xs) * var(--density, 1));
+    }
+  }
+
+  /* The inline legend: a wrapping row of keys that sits on the surface it
+     belongs to — a panel foot, a chart caption. No box, no border, and never
+     a name broken across two lines. */
+  .c-legend--inline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(0.35rem * var(--density, 1)) calc(1rem * var(--density, 1));
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+  }
+
+  .c-legend__title {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  .c-legend__ramp {
+    block-size: 10px;
+    border-radius: var(--radius-pill);
+    /* A legend ramp answers "how big is this quantity", so it is ordered.
+       --gradient-heat is a multi-hue heat ramp and its lightness is not
+       monotonic by design (71, 78, 78, 70.4, 77, 62.36 across its six
+       stops) — feeding it to a ramp that implies order made the guide's own
+       legend sort a scale that sorts nothing. --chart-seq-* is one hue with
+       rising lightness, which is what a ramp means. --gradient-heat stays on
+       the playground chip, where it correctly means "hot, not ordered". */
+    background: linear-gradient(
+      90deg,
+      var(--chart-seq-7),
+      var(--chart-seq-6),
+      var(--chart-seq-5),
+      var(--chart-seq-4),
+      var(--chart-seq-3),
+      var(--chart-seq-2),
+      var(--chart-seq-1)
+    );
+  }
+
+  .c-legend__scale {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--color-text-subtle);
+  }
+
+  .c-legend__items {
+    display: grid;
+    gap: calc(0.4rem * var(--density, 1));
+    content-visibility: auto;
+    contain-intrinsic-size: auto 120px;
+  }
+
+  .c-legend__item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(0.55rem * var(--density, 1));
+    color: var(--color-text-muted);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-inline-size: calc(12rem * var(--density, 1));
+    min-block-size: var(--target-option);
+    min-inline-size: var(--target-option);
+  }
+  .c-legend__item > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .c-legend__swatch {
+    display: inline-block;
+    inline-size: calc(0.875rem * var(--density, 1));
+    block-size: calc(0.875rem * var(--density, 1));
+    border-radius: var(--radius-xs);
+    flex: none;
+    background-color: currentColor;
+  }
+
+   .c-legend__caption {
+     font-size: var(--type-micro);
+     color: var(--color-text-subtle);
+   }
+   .c-legend__audit {
+     font-size: var(--type-micro);
+     color: var(--color-danger-text);
+     padding: calc(var(--space-xs) * var(--density, 1));
+     border: 1px solid var(--color-danger-border, var(--color-border));
+     border-radius: var(--radius-sm);
+   }
+   .c-legend__classification {
+     font-size: var(--type-micro);
+     color: var(--color-text-muted);
+   }
+   .c-legend__size {
+     font-size: var(--type-micro);
+     color: var(--color-text-subtle);
+   }
+   .c-legend__table-wrap {
+     font-size: var(--type-micro);
+   }
+   .c-legend__table {
+     inline-size: 100%;
+     border-collapse: collapse;
+   }
+   .c-legend__table td {
+     padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1));
+     border-block-end: 1px solid var(--color-border);
+   }
+   .c-legend__ramp-segment {
+     display: inline-flex;
+     align-items: flex-end;
+     justify-content: center;
+   }
+   .c-legend__ramp-break {
+     font-size: var(--type-micro);
+     color: var(--color-text-subtle);
+   }
+   .c-legend__ramp-label {
+     font-size: var(--type-micro);
+     color: var(--color-text-subtle);
+   }
+
+  /* =======================================================================
+     17. ALERTS / CALLOUTS
+     ======================================================================= */
+  .c-alert {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 120px;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: calc(var(--space-xs) * var(--density, 1));
+    align-items: start;
+    padding: calc(0.9rem * var(--density, 1)) calc(1rem * var(--density, 1));
+    border: 1px solid var(--color-border);
+    border-inline-start: 3px solid var(--color-text-subtle);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-1);
+    font-size: var(--type-sm);
+    line-height: var(--leading-normal);
+  }
+
+  .c-alert__empty,
+  .c-alert__loading,
+  .c-alert__error {
+    color: var(--color-text-muted);
+    padding: calc(var(--space-md) * var(--density, 1));
+  }
+
+  .c-alert__icon {
+    inline-size: calc(1.15rem * var(--density, 1));
+    block-size: calc(1.15rem * var(--density, 1));
+    margin-block-start: calc(0.1rem * var(--density, 1));
+    flex: none;
+  }
+
+  .c-alert__icon svg {
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  .c-alert__title {
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-strong);
+    margin-block-end: calc(0.15rem * var(--density, 1));
+  }
+
+  .c-alert__body {
+    color: var(--color-text-muted);
+  }
+
+  .c-alert__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--space-xs) * var(--density, 1));
+    align-items: center;
+  }
+  .c-alert__actions > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .c-alert--info {
+    border-inline-start-color: var(--color-info);
+    background: var(--color-info-soft);
+  }
+  .c-alert--info .c-alert__icon {
+    color: var(--color-info-text);
+  }
+
+  .c-alert--success {
+    border-inline-start-color: var(--color-success);
+    background: var(--color-success-soft);
+  }
+  .c-alert--success .c-alert__icon {
+    color: var(--color-success-text);
+  }
+
+  .c-alert--warning {
+    border-inline-start-color: var(--color-warning);
+    background: var(--color-warning-soft);
+  }
+  .c-alert--warning .c-alert__icon {
+    color: var(--color-warning-text);
+  }
+
+  .c-alert--danger {
+    border-inline-start-color: var(--color-danger);
+    background: var(--color-danger-soft);
+  }
+  .c-alert--danger .c-alert__icon {
+    color: var(--color-danger-text);
+  }
+
+  .c-alert--accent {
+    border-inline-start-color: var(--color-accent);
+    background: var(--color-accent-soft);
+  }
+  .c-alert--accent .c-alert__icon {
+    color: var(--color-accent-text);
+  }
+
+  .c-alert__close {
+    color: var(--color-text-subtle);
+    cursor: pointer;
+    padding: calc(0.35rem * var(--density, 1));
+    border-radius: var(--radius-xs);
+    min-inline-size: var(--target-option);
+    min-block-size: var(--target-option);
+    display: inline-grid;
+    place-items: center;
+    transition: color var(--dur-fast) var(--ease-standard), background-color var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-alert__close:hover {
+    color: var(--color-text-strong);
+    background: var(--color-surface-3);
+  }
+
+  /* =======================================================================
+     18. TOAST
+     ======================================================================= */
+  .c-toast {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(0.7rem * var(--density, 1));
+    padding: calc(var(--space-xs) * var(--density, 1)) calc(0.9rem * var(--density, 1));
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-2);
+    box-shadow: var(--shadow-lg);
+    font-size: var(--type-sm);
+    color: var(--color-text);
+    inline-size: max-content;
+    max-inline-size: min(calc(28rem * var(--density, 1)), calc(100vw - calc(2rem * var(--density, 1))));
+  }
+}

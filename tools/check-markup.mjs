@@ -181,7 +181,7 @@ if (desc && ogDesc && desc[1] !== ogDesc[1]) {
   // `hidden="until-found"` is unsupported in Safari (blocked since Feb 2026);
   // `content-visibility: hidden` and `display: none` on a disclosure body
   // defeat the reveal. Guard against them in src/css.
-  const cssFiles = ["base.css","components.css","components-shell.css","components-data.css","components-docs.css","components-landing.css","patterns.css","utilities.css","tokens.css"];
+  const cssFiles = ["base.css","components-brand.css","components-buttons.css","components-cards.css","components-navigation.css","components-forms.css","components-display.css","components-overlay.css","components-misc.css","components-shell.css","components-data-dashboard.css","components-data-charts.css","components-data-tables.css","components-data-maps.css","components-data-widgets.css","components-docs.css","components-landing.css","patterns.css","utilities.css","tokens.css"];
   for (const f of cssFiles) {
     const css = read("src/css", f);
     if (css === null) continue;

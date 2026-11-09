@@ -6,7 +6,7 @@
 A token-driven design system for **spatial interfaces** — routing engines, pedestrian
 simulators, map tooling and geospatial dashboards.
 
-<!-- ds:components-line -->225 components, 301 design tokens<!-- /ds:components-line -->, dark and light themes, zero runtime dependencies, no build step.
+<!-- ds:components-line -->216 components, 301 design tokens<!-- /ds:components-line -->, dark and light themes, zero runtime dependencies, no build step.
 
 The [style guide](index.html) is the specification and the test suite.
 
@@ -134,9 +134,20 @@ If inlining layers with a bundler, import them in this order (`ds.css` declares 
 @import "src/css/fonts.css";
 @import "src/css/tokens.css" layer(tokens);
 @import "src/css/base.css" layer(base);
-@import "src/css/components.css" layer(components);
+@import "src/css/components-brand.css" layer(components);
+@import "src/css/components-buttons.css" layer(components);
+@import "src/css/components-cards.css" layer(components);
+@import "src/css/components-navigation.css" layer(components);
+@import "src/css/components-forms.css" layer(components);
+@import "src/css/components-display.css" layer(components);
+@import "src/css/components-overlay.css" layer(components);
+@import "src/css/components-misc.css" layer(components);
 @import "src/css/components-shell.css" layer(components);
-@import "src/css/components-data.css" layer(components);
+@import "src/css/components-data-dashboard.css" layer(components);
+@import "src/css/components-data-charts.css" layer(components);
+@import "src/css/components-data-tables.css" layer(components);
+@import "src/css/components-data-maps.css" layer(components);
+@import "src/css/components-data-widgets.css" layer(components);
 @import "src/css/components-docs.css" layer(components);
 @import "src/css/components-landing.css" layer(components);
 @import "src/css/patterns.css" layer(components);
@@ -356,8 +367,15 @@ Four layers: primitives → semantic → component → utilities. Primitives nev
 @import "src/css/fonts.css";
 @import "src/css/tokens.css" layer(tokens);
 @import "src/css/base.css" layer(base);
-@import "src/css/components.css" layer(components);
-/* + components-shell, components-data, components-docs, components-landing, patterns, utilities */
+@import "src/css/components-brand.css" layer(components);
+@import "src/css/components-buttons.css" layer(components);
+@import "src/css/components-cards.css" layer(components);
+@import "src/css/components-navigation.css" layer(components);
+@import "src/css/components-forms.css" layer(components);
+@import "src/css/components-display.css" layer(components);
+@import "src/css/components-overlay.css" layer(components);
+@import "src/css/components-misc.css" layer(components);
+/* + components-shell, components-data-dashboard, components-data-charts, components-data-tables, components-data-maps, components-data-widgets, components-docs, components-landing, patterns, utilities */
 ```
 
 ## Consumer layering

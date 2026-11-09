@@ -4,7 +4,13 @@ import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 
 const root = process.cwd();
-const css = readFileSync(join(root, "src/css/components-data.css"), "utf8") + readFileSync(join(root, "src/css/utilities.css"), "utf8");
+const css = [
+  "components-data-dashboard.css",
+  "components-data-charts.css",
+  "components-data-tables.css",
+  "components-data-maps.css",
+  "components-data-widgets.css",
+].map((f) => readFileSync(join(root, "src/css", f), "utf8")).join("\n") + readFileSync(join(root, "src/css/utilities.css"), "utf8");
 const js = readFileSync(join(root, "src/js/ds.js"), "utf8");
 const svg = join(root, "src/svg/cvd-filters.svg");
 

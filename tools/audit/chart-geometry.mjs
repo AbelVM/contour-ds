@@ -37,13 +37,19 @@ const fail = (m) => {
   console.error("FAIL:", m);
 };
 
-const css = readFileSync(`${ROOT}/src/css/components-data.css`, "utf8");
+const css = [
+  "components-data-dashboard.css",
+  "components-data-charts.css",
+  "components-data-tables.css",
+  "components-data-maps.css",
+  "components-data-widgets.css",
+].map((f) => readFileSync(`${ROOT}/src/css/${f}`, "utf8")).join("\n");
 
 // The rule must exist before a browser can obey it. Checked statically because
 // the assertion is about the source, not the render.
 const plotRule = /\.c-chart__plot\s*\{[\s\S]*?\n  \}/.exec(css);
 if (!plotRule) {
-  fail(".c-chart__plot is not a rule I can find in components-data.css — cannot judge its geometry");
+  fail(".c-chart__plot is not a rule I can find in the data component sheets — cannot judge its geometry");
 } else {
   if (!/var\(--chart-ticks/.test(plotRule[0]))
     fail(".c-chart__plot does not read --chart-ticks: the band is a literal again");

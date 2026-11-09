@@ -1,0 +1,214 @@
+/* ============================================================================
+   CONTOUR — Components: Brand & Header
+   ----------------------------------------------------------------------------
+   Naming: .c-<block> for the block, .c-<block>__<element> for parts,
+   .c-<block>--<variant> for variants. Elements never rely on descendant
+   selectors so components can be safely nested.
+   ========================================================================= */
+
+@layer components {
+  /* =======================================================================
+     1. BRAND MARK
+     ======================================================================= */
+  .c-mark {
+    display: grid;
+    place-items: center;
+    inline-size: calc(2.25rem * var(--density, 1));
+    block-size: calc(2.25rem * var(--density, 1));
+    border-radius: var(--radius-md);
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+    flex: none;
+  }
+
+  .c-mark svg {
+    inline-size: 1.35rem;
+    block-size: 1.35rem;
+  }
+
+  .c-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: calc(var(--space-xs) * var(--density, 1));
+    text-decoration: none;
+    color: var(--color-text-strong);
+  }
+  .c-brand > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .c-brand__name {
+    font-family: var(--font-display);
+    font-weight: var(--weight-bold);
+    font-size: calc(1.05rem * var(--density, 1));
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+  }
+
+  .c-brand__tag {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-micro);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+    padding-inline-start: calc(var(--space-xs) * var(--density, 1));
+    border-inline-start: 1px solid var(--color-border);
+  }
+
+  /* On very narrow screens the version tag is the first thing to go — the
+     wordmark carries the identity, the tag does not. */
+  @media (width < 30rem) {
+    .c-brand__tag {
+      display: none;
+    }
+  }
+
+  /* =======================================================================
+     2. SITE HEADER
+     ======================================================================= */
+  .c-header {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: var(--z-header);
+    background: color-mix(in oklab, var(--color-canvas) 86%, transparent);
+    backdrop-filter: blur(16px) saturate(1.4);
+    border-block-end: 1px solid var(--color-border-subtle);
+  }
+
+  /* Raised once the page has moved under it (BY-29): the scroll listener on
+     contour-header toggles this class past a small threshold. Shadows are
+     reserved for things that genuinely float — a scrolled header is one. */
+  .c-header--scrolled {
+    box-shadow: var(--shadow-sm);
+  }
+
+  .c-header__inner {
+    container-type: inline-size;
+    display: flex;
+    align-items: center;
+    gap: calc(var(--space-md) * var(--density, 1));
+    min-block-size: var(--header-height);
+  }
+  .c-header__inner > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+
+  @container (inline-size < 32rem) {
+    .c-header__inner { gap: calc(var(--space-sm) * var(--density, 1)); }
+    .c-header__nav a { padding: calc(var(--space-xs) * var(--density, 1)) calc(var(--space-2xs) * var(--density, 1)); font-size: var(--type-xs); }
+  }
+
+  .c-header__nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(var(--space-3xs) * var(--density, 1));
+    margin-inline-start: auto;
+  }
+  .c-header__nav > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .c-header__nav a {
+    padding: calc(var(--space-xs) * var(--density, 1)) calc(var(--space-2xs) * var(--density, 1));
+    border-radius: var(--radius-sm);
+    font-size: var(--type-xs);
+    font-weight: var(--weight-medium);
+    color: var(--color-text-muted);
+    text-decoration: none;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-inline-size: calc(12rem * var(--density, 1));
+    transition:
+      color var(--dur-fast) var(--ease-standard),
+      background-color var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-header__nav a:hover {
+    color: var(--color-text-strong);
+    background: var(--color-surface-2);
+  }
+
+  .c-header__nav a[aria-current="true"] {
+    color: var(--color-text-strong);
+    background: var(--color-primary-soft);
+  }
+
+  .c-header__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(var(--space-2xs) * var(--density, 1));
+    margin-inline-start: auto;
+  }
+  .c-header__actions > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .c-header__nav + .c-header__actions {
+    margin-inline-start: var(--space-2xs);
+  }
+
+  /* Mobile toggle (BY-29). The component renders the button only when a nav
+     exists; under 60rem it is the only way to open the nav, and at desktop it
+     stays hidden because the nav is always visible there. Control size comes
+     from --target-control, the same token .c-btn uses, so the touch target
+     holds the 24 px WCAG floor without a bespoke number. */
+  .c-header__toggle {
+    display: none;
+  }
+
+  @media (width < 60rem) {
+    .c-header__nav {
+      display: none;
+    }
+
+    .c-header__nav.is-open {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0;
+      margin-inline-start: 0;
+      flex-basis: 100%;
+      padding-block: var(--space-xs);
+      border-block-start: 1px solid var(--color-border-subtle);
+    }
+
+    .c-header__nav.is-open a {
+      inline-size: 100%;
+      white-space: normal;
+    }
+
+    .c-header__toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-inline-size: var(--target-control);
+      min-block-size: var(--target-control);
+      padding: 0;
+      border: none;
+      background: transparent;
+      color: var(--color-text-muted);
+      cursor: pointer;
+    }
+
+    .c-header__toggle:hover {
+      color: var(--color-text-strong);
+    }
+
+    .c-header__toggle:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+
+    .c-header__toggle svg {
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    }
+  }
+}

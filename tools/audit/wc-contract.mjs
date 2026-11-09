@@ -459,6 +459,70 @@ const ORPHAN_LEDGER = {
   "c-pagination__next": "modifier on .c-pagination__link; the base link rule carries the styling",
   // Toast variant modifier; variant styling is applied via the host class.
   "c-toast--success": "variant modifier on .c-toast; variant colour is carried by the host data-variant hook",
+
+  // Chart empty-state scaffolding: the host styles these via data-state hooks,
+  // no dedicated __empty rule exists yet (tracked under D-07).
+  "c-catchment__empty": "empty-state placeholder styled by the host data-state hook",
+  "c-category__empty": "empty-state placeholder styled by the host data-state hook",
+  "c-chart__empty": "empty-state placeholder styled by the host data-state hook",
+  "c-combobox__empty": "empty-state placeholder styled by the host data-state hook",
+  "c-donut__empty": "empty-state placeholder styled by the host data-state hook",
+  "c-heatmap__empty": "empty-state placeholder styled by the host data-state hook",
+  "c-isochrone__empty": "empty-state placeholder styled by the host data-state hook",
+  "c-pivot__empty": "empty-state placeholder styled by the host data-state hook",
+  "c-sparkline__empty": "empty-state placeholder styled by the host data-state hook",
+  "c-stacked-bar__empty": "empty-state placeholder styled by the host data-state hook",
+  "c-table__empty": "empty-state placeholder styled by the host data-state hook",
+  "c-time-series__empty": "empty-state placeholder styled by the host data-state hook",
+  "c-timeline__empty": "empty-state placeholder styled by the host data-state hook",
+  "c-tree__empty": "empty-state placeholder styled by the host data-state hook",
+
+  // Combobox internals styled by the host component.
+  "c-combobox__input": "combobox input styled by the host contour-combobox rule",
+  "c-combobox__option": "combobox option styled by the host contour-combobox rule",
+
+  // Dot variants used by contour-dash-freshness; colour carried by host data-variant hook.
+  "c-dot": "dot base styled by contour-dash-freshness host data-state hook",
+  "c-dot--accent": "dot accent variant styled by contour-dash-freshness host data-variant hook",
+  "c-dot--live": "dot live variant styled by contour-dash-freshness host data-variant hook",
+  "c-dot--success": "dot success variant styled by contour-dash-freshness host data-variant hook",
+
+  // Brush handle internals styled by the host contour-brush rule.
+  "c-brush__handle--start": "brush start handle styled by contour-brush host rule",
+  "c-brush__handle--end": "brush end handle styled by contour-brush host rule",
+
+  // Tree internals styled by the host contour-tree rule.
+  "c-tree__children": "tree children container styled by contour-tree host rule",
+  "c-tree__leaf": "tree leaf node styled by contour-tree host rule",
+  "c-tree__node": "tree node styled by contour-tree host rule",
+  "c-tree__row": "tree row styled by contour-tree host rule",
+  "c-tree__toggle": "tree toggle styled by contour-tree host rule",
+
+  // Drag/drop/resize/sort scaffolding styled by host attribute hooks.
+  "c-draggable": "draggable handle styled by host data-draggable hook",
+  "c-drop-indicator": "drop indicator styled by host data-drop hook",
+  "c-drop-indicator--visible": "drop indicator visible variant styled by host data-drop hook",
+  "c-drop-zone": "drop zone styled by host data-drop-zone hook",
+  "c-resizable": "resizable edge styled by host data-resizable hook",
+  "c-resizable--horizontal": "horizontal resizable styled by host data-resizable hook",
+  "c-resizable__pane": "resizable pane styled by host data-resizable hook",
+  "c-sortable-list__live": "sortable live region styled by host data-sortable hook",
+  "c-tags-input__live": "tags input live region styled by host data-tags hook",
+
+  // Map/layout scaffolding styled by host rules.
+  "c-scheme-toggle": "scheme toggle styled by contour-scheme-toggle host rule",
+  "c-scroll-area": "scroll area styled by contour-scroll-area host rule",
+  "c-split-map": "split map styled by contour-split-map host rule",
+  "c-split-map__pane": "split map pane styled by contour-split-map host rule",
+  "c-split-map__pane--left": "left split-map pane styled by contour-split-map host rule",
+  "c-split-map__pane--right": "right split-map pane styled by contour-split-map host rule",
+
+  // Animation controls.
+  "c-animation-controls__scrubber--thumb": "animation scrubber thumb styled by host data-scrubber hook",
+
+  // Pull-to-refresh scaffolding styled by the host contour-dash-freshness rule.
+  "c-pull-to-refresh": "pull-to-refresh surface styled by contour-dash-freshness host rule",
+  "c-pull-to-refresh__indicator": "pull-to-refresh indicator styled by contour-dash-freshness host rule",
 };
 
 const browser = await chromium.launch({ args: ["--no-sandbox"] });

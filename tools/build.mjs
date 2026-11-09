@@ -211,14 +211,25 @@ const dsImports = [
 // it; everything else ds.css imports is core to all four surfaces.
 const SURFACE_ONLY = {
   "components-docs.css": "docs",
-  "components-data.css": "data",
+  "components-data-dashboard.css": "data",
+  "components-data-charts.css": "data",
+  "components-data-tables.css": "data",
+  "components-data-maps.css": "data",
+  "components-data-widgets.css": "data",
   "components-landing.css": "landing",
 };
 const CORE = dsImports.filter((f) => !(f in SURFACE_ONLY));
 const SURFACES = {
   core: CORE,
   docs: [...CORE, "components-docs.css"],
-  data: [...CORE, "components-data.css"],
+  data: [
+    ...CORE,
+    "components-data-dashboard.css",
+    "components-data-charts.css",
+    "components-data-tables.css",
+    "components-data-maps.css",
+    "components-data-widgets.css",
+  ],
   landing: [...CORE, "components-landing.css"],
 };
 

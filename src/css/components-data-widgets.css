@@ -1,0 +1,342 @@
+/* ============================================================================
+   CONTOUR — Data & dashboard components
+   ----------------------------------------------------------------------------
+   For technical dashboards: KPI tiles, panels, filter bars, dense tables,
+   chart frames and legends. These components read data; they are tuned for
+   scanning and comparison rather than for narrative.
+   ========================================================================= */
+
+@layer components {
+
+  /* =======================================================================
+     10. DRAWER
+     A sliding side panel for drill-down without losing context.
+     ======================================================================= */
+  .c-drawer {
+    position: fixed;
+    inset-block: 0;
+    inset-inline-end: 0;
+    inline-size: min(calc(26rem * var(--density, 1)), 100vw);
+    display: none;
+    flex-direction: column;
+    border-inline-start: 1px solid var(--color-border);
+    background: var(--color-surface-1);
+    box-shadow: var(--shadow-xl);
+    z-index: var(--z-drawer);
+    /* Open/close transition (BY-50). Enhancement-only like the command's: an
+       engine without `transition-behavior: allow-discrete` drops the whole
+       declaration and keeps today's instant open. Fade, not translate: the
+       drawer is anchored inset-inline-end, so a physical slide would go the
+       wrong way in RTL; opacity is direction-neutral. No `overlay` — this is a
+       light host in normal flow, not a top-layer popover. */
+    opacity: 0;
+    transition: opacity var(--dur-base) var(--ease-standard),
+      display var(--dur-base) var(--ease-standard) allow-discrete;
+  }
+
+  .c-drawer:popover-open,
+  .c-drawer.is-open {
+    display: flex;
+    opacity: 1;
+    @starting-style {
+      opacity: 0;
+    }
+  }
+
+  .c-scrim {
+    position: fixed;
+    inset: 0;
+    display: none;
+    background: var(--color-scrim);
+    z-index: calc(var(--z-drawer) - 1);
+  }
+
+  .c-scrim.is-open {
+    display: block;
+  }
+
+  /* The inline variant, matching `.c-drawer--inline`: the base scrim is pinned
+     to the viewport because it dims the page behind an open layer, which makes
+     it impossible to show on its own. This one dims its nearest positioned
+     ancestor instead, so a stage can hold it. */
+  .c-scrim--inline {
+    position: absolute;
+  }
+
+  .c-drawer__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(var(--space-sm) * var(--density, 1));
+    padding: calc(var(--space-md) * var(--density, 1));
+    border-block-end: 1px solid var(--color-border-subtle);
+  }
+  .c-drawer__head > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .c-drawer__title {
+    font-family: var(--font-display);
+    font-size: var(--type-h4);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-strong);
+  }
+
+  .c-drawer__close {
+    margin-inline-start: auto;
+    color: var(--color-text-subtle);
+    cursor: pointer;
+    padding: calc(var(--space-3xs) * var(--density, 1));
+    border-radius: var(--radius-xs);
+  }
+
+  .c-drawer__close:hover {
+    color: var(--color-text-strong);
+    background: var(--color-surface-3);
+  }
+
+  .c-drawer__close:focus-visible {
+    outline-offset: -2px;
+  }
+
+  .c-drawer__body {
+    flex: 1;
+    overflow-y: auto;
+    padding: calc(var(--space-md) * var(--density, 1));
+    display: grid;
+    gap: calc(var(--space-md) * var(--density, 1));
+    align-content: start;
+    scrollbar-gutter: stable;
+    overscroll-behavior: contain;
+    scroll-padding: var(--space-2xs);
+  }
+
+  .c-drawer__foot {
+    padding: calc(var(--space-md) * var(--density, 1));
+    border-block-start: 1px solid var(--color-border-subtle);
+    background: var(--color-surface-2);
+  }
+
+  /* The inline variant. The base drawer is pinned to the viewport; this one
+     sits in normal flow, so a drawer can be shown inside a page, a recipe or
+     a specification without covering what it is describing. */
+  .c-drawer--inline {
+    position: relative;
+    inset: auto;
+    inline-size: min(calc(26rem * var(--density, 1)), 100%);
+    min-block-size: calc(20rem * var(--density, 1));
+    margin-inline-start: auto;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: none;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* =======================================================================
+     10. SURVEY LINE — provenance of a number
+     ======================================================================= */
+  .c-survey {
+    display: flex;
+    align-items: baseline;
+    gap: calc(var(--space-2xs) * var(--density, 1));
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--color-text-subtle);
+    letter-spacing: var(--tracking-micro);
+    text-transform: uppercase;
+  }
+
+  .c-survey__empty,
+  .c-survey__loading,
+  .c-survey__error {
+    color: var(--color-text-muted);
+  }
+
+  .c-survey__value {
+    font-size: var(--type-body);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-strong);
+    letter-spacing: var(--tracking-body);
+    text-transform: none;
+  }
+
+  .c-survey__sep {
+    opacity: 0.4;
+  }
+
+  /* =======================================================================
+     WIDGET STATE — unified loading/error/empty/retry wrapper
+     ======================================================================= */
+  .c-widget-state {
+    display: grid;
+    gap: calc(var(--space-2xs) * var(--density, 1));
+  }
+  .c-widget-state__empty, .c-widget-state__loading, .c-widget-state__error {
+    color: var(--color-text-muted);
+    padding: calc(var(--space-md) * var(--density, 1));
+  }
+
+  .c-widget-state__label {
+    font-size: var(--type-sm);
+    color: var(--color-text-muted);
+  }
+
+  /* =======================================================================
+     BROWNOUT — degraded-mode wrapper
+     ======================================================================= */
+  .c-brownout[data-level="3"] .c-brownout__decorative {
+    display: none;
+  }
+  .c-brownout__decorative { }
+
+  .c-brownout__label {
+    font-size: var(--type-xs);
+    color: var(--color-text-muted);
+  }
+
+  /* =======================================================================
+     BIVARIATE LEGEND — 2D matrix legend
+     ======================================================================= */
+  .c-bivariate-legend {
+    display: grid;
+    gap: calc(var(--space-3xs) * var(--density, 1));
+  }
+  .c-bivariate-legend__matrix {
+    display: grid;
+    gap: 2px;
+    max-inline-size: calc(8rem * var(--density, 1));
+  }
+  .c-bivariate-legend__axis--x {
+    text-align: center;
+  }
+  .c-bivariate-legend__axis--y {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+  }
+  .c-bivariate-legend__cell {
+    aspect-ratio: 1;
+    border-radius: var(--radius-xs);
+  }
+
+  .c-bivariate-legend__swatch {
+    display: inline-block;
+    inline-size: calc(0.75rem * var(--density, 1));
+    block-size: calc(0.75rem * var(--density, 1));
+    border-radius: var(--radius-xs);
+    border: 1px solid var(--color-border);
+  }
+  .c-bivariate-legend__axis {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--color-text-muted);
+  }
+
+  /* generated scaffolding (containment) */
+  .c-animation-controls__scrubber { contain: layout; }
+  .c-bivariate__live, .c-bivariate-legend__live { contain: layout; }
+  .c-metrics__empty, .c-chart-grid__empty, .c-filter-bar__empty, .c-pagination__prev { contain: layout; }
+
+  /* Spatial filter (CARTO-inspired): draw-on-map mode toolbar. */
+  .c-spatial-filter {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(var(--space-2xs) * var(--density, 1));
+  }
+  .c-spatial-filter > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+  .c-spatial-filter--active {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+  .c-spatial-filter__modes {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: calc(var(--space-2xs) * var(--density, 1));
+  }
+  .c-spatial-filter__modes > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+  .c-spatial-filter__mode {
+    /* inherits c-btn */
+  }
+
+  /* Geocoder (CARTO-inspired): search input + result list. */
+  .c-geocoder {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    gap: calc(var(--space-xs) * var(--density, 1));
+  }
+  .c-geocoder > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+  .c-geocoder__input {
+    inline-size: 100%;
+    padding: calc(var(--space-xs) * var(--density, 1)) calc(var(--space-sm) * var(--density, 1));
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-0);
+    color: var(--color-text);
+    font: inherit;
+  }
+  .c-geocoder__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-sm);
+    max-block-size: calc(12rem * var(--density, 1));
+    overflow: auto;
+  }
+  .c-geocoder__result {
+    padding: calc(var(--space-xs) * var(--density, 1)) calc(var(--space-sm) * var(--density, 1));
+    cursor: pointer;
+  }
+  .c-geocoder__result:hover,
+  .c-geocoder__result:focus-visible {
+    background: var(--color-surface-2);
+  }
+  .c-geocoder__empty {
+    padding: calc(var(--space-sm) * var(--density, 1));
+    color: var(--color-text-muted);
+    text-align: center;
+  }
+
+  .c-data-export {
+  .c-data-export {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(var(--space-xs) * var(--density, 1));
+  }
+  .c-data-export > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+  .c-data-export__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: calc(var(--space-xs) * var(--density, 1));
+    padding: calc(var(--space-xs) * var(--density, 1)) calc(var(--space-sm) * var(--density, 1));
+    border: 1px solid var(--color-border);
+    transition: background-color var(--dur-fast) var(--ease-standard), border-color var(--dur-fast) var(--ease-standard);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-1);
+    color: var(--color-text-strong);
+    font: inherit;
+    cursor: pointer;
+  }
+  .c-data-export__btn > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+  .c-data-export__btn:hover { background: var(--color-surface-2); }
+}

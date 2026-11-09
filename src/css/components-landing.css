@@ -104,7 +104,7 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.65rem;
+    gap: calc(0.65rem * var(--density, 1));
   }
   .c-testimonial__byline > * {
     min-inline-size: 0;
@@ -172,9 +172,9 @@
   .c-cta__actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.6rem;
+    gap: calc(0.6rem * var(--density, 1));
     justify-content: center;
-    margin-block-start: 0.5rem;
+    margin-block-start: calc(0.5rem * var(--density, 1));
   }
   .c-cta__actions > * {
     min-inline-size: 0;
@@ -225,7 +225,7 @@
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
-    gap: 0.3rem;
+    gap: calc(0.3rem * var(--density, 1));
     font-family: var(--font-display);
     font-size: 2.5rem;
     font-weight: var(--weight-bold);
@@ -254,7 +254,7 @@
 
   .c-price__features {
     display: grid;
-    gap: 0.55rem;
+    gap: calc(0.55rem * var(--density, 1));
     font-size: var(--type-sm);
     color: var(--color-text-muted);
   }
@@ -359,7 +359,7 @@
 
   .c-showcase__list {
     display: grid;
-    gap: 0.6rem;
+    gap: calc(0.6rem * var(--density, 1));
     margin-block-start: var(--space-md);
     content-visibility: auto;
     contain-intrinsic-size: auto 200px;
@@ -368,7 +368,7 @@
   .c-showcase__list li {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
-    gap: 0.6rem;
+    gap: calc(0.6rem * var(--density, 1));
     align-items: start;
     font-size: var(--type-sm);
     color: var(--color-text);
@@ -396,7 +396,7 @@
 
   .c-metrics__item {
     display: grid;
-    gap: 0.2rem;
+    gap: calc(0.2rem * var(--density, 1));
   }
 
   .c-metrics__value {

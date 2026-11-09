@@ -358,6 +358,60 @@
     .c-tags-input__tag {
       border-color: Highlight;
     }
+
+    /* Remaining form controls — borders must use system colours so they
+       remain visible in Forced Colors Mode (F-RO11). */
+    .c-select,
+    .c-input,
+    .c-textarea,
+    .c-combobox,
+    .c-number-field,
+    .c-time-picker,
+    .c-color-picker,
+    .c-file-upload {
+      border: 1px solid CanvasText;
+    }
+
+    /* Disabled states must dim in forced-colors (F-RO12). */
+    .c-switch__input:disabled,
+    .c-check__input:disabled,
+    .c-radio__input:disabled {
+      opacity: 0.5;
+    }
+    .c-switch__input:disabled::after,
+    .c-check__input:disabled::after,
+    .c-radio__input:disabled::after {
+      opacity: 0.5;
+    }
+
+    /* Double focus ring: text controls already suppress outline on
+       :focus-visible; ensure the ring doesn't double with the border
+       (F-RO13). */
+    .c-input:focus-visible,
+    .c-select:focus-visible,
+    .c-textarea:focus-visible,
+    .c-combobox:focus-visible,
+    .c-number-field:focus-visible,
+    .c-time-picker:focus-visible,
+    .c-color-picker:focus-visible,
+    .c-file-upload:focus-visible {
+      outline: none;
+    }
+
+    /* Ringless command field: ensure a visible focus ring (F-RO14). */
+    .c-command__field:focus-visible {
+      outline: 2px solid Highlight;
+      outline-offset: 2px;
+    }
+
+    /* WebKit-only range focus: give all range thumbs a focus style
+       (F-RO15). */
+    .c-range:focus-visible::-webkit-slider-thumb,
+    .c-range:focus-visible::-moz-range-thumb,
+    .c-range:focus-visible::-ms-thumb {
+      outline: 2px solid Highlight;
+      outline-offset: 2px;
+    }
   }
 
 

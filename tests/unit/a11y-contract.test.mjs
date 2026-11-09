@@ -13,7 +13,7 @@ describe("accessibility contract (R12-17/R12-35)", () => {
   });
 
   it("CSS contains reduced-motion media query", () => {
-    const css = readFileSync("src/css/components.css", "utf8") + readFileSync("src/css/base.css", "utf8");
+    const css = readFileSync("src/css/components-brand.css", "utf8") + readFileSync("src/css/components-buttons.css", "utf8") + readFileSync("src/css/components-cards.css", "utf8") + readFileSync("src/css/components-navigation.css", "utf8") + readFileSync("src/css/components-forms.css", "utf8") + readFileSync("src/css/components-display.css", "utf8") + readFileSync("src/css/components-overlay.css", "utf8") + readFileSync("src/css/components-misc.css", "utf8") + readFileSync("src/css/base.css", "utf8");
     expect(css).toContain("prefers-reduced-motion");
   });
 

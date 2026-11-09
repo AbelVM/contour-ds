@@ -1,0 +1,1228 @@
+/* ============================================================================
+   CONTOUR — Data & dashboard components
+   ----------------------------------------------------------------------------
+   For technical dashboards: KPI tiles, panels, filter bars, dense tables,
+   chart frames and legends. These components read data; they are tuned for
+   scanning and comparison rather than for narrative.
+   ========================================================================= */
+
+@layer components {
+
+  /* =======================================================================
+     8. BIVARIATE LEGEND
+     A 2D colour matrix for two variables. The system owns the ramp, the
+     axis and the type; the consumer owns the data and the cell colour.
+     ======================================================================= */
+  .c-bivariate {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: 1fr auto;
+    gap: calc(var(--space-2xs) * var(--density, 1));
+    inline-size: fit-content;
+  }
+
+  .c-bivariate__matrix {
+    display: grid;
+    grid-template-columns: repeat(var(--bv-cols, 3), 1fr);
+    grid-template-rows: repeat(var(--bv-rows, 3), 1fr);
+    gap: 1px;
+    background: var(--color-border-subtle);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+
+  .c-bivariate__cell {
+    inline-size: calc(1.5rem * var(--density, 1));
+    block-size: calc(1.5rem * var(--density, 1));
+    background: var(--bv-cell, var(--color-surface-2));
+  }
+
+  .c-bivariate__axis {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+  }
+
+  .c-bivariate__axis--x {
+    grid-column: 2;
+    grid-row: 2;
+    text-align: center;
+  }
+
+  .c-bivariate__axis--y {
+    grid-column: 1;
+    grid-row: 1;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    align-self: center;
+    justify-self: center;
+  }
+
+  /* =======================================================================
+     8b. COMPASS — orientation indicator for maps
+     ======================================================================= */
+  .c-compass {
+    position: relative;
+    inline-size: calc(2.5rem * var(--density, 1));
+    block-size: calc(2.5rem * var(--density, 1));
+    border-radius: 50%;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    display: grid;
+    place-items: center;
+    cursor: grab;
+    user-select: none;
+  }
+
+  .c-compass__needle {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .c-compass__needle--n {
+    fill: var(--color-danger);
+  }
+  .c-compass__needle--s {
+    fill: var(--color-primary);
+  }
+
+  .c-compass__label {
+    position: absolute;
+    font-family: var(--font-mono);
+    font-size: calc(0.5rem * var(--density, 1));
+    color: var(--color-text-subtle);
+    font-weight: var(--weight-bold);
+  }
+
+  .c-compass__label--n { inset-block-start: 0; inset-inline-start: 50%; transform: translate(-50%, -50%); }
+  .c-compass__label--s { inset-block-end: 0; inset-inline-start: 50%; transform: translate(-50%, 50%); }
+  .c-compass__label--e { inset-inline-end: 0; inset-block-start: 50%; transform: translate(50%, -50%); }
+  .c-compass__label--w { inset-inline-start: 0; inset-block-start: 50%; transform: translate(-50%, -50%); }
+
+  .c-compass__empty,
+  .c-compass__loading,
+  .c-compass__error {
+    color: var(--color-text-muted);
+  }
+
+  /* =======================================================================
+     8c. MINIMAP — inset map with viewport rectangle
+     ======================================================================= */
+  .c-minimap {
+    position: absolute;
+    inset-block-end: var(--space-sm);
+    inset-inline-end: var(--space-sm);
+    inline-size: calc(8rem * var(--density, 1));
+    block-size: calc(6rem * var(--density, 1));
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    z-index: var(--z-raised, 10);
+  }
+
+  .c-minimap__label {
+    position: absolute;
+    inset-block-start: var(--space-2xs);
+    inset-inline-start: var(--space-2xs);
+    font-size: var(--type-micro);
+    color: var(--color-text-subtle);
+    z-index: var(--z-raised, 10);
+  }
+
+  .c-minimap__viewport {
+    position: absolute;
+    border: 2px solid var(--color-primary);
+    background: color-mix(in oklab, var(--color-primary) 15%, transparent);
+    pointer-events: none;
+  }
+
+  .c-minimap__empty,
+  .c-minimap__loading,
+  .c-minimap__error {
+    color: var(--color-text-muted);
+    font-size: var(--type-micro);
+  }
+
+  /* =======================================================================
+     8d. COORDINATE — lat/long display with copy
+     ======================================================================= */
+  .c-coordinate {
+    display: inline-flex;
+    align-items: center;
+    gap: calc(var(--space-2xs) * var(--density, 1));
+    padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1));
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: var(--type-xs);
+    color: var(--color-text);
+  }
+
+   .c-coordinate__value {
+     font-variant-numeric: tabular-nums;
+   }
+
+   .c-coordinate__empty,
+   .c-coordinate__loading,
+   .c-coordinate__error {
+     color: var(--color-text-muted);
+   }
+
+  .c-coordinate__copy {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: calc(1.5rem * var(--density, 1));
+    block-size: calc(1.5rem * var(--density, 1));
+    color: var(--color-text-subtle);
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 0;
+  }
+
+  .c-coordinate__copy:hover {
+    color: var(--color-primary);
+  }
+
+  /* =======================================================================
+     8e. LAYER PANEL — toggleable layer list
+     ======================================================================= */
+  .c-layer-panel {
+    display: block;
+    min-inline-size: 0;
+    box-sizing: border-box;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: calc(var(--space-xs) * var(--density, 1));
+    max-block-size: calc(16rem * var(--density, 1));
+    overflow-y: auto;
+  }
+
+  .c-layer-panel__item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(var(--space-xs) * var(--density, 1));
+    padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1));
+    border-radius: var(--radius-sm);
+    font-size: var(--type-sm);
+    cursor: grab;
+    min-inline-size: 0;
+    overflow: hidden;
+  }
+
+  .c-layer-panel__item > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .c-layer-panel__item:hover {
+    background: var(--color-surface-2);
+  }
+
+  .c-layer-panel__item:hover .c-drag-handle {
+    color: var(--color-text);
+  }
+
+  .c-layer-panel__item--dragging {
+    opacity: 0.5;
+    transform: scale(0.98);
+  }
+
+   .c-layer-panel__toggle {
+      inline-size: calc(1rem * var(--density, 1));
+      block-size: calc(1rem * var(--density, 1));
+      accent-color: var(--color-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      background: var(--color-surface-1);
+      padding: 0;
+      font-size: calc(0.625rem * var(--density, 1));
+      line-height: 1;
+      cursor: pointer;
+    }
+
+  .c-layer-panel__toggle svg,
+  .c-layer-panel__remove svg {
+    inline-size: calc(0.75rem * var(--density, 1));
+    block-size: calc(0.75rem * var(--density, 1));
+  }
+
+  .c-layer-panel__opacity {
+    flex: 1 1 calc(8rem * var(--density, 1));
+    min-inline-size: 0;
+    min-block-size: calc(1.5rem * var(--density, 1));
+    accent-color: var(--color-primary);
+  }
+
+  .c-layer-panel__projection {
+    flex: 0 1 calc(8rem * var(--density, 1));
+    min-inline-size: 0;
+    max-inline-size: 100%;
+  }
+
+   .c-layer-panel__name {
+      flex: 1 1 calc(8rem * var(--density, 1));
+     min-inline-size: 0;
+     overflow: hidden;
+     text-overflow: ellipsis;
+     white-space: nowrap;
+   }
+   .c-layer-panel__caption {
+     flex-basis: 100%;
+     font-size: var(--type-sm);
+     color: var(--color-text-muted);
+   }
+
+  .c-layer-panel__label {
+    font-size: var(--type-xs);
+    font-weight: var(--weight-medium);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-label);
+  }
+
+  .c-layer-panel__rename,
+  .c-layer-panel__duplicate,
+  .c-layer-panel__zoom,
+  .c-layer-panel__remove {
+    flex: 0 0 auto;
+    font-size: var(--type-xs);
+    padding: calc(var(--space-3xs) * var(--density, 1)) calc(var(--space-2xs) * var(--density, 1));
+    border: 1px solid var(--color-control-edge);
+    border-radius: var(--radius-xs);
+    background: var(--color-surface-2);
+    color: var(--color-text);
+    cursor: pointer;
+  }
+
+  .c-layer-panel__rename-input {
+    font-size: var(--type-sm);
+    padding: calc(var(--space-3xs) * var(--density, 1)) calc(var(--space-2xs) * var(--density, 1));
+    border: 1px solid var(--color-control-edge);
+    border-radius: var(--radius-xs);
+    background: var(--color-surface-1);
+    color: var(--color-text);
+  }
+
+  .c-layer-panel__empty,
+  .c-layer-panel__loading,
+  .c-layer-panel__error {
+    color: var(--color-text-muted);
+    padding: calc(var(--space-md) * var(--density, 1));
+  }
+
+  /* =======================================================================
+     8f. TIME SLIDER — temporal data scrubber
+     ======================================================================= */
+  .c-time-slider {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(var(--space-sm) * var(--density, 1));
+    padding: calc(var(--space-xs) * var(--density, 1));
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+  }
+
+  .c-time-slider__play {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: calc(2rem * var(--density, 1));
+    block-size: calc(2rem * var(--density, 1));
+    border-radius: 50%;
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+    border: none;
+    cursor: pointer;
+    flex: none;
+  }
+
+  .c-time-slider__play svg {
+    inline-size: calc(1rem * var(--density, 1));
+    block-size: calc(1rem * var(--density, 1));
+  }
+
+  .c-time-slider__play:hover {
+    background: var(--color-primary-hover, var(--color-primary));
+  }
+
+  .c-time-slider__track {
+    flex: 1 1 calc(8rem * var(--density, 1));
+    min-inline-size: 0;
+    min-block-size: calc(1.5rem * var(--density, 1));
+    accent-color: var(--color-primary);
+  }
+
+  .c-time-slider__time {
+    font-family: var(--font-mono);
+    font-size: var(--type-xs);
+    color: var(--color-text-subtle);
+    min-inline-size: calc(4rem * var(--density, 1));
+    text-align: end;
+  }
+
+  .c-time-slider__speed {
+    flex: none;
+    max-inline-size: calc(5rem * var(--density, 1));
+    contain: layout;
+  }
+
+  .c-time-slider__loop {
+    flex: none;
+    inline-size: auto;
+    padding-inline: var(--space-sm);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-inline-size: calc(8rem * var(--density, 1));
+  }
+
+  /* =======================================================================
+     8g. COMPARISON — before/after map comparison
+     ======================================================================= */
+  .c-comparison {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+  }
+
+  .c-comparison__pane {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-start;
+    padding: calc(var(--space-sm) * var(--density, 1));
+  }
+  .c-comparison__pane > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .c-comparison__pane--before {
+    justify-content: flex-start;
+  }
+  .c-comparison__pane:not(.c-comparison__pane--before) {
+    justify-content: flex-end;
+  }
+
+  .c-comparison__pane--before {
+    clip-path: inset(0 calc(100% - var(--comparison-pos, 50%)) 0 0);
+  }
+  .c-comparison__pane:not(.c-comparison__pane--before) {
+    clip-path: inset(0 0 0 var(--comparison-pos, 50%));
+  }
+
+   .c-comparison__divider {
+      position: absolute;
+      inset-block: 0;
+      inset-inline-start: var(--comparison-pos, 50%);
+      inline-size: calc(1.5rem * var(--density, 1));
+      transform: translateX(-50%);
+      background: transparent;
+      cursor: col-resize;
+      touch-action: none;
+      z-index: 1;
+      pointer-events: auto;
+    }
+   .c-comparison__divider::after {
+      content: "";
+      position: absolute;
+      inset-block: 0;
+      inset-inline-start: 50%;
+      inline-size: 2px;
+      transform: translateX(-50%);
+      background: var(--color-primary);
+      pointer-events: none;
+    }
+
+   .c-comparison__divider::before {
+      pointer-events: auto;
+    }
+
+   .c-comparison__divider::before {
+     content: "";
+     position: absolute;
+     inset-block-start: 50%;
+     inset-inline-start: 50%;
+     inline-size: calc(1.5rem * var(--density, 1));
+     block-size: calc(1.5rem * var(--density, 1));
+    background: var(--color-primary);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .c-comparison__label {
+    position: absolute;
+    inset-block-start: var(--space-sm);
+    padding: calc(var(--space-xs) * var(--density, 1)) calc(var(--space-sm) * var(--density, 1));
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-size: var(--type-xs);
+    color: var(--color-text);
+    z-index: 2;
+  }
+  .c-comparison__divider {
+    font-size: var(--type-micro);
+    color: var(--color-text-muted);
+    overflow: visible;
+    white-space: nowrap;
+    text-align: center;
+  }
+
+  .c-comparison__label--before { inset-inline-start: var(--space-xs); }
+  .c-comparison__label--after { inset-inline-end: var(--space-xs); }
+
+  /* =======================================================================
+     8h. HEXBIN — hexagonal binning for point density
+     ======================================================================= */
+  .c-hexbin {
+    display: grid;
+    gap: 2px;
+  }
+
+  .c-hexbin__cell {
+    aspect-ratio: 1;
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+    background: var(--color-surface-2);
+    transition: background-color var(--dur-fast) var(--ease-standard);
+  }
+
+   .c-hexbin__cell:hover {
+     opacity: 0.8;
+   }
+
+   .c-hexbin__tooltip {
+     position: absolute;
+     inset-block-start: var(--chart-tip-block-start);
+     inset-inline-start: var(--chart-tip-inline-start);
+     z-index: var(--z-tooltip);
+     padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1));
+     border-radius: var(--radius-xs);
+     background: var(--color-surface-3);
+     color: var(--color-text);
+     font-size: var(--type-micro);
+     pointer-events: none;
+     white-space: nowrap;
+   }
+
+   .c-hexbin__empty,
+   .c-hexbin__loading,
+   .c-hexbin__error {
+     grid-column: 1 / -1;
+     color: var(--color-text-muted);
+   }
+
+  .c-hexbin__label {
+    font-size: var(--type-xs);
+    color: var(--color-text-subtle);
+    margin-block-start: var(--space-xs);
+  }
+
+  /* =======================================================================
+     8i. FLOW MAP — origin-destination flows
+     ======================================================================= */
+  .c-flow-map {
+    position: relative;
+    inline-size: 100%;
+    aspect-ratio: 1;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .c-flow-map svg {
+    inline-size: 100%;
+    block-size: 100%;
+    display: block;
+  }
+
+  .c-flow-map__label {
+    position: absolute;
+    inset-block-end: var(--space-xs);
+    inset-inline-start: var(--space-xs);
+    font-size: var(--type-xs);
+    color: var(--color-text-subtle);
+  }
+
+  .c-flow-map__flow {
+    fill: none;
+    stroke: var(--color-primary);
+    stroke-width: 2;
+    stroke-linecap: round;
+    opacity: 0.6;
+    transition: opacity var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-flow-map__flow:hover {
+    opacity: 1;
+    stroke-width: 3;
+  }
+
+  .c-flow-map__node {
+    fill: var(--color-primary);
+    stroke: var(--color-surface-1);
+    stroke-width: 2;
+  }
+
+  .c-flow-map__node--source { fill: var(--chart-2, var(--color-primary)); }
+   .c-flow-map__node--target { fill: var(--chart-3, var(--color-primary)); }
+
+   .c-flow-map__tooltip {
+     position: absolute;
+     inset-block-start: var(--chart-tip-block-start);
+     inset-inline-start: var(--chart-tip-inline-start);
+     z-index: var(--z-tooltip);
+     padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1));
+     border-radius: var(--radius-xs);
+     background: var(--color-surface-3);
+     color: var(--color-text);
+     font-size: var(--type-micro);
+     pointer-events: none;
+     white-space: nowrap;
+   }
+
+   .c-flow-map__empty,
+   .c-flow-map__loading,
+   .c-flow-map__error {
+     color: var(--color-text-muted);
+   }
+
+  /* =======================================================================
+     8j. ISOCHRONE — travel-time polygons
+     ======================================================================= */
+  .c-isochrone {
+    position: relative;
+    inline-size: 100%;
+    aspect-ratio: 1;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .c-isochrone svg {
+    inline-size: 100%;
+    block-size: 100%;
+    display: block;
+  }
+
+  .c-isochrone__label {
+    position: absolute;
+    inset-block-end: var(--space-xs);
+    inset-inline-start: var(--space-xs);
+    font-size: var(--type-xs);
+    color: var(--color-text-subtle);
+  }
+
+  .c-isochrone__ring {
+    fill: color-mix(in oklab, var(--color-primary) 15%, transparent);
+    stroke: var(--color-primary);
+    stroke-width: 1.5;
+    stroke-dasharray: 4 2;
+    opacity: 0.7;
+  }
+
+  .c-isochrone__ring--5min { fill: color-mix(in oklab, var(--color-primary) 25%, transparent); }
+  .c-isochrone__ring--10min { fill: color-mix(in oklab, var(--color-primary) 15%, transparent); }
+  .c-isochrone__ring--15min { fill: color-mix(in oklab, var(--color-primary) 8%, transparent); }
+
+  .c-isochrone__tooltip {
+    position: absolute;
+    inset-block-start: var(--chart-tip-block-start);
+    inset-inline-start: var(--chart-tip-inline-start);
+    z-index: var(--z-tooltip);
+    padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1));
+    border-radius: var(--radius-xs);
+    background: var(--color-surface-3);
+    color: var(--color-text);
+    font-size: var(--type-micro);
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  .c-isochrone__center {
+    fill: var(--color-danger);
+    stroke: var(--color-surface-1);
+    stroke-width: 2;
+  }
+
+  /* =======================================================================
+     8k. CATCHMENT — service area boundaries
+     ======================================================================= */
+  .c-catchment {
+    position: relative;
+    inline-size: 100%;
+    aspect-ratio: 1;
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .c-catchment svg {
+    inline-size: 100%;
+    block-size: 100%;
+    display: block;
+  }
+
+  .c-catchment__area {
+    fill: color-mix(in oklab, var(--color-primary) 12%, transparent);
+    stroke: var(--color-primary);
+    stroke-width: 2;
+    stroke-dasharray: 8 4;
+  }
+
+  .c-catchment__center {
+    fill: var(--color-primary);
+    stroke: var(--color-surface-1);
+    stroke-width: 2;
+  }
+
+  .c-catchment__tooltip {
+    position: absolute;
+    z-index: var(--z-tooltip);
+    padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1));
+    border-radius: var(--radius-xs);
+    background: var(--color-surface-3);
+    color: var(--color-text);
+    font-size: var(--type-micro);
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  .c-catchment__label {
+    font-family: var(--font-mono);
+    font-size: calc(0.6rem * var(--density, 1));
+    fill: var(--color-text-subtle);
+  }
+
+  /* =======================================================================
+     9. MAP SLOT — the chrome around a map
+     ======================================================================= */
+  .c-map-slot {
+    position: relative;
+    isolation: isolate;
+    --map-ctrl-surface: var(--color-surface-1);
+    --map-ctrl-border: var(--color-border);
+    --map-ctrl-radius: var(--radius-md);
+    --map-ctrl-icon: var(--color-text-muted);
+    --map-ctrl-gap: var(--space-3xs);
+    --map-ctrl-size: calc(2rem * var(--density, 1));
+  }
+
+  .c-map-slot__chrome {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: var(--z-raised);
+  }
+
+  .c-map-slot__chrome > * {
+    pointer-events: auto;
+  }
+
+  .c-map-slot__controls {
+    position: absolute;
+    inset-block-start: var(--space-sm);
+    inset-inline-end: var(--space-sm);
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    gap: var(--map-ctrl-gap);
+  }
+  .c-map-slot__controls > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .c-map-slot__control {
+    inline-size: var(--map-ctrl-size);
+    block-size: var(--map-ctrl-size);
+    display: grid;
+    place-items: center;
+    background: var(--map-ctrl-surface);
+    border: 1px solid var(--map-ctrl-border);
+    border-radius: var(--map-ctrl-radius);
+    color: var(--map-ctrl-icon);
+    cursor: pointer;
+  }
+
+  .c-map-slot__control:focus-visible {
+    outline: var(--focus-width) solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+
+  .c-map-slot__scale {
+    position: absolute;
+    inset-block-end: var(--space-sm);
+    inset-inline-start: var(--space-sm);
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--color-text-muted);
+  }
+
+  /* The attribution band (C-15). A credit line is not decoration: the vendor's
+     terms let us choose its colour and size and forbid hiding it, so this is a
+     layout zone with an owned corner, and every geometry on it comes from
+     `--map-attribution-*` above — a consumer that needs the bottom-right corner
+     moves the band by setting tokens, never by overriding a rule and praying
+     about specificity.
+     The text is the body pair (`--color-text` on `--color-surface-1`), not
+     `--color-text-subtle`: the same promise `map-chrome.css` makes to the
+     engine's own control, and the reason `contrast-and-aria.mjs` already
+     measures it — a credit that falls below 4.5:1 is a credit nobody reads. */
+  .c-map-slot__attribution {
+    position: absolute;
+    inset-block-end: var(--map-attribution-inset-block);
+    inset-inline-end: var(--map-attribution-inset-inline);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--map-attribution-gap);
+    max-inline-size: calc(100% - (var(--map-attribution-inset-inline) * 2));
+    padding-block: var(--space-3xs);
+    padding-inline: var(--map-attribution-padding-inline);
+    background: var(--map-attribution-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-size: var(--type-micro);
+    color: var(--color-text);
+  }
+
+  /* The provider mark sits in a box this system reserves and never paints:
+     65×20 is the size the vendor ships, published in their own CSS as a minimum.
+     A mark that is recoloured or shrunk to suit the theme is the breach, so the
+     rule sizes the SLOT and stops there. */
+  .c-map-slot__attribution-mark {
+    flex: 0 0 auto;
+    min-inline-size: var(--map-attribution-logo-inline);
+    min-block-size: var(--map-attribution-logo-block);
+    display: inline-block;
+    object-fit: contain;
+  }
+
+  .c-map-slot__attribution a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* =======================================================================
+     MAP AREA — the canvas container (Airship-inspired)
+     ======================================================================= */
+  .c-map-area {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    overflow: hidden;
+    background: var(--color-canvas);
+  }
+
+  .c-map-area > .c-map-slot,
+  .c-map-area > [data-map] {
+    flex: 1 1 auto;
+    min-block-size: 0;
+  }
+
+  /* =======================================================================
+     MAP PANEL — positioned over the map (Airship-inspired)
+     ======================================================================= */
+  .c-map-panel {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--space-2xs) * var(--density, 1));
+    padding: calc(var(--space-sm) * var(--density, 1));
+    max-inline-size: calc(100% - var(--space-lg));
+    max-block-size: calc(100% - var(--space-lg));
+    overflow: auto;
+    overscroll-behavior: contain;
+    scroll-padding: var(--space-2xs);
+    background: var(--color-surface-1);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    pointer-events: auto;
+    z-index: var(--z-raised);
+  }
+
+  .c-map-panel--top { inset-block-start: var(--space-sm); }
+  .c-map-panel--bottom { inset-block-end: var(--space-sm); }
+  .c-map-panel--left { inset-inline-start: var(--space-sm); }
+  .c-map-panel--right { inset-inline-end: var(--space-sm); }
+
+  /* =======================================================================
+     MAP FOOTER — bottom panel for charts/tables (Airship-inspired)
+     ======================================================================= */
+  .c-map-footer {
+    display: flex;
+    flex: 0 0 auto;
+    max-inline-size: 100%;
+    min-inline-size: 0;
+    max-block-size: calc(16rem * var(--density, 1));
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-padding-inline: calc(0.5rem * var(--density, 1));
+    overflow-y: hidden;
+    border-block-start: 1px solid var(--color-border);
+    background: var(--color-surface-1);
+  }
+
+  .c-map-footer > * {
+    flex: 1 1 0;
+    min-inline-size: 0;
+    padding: calc(var(--space-sm) * var(--density, 1));
+  }
+
+  /* =======================================================================
+     BOX — padded container used inside panels (Airship-inspired)
+     ======================================================================= */
+  .c-box {
+    padding: calc(var(--space-md) * var(--density, 1));
+    border-radius: var(--radius-md);
+    background: var(--color-surface-1);
+  }
+
+  .c-box--border {
+    border: 1px solid var(--color-border);
+  }
+
+  /* =======================================================================
+     CONTAINER — used inside sidebars (Airship-inspired)
+     ======================================================================= */
+  .c-container {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--space-xs) * var(--density, 1));
+  }
+
+  .c-container--scrollable {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    min-block-size: 0;
+    scrollbar-width: auto;
+    overscroll-behavior: contain;
+    scroll-padding: var(--space-2xs);
+  }
+  .c-container--scrollable::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  .c-container--scrollable::-webkit-scrollbar-thumb {
+    background: var(--color-control-edge);
+    border-radius: var(--radius-pill);
+  }
+
+  /* =======================================================================
+     APP SHELL (Airship-inspired)
+     ======================================================================= */
+  .c-app {
+    display: flex;
+    flex-direction: column;
+    min-block-size: 100dvh;
+    background: var(--color-canvas);
+    color: var(--color-text);
+  }
+
+  .c-app__header {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: calc(var(--space-sm) * var(--density, 1));
+    padding: calc(var(--space-md) * var(--density, 1));
+    border-block-end: var(--hairline);
+  }
+  .c-app__header > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .c-app__title {
+    padding: calc(var(--space-md) * var(--density, 1));
+    font-weight: var(--weight-semibold);
+  }
+
+  .c-app-body__title {
+    padding: calc(var(--space-md) * var(--density, 1));
+  }
+
+  .c-app__main {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scroll-padding: var(--space-2xs);
+  }
+
+  .c-app-body {
+    display: flex;
+    flex: 1 1 auto;
+    min-block-size: 0;
+    overflow: hidden;
+  }
+
+  .c-app-body__main {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scroll-padding: var(--space-2xs);
+  }
+
+  .c-app-body > .c-sidebar {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .c-app-body > main {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scroll-padding: var(--space-2xs);
+  }
+
+  .c-chart__control {
+    min-inline-size: var(--target-chart);
+    min-block-size: var(--target-chart);
+  }
+
+  /* =======================================================================
+     11. SCALE BAR — unit-aware
+     ======================================================================= */
+  .c-scale-bar {
+    display: inline-flex;
+    align-items: center;
+    gap: calc(var(--space-2xs) * var(--density, 1));
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--color-text-muted);
+  }
+
+  .c-scale-bar__line {
+    position: relative;
+    block-size: 2px;
+    background: var(--color-text-muted);
+    border-radius: var(--radius-pill);
+  }
+
+  .c-scale-bar__tick {
+    position: absolute;
+    inset-block-start: 50%;
+    inline-size: 1px;
+    block-size: calc(0.5rem * var(--density, 1));
+    background: var(--color-text-muted);
+    transform: translate(-50%, -50%);
+  }
+
+   .c-scale-bar__label {
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      max-inline-size: calc(8rem * var(--density, 1));
+   }
+
+   .c-scale-bar__empty,
+   .c-scale-bar__loading,
+   .c-scale-bar__error {
+     color: var(--color-text-muted);
+   }
+
+  /* =======================================================================
+     INSTRUMENT READOUT — the parameters a spatial surface is drawn at
+     ======================================================================= */
+  .c-instrument {
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--space-xs) * var(--density, 1));
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+  }
+
+  .c-instrument__empty,
+  .c-instrument__loading,
+  .c-instrument__error {
+    color: var(--color-text-muted);
+    padding: calc(var(--space-md) * var(--density, 1));
+  }
+
+  .c-instrument__item {
+    display: inline-flex;
+    align-items: center;
+    gap: calc(0.3rem * var(--density, 1));
+  }
+  .c-instrument__item > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .c-instrument__item::before {
+    content: "·";
+    color: var(--color-text-muted);
+  }
+
+  .c-instrument__item:first-child::before {
+    content: none;
+  }
+
+  .c-instrument__value {
+    color: var(--color-text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* =======================================================================
+     DATA MARK — a painted mark is not a target
+     ======================================================================= */
+  .c-datamark {
+    display: inline-block;
+    inline-size: var(--target-mark, 0);
+    block-size: var(--target-mark, 0);
+    min-inline-size: 0;
+    min-block-size: 0;
+  }
+
+  /* =======================================================================
+     SPATIAL MARKS (T-50) — the system owns how a mark looks; the pipeline
+     owns the geometry. Four marks, tokenised, no data.
+     ======================================================================= */
+  .c-datamark--isoline {
+    fill: none;
+    stroke-width: 1.5;
+    stroke-dasharray: none;
+  }
+
+  .c-datamark--catchment {
+    fill: var(--chart-selection, var(--color-primary-soft));
+    fill-opacity: 0.45;
+    stroke: var(--color-primary);
+    stroke-width: 1;
+  }
+
+  .c-datamark--route {
+    fill: none;
+    stroke: var(--color-primary);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .c-datamark--hex {
+    fill: var(--color-surface-2);
+    stroke: var(--color-border);
+    stroke-width: 1;
+  }
+
+  .c-datamark--hex[data-class="critical"] {
+    fill: var(--color-danger-soft);
+  }
+
+  /* =======================================================================
+     LAYER SWITCHER — the canonical map control
+     ======================================================================= */
+  .c-layer-switch {
+    display: grid;
+    gap: calc(var(--space-2xs) * var(--density, 1));
+    padding: calc(var(--space-sm) * var(--density, 1));
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-1);
+  }
+
+  .c-layer-switch__empty,
+  .c-layer-switch__loading,
+  .c-layer-switch__error {
+    color: var(--color-text-muted);
+    padding: calc(var(--space-md) * var(--density, 1));
+  }
+
+  .c-layer-switch__item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(var(--space-sm) * var(--density, 1));
+    padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1));
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: var(--type-sm);
+    transition: background-color var(--dur-fast) var(--ease-standard);
+  }
+  .c-layer-switch__item > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .c-layer-switch__item:hover {
+    background: var(--color-surface-2);
+  }
+
+  .c-layer-switch__swatch {
+    inline-size: 1rem;
+    block-size: 1rem;
+    border-radius: var(--radius-xs);
+    border: 1px solid var(--color-border);
+    flex: none;
+  }
+
+  .c-layer-switch__name {
+    flex: 1;
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .c-layer-switch__count {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--color-text-subtle);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .c-layer-switch__toggle {
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    display: grid;
+    place-items: center;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--color-text-subtle);
+    border-radius: var(--radius-xs);
+  }
+
+  .c-layer-switch__toggle svg {
+    inline-size: 0.75rem;
+    block-size: 0.75rem;
+  }
+
+  .c-layer-switch__toggle:hover {
+    color: var(--color-text);
+    background: var(--color-surface-3);
+  }
+}

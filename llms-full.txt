@@ -27,7 +27,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `38389d4131097eb2` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3bebdb1ecaad70a0` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -78,7 +78,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `38389d4131097eb2` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3bebdb1ecaad70a0` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -128,7 +128,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `38389d4131097eb2` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3bebdb1ecaad70a0` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -165,7 +165,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `38389d4131097eb2` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3bebdb1ecaad70a0` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -209,7 +209,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `38389d4131097eb2` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3bebdb1ecaad70a0` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -245,7 +245,7 @@ Entrances, reveals and anything that moves the eye across a gap.
 
 ## Blocks documented here
 
-13 block(s). Their facts live in `../contour.components.json`;
+12 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
@@ -253,7 +253,6 @@ starts disagreeing with itself.
 - `.c-btn`
 - `.c-card`
 - `.c-cluster`
-- `.c-dot`
 - `.c-icon-badge`
 - `.c-kbd`
 - `.c-pill`
@@ -263,9 +262,16 @@ starts disagreeing with itself.
 - `.c-skeleton`
 - `.c-spinner`
 
+### Defined by the guide, not the system
+
+These appear in the specimen markup and in no sheet under `src/css`, so they are not
+part of the component contract and nothing in an installed package defines them:
+
+- `.c-dot`
+
 ---
 
-Source `index.html` @ `38389d4131097eb2` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3bebdb1ecaad70a0` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -306,7 +312,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `38389d4131097eb2` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3bebdb1ecaad70a0` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -384,7 +390,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `38389d4131097eb2` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3bebdb1ecaad70a0` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -413,7 +419,7 @@ Equivalent contour-* elements are catalogued in §23.
 
 ## Blocks documented here
 
-16 block(s). Their facts live in `../contour.components.json`;
+15 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
@@ -421,7 +427,6 @@ starts disagreeing with itself.
 - `.c-badge`
 - `.c-btn`
 - `.c-chip`
-- `.c-dot`
 - `.c-empty`
 - `.c-icon-badge`
 - `.c-kbd`
@@ -434,9 +439,16 @@ starts disagreeing with itself.
 - `.c-spinner`
 - `.c-tag`
 
+### Defined by the guide, not the system
+
+These appear in the specimen markup and in no sheet under `src/css`, so they are not
+part of the component contract and nothing in an installed package defines them:
+
+- `.c-dot`
+
 ---
 
-Source `index.html` @ `38389d4131097eb2` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3bebdb1ecaad70a0` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -488,7 +500,7 @@ Scroll container with content-visibility for performance. Virtualization logic i
 
 ## Blocks documented here
 
-19 block(s). Their facts live in `../contour.components.json`;
+14 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
@@ -497,9 +509,6 @@ starts disagreeing with itself.
 - `.c-btn`
 - `.c-card`
 - `.c-coordinate`
-- `.c-draggable`
-- `.c-drop-indicator`
-- `.c-drop-zone`
 - `.c-feature`
 - `.c-footer`
 - `.c-icon-badge`
@@ -507,14 +516,23 @@ starts disagreeing with itself.
 - `.c-link`
 - `.c-mark`
 - `.c-plate`
-- `.c-resizable`
 - `.c-resize-handle`
-- `.c-scroll-area`
 - `.c-section-head`
+
+### Defined by the guide, not the system
+
+These appear in the specimen markup and in no sheet under `src/css`, so they are not
+part of the component contract and nothing in an installed package defines them:
+
+- `.c-draggable`
+- `.c-drop-indicator`
+- `.c-drop-zone`
+- `.c-resizable`
+- `.c-scroll-area`
 
 ---
 
-Source `index.html` @ `38389d4131097eb2` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3bebdb1ecaad70a0` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -551,7 +569,7 @@ On this page
 
 ## Blocks documented here
 
-22 block(s). Their facts live in `../contour.components.json`;
+21 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
@@ -569,7 +587,6 @@ starts disagreeing with itself.
 - `.c-menu`
 - `.c-pagination`
 - `.c-readout`
-- `.c-scheme-toggle`
 - `.c-search-trigger`
 - `.c-section-head`
 - `.c-segmented`
@@ -578,9 +595,16 @@ starts disagreeing with itself.
 - `.c-toolbar`
 - `.c-tree`
 
+### Defined by the guide, not the system
+
+These appear in the specimen markup and in no sheet under `src/css`, so they are not
+part of the component contract and nothing in an installed package defines them:
+
+- `.c-scheme-toggle`
+
 ---
 
-Source `index.html` @ `38389d4131097eb2` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3bebdb1ecaad70a0` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -639,13 +663,12 @@ Progress drawn as elevation rings rather than a bar — the system's own shape l
 
 ## Blocks documented here
 
-15 block(s). Their facts live in `../contour.components.json`;
+14 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
 - `.c-alert`
 - `.c-btn`
-- `.c-dot`
 - `.c-empty`
 - `.c-error-boundary`
 - `.c-icon-badge`
@@ -659,9 +682,16 @@ starts disagreeing with itself.
 - `.c-spinner`
 - `.c-toast`
 
+### Defined by the guide, not the system
+
+These appear in the specimen markup and in no sheet under `src/css`, so they are not
+part of the component contract and nothing in an installed package defines them:
+
+- `.c-dot`
+
 ---
 
-Source `index.html` @ `38389d4131097eb2` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3bebdb1ecaad70a0` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -750,7 +780,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `38389d4131097eb2` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3bebdb1ecaad70a0` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -898,7 +928,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `38389d4131097eb2` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3bebdb1ecaad70a0` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -969,7 +999,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `38389d4131097eb2` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3bebdb1ecaad70a0` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1081,7 +1111,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `38389d4131097eb2` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3bebdb1ecaad70a0` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1157,7 +1187,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `38389d4131097eb2` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3bebdb1ecaad70a0` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1233,7 +1263,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `38389d4131097eb2` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3bebdb1ecaad70a0` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1428,7 +1458,7 @@ part of the component contract and nothing in an installed package defines them:
 
 ---
 
-Source `index.html` @ `38389d4131097eb2` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3bebdb1ecaad70a0` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1490,7 +1520,7 @@ By route volume
 
 ## Blocks documented here
 
-40 block(s). Their facts live in `../contour.components.json`;
+39 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
@@ -1511,7 +1541,6 @@ starts disagreeing with itself.
 - `.c-delta`
 - `.c-docs-nav`
 - `.c-docs-shell`
-- `.c-dot`
 - `.c-filter-bar`
 - `.c-filter-pill`
 - `.c-icon-badge`
@@ -1541,10 +1570,11 @@ These appear in the specimen markup and in no sheet under `src/css`, so they are
 part of the component contract and nothing in an installed package defines them:
 
 - `.c-cursor-demo`
+- `.c-dot`
 
 ---
 
-Source `index.html` @ `38389d4131097eb2` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3bebdb1ecaad70a0` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1572,7 +1602,7 @@ The playground writes directly to the scoped container. Nothing here is a specia
 
 ## Blocks documented here
 
-12 block(s). Their facts live in `../contour.components.json`;
+11 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
@@ -1580,7 +1610,6 @@ starts disagreeing with itself.
 - `.c-btn`
 - `.c-card`
 - `.c-chip`
-- `.c-dot`
 - `.c-field`
 - `.c-icon-badge`
 - `.c-kbd`
@@ -1589,9 +1618,16 @@ starts disagreeing with itself.
 - `.c-section-head`
 - `.c-theme-scope`
 
+### Defined by the guide, not the system
+
+These appear in the specimen markup and in no sheet under `src/css`, so they are not
+part of the component contract and nothing in an installed package defines them:
+
+- `.c-dot`
+
 ---
 
-Source `index.html` @ `38389d4131097eb2` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3bebdb1ecaad70a0` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1651,7 +1687,7 @@ Full surface with the complete content and a wider layout.
 
 ## Blocks documented here
 
-10 block(s). Their facts live in `../contour.components.json`;
+9 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
@@ -1659,16 +1695,22 @@ starts disagreeing with itself.
 - `.c-btn`
 - `.c-card`
 - `.c-dialog`
-- `.c-dot`
 - `.c-icon-badge`
 - `.c-kbd`
 - `.c-panel`
 - `.c-section-head`
 - `.c-segmented`
 
+### Defined by the guide, not the system
+
+These appear in the specimen markup and in no sheet under `src/css`, so they are not
+part of the component contract and nothing in an installed package defines them:
+
+- `.c-dot`
+
 ---
 
-Source `index.html` @ `38389d4131097eb2` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3bebdb1ecaad70a0` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1706,7 +1748,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `38389d4131097eb2` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3bebdb1ecaad70a0` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1771,6 +1813,8 @@ Dialog body content.
 
 Content behind the scrim.
 
+Every attribute, boolean attribute, slot and part declared by each block, counted from dist/contour.components.json. Boolean attributes are set by presence; all others take a string value. Blocks with no declared attributes are omitted.
+
 ## Subsections
 
 - Composition and states
@@ -1780,6 +1824,7 @@ Content behind the scrim.
 - Reactivity playground
 - Form association
 - Event emission
+- Attribute & property reference
 
 ## Blocks documented here
 
@@ -1812,7 +1857,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `38389d4131097eb2` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3bebdb1ecaad70a0` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1848,7 +1893,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `38389d4131097eb2` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3bebdb1ecaad70a0` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1890,7 +1935,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `38389d4131097eb2` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3bebdb1ecaad70a0` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1913,7 +1958,7 @@ Sheet body content.
 
 ## Blocks documented here
 
-19 block(s). Their facts live in `../contour.components.json`;
+17 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
@@ -1928,16 +1973,22 @@ starts disagreeing with itself.
 - `.c-divider`
 - `.c-fab`
 - `.c-pivot`
-- `.c-pull-to-refresh`
 - `.c-responsive-content`
 - `.c-section-head`
 - `.c-skeleton`
 - `.c-skeleton-group`
-- `.c-split-map`
 - `.c-status-light`
 - `.c-swatch`
 
+### Defined by the guide, not the system
+
+These appear in the specimen markup and in no sheet under `src/css`, so they are not
+part of the component contract and nothing in an installed package defines them:
+
+- `.c-pull-to-refresh`
+- `.c-split-map`
+
 ---
 
-Source `index.html` @ `38389d4131097eb2` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `3bebdb1ecaad70a0` · last committed 2026-11-09T00:16:57+01:00 · no URL: the project is private until v1.0.
 

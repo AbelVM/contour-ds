@@ -1,0 +1,246 @@
+/* ============================================================================
+   CONTOUR — Data & dashboard components
+   ----------------------------------------------------------------------------
+   For technical dashboards: KPI tiles, panels, filter bars, dense tables,
+   chart frames and legends. These components read data; they are tuned for
+   scanning and comparison rather than for narrative.
+   ========================================================================= */
+
+@layer components {
+
+  /* =======================================================================
+     6. FILTER BAR & PILLS
+     ======================================================================= */
+  .c-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--space-2xs) * var(--density, 1));
+    flex-wrap: wrap;
+    padding: calc(var(--space-2xs) * var(--density, 1)) calc(0.65rem * var(--density, 1));
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-1);
+  }
+
+  .c-filter-bar__label {
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--color-text-subtle);
+    padding-inline: calc(0.35rem * var(--density, 1));
+  }
+
+  .c-filter-bar__divider {
+    inline-size: 1px;
+    block-size: calc(1.25rem * var(--density, 1));
+    background: var(--color-border);
+  }
+
+  /* An active filter — removable, and always shows what it filters. */
+  .c-filter-pill {
+    min-block-size: var(--target-control);
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(0.4rem * var(--density, 1));
+    padding: calc(0.2rem * var(--density, 1)) calc(0.3rem * var(--density, 1)) calc(0.2rem * var(--density, 1)) calc(0.55rem * var(--density, 1));
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-2);
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    color: var(--color-text);
+  }
+
+  .c-filter-pill__key {
+    color: var(--color-text-subtle);
+  }
+
+  .c-filter-pill__value {
+    color: var(--color-text-strong);
+    font-weight: var(--weight-medium);
+  }
+
+  .c-filter-pill__remove {
+    display: grid;
+    place-items: center;
+    inline-size: var(--target-option);
+    block-size: var(--target-option);
+    border-radius: 50%;
+    color: var(--color-text-subtle);
+    cursor: pointer;
+    transition:
+      background-color var(--dur-fast) var(--ease-standard),
+      color var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-filter-pill__remove:hover {
+    background: var(--color-danger-soft);
+    color: var(--color-danger-text);
+  }
+
+  .c-filter-pill__remove svg {
+    inline-size: 0.7rem;
+    block-size: 0.7rem;
+  }
+
+  /* =======================================================================
+     7. TABLE — sortable, selectable, density-aware
+     ======================================================================= */
+.c-table th[aria-sort] {
+     cursor: pointer;
+     user-select: none;
+     position: relative;
+   }
+
+   .c-table th[aria-sort]:hover {
+     color: var(--color-text);
+   }
+
+   .c-table th[aria-sort]:hover .c-table__sort svg {
+     opacity: 0.7;
+   }
+
+  .c-table th[aria-sort] .c-table__sort {
+    display: inline-flex;
+    align-items: center;
+    gap: calc(0.3rem * var(--density, 1));
+  }
+
+  .c-table__sort svg {
+    inline-size: 0.8rem;
+    block-size: 0.8rem;
+    opacity: 0.35;
+    transition: opacity var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-table th[aria-sort="ascending"] .c-table__sort svg,
+  .c-table th[aria-sort="descending"] .c-table__sort svg {
+    opacity: 1;
+    color: var(--color-primary-text);
+  }
+
+  .c-table__pinned {
+    position: sticky;
+    inset-inline-start: 0;
+    z-index: var(--z-raised);
+    background: var(--color-surface-1);
+    box-shadow: 1px 0 0 var(--color-border);
+  }
+
+  .c-table thead .c-table__pinned {
+    z-index: var(--z-sticky);
+    background: var(--color-surface-2);
+  }
+
+  .c-table__select {
+    inline-size: calc(2.5rem * var(--density, 1));
+    text-align: center;
+  }
+
+  .c-table tbody tr[aria-selected="true"] {
+    background: var(--chart-selection);
+  }
+
+  /* Row actions stay hidden until the row is hovered or focused. */
+  .c-table__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(var(--space-3xs) * var(--density, 1));
+    justify-content: flex-end;
+    opacity: 0;
+    transition: opacity var(--dur-fast) var(--ease-standard);
+  }
+  .c-table__actions > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .c-table tbody tr:hover .c-table__actions,
+  .c-table tbody tr:focus-within .c-table__actions {
+    opacity: 1;
+  }
+
+  @media (hover: none) {
+    .c-table__actions {
+      opacity: 1;
+    }
+  }
+
+  /* =======================================================================
+     8. TIME RANGE
+     ======================================================================= */
+  .c-time-range {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: calc(0.4rem * var(--density, 1));
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    letter-spacing: 0.04em;
+    color: var(--color-text-subtle);
+  }
+  .c-time-range > * {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+
+  /* =======================================================================
+     9. ACTIVITY FEED
+     ======================================================================= */
+  .c-activity {
+    display: grid;
+    gap: calc(var(--space-sm) * var(--density, 1));
+    content-visibility: auto;
+    contain-intrinsic-size: auto 200px;
+  }
+
+  .c-activity__empty,
+  .c-activity__loading,
+  .c-activity__error {
+    color: var(--color-text-muted);
+    padding: calc(var(--space-md) * var(--density, 1));
+  }
+
+  .c-activity__item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: calc(0.6rem * var(--density, 1));
+    align-items: start;
+    font-size: var(--type-xs);
+  }
+
+  .c-activity__dot {
+    inline-size: calc(0.5rem * var(--density, 1));
+    block-size: calc(0.5rem * var(--density, 1));
+    margin-block-start: calc(0.35rem * var(--density, 1));
+    border-radius: 50%;
+    background: var(--color-text-subtle);
+  }
+
+  .c-activity__dot--primary {
+    background: var(--color-primary);
+  }
+  .c-activity__dot--accent {
+    background: var(--color-accent);
+  }
+  .c-activity__dot--danger {
+    background: var(--color-danger);
+  }
+
+  .c-activity__text {
+    color: var(--color-text);
+    line-height: 1.5;
+  }
+
+  .c-activity__time {
+    font-family: var(--font-mono);
+    color: var(--color-text-subtle);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-inline-size: calc(8rem * var(--density, 1));
+  }
+}

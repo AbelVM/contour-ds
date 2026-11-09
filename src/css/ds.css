@@ -5,19 +5,30 @@
      <link rel="stylesheet" href="src/css/ds.css">
 
    For bundlers, prefer importing the layers directly so the CSS is inlined:
-     @import "contour/tokens.css" layer(tokens);
-     @import "contour/base.css" layer(base);
-     @import "contour/components.css" layer(components);
-     @import "contour/components-shell.css" layer(components);
-     @import "contour/components-data.css" layer(components);
-     @import "contour/components-docs.css" layer(components);
-     @import "contour/components-landing.css" layer(components);
-     @import "contour/patterns.css" layer(components);
-     @import "contour/utilities.css" layer(utilities);
+      @import "contour/tokens.css" layer(tokens);
+      @import "contour/base.css" layer(base);
+      @import "contour/components-brand.css" layer(components);
+      @import "contour/components-buttons.css" layer(components);
+      @import "contour/components-cards.css" layer(components);
+      @import "contour/components-navigation.css" layer(components);
+      @import "contour/components-forms.css" layer(components);
+      @import "contour/components-display.css" layer(components);
+      @import "contour/components-overlay.css" layer(components);
+      @import "contour/components-misc.css" layer(components);
+      @import "contour/components-shell.css" layer(components);
+      @import "contour/components-data-dashboard.css" layer(components);
+      @import "contour/components-data-charts.css" layer(components);
+      @import "contour/components-data-tables.css" layer(components);
+      @import "contour/components-data-maps.css" layer(components);
+      @import "contour/components-data-widgets.css" layer(components);
+      @import "contour/components-docs.css" layer(components);
+      @import "contour/components-landing.css" layer(components);
+      @import "contour/patterns.css" layer(components);
+      @import "contour/utilities.css" layer(utilities);
 
    Layer order matters: utilities always win over components.
-   The component layer is split by audience, so a product that only needs
-   one surface can import one file and skip the rest.
+   The component layer is split by audience and concern, so a product that only
+   needs one surface can import one file and skip the rest.
    ========================================================================= */
 
 @layer tokens, base, components, utilities;
@@ -26,9 +37,20 @@
 
 @import url("./tokens.css") layer(tokens);
 @import url("./base.css") layer(base);
-@import url("./components.css") layer(components);
+@import url("./components-brand.css") layer(components);
+@import url("./components-buttons.css") layer(components);
+@import url("./components-cards.css") layer(components);
+@import url("./components-navigation.css") layer(components);
+@import url("./components-forms.css") layer(components);
+@import url("./components-display.css") layer(components);
+@import url("./components-overlay.css") layer(components);
+@import url("./components-misc.css") layer(components);
 @import url("./components-shell.css") layer(components);
-@import url("./components-data.css") layer(components);
+@import url("./components-data-dashboard.css") layer(components);
+@import url("./components-data-charts.css") layer(components);
+@import url("./components-data-tables.css") layer(components);
+@import url("./components-data-maps.css") layer(components);
+@import url("./components-data-widgets.css") layer(components);
 @import url("./components-docs.css") layer(components);
 @import url("./components-landing.css") layer(components);
 @import url("./patterns.css") layer(components);
