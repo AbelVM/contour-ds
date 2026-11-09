@@ -453,15 +453,15 @@ Based on the component list (222 classes) and prior completeness reviews, here i
 | R16-12 | ✅ | Fix WebKit-only range focus | P2 | Med | Low | S | Verified: ::-moz-range-thumb focus/hover equivalents already present. |
 | R16-13 | ✅ | Fix drawer under sticky header | P2 | Med | Low | S | Verified: drawer z-index --z-drawer (500) > header --z-header (400). |
 | R16-14 | ✅ | Fix iOS tap flash | P3 | Low | Low | S | Verified: -webkit-tap-highlight-color: transparent in base.css reset. |
-| R16-15 | ⬜ | Add viewport/global scope toggle to data components | P2 | High | Med | M | CARTO-inspired. |
-| R16-16 | ⬜ | Add cross-filter contract with clear-all | P2 | High | Med | M | CARTO-inspired. |
-| R16-17 | ⬜ | Add map-linked table (hover highlight, click-to-zoom) | P2 | High | Med | M | CARTO-inspired. |
-| R16-18 | ⬜ | Add geocoder component | P3 | Med | Med | L | CARTO-inspired. |
-| R16-19 | ⬜ | Add feature selection component | P3 | Med | Med | L | CARTO-inspired. |
-| R16-20 | ⬜ | Add scatter plot series to c-chart | P3 | Med | Low | M | CARTO-inspired. |
-| R16-21 | ⬜ | Add series management to c-time-series | P3 | Med | Med | M | CARTO-inspired. |
-| R16-22 | ⬜ | Add top-N/sort to c-category | P3 | Low | Low | S | CARTO-inspired. |
-| R16-23 | ⬜ | Add bucket-count/limit-values to c-chart--histogram | P3 | Low | Low | S | CARTO-inspired. |
+| R16-15 | ✅ | Add viewport/global scope toggle to data components | P2 | High | Med | M | CARTO-inspired. Done: ContourFilterBar scope attribute + contour:scope-change event (commit e79d2c8). |
+| R16-16 | ✅ | Add cross-filter contract with clear-all | P2 | High | Med | M | CARTO-inspired. Done: contour:clear-all listeners + contour:filter-change emissions on table, chart, brush, threshold, legend, pivot, category; search added to shared OBSERVED array (commit e79d2c8). |
+| R16-17 | ✅ | Add map-linked table (hover highlight, click-to-zoom) | P2 | High | Med | M | CARTO-inspired. Done: data-row attribute on rows, contour:zoom emission with row index and JSON row data (commit e79d2c8). |
+| R16-18 | ✅ | Add geocoder component | P3 | Med | Med | L | CARTO-inspired. Already exists: ContourGeocoder in src/js/wc/content.mjs with wireStates, ARIA, keyboard nav, contour:search/contour:select events. |
+| R16-19 | ✅ | Add feature selection component | P3 | Med | Med | L | CARTO-inspired. Already exists: ContourSpatialFilter in src/js/wc/navigation.mjs with mode buttons, aria-pressed, keyboard handling. |
+| R16-20 | ✅ | Add scatter plot series to c-chart | P3 | Med | Low | M | CARTO-inspired. Already exists: s.type === "scatter" handled in ContourChart render. |
+| R16-21 | ✅ | Add series management to c-time-series | P3 | Med | Med | M | CARTO-inspired. Done: series JSON attribute with per-series style (line|bar), color binding via var(--chart-N), keyboard/click contour:select per series point, backward compat with values (commit e79d2c8). |
+| R16-22 | ✅ | Add top-N/sort to c-category | P3 | Low | Low | S | CARTO-inspired. Already implemented: limit and sort attributes in ContourCategory observed/properties with full sort logic (value-desc/asc, alpha-asc/desc) and top-N slicing. |
+| R16-23 | ✅ | Add bucket-count/limit-values to c-chart--histogram | P3 | Low | Low | S | CARTO-inspired. Done: bucket-count bins values into equal-width buckets; limit-values truncates input array; both added to ContourChart observed/properties (commit 7038cb1). |
 | R16-24 | ⬜ | Add color binding to layer for donut/pie | P3 | Low | Low | S | CARTO-inspired. |
 | R16-25 | ⬜ | Define shared field/filter/query state contract | P2 | High | Med | M | Libreship support. |
 | R16-26 | ⬜ | Define table/map selection identity | P2 | High | Med | M | Libreship support. |

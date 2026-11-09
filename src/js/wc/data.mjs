@@ -1967,8 +1967,8 @@ define("contour-category", ContourCategory);
  * Attributes: `value`, `values`, `items`, `label`, `empty`, `loading`, `error`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`, `brownout`, `brownout-level`.
  */
 class ContourDonut extends ContourBase {
-    static get observed() { return ["value", "values", "items", "label", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "brownout", "brownout-level", "note"]; }
-    static get properties() { return { value: { attribute: "value" }, values: { attribute: "values" }, items: { attribute: "items" }, label: { attribute: "label" }, src: { attribute: "src" }, note: { attribute: "note" } }; }
+    static get observed() { return ["value", "values", "items", "label", "color", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "brownout", "brownout-level", "note"]; }
+    static get properties() { return { value: { attribute: "value" }, values: { attribute: "values" }, items: { attribute: "items" }, label: { attribute: "label" }, color: { attribute: "color" }, src: { attribute: "src" }, note: { attribute: "note" } }; }
     render() {
       this.classList.add("c-donut");
       this.setAttribute("role", "img");
@@ -2005,13 +2005,14 @@ class ContourDonut extends ContourBase {
         svg.setAttribute("class", "c-donut__ring");
         svg.setAttribute("viewBox", "0 0 32 32");
         let offset = 0;
+        const layerColor = this.getAttribute("color");
         items.forEach((it, i) => {
           const v = values[i];
           const pct = v / total;
           const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
           circle.setAttribute("cx", "16"); circle.setAttribute("cy", "16"); circle.setAttribute("r", "12");
           circle.setAttribute("fill", "none");
-          circle.setAttribute("stroke", (typeof it === "object" && it.color) ? it.color : "var(--chart-" + ((i % 8) + 1) + ")");
+          circle.setAttribute("stroke", layerColor || (typeof it === "object" && it.color ? it.color : "var(--chart-" + ((i % 8) + 1) + ")"));
           circle.setAttribute("stroke-width", "6");
           const circ = 2 * Math.PI * 12;
           circle.setAttribute("stroke-dasharray", (pct * circ) + " " + (circ - pct * circ));
@@ -2041,8 +2042,8 @@ class ContourDonut extends ContourBase {
         row.setAttribute("role", "listitem");
         const sw = document.createElement("span");
         sw.className = "c-donut__swatch";
-        sw.style.background = (typeof it === "object" && it.color) ? it.color : "var(--chart-" + ((i % 8) + 1) + ")";
-            if (sw.style.background) sw.dataset.color = (typeof it === "object" && it.color) ? it.color : sw.style.background;
+        sw.style.background = layerColor || (typeof it === "object" && it.color ? it.color : "var(--chart-" + ((i % 8) + 1) + ")");
+            if (sw.style.background) sw.dataset.color = layerColor || (typeof it === "object" && it.color ? it.color : sw.style.background);
         row.appendChild(sw);
         const lbl = document.createElement("span");
         lbl.textContent = (typeof it === "object" ? (it.label || "") : String(it)) + " — " + values[i];
