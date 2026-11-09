@@ -1225,4 +1225,31 @@
     color: var(--color-text);
     background: var(--color-surface-3);
   }
+
+  /* -- Split map ----------------------------------------------------------- */
+  .c-split-map {
+    display: flex;
+    inline-size: 100%;
+    block-size: calc(30rem * var(--density, 1));
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: var(--color-surface-1);
+  }
+
+  .c-split-map__pane {
+    flex: 1;
+    min-inline-size: 0;
+    overflow: auto;
+    padding: calc(var(--space-sm) * var(--density, 1));
+    background: var(--color-surface-1);
+  }
+
+  .c-split-map__pane--left {
+    border-inline-end: 1px solid var(--color-border);
+  }
+
+  .c-split-map__pane--right {
+    border-inline-start: 1px solid var(--color-border);
+  }
 }

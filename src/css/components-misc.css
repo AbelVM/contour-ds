@@ -1446,4 +1446,105 @@
   .c-segmented__option:active {
     transform: translateY(1px);
   }
+
+  /* =======================================================================
+     DRAGGABLE — drag source with native DnD + keyboard move
+     ======================================================================= */
+  .c-draggable {
+    cursor: grab;
+    user-select: none;
+  }
+  .c-draggable:active {
+    cursor: grabbing;
+  }
+  .c-draggable--dragging {
+    opacity: 0.6;
+    background: var(--color-surface-3);
+    border: 1px dashed var(--color-border);
+  }
+
+  /* =======================================================================
+     DROP-INDICATOR — shows where a dragged item will land
+     ======================================================================= */
+  .c-drop-indicator {
+    position: relative;
+    contain: layout;
+  }
+  .c-drop-indicator--visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: -2px;
+  }
+  .c-drop-indicator__label {
+    font-size: var(--type-xs);
+    color: var(--color-text-subtle);
+    white-space: nowrap;
+  }
+
+  /* =======================================================================
+     DROP-ZONE — drop target with active/reject states
+     ======================================================================= */
+  .c-drop-zone {
+    border: 2px dashed var(--color-border-subtle);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-1);
+    min-block-size: calc(3rem * var(--density, 1));
+    contain: layout;
+  }
+  .c-drop-zone--active {
+    border-style: solid;
+    border-color: var(--color-primary);
+    background: color-mix(in oklab, var(--color-primary) 8%, transparent);
+  }
+  .c-drop-zone--reject {
+    border-style: solid;
+    border-color: var(--color-danger);
+    background: color-mix(in oklab, var(--color-danger) 8%, transparent);
+  }
+  .c-drop-zone__label {
+    text-align: center;
+    font-size: var(--type-sm);
+    color: var(--color-text);
+  }
+
+  /* =======================================================================
+     RESIZABLE — split pane with draggable handle
+     ======================================================================= */
+  .c-resizable {
+    display: flex;
+    gap: calc(0.25rem * var(--density, 1));
+    contain: layout;
+  }
+  .c-resizable--vertical {
+    flex-direction: column;
+    min-block-size: calc(10rem * var(--density, 1));
+  }
+  .c-resizable--horizontal {
+    flex-direction: row;
+    min-inline-size: calc(10rem * var(--density, 1));
+  }
+  .c-resizable__pane {
+    flex: 1;
+    min-inline-size: 0;
+    min-block-size: 0;
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: calc(var(--space-xs) * var(--density, 1));
+    overflow: auto;
+  }
+
+  /* =======================================================================
+     SCROLL-AREA — scrollable region with optional title
+     ======================================================================= */
+  .c-scroll-area {
+    overflow: auto;
+    contain: layout;
+  }
+  .c-scroll-area__title {
+    padding: calc(var(--space-xs) * var(--density, 1));
+    font-size: var(--type-xs);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-subtle);
+    border-block-end: 1px solid var(--color-border-subtle);
+  }
 }

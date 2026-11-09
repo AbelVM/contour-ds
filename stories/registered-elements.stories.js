@@ -22,14 +22,6 @@ export default {
   tags: ["autodocs"],
   parameters: {
     contour: { maturity: "composition" },
-    a11y: { test: "todo" },
-    issue: "SB-04a",
-    a11yTodo: {
-      owner: "Contour maintainers",
-      rootCause: "generated catalogue spans incomplete contexts",
-      mitigation: "promote mature elements to focused stories",
-      review: "2026-12-01",
-    },
   },
 };
 

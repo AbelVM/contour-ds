@@ -685,4 +685,44 @@
     inline-size: max-content;
     max-inline-size: min(calc(28rem * var(--density, 1)), calc(100vw - calc(2rem * var(--density, 1))));
   }
-}
+
+  /* =======================================================================
+     19. DOT — small status indicator
+     ======================================================================= */
+  .c-dot {
+    display: inline-grid;
+    place-items: center;
+    inline-size: calc(0.5rem * var(--density, 1));
+    block-size: calc(0.5rem * var(--density, 1));
+    border-radius: 50%;
+    background: var(--color-text-muted);
+    color: var(--color-text);
+    flex: none;
+  }
+  .c-dot--live {
+    background: var(--color-danger);
+    color: var(--color-danger-text);
+    animation: c-dot-pulse calc(2s * var(--density, 1)) infinite;
+  }
+  @keyframes c-dot-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  /* =======================================================================
+     20. PULL-TO-REFRESH — touch-to-refresh indicator
+     ======================================================================= */
+  .c-pull-to-refresh {
+    display: block;
+    overflow: hidden;
+    contain: layout;
+  }
+  .c-pull-to-refresh__indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: calc(0.3rem * var(--density, 1));
+    padding: calc(var(--space-xs) * var(--density, 1));
+    font-size: var(--type-xs);
+    color: var(--color-text-subtle);
+    transition: transform var(--dur-fast) var(--ease-standard);
+  }
