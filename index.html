@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Contour — a design system for spatial interfaces</title>
-    <meta name="description" content="Contour is a token-driven design system for spatial interfaces. Dark and light themes, 225 components, 306 design tokens, zero runtime dependencies." />
+    <meta name="description" content="Contour is a token-driven design system for spatial interfaces. Dark and light themes, 230 components, 306 design tokens, zero runtime dependencies." />
     <!-- One sentence, two readers: stamp.mjs generates BOTH descriptions from
          the same computed string, so the crawler copy can never fall a whole
          component count behind the search copy. `twitter:description` is
@@ -15,7 +15,7 @@
          that resolves — a card pointing at a dead image is a claim, not a
          fallback. -->
     <meta property="og:title" content="Contour — a design system for spatial interfaces" />
-    <meta property="og:description" content="Contour is a token-driven design system for spatial interfaces. Dark and light themes, 225 components, 306 design tokens, zero runtime dependencies." />
+    <meta property="og:description" content="Contour is a token-driven design system for spatial interfaces. Dark and light themes, 230 components, 306 design tokens, zero runtime dependencies." />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="Contour — a design system for spatial interfaces" />
@@ -526,7 +526,7 @@
                 <span>GRID 0.88 m</span>
                 <span>H3 · RES 15</span>
                 <span><!-- ds:tokens -->306<!-- /ds:tokens --> tokens</span>
-                <span><!-- ds:components -->225<!-- /ds:components --> components</span>
+                <span><!-- ds:components -->230<!-- /ds:components --> components</span>
                 <span>0 runtime deps</span>
                 <span>2 + system themes</span>
               </div>
@@ -14000,6 +14000,9 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                     <thead><tr><th>Event</th><th>Payload keys</th><th>Composed</th></tr></thead>
                     <tbody>
                       <tr><td><code>contour:activate</code></td><td>—</td><td>true</td></tr>
+                      <tr><td><code>contour:apply</code></td><td><code>name</code></td><td>true</td></tr>
+                      <tr><td><code>contour:activity-clear</code></td><td>—</td><td>true</td></tr>
+                      <tr><td><code>contour:activity-filter</code></td><td><code>unread</code></td><td>true</td></tr>
                       <tr><td><code>contour:activity-select</code></td><td><code>index</code>, <code>text</code></td><td>true</td></tr>
                       <tr><td><code>contour:add</code></td><td><code>value</code></td><td>true</td></tr>
                       <tr><td><code>contour:advanced-toggle</code></td><td><code>title</code></td><td>true</td></tr>
@@ -14036,6 +14039,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                       <tr><td><code>contour:hide</code></td><td>—</td><td>true</td></tr>
                       <tr><td><code>contour:hover</code></td><td><code>row</code></td><td>true</td></tr>
                       <tr><td><code>contour:input</code></td><td><code>name</code>, <code>value</code>, <code>checked</code></td><td>true</td></tr>
+                      <tr><td><code>contour:inspect-action</code></td><td><code>label</code></td><td>true</td></tr>
                       <tr><td><code>contour:layer-duplicate</code></td><td><code>name</code></td><td>true</td></tr>
                       <tr><td><code>contour:layer-opacity</code></td><td><code>name</code>, <code>opacity</code></td><td>true</td></tr>
                       <tr><td><code>contour:layer-projection</code></td><td><code>name</code>, <code>projection</code></td><td>true</td></tr>
@@ -14052,6 +14056,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                       <tr><td><code>contour:map-attach</code></td><td>—</td><td>true</td></tr>
                       <tr><td><code>contour:map-control</code></td><td><code>control</code></td><td>true</td></tr>
                       <tr><td><code>contour:map-detach</code></td><td>—</td><td>true</td></tr>
+                      <tr><td><code>contour:map-popup-reposition</code></td><td><code>anchor</code>, <code>flippedX</code>, <code>flippedY</code>, <code>left</code>, <code>top</code></td><td>true</td></tr>
                       <tr><td><code>contour:mode-change</code></td><td><code>mode</code></td><td>true</td></tr>
                       <tr><td><code>contour:scope-change</code></td><td><code>scope</code></td><td>true</td></tr>
                       <tr><td><code>contour:move</code></td><td><code>direction</code>, <code>from</code>, <code>to</code></td><td>true</td></tr>
@@ -14068,6 +14073,8 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                       <tr><td><code>contour:seek</code></td><td><code>progress</code>, <code>value</code></td><td>true</td></tr>
                       <tr><td><code>contour:select</code></td><td><code>area</code>, <code>col</code>, <code>index</code>, <code>key</code>, <code>label</code>, <code>labels</code>, <code>path</code>, <code>row</code>, <code>rows</code>, <code>series</code>, <code>value</code></td><td>true</td></tr>
                       <tr><td><code>contour:search</code></td><td><code>query</code></td><td>true</td></tr>
+                      <tr><td><code>contour:spatial-filter</code></td><td><code>action</code>, <code>mode</code>, <code>operator</code></td><td>true</td></tr>
+                      <tr><td><code>contour:split-change</code></td><td><code>value</code>, <code>width</code>, <code>height</code></td><td>true</td></tr>
                       <tr><td><code>contour:show</code></td><td>—</td><td>true</td></tr>
                       <tr><td><code>contour:showcase-activate</code></td><td><code>title</code></td><td>true</td></tr>
                       <tr><td><code>contour:sort</code></td><td><code>column</code>, <code>direction</code></td><td>true</td></tr>

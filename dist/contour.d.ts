@@ -11,6 +11,7 @@ export interface ContourDataElement extends ContourElement{data?:S;series?:S;src
 
 export interface ContourAccordionElement extends ContourElement{exclusive?:boolean;src?:S;}
 export interface ContourActivityElement extends ContourElement{src?:S;}
+export interface ContourActivityFeedElement extends ContourElement{filter?:S;"unread-only"?:boolean;}
 export interface ContourAnimationControlsElement extends ContourElement{playing?:boolean;speed?:S;progress?:S;}
 export interface ContourAnnotationElement extends ContourElement{x?:S;y?:S;}
 export interface ContourAvatarElement extends ContourElement{src?:S;}
@@ -47,6 +48,7 @@ export interface ContourDonutElement extends ContourDataElement{value?:S;values?
 export interface ContourEmptyElement extends ContourElement{illustration?:S;}
 export interface ContourErrorBoundaryElement extends ContourElement{fallback?:S;}
 export interface ContourFaqElement extends ContourElement{src?:S;}
+export interface ContourFeatureInspectorElement extends ContourElement{open?:boolean;}
 export interface ContourFileUploadElement extends ContourFormElement{label?:S;accept?:S;multiple?:boolean;progress?:S;}
 export interface ContourFilterBarElement extends ContourElement{src?:S;clearable?:S;scope?:S;}
 export interface ContourFlowMapElement extends ContourDataElement{label?:S;nodes?:S;}
@@ -81,6 +83,7 @@ export interface ContourPopoverElement extends ContourElement{content?:S;}
 export interface ContourPressableFullElement extends ContourElement{disabled?:boolean;}
 export interface ContourPriceFullElement extends ContourElement{format?:S;locale?:S;}
 export interface ContourProgressElement extends ContourElement{paused?:boolean;pausable?:boolean;}
+export interface ContourProvenanceElement extends ContourElement{source?:S;confidence?:S;resolution?:S;coverage?:S;warning?:S;methodology?:S;}
 export interface ContourPullToRefreshElement extends ContourElement{threshold?:S;}
 export interface ContourRadioElement extends ContourFormElement{label?:S;error?:S;help?:S;}
 export interface ContourRadioListElement extends ContourElement{src?:S;}
@@ -90,6 +93,7 @@ export interface ContourReadoutElement extends ContourDataElement{rows?:S;format
 export interface ContourResizeObserverElement extends ContourElement{debounce?:S;}
 export interface ContourResponsiveContentElement extends ContourElement{breakpoint?:S;}
 export interface ContourRowActionFullElement extends ContourElement{disabled?:boolean;}
+export interface ContourSavedViewElement extends ContourElement{updated?:S;source?:S;active?:boolean;}
 export interface ContourScaleBarElement extends ContourElement{distance?:S;resolution?:S;latitude?:S;src?:S;}
 export interface ContourSegmentedElement extends ContourFormElement{options?:S;selected?:S;label?:S;}
 export interface ContourSelectElement extends ContourFormElement{options?:S;label?:S;error?:S;help?:S;}
@@ -98,9 +102,10 @@ export interface ContourSideSheetElement extends ContourElement{open?:boolean;si
 export interface ContourSidebarElement extends ContourElement{collapsed?:boolean;}
 export interface ContourSkeletonElement extends ContourElement{shimmer?:boolean;}
 export interface ContourSparklineElement extends ContourDataElement{points?:S;}
-export interface ContourSpatialFilterElement extends ContourElement{modes?:S;mode?:S;active?:S;src?:S;}
+export interface ContourSpatialFilterElement extends ContourElement{modes?:S;mode?:S;active?:S;bounds?:S;operator?:S;src?:S;}
 export interface ContourSplitButtonElement extends ContourElement{menu?:S;}
 export interface ContourSplitMapElement extends ContourElement{left?:S;right?:S;}
+export interface ContourSplitViewElement extends ContourElement{"left-label"?:S;"right-label"?:S;}
 export interface ContourStackedBarElement extends ContourDataElement{segments?:S;values?:S;colors?:S;normalize?:S;}
 export interface ContourStatElement extends ContourDataElement{value?:S;label?:S;delta?:S;unit?:S;format?:S;locale?:S;}
 export interface ContourStepsElement extends ContourElement{src?:S;}
@@ -132,6 +137,7 @@ export interface ContourWidgetStateElement extends ContourElement{loading?:S;ret
 declare global { interface HTMLElementTagNameMap {
   "contour-accordion":ContourAccordionElement;
   "contour-activity":ContourActivityElement;
+  "contour-activity-feed":ContourActivityFeedElement;
   "contour-advanced":ContourElement;
   "contour-affordance":ContourElement;
   "contour-affordances":ContourElement;
@@ -215,6 +221,7 @@ declare global { interface HTMLElementTagNameMap {
   "contour-fab":ContourElement;
   "contour-faq":ContourFaqElement;
   "contour-feature":ContourElement;
+  "contour-feature-inspector":ContourFeatureInspectorElement;
   "contour-field":ContourElement;
   "contour-field-group":ContourElement;
   "contour-file-tree":ContourElement;
@@ -275,6 +282,7 @@ declare global { interface HTMLElementTagNameMap {
   "contour-pricing":ContourElement;
   "contour-progress":ContourProgressElement;
   "contour-prose":ContourElement;
+  "contour-provenance":ContourProvenanceElement;
   "contour-pull-to-refresh":ContourPullToRefreshElement;
   "contour-pullquote":ContourElement;
   "contour-radio":ContourRadioElement;
@@ -291,6 +299,7 @@ declare global { interface HTMLElementTagNameMap {
   "contour-responsive-content":ContourResponsiveContentElement;
   "contour-row":ContourElement;
   "contour-row-action":ContourElement;
+  "contour-saved-view":ContourSavedViewElement;
   "contour-scale-bar":ContourScaleBarElement;
   "contour-scheme-toggle":ContourElement;
   "contour-scrim":ContourElement;
@@ -316,6 +325,7 @@ declare global { interface HTMLElementTagNameMap {
   "contour-spinner":ContourElement;
   "contour-split-button":ContourSplitButtonElement;
   "contour-split-map":ContourSplitMapElement;
+  "contour-split-view":ContourSplitViewElement;
   "contour-stack":ContourElement;
   "contour-stacked-bar":ContourStackedBarElement;
   "contour-stat":ContourStatElement;

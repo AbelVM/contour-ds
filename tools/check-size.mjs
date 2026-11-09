@@ -55,7 +55,7 @@ const DIST = join(ROOT, "dist");
  *  which the Format Module has no legal place for (C-43). It states values only —
  *  a token's meaning is published once, in the Format document. */
 const BUDGETS = {
-  "contour.min.css": 240 * 1024,  // raised 2026-11-07: +layout fixes; raised 2026-11-09: +c-scheme-toggle, c-split-map CSS blocks; raised 2026-11-09: +c-filter-bar__mode scope toggle CSS; measured 239.6 kB
+  "contour.min.css": 256 * 1024,  // raised 2026-11-07: +layout fixes; raised 2026-11-09: +c-scheme-toggle, c-split-map CSS blocks; raised 2026-11-09: +c-filter-bar__mode scope toggle CSS; raised 2026-11-09: +c-saved-view, c-provenance, c-feature-inspector CSS blocks; measured 243.5 kB
   "contour.min.js": 39 * 1024,  // raised 2026-11-04: focus restoration + changelog; measured 38.0 kB
   "contour.d.ts": 32 * 1024,  // raised 2026-11-04: +3 new components (data-export, pull-to-refresh, split-map)
   "contour.tokens.json": 52 * 1024,  // raised 2026-11-09: +5 brand color aliases (--color-tidal-500 etc.) for Tailwind v4 bridge; measured 51.3 kB
@@ -67,7 +67,7 @@ const BUDGETS = {
   // exists to catch a jump nobody intended, not to keep the truth brief. A file
   // absent from this map is not budgeted at all, which is how an artifact can
   // grow without anyone noticing.
-  "contour.components.json": 286 * 1024,  // raised 2026-11-09: +maturity field on all 225 blocks (R16-47); measured 284.1 kB
+  "contour.components.json": 307 * 1024,  // raised 2026-11-09: +maturity field on all 225 blocks (R16-47); raised 2026-11-09: +3 new blocks (c-saved-view, c-provenance, c-feature-inspector); measured 289.5 kB
   // The docs package (C-45). Measured 2026-10-23 at 43.6 kB: 23 section files
   // (37.4 kB) plus the index (6.2 kB) — figures this gate recomputes and prints on
   // every run, so the numbers above are a dated record, not the thing enforced.
@@ -118,24 +118,24 @@ const BUDGETS = {
   "agent-rules.json": 12 * 1024,
   "surfaces/contour-core.min.css": 160 * 1024,  // raised 2026-11-07: +layout fixes; measured 157.3 kB
   "surfaces/contour-docs.min.css": 176 * 1024,  // raised 2026-11-07: +layout fixes; measured 173.1 kB
-  "surfaces/contour-data.min.css": 215 * 1024,  // raised 2026-11-07: +layout fixes; raised 2026-11-09: +c-split-map CSS block; raised 2026-11-09: +c-filter-bar__mode scope toggle CSS; measured 214.3 kB
+  "surfaces/contour-data.min.css": 224 * 1024,  // raised 2026-11-07: +layout fixes; raised 2026-11-09: +c-split-map CSS block; raised 2026-11-09: +c-filter-bar__mode scope toggle CSS; raised 2026-11-09: +c-saved-view, c-provenance, c-feature-inspector CSS blocks; measured 217.3 kB
   "surfaces/contour-landing.min.css": 169 * 1024,  // raised 2026-11-08: +forced-colors form controls; measured 168.1 kB
   "contour.esm.min.js": 39 * 1024,
-  "contour-wc.esm.min.js": 618 * 1024,  // raised 2026-11-08: +event emission (batch); raised 2026-11-09: +data-contour-preserve-key; raised 2026-11-09: +contour:scope-change event; raised 2026-11-09: +R16-16 cross-filter contract events; raised 2026-11-09: +R16-17 map-linked table click-to-zoom; raised 2026-11-09: +R16-21 time-series series management; measured 616.5 kB
+  "contour-wc.esm.min.js": 650 * 1024,  // raised 2026-11-08: +event emission (batch); raised 2026-11-09: +data-contour-preserve-key; raised 2026-11-09: +contour:scope-change event; raised 2026-11-09: +R16-16 cross-filter contract events; raised 2026-11-09: +R16-17 map-linked table click-to-zoom; raised 2026-11-09: +R16-21 time-series series management; raised 2026-11-09: +contour-saved-view, contour-provenance, contour-feature-inspector WC classes; measured 625.0 kB
   // Per-family wc bundles (R16-60): each = core infrastructure + one family's
   // components, so a consumer who doesn't use a bundler can load just one family.
-  "contour-wc-navigation.esm.min.js": 148 * 1024,  // measured 145.3 kB; raised 2026-11-09: +data-contour-preserve-key; raised 2026-11-09: +contour:scope-change event; measured 147.2 kB
-  "contour-wc-data.esm.min.js": 221 * 1024,  // measured 212.5 kB; raised 2026-11-09: +data-contour-preserve-key; measured 213.8 kB; raised 2026-11-09: +R16-16 cross-filter contract; measured 217.9 kB; raised 2026-11-09: +R16-17 map-linked table click-to-zoom; raised 2026-11-09: +R16-21 time-series series management; measured 219.8 kB
+  "contour-wc-navigation.esm.min.js": 151 * 1024,  // measured 145.3 kB; raised 2026-11-09: +data-contour-preserve-key; raised 2026-11-09: +contour:scope-change event; measured 147.2 kB; raised 2026-11-09: +c-split-view WC class; measured 150.3 kB
+  "contour-wc-data.esm.min.js": 228 * 1024,  // measured 212.5 kB; raised 2026-11-09: +data-contour-preserve-key; measured 213.8 kB; raised 2026-11-09: +R16-16 cross-filter contract; measured 217.9 kB; raised 2026-11-09: +R16-17 map-linked table click-to-zoom; raised 2026-11-09: +R16-21 time-series series management; measured 219.8 kB; raised 2026-11-09: +contour-provenance WC class; measured 221.2 kB
   "contour-wc-map.esm.min.js": 136 * 1024,  // measured 134.0 kB; raised 2026-11-09: +R16-17 map-linked table click-to-zoom; measured 135.0 kB
   "contour-wc-forms.esm.min.js": 131 * 1024,  // measured 128.2 kB; raised 2026-11-09: +data-contour-preserve-key; measured 129.8 kB; raised 2026-11-09: +R16-16 cross-filter contract; measured 130.0 kB
-  "contour-wc-ui.esm.min.js": 229 * 1024,  // measured 226.2 kB; raised 2026-11-09: +data-contour-preserve-key; measured 227.9 kB; raised 2026-11-09: +R16-16 cross-filter contract; measured 228.1 kB
+  "contour-wc-ui.esm.min.js": 231 * 1024,  // measured 226.2 kB; raised 2026-11-09: +data-contour-preserve-key; measured 227.9 kB; raised 2026-11-09: +R16-16 cross-filter contract; measured 228.1 kB; raised 2026-11-09: +c-map-popup collision/anchoring (CDS-072); measured 230.3 kB
   "contour-wc-content.esm.min.js": 124 * 1024,  // measured 120.4 kB
-  "contour-wc-dashboard.esm.min.js": 96 * 1024,  // measured 93.2 kB
+  "contour-wc-dashboard.esm.min.js": 105 * 1024,  // measured 93.2 kB; raised 2026-11-09: +contour-saved-view, contour-dash-freshness, contour-feature-inspector WC classes; measured 101.8 kB
   "contour-wc-docs.esm.min.js": 99 * 1024,  // measured 96.7 kB; raised 2026-11-09: +data-contour-preserve-key; measured 97.6 kB; raised 2026-11-09: +maturity mapping in components.mjs; measured 98.1 kB
   "contour-wc-feedback.esm.min.js": 124 * 1024,  // measured 120.5 kB
-  "contour-wc-interaction.esm.min.js": 109 * 1024,  // measured 107.0 kB; raised 2026-11-09: +data-contour-preserve-key; measured 108.3 kB
+  "contour-wc-interaction.esm.min.js": 115 * 1024,  // measured 107.0 kB; raised 2026-11-09: +data-contour-preserve-key; measured 108.3 kB; raised 2026-11-09: +c-split-view WC class; measured 113.7 kB; raised 2026-11-09: +c-map-popup collision/anchoring (CDS-072); measured 113.8 kB; raised 2026-11-09: +c-resize-handle keyboard alternative (CDS-028); measured 114.5 kB
   "contour-wc-layout.esm.min.js": 96 * 1024,  // measured 93.2 kB
-  "contour-wc-misc.esm.min.js": 97 * 1024,  // measured 95.4 kB; raised 2026-11-09: +data-contour-preserve-key; measured 96.3 kB
+  "contour-wc-misc.esm.min.js": 103 * 1024,  // measured 95.4 kB; raised 2026-11-09: +data-contour-preserve-key; measured 96.3 kB; raised 2026-11-09: +c-split-view WC class; measured 102.1 kB
 };
 
 const kB = (n) => `${(n / 1024).toFixed(1)} kB`;

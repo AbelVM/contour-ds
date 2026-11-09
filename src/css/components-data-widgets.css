@@ -266,6 +266,59 @@
   .c-spatial-filter__mode {
     /* inherits c-btn */
   }
+  .c-spatial-filter__readout {
+    display: inline-flex;
+    align-items: center;
+    gap: calc(var(--space-2xs) * var(--density, 1));
+    padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1));
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-2);
+    font-size: var(--type-xs);
+    font-family: var(--font-mono);
+    color: var(--color-text);
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+  .c-spatial-filter__operator {
+    display: inline-flex;
+    align-items: center;
+    gap: calc(var(--space-2xs) * var(--density, 1));
+    padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1));
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-1);
+    font-size: var(--type-xs);
+    color: var(--color-text);
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+  .c-spatial-filter__operator select {
+    font: inherit;
+    background: transparent;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    padding: 0;
+  }
+  .c-spatial-filter__clear-all {
+    display: inline-flex;
+    align-items: center;
+    gap: calc(var(--space-2xs) * var(--density, 1));
+    padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1));
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-1);
+    color: var(--color-text-muted);
+    font-size: var(--type-xs);
+    cursor: pointer;
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+  .c-spatial-filter__clear-all:hover {
+    background: var(--color-surface-2);
+    color: var(--color-text);
+  }
 
   /* Geocoder (CARTO-inspired): search input + result list. */
   .c-geocoder {
@@ -339,4 +392,159 @@
     overflow-wrap: anywhere;
   }
   .c-data-export__btn:hover { background: var(--color-surface-2); }
+
+  /* =======================================================================
+     11. SAVED VIEW
+     A bookmarked spatial view: name, thumbnail, last-updated, and actions.
+     ======================================================================= */
+  .c-saved-view {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--space-xs) * var(--density, 1));
+    padding: calc(var(--space-sm) * var(--density, 1));
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-1);
+    inline-size: 16rem;
+  }
+  .c-saved-view__thumb {
+    inline-size: 100%;
+    block-size: 9rem;
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-2);
+    overflow: clip;
+  }
+  .c-saved-view__name {
+    font-size: var(--type-sm);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-strong);
+  }
+  .c-saved-view__meta {
+    display: flex;
+    gap: calc(var(--space-xs) * var(--density, 1));
+    font-size: var(--type-xs);
+    color: var(--color-text-muted);
+  }
+  .c-saved-view__actions {
+    display: flex;
+    gap: calc(var(--space-xs) * var(--density, 1));
+    margin-block-start: calc(var(--space-xs) * var(--density, 1));
+  }
+  .c-saved-view__actions > * {
+    min-inline-size: 0;
+  }
+  .c-saved-view--active {
+    border-color: var(--color-accent);
+    box-shadow: var(--shadow-md);
+  }
+
+  /* =======================================================================
+     12. PROVENANCE
+     Data lineage: source, confidence, resolution, coverage, warning, methodology.
+     ======================================================================= */
+  .c-provenance {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: calc(var(--space-xs) * var(--density, 1));
+    align-items: center;
+  }
+  .c-provenance__source {
+    font-size: var(--type-xs);
+    color: var(--color-text-muted);
+  }
+  .c-provenance__source b {
+    color: var(--color-text);
+  }
+  .c-provenance__confidence {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1));
+    border-radius: var(--radius-pill);
+    font-size: var(--type-xs);
+    font-weight: var(--weight-semibold);
+  }
+  .c-provenance__confidence--high {
+    background: var(--color-success-soft);
+    color: var(--color-success-text);
+  }
+  .c-provenance__confidence--medium {
+    background: var(--color-warning-soft);
+    color: var(--color-warning-text);
+  }
+  .c-provenance__confidence--low {
+    background: var(--color-warning-soft);
+    color: var(--color-text-muted);
+  }
+  .c-provenance__resolution,
+  .c-provenance__coverage,
+  .c-provenance__methodology {
+    font-size: var(--type-xs);
+    color: var(--color-text-muted);
+  }
+  .c-provenance__warning {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1));
+    border-radius: var(--radius-pill);
+    background: var(--color-warning-soft);
+    color: var(--color-warning-text);
+    font-size: var(--type-xs);
+    font-weight: var(--weight-semibold);
+  }
+
+  /* =======================================================================
+     13. FEATURE INSPECTOR
+     A drawer-like panel for inspecting map features and their properties.
+     ======================================================================= */
+  .c-feature-inspector {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface-1);
+    box-shadow: var(--shadow-xl);
+    inline-size: min(34rem, 100vw);
+    block-size: min(40rem, 100vh);
+    contain: layout;
+  }
+  .c-feature-inspector__head {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--space-xs) * var(--density, 1));
+    padding: calc(var(--space-sm) * var(--density, 1));
+    border-block-end: 1px solid var(--color-border-subtle);
+  }
+  .c-feature-inspector__title {
+    font-size: var(--type-sm);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-strong);
+  }
+  .c-feature-inspector__body {
+    overflow: auto;
+    padding: calc(var(--space-sm) * var(--density, 1));
+    block-size: 1fr;
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--space-md) * var(--density, 1));
+  }
+  .c-feature-inspector__field {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: calc(var(--space-xs) * var(--density, 1));
+    font-size: var(--type-xs);
+  }
+  .c-feature-inspector__label {
+    color: var(--color-text-muted);
+  }
+  .c-feature-inspector__value {
+    color: var(--color-text);
+  }
+  .c-feature-inspector__actions {
+    display: flex;
+    gap: calc(var(--space-xs) * var(--density, 1));
+    padding: calc(var(--space-sm) * var(--density, 1));
+    border-block-start: 1px solid var(--color-border-subtle);
+  }
 }

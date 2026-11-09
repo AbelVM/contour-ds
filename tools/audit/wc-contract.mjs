@@ -511,6 +511,12 @@ const ORPHAN_LEDGER = {
 
   // Animation controls.
   "c-animation-controls__scrubber--thumb": "animation scrubber thumb styled by host data-scrubber hook",
+
+  // Split view orientation modifier; base .c-split-view rule carries the styling.
+  "c-split-view--horizontal": "split-view orientation modifier; base .c-split-view rule carries the layout",
+
+  // Spatial filter operator select; styled by the host contour-spatial-filter rule.
+  "c-spatial-filter__operator-select": "operator select styled by the host contour-spatial-filter rule",
 };
 
 const browser = await chromium.launch({ args: ["--no-sandbox"] });

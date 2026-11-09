@@ -1716,8 +1716,8 @@ class ContourToolbar extends ContourBase {
  * `src`, `lazy`, `refresh`, `timeout`, `skeleton`.
  */
 class ContourSpatialFilter extends ContourBase {
-    static get observed() { return ["modes", "mode", "active", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { modes: { attribute: "modes" }, mode: { attribute: "mode" }, active: { attribute: "active" }, src: { attribute: "src" } }; }
+    static get observed() { return ["modes", "mode", "active", "bounds", "operator", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
+    static get properties() { return { modes: { attribute: "modes" }, mode: { attribute: "mode" }, active: { attribute: "active" }, bounds: { attribute: "bounds" }, operator: { attribute: "operator" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-spatial-filter");
       if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Spatial filter");
@@ -1743,6 +1743,34 @@ class ContourSpatialFilter extends ContourBase {
         if (current && current === val) btn.setAttribute("aria-pressed", "true");
         bar.appendChild(btn);
       });
+      // Operator selection
+      let operator = this.querySelector(".c-spatial-filter__operator");
+      if (!operator) { operator = document.createElement("div"); operator.className = "c-spatial-filter__operator"; this.appendChild(operator); }
+      const ops = ["intersects", "contains", "within", "disjoint"];
+      const currentOp = this.getAttribute("operator") || "intersects";
+      operator.innerHTML = "";
+      const opLabel = document.createElement("span");
+      opLabel.textContent = "Operator:";
+      operator.appendChild(opLabel);
+      const opSelect = document.createElement("select");
+      opSelect.className = "c-spatial-filter__operator-select";
+      ops.forEach((op) => {
+        const o = document.createElement("option");
+        o.value = op;
+        o.textContent = op;
+        if (op === currentOp) o.setAttribute("selected", "");
+        opSelect.appendChild(o);
+      });
+      operator.appendChild(opSelect);
+      // Bounds readout
+      let readout = this.querySelector(".c-spatial-filter__readout");
+      if (!readout) { readout = document.createElement("div"); readout.className = "c-spatial-filter__readout"; this.appendChild(readout); }
+      const bounds = this.getAttribute("bounds");
+      readout.textContent = bounds || "—";
+      // Clear all
+      let clearAll = this.querySelector(".c-spatial-filter__clear-all");
+      if (!clearAll) { clearAll = document.createElement("button"); clearAll.type = "button"; clearAll.className = "c-spatial-filter__clear-all"; this.appendChild(clearAll); }
+      clearAll.textContent = "Clear all";
       if (this.hasAttribute("active")) {
         this.classList.add("c-spatial-filter--active");
       } else {
@@ -1753,9 +1781,18 @@ class ContourSpatialFilter extends ContourBase {
       if (this._wiredSpatialFilter) return;
       this._wiredSpatialFilter = true;
       this.addEventListener("click", (e) => {
-        const btn = e.target && e.target.closest ? e.target.closest(".c-spatial-filter__mode") : null;
+        const btn = e.target && e.target.closest ? e.target.closest("button") : null;
         if (!btn || !this.contains(btn)) return;
-        const mode = btn.dataset.mode || btn.textContent.trim();
+        if (btn.classList.contains("c-spatial-filter__clear-all")) {
+          this.classList.remove("c-spatial-filter--active");
+          Array.from(this.querySelectorAll(".c-spatial-filter__mode")).forEach((b) => b.setAttribute("aria-pressed", "false"));
+          this.dispatchEvent(new CustomEvent("contour:clear", { bubbles: true, composed: true, detail: {} }));
+          this.dispatchEvent(new CustomEvent("contour:spatial-filter", { bubbles: true, composed: true, detail: { action: "clear-all" } }));
+          return;
+        }
+        const modeBtn = btn.closest(".c-spatial-filter__mode");
+        if (!modeBtn) return;
+        const mode = modeBtn.dataset.mode || modeBtn.textContent.trim();
         if (mode === "clear") {
           this.classList.remove("c-spatial-filter--active");
           Array.from(this.querySelectorAll(".c-spatial-filter__mode")).forEach((b) => b.setAttribute("aria-pressed", "false"));
@@ -1763,8 +1800,16 @@ class ContourSpatialFilter extends ContourBase {
           return;
         }
         this.classList.add("c-spatial-filter--active");
-        Array.from(this.querySelectorAll(".c-spatial-filter__mode")).forEach((b) => b.setAttribute("aria-pressed", String(b === btn)));
+        Array.from(this.querySelectorAll(".c-spatial-filter__mode")).forEach((b) => b.setAttribute("aria-pressed", String(b === modeBtn)));
         this.dispatchEvent(new CustomEvent("contour:draw-start", { bubbles: true, composed: true, detail: { mode } }));
+        this.dispatchEvent(new CustomEvent("contour:spatial-filter", { bubbles: true, composed: true, detail: { action: "draw-start", mode } }));
+      });
+      this.addEventListener("change", (e) => {
+        const select = e.target;
+        if (select && select.classList.contains("c-spatial-filter__operator-select")) {
+          this.setAttribute("operator", select.value);
+          this.dispatchEvent(new CustomEvent("contour:spatial-filter", { bubbles: true, composed: true, detail: { action: "operator", operator: select.value } }));
+        }
       });
       this.addEventListener("keydown", (e) => {
         const modes = Array.from(this.querySelectorAll(".c-spatial-filter__mode"));

@@ -717,7 +717,7 @@ class ContourSkeletonGroup extends ContourBase {
  * `cluster-count`, `cluster-expanded`.
  */
 class ContourMapPopup extends ContourBase {
-  static get observed() { return ["title", "content", "cluster-count", "cluster-expanded", "cluster-items"]; }
+  static get observed() { return ["title", "content", "cluster-count", "cluster-expanded", "cluster-items", "anchor", "position", "collision"]; }
   static get properties() { return { title: { attribute: "title" }, content: { attribute: "content" }, "cluster-count": { attribute: "cluster-count", type: Number }, "cluster-expanded": { attribute: "cluster-expanded", type: Boolean }, "cluster-items": { attribute: "cluster-items" } }; }
     render() {
       this.classList.add("c-map-popup");
@@ -783,6 +783,46 @@ class ContourMapPopup extends ContourBase {
           this.dispatchEvent(new CustomEvent("contour:cluster-toggle", { bubbles: true, composed: true, detail: { count: Number(this.getAttribute("cluster-count")), expanded } }));
         }
       });
+      // CDS-072: anchor + collision handling.
+      const anchorSel = this.getAttribute("anchor");
+      let anchorEl = null;
+      if (anchorSel) {
+        anchorEl = anchorSel.startsWith("#") ? document.getElementById(anchorSel.slice(1)) : document.querySelector(anchorSel);
+      }
+      const anchorName = "--map-popup-" + this.id;
+      const applyAnchor = () => {
+        if (anchorEl) {
+          anchorEl.style.setProperty("anchor-name", anchorName);
+          this.style.setProperty("position-anchor", anchorName);
+        }
+      };
+      const flipIfNeeded = () => {
+        try {
+          const r = this.getBoundingClientRect();
+          const flipX = r.right > window.innerWidth || r.left < 0;
+          const flipY = r.bottom > window.innerHeight || r.top < 0;
+          const flipped = flipX || flipY;
+          this.classList.toggle("c-map-popup--flip-x", flipX && !flipY);
+          this.classList.toggle("c-map-popup--flip-y", flipY && !flipX);
+          this.classList.toggle("c-map-popup--flip-both", flipX && flipY);
+          if (flipped) {
+            this.dispatchEvent(new CustomEvent("contour:map-popup-reposition", {
+              bubbles: true, composed: true,
+              detail: { anchor: anchorSel || "", flippedX: flipX, flippedY: flipY, left: Math.round(r.left), top: Math.round(r.top) }
+            }));
+          }
+        } catch (e) {}
+      };
+      applyAnchor();
+      this.addEventListener("toggle", (e) => {
+        if (e.newState === "open") {
+          requestAnimationFrame(() => { applyAnchor(); flipIfNeeded(); });
+        }
+      });
+      // Re-check on resize/scroll so the popup stays in view.
+      const onResize = () => flipIfNeeded();
+      window.addEventListener("resize", onResize);
+      onDispose(this, () => { window.removeEventListener("resize", onResize); if (anchorEl) anchorEl.style.removeProperty("anchor-name"); });
     }
   }
   define("contour-map-popup", ContourMapPopup);
