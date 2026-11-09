@@ -121,14 +121,14 @@ const BUDGETS = {
   "surfaces/contour-data.min.css": 215 * 1024,  // raised 2026-11-07: +layout fixes; raised 2026-11-09: +c-split-map CSS block; raised 2026-11-09: +c-filter-bar__mode scope toggle CSS; measured 214.3 kB
   "surfaces/contour-landing.min.css": 169 * 1024,  // raised 2026-11-08: +forced-colors form controls; measured 168.1 kB
   "contour.esm.min.js": 39 * 1024,
-  "contour-wc.esm.min.js": 611 * 1024,  // raised 2026-11-08: +event emission (batch); raised 2026-11-09: +data-contour-preserve-key; raised 2026-11-09: +contour:scope-change event; measured 610.6 kB
+  "contour-wc.esm.min.js": 618 * 1024,  // raised 2026-11-08: +event emission (batch); raised 2026-11-09: +data-contour-preserve-key; raised 2026-11-09: +contour:scope-change event; raised 2026-11-09: +R16-16 cross-filter contract events; raised 2026-11-09: +R16-17 map-linked table click-to-zoom; raised 2026-11-09: +R16-21 time-series series management; measured 616.5 kB
   // Per-family wc bundles (R16-60): each = core infrastructure + one family's
   // components, so a consumer who doesn't use a bundler can load just one family.
   "contour-wc-navigation.esm.min.js": 148 * 1024,  // measured 145.3 kB; raised 2026-11-09: +data-contour-preserve-key; raised 2026-11-09: +contour:scope-change event; measured 147.2 kB
-  "contour-wc-data.esm.min.js": 214 * 1024,  // measured 212.5 kB; raised 2026-11-09: +data-contour-preserve-key; measured 213.8 kB
-  "contour-wc-map.esm.min.js": 135 * 1024,  // measured 134.0 kB
-  "contour-wc-forms.esm.min.js": 130 * 1024,  // measured 128.2 kB; raised 2026-11-09: +data-contour-preserve-key; measured 129.8 kB
-  "contour-wc-ui.esm.min.js": 228 * 1024,  // measured 226.2 kB; raised 2026-11-09: +data-contour-preserve-key; measured 227.9 kB
+  "contour-wc-data.esm.min.js": 221 * 1024,  // measured 212.5 kB; raised 2026-11-09: +data-contour-preserve-key; measured 213.8 kB; raised 2026-11-09: +R16-16 cross-filter contract; measured 217.9 kB; raised 2026-11-09: +R16-17 map-linked table click-to-zoom; raised 2026-11-09: +R16-21 time-series series management; measured 219.8 kB
+  "contour-wc-map.esm.min.js": 136 * 1024,  // measured 134.0 kB; raised 2026-11-09: +R16-17 map-linked table click-to-zoom; measured 135.0 kB
+  "contour-wc-forms.esm.min.js": 131 * 1024,  // measured 128.2 kB; raised 2026-11-09: +data-contour-preserve-key; measured 129.8 kB; raised 2026-11-09: +R16-16 cross-filter contract; measured 130.0 kB
+  "contour-wc-ui.esm.min.js": 229 * 1024,  // measured 226.2 kB; raised 2026-11-09: +data-contour-preserve-key; measured 227.9 kB; raised 2026-11-09: +R16-16 cross-filter contract; measured 228.1 kB
   "contour-wc-content.esm.min.js": 124 * 1024,  // measured 120.4 kB
   "contour-wc-dashboard.esm.min.js": 96 * 1024,  // measured 93.2 kB
   "contour-wc-docs.esm.min.js": 98 * 1024,  // measured 96.7 kB; raised 2026-11-09: +data-contour-preserve-key; measured 97.6 kB

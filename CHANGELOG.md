@@ -18,6 +18,8 @@
 
 ### Changed
 - Size budget for `dist/docs/` raised from 65.0 kB to 66.0 kB: the CSS split (R16-61) documents all 13 component files in the guide instead of one `components.css`, growing the generated docs package by ~750 bytes (measured 65.7 kB).
+- Size budget for `contour-wc.esm.min.js` raised from 615.0 kB to 618.0 kB: R16-16 cross-filter contract (`contour:clear-all` listeners + `contour:filter-change` emissions on table, chart, brush, threshold, legend, pivot), R16-17 map-linked table click-to-zoom (`contour:zoom` emission), and R16-21 time-series series management (`series` attribute, multi-series line/bar rendering) added ~1.9 kB of web-component code (measured 616.5 kB).
+- Size budget for `contour-wc-data.esm.min.js` raised from 218.0 kB to 221.0 kB: R16-16 cross-filter contract and R16-17 map-linked table click-to-zoom added ~1.9 kB to the data family bundle (measured 219.8 kB).
 
 ## [1.7.1] - 2026-11-04
 

@@ -366,6 +366,7 @@ class ContourTable extends ContourBase {
               const tr = document.createElement("tr");
               tr.dataset.rowIndex = String(windowStart + ri);
               tr.setAttribute("tabindex", "0");
+              tr.setAttribute("data-row", JSON.stringify(row));
               cols.forEach((c, ci) => {
                 const isSelect = (typeof c === "object" && c !== null && c.select);
                 const td = document.createElement("td");
@@ -443,6 +444,7 @@ class ContourTable extends ContourBase {
           this._sortDir = 1;
         }
         this.dispatchEvent(new CustomEvent("contour:sort", { bubbles: true, composed: true, detail: { column: idx, direction: this._sortDir === 1 ? "ascending" : "descending" } }));
+        this.dispatchEvent(new CustomEvent("contour:filter-change", { bubbles: true, composed: true, detail: { source: "table", filter: { sort: idx, sortDir: this._sortDir === 1 ? "ascending" : "descending" } } }));
         this.requestRender();
       };
       this.addEventListener("click", (e) => {
@@ -466,14 +468,15 @@ class ContourTable extends ContourBase {
           if (!Number.isFinite(page) || page < 1) page = 1;
           if (action === "prev" && page > 1) page -= 1;
           if (action === "next") page += 1;
-           this._page = page;
-           this._pageAttrLast = String(page);
-           // Reflect the page on the host so consumers can key off the attribute
-           // (D-04). Marked internal so the resulting render preserves _page
-           // instead of nulling it (B3-01).
-           this._pageInternal = true;
-           this.setAttribute("page", String(page));
-           this.dispatchEvent(new CustomEvent("contour:page", { bubbles: true, composed: true, detail: { page } }));
+            this._page = page;
+            this._pageAttrLast = String(page);
+            // Reflect the page on the host so consumers can key off the attribute
+            // (D-04). Marked internal so the resulting render preserves _page
+            // instead of nulling it (B3-01).
+            this._pageInternal = true;
+            this.setAttribute("page", String(page));
+            this.dispatchEvent(new CustomEvent("contour:page", { bubbles: true, composed: true, detail: { page } }));
+            this.dispatchEvent(new CustomEvent("contour:filter-change", { bubbles: true, composed: true, detail: { source: "table", filter: { page } } }));
           const persist = this.getAttribute("persist");
           if (persist === "storage" && this.id) { try { localStorage.setItem("contour-table:" + this.id, String(page)); } catch (e) {} }
           else if (persist === "url") { try { const url = new URL(window.location.href); url.searchParams.set("c-table", String(page)); window.history.replaceState(null, "", url.toString()); } catch (e) {} }
@@ -496,6 +499,7 @@ class ContourTable extends ContourBase {
         if (!this._filters) this._filters = {};
         this._filters[idx] = inp.value;
         this.requestRender();
+        this.dispatchEvent(new CustomEvent("contour:filter-change", { bubbles: true, composed: true, detail: { source: "table", filter: { column: idx, value: inp.value } } }));
       });
       this.addEventListener("scroll", (e) => {
         if (!this.hasAttribute("virtual") || !e.target || !e.target.classList || !e.target.classList.contains("c-table-wrap")) return;
@@ -512,6 +516,7 @@ class ContourTable extends ContourBase {
           if (!Number.isFinite(idx)) return;
           if (cb.checked) this._selectedRows.add(idx); else this._selectedRows.delete(idx);
           this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { rows: Array.from(this._selectedRows) } }));
+          this.dispatchEvent(new CustomEvent("contour:filter-change", { bubbles: true, composed: true, detail: { source: "table", filter: { selectedRows: Array.from(this._selectedRows) } } }));
           return;
         }
         const all = e.target && e.target.closest ? e.target.closest(".c-table__select-all") : null;
@@ -520,6 +525,7 @@ class ContourTable extends ContourBase {
           cbs.forEach((c) => { c.checked = all.checked; });
           this._selectedRows = new Set(all.checked ? cbs.map((c) => Number(c.dataset.rowIndex)) : []);
           this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { rows: Array.from(this._selectedRows) } }));
+          this.dispatchEvent(new CustomEvent("contour:filter-change", { bubbles: true, composed: true, detail: { source: "table", filter: { selectedRows: Array.from(this._selectedRows) } } }));
         }
       });
       // Map-linked table (CARTO-inspired): emit contour:hover on row hover so a
@@ -542,6 +548,17 @@ class ContourTable extends ContourBase {
         this._hoveredRow = null;
         this.dispatchEvent(new CustomEvent("contour:leave", { bubbles: true, composed: true, detail: {} }));
       });
+      // Map-linked table (R16-17): click-to-zoom on a row emits contour:zoom so
+      // a map consumer can zoom to the corresponding feature. Contour stays
+      // engine-agnostic: it only announces the row index and data.
+      this.addEventListener("click", (e) => {
+        const tr = e.target && e.target.closest ? e.target.closest("tbody tr") : null;
+        if (!tr || !this.contains(tr)) return;
+        const idx = Number(tr.dataset.rowIndex);
+        if (!Number.isFinite(idx)) return;
+        const rowData = tr.getAttribute("data-row") || "";
+        this.dispatchEvent(new CustomEvent("contour:zoom", { bubbles: true, composed: true, detail: { row: idx, index: idx, data: rowData } }));
+      });
       this.addEventListener("keydown", (e) => {
         if (e.key !== "Enter" && e.key !== " ") return;
         const tr = e.target && e.target.closest ? e.target.closest("tbody tr") : null;
@@ -550,6 +567,18 @@ class ContourTable extends ContourBase {
         const idx = Number(tr.dataset.rowIndex);
         if (!Number.isFinite(idx)) return;
         this.dispatchEvent(new CustomEvent("contour:activate", { bubbles: true, composed: true, detail: { row: idx } }));
+      });
+      // Cross-filter contract (R16-16): clear-all resets table sort/page/filter state.
+      this.addEventListener("contour:clear-all", () => {
+        let changed = false;
+        if (this.hasAttribute("sort")) { this.removeAttribute("sort"); changed = true; }
+        if (this.hasAttribute("sort-dir")) { this.removeAttribute("sort-dir"); changed = true; }
+        if (this.hasAttribute("page")) { this.removeAttribute("page"); changed = true; }
+        if (this._filters && Object.keys(this._filters).length) { this._filters = {}; changed = true; }
+        if (changed) {
+          this.dispatchEvent(new CustomEvent("contour:filter-change", { bubbles: true, composed: true, detail: { source: "table", filter: { sort: null, sortDir: null, page: null, filters: null } } }));
+          this.requestRender();
+        }
       });
     }
   }
@@ -1051,6 +1080,14 @@ const series = this.getAttribute("series");
           e.preventDefault();
           this._activeSeries = next;
           this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { series: next } }));
+        }
+      });
+      // Cross-filter contract (R16-16): clear-all resets chart brush state.
+      this.addEventListener("contour:clear-all", () => {
+        if (this.hasAttribute("brush")) {
+          this.removeAttribute("brush");
+          this.dispatchEvent(new CustomEvent("contour:filter-change", { bubbles: true, composed: true, detail: { source: "chart", filter: { brush: null } } }));
+          this.requestRender();
         }
       });
     }
@@ -1706,6 +1743,15 @@ class ContourBrush extends ContourBase {
           this.dispatchEvent(new CustomEvent("contour:brush-start", { bubbles: true, composed: true, detail: { value: this.getAttribute("start"), start: this.getAttribute("start"), end: this.getAttribute("end") } }));
         }
       });
+      // Cross-filter contract (R16-16): clear-all resets brush range.
+      this.addEventListener("contour:clear-all", () => {
+        if (this.hasAttribute("start") || this.hasAttribute("end")) {
+          this.removeAttribute("start");
+          this.removeAttribute("end");
+          this.dispatchEvent(new CustomEvent("contour:filter-change", { bubbles: true, composed: true, detail: { source: "brush", filter: { start: null, end: null } } }));
+          this.requestRender();
+        }
+      });
     }
   }
 define("contour-brush", ContourBrush);
@@ -1763,7 +1809,7 @@ define("contour-stacked-bar", ContourStackedBar);
  * Attributes: `items`, `empty`, `loading`, `error`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`, `search`.
  */
 class ContourCategory extends ContourBase {
-    static get observed() { return ["items", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "search", "note", "limit", "sort"]; }
+    static get observed() { return ["items", "search", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "note", "limit", "sort"]; }
     static get properties() { return { items: { attribute: "items" }, src: { attribute: "src" }, search: { attribute: "search" }, note: { attribute: "note" }, limit: { attribute: "limit" }, sort: { attribute: "sort" } }; }
     render() {
       this.classList.add("c-category");
@@ -1884,6 +1930,13 @@ class ContourCategory extends ContourBase {
           }
         });
       });
+      // Cross-filter contract (R16-16): clear-all resets search filter.
+      this.addEventListener("contour:clear-all", () => {
+        if (this.hasAttribute("search")) {
+          this.removeAttribute("search");
+          this.dispatchEvent(new CustomEvent("contour:filter-change", { bubbles: true, composed: true, detail: { source: "category", filter: { search: null } } }));
+        }
+      });
     }
   }
 define("contour-category", ContourCategory);
@@ -1993,74 +2046,100 @@ define("contour-donut", ContourDonut);
  * Attributes: `values`, `points`, `empty`, `loading`, `error`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`, `annotations`.
  */
 class ContourTimeSeries extends ContourBase {
-    static get observed() { return ["values", "points", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "annotations", "note", "style"]; }
-    static get properties() { return { values: { attribute: "values" }, points: { attribute: "points" }, src: { attribute: "src" }, annotations: { attribute: "annotations" }, note: { attribute: "note" }, style: { attribute: "style" } }; }
+    static get observed() { return ["values", "points", "series", "style", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "annotations", "note"]; }
+    static get properties() { return { values: { attribute: "values" }, points: { attribute: "points" }, series: { attribute: "series" }, style: { attribute: "style" }, src: { attribute: "src" }, annotations: { attribute: "annotations" }, note: { attribute: "note" } }; }
     render() {
       this.classList.add("c-time-series");
       this.setAttribute("role", "img");
       this.setAttribute("aria-label", "Time series");
       wireStates(this);
-      loadRemote(this, ["values", "points"]);
+      loadRemote(this, ["values", "points", "series"]);
       if (renderStates(this, "time-series")) return;
       Array.from(this.querySelectorAll(".c-time-series__plot, .c-time-series__axis")).forEach((n) => n.remove());
-      let values = [];
-      const vAttr = this.getAttribute("values");
-      if (vAttr) { try { values = JSON.parse(vAttr); } catch (e) { values = vAttr.split(",").map(Number); } }
-      const max = Math.max(...values, 1);
-      const min = Math.min(...values, 0);
-      const style = this.getAttribute("style") || "bar";
+      // Series management (R16-21): support multiple series via `series` JSON
+      // attribute, with per-series style (line|bar), color binding, and
+      // interval control. Falls back to single `values` attribute for
+      // backward compatibility.
+      let series = [];
+      const sAttr = this.getAttribute("series");
+      if (sAttr) { try { series = JSON.parse(sAttr); } catch (e) { series = []; } }
+      const remote = remoteData(this, "series");
+      if (Array.isArray(remote)) series = remote;
+      // Backward compat: single `values` attribute becomes one series.
+      if (!series.length) {
+        let values = [];
+        const vAttr = this.getAttribute("values");
+        if (vAttr) { try { values = JSON.parse(vAttr); } catch (e) { values = vAttr.split(",").map(Number); } }
+        if (values.length) {
+          series = [{ label: "Series 1", values, style: this.getAttribute("style") || "bar", color: "var(--chart-1)" }];
+        }
+      }
+      const max = series.reduce((m, s) => { const v = Array.isArray(s.values) ? Math.max(...s.values, 0) : 0; return Math.max(m, v); }, 1);
+      const min = series.reduce((m, s) => { const v = Array.isArray(s.values) ? Math.min(...s.values, 0) : 0; return Math.min(m, v); }, 0);
       const plot = document.createElement("div");
       plot.className = "c-time-series__plot";
       plot.setAttribute("part", "plot");
-      if (style === "line") {
-        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-        svg.setAttribute("viewBox", "0 0 300 120");
-        svg.setAttribute("preserveAspectRatio", "none");
-        svg.style.cssText = "position: absolute; inset: 0; width: 100%; height: 100%";
-        const range = (max - min) || 1;
-        const n = values.length || 1;
-        const pts = values.map((v, i) => {
-          const x = (i / Math.max(1, n - 1)) * 300;
-          const y = 120 - ((v - min) / range) * 120;
-          return x.toFixed(2) + "," + y.toFixed(2);
-        }).join(" ");
-        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        path.setAttribute("class", "c-time-series__line");
-        path.setAttribute("d", "M " + pts.replace(/ /g, " L "));
-        path.style.stroke = "var(--chart-1)";
-        path.style.fill = "none";
-        path.style.strokeWidth = "2";
-        svg.appendChild(path);
-        // point markers
-        values.forEach((v, i) => {
-          const x = (i / Math.max(1, n - 1)) * 300;
-          const y = 120 - ((v - min) / range) * 120;
-          const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-          c.setAttribute("class", "c-time-series__point");
-          c.setAttribute("cx", x.toFixed(2));
-          c.setAttribute("cy", y.toFixed(2));
-          c.setAttribute("r", "3");
-          c.setAttribute("tabindex", i === 0 ? "0" : "-1");
-          c.setAttribute("role", "button");
-          c.setAttribute("title", String(v));
-          c.setAttribute("aria-label", "Value " + v);
-          svg.appendChild(c);
-        });
-        plot.appendChild(svg);
-      } else {
-        values.forEach((v, i) => {
-          const bar = document.createElement("div");
-          bar.className = "c-time-series__bar";
-          bar.style.blockSize = ((v / max) * 100) + "%";
-          bar.setAttribute("title", String(v));
-          bar.setAttribute("role", "img");
-          bar.setAttribute("aria-label", "Value " + v);
-          bar.setAttribute("tabindex", i === 0 ? "0" : "-1");
-          plot.appendChild(bar);
-        });
-      }
+      series.forEach((s, si) => {
+        const values = Array.isArray(s.values) ? s.values : [];
+        const style = s.style || "bar";
+        const color = s.color || `var(--chart-${((si % 8) + 1)})`;
+        const label = s.label || `Series ${si + 1}`;
+        if (style === "line") {
+          const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+          svg.setAttribute("viewBox", "0 0 300 120");
+          svg.setAttribute("preserveAspectRatio", "none");
+          svg.style.cssText = "position: absolute; inset: 0; width: 100%; height: 100%";
+          const range = (max - min) || 1;
+          const n = values.length || 1;
+          const pts = values.map((v, i) => {
+            const x = (i / Math.max(1, n - 1)) * 300;
+            const y = 120 - ((v - min) / range) * 120;
+            return x.toFixed(2) + "," + y.toFixed(2);
+          }).join(" ");
+          const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          path.setAttribute("class", "c-time-series__line");
+          path.setAttribute("data-series", String(si));
+          path.setAttribute("d", "M " + pts.replace(/ /g, " L "));
+          path.style.stroke = color;
+          path.style.fill = "none";
+          path.style.strokeWidth = "2";
+          svg.appendChild(path);
+          // point markers
+          values.forEach((v, i) => {
+            const x = (i / Math.max(1, n - 1)) * 300;
+            const y = 120 - ((v - min) / range) * 120;
+            const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            c.setAttribute("class", "c-time-series__point");
+            c.setAttribute("data-series", String(si));
+            c.setAttribute("data-index", String(i));
+            c.setAttribute("cx", x.toFixed(2));
+            c.setAttribute("cy", y.toFixed(2));
+            c.setAttribute("r", "3");
+            c.setAttribute("tabindex", i === 0 && si === 0 ? "0" : "-1");
+            c.setAttribute("role", "button");
+            c.setAttribute("title", String(v));
+            c.setAttribute("aria-label", label + ": " + String(v));
+            svg.appendChild(c);
+          });
+          plot.appendChild(svg);
+        } else {
+          values.forEach((v, i) => {
+            const bar = document.createElement("div");
+            bar.className = "c-time-series__bar";
+            bar.setAttribute("data-series", String(si));
+            bar.setAttribute("data-index", String(i));
+            bar.style.blockSize = ((v / max) * 100) + "%";
+            bar.style.background = color;
+            bar.setAttribute("title", String(v));
+            bar.setAttribute("role", "img");
+            bar.setAttribute("aria-label", label + ": " + String(v));
+            bar.setAttribute("tabindex", i === 0 && si === 0 ? "0" : "-1");
+            plot.appendChild(bar);
+          });
+        }
+      });
       this.appendChild(plot);
-      if (!values.length) renderEmpty(this, "time-series");
+      if (!series.length || !series.some((s) => Array.isArray(s.values) && s.values.length)) renderEmpty(this, "time-series");
       const note = this.getAttribute("note");
       let noteEl = this.querySelector(".c-time-series__note");
       if (note) {
@@ -2074,12 +2153,23 @@ class ContourTimeSeries extends ContourBase {
       if (this._wiredTimeSeries) return;
       this._wiredTimeSeries = true;
       const bars = () => Array.from(this.querySelectorAll(".c-time-series__bar"));
+      const points = () => Array.from(this.querySelectorAll(".c-time-series__point"));
       this.addEventListener("click", (e) => {
         const bar = e.target && e.target.closest ? e.target.closest(".c-time-series__bar") : null;
         if (!bar || !this.contains(bar)) return;
-        const idx = bars().indexOf(bar);
-        this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index: idx, value: bar.getAttribute("title") } }));
+        const seriesIdx = Number(bar.dataset.series || "0");
+        const idx = Number(bar.dataset.index || "0");
+        this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { series: seriesIdx, index: idx, value: bar.getAttribute("title") } }));
+        return;
       });
+      const pointClick = (e) => {
+        const point = e.target && e.target.closest ? e.target.closest(".c-time-series__point") : null;
+        if (!point || !this.contains(point)) return;
+        const seriesIdx = Number(point.dataset.series || "0");
+        const idx = Number(point.dataset.index || "0");
+        this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { series: seriesIdx, index: idx, value: point.getAttribute("title") } }));
+      };
+      this.addEventListener("click", pointClick);
       this.addEventListener("keydown", (e) => {
         const bar = e.target && e.target.closest ? e.target.closest(".c-time-series__bar") : null;
         if (!bar || !this.contains(bar)) return;
@@ -2087,7 +2177,8 @@ class ContourTimeSeries extends ContourBase {
         const idx = all.indexOf(bar);
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index: idx, value: bar.getAttribute("title") } }));
+          const seriesIdx = Number(bar.dataset.series || "0");
+          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { series: seriesIdx, index: idx, value: bar.getAttribute("title") } }));
           return;
         }
         navKey(e, all, {
@@ -2104,6 +2195,11 @@ class ContourTimeSeries extends ContourBase {
         if (bar && this.contains(bar)) {
           const tip = this.querySelector(".c-time-series__tooltip");
           if (tip) { tip.textContent = bar.getAttribute("title"); tip.removeAttribute("hidden"); }
+        }
+        const point = e.target && e.target.closest ? e.target.closest(".c-time-series__point") : null;
+        if (point && this.contains(point)) {
+          const tip = this.querySelector(".c-time-series__tooltip");
+          if (tip) { tip.textContent = point.getAttribute("title"); tip.removeAttribute("hidden"); }
         }
       });
       this.addEventListener("focusout", (e) => {
@@ -2243,6 +2339,7 @@ class ContourPivot extends ContourBase {
           this.setAttribute("filter", fi.value);
           this.render();
           this.dispatchEvent(new CustomEvent("contour:filter", { bubbles: true, composed: true, detail: { query: fi.value } }));
+          this.dispatchEvent(new CustomEvent("contour:filter-change", { bubbles: true, composed: true, detail: { source: "pivot", filter: { filter: fi.value } } }));
         }
       });
       this.addEventListener("change", (e) => {
@@ -2269,6 +2366,13 @@ class ContourPivot extends ContourBase {
         else if (e.key === "Home") target = cell.parentElement.children[0];
         else if (e.key === "End") target = cell.parentElement.children[cell.parentElement.children.length - 1];
         if (target) { e.preventDefault(); try { target.focus(); } catch (err) {} }
+      });
+      // Cross-filter contract (R16-16): clear-all resets pivot filter.
+      this.addEventListener("contour:clear-all", () => {
+        if (this.hasAttribute("filter")) {
+          this.removeAttribute("filter");
+          this.dispatchEvent(new CustomEvent("contour:filter-change", { bubbles: true, composed: true, detail: { source: "pivot", filter: { filter: null } } }));
+        }
       });
     }
   }
@@ -2571,6 +2675,19 @@ class ContourThreshold extends ContourBase {
       if (state) this.setAttribute("data-state", state);
       else this.removeAttribute("data-state");
       if (label) this.setAttribute("aria-label", label);
+    }
+    enhance() {
+      if (this._wiredThreshold) return;
+      this._wiredThreshold = true;
+      // Cross-filter contract (R16-16): clear-all resets threshold norm/target.
+      this.addEventListener("contour:clear-all", () => {
+        if (this.hasAttribute("norm") || this.hasAttribute("value")) {
+          this.removeAttribute("norm");
+          this.removeAttribute("value");
+          this.dispatchEvent(new CustomEvent("contour:filter-change", { bubbles: true, composed: true, detail: { source: "threshold", filter: { norm: null, value: null } } }));
+          this.requestRender();
+        }
+      });
     }
   }
 define("contour-threshold", ContourThreshold);
@@ -2971,6 +3088,24 @@ class ContourLegend extends ContourBase {
           onNavigate: (i) => items.forEach((o, j) => o.setAttribute("tabindex", j === i ? "0" : "-1")),
           onKey: () => {}
         });
+      });
+      // Cross-filter contract (R16-16): clear-all resets legend selection.
+      this.addEventListener("contour:clear-all", () => {
+        const items = Array.from(this.querySelectorAll(".c-legend__item"));
+        let changed = false;
+        items.forEach((o) => {
+          if (o.getAttribute("role") === "button" && o.getAttribute("aria-pressed") === "true") {
+            o.setAttribute("aria-pressed", "false");
+            changed = true;
+          }
+          if (o.getAttribute("aria-selected") === "true") {
+            o.setAttribute("aria-selected", "false");
+            changed = true;
+          }
+        });
+        if (changed) {
+          this.dispatchEvent(new CustomEvent("contour:filter-change", { bubbles: true, composed: true, detail: { source: "legend", filter: { selection: null } } }));
+        }
       });
     }
   }
