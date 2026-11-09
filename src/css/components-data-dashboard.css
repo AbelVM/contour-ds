@@ -160,19 +160,10 @@
   }
 
    .c-delta--flat {
-     color: var(--color-text-subtle);
-   }
-   .c-delta--good {
-     color: var(--color-success-text);
-   }
-   .c-delta--bad {
-     color: var(--color-danger-text);
-   }
-   .c-delta--neutral {
-     color: var(--color-text-muted);
-   }
+      color: var(--color-text-subtle);
+    }
 
-  .c-kpi__note {
+   .c-kpi__note {
     font-size: var(--type-xs);
     color: var(--color-text-subtle);
   }

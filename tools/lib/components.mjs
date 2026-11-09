@@ -66,12 +66,38 @@ export function buildComponentsDocument(inv) {
   const detail = inv.components.rules;
   const census = new Set(Object.keys(inv.tokens.census));
 
+  // Maturity classification for Contour components. Defaults to "complete-widget";
+  // exceptions listed below. Mirrors stories/registered-elements.stories.js
+  // STORY_MATURITY so the inventory and Storybook stay in lockstep.
+  const MATURITY = {
+    primitive: new Set([
+      "c-box", "c-cluster", "c-container", "c-divider", "c-row",
+      "c-scrim", "c-stack",
+    ]),
+    composition: new Set([
+      "c-app", "c-app-body", "c-dash-shell", "c-dash-toolbar",
+      "c-dash-kpi-row", "c-docs-shell", "c-docs-nav", "c-footer",
+      "c-header", "c-sidebar", "c-side-sheet", "c-theme-scope",
+    ]),
+    scaffold: new Set([
+      "c-brownout", "c-empty", "c-error-boundary", "c-loading",
+      "c-reserved", "c-skeleton", "c-skeleton-group", "c-widget-state",
+    ]),
+  };
+  const maturityOf = (name) => {
+    for (const [level, set] of Object.entries(MATURITY)) {
+      if (set.has(name)) return level;
+    }
+    return "complete-widget";
+  };
+
   const blocks = names.map((name) => {
     const d = detail[name];
     const where = inv.components.specimens[name] || { guide: false, templates: false, surfaces: {} };
     const { tokens, vars, inputs } = bucket(d.tokens, census, inv.props);
     return {
       name,
+      maturity: maturityOf(name),
       sheets: d.files,
       rules: d.rules,
       elements: d.elements,

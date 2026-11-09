@@ -694,9 +694,6 @@
   }
 
   .c-banner--info { border-inline-start-color: var(--color-info); }
-  .c-banner--success { border-inline-start-color: var(--color-success); }
-  .c-banner--warning { border-inline-start-color: var(--color-warning); }
-  .c-banner--danger { border-inline-start-color: var(--color-danger); }
 
   /* -- Animation controls ------------------------------------------------- */
   .c-animation-controls {
@@ -1054,10 +1051,6 @@
     background: var(--color-text-subtle);
   }
   .c-status-light--success::before { background: var(--color-success); }
-  .c-status-light--warning::before { background: var(--color-warning); }
-  .c-status-light--danger::before { background: var(--color-danger); }
-  .c-status-light--info::before { background: var(--color-info); }
-  .c-status-light--neutral::before { background: var(--color-text-subtle); }
   .c-divider {
     display: flex;
     flex-wrap: wrap;
@@ -1076,15 +1069,6 @@
     flex: 1 1 auto;
     block-size: 1px;
     background: var(--color-border);
-  }
-  .c-divider--horizontal {
-    flex-direction: row;
-  }
-  .c-divider--vertical::before,
-  .c-divider--vertical::after {
-    inline-size: 1px;
-    block-size: auto;
-    flex: 1 1 auto;
   }
   .c-avatar-group {
     display: inline-flex;
@@ -1332,8 +1316,6 @@
   .c-badge-overflow { display: inline-flex; }
   /* -- Side sheet -------------------------------------------------------- */
   .c-side-sheet { position: fixed; inset-block: 0; z-index: var(--z-drawer); background: var(--color-surface-1); box-shadow: var(--shadow-lg); padding: calc(var(--space-md) * var(--density, 1)); transform: translateX(100%); transition: transform var(--dur-base) var(--ease-standard); }
-  .c-side-sheet--start { inset-inline-start: 0; transform: translateX(-100%); }
-  .c-side-sheet--end { inset-inline-end: 0; }
   .c-side-sheet.is-open { transform: translateX(0); }
   .c-side-sheet__title { font-size: var(--type-h4); font-weight: 600; margin-block-end: var(--space-sm); }
   .c-side-sheet__panel {

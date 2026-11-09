@@ -67,7 +67,7 @@ const BUDGETS = {
   // exists to catch a jump nobody intended, not to keep the truth brief. A file
   // absent from this map is not budgeted at all, which is how an artifact can
   // grow without anyone noticing.
-  "contour.components.json": 279 * 1024,  // raised 2026-11-08: +forced-colors form controls; measured 278.0 kB
+  "contour.components.json": 286 * 1024,  // raised 2026-11-09: +maturity field on all 225 blocks (R16-47); measured 284.1 kB
   // The docs package (C-45). Measured 2026-10-23 at 43.6 kB: 23 section files
   // (37.4 kB) plus the index (6.2 kB) — figures this gate recomputes and prints on
   // every run, so the numbers above are a dated record, not the thing enforced.
@@ -131,7 +131,7 @@ const BUDGETS = {
   "contour-wc-ui.esm.min.js": 229 * 1024,  // measured 226.2 kB; raised 2026-11-09: +data-contour-preserve-key; measured 227.9 kB; raised 2026-11-09: +R16-16 cross-filter contract; measured 228.1 kB
   "contour-wc-content.esm.min.js": 124 * 1024,  // measured 120.4 kB
   "contour-wc-dashboard.esm.min.js": 96 * 1024,  // measured 93.2 kB
-  "contour-wc-docs.esm.min.js": 98 * 1024,  // measured 96.7 kB; raised 2026-11-09: +data-contour-preserve-key; measured 97.6 kB
+  "contour-wc-docs.esm.min.js": 99 * 1024,  // measured 96.7 kB; raised 2026-11-09: +data-contour-preserve-key; measured 97.6 kB; raised 2026-11-09: +maturity mapping in components.mjs; measured 98.1 kB
   "contour-wc-feedback.esm.min.js": 124 * 1024,  // measured 120.5 kB
   "contour-wc-interaction.esm.min.js": 109 * 1024,  // measured 107.0 kB; raised 2026-11-09: +data-contour-preserve-key; measured 108.3 kB
   "contour-wc-layout.esm.min.js": 96 * 1024,  // measured 93.2 kB

@@ -597,8 +597,8 @@ class ContourDataTable extends ContourTable {
  */
 class ContourChart extends ContourBase {
     static get updateMode() { return "keyed"; }
-  static get observed() { return ["series", "axis", "empty", "loading", "error", "retry", "skeleton", "zoomable", "data-table", "brush", "brush-min", "brush-max", "brush-start", "brush-end", "note", "bucket-count", "limit-values"]; }
-  static get properties() { return { series: { attribute: "series" }, axis: { attribute: "axis" }, zoomable: { attribute: "zoomable", type: Boolean }, brush: { attribute: "brush", type: Boolean }, note: { attribute: "note" }, "bucket-count": { attribute: "bucket-count" }, "limit-values": { attribute: "limit-values" } }; }
+  static get observed() { return ["series", "axis", "color", "empty", "loading", "error", "retry", "skeleton", "zoomable", "data-table", "brush", "brush-min", "brush-max", "brush-start", "brush-end", "note", "bucket-count", "limit-values"]; }
+  static get properties() { return { series: { attribute: "series" }, axis: { attribute: "axis" }, color: { attribute: "color" }, zoomable: { attribute: "zoomable", type: Boolean }, brush: { attribute: "brush", type: Boolean }, note: { attribute: "note" }, "bucket-count": { attribute: "bucket-count" }, "limit-values": { attribute: "limit-values" } }; }
     render() {
       this.classList.add("c-chart");
       if (!this.hasAttribute("role")) this.setAttribute("role", "img");
@@ -689,8 +689,9 @@ const series = this.getAttribute("series");
            // consumer does not have to hand-compute arc or bar math.
            const hasStructured = parsed.some((s) => s && Array.isArray(s.values));
            if (hasStructured) {
-             parsed.forEach((s, i) => {
-               const color = `var(--chart-${i + 1})`;
+              parsed.forEach((s, i) => {
+                const layerColor = this.getAttribute("color");
+                const color = layerColor || `var(--chart-${i + 1})`;
                if (s.type === "donut") {
                  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
                  svg.setAttribute("viewBox", "0 0 200 200");
