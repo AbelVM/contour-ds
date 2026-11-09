@@ -597,8 +597,8 @@ class ContourDataTable extends ContourTable {
  */
 class ContourChart extends ContourBase {
     static get updateMode() { return "keyed"; }
-  static get observed() { return ["series", "axis", "empty", "loading", "error", "retry", "skeleton", "zoomable", "data-table", "brush", "brush-min", "brush-max", "brush-start", "brush-end", "note"]; }
-  static get properties() { return { series: { attribute: "series" }, axis: { attribute: "axis" }, zoomable: { attribute: "zoomable", type: Boolean }, brush: { attribute: "brush", type: Boolean }, note: { attribute: "note" } }; }
+  static get observed() { return ["series", "axis", "empty", "loading", "error", "retry", "skeleton", "zoomable", "data-table", "brush", "brush-min", "brush-max", "brush-start", "brush-end", "note", "bucket-count", "limit-values"]; }
+  static get properties() { return { series: { attribute: "series" }, axis: { attribute: "axis" }, zoomable: { attribute: "zoomable", type: Boolean }, brush: { attribute: "brush", type: Boolean }, note: { attribute: "note" }, "bucket-count": { attribute: "bucket-count" }, "limit-values": { attribute: "limit-values" } }; }
     render() {
       this.classList.add("c-chart");
       if (!this.hasAttribute("role")) this.setAttribute("role", "img");
@@ -708,12 +708,34 @@ const series = this.getAttribute("series");
                     svg.appendChild(path);
                   });
                  plot.appendChild(svg);
-               } else if (s.type === "histogram") {
-                 const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-                 svg.setAttribute("viewBox", "0 0 300 120");
-                 svg.setAttribute("preserveAspectRatio", "none");
-                 svg.style.cssText = "position: absolute; inset: 0; width: 100%; height: 100%";
-                  barRects(s.values).forEach((r, ri) => {
+                } else if (s.type === "histogram") {
+                  // R16-23: bucket-count / limit-values controls.
+                  // `limit-values` truncates the input array; `bucket-count`
+                  // bins values into equal-width buckets and renders the
+                  // per-bucket counts as bars.
+                  let vals = Array.isArray(s.values) ? s.values.slice() : [];
+                  const limitValues = parseInt(this.getAttribute("limit-values") || "0", 10);
+                  if (limitValues > 0) vals = vals.slice(0, limitValues);
+                  const bucketCount = parseInt(this.getAttribute("bucket-count") || "0", 10);
+                  let plotVals = vals;
+                  if (bucketCount > 0 && vals.length) {
+                    const nums = vals.map((v) => Number(v) || 0);
+                    const min = Math.min.apply(null, nums);
+                    const max = Math.max.apply(null, nums);
+                    const range = max - min || 1;
+                    const width = range / bucketCount;
+                    const buckets = new Array(bucketCount).fill(0);
+                    nums.forEach((v) => {
+                      const bi = Math.min(bucketCount - 1, Math.floor((v - min) / width));
+                      buckets[bi] += 1;
+                    });
+                    plotVals = buckets;
+                  }
+                  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                  svg.setAttribute("viewBox", "0 0 300 120");
+                  svg.setAttribute("preserveAspectRatio", "none");
+                  svg.style.cssText = "position: absolute; inset: 0; width: 100%; height: 100%";
+                   barRects(plotVals).forEach((r, ri) => {
                     const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
                     rect.setAttribute("class", "c-chart__bar");
                     rect.setAttribute("data-series", String(i + 1));
