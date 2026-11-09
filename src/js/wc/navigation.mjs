@@ -1086,8 +1086,8 @@ class ContourTocFull extends ContourBase {
   }
 define("contour-toc", ContourTocFull);
 class ContourFilterBar extends ContourBase {
-    static get observed() { return ["label", "divider", "items", "input", "placeholder", "mode", "modes", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "count", "clearable"]; }
-    static get properties() { return { label: { attribute: "label" }, divider: { attribute: "divider" }, items: { attribute: "items" }, src: { attribute: "src" }, count: { attribute: "count" }, clearable: { attribute: "clearable" } }; }
+    static get observed() { return ["label", "divider", "items", "input", "placeholder", "mode", "modes", "scope", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "count", "clearable"]; }
+    static get properties() { return { label: { attribute: "label" }, divider: { attribute: "divider" }, items: { attribute: "items" }, src: { attribute: "src" }, count: { attribute: "count" }, clearable: { attribute: "clearable" }, scope: { attribute: "scope" } }; }
     render() {
       this.classList.add("c-filter-bar");
       wireStates(this);
@@ -1138,11 +1138,33 @@ class ContourFilterBar extends ContourBase {
            if (current && current === val) btn.setAttribute("aria-pressed", "true");
            bar.appendChild(btn);
          });
-       } else {
-         const bar = this.querySelector(".c-filter-bar__modes");
-         if (bar) bar.remove();
-       }
-       // Render filter pills from items.
+        } else {
+          const bar = this.querySelector(".c-filter-bar__modes");
+          if (bar) bar.remove();
+        }
+        // Scope toggle (viewport / global) — CARTO-inspired.
+        const scope = this.getAttribute("scope");
+        if (scope === "viewport" || scope === "global") {
+          Array.from(this.querySelectorAll(".c-filter-bar__scope")).forEach((n) => n.remove());
+          const bar = document.createElement("div");
+          bar.className = "c-filter-bar__modes c-filter-bar__scope";
+          bar.setAttribute("role", "toolbar");
+          bar.setAttribute("aria-label", "Data scope");
+          ["viewport", "global"].forEach((s) => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "c-filter-bar__mode c-filter-bar__scope-btn";
+            btn.textContent = s === "viewport" ? "Viewport" : "Global";
+            btn.dataset.scope = s;
+            if (scope === s) btn.setAttribute("aria-pressed", "true");
+            bar.appendChild(btn);
+          });
+          this.appendChild(bar);
+        } else {
+          const bar = this.querySelector(".c-filter-bar__scope");
+          if (bar) bar.remove();
+        }
+        // Render filter pills from items.
       Array.from(this.querySelectorAll(".c-filter-pill")).forEach((n) => n.remove());
       const items = remoteData(this, "items");
       // Slotted content: authored .c-filter-pill children take precedence.
@@ -1185,13 +1207,19 @@ class ContourFilterBar extends ContourBase {
        wireRemovable(this);
        if (this._wiredFilterBar) return;
        this._wiredFilterBar = true;
-       this.addEventListener("click", (e) => {
-         const btn = e.target && e.target.closest ? e.target.closest(".c-filter-bar__mode") : null;
-         if (!btn || !this.contains(btn)) return;
-         const mode = btn.dataset.mode || btn.textContent.trim();
-         Array.from(this.querySelectorAll(".c-filter-bar__mode")).forEach((b) => b.setAttribute("aria-pressed", String(b === btn)));
-         this.dispatchEvent(new CustomEvent("contour:mode-change", { bubbles: true, composed: true, detail: { mode } }));
-       });
+        this.addEventListener("click", (e) => {
+          const btn = e.target && e.target.closest ? e.target.closest(".c-filter-bar__mode") : null;
+          if (!btn || !this.contains(btn)) return;
+          const mode = btn.dataset.mode || btn.textContent.trim();
+          Array.from(this.querySelectorAll(".c-filter-bar__mode")).forEach((b) => b.setAttribute("aria-pressed", String(b === btn)));
+          this.dispatchEvent(new CustomEvent("contour:mode-change", { bubbles: true, composed: true, detail: { mode } }));
+          // Scope toggle: dispatch contour:scope-change for viewport/global buttons.
+          if (btn.classList.contains("c-filter-bar__scope-btn")) {
+            const scope = btn.dataset.scope || null;
+            if (scope) this.setAttribute("scope", scope);
+            this.dispatchEvent(new CustomEvent("contour:scope-change", { bubbles: true, composed: true, detail: { scope } }));
+          }
+        });
         this.addEventListener("keydown", (e) => {
           const modes = Array.from(this.querySelectorAll(".c-filter-bar__mode"));
           navKey(e, modes, { wrap: false, onKey: () => { document.activeElement.click(); } });

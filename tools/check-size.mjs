@@ -55,7 +55,7 @@ const DIST = join(ROOT, "dist");
  *  which the Format Module has no legal place for (C-43). It states values only —
  *  a token's meaning is published once, in the Format document. */
 const BUDGETS = {
-  "contour.min.css": 239 * 1024,  // raised 2026-11-07: +layout fixes; raised 2026-11-09: +c-scheme-toggle, c-split-map CSS blocks; measured 238.7 kB
+  "contour.min.css": 240 * 1024,  // raised 2026-11-07: +layout fixes; raised 2026-11-09: +c-scheme-toggle, c-split-map CSS blocks; raised 2026-11-09: +c-filter-bar__mode scope toggle CSS; measured 239.6 kB
   "contour.min.js": 39 * 1024,  // raised 2026-11-04: focus restoration + changelog; measured 38.0 kB
   "contour.d.ts": 32 * 1024,  // raised 2026-11-04: +3 new components (data-export, pull-to-refresh, split-map)
   "contour.tokens.json": 51 * 1024,
@@ -118,13 +118,13 @@ const BUDGETS = {
   "agent-rules.json": 12 * 1024,
   "surfaces/contour-core.min.css": 160 * 1024,  // raised 2026-11-07: +layout fixes; measured 157.3 kB
   "surfaces/contour-docs.min.css": 176 * 1024,  // raised 2026-11-07: +layout fixes; measured 173.1 kB
-  "surfaces/contour-data.min.css": 214 * 1024,  // raised 2026-11-07: +layout fixes; raised 2026-11-09: +c-split-map CSS block; measured 213.3 kB
+  "surfaces/contour-data.min.css": 215 * 1024,  // raised 2026-11-07: +layout fixes; raised 2026-11-09: +c-split-map CSS block; raised 2026-11-09: +c-filter-bar__mode scope toggle CSS; measured 214.3 kB
   "surfaces/contour-landing.min.css": 169 * 1024,  // raised 2026-11-08: +forced-colors form controls; measured 168.1 kB
   "contour.esm.min.js": 39 * 1024,
-  "contour-wc.esm.min.js": 610 * 1024,  // raised 2026-11-08: +event emission (batch); raised 2026-11-09: +data-contour-preserve-key; measured 609.6 kB
+  "contour-wc.esm.min.js": 611 * 1024,  // raised 2026-11-08: +event emission (batch); raised 2026-11-09: +data-contour-preserve-key; raised 2026-11-09: +contour:scope-change event; measured 610.6 kB
   // Per-family wc bundles (R16-60): each = core infrastructure + one family's
   // components, so a consumer who doesn't use a bundler can load just one family.
-  "contour-wc-navigation.esm.min.js": 147 * 1024,  // measured 145.3 kB; raised 2026-11-09: +data-contour-preserve-key; measured 146.2 kB
+  "contour-wc-navigation.esm.min.js": 148 * 1024,  // measured 145.3 kB; raised 2026-11-09: +data-contour-preserve-key; raised 2026-11-09: +contour:scope-change event; measured 147.2 kB
   "contour-wc-data.esm.min.js": 214 * 1024,  // measured 212.5 kB; raised 2026-11-09: +data-contour-preserve-key; measured 213.8 kB
   "contour-wc-map.esm.min.js": 135 * 1024,  // measured 134.0 kB
   "contour-wc-forms.esm.min.js": 130 * 1024,  // measured 128.2 kB; raised 2026-11-09: +data-contour-preserve-key; measured 129.8 kB

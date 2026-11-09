@@ -85,6 +85,47 @@
     block-size: 0.7rem;
   }
 
+  /* Scope / mode toggle buttons — CARTO-inspired viewport/global scope. */
+  .c-filter-bar__modes {
+    display: inline-flex;
+    gap: calc(0.15rem * var(--density, 1));
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    padding: calc(0.1rem * var(--density, 1));
+    background: var(--color-surface-1);
+  }
+
+  .c-filter-bar__mode {
+    display: inline-flex;
+    align-items: center;
+    padding: calc(0.2rem * var(--density, 1)) calc(0.55rem * var(--density, 1));
+    border: none;
+    border-radius: var(--radius-pill);
+    background: transparent;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: var(--type-micro);
+    cursor: pointer;
+    transition:
+      background-color var(--dur-fast) var(--ease-standard),
+      color var(--dur-fast) var(--ease-standard);
+  }
+
+  .c-filter-bar__mode:hover {
+    background: var(--color-surface-2);
+    color: var(--color-text);
+  }
+
+  .c-filter-bar__mode[aria-pressed="true"] {
+    background: var(--color-primary-solid);
+    color: var(--color-on-primary-solid);
+  }
+
+  .c-filter-bar__mode:focus-visible {
+    outline: var(--focus-width) solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+
   /* =======================================================================
      7. TABLE — sortable, selectable, density-aware
      ======================================================================= */
