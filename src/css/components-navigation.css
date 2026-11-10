@@ -364,4 +364,42 @@
     outline: var(--focus-width) solid var(--color-focus-ring);
     outline-offset: 2px;
   }
+
+  /* The two glyphs are stacked and the active one is shown. The switch is
+     driven by the page's scheme (the meta element, via `color-scheme`), never
+     by a class the script writes — the toggle is a viewer, not a state
+     holder, so a reader who never runs JS still sees the right icon. */
+  .c-scheme-toggle__icons {
+    display: inline-grid;
+    grid-auto-flow: column;
+    gap: calc(0.125rem * var(--density, 1));
+    inline-size: calc(1.5rem * var(--density, 1));
+    block-size: calc(1.5rem * var(--density, 1));
+  }
+  .c-scheme-toggle__sun,
+  .c-scheme-toggle__moon {
+    grid-row: 1;
+    grid-column: 1;
+    inline-size: 100%;
+    block-size: 100%;
+    color: var(--color-text-muted);
+  }
+  /* Light scheme — explicit, or the system when the page follows it. */
+  :root:has(> head > meta[name="color-scheme"][content="light"]) .c-scheme-toggle__sun {
+    color: var(--color-text);
+  }
+  @media (prefers-color-scheme: light) {
+    :root:has(> head > meta[name="color-scheme"][content="light dark"]) .c-scheme-toggle__sun {
+      color: var(--color-text);
+    }
+  }
+  /* Dark scheme — explicit, or the system when the page follows it. */
+  :root:has(> head > meta[name="color-scheme"][content="dark"]) .c-scheme-toggle__moon {
+    color: var(--color-text);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:has(> head > meta[name="color-scheme"][content="light dark"]) .c-scheme-toggle__moon {
+      color: var(--color-text);
+    }
+  }
 }

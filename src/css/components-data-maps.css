@@ -1266,6 +1266,21 @@
     background: var(--color-surface-1);
     contain: layout;
   }
+  /* SPLIT PANE — the unstyled wrapper a consumer drops around a map, a
+     resizable handle and a data surface. It ships no divider: that is the
+     job of `contour-resizable`, which emits the `contour:resize` event the
+     pane listens for. The pane itself is a flex row with a fixed minimum
+     so the two surfaces stay in range and the map keeps its aspect ratio. */
+  .c-split-pane {
+    display: flex;
+    align-items: stretch;
+    gap: calc(var(--space-sm) * var(--density, 1));
+    min-block-size: calc(12rem * var(--density, 1));
+    contain: layout;
+  }
+  .c-split-pane--vertical {
+    flex-direction: column;
+  }
   .c-split-view__pane {
     flex: 1;
     min-inline-size: 0;

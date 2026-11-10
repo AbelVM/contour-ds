@@ -42,16 +42,16 @@ const re = /<code id="ds-code-(\d+)">([\s\S]*?)<\/code>/g;
 const snippets = [];
 let m;
 while ((m = re.exec(html))) {
-  const id = m[1];
-  // Decode with the parser's own single-pass decoder, the inverse of the
-  // serialiser that wrote the snippet. A chain of replaces decodes twice: an
-  // attribute the author wrote as `[&quot;One&quot;]` is published as
-  // `&amp;quot;`, which `&amp;`-then-`&quot;` collapses to raw quotes — so the gate
-  // mounted markup no browser would read, and reported the emitter's escape as
-  // the specimen's fault. AGENTS.md rule 8 is about exactly this pair.
-  const code = decodeEntities(m[2]);
-  snippets.push({ id, code });
-}
+    const id = m[1];
+    // Decode with the parser's own single-pass decoder, the inverse of the
+    // serialiser that wrote the snippet. A chain of replaces decodes twice: an
+    // attribute the author wrote as `[&quot;One&quot;]` is published as
+    // `&amp;quot;`, which `&amp;`-then-`&quot;` collapses to raw quotes — so the gate
+    // mounted markup no browser would read, and reported the emitter's escape as
+    // the specimen's fault. AGENTS.md rule 8 is about exactly this pair.
+    const code = decodeEntities(m[2]);
+    snippets.push({ id, code, raw: m[2] });
+  }
 
 if (!snippets.length) {
   console.error("execute-docs: FAIL — no snippets found");
@@ -160,8 +160,8 @@ mkdirSync(outDir, { recursive: true });
 // Write every mounted page first (cheap), then validate them in a single
 // html-validate invocation instead of one process per snippet — the per-file
 // spawn was the dominant cost of this gate.
-for (const { id, code } of snippets) {
-  const page = `<!DOCTYPE html>
+for (const { id, raw } of snippets) {
+    const page = `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -169,10 +169,10 @@ for (const { id, code } of snippets) {
 <link rel="stylesheet" href="../../src/css/ds.css">
 </head>
 <body>
-${code}
+${raw}
 </body>
 </html>`;
-  writeFileSync(join(outDir, `snippet-${id}.html`), page);
+    writeFileSync(join(outDir, `snippet-${id}.html`), page);
 }
 
 let errors = 0;

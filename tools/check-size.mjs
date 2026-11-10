@@ -122,10 +122,10 @@ const BUDGETS = {
   "contour.vue.d.ts": 22 * 1024,  // Vue GlobalComponents augmentation (CDS-037); measured 20.6 kB
   "custom-elements.json": 780 * 1024,  // Custom Elements Manifest CEM 1.0 (CDS-037); 400 declarations + event vocab; measured 756.6 kB
   "contour.code-snippets": 124 * 1024,  // VS Code editor snippets (CDS-037); 400 snippets; measured 117.0 kB
-  "surfaces/contour-core.min.css": 160 * 1024,  // raised 2026-11-07: +layout fixes; measured 157.3 kB
-  "surfaces/contour-docs.min.css": 177 * 1024,  // raised 2026-11-07: +layout fixes; raised 2026-11-10: +CDS-046 CSS anchor positioning (c-popover, c-hover-card, c-context-menu); measured 176.1 kB
-  "surfaces/contour-data.min.css": 224 * 1024,  // raised 2026-11-07: +layout fixes; raised 2026-11-09: +c-split-map CSS block; raised 2026-11-09: +c-filter-bar__mode scope toggle CSS; raised 2026-11-09: +c-saved-view, c-provenance, c-feature-inspector CSS blocks; measured 217.3 kB
-  "surfaces/contour-landing.min.css": 169 * 1024,  // raised 2026-11-08: +forced-colors form controls; measured 168.1 kB
+  "surfaces/contour-core.min.css": 164 * 1024,  // raised 2026-11-07: +layout fixes; measured 157.3 kB; raised 2026-11-10: +c-combobox, c-live-badge, c-dot variants, c-tree elements, c-split-pane, c-scheme-toggle icons CSS; measured 163.6 kB
+  "surfaces/contour-docs.min.css": 181 * 1024,  // raised 2026-11-07: +layout fixes; raised 2026-11-10: +CDS-046 CSS anchor positioning (c-popover, c-hover-card, c-context-menu); raised 2026-11-10: +c-combobox, c-live-badge, c-dot variants, c-tree elements, c-split-pane, c-scheme-toggle icons CSS; measured 180.7 kB
+  "surfaces/contour-data.min.css": 229 * 1024,  // raised 2026-11-07: +layout fixes; raised 2026-11-09: +c-split-map CSS block; raised 2026-11-09: +c-filter-bar__mode scope toggle CSS; raised 2026-11-09: +c-saved-view, c-provenance, c-feature-inspector CSS blocks; raised 2026-11-10: +c-combobox, c-live-badge, c-dot variants, c-tree elements, c-split-pane, c-scheme-toggle icons CSS; measured 228.2 kB
+  "surfaces/contour-landing.min.css": 173 * 1024,  // raised 2026-11-08: +forced-colors form controls; raised 2026-11-10: +c-combobox, c-live-badge, c-dot variants, c-tree elements, c-split-pane, c-scheme-toggle icons CSS; measured 172.3 kB
   "contour.esm.min.js": 39 * 1024,
   "contour-wc.esm.min.js": 650 * 1024,  // raised 2026-11-08: +event emission (batch); raised 2026-11-09: +data-contour-preserve-key; raised 2026-11-09: +contour:scope-change event; raised 2026-11-09: +R16-16 cross-filter contract events; raised 2026-11-09: +R16-17 map-linked table click-to-zoom; raised 2026-11-09: +R16-21 time-series series management; raised 2026-11-09: +contour-saved-view, contour-provenance, contour-feature-inspector WC classes; measured 625.0 kB
   // Per-family wc bundles (R16-60): each = core infrastructure + one family's

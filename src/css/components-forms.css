@@ -425,4 +425,49 @@
     outline: var(--focus-width) solid var(--color-focus-ring);
     outline-offset: 2px;
   }
+
+  /* -- Combobox ---------------------------------------------------------
+     An autocomplete input with a listbox that opens on focus. The list is
+     a real <ul> with real <li> options, so it needs the same treatment as
+     every other list in the system: a scroller, a hover state and a chosen
+     mark. The input is a plain .c-input, so it inherits the control base
+     and only the list and its options are defined here.
+     --------------------------------------------------------------------- */
+  .c-combobox {
+    display: grid;
+    gap: calc(0.25rem * var(--density, 1));
+    position: relative;
+  }
+  .c-combobox__input {
+    width: 100%;
+  }
+  .c-combobox__list {
+    list-style: none;
+    margin: 0;
+    padding: calc(0.25rem * var(--density, 1));
+    border: 1px solid var(--color-control-edge);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-1);
+    box-shadow: var(--shadow-sm);
+    overflow: auto;
+    max-block-size: calc(16rem * var(--density, 1));
+    contain: layout;
+  }
+  .c-combobox__option {
+    padding: calc(0.5rem * var(--density, 1)) calc(0.75rem * var(--density, 1));
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: var(--type-sm);
+    color: var(--color-text);
+  }
+  .c-combobox__option:hover,
+  .c-combobox__option:focus-visible {
+    background: var(--color-surface-2);
+    outline: none;
+  }
+  .c-combobox__option[aria-selected="true"] {
+    background: var(--color-primary-soft);
+    color: var(--color-primary-text);
+    font-weight: var(--weight-medium);
+  }
 }

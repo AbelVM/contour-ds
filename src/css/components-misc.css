@@ -1452,6 +1452,72 @@
   .c-tree-grid { display: block; overflow: auto; content-visibility: auto; contain-intrinsic-size: auto 300px; }
   .c-tree-grid__table { inline-size: 100%; }
 
+  /* -- Tree -------------------------------------------------------------
+     A tree is a list of nodes; the block class is the only thing a consumer
+     writes, and the element classes below are what the component renders.
+     The toggle rotates on expand, the leaf is a node with no children, and
+     the select is an optional checkbox column — all styled here so a reader
+     who copies the markup gets a working tree without the script.
+     --------------------------------------------------------------------- */
+  .c-tree {
+    display: block;
+    font-size: var(--type-sm);
+    line-height: var(--leading-tight);
+  }
+  .c-tree__node {
+    display: block;
+  }
+  .c-tree__row {
+    display: flex;
+    align-items: center;
+    gap: calc(0.25rem * var(--density, 1));
+    padding: calc(0.125rem * var(--density, 1)) calc(0.375rem * var(--density, 1));
+    border-radius: var(--radius-sm);
+    cursor: default;
+  }
+  .c-tree__row:hover {
+    background: var(--color-surface-2);
+  }
+  .c-tree__toggle {
+    display: inline-grid;
+    place-items: center;
+    inline-size: calc(1.25rem * var(--density, 1));
+    block-size: calc(1.25rem * var(--density, 1));
+    border: none;
+    background: transparent;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+  }
+  .c-tree__toggle:hover {
+    color: var(--color-text);
+    background: var(--color-surface-2);
+  }
+  .c-tree__toggle[aria-expanded="true"] svg {
+    transform: rotate(90deg);
+  }
+  .c-tree__children {
+    padding-inline-start: calc(1.25rem * var(--density, 1));
+  }
+  .c-tree__leaf {
+    display: flex;
+    align-items: center;
+    gap: calc(0.25rem * var(--density, 1));
+    padding: calc(0.125rem * var(--density, 1)) calc(0.375rem * var(--density, 1));
+    color: var(--color-text);
+  }
+  .c-tree__leaf::before {
+    content: "";
+    inline-size: calc(0.5rem * var(--density, 1));
+    block-size: calc(0.5rem * var(--density, 1));
+    border-radius: 50%;
+    background: var(--color-border-subtle);
+    flex: none;
+  }
+  .c-tree__select {
+    margin-inline-start: auto;
+  }
+
   .c-notification-center__trigger {
     position: relative;
   }

@@ -484,24 +484,26 @@ const ORPHAN_LEDGER = {
   "c-timeline__empty": "empty-state placeholder styled by the host data-state hook",
   "c-tree__empty": "empty-state placeholder styled by the host data-state hook",
 
-  // Combobox internals styled by the host component.
-  "c-combobox__input": "combobox input styled by the host contour-combobox rule",
-  "c-combobox__option": "combobox option styled by the host contour-combobox rule",
+  // Combobox internals: defined in components-forms.css (§11), so the host
+  // rule is a real one and this name is no longer scaffolding.
+  // (c-combobox__input, c-combobox__option were ledgered here while the
+  // combobox had no rule of its own; the ledger entry is struck off with the
+  // rule that landed.)
 
-  // Dot variants used by contour-dash-freshness; colour carried by host data-variant hook.
-  "c-dot--accent": "dot accent variant styled by contour-dash-freshness host data-variant hook",
-  "c-dot--success": "dot success variant styled by contour-dash-freshness host data-variant hook",
+  // Dot variants: defined in components-display.css (§19) alongside .c-dot
+  // and .c-dot--live, so the accent and success variants are real rules.
+  // (c-dot--accent, c-dot--success were ledgered here while the dot variants
+  // had no rule; struck off with the rules that landed.)
 
   // Brush handle internals styled by the host contour-brush rule.
   "c-brush__handle--start": "brush start handle styled by contour-brush host rule",
   "c-brush__handle--end": "brush end handle styled by contour-brush host rule",
 
-  // Tree internals styled by the host contour-tree rule.
-  "c-tree__children": "tree children container styled by contour-tree host rule",
-  "c-tree__leaf": "tree leaf node styled by contour-tree host rule",
-  "c-tree__node": "tree node styled by contour-tree host rule",
-  "c-tree__row": "tree row styled by contour-tree host rule",
-  "c-tree__toggle": "tree toggle styled by contour-tree host rule",
+  // Tree internals: defined in components-misc.css (§ Tree) — node, row,
+  // toggle, children, leaf and select are all real rules, so the host no
+  // longer carries them. (c-tree__children, c-tree__leaf, c-tree__node,
+  // c-tree__row, c-tree__toggle were ledgered here while the tree had only
+  // the block class; struck off with the rules that landed.)
 
   // Drag/drop/resize/sort scaffolding styled by host attribute hooks.
   "c-sortable-list__live": "sortable live region styled by host data-sortable hook",
