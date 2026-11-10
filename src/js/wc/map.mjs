@@ -240,9 +240,16 @@ class ContourLayerPanel extends ContourBase {
       if (parsed) { parsed.forEach((it) => {
            const name = typeof it === "string" ? it : (it.name || it.label || "");
            const caption = (typeof it === "object" && it) ? (it.caption || it.subtitle || "") : "";
-           const item = document.createElement("div");
-           item.className = "c-layer-panel__item" + (it.dragging ? " c-layer-panel__item--dragging" : "");
-            const toggle = document.createElement("button");
+            const item = document.createElement("div");
+            item.className = "c-layer-panel__item" + (it.dragging ? " c-layer-panel__item--dragging" : "");
+            // Drag handle: focusable grip for keyboard reorder (CDS-049).
+            const drag = document.createElement("button");
+            drag.type = "button";
+            drag.className = "c-drag-handle--dots";
+            drag.setAttribute("aria-label", "Reorder " + (name || "layer"));
+            drag.setAttribute("tabindex", "0");
+            item.appendChild(drag);
+             const toggle = document.createElement("button");
             toggle.type = "button";
             toggle.className = "c-layer-panel__toggle";
             toggle.setAttribute("part", "visibility-toggle");
@@ -385,30 +392,34 @@ class ContourLayerPanel extends ContourBase {
            this.dispatchEvent(new CustomEvent("contour:layer-remove", { bubbles: true, composed: true, detail: { name } }));
          }
        });
-        this.addEventListener("keydown", (e) => {
-          if (e.target && e.target.classList && e.target.classList.contains("c-layer-panel__toggle") && (e.key === "Enter" || e.key === " ")) {
-            e.preventDefault();
-            e.target.click();
-            return;
-          }
-          const item = e.target && e.target.closest ? e.target.closest(".c-layer-panel__item") : null;
-          if (!item || !this.contains(item)) return;
-         if (!(e.altKey) || (e.key !== "ArrowUp" && e.key !== "ArrowDown")) return;
-         e.preventDefault();
-         const items = Array.from(this.querySelectorAll(".c-layer-panel__item"));
-         const idx = items.indexOf(item);
-         if (idx < 0) return;
-         const dir = e.key === "ArrowUp" ? -1 : 1;
-         const newIdx = idx + dir;
-         if (newIdx < 0 || newIdx >= items.length) return;
-         item.classList.add("c-layer-panel__item--dragging");
-         if (dir < 0) this.insertBefore(item, items[newIdx]);
-         else this.insertBefore(items[newIdx], item);
-         item.focus();
-         setTimeout(() => item.classList.remove("c-layer-panel__item--dragging"), 200);
-         const layerIds = Array.from(this.querySelectorAll(".c-layer-panel__item")).map((el) => el.querySelector(".c-layer-panel__name")?.textContent || "");
-         this.dispatchEvent(new CustomEvent("contour:layer-reorder", { bubbles: true, composed: true, detail: { layerIds } }));
-       });
+         this.addEventListener("keydown", (e) => {
+           if (e.target && e.target.classList && e.target.classList.contains("c-layer-panel__toggle") && (e.key === "Enter" || e.key === " ")) {
+             e.preventDefault();
+             e.target.click();
+             return;
+           }
+           const item = e.target && e.target.closest ? e.target.closest(".c-layer-panel__item") : null;
+           if (!item || !this.contains(item)) return;
+           const isDrag = e.target && e.target.classList && e.target.classList.contains("c-drag-handle--dots");
+           // Drag handle: ArrowUp/ArrowDown reorder without Alt modifier (CDS-049).
+           // Item-level: Alt+ArrowUp/ArrowDown as an alternative.
+           if ((isDrag && (e.key === "ArrowUp" || e.key === "ArrowDown")) || (e.altKey && (e.key === "ArrowUp" || e.key === "ArrowDown"))) {
+             e.preventDefault();
+             const items = Array.from(this.querySelectorAll(".c-layer-panel__item"));
+             const idx = items.indexOf(item);
+             if (idx < 0) return;
+             const dir = e.key === "ArrowUp" ? -1 : 1;
+             const newIdx = idx + dir;
+             if (newIdx < 0 || newIdx >= items.length) return;
+             item.classList.add("c-layer-panel__item--dragging");
+             if (dir < 0) this.insertBefore(item, items[newIdx]);
+             else this.insertBefore(items[newIdx], item);
+             (isDrag ? e.target : item).focus();
+             setTimeout(() => item.classList.remove("c-layer-panel__item--dragging"), 200);
+             const layerIds = Array.from(this.querySelectorAll(".c-layer-panel__item")).map((el) => el.querySelector(".c-layer-panel__name")?.textContent || "");
+             this.dispatchEvent(new CustomEvent("contour:layer-reorder", { bubbles: true, composed: true, detail: { layerIds } }));
+           }
+         });
      }
   }
 define("contour-layer-panel", ContourLayerPanel);
