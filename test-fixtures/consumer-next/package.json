@@ -1,0 +1,17 @@
+{
+  "name": "contour-consumer-next",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Clean consumer fixture: Next.js installing the generated Contour tarball",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "^14.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "contour-ds": "file:../../dist"
+  }
+}

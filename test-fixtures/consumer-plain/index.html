@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Contour — plain HTML consumer fixture</title>
+    <link rel="stylesheet" href="node_modules/contour-ds/dist/contour.min.css" />
+  </head>
+  <body>
+    <h1>Contour plain HTML consumer</h1>
+    <button class="c-button c-button--primary">Primary button</button>
+    <button class="c-button c-button--secondary">Secondary button</button>
+    <div class="c-card">
+      <h2 class="c-card__title">Card title</h2>
+      <p class="c-card__body">Card body content.</p>
+    </div>
+    <script type="module">
+      import { ContourButton } from 'node_modules/contour-ds/dist/wc/contour-wc-button.esm.min.js';
+    </script>
+  </body>
+</html>

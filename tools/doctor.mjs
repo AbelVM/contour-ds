@@ -32,6 +32,8 @@ const gates = [
   ["stamp", "node", ["tools/stamp.mjs", "--check"]],
   ["gen-light-dark", "node", ["tools/gen-light-dark.mjs", "--check"]],
   ["check-size", "node", ["tools/check-size.mjs"]],
+  ["check-consumer-install", "node", ["tools/check-consumer-install.mjs"]],
+  ["check-ssr", "node", ["tools/check-ssr.mjs"]],
   ["check-dist", "node", ["tools/check-dist.mjs"]],
   ["check-agent-rules", "node", ["tools/check-agent-rules.mjs"]],
   ["check-wc", "node", ["tools/check-wc.mjs"]],

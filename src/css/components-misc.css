@@ -1242,9 +1242,9 @@
   }
 
   /* CDS-072: flip classes applied by JS when anchor positioning is unavailable. */
-  .c-map-popup--flip-x { left: auto; right: calc(var(--space-2xs) * var(--density, 1)); }
+  .c-map-popup--flip-x { inset-inline: auto calc(var(--space-2xs) * var(--density, 1)); }
   .c-map-popup--flip-y { top: auto; bottom: calc(var(--space-2xs) * var(--density, 1)); }
-  .c-map-popup--flip-both { left: auto; right: calc(var(--space-2xs) * var(--density, 1)); top: auto; bottom: calc(var(--space-2xs) * var(--density, 1)); }
+  .c-map-popup--flip-both { inset-inline: auto calc(var(--space-2xs) * var(--density, 1)); top: auto; bottom: calc(var(--space-2xs) * var(--density, 1)); }
 
   .c-map-popup__title {
     font-weight: var(--weight-semibold);

@@ -1,0 +1,13 @@
+{
+  "name": "contour-consumer-plain",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Clean consumer fixture: plain HTML/ES modules installing the generated Contour tarball",
+  "scripts": {
+    "dev": "serve ."
+  },
+  "dependencies": {
+    "contour-ds": "file:../../dist"
+  }
+}
