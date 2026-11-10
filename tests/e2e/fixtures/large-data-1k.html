@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>CDS-064: 1K table rows benchmark</title>
+  <link rel="stylesheet" href="/dist/contour.css">
+</head>
+<body>
+  <div id="bench"></div>
+  <script>
+    (function () {
+      const start = performance.now();
+      const bench = document.getElementById('bench');
+      const table = document.createElement('table');
+      table.className = 'c-table';
+      const thead = document.createElement('thead');
+      const tr = document.createElement('tr');
+      for (let c = 0; c < 6; c++) {
+        const th = document.createElement('th');
+        th.textContent = 'Column ' + (c + 1);
+        tr.appendChild(th);
+      }
+      thead.appendChild(tr);
+      table.appendChild(thead);
+      const tbody = document.createElement('tbody');
+      for (let r = 0; r < 1000; r++) {
+        const row = document.createElement('tr');
+        for (let c = 0; c < 6; c++) {
+          const td = document.createElement('td');
+          td.textContent = 'Row ' + (r + 1) + ', Col ' + (c + 1);
+          row.appendChild(td);
+        }
+        tbody.appendChild(row);
+      }
+      table.appendChild(tbody);
+      bench.appendChild(table);
+      // Force layout so paint/layout work is included in the measurement.
+      void table.offsetHeight;
+      void table.offsetWidth;
+      const end = performance.now();
+      window.__benchMs = end - start;
+      window.__benchDone = true;
+      if (window.__benchResolve) window.__benchResolve();
+    })();
+  </script>
+</body>
+</html>

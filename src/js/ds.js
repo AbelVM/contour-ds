@@ -1244,6 +1244,13 @@
     const sx = w / (cols - 1);
     const sy = h / (rows - 1);
 
+    // Match the SVG viewBox to the container so path coordinates (pixel space)
+    // stay inside the viewBox at any size. Without this, paths generated in
+    // pixel space exceed a fixed viewBox="0 0 300 300" when the container is
+    // wider than 300px, and the unclipped getBoundingClientRect() boxes cause
+    // horizontal scroll in RTL.
+    svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+
     // Clear previous contours.
     svg.querySelectorAll(".c-contour-plot__contour").forEach((n) => n.remove());
 

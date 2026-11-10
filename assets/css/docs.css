@@ -46,6 +46,13 @@
     animation: contour-drift 120s linear infinite;
   }
 
+  /* RTL: mirror the full-bleed mask so it extends in the correct direction. */
+  [dir="rtl"] .chart-paper::before,
+  [dir="rtl"] .chart-paper::after {
+    left: var(--bleed-right, 0);
+    right: var(--bleed-left, 0);
+  }
+
   @keyframes contour-drift {
     from { -webkit-mask-position: 0 0; mask-position: 0 0; }
     to { -webkit-mask-position: 600px 600px; mask-position: 600px 600px; }
@@ -657,6 +664,7 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     background: var(--color-surface-1);
+    min-width: 0;
   }
 
   /* A specimen's gap from the heading above it is the guide's layout, not the

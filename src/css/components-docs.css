@@ -830,6 +830,12 @@
   pre.hljs {
     overflow-x: auto;
     max-inline-size: 100%;
+    min-width: 0;
+  }
+  pre.hljs > code {
+    display: block;
+    max-inline-size: 100%;
+    overflow: hidden;
   }
 
 
