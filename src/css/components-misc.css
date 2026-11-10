@@ -770,6 +770,18 @@
     .c-context-menu[popover] { display: none; }
     .c-context-menu[popover].is-open { display: block; }
   }
+  /* CDS-046: CSS anchor positioning — enhancement-only. When supported, the
+     context menu anchors to its trigger element and flips to stay in view. */
+  @supports (anchor-name: --x) {
+    .c-context-menu:popover-open {
+      position: absolute;
+      inset: auto;
+      margin: 0;
+      position-area: block-start;
+      position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
+      position-try-order: most-block-size;
+    }
+  }
   .c-hover-card {
     padding: calc(var(--space-sm) * var(--density, 1)) calc(var(--space-md) * var(--density, 1));
     border-radius: var(--radius-md);
@@ -781,6 +793,14 @@
   @supports not (selector(:popover-open)) {
     .c-hover-card[popover] { display: none; }
     .c-hover-card[popover].is-open { display: block; }
+  }
+  /* CDS-046: CSS anchor positioning — enhancement-only. */
+  @supports (anchor-name: --x) {
+    .c-hover-card:popover-open {
+      position-area: block-start;
+      position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
+      position-try-order: most-block-size;
+    }
   }
   .c-hover-card__title {
     font-weight: var(--weight-semibold);
@@ -971,6 +991,14 @@
     border: 1px solid var(--color-border);
     box-shadow: var(--shadow-md);
     max-inline-size: calc(20rem * var(--density, 1));
+  }
+  /* CDS-046: CSS anchor positioning — enhancement-only. */
+  @supports (anchor-name: --x) {
+    .c-popover:popover-open {
+      position-area: block-start;
+      position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
+      position-try-order: most-block-size;
+    }
   }
   .c-popover__title {
     font-weight: var(--weight-semibold);
