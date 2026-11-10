@@ -117,7 +117,7 @@ const BUDGETS = {
   "hljs.css": 4 * 1024,
   "agent-rules.json": 12 * 1024,
   "surfaces/contour-core.min.css": 160 * 1024,  // raised 2026-11-07: +layout fixes; measured 157.3 kB
-  "surfaces/contour-docs.min.css": 176 * 1024,  // raised 2026-11-07: +layout fixes; measured 173.1 kB
+  "surfaces/contour-docs.min.css": 177 * 1024,  // raised 2026-11-07: +layout fixes; raised 2026-11-10: +CDS-046 CSS anchor positioning (c-popover, c-hover-card, c-context-menu); measured 176.1 kB
   "surfaces/contour-data.min.css": 224 * 1024,  // raised 2026-11-07: +layout fixes; raised 2026-11-09: +c-split-map CSS block; raised 2026-11-09: +c-filter-bar__mode scope toggle CSS; raised 2026-11-09: +c-saved-view, c-provenance, c-feature-inspector CSS blocks; measured 217.3 kB
   "surfaces/contour-landing.min.css": 169 * 1024,  // raised 2026-11-08: +forced-colors form controls; measured 168.1 kB
   "contour.esm.min.js": 39 * 1024,
