@@ -116,6 +116,12 @@ const BUDGETS = {
   // Measured 2026-10-24 at 3,664 B.
   "hljs.css": 4 * 1024,
   "agent-rules.json": 12 * 1024,
+  "contour.html-data.json": 262 * 1024,  // VS Code HTML custom data (CDS-037); 400 tags derived from contract; measured 254.9 kB
+  "contour.web-types.json": 310 * 1024,  // JetBrains web-types (CDS-037); measured 301.8 kB
+  "contour.react.d.ts": 36 * 1024,  // React JSX IntrinsicElements augmentation (CDS-037); measured 33.5 kB
+  "contour.vue.d.ts": 22 * 1024,  // Vue GlobalComponents augmentation (CDS-037); measured 20.6 kB
+  "custom-elements.json": 780 * 1024,  // Custom Elements Manifest CEM 1.0 (CDS-037); 400 declarations + event vocab; measured 756.6 kB
+  "contour.code-snippets": 124 * 1024,  // VS Code editor snippets (CDS-037); 400 snippets; measured 117.0 kB
   "surfaces/contour-core.min.css": 160 * 1024,  // raised 2026-11-07: +layout fixes; measured 157.3 kB
   "surfaces/contour-docs.min.css": 177 * 1024,  // raised 2026-11-07: +layout fixes; raised 2026-11-10: +CDS-046 CSS anchor positioning (c-popover, c-hover-card, c-context-menu); measured 176.1 kB
   "surfaces/contour-data.min.css": 224 * 1024,  // raised 2026-11-07: +layout fixes; raised 2026-11-09: +c-split-map CSS block; raised 2026-11-09: +c-filter-bar__mode scope toggle CSS; raised 2026-11-09: +c-saved-view, c-provenance, c-feature-inspector CSS blocks; measured 217.3 kB

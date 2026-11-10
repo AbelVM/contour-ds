@@ -44,6 +44,12 @@ Optional progressive-enhancement layer: `src/js/wc/index.mjs` (also `dist/contou
 
 - [llms-full.txt](./llms-full.txt): the full concatenated guide (all sections, all specimens) for agents that want the complete text in one fetch.
 - [contour.components.json](./dist/contour.components.json): the component contract (blocks, elements, variants, states).
+- [contour.html-data.json](./dist/contour.html-data.json): VS Code HTML custom data for Contour custom elements.
+- [contour.web-types.json](./dist/contour.web-types.json): JetBrains web-types metadata for Contour custom elements.
+- [contour.react.d.ts](./dist/contour.react.d.ts): React JSX IntrinsicElements augmentation for Contour custom elements.
+- [contour.vue.d.ts](./dist/contour.vue.d.ts): Vue GlobalComponents augmentation for Contour custom elements.
+- [custom-elements.json](./dist/custom-elements.json): Custom Elements Manifest (CEM 1.0) for Contour custom elements.
+- [contour.code-snippets](./dist/contour.code-snippets): VS Code editor snippets for Contour custom elements.
 - [contour.tokens.json](./dist/contour.tokens.json): the token layer as DTCG 2025.10.
 
 ## Accessibility contract

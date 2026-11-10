@@ -88,7 +88,24 @@
     "./wc/*": "./dist/wc/*",
     "./package.json": "./package.json",
     "./agent-rules": "./dist/agent-rules.json",
-    "./agent-rules.json": "./dist/agent-rules.json"
+    "./agent-rules.json": "./dist/agent-rules.json",
+    "./html-data": "./dist/contour.html-data.json",
+    "./html-data.json": "./dist/contour.html-data.json",
+    "./web-types": "./dist/contour.web-types.json",
+    "./web-types.json": "./dist/contour.web-types.json",
+    "./react": {
+      "types": "./dist/contour.react.d.ts"
+    },
+    "./react.d.ts": "./dist/contour.react.d.ts",
+    "./vue": {
+      "types": "./dist/contour.vue.d.ts"
+    },
+    "./vue.d.ts": "./dist/contour.vue.d.ts",
+    "./custom-elements": "./dist/custom-elements.json",
+    "./custom-elements.json": "./dist/custom-elements.json",
+    "./custom-elements-manifest": "./dist/custom-elements.json",
+    "./snippets": "./dist/contour.code-snippets",
+    "./code-snippets": "./dist/contour.code-snippets"
   },
   "sideEffects": [
     "*.css",
@@ -117,7 +134,7 @@
     "vite": "^8.3.7",
     "vitest": "^5.1.0"
   },
-  "author": "Abel Vázquez Montoro",
+  "author": "Abel V\u00e1zquez Montoro",
   "repository": {
     "type": "git",
     "url": "https://github.com/AbelVM/contour-ds.git"
@@ -131,5 +148,6 @@
   },
   "allowScripts": {
     "esbuild@0.28.2": true
-  }
+  },
+  "customElements": "dist/custom-elements.json"
 }

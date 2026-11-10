@@ -113,6 +113,12 @@ no document — a bundle nobody names is a bundle nobody finds.
 | `contour.tokens.json` | the token layer as a **DTCG 2025.10 Format** document |
 | `contour.themes.json` | the dark half of every `light-dark()` pair, as a **Resolver** document |
 | `contour.components.json` | the component contract: blocks, elements, variants, states, and the custom properties each one reads |
+| `contour.html-data.json` | VS Code HTML custom data for registered Contour custom elements and attributes |
+| `contour.web-types.json` | JetBrains web-types metadata for Contour custom elements |
+| `contour.react.d.ts` | React JSX `IntrinsicElements` augmentation for Contour custom elements |
+| `contour.vue.d.ts` | Vue `GlobalComponents` augmentation for Contour custom elements |
+| `custom-elements.json` | Custom Elements Manifest (CEM 1.0) for Contour custom elements and global event vocabulary |
+| `contour.code-snippets` | VS Code editor snippets for Contour custom elements |
 | `docs/index.json` | the guide's prose as a machine-readable package, one file per section, re-derived from `index.html` |
 | `registry/registry.json` | a shadcn registry: one item per surface, pointing at the bundles rather than copying them |
 | `agent-rules.json` | the constraints for a machine generating UI, each naming the gate that enforces it |
