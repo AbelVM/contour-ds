@@ -1,3 +1,3 @@
-import { ContourButton } from 'contour-ds/dist/wc/contour-wc-button.esm.min.js';
+import "contour-ds/contour-wc.esm.js";
 
-console.log('ContourButton registered:', customElements.get('contour-button'));
+console.log('ContourButton registered:', customElements.get('contour-btn'));

@@ -467,7 +467,7 @@ design tools:
 
 1. Install the [Tokens Studio](https://tokens.studio/) plugin in Figma.
 2. Create a new token set and choose **Import → DTCG**.
-3. Point it at `node_modules/contour-ds/dist/contour.tokens.json` (or the
+3. Point it at `contour-ds/tokens.json` (the DTCG 2025.10 Format document, or the
    published URL).
 4. Map the `tidal` / `plasma` / `basalt` families to your Figma variables;
    the semantic layer (`color-primary`, `color-text-muted`, …) is what

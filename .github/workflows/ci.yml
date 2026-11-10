@@ -72,6 +72,15 @@ jobs:
       - name: Check the shipped bundle loads cleanly
         run: node tools/check-dist.mjs
 
+      # Installs the generated tarball into a plain HTML, a Vite+React, an Astro
+      # and a Next.js fixture and resolves every specifier those fixtures import
+      # against the package's exports map. It is the only check that asks what a
+      # consumer's own bundler would ask, which is why it cannot be folded into a
+      # file-existence scan: four specifiers lived in fixtures and templates that
+      # the exports map refuses, and every other gate passed them.
+      - name: Check the consumer install and its specifiers
+        run: node tools/check-consumer-install.mjs
+
       - name: Check guide-only identifiers have not leaked into src/
         run: node tools/check-ownership.mjs
 

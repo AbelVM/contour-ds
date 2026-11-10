@@ -18,7 +18,7 @@ This project uses Contour (`contour-ds`) for all UI. Rules:
 - Depth is lightness, not shadow.
 - Charts carry a dash pattern as well as a hue.
 - Mono type is for data, labels, code — never body copy.
-- Full contract: `node_modules/contour-ds/dist/agent-rules.json`.
-- Component inventory: `node_modules/contour-ds/dist/contour.components.json`.
-- Tokens: `node_modules/contour-ds/dist/contour.tokens.json`.
+- Full contract: `contour-ds/agent-rules.json`.
+- Component inventory: `contour-ds/components.json`.
+- Tokens: `contour-ds/tokens.json`.
 ```

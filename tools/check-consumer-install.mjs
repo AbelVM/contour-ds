@@ -13,6 +13,7 @@
 import { execSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { createRequire } from 'node:module';
 
 const ROOT = process.cwd();
 const FIXTURES = join(ROOT, 'test-fixtures');
@@ -34,6 +35,35 @@ function fail(msg, err) {
 
 function run(cmd, opts = {}) {
   return execSync(cmd, { stdio: 'pipe', encoding: 'utf8', ...opts });
+}
+
+/**
+ * Collect every `contour-ds/…` specifier a fixture imports, so the gate can
+ * resolve each one against the installed package rather than guessing from a
+ * hand-written list. A hand-written list is what let four broken specifiers
+ * live in fixtures and templates while the gate only checked file existence.
+ */
+function collectSpecifiers(dir) {
+  const found = new Set();
+  const walk = (d) => {
+    let entries;
+    try { entries = readdirSync(d, { withFileTypes: true }); } catch { return; }
+    for (const e of entries) {
+      const p = join(d, e.name);
+      if (e.isDirectory()) {
+        if (e.name === 'node_modules' || e.name === '.git') continue;
+        walk(p);
+      } else if (/\.(js|mjs|cjs|jsx|ts|tsx|html|astro)$/.test(e.name)) {
+        let text;
+        try { text = readFileSync(p, 'utf8'); } catch { continue; }
+        const re = /(?:import|export)\s+(?:[^;]*\s+from\s+)?['"]\s*((?:\.\/|\.\.\/)?(?:node_modules\/)?contour-ds\/[A-Za-z0-9._/*-]+)\s*['"]/g;
+        let m;
+        while ((m = re.exec(text)) !== null) found.add(m[1]);
+      }
+    }
+  };
+  walk(dir);
+  return [...found];
 }
 
 // ── Step 1: generate the tarball ──────────────────────────────────────────
@@ -116,6 +146,29 @@ for (const fixture of fixtures) {
     ok(`package.json declares ${exports.length} export paths`);
   } catch (err) {
     fail('could not read installed package.json', err);
+  }
+
+  // Verify the specifiers this fixture actually imports resolve against the
+  // installed package's exports map. Existence alone is not the contract: a
+  // fixture can import `contour-ds/dist/wc/contour-wc-button.esm.min.js`, find
+  // the file on disk (it is copied by `files`), and still blow up at runtime
+  // because the exports map refuses the subpath. Resolving the specifier is
+  // what a consumer's bundler does, so it is what this gate does.
+  const fixtureRequire = createRequire(join(dir, 'package.json'));
+  const specifiers = collectSpecifiers(dir);
+  if (!specifiers.length) {
+    fail('fixture imports no contour-ds specifier — nothing was resolved');
+  }
+  for (const spec of specifiers) {
+    // Normalise a fixture-relative path (`node_modules/contour-ds/…`) to the
+    // bare package specifier the exports map keys on.
+    const bare = spec.replace(/^(\.\/|\.\.\/)?node_modules\//, "");
+    try {
+      fixtureRequire.resolve(bare, { paths: [dir] });
+      ok(`specifier resolves: ${spec}`);
+    } catch (err) {
+      fail(`specifier does not resolve: ${spec}`, err);
+    }
   }
 }
 
