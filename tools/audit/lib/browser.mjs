@@ -153,6 +153,6 @@ if (!found) {
 
 // `found.path` is either a bare package name or an absolute entry path; both
 // are valid specifiers for `import()`.
-const { chromium } = await import(found.path);
+const { chromium, firefox, webkit } = await import(found.path);
 
-export { chromium, found };
+export { chromium, firefox, webkit, found };
