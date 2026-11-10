@@ -2585,18 +2585,78 @@ class ContourBivariateLegend extends ContourBivariate {
     static get observed() { return ["size", "axis-x", "axis-y", "colors", "selected"]; }
     static get properties() { return { size: { attribute: "size" }, axisX: { attribute: "axis-x" }, axisY: { attribute: "axis-y" }, colors: { attribute: "colors" }, selected: { attribute: "selected" } }; }
     render() {
-      super.render();
       this.classList.add("c-bivariate-legend");
+      this.setAttribute("role", "group");
+      this.setAttribute("aria-label", "Bivariate legend");
+      const size = Math.min(12, Math.max(1, parseInt(this.getAttribute("size") || "3", 10) || 3));
+      const matrix = this.ensure(".c-bivariate-legend__matrix", () => { const el = document.createElement("div"); el.className = "c-bivariate-legend__matrix"; return el; });
+      matrix.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+      matrix.style.gridTemplateRows = `repeat(${size}, 1fr)`;
+      // Slot composition: authored cells win over the generated grid.
+      const authored = Array.from(matrix.children).filter((n) => n.classList && n.classList.contains("c-bivariate-legend__cell"));
+      if (!authored.length) {
+        matrix.innerHTML = "";
+        let colors = [];
+        const cAttr = this.getAttribute("colors");
+        if (cAttr) { try { colors = JSON.parse(cAttr); } catch (e) { colors = []; } }
+        for (let r = 0; r < size; r++) {
+          for (let c = 0; c < size; c++) {
+            const cell = document.createElement("div");
+            cell.className = "c-bivariate-legend__cell";
+            cell.setAttribute("role", "button");
+            cell.setAttribute("tabindex", "0");
+            cell.setAttribute("aria-label", "Cell " + c + "," + r);
+            // Palette runs from bottom-left (low/low) to top-right (high/high):
+            // reverse the row order so the first palette row sits at the bottom.
+            const srcIndex = (size - 1 - r) * size + c;
+            if (colors[srcIndex]) { cell.style.background = colors[srcIndex]; cell.dataset.color = colors[srcIndex]; }
+            matrix.appendChild(cell);
+          }
+        }
+        // selected highlight
+        const sel = this.getAttribute("selected");
+        if (sel) {
+          const parts = sel.split(",");
+          const sr = parseInt(parts[0], 10);
+          const sc = parseInt(parts[1], 10);
+          const cells = Array.from(matrix.querySelectorAll(".c-bivariate-legend__cell"));
+          cells.forEach((cell, i) => {
+            const rr = Math.floor(i / size);
+            const cc = i % size;
+            if (rr === sr && cc === sc) cell.setAttribute("data-selected", "");
+            else cell.removeAttribute("data-selected");
+          });
+        }
+        // aria-live region
+        let live = this.querySelector(".c-bivariate-legend__live");
+        if (!live) { live = document.createElement("div"); live.className = "c-bivariate-legend__live"; live.setAttribute("aria-live", "polite"); live.style.position = "absolute"; live.style.width = "1px"; live.style.height = "1px"; live.style.overflow = "hidden"; live.style.clip = "rect(0,0,0,0)"; this.appendChild(live); }
+      }
+      const axisX = this.getAttribute("axis-x");
+      if (axisX) {
+        const ax = this.ensure(".c-bivariate-legend__axis--x", () => { const el = document.createElement("div"); el.className = "c-bivariate-legend__axis c-bivariate-legend__axis--x"; return el; });
+        ax.textContent = axisX;
+      } else {
+        const ax = this.querySelector(".c-bivariate-legend__axis--x");
+        if (ax) ax.remove();
+      }
+      const axisY = this.getAttribute("axis-y");
+      if (axisY) {
+        const ay = this.ensure(".c-bivariate-legend__axis--y", () => { const el = document.createElement("div"); el.className = "c-bivariate-legend__axis c-bivariate-legend__axis--y"; return el; });
+        ay.textContent = axisY;
+      } else {
+        const ay = this.querySelector(".c-bivariate-legend__axis--y");
+        if (ay) ay.remove();
+      }
     }
     enhance() {
       if (this._wiredBivLegend) return;
       this._wiredBivLegend = true;
       const selectCell = (cell) => {
-        const matrix = this.querySelector(".c-bivariate__matrix");
-        const cells = Array.from(matrix ? matrix.querySelectorAll(".c-bivariate__cell") : []);
+        const matrix = this.querySelector(".c-bivariate-legend__matrix");
+        const cells = Array.from(matrix ? matrix.querySelectorAll(".c-bivariate-legend__cell") : []);
         const idx = cells.indexOf(cell);
         if (idx < 0) return;
-        const size = Math.min(8, Math.max(1, parseInt(this.getAttribute("size") || "3", 10) || 3));
+        const size = Math.min(12, Math.max(1, parseInt(this.getAttribute("size") || "3", 10) || 3));
         const row = Math.floor(idx / size);
         const col = idx % size;
         cells.forEach((cell, i) => {
@@ -2608,16 +2668,21 @@ class ContourBivariateLegend extends ContourBivariate {
         this.dispatchEvent(new CustomEvent("contour:select", { detail: { row, col }, bubbles: true, composed: true }));
       };
       this.addEventListener("click", (e) => {
-        const cell = e.target && e.target.closest ? e.target.closest(".c-bivariate__cell") : null;
+        const cell = e.target && e.target.closest ? e.target.closest(".c-bivariate-legend__cell") : null;
         if (cell && this.contains(cell)) selectCell(cell);
       });
       this.addEventListener("keydown", (e) => {
-        const cell = e.target && e.target.closest ? e.target.closest(".c-bivariate__cell") : null;
+        const cell = e.target && e.target.closest ? e.target.closest(".c-bivariate-legend__cell") : null;
         if (!cell || !this.contains(cell)) return;
         if (e.key === "Enter" || e.key === " ") { e.preventDefault(); selectCell(cell); }
       });
     }
-    clear() { this.removeAttribute("selected"); this.dispatchEvent(new CustomEvent("contour:clear", { bubbles: true, composed: true })); }
+    clear() {
+      this.removeAttribute("selected");
+      const cells = Array.from(this.querySelectorAll(".c-bivariate-legend__cell"));
+      cells.forEach((c) => c.removeAttribute("data-selected"));
+      this.dispatchEvent(new CustomEvent("contour:clear", { bubbles: true, composed: true }));
+    }
   }
 define("contour-bivariate-legend", ContourBivariateLegend);
 /**
@@ -2760,10 +2825,12 @@ class ContourMetricsFull extends ContourBase {
  * Attributes: `title`, `ramp`, `scale`, `items`, `method`, `norm`, `selectable`, `empty`, `loading`, `error`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`, `glyphs`, `thresholds`, `breaks`, `no-data-color`, `size`, `table`, `classification`, `audit`, `continuous`, `ends`, `caption`.
  */
 class ContourLegend extends ContourBase {
-    static get observed() { return ["title", "ramp", "scale", "items", "method", "norm", "selectable", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "glyphs", "thresholds", "breaks", "no-data-color", "size", "table", "classification", "audit", "continuous", "ends", "caption"]; }
-    static get properties() { return { title: { attribute: "title" }, ramp: { attribute: "ramp" }, scale: { attribute: "scale" }, items: { attribute: "items" }, method: { attribute: "method" }, norm: { attribute: "norm" }, selectable: { attribute: "selectable", type: Boolean }, src: { attribute: "src" } }; }
+    static get observed() { return ["title", "ramp", "scale", "items", "method", "norm", "selectable", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "glyphs", "thresholds", "breaks", "no-data-color", "no-data-label", "size", "table", "classification", "audit", "continuous", "ends", "caption", "graduated"]; }
+    static get properties() { return { title: { attribute: "title" }, ramp: { attribute: "ramp" }, scale: { attribute: "scale" }, items: { attribute: "items" }, method: { attribute: "method" }, norm: { attribute: "norm" }, selectable: { attribute: "selectable", type: Boolean }, src: { attribute: "src" }, graduated: { attribute: "graduated", type: Boolean } }; }
     render() {
       this.classList.add("c-legend");
+      const graduated = this.hasAttribute("graduated");
+      if (graduated) this.classList.add("c-legend--graduated");
       const continuous = this.hasAttribute("continuous");
       if (continuous || this.hasAttribute("selectable")) {
         this.setAttribute("role", "group");
@@ -2823,9 +2890,24 @@ class ContourLegend extends ContourBase {
               item.setAttribute("aria-selected", "false");
             }
             const sw = document.createElement("span");
-            sw.className = "c-legend__swatch";
+            if (graduated) {
+              sw.className = "c-legend__swatch c-legend__swatch--graduated";
+              const gSize = it && it.size != null ? it.size : (it && it.value != null ? it.value : 1);
+              const sizePx = Math.max(6, Math.min(24, parseFloat(gSize) * 4));
+              sw.style.inlineSize = sizePx + "px";
+              sw.style.blockSize = sizePx + "px";
+            } else {
+              sw.className = "c-legend__swatch";
+            }
             if (it && it.color) { sw.style.background = it.color; sw.dataset.color = it.color; }
             item.appendChild(sw);
+            // graduated break label
+            if (graduated && (it && it.break != null)) {
+              const bl = document.createElement("span");
+              bl.className = "c-legend__break-label";
+              bl.textContent = String(it.break);
+              item.appendChild(bl);
+            }
             // geometry glyph
              const glyphShape = (it && (it.shape || it.marker || it.glyph)) || this.getAttribute("glyphs");
              if (glyphShape) {
@@ -2889,11 +2971,13 @@ class ContourLegend extends ContourBase {
        }
        // no-data entry from palette / no-data-color
        const ndColor = this.getAttribute("no-data-color");
+       const ndLabel = this.getAttribute("no-data-label") || "No data";
        if (ndColor) {
          let nd = this.querySelector(".c-legend__no-data");
          if (!nd) { nd = document.createElement("div"); nd.className = "c-legend__no-data"; this.appendChild(nd); }
          nd.setAttribute("part", "no-data");
-         nd.textContent = "No data";
+         nd.setAttribute("aria-label", ndLabel);
+         nd.textContent = ndLabel;
          const glyph = document.createElement("span");
          glyph.className = "glyph";
          glyph.style.background = ndColor;

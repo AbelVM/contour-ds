@@ -66,7 +66,7 @@ export interface ContourKpiElement extends ContourDataElement{value?:S;label?:S;
 export interface ContourLandingFeaturesFullElement extends ContourElement{src?:S;}
 export interface ContourLayerPanelElement extends ContourElement{src?:S;}
 export interface ContourLayerSwitchElement extends ContourElement{src?:S;}
-export interface ContourLegendElement extends ContourDataElement{title?:S;ramp?:S;scale?:S;items?:S;method?:S;norm?:S;selectable?:boolean;}
+export interface ContourLegendElement extends ContourDataElement{title?:S;ramp?:S;scale?:S;items?:S;method?:S;norm?:S;selectable?:boolean;graduated?:boolean;}
 export interface ContourMapPopupElement extends ContourElement{content?:S;"cluster-count"?:number;"cluster-expanded"?:boolean;"cluster-items"?:S;}
 export interface ContourMeasureElement extends ContourDataElement{label?:S;value?:S;point?:S;line?:S;}
 export interface ContourMenuElement extends ContourElement{src?:S;}
