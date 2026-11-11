@@ -1,4 +1,4 @@
-import { ContourBase, define, onDispose, supportsUntilFound, contourId, headingTag } from './core.mjs';
+import { ContourBase, define, onDispose, supportsUntilFound, contourId, headingTag, navKey } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { wireMenu, wirePagination, wireTabs, wireTree, wireRemovable } from './behaviours.mjs';
 class ContourMenu extends ContourBase {
@@ -12,16 +12,42 @@ class ContourMenu extends ContourBase {
       if (renderStates(this, "menu")) return;
       const items = remoteData(this, "items");
       // Slot composition wins over the JSON attribute.
-       const authored = Array.from(this.children).filter((n) => !n.classList || !n.classList.contains("c-menu"));
-       if (authored.length) {
-         if (this.querySelector("ul.c-menu")) return;
-         const ul = document.createElement("ul");
-         ul.className = "c-menu";
-         ul.setAttribute("role", "menu");
-         this.appendChild(ul);
-         return;
-       }
-       if (items) {
+      // Authored menu items (li[role="menuitem"] or li.c-menu__item in light DOM)
+      // are used as-is; the JSON `items` attribute only fills in when the host
+      // has no authored menu content.
+      const authoredItems = Array.from(this.querySelectorAll("li[role='menuitem'], li.c-menu__item, [role='menuitem']"));
+      const authoredUl = this.querySelector("ul.c-menu");
+      if (authoredItems.length) {
+        // Ensure authored items are inside a ul.c-menu wrapper.
+        if (!authoredUl) {
+          const ul = document.createElement("ul");
+          ul.className = "c-menu";
+          ul.setAttribute("role", "menu");
+          // Re-parent authored items into the wrapper, preserving order.
+          for (const item of authoredItems) {
+            if (item.parentElement === this) ul.appendChild(item);
+          }
+          this.appendChild(ul);
+        } else {
+          // Ensure classes/roles on authored items inside the existing wrapper.
+          for (const item of authoredItems) {
+            if (!item.classList.contains("c-menu__item")) item.classList.add("c-menu__item");
+            if (!item.getAttribute("role")) item.setAttribute("role", "menuitem");
+            if (!item.hasAttribute("tabindex")) item.setAttribute("tabindex", "-1");
+          }
+        }
+        // Set the first enabled item to tabindex 0 for roving focus.
+        const first = authoredItems.find((it) => it.getAttribute("aria-disabled") !== "true");
+        if (first) first.setAttribute("tabindex", "0");
+        this.classList.remove("c-menu");
+        if (authoredUl) authoredUl.classList.add("c-menu");
+        return;
+      }
+      if (authoredUl) {
+        // Authored ul.c-menu exists but no menu items yet: keep it, don't generate.
+        return;
+      }
+      if (items) {
          try {
            const parsed = JSON.parse(items);
            const ul = this.ensure("ul.c-menu", () => { const el = document.createElement("ul"); el.className = "c-menu"; el.setAttribute("role", "menu"); return el; });
@@ -115,10 +141,59 @@ class ContourTabs extends ContourBase {
       if (renderStates(this, "tabs")) return;
       const tabs = remoteData(this, "tabs");
       // Slot composition wins over the JSON attribute, same as ContourMenu:
-      // authored tab buttons and panels stay across re-renders and the
-      // JSON scaffolding only fills in when the host is empty.
-      const authored = Array.from(this.children).filter((n) => !n.classList || !n.classList.contains("c-tabs__list"));
-      if (tabs && !authored.length) {
+      // authored tab buttons ([role='tab']) and panels (.c-tabs__panel) in light
+      // DOM are used as-is; the JSON `tabs` attribute only fills in when the host
+      // has no authored tab content.
+      const authoredTabs = Array.from(this.querySelectorAll("[role='tab']"));
+      const authoredList = this.querySelector(".c-tabs__list");
+      const authoredPanels = Array.from(this.querySelectorAll(".c-tabs__panel"));
+
+      if (authoredTabs.length) {
+        // Ensure authored tabs are inside a .c-tabs__list wrapper.
+        if (!authoredList) {
+          const list = document.createElement("div");
+          list.className = "c-tabs__list";
+          list.setAttribute("role", "tablist");
+          const orientation = this.getAttribute("orientation") === "vertical" ? "vertical" : "horizontal";
+          list.setAttribute("aria-orientation", orientation);
+          if (orientation === "vertical") this.classList.add("c-tabs--vertical"); else this.classList.remove("c-tabs--vertical");
+          for (const tab of authoredTabs) {
+            if (tab.parentElement === this) list.appendChild(tab);
+          }
+          this.prepend(list);
+        }
+        // Normalise attributes on authored tabs and link panels.
+        const orientation = this.getAttribute("orientation") === "vertical" ? "vertical" : "horizontal";
+        if (authoredList) authoredList.setAttribute("aria-orientation", orientation);
+        if (orientation === "vertical") this.classList.add("c-tabs--vertical"); else this.classList.remove("c-tabs--vertical");
+
+        authoredTabs.forEach((tab, i) => {
+          if (!tab.classList.contains("c-tabs__tab")) tab.classList.add("c-tabs__tab");
+          if (!tab.getAttribute("role")) tab.setAttribute("role", "tab");
+          let panelId = tab.getAttribute("aria-controls");
+          if (!panelId) {
+            panelId = contourId("c-tabs-panel");
+            tab.setAttribute("aria-controls", panelId);
+            let panel = authoredPanels.find((p) => p.id === panelId);
+            if (!panel) {
+              panel = document.createElement("div");
+              panel.className = "c-tabs__panel";
+              panel.id = panelId;
+              panel.setAttribute("role", "tabpanel");
+              this.appendChild(panel);
+            }
+          }
+          const selected = i === 0 || tab.getAttribute("aria-selected") === "true";
+          tab.setAttribute("aria-selected", String(selected));
+          tab.tabIndex = selected ? 0 : -1;
+          const ctrl = tab.getAttribute("aria-controls");
+          const panel = ctrl ? document.getElementById(ctrl) : null;
+          if (panel) panel.hidden = !selected;
+        });
+        return;
+      }
+
+      if (tabs && !authoredTabs.length) {
          try {
            const parsed = JSON.parse(tabs);
             const list = this.ensure(".c-tabs__list", () => { const el = document.createElement("div"); el.className = "c-tabs__list"; el.setAttribute("role", "tablist"); return el; });
@@ -178,7 +253,7 @@ class ContourTabs extends ContourBase {
             });
             if (list.parentNode !== this) this.prepend(list);
          } catch (e) { /* keep existing */ }
-        } else if (!tabs && !authored.length) {
+        } else if (!tabs && !authoredTabs.length) {
           const list = this.querySelector(".c-tabs__list");
           if (list) list.remove();
           renderEmpty(this, "tabs");
@@ -232,6 +307,8 @@ class ContourHeader extends ContourBase {
     static get properties() { return { brand: { attribute: "brand" }, links: { attribute: "links" } }; }
     render() {
       this.classList.add("c-header");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "banner");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("brand") || "Header");
       const brand = this.getAttribute("brand");
       const links = this.getAttribute("links");
       const inner = this.ensure(".c-header__inner", () => { const el = document.createElement("div"); el.className = "container c-header__inner"; return el; });
@@ -333,6 +410,7 @@ class ContourHeader extends ContourBase {
         if (!nav) return;
         const open = nav.classList.toggle("is-open");
         toggle.setAttribute("aria-expanded", String(open));
+        this.dispatchEvent(new CustomEvent("contour:toggle", { bubbles: true, composed: true, detail: { open } }));
       });
       this.addEventListener("keydown", (e) => {
         if (e.key !== "Escape") return;
@@ -608,6 +686,7 @@ render() {
           toggle.setAttribute("aria-expanded", String(!expanded));
           const row = toggle.closest(".c-tree__row");
           if (row) row.setAttribute("aria-expanded", String(!expanded));
+          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { path, expanded: !expanded } }));
           if (this.hasAttribute("virtual") && this._treeRoot) {
             const s = this._treeRoot;
             this._treeScrollTop = s.scrollTop || 0;
@@ -746,6 +825,8 @@ class ContourBreadcrumb extends ContourBase {
     static get properties() { return { items: { attribute: "items" }, separator: { attribute: "separator" }, max: { attribute: "max", type: Number }, src: { attribute: "src" } } };
     render() {
       this.classList.add("c-breadcrumb");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "navigation");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Breadcrumb");
       wireStates(this);
       loadRemote(this, "items");
       if (renderStates(this, "breadcrumb")) return;
@@ -780,6 +861,7 @@ class ContourBreadcrumb extends ContourBase {
               // (the arm-7 trap), so the flag lives outside OBSERVED.
               this._overflowExpanded = true;
               this.requestRender();
+              this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { expanded: true } }));
             });
             n.appendChild(btn);
           }
@@ -913,7 +995,7 @@ class ContourTocFull extends ContourBase {
     static get properties() { return { title: { attribute: "title" }, items: { attribute: "items" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-toc");
-      this.setAttribute("role", "list");
+      this.setAttribute("role", "group");
       wireStates(this);
       loadRemote(this, "items");
       if (renderStates(this, "toc")) return;
@@ -930,11 +1012,12 @@ class ContourTocFull extends ContourBase {
           l.className = "c-toc__list";
           l.setAttribute("aria-label", title);
           l.innerHTML = "";
-          parsed.forEach((item) => {
+          parsed.forEach((item, i) => {
             const a = document.createElement("a");
             a.className = "c-toc__link" + (item.sub ? " c-toc__link--sub" : "");
             a.href = item.href || "#";
             a.textContent = item.label || item;
+            a.tabIndex = i === 0 ? 0 : -1;
             if (item.current) a.setAttribute("aria-current", "true");
             l.appendChild(a);
           });
@@ -990,14 +1073,21 @@ class ContourTocFull extends ContourBase {
           if (!target) return;
           e.preventDefault();
           try { target.scrollIntoView({ behavior: "smooth", block: "start" }); } catch (err) { target.scrollIntoView(); }
+          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { href } }));
+        });
+        // Keyboard: roving tabindex over TOC links, Enter follows the link.
+        this.addEventListener("keydown", (e) => {
+          const links = Array.from(this.querySelectorAll(".c-toc__link"));
+          if (!links.length) return;
+          navKey(e, links, { wrap: true, homeEnd: true, onNavigate: (i) => { links.forEach((a, j) => a.tabIndex = j === i ? 0 : -1); }, onKey: (k) => { if (k === "Enter") { const a = document.activeElement; if (a) { e.preventDefault(); a.click(); } } } });
         });
       }
     }
   }
 define("contour-toc", ContourTocFull);
 class ContourFilterBar extends ContourBase {
-    static get observed() { return ["label", "divider", "items", "input", "placeholder", "mode", "modes", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "count", "clearable"]; }
-    static get properties() { return { label: { attribute: "label" }, divider: { attribute: "divider" }, items: { attribute: "items" }, src: { attribute: "src" }, count: { attribute: "count" }, clearable: { attribute: "clearable" } }; }
+    static get observed() { return ["label", "divider", "items", "input", "placeholder", "mode", "modes", "scope", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "count", "clearable"]; }
+    static get properties() { return { label: { attribute: "label" }, divider: { attribute: "divider" }, items: { attribute: "items" }, src: { attribute: "src" }, count: { attribute: "count" }, clearable: { attribute: "clearable" }, scope: { attribute: "scope" } }; }
     render() {
       this.classList.add("c-filter-bar");
       wireStates(this);
@@ -1048,11 +1138,33 @@ class ContourFilterBar extends ContourBase {
            if (current && current === val) btn.setAttribute("aria-pressed", "true");
            bar.appendChild(btn);
          });
-       } else {
-         const bar = this.querySelector(".c-filter-bar__modes");
-         if (bar) bar.remove();
-       }
-       // Render filter pills from items.
+        } else {
+          const bar = this.querySelector(".c-filter-bar__modes");
+          if (bar) bar.remove();
+        }
+        // Scope toggle (viewport / global) — CARTO-inspired.
+        const scope = this.getAttribute("scope");
+        if (scope === "viewport" || scope === "global") {
+          Array.from(this.querySelectorAll(".c-filter-bar__scope")).forEach((n) => n.remove());
+          const bar = document.createElement("div");
+          bar.className = "c-filter-bar__modes c-filter-bar__scope";
+          bar.setAttribute("role", "toolbar");
+          bar.setAttribute("aria-label", "Data scope");
+          ["viewport", "global"].forEach((s) => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "c-filter-bar__mode c-filter-bar__scope-btn";
+            btn.textContent = s === "viewport" ? "Viewport" : "Global";
+            btn.dataset.scope = s;
+            if (scope === s) btn.setAttribute("aria-pressed", "true");
+            bar.appendChild(btn);
+          });
+          this.appendChild(bar);
+        } else {
+          const bar = this.querySelector(".c-filter-bar__scope");
+          if (bar) bar.remove();
+        }
+        // Render filter pills from items.
       Array.from(this.querySelectorAll(".c-filter-pill")).forEach((n) => n.remove());
       const items = remoteData(this, "items");
       // Slotted content: authored .c-filter-pill children take precedence.
@@ -1095,24 +1207,23 @@ class ContourFilterBar extends ContourBase {
        wireRemovable(this);
        if (this._wiredFilterBar) return;
        this._wiredFilterBar = true;
-       this.addEventListener("click", (e) => {
-         const btn = e.target && e.target.closest ? e.target.closest(".c-filter-bar__mode") : null;
-         if (!btn || !this.contains(btn)) return;
-         const mode = btn.dataset.mode || btn.textContent.trim();
-         Array.from(this.querySelectorAll(".c-filter-bar__mode")).forEach((b) => b.setAttribute("aria-pressed", String(b === btn)));
-         this.dispatchEvent(new CustomEvent("contour:mode-change", { bubbles: true, composed: true, detail: { mode } }));
-       });
-       this.addEventListener("keydown", (e) => {
-         const btn = e.target && e.target.closest ? e.target.closest(".c-filter-bar__mode") : null;
-         if (!btn || !this.contains(btn)) return;
-         const modes = Array.from(this.querySelectorAll(".c-filter-bar__mode"));
-         const idx = modes.indexOf(btn);
-         let next = -1;
-         if (e.key === "ArrowRight") next = Math.min(modes.length - 1, idx + 1);
-         else if (e.key === "ArrowLeft") next = Math.max(0, idx - 1);
-         if (next >= 0) { e.preventDefault(); try { modes[next].focus(); } catch (err) {} }
-         else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); btn.click(); }
-       });
+        this.addEventListener("click", (e) => {
+          const btn = e.target && e.target.closest ? e.target.closest(".c-filter-bar__mode") : null;
+          if (!btn || !this.contains(btn)) return;
+          const mode = btn.dataset.mode || btn.textContent.trim();
+          Array.from(this.querySelectorAll(".c-filter-bar__mode")).forEach((b) => b.setAttribute("aria-pressed", String(b === btn)));
+          this.dispatchEvent(new CustomEvent("contour:mode-change", { bubbles: true, composed: true, detail: { mode } }));
+          // Scope toggle: dispatch contour:scope-change for viewport/global buttons.
+          if (btn.classList.contains("c-filter-bar__scope-btn")) {
+            const scope = btn.dataset.scope || null;
+            if (scope) this.setAttribute("scope", scope);
+            this.dispatchEvent(new CustomEvent("contour:scope-change", { bubbles: true, composed: true, detail: { scope } }));
+          }
+        });
+        this.addEventListener("keydown", (e) => {
+          const modes = Array.from(this.querySelectorAll(".c-filter-bar__mode"));
+          navKey(e, modes, { wrap: false, onKey: () => { document.activeElement.click(); } });
+        });
        // text input
        const inp = this.querySelector(".c-filter-bar__input");
        if (inp && !inp._wiredFilterInput) {
@@ -1435,7 +1546,7 @@ class ContourFooter extends ContourBase {
   define("contour-footer", ContourFooter);
 class ContourSchemeToggle extends ContourBase {
     static get observed() { return []; }
-    render() { this.classList.add("c-scheme-toggle"); }
+    render() { this.classList.add("c-scheme-toggle"); if (!this.hasAttribute("role")) this.setAttribute("role", "button"); if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0"); if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Toggle color scheme"); }
     enhance() {
       if (this._wiredScheme) return;
       this._wiredScheme = true;
@@ -1448,6 +1559,12 @@ class ContourSchemeToggle extends ContourBase {
         try { localStorage.setItem("contour-theme", next); } catch (e) {}
         requestAnimationFrame(() => requestAnimationFrame(() => root.classList.remove("is-theme-switching")));
         this.dispatchEvent(new CustomEvent("contour:theme-change", { detail: { theme: next }, bubbles: true, composed: true }));
+      });
+      this.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          this.click();
+        }
       });
       // restore persisted theme on connect
       try {
@@ -1462,6 +1579,8 @@ class ContourSidebar extends ContourBase {
     static get properties() { return { title: { attribute: "title" }, items: { attribute: "items" }, collapsed: { attribute: "collapsed", type: Boolean } }; }
     render() {
       this.classList.add("c-sidebar");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "navigation");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("title") || "Sidebar");
       if (this.hasAttribute("collapsed")) this.classList.add("c-sidebar--collapsed"); else this.classList.remove("c-sidebar--collapsed");
       const title = this.getAttribute("title");
       if (title) {
@@ -1477,11 +1596,12 @@ class ContourSidebar extends ContourBase {
           const parsed = JSON.parse(items);
           const nav = this.ensure("nav.c-sidebar__nav", () => { const el = document.createElement("nav"); el.className = "c-sidebar__nav"; return el; });
           nav.innerHTML = "";
-          parsed.forEach((it) => {
+          parsed.forEach((it, i) => {
             const a = document.createElement("a");
             a.className = "c-sidebar__link";
             a.href = (it && it.href) || "#";
             a.textContent = (it && (it.label || it)) || "";
+            a.tabIndex = i === 0 ? 0 : -1;
             nav.appendChild(a);
           });
         } catch (e) { /* keep existing */ }
@@ -1494,6 +1614,15 @@ class ContourSidebar extends ContourBase {
         const btn = e.target && e.target.closest ? e.target.closest(".c-sidebar__toggle") : null;
         if (!btn || !this.contains(btn)) return;
         this.toggleAttribute("collapsed");
+        this.dispatchEvent(new CustomEvent("contour:toggle", { bubbles: true, composed: true, detail: { collapsed: this.hasAttribute("collapsed") } }));
+      });
+      // Keyboard: roving tabindex over sidebar links, Enter follows the link.
+      this.addEventListener("keydown", (e) => {
+        const nav = this.querySelector("nav.c-sidebar__nav");
+        if (!nav) return;
+        const links = Array.from(nav.querySelectorAll(".c-sidebar__link"));
+        if (!links.length) return;
+        navKey(e, links, { wrap: true, homeEnd: true, onNavigate: (i) => { links.forEach((l, j) => l.tabIndex = j === i ? 0 : -1); }, onKey: (k) => { if (k === "Enter") { const a = document.activeElement; if (a) { e.preventDefault(); a.click(); } } } });
       });
     }
   }
@@ -1513,10 +1642,11 @@ class ContourToolbar extends ContourBase {
           const limit = this.overflow && this.overflow > 0 ? this.overflow : parsed.length;
           const visible = parsed.slice(0, limit);
           const excess = parsed.slice(limit);
-          visible.forEach((a) => {
+          visible.forEach((a, i) => {
             const btn = document.createElement("button");
             btn.className = "c-toolbar__btn";
             btn.type = "button";
+            btn.tabIndex = i === 0 ? 0 : -1;
             btn.textContent = typeof a === "string" ? a : (a.label || a);
             this.appendChild(btn);
           });
@@ -1553,12 +1683,25 @@ class ContourToolbar extends ContourBase {
       this._wiredToolbar = true;
       this.addEventListener("click", (e) => {
         const btn = e.target && e.target.closest ? e.target.closest(".c-toolbar__overflow-btn") : null;
-        if (!btn || !this.contains(btn)) return;
-        const menu = btn.parentElement && btn.parentElement.querySelector(".c-toolbar__overflow-menu");
-        if (!menu) return;
-        const open = menu.hasAttribute("hidden");
-        if (open) menu.removeAttribute("hidden"); else menu.setAttribute("hidden", "");
-        btn.setAttribute("aria-expanded", String(open));
+        if (btn && this.contains(btn)) {
+          const menu = btn.parentElement && btn.parentElement.querySelector(".c-toolbar__overflow-menu");
+          if (menu) {
+            const open = menu.hasAttribute("hidden");
+            if (open) menu.removeAttribute("hidden"); else menu.setAttribute("hidden", "");
+            btn.setAttribute("aria-expanded", String(open));
+          }
+          return;
+        }
+        const actionBtn = e.target && e.target.closest ? e.target.closest(".c-toolbar__btn") : null;
+        if (actionBtn && this.contains(actionBtn)) {
+          this.dispatchEvent(new CustomEvent("contour:activate", { bubbles: true, composed: true, detail: { label: actionBtn.textContent.trim() } }));
+        }
+      });
+      // Keyboard: roving tabindex over visible toolbar buttons, Enter/Space activates.
+      this.addEventListener("keydown", (e) => {
+        const btns = Array.from(this.querySelectorAll(":scope > .c-toolbar__btn:not(.c-toolbar__overflow-btn)"));
+        if (!btns.length) return;
+        navKey(e, btns, { wrap: true, homeEnd: true, onNavigate: (i) => { btns.forEach((b, j) => b.tabIndex = j === i ? 0 : -1); }, onKey: (k) => { if (k === "Enter" || k === " ") { const b = document.activeElement; if (b) { e.preventDefault(); b.click(); } } } });
       });
     }
   }
@@ -1573,10 +1716,11 @@ class ContourToolbar extends ContourBase {
  * `src`, `lazy`, `refresh`, `timeout`, `skeleton`.
  */
 class ContourSpatialFilter extends ContourBase {
-    static get observed() { return ["modes", "mode", "active", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
-    static get properties() { return { modes: { attribute: "modes" }, mode: { attribute: "mode" }, active: { attribute: "active" }, src: { attribute: "src" } }; }
+    static get observed() { return ["modes", "mode", "active", "bounds", "operator", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
+    static get properties() { return { modes: { attribute: "modes" }, mode: { attribute: "mode" }, active: { attribute: "active" }, bounds: { attribute: "bounds" }, operator: { attribute: "operator" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-spatial-filter");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Spatial filter");
       wireStates(this);
       loadRemote(this, []);
       if (renderStates(this, "spatial-filter")) return;
@@ -1599,6 +1743,34 @@ class ContourSpatialFilter extends ContourBase {
         if (current && current === val) btn.setAttribute("aria-pressed", "true");
         bar.appendChild(btn);
       });
+      // Operator selection
+      let operator = this.querySelector(".c-spatial-filter__operator");
+      if (!operator) { operator = document.createElement("div"); operator.className = "c-spatial-filter__operator"; this.appendChild(operator); }
+      const ops = ["intersects", "contains", "within", "disjoint"];
+      const currentOp = this.getAttribute("operator") || "intersects";
+      operator.innerHTML = "";
+      const opLabel = document.createElement("span");
+      opLabel.textContent = "Operator:";
+      operator.appendChild(opLabel);
+      const opSelect = document.createElement("select");
+      opSelect.className = "c-spatial-filter__operator-select";
+      ops.forEach((op) => {
+        const o = document.createElement("option");
+        o.value = op;
+        o.textContent = op;
+        if (op === currentOp) o.setAttribute("selected", "");
+        opSelect.appendChild(o);
+      });
+      operator.appendChild(opSelect);
+      // Bounds readout
+      let readout = this.querySelector(".c-spatial-filter__readout");
+      if (!readout) { readout = document.createElement("div"); readout.className = "c-spatial-filter__readout"; this.appendChild(readout); }
+      const bounds = this.getAttribute("bounds");
+      readout.textContent = bounds || "—";
+      // Clear all
+      let clearAll = this.querySelector(".c-spatial-filter__clear-all");
+      if (!clearAll) { clearAll = document.createElement("button"); clearAll.type = "button"; clearAll.className = "c-spatial-filter__clear-all"; this.appendChild(clearAll); }
+      clearAll.textContent = "Clear all";
       if (this.hasAttribute("active")) {
         this.classList.add("c-spatial-filter--active");
       } else {
@@ -1609,9 +1781,18 @@ class ContourSpatialFilter extends ContourBase {
       if (this._wiredSpatialFilter) return;
       this._wiredSpatialFilter = true;
       this.addEventListener("click", (e) => {
-        const btn = e.target && e.target.closest ? e.target.closest(".c-spatial-filter__mode") : null;
+        const btn = e.target && e.target.closest ? e.target.closest("button") : null;
         if (!btn || !this.contains(btn)) return;
-        const mode = btn.dataset.mode || btn.textContent.trim();
+        if (btn.classList.contains("c-spatial-filter__clear-all")) {
+          this.classList.remove("c-spatial-filter--active");
+          Array.from(this.querySelectorAll(".c-spatial-filter__mode")).forEach((b) => b.setAttribute("aria-pressed", "false"));
+          this.dispatchEvent(new CustomEvent("contour:clear", { bubbles: true, composed: true, detail: {} }));
+          this.dispatchEvent(new CustomEvent("contour:spatial-filter", { bubbles: true, composed: true, detail: { action: "clear-all" } }));
+          return;
+        }
+        const modeBtn = btn.closest(".c-spatial-filter__mode");
+        if (!modeBtn) return;
+        const mode = modeBtn.dataset.mode || modeBtn.textContent.trim();
         if (mode === "clear") {
           this.classList.remove("c-spatial-filter--active");
           Array.from(this.querySelectorAll(".c-spatial-filter__mode")).forEach((b) => b.setAttribute("aria-pressed", "false"));
@@ -1619,19 +1800,20 @@ class ContourSpatialFilter extends ContourBase {
           return;
         }
         this.classList.add("c-spatial-filter--active");
-        Array.from(this.querySelectorAll(".c-spatial-filter__mode")).forEach((b) => b.setAttribute("aria-pressed", String(b === btn)));
+        Array.from(this.querySelectorAll(".c-spatial-filter__mode")).forEach((b) => b.setAttribute("aria-pressed", String(b === modeBtn)));
         this.dispatchEvent(new CustomEvent("contour:draw-start", { bubbles: true, composed: true, detail: { mode } }));
+        this.dispatchEvent(new CustomEvent("contour:spatial-filter", { bubbles: true, composed: true, detail: { action: "draw-start", mode } }));
+      });
+      this.addEventListener("change", (e) => {
+        const select = e.target;
+        if (select && select.classList.contains("c-spatial-filter__operator-select")) {
+          this.setAttribute("operator", select.value);
+          this.dispatchEvent(new CustomEvent("contour:spatial-filter", { bubbles: true, composed: true, detail: { action: "operator", operator: select.value } }));
+        }
       });
       this.addEventListener("keydown", (e) => {
-        const btn = e.target && e.target.closest ? e.target.closest(".c-spatial-filter__mode") : null;
-        if (!btn || !this.contains(btn)) return;
         const modes = Array.from(this.querySelectorAll(".c-spatial-filter__mode"));
-        const idx = modes.indexOf(btn);
-        let next = -1;
-        if (e.key === "ArrowRight") next = Math.min(modes.length - 1, idx + 1);
-        else if (e.key === "ArrowLeft") next = Math.max(0, idx - 1);
-        if (next >= 0) { e.preventDefault(); try { modes[next].focus(); } catch (err) {} }
-        else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); btn.click(); }
+        navKey(e, modes, { wrap: false, onKey: () => { document.activeElement.click(); } });
       });
     }
   }

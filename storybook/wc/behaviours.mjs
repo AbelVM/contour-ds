@@ -34,7 +34,7 @@
 // listbox's options, an aria-controls target) takes it from here rather than
 // calling Math.random(), which can hand two instances the same id and then point
 // one control at another's list.
-import { contourId, supportsUntilFound, onDispose } from './core.mjs';
+import { contourId, supportsUntilFound, onDispose, navKey, isRtl } from './core.mjs';
 
 // A host is wired once per behaviour. Re-entering is normal — the base class
 // calls enhance() after every render — so the guard lives in a WeakMap keyed on
@@ -127,21 +127,6 @@ const wcEmit = (host, name, detail) => {
  * The active tab is `[aria-selected="true"]`, which is the rule the sheet
  * paints, so no state class is ever written — and none is invented either.
  */
-// RTL awareness (BY2-A7): a horizontal control reverses its arrow keys in a
-// right-to-left context, so ArrowRight moves to the previous item and
-// ArrowLeft to the next. The direction is read from the host, then its
-// nearest ancestor, then the document — the same cascade the platform uses.
-function isRtl(host) {
-  let el = host;
-  while (el && el.nodeType === 1) {
-    const d = el.getAttribute && el.getAttribute("dir");
-    if (d) return d.toLowerCase() === "rtl";
-    el = el.parentElement;
-  }
-  try { return (document.documentElement.getAttribute("dir") || "").toLowerCase() === "rtl"; }
-  catch (e) { return false; }
-}
-
 /** Wire tab keyboard navigation and selection for a host. */
 export function wireTabs(host) {
   if (!wcClaim(host, "tabs")) return;
@@ -343,15 +328,7 @@ export function wireSegmented(host) {
     const seg = groups.find((g) => wcGroup(host, g, "button").includes(btn));
     if (!seg) return;
     const opts = wcGroup(host, seg, "button");
-    const idx = opts.indexOf(btn);
-    let next = -1;
-    const rtl = isRtl(host);
-    if (e.key === "ArrowRight" || e.key === "ArrowDown") next = rtl ? Math.max(idx - 1, 0) : Math.min(idx + 1, opts.length - 1);
-    else if (e.key === "ArrowLeft" || e.key === "ArrowUp") next = rtl ? Math.min(idx + 1, opts.length - 1) : Math.max(idx - 1, 0);
-    else if (e.key === "Home") next = 0;
-    else if (e.key === "End") next = opts.length - 1;
-    else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); activate(btn); return; }
-    if (next >= 0 && next !== idx) { e.preventDefault(); opts[next].focus(); }
+    navKey(e, opts, { wrap: false, homeEnd: true, rtl: isRtl(host), onNavigate: (i) => activate(opts[i]), onKey: () => activate(btn) });
   });
 }
 
@@ -793,16 +770,7 @@ export function wireTree(host) {
       }
       return;
     }
-    let next = -1;
-    if (e.key === "ArrowDown") next = Math.min(idx + 1, items.length - 1);
-    else if (e.key === "ArrowUp") next = Math.max(idx - 1, 0);
-    else if (e.key === "Home") next = 0;
-    else if (e.key === "End") next = items.length - 1;
-    if (next >= 0 && next !== idx) {
-      e.preventDefault();
-      items[next].focus();
-      rove(items[next]);
-    }
+    navKey(e, items, { wrap: false, homeEnd: true, onNavigate: (i) => rove(items[i]) });
   });
 }
 
@@ -865,17 +833,7 @@ export function wireMenu(host) {
       }
     }
 
-    let next = -1;
-    if (e.key === "ArrowDown") next = index < 0 ? 0 : Math.min(index + 1, its.length - 1);
-    else if (e.key === "ArrowUp") next = index < 0 ? its.length - 1 : Math.max(index - 1, 0);
-    else if (e.key === "Home") next = 0;
-    else if (e.key === "End") next = its.length - 1;
-    if (next >= 0) { e.preventDefault(); its[next].focus(); return; }
-    if ((e.key === "Enter" || e.key === " ") && index >= 0 && !(target && target.getAttribute("aria-haspopup") === "menu")) {
-      e.preventDefault();
-      wcEmit(host, "contour:select", { index, label: its[index].textContent.trim() });
-      closeAllSubmenus();
-    }
+    navKey(e, its, { wrap: true, homeEnd: true, onKey: () => { if (e.key === "Enter" || e.key === " ") { const idx = its.indexOf(document.activeElement); if (idx >= 0 && !(target && target.getAttribute("aria-haspopup") === "menu")) { wcEmit(host, "contour:select", { index: idx, label: its[idx].textContent.trim() }); closeAllSubmenus(); } } } });
     // Typeahead (F-21): printable char jumps to the first item whose label
     // starts with the typed character.
     if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {

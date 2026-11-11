@@ -4,20 +4,21 @@
   "generatedBy": "tools/build.mjs, from tools/lib/inventory.mjs",
   "statement": "Generated, never hand-edited. Every block, element, variant, state and token below is read from src/css by the same inventory that publishes every count in this repository, and tools/check-components.mjs fails if the shipped bytes are not that derivation. `tokens` lists the custom properties a block's rules read; a rule naming two blocks (`.c-alert, .c-callout`) is credited to both, because that is what a retune does.",
   "counts": {
-    "blocks": 225,
-    "elements": 741,
-    "variants": 115,
-    "states": 305,
-    "tokens": 2403,
-    "vars": 19,
-    "inputs": 18,
+    "blocks": 231,
+    "elements": 754,
+    "variants": 106,
+    "states": 314,
+    "tokens": 2520,
+    "vars": 16,
+    "inputs": 17,
     "tokensIndexed": 198
   },
   "blocks": [
     {
       "name": "c-accordion",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-navigation.css",
         "utilities.css"
       ],
       "rules": 5,
@@ -67,8 +68,9 @@
     },
     {
       "name": "c-activity",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-tables.css"
       ],
       "rules": 11,
       "elements": [
@@ -125,9 +127,80 @@
       }
     },
     {
-      "name": "c-advanced",
+      "name": "c-activity-feed",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-data-tables.css"
+      ],
+      "rules": 16,
+      "elements": [
+        "c-activity-feed__dot",
+        "c-activity-feed__dot--error",
+        "c-activity-feed__dot--info",
+        "c-activity-feed__dot--success",
+        "c-activity-feed__dot--warning",
+        "c-activity-feed__empty",
+        "c-activity-feed__header",
+        "c-activity-feed__item",
+        "c-activity-feed__item--unread",
+        "c-activity-feed__list",
+        "c-activity-feed__severity",
+        "c-activity-feed__text",
+        "c-activity-feed__time",
+        "c-activity-feed__title",
+        "c-activity-feed__toolbar"
+      ],
+      "variants": [],
+      "states": [],
+      "attributes": [
+        "items",
+        "filter",
+        "unread-only",
+        "empty",
+        "loading",
+        "error"
+      ],
+      "booleanAttributes": [
+        "unread-only"
+      ],
+      "slots": [],
+      "parts": [],
+      "tokens": [
+        "--color-border",
+        "--color-border-subtle",
+        "--color-danger",
+        "--color-primary",
+        "--color-primary-soft",
+        "--color-success",
+        "--color-surface-1",
+        "--color-text",
+        "--color-text-muted",
+        "--color-text-strong",
+        "--color-text-subtle",
+        "--color-warning",
+        "--density",
+        "--font-mono",
+        "--radius-md",
+        "--radius-sm",
+        "--space-md",
+        "--space-sm",
+        "--space-xs",
+        "--type-sm",
+        "--type-xs",
+        "--weight-semibold"
+      ],
+      "vars": [],
+      "inputs": [],
+      "renderedIn": {
+        "guide": true,
+        "templates": []
+      }
+    },
+    {
+      "name": "c-advanced",
+      "maturity": "complete-widget",
+      "sheets": [
+        "components-display.css",
         "utilities.css"
       ],
       "rules": 3,
@@ -160,6 +233,7 @@
     },
     {
       "name": "c-affordance",
+      "maturity": "complete-widget",
       "sheets": [
         "patterns.css",
         "utilities.css"
@@ -212,6 +286,7 @@
     },
     {
       "name": "c-affordances",
+      "maturity": "complete-widget",
       "sheets": [
         "patterns.css"
       ],
@@ -243,8 +318,9 @@
     },
     {
       "name": "c-alert",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-display.css",
         "utilities.css"
       ],
       "rules": 32,
@@ -345,6 +421,7 @@
     },
     {
       "name": "c-anchor",
+      "maturity": "complete-widget",
       "sheets": [
         "components-docs.css"
       ],
@@ -383,21 +460,17 @@
     },
     {
       "name": "c-animation-controls",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css",
-        "components.css"
+        "components-data-widgets.css",
+        "components-misc.css"
       ],
-      "rules": 7,
+      "rules": 3,
       "elements": [
-        "c-animation-controls__scrubber",
-        "c-animation-controls__scrubber--thumb"
+        "c-animation-controls__scrubber"
       ],
       "variants": [],
-      "states": [
-        "::-moz-range-thumb",
-        "::-webkit-slider-thumb",
-        ":not(.c-animation-controls__scrubber--thumb)"
-      ],
+      "states": [],
       "attributes": [
         "playing",
         "speed",
@@ -406,9 +479,13 @@
         "max",
         "caption",
         "show-thumb",
-        "show-thumb-caption"
+        "show-thumb-caption",
+        "loop",
+        "step",
+        "markers"
       ],
       "booleanAttributes": [
+        "loop",
         "playing"
       ],
       "slots": [],
@@ -426,8 +503,9 @@
     },
     {
       "name": "c-annotation",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-misc.css",
         "utilities.css"
       ],
       "rules": 5,
@@ -469,8 +547,9 @@
     },
     {
       "name": "c-app",
+      "maturity": "composition",
       "sheets": [
-        "components-data.css"
+        "components-data-maps.css"
       ],
       "rules": 5,
       "elements": [
@@ -509,8 +588,9 @@
     },
     {
       "name": "c-app-body",
+      "maturity": "composition",
       "sheets": [
-        "components-data.css"
+        "components-data-maps.css"
       ],
       "rules": 5,
       "elements": [
@@ -543,8 +623,9 @@
     },
     {
       "name": "c-avatar",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-misc.css"
       ],
       "rules": 5,
       "elements": [],
@@ -575,6 +656,7 @@
         "--color-primary-soft",
         "--color-primary-text",
         "--color-surface-1",
+        "--density",
         "--font-mono",
         "--ring-3",
         "--type-sm",
@@ -590,8 +672,9 @@
     },
     {
       "name": "c-avatar-group",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-misc.css"
       ],
       "rules": 3,
       "elements": [],
@@ -607,7 +690,8 @@
       "slots": [],
       "parts": [],
       "tokens": [
-        "--color-surface-1"
+        "--color-surface-1",
+        "--density"
       ],
       "vars": [],
       "inputs": [],
@@ -618,8 +702,9 @@
     },
     {
       "name": "c-axis",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-charts.css"
       ],
       "rules": 6,
       "elements": [
@@ -675,11 +760,13 @@
     },
     {
       "name": "c-badge",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-buttons.css",
+        "components-misc.css",
         "utilities.css"
       ],
-      "rules": 12,
+      "rules": 11,
       "elements": [],
       "variants": [
         "c-badge--accent",
@@ -725,11 +812,11 @@
         "--color-text-muted",
         "--color-warning-soft",
         "--color-warning-text",
+        "--density",
         "--dur-fast",
         "--ease-standard",
         "--font-mono",
         "--radius-xs",
-        "--target-control",
         "--type-micro",
         "--weight-medium"
       ],
@@ -744,8 +831,9 @@
     },
     {
       "name": "c-badge-overflow",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-misc.css",
         "utilities.css"
       ],
       "rules": 2,
@@ -771,16 +859,14 @@
     },
     {
       "name": "c-banner",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-misc.css"
       ],
-      "rules": 6,
+      "rules": 3,
       "elements": [],
       "variants": [
-        "c-banner--danger",
-        "c-banner--info",
-        "c-banner--success",
-        "c-banner--warning"
+        "c-banner--info"
       ],
       "states": [],
       "attributes": [
@@ -791,13 +877,10 @@
       "slots": [],
       "parts": [],
       "tokens": [
-        "--color-danger",
         "--color-info",
         "--color-primary",
-        "--color-success",
         "--color-surface-2",
         "--color-text",
-        "--color-warning",
         "--density",
         "--radius-sm",
         "--space-md",
@@ -813,8 +896,10 @@
     },
     {
       "name": "c-bivariate",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-maps.css",
+        "components-data-widgets.css"
       ],
       "rules": 7,
       "elements": [
@@ -867,8 +952,9 @@
     },
     {
       "name": "c-bivariate-legend",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-widgets.css"
       ],
       "rules": 8,
       "elements": [
@@ -909,8 +995,9 @@
     },
     {
       "name": "c-box",
+      "maturity": "primitive",
       "sheets": [
-        "components-data.css"
+        "components-data-maps.css"
       ],
       "rules": 2,
       "elements": [],
@@ -942,8 +1029,9 @@
     },
     {
       "name": "c-brand",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-brand.css"
       ],
       "rules": 5,
       "elements": [
@@ -970,8 +1058,10 @@
         "--color-border",
         "--color-text-strong",
         "--color-text-subtle",
+        "--density",
         "--font-display",
         "--font-mono",
+        "--space-xs",
         "--tracking-micro",
         "--type-micro",
         "--weight-bold"
@@ -989,8 +1079,9 @@
     },
     {
       "name": "c-breadcrumb",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-misc.css"
       ],
       "rules": 9,
       "elements": [
@@ -1044,8 +1135,9 @@
     },
     {
       "name": "c-brownout",
+      "maturity": "scaffold",
       "sheets": [
-        "components-data.css"
+        "components-data-widgets.css"
       ],
       "rules": 3,
       "elements": [
@@ -1079,14 +1171,13 @@
     },
     {
       "name": "c-brush",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-charts.css"
       ],
-      "rules": 6,
+      "rules": 4,
       "elements": [
         "c-brush__handle",
-        "c-brush__handle--end",
-        "c-brush__handle--start",
         "c-brush__range",
         "c-brush__selection"
       ],
@@ -1118,6 +1209,7 @@
         "--color-primary",
         "--color-surface-2",
         "--color-text-muted",
+        "--density",
         "--radius-sm",
         "--space-2xs",
         "--type-xs"
@@ -1131,12 +1223,13 @@
     },
     {
       "name": "c-btn",
+      "maturity": "complete-widget",
       "sheets": [
+        "components-buttons.css",
         "components-shell.css",
-        "components.css",
         "utilities.css"
       ],
-      "rules": 43,
+      "rules": 42,
       "elements": [],
       "variants": [
         "c-btn--accent",
@@ -1216,6 +1309,8 @@
         "--shadow-color-highlight",
         "--shadow-color-primary",
         "--space-2xs",
+        "--space-md",
+        "--space-sm",
         "--target-control",
         "--type-body",
         "--type-micro",
@@ -1241,8 +1336,9 @@
     },
     {
       "name": "c-btn-group",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-buttons.css"
       ],
       "rules": 6,
       "elements": [],
@@ -1277,10 +1373,11 @@
     },
     {
       "name": "c-calendar",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-misc.css"
       ],
-      "rules": 11,
+      "rules": 10,
       "elements": [
         "c-calendar__day",
         "c-calendar__day--empty",
@@ -1308,9 +1405,7 @@
         "--color-text",
         "--density",
         "--radius-sm",
-        "--space-2xs",
         "--space-xs",
-        "--target-control",
         "--target-option",
         "--type-sm",
         "--type-xs"
@@ -1324,6 +1419,7 @@
     },
     {
       "name": "c-callout",
+      "maturity": "complete-widget",
       "sheets": [
         "components-docs.css",
         "utilities.css"
@@ -1407,9 +1503,10 @@
     },
     {
       "name": "c-card",
+      "maturity": "complete-widget",
       "sheets": [
         "base.css",
-        "components.css",
+        "components-cards.css",
         "utilities.css"
       ],
       "rules": 17,
@@ -1476,8 +1573,9 @@
     },
     {
       "name": "c-carousel",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-misc.css"
       ],
       "rules": 8,
       "elements": [
@@ -1512,17 +1610,15 @@
     },
     {
       "name": "c-catchment",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-maps.css"
       ],
-      "rules": 10,
+      "rules": 6,
       "elements": [
         "c-catchment__area",
         "c-catchment__center",
-        "c-catchment__empty",
-        "c-catchment__error",
         "c-catchment__label",
-        "c-catchment__loading",
         "c-catchment__tooltip"
       ],
       "variants": [],
@@ -1554,7 +1650,6 @@
         "--color-surface-1",
         "--color-surface-3",
         "--color-text",
-        "--color-text-muted",
         "--color-text-subtle",
         "--density",
         "--font-mono",
@@ -1574,13 +1669,14 @@
     },
     {
       "name": "c-category",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-charts.css",
+        "components-data-dashboard.css"
       ],
-      "rules": 7,
+      "rules": 6,
       "elements": [
         "c-category__bar",
-        "c-category__empty",
         "c-category__item",
         "c-category__label",
         "c-category__note",
@@ -1590,6 +1686,7 @@
       "states": [],
       "attributes": [
         "items",
+        "search",
         "empty",
         "loading",
         "error",
@@ -1599,7 +1696,6 @@
         "refresh",
         "timeout",
         "skeleton",
-        "search",
         "note",
         "limit",
         "sort"
@@ -1621,7 +1717,6 @@
         "--radius-sm",
         "--space-2xs",
         "--space-3xs",
-        "--space-md",
         "--space-xs",
         "--type-sm",
         "--type-xs"
@@ -1635,6 +1730,7 @@
     },
     {
       "name": "c-changelog",
+      "maturity": "complete-widget",
       "sheets": [
         "components-docs.css"
       ],
@@ -1685,18 +1781,21 @@
       "vars": [],
       "inputs": [],
       "renderedIn": {
-        "guide": false,
+        "guide": true,
         "templates": []
       }
     },
     {
       "name": "c-chart",
+      "maturity": "complete-widget",
       "sheets": [
         "base.css",
-        "components-data.css",
+        "components-data-charts.css",
+        "components-data-dashboard.css",
+        "components-data-maps.css",
         "utilities.css"
       ],
-      "rules": 52,
+      "rules": 49,
       "elements": [
         "c-chart__axis",
         "c-chart__axis--centered",
@@ -1713,10 +1812,7 @@
         "c-chart__band--seq-7",
         "c-chart__bar",
         "c-chart__control",
-        "c-chart__empty",
-        "c-chart__error",
         "c-chart__line",
-        "c-chart__loading",
         "c-chart__missing",
         "c-chart__note",
         "c-chart__plot",
@@ -1746,6 +1842,7 @@
       "attributes": [
         "series",
         "axis",
+        "color",
         "empty",
         "loading",
         "error",
@@ -1758,7 +1855,9 @@
         "brush-max",
         "brush-start",
         "brush-end",
-        "note"
+        "note",
+        "bucket-count",
+        "limit-values"
       ],
       "booleanAttributes": [
         "brush",
@@ -1802,10 +1901,7 @@
         "--chart-tip-inline-start",
         "--chart-tooltip-bg",
         "--chart-tooltip-fg",
-        "--color-danger",
         "--color-surface-1",
-        "--color-text",
-        "--color-text-muted",
         "--color-text-subtle",
         "--density",
         "--font-mono",
@@ -1833,8 +1929,10 @@
     },
     {
       "name": "c-chart-grid",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-dashboard.css",
+        "components-data-widgets.css"
       ],
       "rules": 8,
       "elements": [
@@ -1883,11 +1981,13 @@
     },
     {
       "name": "c-check",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-forms.css",
+        "components-misc.css",
         "utilities.css"
       ],
-      "rules": 17,
+      "rules": 19,
       "elements": [
         "c-check__box",
         "c-check__input"
@@ -1930,6 +2030,7 @@
         "--color-on-primary",
         "--color-primary",
         "--color-surface-1",
+        "--density",
         "--dur-fast",
         "--ease-out-expo",
         "--ease-standard",
@@ -1946,11 +2047,13 @@
     },
     {
       "name": "c-chip",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-buttons.css",
+        "components-misc.css",
         "utilities.css"
       ],
-      "rules": 14,
+      "rules": 13,
       "elements": [
         "c-chip__key",
         "c-chip__value"
@@ -1993,7 +2096,6 @@
         "--font-mono",
         "--radius-pill",
         "--space-2xs",
-        "--target-control",
         "--target-option",
         "--type-xs",
         "--weight-semibold"
@@ -2007,8 +2109,9 @@
     },
     {
       "name": "c-cluster",
+      "maturity": "primitive",
       "sheets": [
-        "components.css"
+        "components-misc.css"
       ],
       "rules": 1,
       "elements": [],
@@ -2035,8 +2138,9 @@
     },
     {
       "name": "c-code",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-display.css"
       ],
       "rules": 7,
       "elements": [
@@ -2085,9 +2189,10 @@
     },
     {
       "name": "c-code-tabs",
+      "maturity": "complete-widget",
       "sheets": [
         "components-docs.css",
-        "components.css"
+        "components-navigation.css"
       ],
       "rules": 20,
       "elements": [
@@ -2157,10 +2262,12 @@
     },
     {
       "name": "c-color-picker",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-misc.css",
+        "utilities.css"
       ],
-      "rules": 8,
+      "rules": 12,
       "elements": [
         "c-color-picker__alpha",
         "c-color-picker__eyedropper",
@@ -2170,7 +2277,11 @@
         "c-color-picker__presets"
       ],
       "variants": [],
-      "states": [],
+      "states": [
+        ".is-selected",
+        ":focus-visible",
+        "[aria-pressed=\"true\"]"
+      ],
       "attributes": [
         "value",
         "label",
@@ -2193,7 +2304,6 @@
         "--density",
         "--radius-xs",
         "--space-2xs",
-        "--target-control",
         "--type-xs"
       ],
       "vars": [],
@@ -2205,28 +2315,22 @@
     },
     {
       "name": "c-combobox",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-forms.css",
         "utilities.css"
       ],
-      "rules": 24,
+      "rules": 14,
       "elements": [
-        "c-combobox__clear",
-        "c-combobox__empty",
-        "c-combobox__error",
         "c-combobox__input",
         "c-combobox__list",
-        "c-combobox__loading",
-        "c-combobox__option",
-        "c-combobox__option--active"
+        "c-combobox__option"
       ],
       "variants": [],
       "states": [
         ":focus-visible",
-        ":has(.c-combobox__clear)",
         ":hover",
-        "[aria-selected=\"true\"]",
-        "[hidden]"
+        "[aria-selected=\"true\"]"
       ],
       "attributes": [
         "options",
@@ -2259,28 +2363,18 @@
       ],
       "tokens": [
         "--border-width-thick",
-        "--color-border",
         "--color-control-edge",
-        "--color-focus-halo",
-        "--color-focus-ring",
-        "--color-primary",
         "--color-primary-soft",
         "--color-primary-text",
         "--color-surface-1",
         "--color-surface-2",
         "--color-text",
-        "--color-text-muted",
         "--density",
-        "--dur-fast",
-        "--ease-standard",
         "--radius-md",
         "--radius-sm",
-        "--shadow-md",
-        "--space-2xs",
-        "--space-xs",
-        "--target-control",
+        "--shadow-sm",
         "--type-sm",
-        "--z-tooltip"
+        "--weight-medium"
       ],
       "vars": [],
       "inputs": [],
@@ -2291,12 +2385,13 @@
     },
     {
       "name": "c-command",
+      "maturity": "complete-widget",
       "sheets": [
         "base.css",
         "components-shell.css",
         "utilities.css"
       ],
-      "rules": 41,
+      "rules": 42,
       "elements": [
         "c-command__empty",
         "c-command__field",
@@ -2388,8 +2483,9 @@
     },
     {
       "name": "c-command-palette",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-misc.css",
         "utilities.css"
       ],
       "rules": 10,
@@ -2435,6 +2531,7 @@
     },
     {
       "name": "c-compare",
+      "maturity": "complete-widget",
       "sheets": [
         "components-landing.css"
       ],
@@ -2504,8 +2601,9 @@
     },
     {
       "name": "c-comparison",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-maps.css"
       ],
       "rules": 17,
       "elements": [
@@ -2560,8 +2658,9 @@
     },
     {
       "name": "c-compass",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-maps.css"
       ],
       "rules": 12,
       "elements": [
@@ -2605,6 +2704,7 @@
         "--color-surface-1",
         "--color-text-muted",
         "--color-text-subtle",
+        "--density",
         "--font-mono",
         "--weight-bold"
       ],
@@ -2617,8 +2717,9 @@
     },
     {
       "name": "c-container",
+      "maturity": "primitive",
       "sheets": [
-        "components-data.css"
+        "components-data-maps.css"
       ],
       "rules": 4,
       "elements": [],
@@ -2653,15 +2754,17 @@
     },
     {
       "name": "c-context-menu",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-misc.css",
         "utilities.css"
       ],
-      "rules": 6,
+      "rules": 7,
       "elements": [],
       "variants": [],
       "states": [
         ".is-open",
+        ":popover-open",
         "[popover]"
       ],
       "attributes": [
@@ -2688,8 +2791,9 @@
     },
     {
       "name": "c-contour-plot",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-charts.css"
       ],
       "rules": 10,
       "elements": [
@@ -2721,6 +2825,7 @@
         "--color-primary",
         "--color-surface-1",
         "--color-text-subtle",
+        "--density",
         "--font-mono",
         "--radius-md"
       ],
@@ -2733,8 +2838,9 @@
     },
     {
       "name": "c-coordinate",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-maps.css"
       ],
       "rules": 7,
       "elements": [
@@ -2794,6 +2900,7 @@
     },
     {
       "name": "c-cta",
+      "maturity": "complete-widget",
       "sheets": [
         "components-landing.css"
       ],
@@ -2847,6 +2954,7 @@
     },
     {
       "name": "c-dash-freshness",
+      "maturity": "complete-widget",
       "sheets": [
         "patterns.css"
       ],
@@ -2883,6 +2991,7 @@
     },
     {
       "name": "c-dash-kpi-row",
+      "maturity": "composition",
       "sheets": [
         "patterns.css"
       ],
@@ -2915,6 +3024,7 @@
     },
     {
       "name": "c-dash-shell",
+      "maturity": "composition",
       "sheets": [
         "patterns.css"
       ],
@@ -2945,6 +3055,7 @@
     },
     {
       "name": "c-dash-toolbar",
+      "maturity": "composition",
       "sheets": [
         "patterns.css",
         "utilities.css"
@@ -2994,10 +3105,11 @@
     },
     {
       "name": "c-data-export",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-widgets.css"
       ],
-      "rules": 5,
+      "rules": 35,
       "elements": [
         "c-data-export__btn"
       ],
@@ -3015,21 +3127,39 @@
       "slots": [],
       "parts": [],
       "tokens": [
+        "--color-accent",
         "--color-border",
+        "--color-border-subtle",
+        "--color-success-soft",
+        "--color-success-text",
         "--color-surface-1",
         "--color-surface-2",
+        "--color-text",
+        "--color-text-muted",
         "--color-text-strong",
+        "--color-warning-soft",
+        "--color-warning-text",
         "--density",
         "--dur-fast",
         "--ease-standard",
+        "--radius-lg",
+        "--radius-md",
+        "--radius-pill",
         "--radius-sm",
+        "--shadow-md",
+        "--shadow-xl",
+        "--space-2xs",
+        "--space-md",
         "--space-sm",
-        "--space-xs"
+        "--space-xs",
+        "--type-sm",
+        "--type-xs",
+        "--weight-semibold"
       ],
       "vars": [],
       "inputs": [],
       "renderedIn": {
-        "guide": false,
+        "guide": true,
         "templates": [
           "dashboard"
         ]
@@ -3037,9 +3167,10 @@
     },
     {
       "name": "c-data-grid",
+      "maturity": "complete-widget",
       "sheets": [
         "base.css",
-        "components.css"
+        "components-misc.css"
       ],
       "rules": 6,
       "elements": [
@@ -3080,8 +3211,9 @@
     },
     {
       "name": "c-data-table",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-display.css"
       ],
       "rules": 2,
       "elements": [],
@@ -3094,7 +3226,9 @@
       ],
       "slots": [],
       "parts": [],
-      "tokens": [],
+      "tokens": [
+        "--density"
+      ],
       "vars": [],
       "inputs": [],
       "renderedIn": {
@@ -3104,8 +3238,10 @@
     },
     {
       "name": "c-datamark",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-charts.css",
+        "components-data-maps.css"
       ],
       "rules": 10,
       "elements": [],
@@ -3152,11 +3288,12 @@
     },
     {
       "name": "c-date-picker",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-misc.css",
         "utilities.css"
       ],
-      "rules": 14,
+      "rules": 16,
       "elements": [
         "c-date-picker__calendar",
         "c-date-picker__calendar-day",
@@ -3220,8 +3357,9 @@
     },
     {
       "name": "c-date-range",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-misc.css",
         "utilities.css"
       ],
       "rules": 4,
@@ -3260,21 +3398,19 @@
     },
     {
       "name": "c-delta",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-dashboard.css"
       ],
-      "rules": 11,
+      "rules": 8,
       "elements": [
         "c-delta__empty",
         "c-delta__error",
         "c-delta__loading"
       ],
       "variants": [
-        "c-delta--bad",
         "c-delta--down",
         "c-delta--flat",
-        "c-delta--good",
-        "c-delta--neutral",
         "c-delta--up"
       ],
       "states": [],
@@ -3319,6 +3455,7 @@
     },
     {
       "name": "c-destructive-hint",
+      "maturity": "complete-widget",
       "sheets": [
         "components-shell.css"
       ],
@@ -3349,8 +3486,9 @@
     },
     {
       "name": "c-dialog",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-overlay.css",
         "utilities.css"
       ],
       "rules": 18,
@@ -3411,6 +3549,7 @@
     },
     {
       "name": "c-diff",
+      "maturity": "complete-widget",
       "sheets": [
         "components-docs.css"
       ],
@@ -3459,8 +3598,9 @@
     },
     {
       "name": "c-disclosure",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-navigation.css",
         "utilities.css"
       ],
       "rules": 11,
@@ -3519,15 +3659,13 @@
     },
     {
       "name": "c-divider",
+      "maturity": "primitive",
       "sheets": [
-        "components.css"
+        "components-misc.css"
       ],
-      "rules": 7,
+      "rules": 4,
       "elements": [],
-      "variants": [
-        "c-divider--horizontal",
-        "c-divider--vertical"
-      ],
+      "variants": [],
       "states": [
         "::after",
         "::before"
@@ -3555,6 +3693,7 @@
     },
     {
       "name": "c-do-dont",
+      "maturity": "complete-widget",
       "sheets": [
         "components-docs.css"
       ],
@@ -3607,6 +3746,7 @@
     },
     {
       "name": "c-docs-nav",
+      "maturity": "composition",
       "sheets": [
         "components-docs.css"
       ],
@@ -3683,6 +3823,7 @@
     },
     {
       "name": "c-docs-shell",
+      "maturity": "composition",
       "sheets": [
         "patterns.css"
       ],
@@ -3736,13 +3877,14 @@
     },
     {
       "name": "c-donut",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-charts.css",
+        "components-data-dashboard.css"
       ],
-      "rules": 11,
+      "rules": 10,
       "elements": [
         "c-donut__center",
-        "c-donut__empty",
         "c-donut__item",
         "c-donut__list",
         "c-donut__note",
@@ -3757,6 +3899,7 @@
         "values",
         "items",
         "label",
+        "color",
         "empty",
         "loading",
         "error",
@@ -3782,14 +3925,12 @@
         "list"
       ],
       "tokens": [
-        "--color-text-muted",
         "--color-text-subtle",
         "--density",
         "--font-display",
         "--radius-xs",
         "--space-2xs",
         "--space-3xs",
-        "--space-md",
         "--space-xs",
         "--type-h3",
         "--type-lg",
@@ -3808,10 +3949,11 @@
     },
     {
       "name": "c-dot",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-display.css"
       ],
-      "rules": 8,
+      "rules": 7,
       "elements": [],
       "variants": [
         "c-dot--accent",
@@ -3821,10 +3963,7 @@
         "c-dot--success",
         "c-dot--warning"
       ],
-      "states": [
-        "::after",
-        "::before"
-      ],
+      "states": [],
       "attributes": [
         "variant",
         "live"
@@ -3840,17 +3979,20 @@
       ],
       "tokens": [
         "--color-accent",
+        "--color-accent-text",
         "--color-danger",
+        "--color-danger-text",
         "--color-primary",
+        "--color-primary-text",
         "--color-success",
-        "--color-text-subtle",
+        "--color-success-text",
+        "--color-text",
+        "--color-text-muted",
         "--color-warning",
-        "--dur-ping",
-        "--ease-out-expo"
+        "--color-warning-text",
+        "--density"
       ],
-      "vars": [
-        "--dot-color"
-      ],
+      "vars": [],
       "inputs": [],
       "renderedIn": {
         "guide": true,
@@ -3861,12 +4003,12 @@
     },
     {
       "name": "c-drag-handle",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css",
-        "components-shell.css",
-        "components.css"
+        "components-data-maps.css",
+        "components-shell.css"
       ],
-      "rules": 9,
+      "rules": 6,
       "elements": [],
       "variants": [
         "c-drag-handle--dots"
@@ -3904,14 +4046,14 @@
     },
     {
       "name": "c-draggable",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-misc.css"
       ],
-      "rules": 5,
+      "rules": 3,
       "elements": [],
       "variants": [
-        "c-draggable--dragging",
-        "c-draggable--reordering"
+        "c-draggable--dragging"
       ],
       "states": [
         ":active"
@@ -3927,9 +4069,8 @@
         "draggable"
       ],
       "tokens": [
-        "--dur-base",
-        "--dur-fast",
-        "--ease-standard"
+        "--color-border",
+        "--color-surface-3"
       ],
       "vars": [],
       "inputs": [],
@@ -3940,8 +4081,9 @@
     },
     {
       "name": "c-drawer",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css",
+        "components-data-widgets.css",
         "utilities.css"
       ],
       "rules": 17,
@@ -4006,17 +4148,18 @@
     },
     {
       "name": "c-drop-indicator",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-misc.css"
       ],
-      "rules": 5,
-      "elements": [],
+      "rules": 3,
+      "elements": [
+        "c-drop-indicator__label"
+      ],
       "variants": [
         "c-drop-indicator--visible"
       ],
-      "states": [
-        "::before"
-      ],
+      "states": [],
       "attributes": [
         "label"
       ],
@@ -4029,14 +4172,8 @@
       ],
       "tokens": [
         "--color-primary",
-        "--color-primary-soft",
-        "--density",
-        "--dur-fast",
-        "--ease-standard",
-        "--font-mono",
-        "--space-2xs",
-        "--tracking-label",
-        "--type-micro"
+        "--color-text-subtle",
+        "--type-xs"
       ],
       "vars": [],
       "inputs": [],
@@ -4047,11 +4184,14 @@
     },
     {
       "name": "c-drop-zone",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-misc.css"
       ],
-      "rules": 3,
-      "elements": [],
+      "rules": 4,
+      "elements": [
+        "c-drop-zone__label"
+      ],
       "variants": [
         "c-drop-zone--active",
         "c-drop-zone--reject"
@@ -4068,15 +4208,14 @@
         "drop-zone"
       ],
       "tokens": [
-        "--color-border",
+        "--color-border-subtle",
         "--color-danger",
         "--color-primary",
-        "--color-primary-soft",
+        "--color-surface-1",
+        "--color-text",
         "--density",
-        "--dur-fast",
-        "--ease-standard",
         "--radius-md",
-        "--space-md"
+        "--type-sm"
       ],
       "vars": [],
       "inputs": [],
@@ -4087,8 +4226,9 @@
     },
     {
       "name": "c-dropdown",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-misc.css",
         "utilities.css"
       ],
       "rules": 5,
@@ -4119,8 +4259,9 @@
     },
     {
       "name": "c-elevation",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-cards.css",
         "utilities.css"
       ],
       "rules": 2,
@@ -4154,8 +4295,9 @@
     },
     {
       "name": "c-empty",
+      "maturity": "scaffold",
       "sheets": [
-        "components.css",
+        "components-misc.css",
         "utilities.css"
       ],
       "rules": 8,
@@ -4218,8 +4360,9 @@
     },
     {
       "name": "c-error-boundary",
+      "maturity": "scaffold",
       "sheets": [
-        "components.css",
+        "components-display.css",
         "utilities.css"
       ],
       "rules": 4,
@@ -4256,9 +4399,10 @@
     },
     {
       "name": "c-expandable",
+      "maturity": "complete-widget",
       "sheets": [
+        "components-navigation.css",
         "components-shell.css",
-        "components.css",
         "utilities.css"
       ],
       "rules": 5,
@@ -4298,8 +4442,9 @@
     },
     {
       "name": "c-fab",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-misc.css",
         "utilities.css"
       ],
       "rules": 2,
@@ -4316,6 +4461,7 @@
       "tokens": [
         "--color-on-primary",
         "--color-primary",
+        "--density",
         "--shadow-lg",
         "--space-lg",
         "--type-lg",
@@ -4330,6 +4476,7 @@
     },
     {
       "name": "c-faq",
+      "maturity": "complete-widget",
       "sheets": [
         "components-landing.css",
         "utilities.css"
@@ -4408,8 +4555,9 @@
     },
     {
       "name": "c-feature",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-cards.css"
       ],
       "rules": 4,
       "elements": [
@@ -4464,9 +4612,61 @@
       }
     },
     {
-      "name": "c-field",
+      "name": "c-feature-inspector",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-data-widgets.css"
+      ],
+      "rules": 8,
+      "elements": [
+        "c-feature-inspector__actions",
+        "c-feature-inspector__body",
+        "c-feature-inspector__field",
+        "c-feature-inspector__head",
+        "c-feature-inspector__label",
+        "c-feature-inspector__title",
+        "c-feature-inspector__value"
+      ],
+      "variants": [],
+      "states": [],
+      "attributes": [
+        "title",
+        "open"
+      ],
+      "booleanAttributes": [
+        "open"
+      ],
+      "slots": [],
+      "parts": [],
+      "tokens": [
+        "--color-border",
+        "--color-border-subtle",
+        "--color-surface-1",
+        "--color-text",
+        "--color-text-muted",
+        "--color-text-strong",
+        "--density",
+        "--radius-lg",
+        "--shadow-xl",
+        "--space-md",
+        "--space-sm",
+        "--space-xs",
+        "--type-sm",
+        "--type-xs",
+        "--weight-semibold"
+      ],
+      "vars": [],
+      "inputs": [],
+      "renderedIn": {
+        "guide": true,
+        "templates": []
+      }
+    },
+    {
+      "name": "c-field",
+      "maturity": "complete-widget",
+      "sheets": [
+        "components-forms.css",
         "utilities.css"
       ],
       "rules": 7,
@@ -4505,6 +4705,7 @@
         "--color-danger-text",
         "--color-text-muted",
         "--color-text-subtle",
+        "--density",
         "--font-mono",
         "--tracking-label",
         "--type-micro",
@@ -4520,8 +4721,9 @@
     },
     {
       "name": "c-field-group",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-forms.css",
         "utilities.css"
       ],
       "rules": 8,
@@ -4572,6 +4774,7 @@
     },
     {
       "name": "c-file-tree",
+      "maturity": "complete-widget",
       "sheets": [
         "components-docs.css"
       ],
@@ -4594,6 +4797,7 @@
         "--color-primary-text",
         "--color-text-muted",
         "--color-text-strong",
+        "--density",
         "--font-mono"
       ],
       "vars": [],
@@ -4605,10 +4809,12 @@
     },
     {
       "name": "c-file-upload",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-misc.css",
+        "utilities.css"
       ],
-      "rules": 9,
+      "rules": 12,
       "elements": [
         "c-file-upload__dropzone",
         "c-file-upload__input",
@@ -4620,7 +4826,8 @@
       ],
       "variants": [],
       "states": [
-        ".is-dragover"
+        ".is-dragover",
+        ":focus-visible"
       ],
       "attributes": [
         "label",
@@ -4658,17 +4865,25 @@
     },
     {
       "name": "c-filter-bar",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-tables.css",
+        "components-data-widgets.css"
       ],
-      "rules": 4,
+      "rules": 9,
       "elements": [
         "c-filter-bar__divider",
         "c-filter-bar__empty",
-        "c-filter-bar__label"
+        "c-filter-bar__label",
+        "c-filter-bar__mode",
+        "c-filter-bar__modes"
       ],
       "variants": [],
-      "states": [],
+      "states": [
+        ":focus-visible",
+        ":hover",
+        "[aria-pressed=\"true\"]"
+      ],
       "attributes": [
         "label",
         "divider",
@@ -4677,6 +4892,7 @@
         "placeholder",
         "mode",
         "modes",
+        "scope",
         "empty",
         "loading",
         "error",
@@ -4698,11 +4914,21 @@
       ],
       "tokens": [
         "--color-border",
+        "--color-focus-ring",
+        "--color-on-primary-solid",
+        "--color-primary-solid",
         "--color-surface-1",
+        "--color-surface-2",
+        "--color-text",
+        "--color-text-muted",
         "--color-text-subtle",
         "--density",
+        "--dur-fast",
+        "--ease-standard",
+        "--focus-width",
         "--font-mono",
         "--radius-lg",
+        "--radius-pill",
         "--space-2xs",
         "--tracking-label",
         "--type-micro"
@@ -4718,8 +4944,9 @@
     },
     {
       "name": "c-filter-pill",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css",
+        "components-data-tables.css",
         "utilities.css"
       ],
       "rules": 8,
@@ -4757,6 +4984,7 @@
         "--color-text",
         "--color-text-strong",
         "--color-text-subtle",
+        "--density",
         "--dur-fast",
         "--ease-standard",
         "--font-mono",
@@ -4777,8 +5005,9 @@
     },
     {
       "name": "c-flag",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-misc.css"
       ],
       "rules": 2,
       "elements": [],
@@ -4819,8 +5048,9 @@
     },
     {
       "name": "c-flow-map",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-maps.css"
       ],
       "rules": 12,
       "elements": [
@@ -4890,9 +5120,10 @@
     },
     {
       "name": "c-footer",
+      "maturity": "composition",
       "sheets": [
         "base.css",
-        "components.css"
+        "components-misc.css"
       ],
       "rules": 10,
       "elements": [
@@ -4954,8 +5185,9 @@
     },
     {
       "name": "c-form",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-forms.css"
       ],
       "rules": 7,
       "elements": [
@@ -4997,8 +5229,9 @@
     },
     {
       "name": "c-gauge",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-charts.css"
       ],
       "rules": 12,
       "elements": [
@@ -5081,8 +5314,9 @@
     },
     {
       "name": "c-geocoder",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-widgets.css"
       ],
       "rules": 8,
       "elements": [
@@ -5135,9 +5369,10 @@
     },
     {
       "name": "c-header",
+      "maturity": "composition",
       "sheets": [
         "base.css",
-        "components.css",
+        "components-brand.css",
         "utilities.css"
       ],
       "rules": 26,
@@ -5210,17 +5445,15 @@
     },
     {
       "name": "c-heatmap",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-charts.css"
       ],
-      "rules": 10,
+      "rules": 7,
       "elements": [
         "c-heatmap__cell",
-        "c-heatmap__empty",
-        "c-heatmap__error",
         "c-heatmap__legend",
         "c-heatmap__legend-bar",
-        "c-heatmap__loading",
         "c-heatmap__tooltip"
       ],
       "variants": [],
@@ -5253,11 +5486,9 @@
         "--chart-tip-block-start",
         "--chart-tip-inline-start",
         "--color-border",
-        "--color-danger",
         "--color-surface-1",
         "--color-surface-3",
         "--color-text",
-        "--color-text-muted",
         "--color-text-subtle",
         "--density",
         "--dur-fast",
@@ -5281,8 +5512,9 @@
     },
     {
       "name": "c-hexbin",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-maps.css"
       ],
       "rules": 8,
       "elements": [
@@ -5344,11 +5576,12 @@
     },
     {
       "name": "c-hover-card",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-misc.css",
         "utilities.css"
       ],
-      "rules": 9,
+      "rules": 10,
       "elements": [
         "c-hover-card__body",
         "c-hover-card__content",
@@ -5357,6 +5590,7 @@
       "variants": [],
       "states": [
         ".is-open",
+        ":popover-open",
         "[popover]"
       ],
       "attributes": [
@@ -5391,8 +5625,9 @@
     },
     {
       "name": "c-icon-badge",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-cards.css"
       ],
       "rules": 5,
       "elements": [],
@@ -5421,6 +5656,7 @@
         "--color-primary-soft",
         "--color-warning",
         "--color-warning-soft",
+        "--density",
         "--radius-md"
       ],
       "vars": [],
@@ -5432,11 +5668,12 @@
     },
     {
       "name": "c-input",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-forms.css",
         "utilities.css"
       ],
-      "rules": 10,
+      "rules": 12,
       "elements": [],
       "variants": [],
       "states": [
@@ -5492,8 +5729,9 @@
     },
     {
       "name": "c-input-group",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-forms.css",
         "utilities.css"
       ],
       "rules": 6,
@@ -5519,7 +5757,8 @@
       "tokens": [
         "--border-width-thick",
         "--color-surface-1",
-        "--color-text-subtle"
+        "--color-text-subtle",
+        "--density"
       ],
       "vars": [],
       "inputs": [],
@@ -5530,6 +5769,7 @@
     },
     {
       "name": "c-install",
+      "maturity": "complete-widget",
       "sheets": [
         "components-docs.css"
       ],
@@ -5580,8 +5820,9 @@
     },
     {
       "name": "c-instrument",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-maps.css"
       ],
       "rules": 9,
       "elements": [
@@ -5637,16 +5878,14 @@
     },
     {
       "name": "c-isochrone",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-maps.css"
       ],
-      "rules": 12,
+      "rules": 9,
       "elements": [
         "c-isochrone__center",
-        "c-isochrone__empty",
-        "c-isochrone__error",
         "c-isochrone__label",
-        "c-isochrone__loading",
         "c-isochrone__ring",
         "c-isochrone__ring--10min",
         "c-isochrone__ring--15min",
@@ -5685,7 +5924,6 @@
         "--color-surface-1",
         "--color-surface-3",
         "--color-text",
-        "--color-text-muted",
         "--color-text-subtle",
         "--density",
         "--radius-md",
@@ -5705,8 +5943,9 @@
     },
     {
       "name": "c-kbd",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-misc.css"
       ],
       "rules": 1,
       "elements": [],
@@ -5727,6 +5966,7 @@
         "--color-border",
         "--color-surface-2",
         "--color-text-muted",
+        "--density",
         "--font-mono",
         "--radius-xs"
       ],
@@ -5742,9 +5982,10 @@
     },
     {
       "name": "c-kpi",
+      "maturity": "complete-widget",
       "sheets": [
         "base.css",
-        "components-data.css",
+        "components-data-dashboard.css",
         "utilities.css"
       ],
       "rules": 22,
@@ -5834,6 +6075,7 @@
     },
     {
       "name": "c-landing-features",
+      "maturity": "complete-widget",
       "sheets": [
         "patterns.css"
       ],
@@ -5894,6 +6136,7 @@
     },
     {
       "name": "c-landing-hero",
+      "maturity": "complete-widget",
       "sheets": [
         "patterns.css",
         "utilities.css"
@@ -5956,8 +6199,9 @@
     },
     {
       "name": "c-layer-panel",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-maps.css"
       ],
       "rules": 22,
       "elements": [
@@ -6036,9 +6280,10 @@
     },
     {
       "name": "c-layer-switch",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css",
-        "components.css"
+        "components-data-maps.css",
+        "components-misc.css"
       ],
       "rules": 14,
       "elements": [
@@ -6108,14 +6353,17 @@
     },
     {
       "name": "c-legend",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css",
-        "components.css",
+        "components-data-charts.css",
+        "components-display.css",
+        "components-misc.css",
         "utilities.css"
       ],
-      "rules": 46,
+      "rules": 55,
       "elements": [
         "c-legend__audit",
+        "c-legend__break-label",
         "c-legend__caption",
         "c-legend__classification",
         "c-legend__empty",
@@ -6132,12 +6380,14 @@
         "c-legend__scale",
         "c-legend__size",
         "c-legend__swatch",
+        "c-legend__swatch--graduated",
         "c-legend__swatch--line",
         "c-legend__table",
         "c-legend__table-wrap",
         "c-legend__title"
       ],
       "variants": [
+        "c-legend--graduated",
         "c-legend--inline",
         "c-legend--interactive"
       ],
@@ -6175,15 +6425,18 @@
         "thresholds",
         "breaks",
         "no-data-color",
+        "no-data-label",
         "size",
         "table",
         "classification",
         "audit",
         "continuous",
         "ends",
-        "caption"
+        "caption",
+        "graduated"
       ],
       "booleanAttributes": [
+        "graduated",
         "selectable"
       ],
       "slots": [
@@ -6229,6 +6482,7 @@
         "--space-md",
         "--space-sm",
         "--space-xs",
+        "--target-option",
         "--tracking-label",
         "--type-micro",
         "--type-xs"
@@ -6246,8 +6500,9 @@
     },
     {
       "name": "c-link",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-buttons.css"
       ],
       "rules": 3,
       "elements": [],
@@ -6268,6 +6523,7 @@
       ],
       "tokens": [
         "--color-link",
+        "--density",
         "--dur-fast",
         "--ease-standard",
         "--type-xs",
@@ -6282,6 +6538,7 @@
     },
     {
       "name": "c-linkish",
+      "maturity": "complete-widget",
       "sheets": [
         "components-shell.css"
       ],
@@ -6311,8 +6568,9 @@
     },
     {
       "name": "c-live-badge",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-display.css",
         "utilities.css"
       ],
       "rules": 6,
@@ -6340,28 +6598,19 @@
         "live-badge"
       ],
       "tokens": [
-        "--color-accent",
-        "--color-accent-text",
+        "--color-control-edge",
         "--color-danger",
-        "--color-danger-text",
         "--color-success",
-        "--color-success-text",
+        "--color-surface-1",
+        "--color-text",
+        "--color-text-muted",
         "--color-warning",
-        "--color-warning-text",
         "--density",
-        "--dur-ping",
-        "--ease-out-expo",
         "--radius-pill",
-        "--space-2xs",
-        "--space-xs",
-        "--tracking-wide",
         "--type-xs",
-        "--weight-semibold"
+        "--weight-medium"
       ],
-      "vars": [
-        "--live-color",
-        "--live-text"
-      ],
+      "vars": [],
       "inputs": [],
       "renderedIn": {
         "guide": true,
@@ -6370,8 +6619,9 @@
     },
     {
       "name": "c-loading",
+      "maturity": "scaffold",
       "sheets": [
-        "components.css"
+        "components-misc.css"
       ],
       "rules": 1,
       "elements": [],
@@ -6406,6 +6656,7 @@
     },
     {
       "name": "c-logos",
+      "maturity": "complete-widget",
       "sheets": [
         "components-landing.css"
       ],
@@ -6447,8 +6698,9 @@
     },
     {
       "name": "c-map-area",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-maps.css"
       ],
       "rules": 3,
       "elements": [],
@@ -6483,8 +6735,9 @@
     },
     {
       "name": "c-map-footer",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-maps.css"
       ],
       "rules": 2,
       "elements": [],
@@ -6517,8 +6770,9 @@
     },
     {
       "name": "c-map-panel",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css",
+        "components-data-maps.css",
         "utilities.css"
       ],
       "rules": 7,
@@ -6562,23 +6816,33 @@
     },
     {
       "name": "c-map-popup",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-misc.css",
         "utilities.css"
       ],
-      "rules": 6,
+      "rules": 10,
       "elements": [
         "c-map-popup__body",
         "c-map-popup__title"
       ],
-      "variants": [],
-      "states": [],
+      "variants": [
+        "c-map-popup--flip-both",
+        "c-map-popup--flip-x",
+        "c-map-popup--flip-y"
+      ],
+      "states": [
+        "[anchor]"
+      ],
       "attributes": [
         "title",
         "content",
         "cluster-count",
         "cluster-expanded",
-        "cluster-items"
+        "cluster-items",
+        "anchor",
+        "position",
+        "collision"
       ],
       "booleanAttributes": [
         "cluster-expanded"
@@ -6608,8 +6872,9 @@
     },
     {
       "name": "c-map-slot",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-maps.css"
       ],
       "rules": 12,
       "elements": [
@@ -6642,6 +6907,7 @@
         "--color-surface-1",
         "--color-text",
         "--color-text-muted",
+        "--density",
         "--focus-width",
         "--font-mono",
         "--map-attribution-gap",
@@ -6676,8 +6942,9 @@
     },
     {
       "name": "c-mark",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-brand.css"
       ],
       "rules": 2,
       "elements": [],
@@ -6701,6 +6968,7 @@
       "tokens": [
         "--color-primary",
         "--color-primary-soft",
+        "--density",
         "--radius-md"
       ],
       "vars": [],
@@ -6716,8 +6984,9 @@
     },
     {
       "name": "c-measure",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-dashboard.css"
       ],
       "rules": 8,
       "elements": [
@@ -6780,9 +7049,10 @@
     },
     {
       "name": "c-menu",
+      "maturity": "complete-widget",
       "sheets": [
+        "components-misc.css",
         "components-shell.css",
-        "components.css",
         "utilities.css"
       ],
       "rules": 30,
@@ -6859,8 +7129,9 @@
     },
     {
       "name": "c-meter",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-display.css",
         "utilities.css"
       ],
       "rules": 14,
@@ -6941,8 +7212,9 @@
     },
     {
       "name": "c-metrics",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css",
+        "components-data-widgets.css",
         "components-landing.css"
       ],
       "rules": 5,
@@ -6996,8 +7268,9 @@
     },
     {
       "name": "c-minimap",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-maps.css"
       ],
       "rules": 6,
       "elements": [
@@ -7035,6 +7308,7 @@
         "--color-surface-1",
         "--color-text-muted",
         "--color-text-subtle",
+        "--density",
         "--radius-sm",
         "--space-2xs",
         "--space-sm",
@@ -7050,8 +7324,9 @@
     },
     {
       "name": "c-notification-center",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-misc.css",
         "utilities.css"
       ],
       "rules": 8,
@@ -7093,16 +7368,19 @@
     },
     {
       "name": "c-number-field",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-misc.css",
         "utilities.css"
       ],
-      "rules": 4,
+      "rules": 7,
       "elements": [
         "c-number-field__label"
       ],
       "variants": [],
-      "states": [],
+      "states": [
+        ":focus-visible"
+      ],
       "attributes": [
         "value",
         "min",
@@ -7135,6 +7413,7 @@
     },
     {
       "name": "c-pager",
+      "maturity": "complete-widget",
       "sheets": [
         "components-docs.css"
       ],
@@ -7192,12 +7471,13 @@
     },
     {
       "name": "c-pagination",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css",
-        "components.css",
+        "components-data-widgets.css",
+        "components-misc.css",
         "utilities.css"
       ],
-      "rules": 10,
+      "rules": 9,
       "elements": [
         "c-pagination__empty",
         "c-pagination__error",
@@ -7244,7 +7524,6 @@
         "--radius-sm",
         "--space-3xs",
         "--space-md",
-        "--target-control",
         "--type-xs"
       ],
       "vars": [],
@@ -7256,10 +7535,11 @@
     },
     {
       "name": "c-palette-editor",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-misc.css"
       ],
-      "rules": 3,
+      "rules": 2,
       "elements": [
         "c-palette-editor__swatch"
       ],
@@ -7275,8 +7555,7 @@
         "--color-border",
         "--density",
         "--radius-sm",
-        "--space-2xs",
-        "--target-control"
+        "--space-2xs"
       ],
       "vars": [],
       "inputs": [],
@@ -7287,9 +7566,10 @@
     },
     {
       "name": "c-panel",
+      "maturity": "complete-widget",
       "sheets": [
         "base.css",
-        "components-data.css",
+        "components-data-dashboard.css",
         "components-shell.css",
         "utilities.css"
       ],
@@ -7373,11 +7653,13 @@
     },
     {
       "name": "c-pill",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-buttons.css",
+        "components-misc.css",
         "utilities.css"
       ],
-      "rules": 9,
+      "rules": 8,
       "elements": [],
       "variants": [
         "c-pill--danger",
@@ -7419,11 +7701,11 @@
         "--color-warning",
         "--color-warning-soft",
         "--color-warning-text",
+        "--density",
         "--dur-fast",
         "--ease-standard",
         "--font-mono",
         "--radius-pill",
-        "--target-control",
         "--target-option",
         "--tracking-label",
         "--type-micro",
@@ -7438,14 +7720,14 @@
     },
     {
       "name": "c-pivot",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css",
+        "components-data-charts.css",
         "utilities.css"
       ],
-      "rules": 12,
+      "rules": 11,
       "elements": [
         "c-pivot__aggregate",
-        "c-pivot__empty",
         "c-pivot__filter",
         "c-pivot__toolbar"
       ],
@@ -7474,12 +7756,10 @@
         "--color-border",
         "--color-surface-1",
         "--color-surface-2",
-        "--color-text-muted",
         "--density",
         "--font-mono",
         "--space-2xs",
         "--space-3xs",
-        "--space-md",
         "--type-micro",
         "--type-sm"
       ],
@@ -7492,8 +7772,9 @@
     },
     {
       "name": "c-plate",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-cards.css"
       ],
       "rules": 2,
       "elements": [],
@@ -7528,18 +7809,21 @@
     },
     {
       "name": "c-popover",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-misc.css",
         "utilities.css"
       ],
-      "rules": 7,
+      "rules": 8,
       "elements": [
         "c-popover__body",
         "c-popover__content",
         "c-popover__title"
       ],
       "variants": [],
-      "states": [],
+      "states": [
+        ":popover-open"
+      ],
       "attributes": [
         "title",
         "content"
@@ -7571,6 +7855,7 @@
     },
     {
       "name": "c-pressable",
+      "maturity": "complete-widget",
       "sheets": [
         "components-shell.css"
       ],
@@ -7605,6 +7890,7 @@
     },
     {
       "name": "c-price",
+      "maturity": "complete-widget",
       "sheets": [
         "components-landing.css",
         "utilities.css"
@@ -7670,6 +7956,7 @@
     },
     {
       "name": "c-pricing",
+      "maturity": "complete-widget",
       "sheets": [
         "components-landing.css"
       ],
@@ -7700,8 +7987,9 @@
     },
     {
       "name": "c-progress",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-display.css"
       ],
       "rules": 4,
       "elements": [
@@ -7748,6 +8036,7 @@
     },
     {
       "name": "c-prose",
+      "maturity": "complete-widget",
       "sheets": [
         "components-docs.css"
       ],
@@ -7801,18 +8090,69 @@
       }
     },
     {
-      "name": "c-pull-to-refresh",
+      "name": "c-provenance",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-data-widgets.css"
       ],
-      "rules": 4,
+      "rules": 11,
+      "elements": [
+        "c-provenance__confidence",
+        "c-provenance__confidence--high",
+        "c-provenance__confidence--low",
+        "c-provenance__confidence--medium",
+        "c-provenance__coverage",
+        "c-provenance__methodology",
+        "c-provenance__resolution",
+        "c-provenance__source",
+        "c-provenance__warning"
+      ],
+      "variants": [],
+      "states": [],
+      "attributes": [
+        "source",
+        "confidence",
+        "resolution",
+        "coverage",
+        "warning",
+        "methodology"
+      ],
+      "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
+      "tokens": [
+        "--color-success-soft",
+        "--color-success-text",
+        "--color-text",
+        "--color-text-muted",
+        "--color-warning-soft",
+        "--color-warning-text",
+        "--density",
+        "--radius-pill",
+        "--space-2xs",
+        "--space-xs",
+        "--type-xs",
+        "--weight-semibold"
+      ],
+      "vars": [],
+      "inputs": [],
+      "renderedIn": {
+        "guide": true,
+        "templates": []
+      }
+    },
+    {
+      "name": "c-pull-to-refresh",
+      "maturity": "complete-widget",
+      "sheets": [
+        "components-display.css"
+      ],
+      "rules": 2,
       "elements": [
         "c-pull-to-refresh__indicator"
       ],
       "variants": [],
-      "states": [
-        ".is-refreshing"
-      ],
+      "states": [],
       "attributes": [
         "threshold"
       ],
@@ -7820,14 +8160,17 @@
       "slots": [],
       "parts": [],
       "tokens": [
-        "--color-text-muted",
+        "--color-text-subtle",
+        "--density",
         "--dur-fast",
-        "--ease-standard"
+        "--ease-standard",
+        "--space-xs",
+        "--type-xs"
       ],
       "vars": [],
       "inputs": [],
       "renderedIn": {
-        "guide": false,
+        "guide": true,
         "templates": [
           "dashboard"
         ]
@@ -7835,8 +8178,9 @@
     },
     {
       "name": "c-pullquote",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-misc.css"
       ],
       "rules": 2,
       "elements": [],
@@ -7858,6 +8202,7 @@
         "--color-primary",
         "--color-text-strong",
         "--color-text-subtle",
+        "--density",
         "--font-display",
         "--font-mono",
         "--tracking-label",
@@ -7873,11 +8218,12 @@
     },
     {
       "name": "c-radio",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-misc.css",
         "utilities.css"
       ],
-      "rules": 10,
+      "rules": 12,
       "elements": [
         "c-radio__input"
       ],
@@ -7885,6 +8231,7 @@
       "states": [
         "::after",
         ":checked",
+        ":disabled",
         ":focus-visible",
         ":has(input:disabled)"
       ],
@@ -7933,8 +8280,9 @@
     },
     {
       "name": "c-radio-list",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-misc.css"
       ],
       "rules": 5,
       "elements": [
@@ -7979,17 +8327,20 @@
     },
     {
       "name": "c-range",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-forms.css",
+        "components-misc.css",
         "utilities.css"
       ],
-      "rules": 14,
+      "rules": 17,
       "elements": [],
       "variants": [],
       "states": [
         "::-moz-range-progress",
         "::-moz-range-thumb",
         "::-moz-range-track",
+        "::-ms-thumb",
         "::-webkit-slider-runnable-track",
         "::-webkit-slider-thumb",
         ":disabled",
@@ -8026,6 +8377,7 @@
         "--color-primary-solid",
         "--color-surface-1",
         "--color-track",
+        "--density",
         "--dur-fast",
         "--ease-standard",
         "--radius-pill",
@@ -8042,8 +8394,9 @@
     },
     {
       "name": "c-range-scale",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-forms.css"
       ],
       "rules": 1,
       "elements": [],
@@ -8063,6 +8416,7 @@
       ],
       "tokens": [
         "--color-text-subtle",
+        "--density",
         "--font-mono",
         "--type-micro"
       ],
@@ -8075,10 +8429,11 @@
     },
     {
       "name": "c-rating",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-misc.css"
       ],
-      "rules": 7,
+      "rules": 6,
       "elements": [
         "c-rating__star",
         "c-rating__swatch",
@@ -8101,7 +8456,6 @@
         "--dur-fast",
         "--ease-standard",
         "--space-2xs",
-        "--target-control",
         "--target-option"
       ],
       "vars": [],
@@ -8113,8 +8467,9 @@
     },
     {
       "name": "c-readout",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-cards.css"
       ],
       "rules": 25,
       "elements": [
@@ -8187,6 +8542,7 @@
     },
     {
       "name": "c-recipe",
+      "maturity": "complete-widget",
       "sheets": [
         "patterns.css"
       ],
@@ -8256,6 +8612,7 @@
     },
     {
       "name": "c-reserved",
+      "maturity": "scaffold",
       "sheets": [
         "components-shell.css"
       ],
@@ -8273,7 +8630,9 @@
       "parts": [
         "reserved"
       ],
-      "tokens": [],
+      "tokens": [
+        "--density"
+      ],
       "vars": [],
       "inputs": [],
       "renderedIn": {
@@ -8283,10 +8642,11 @@
     },
     {
       "name": "c-resizable",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-misc.css"
       ],
-      "rules": 6,
+      "rules": 4,
       "elements": [
         "c-resizable__pane"
       ],
@@ -8294,9 +8654,7 @@
         "c-resizable--horizontal",
         "c-resizable--vertical"
       ],
-      "states": [
-        "::before"
-      ],
+      "states": [],
       "attributes": [
         "direction",
         "value"
@@ -8308,7 +8666,13 @@
       "parts": [
         "resizable"
       ],
-      "tokens": [],
+      "tokens": [
+        "--color-border",
+        "--color-surface-2",
+        "--density",
+        "--radius-sm",
+        "--space-xs"
+      ],
       "vars": [],
       "inputs": [],
       "renderedIn": {
@@ -8318,18 +8682,15 @@
     },
     {
       "name": "c-resize-handle",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-shell.css",
-        "components.css"
+        "components-shell.css"
       ],
-      "rules": 13,
+      "rules": 6,
       "elements": [],
-      "variants": [
-        "c-resize-handle--dragging"
-      ],
+      "variants": [],
       "states": [
         "::after",
-        "::before",
         ":focus-visible",
         ":focus-within",
         ":hover"
@@ -8346,10 +8707,9 @@
         "resize-handle"
       ],
       "tokens": [
-        "--color-border",
         "--color-control-edge",
-        "--color-primary",
         "--color-text-muted",
+        "--density",
         "--dur-fast",
         "--ease-standard",
         "--radius-pill"
@@ -8363,8 +8723,9 @@
     },
     {
       "name": "c-resize-observer",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-display.css"
       ],
       "rules": 2,
       "elements": [
@@ -8378,7 +8739,9 @@
       "booleanAttributes": [],
       "slots": [],
       "parts": [],
-      "tokens": [],
+      "tokens": [
+        "--density"
+      ],
       "vars": [],
       "inputs": [],
       "renderedIn": {
@@ -8388,8 +8751,9 @@
     },
     {
       "name": "c-responsive-content",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-misc.css"
       ],
       "rules": 2,
       "elements": [],
@@ -8415,8 +8779,9 @@
     },
     {
       "name": "c-row",
+      "maturity": "primitive",
       "sheets": [
-        "components.css"
+        "components-misc.css"
       ],
       "rules": 1,
       "elements": [],
@@ -8445,6 +8810,7 @@
     },
     {
       "name": "c-row-action",
+      "maturity": "complete-widget",
       "sheets": [
         "components-shell.css"
       ],
@@ -8476,9 +8842,62 @@
       }
     },
     {
-      "name": "c-scale-bar",
+      "name": "c-saved-view",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-widgets.css"
+      ],
+      "rules": 7,
+      "elements": [
+        "c-saved-view__actions",
+        "c-saved-view__meta",
+        "c-saved-view__name",
+        "c-saved-view__thumb"
+      ],
+      "variants": [
+        "c-saved-view--active"
+      ],
+      "states": [],
+      "attributes": [
+        "name",
+        "updated",
+        "source",
+        "active"
+      ],
+      "booleanAttributes": [
+        "active"
+      ],
+      "slots": [],
+      "parts": [],
+      "tokens": [
+        "--color-accent",
+        "--color-border",
+        "--color-surface-1",
+        "--color-surface-2",
+        "--color-text-muted",
+        "--color-text-strong",
+        "--density",
+        "--radius-md",
+        "--radius-sm",
+        "--shadow-md",
+        "--space-sm",
+        "--space-xs",
+        "--type-sm",
+        "--type-xs",
+        "--weight-semibold"
+      ],
+      "vars": [],
+      "inputs": [],
+      "renderedIn": {
+        "guide": true,
+        "templates": []
+      }
+    },
+    {
+      "name": "c-scale-bar",
+      "maturity": "complete-widget",
+      "sheets": [
+        "components-data-maps.css"
       ],
       "rules": 7,
       "elements": [
@@ -8533,10 +8952,11 @@
     },
     {
       "name": "c-scheme-toggle",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-navigation.css"
       ],
-      "rules": 9,
+      "rules": 11,
       "elements": [
         "c-scheme-toggle__icons",
         "c-scheme-toggle__moon",
@@ -8544,7 +8964,13 @@
       ],
       "variants": [],
       "states": [
-        "[data-scheme-next=\"light\"]"
+        ":active",
+        ":focus-visible",
+        ":has(> head > meta[name=\"color-scheme\"][content=\"dark\"])",
+        ":has(> head > meta[name=\"color-scheme\"][content=\"light dark\"])",
+        ":has(> head > meta[name=\"color-scheme\"][content=\"light\"])",
+        ":hover",
+        ":root"
       ],
       "attributes": [],
       "booleanAttributes": [
@@ -8557,10 +8983,20 @@
         "scheme-toggle"
       ],
       "tokens": [
+        "--color-control-edge",
+        "--color-focus-ring",
+        "--color-surface-1",
+        "--color-surface-2",
+        "--color-text",
+        "--color-text-muted",
+        "--density",
         "--dur-base",
-        "--dur-fast",
         "--ease-out-expo",
-        "--ease-standard"
+        "--ease-standard",
+        "--focus-width",
+        "--radius-md",
+        "--type-sm",
+        "--weight-medium"
       ],
       "vars": [],
       "inputs": [],
@@ -8576,9 +9012,10 @@
     },
     {
       "name": "c-scrim",
+      "maturity": "primitive",
       "sheets": [
         "base.css",
-        "components-data.css"
+        "components-data-widgets.css"
       ],
       "rules": 4,
       "elements": [],
@@ -8609,16 +9046,16 @@
     },
     {
       "name": "c-scroll-area",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-misc.css"
       ],
-      "rules": 5,
-      "elements": [],
+      "rules": 2,
+      "elements": [
+        "c-scroll-area__title"
+      ],
       "variants": [],
-      "states": [
-        "::after",
-        "::before"
-      ],
+      "states": [],
       "attributes": [
         "title"
       ],
@@ -8629,11 +9066,16 @@
       "parts": [
         "scroll-area"
       ],
-      "tokens": [],
-      "vars": [],
-      "inputs": [
-        "--color-surface-0"
+      "tokens": [
+        "--color-border-subtle",
+        "--color-text-subtle",
+        "--density",
+        "--space-xs",
+        "--type-xs",
+        "--weight-semibold"
       ],
+      "vars": [],
+      "inputs": [],
       "renderedIn": {
         "guide": true,
         "templates": []
@@ -8641,6 +9083,7 @@
     },
     {
       "name": "c-search-trigger",
+      "maturity": "complete-widget",
       "sheets": [
         "components-shell.css"
       ],
@@ -8687,8 +9130,9 @@
     },
     {
       "name": "c-section-head",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-cards.css"
       ],
       "rules": 4,
       "elements": [
@@ -8738,11 +9182,13 @@
     },
     {
       "name": "c-segmented",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-misc.css",
+        "components-navigation.css",
         "utilities.css"
       ],
-      "rules": 19,
+      "rules": 18,
       "elements": [
         "c-segmented__option"
       ],
@@ -8781,11 +9227,11 @@
         "--color-surface-1",
         "--color-text-muted",
         "--color-text-strong",
+        "--density",
         "--dur-fast",
         "--ease-standard",
         "--focus-width",
         "--radius-pill",
-        "--target-control",
         "--target-option",
         "--type-micro",
         "--weight-semibold"
@@ -8801,11 +9247,13 @@
     },
     {
       "name": "c-select",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-forms.css",
+        "components-misc.css",
         "utilities.css"
       ],
-      "rules": 10,
+      "rules": 12,
       "elements": [],
       "variants": [],
       "states": [
@@ -8862,8 +9310,9 @@
     },
     {
       "name": "c-sheet",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-misc.css",
         "utilities.css"
       ],
       "rules": 14,
@@ -8925,8 +9374,9 @@
     },
     {
       "name": "c-shortcut",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-misc.css"
       ],
       "rules": 3,
       "elements": [
@@ -8959,8 +9409,9 @@
     },
     {
       "name": "c-shortcut-list",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-buttons.css"
       ],
       "rules": 1,
       "elements": [],
@@ -8989,8 +9440,9 @@
     },
     {
       "name": "c-shortcut-overlay",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-buttons.css",
         "utilities.css"
       ],
       "rules": 4,
@@ -9029,8 +9481,9 @@
     },
     {
       "name": "c-shortcut-panel",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-buttons.css",
         "utilities.css"
       ],
       "rules": 3,
@@ -9069,8 +9522,9 @@
     },
     {
       "name": "c-shortcut-row",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-buttons.css"
       ],
       "rules": 5,
       "elements": [
@@ -9105,6 +9559,7 @@
     },
     {
       "name": "c-showcase",
+      "maturity": "complete-widget",
       "sheets": [
         "components-landing.css"
       ],
@@ -9177,19 +9632,17 @@
     },
     {
       "name": "c-side-sheet",
+      "maturity": "composition",
       "sheets": [
-        "components.css",
+        "components-misc.css",
         "utilities.css"
       ],
-      "rules": 9,
+      "rules": 7,
       "elements": [
         "c-side-sheet__panel",
         "c-side-sheet__title"
       ],
-      "variants": [
-        "c-side-sheet--end",
-        "c-side-sheet--start"
-      ],
+      "variants": [],
       "states": [
         ".is-open"
       ],
@@ -9224,10 +9677,11 @@
     },
     {
       "name": "c-sidebar",
+      "maturity": "composition",
       "sheets": [
         "base.css",
-        "components-data.css",
-        "components.css"
+        "components-data-maps.css",
+        "components-misc.css"
       ],
       "rules": 5,
       "elements": [
@@ -9267,8 +9721,9 @@
     },
     {
       "name": "c-skeleton",
+      "maturity": "scaffold",
       "sheets": [
-        "components.css",
+        "components-misc.css",
         "utilities.css"
       ],
       "rules": 7,
@@ -9298,6 +9753,7 @@
       "tokens": [
         "--color-skeleton",
         "--color-text-strong",
+        "--density",
         "--dur-sweep",
         "--ease-in-out",
         "--radius-xs"
@@ -9311,8 +9767,9 @@
     },
     {
       "name": "c-skeleton-group",
+      "maturity": "scaffold",
       "sheets": [
-        "components.css"
+        "components-misc.css"
       ],
       "rules": 1,
       "elements": [],
@@ -9337,15 +9794,15 @@
     },
     {
       "name": "c-sortable-list",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-misc.css"
       ],
-      "rules": 6,
+      "rules": 5,
       "elements": [
         "c-sortable-list__handle",
         "c-sortable-list__item",
-        "c-sortable-list__list",
-        "c-sortable-list__live"
+        "c-sortable-list__list"
       ],
       "variants": [],
       "states": [],
@@ -9371,17 +9828,15 @@
     },
     {
       "name": "c-sparkline",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-dashboard.css"
       ],
-      "rules": 8,
+      "rules": 5,
       "elements": [
         "c-sparkline__area",
         "c-sparkline__dot",
-        "c-sparkline__empty",
-        "c-sparkline__error",
         "c-sparkline__line",
-        "c-sparkline__loading",
         "c-sparkline__tooltip"
       ],
       "variants": [],
@@ -9408,11 +9863,9 @@
       "tokens": [
         "--chart-tip-block-start",
         "--chart-tip-inline-start",
-        "--color-danger",
         "--color-primary",
         "--color-surface-3",
         "--color-text",
-        "--color-text-muted",
         "--density",
         "--radius-xs",
         "--space-2xs",
@@ -9431,21 +9884,29 @@
     },
     {
       "name": "c-spatial-filter",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-widgets.css"
       ],
-      "rules": 5,
+      "rules": 10,
       "elements": [
-        "c-spatial-filter__modes"
+        "c-spatial-filter__clear-all",
+        "c-spatial-filter__modes",
+        "c-spatial-filter__operator",
+        "c-spatial-filter__readout"
       ],
       "variants": [
         "c-spatial-filter--active"
       ],
-      "states": [],
+      "states": [
+        ":hover"
+      ],
       "attributes": [
         "modes",
         "mode",
         "active",
+        "bounds",
+        "operator",
         "empty",
         "loading",
         "error",
@@ -9461,8 +9922,17 @@
       "parts": [],
       "tokens": [
         "--color-accent",
+        "--color-border",
+        "--color-surface-1",
+        "--color-surface-2",
+        "--color-text",
+        "--color-text-muted",
         "--density",
-        "--space-2xs"
+        "--font-mono",
+        "--radius-sm",
+        "--space-2xs",
+        "--space-xs",
+        "--type-xs"
       ],
       "vars": [],
       "inputs": [],
@@ -9473,8 +9943,9 @@
     },
     {
       "name": "c-spinner",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-misc.css",
         "utilities.css"
       ],
       "rules": 3,
@@ -9494,6 +9965,7 @@
       "tokens": [
         "--color-primary",
         "--color-track",
+        "--density",
         "--dur-spin",
         "--ease-linear",
         "--ring-2"
@@ -9507,8 +9979,9 @@
     },
     {
       "name": "c-split-button",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-misc.css"
       ],
       "rules": 4,
       "elements": [
@@ -9539,8 +10012,9 @@
     },
     {
       "name": "c-split-map",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-data-maps.css"
       ],
       "rules": 4,
       "elements": [
@@ -9559,6 +10033,7 @@
       "parts": [],
       "tokens": [
         "--color-border",
+        "--color-surface-1",
         "--density",
         "--radius-md",
         "--space-sm"
@@ -9566,16 +10041,92 @@
       "vars": [],
       "inputs": [],
       "renderedIn": {
-        "guide": false,
+        "guide": true,
         "templates": [
           "dashboard"
         ]
       }
     },
     {
-      "name": "c-stack",
+      "name": "c-split-pane",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-data-maps.css"
+      ],
+      "rules": 2,
+      "elements": [],
+      "variants": [
+        "c-split-pane--vertical"
+      ],
+      "states": [],
+      "attributes": [],
+      "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
+      "tokens": [
+        "--density",
+        "--space-sm"
+      ],
+      "vars": [],
+      "inputs": [],
+      "renderedIn": {
+        "guide": true,
+        "templates": []
+      }
+    },
+    {
+      "name": "c-split-view",
+      "maturity": "complete-widget",
+      "sheets": [
+        "components-data-maps.css"
+      ],
+      "rules": 15,
+      "elements": [
+        "c-split-view__divider",
+        "c-split-view__divider--dragging",
+        "c-split-view__pane",
+        "c-split-view__pane--left",
+        "c-split-view__pane--right"
+      ],
+      "variants": [
+        "c-split-view--vertical"
+      ],
+      "states": [
+        ":focus-visible",
+        ":hover"
+      ],
+      "attributes": [
+        "direction",
+        "value",
+        "left-label",
+        "right-label"
+      ],
+      "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
+      "tokens": [
+        "--color-accent",
+        "--color-border",
+        "--color-border-subtle",
+        "--color-primary",
+        "--color-surface-1",
+        "--density",
+        "--radius-md",
+        "--space-sm",
+        "--z-tooltip"
+      ],
+      "vars": [],
+      "inputs": [],
+      "renderedIn": {
+        "guide": true,
+        "templates": []
+      }
+    },
+    {
+      "name": "c-stack",
+      "maturity": "primitive",
+      "sheets": [
+        "components-misc.css"
       ],
       "rules": 1,
       "elements": [],
@@ -9604,12 +10155,12 @@
     },
     {
       "name": "c-stacked-bar",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-charts.css"
       ],
-      "rules": 3,
+      "rules": 2,
       "elements": [
-        "c-stacked-bar__empty",
         "c-stacked-bar__segment"
       ],
       "variants": [],
@@ -9637,11 +10188,9 @@
         "bar"
       ],
       "tokens": [
-        "--color-text-muted",
         "--color-track",
         "--density",
-        "--radius-sm",
-        "--space-md"
+        "--radius-sm"
       ],
       "vars": [],
       "inputs": [],
@@ -9652,8 +10201,9 @@
     },
     {
       "name": "c-stat",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-cards.css"
       ],
       "rules": 9,
       "elements": [
@@ -9719,17 +10269,14 @@
     },
     {
       "name": "c-status-light",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-misc.css"
       ],
-      "rules": 8,
+      "rules": 4,
       "elements": [],
       "variants": [
-        "c-status-light--danger",
-        "c-status-light--info",
-        "c-status-light--neutral",
-        "c-status-light--success",
-        "c-status-light--warning"
+        "c-status-light--success"
       ],
       "states": [
         "::before"
@@ -9742,11 +10289,8 @@
       "slots": [],
       "parts": [],
       "tokens": [
-        "--color-danger",
-        "--color-info",
         "--color-success",
         "--color-text-subtle",
-        "--color-warning",
         "--density",
         "--space-2xs",
         "--type-xs"
@@ -9760,8 +10304,9 @@
     },
     {
       "name": "c-stepper",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-misc.css"
       ],
       "rules": 8,
       "elements": [
@@ -9799,6 +10344,7 @@
     },
     {
       "name": "c-steps",
+      "maturity": "complete-widget",
       "sheets": [
         "components-docs.css"
       ],
@@ -9866,8 +10412,9 @@
     },
     {
       "name": "c-streaming-chart",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css",
+        "components-data-charts.css",
         "utilities.css"
       ],
       "rules": 8,
@@ -9927,8 +10474,9 @@
     },
     {
       "name": "c-style-panel",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-misc.css"
       ],
       "rules": 17,
       "elements": [
@@ -9986,8 +10534,9 @@
     },
     {
       "name": "c-style-switcher",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-misc.css"
       ],
       "rules": 2,
       "elements": [
@@ -10017,8 +10566,9 @@
     },
     {
       "name": "c-survey",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-widgets.css"
       ],
       "rules": 6,
       "elements": [
@@ -10074,8 +10624,9 @@
     },
     {
       "name": "c-swatch",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-misc.css"
       ],
       "rules": 3,
       "elements": [
@@ -10098,6 +10649,7 @@
       "tokens": [
         "--color-border",
         "--color-primary",
+        "--density",
         "--radius-sm"
       ],
       "vars": [],
@@ -10111,11 +10663,13 @@
     },
     {
       "name": "c-switch",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-forms.css",
+        "components-misc.css",
         "utilities.css"
       ],
-      "rules": 15,
+      "rules": 17,
       "elements": [
         "c-switch__input",
         "c-switch__track"
@@ -10156,6 +10710,7 @@
         "--color-primary-solid",
         "--color-surface-1",
         "--color-text",
+        "--density",
         "--dur-base",
         "--ease-out-expo",
         "--ease-standard",
@@ -10173,16 +10728,16 @@
     },
     {
       "name": "c-table",
+      "maturity": "complete-widget",
       "sheets": [
         "base.css",
-        "components-data.css",
-        "components.css",
+        "components-data-tables.css",
+        "components-display.css",
         "utilities.css"
       ],
-      "rules": 52,
+      "rules": 51,
       "elements": [
         "c-table__actions",
-        "c-table__loading",
         "c-table__pagination",
         "c-table__pinned",
         "c-table__select",
@@ -10275,8 +10830,9 @@
     },
     {
       "name": "c-table-wrap",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-display.css"
       ],
       "rules": 2,
       "elements": [],
@@ -10293,6 +10849,7 @@
       "tokens": [
         "--color-border",
         "--color-surface-1",
+        "--density",
         "--radius-lg"
       ],
       "vars": [],
@@ -10308,11 +10865,13 @@
     },
     {
       "name": "c-tabs",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-misc.css",
+        "components-navigation.css",
         "utilities.css"
       ],
-      "rules": 34,
+      "rules": 33,
       "elements": [
         "c-tabs__close",
         "c-tabs__empty",
@@ -10396,9 +10955,10 @@
     },
     {
       "name": "c-tag",
+      "maturity": "complete-widget",
       "sheets": [
+        "components-misc.css",
         "components-shell.css",
-        "components.css",
         "utilities.css"
       ],
       "rules": 7,
@@ -10435,6 +10995,7 @@
         "--color-primary-text",
         "--color-surface-2",
         "--color-text",
+        "--density",
         "--dur-fast",
         "--ease-standard",
         "--font-mono",
@@ -10452,13 +11013,14 @@
     },
     {
       "name": "c-tags-input",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-misc.css",
+        "utilities.css"
       ],
-      "rules": 5,
+      "rules": 6,
       "elements": [
         "c-tags-input__input",
-        "c-tags-input__live",
         "c-tags-input__remove",
         "c-tags-input__tag"
       ],
@@ -10496,6 +11058,7 @@
     },
     {
       "name": "c-testimonial",
+      "maturity": "complete-widget",
       "sheets": [
         "components-landing.css"
       ],
@@ -10553,11 +11116,12 @@
     },
     {
       "name": "c-textarea",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-forms.css",
         "utilities.css"
       ],
-      "rules": 10,
+      "rules": 12,
       "elements": [],
       "variants": [],
       "states": [
@@ -10610,6 +11174,7 @@
     },
     {
       "name": "c-theme-scope",
+      "maturity": "composition",
       "sheets": [
         "light-dark-fallback.css",
         "tokens.css"
@@ -10653,8 +11218,9 @@
     },
     {
       "name": "c-threshold",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-dashboard.css"
       ],
       "rules": 10,
       "elements": [
@@ -10716,15 +11282,19 @@
     },
     {
       "name": "c-time-picker",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-misc.css",
+        "utilities.css"
       ],
-      "rules": 2,
+      "rules": 5,
       "elements": [
         "c-time-picker__label"
       ],
       "variants": [],
-      "states": [],
+      "states": [
+        ":focus-visible"
+      ],
       "attributes": [
         "value",
         "label",
@@ -10752,8 +11322,9 @@
     },
     {
       "name": "c-time-range",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-tables.css"
       ],
       "rules": 2,
       "elements": [],
@@ -10773,6 +11344,7 @@
       ],
       "tokens": [
         "--color-text-subtle",
+        "--density",
         "--font-mono",
         "--type-micro"
       ],
@@ -10785,13 +11357,14 @@
     },
     {
       "name": "c-time-series",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-charts.css",
+        "components-data-dashboard.css"
       ],
-      "rules": 6,
+      "rules": 5,
       "elements": [
         "c-time-series__bar",
-        "c-time-series__empty",
         "c-time-series__note",
         "c-time-series__plot",
         "c-time-series__point"
@@ -10801,6 +11374,8 @@
       "attributes": [
         "values",
         "points",
+        "series",
+        "style",
         "empty",
         "loading",
         "error",
@@ -10811,20 +11386,17 @@
         "timeout",
         "skeleton",
         "annotations",
-        "note",
-        "style"
+        "note"
       ],
       "booleanAttributes": [],
       "slots": [],
       "parts": [],
       "tokens": [
         "--color-primary",
-        "--color-text-muted",
         "--color-text-subtle",
         "--density",
         "--radius-xs",
         "--space-2xs",
-        "--space-md",
         "--space-xs",
         "--type-xs"
       ],
@@ -10837,10 +11409,11 @@
     },
     {
       "name": "c-time-slider",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css"
+        "components-data-maps.css"
       ],
-      "rules": 9,
+      "rules": 8,
       "elements": [
         "c-time-slider__loop",
         "c-time-slider__play",
@@ -10902,16 +11475,13 @@
     },
     {
       "name": "c-timeline",
+      "maturity": "complete-widget",
       "sheets": [
-        "components-data.css",
-        "components.css"
+        "components-misc.css"
       ],
-      "rules": 11,
+      "rules": 8,
       "elements": [
-        "c-timeline__empty",
-        "c-timeline__error",
         "c-timeline__item",
-        "c-timeline__loading",
         "c-timeline__text",
         "c-timeline__time",
         "c-timeline__title"
@@ -10944,13 +11514,12 @@
       "tokens": [
         "--border-width-thick",
         "--color-border",
-        "--color-danger",
         "--color-primary",
         "--color-surface-1",
-        "--color-text",
         "--color-text-muted",
         "--color-text-strong",
         "--color-text-subtle",
+        "--density",
         "--font-mono",
         "--type-micro",
         "--type-sm",
@@ -10966,8 +11535,9 @@
     },
     {
       "name": "c-toast",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-display.css",
         "utilities.css"
       ],
       "rules": 4,
@@ -11007,9 +11577,10 @@
     },
     {
       "name": "c-toast-host",
+      "maturity": "complete-widget",
       "sheets": [
         "base.css",
-        "components.css"
+        "components-misc.css"
       ],
       "rules": 3,
       "elements": [],
@@ -11038,6 +11609,7 @@
     },
     {
       "name": "c-toc",
+      "maturity": "complete-widget",
       "sheets": [
         "components-docs.css"
       ],
@@ -11106,8 +11678,9 @@
     },
     {
       "name": "c-toolbar",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-misc.css",
         "utilities.css"
       ],
       "rules": 12,
@@ -11156,8 +11729,9 @@
     },
     {
       "name": "c-tooltip",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-overlay.css",
         "utilities.css"
       ],
       "rules": 8,
@@ -11201,8 +11775,9 @@
     },
     {
       "name": "c-tour",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css",
+        "components-misc.css",
         "utilities.css"
       ],
       "rules": 6,
@@ -11243,30 +11818,26 @@
     },
     {
       "name": "c-tree",
+      "maturity": "complete-widget",
       "sheets": [
         "base.css",
-        "components.css",
+        "components-misc.css",
         "utilities.css"
       ],
-      "rules": 21,
+      "rules": 13,
       "elements": [
         "c-tree__children",
-        "c-tree__empty",
-        "c-tree__error",
-        "c-tree__indent",
         "c-tree__leaf",
-        "c-tree__loading",
         "c-tree__node",
         "c-tree__row",
+        "c-tree__select",
         "c-tree__toggle"
       ],
       "variants": [],
       "states": [
         "::before",
-        ":has(> .c-tree__toggle[aria-expanded=\"true\"])",
         ":hover",
-        "[aria-expanded=\"true\"]",
-        "[hidden]"
+        "[aria-expanded=\"true\"]"
       ],
       "attributes": [
         "items",
@@ -11292,19 +11863,14 @@
         "tree"
       ],
       "tokens": [
+        "--color-border-subtle",
         "--color-surface-2",
+        "--color-text",
         "--color-text-muted",
-        "--color-text-subtle",
         "--density",
-        "--dur-base",
-        "--dur-fast",
-        "--ease-standard",
+        "--leading-tight",
         "--radius-sm",
-        "--space-2xs",
-        "--space-md",
-        "--space-xs",
-        "--type-sm",
-        "--weight-medium"
+        "--type-sm"
       ],
       "vars": [],
       "inputs": [],
@@ -11315,8 +11881,9 @@
     },
     {
       "name": "c-tree-grid",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-misc.css"
       ],
       "rules": 2,
       "elements": [
@@ -11341,6 +11908,7 @@
     },
     {
       "name": "c-version",
+      "maturity": "complete-widget",
       "sheets": [
         "components-docs.css"
       ],
@@ -11368,6 +11936,7 @@
         "--color-primary",
         "--color-surface-1",
         "--color-text",
+        "--density",
         "--dur-fast",
         "--ease-standard",
         "--font-mono",
@@ -11383,6 +11952,7 @@
     },
     {
       "name": "c-version-banner",
+      "maturity": "complete-widget",
       "sheets": [
         "components-docs.css"
       ],
@@ -11408,6 +11978,7 @@
       "tokens": [
         "--color-warning-soft",
         "--color-warning-text",
+        "--density",
         "--radius-md",
         "--type-xs"
       ],
@@ -11420,8 +11991,9 @@
     },
     {
       "name": "c-virtual-list",
+      "maturity": "complete-widget",
       "sheets": [
-        "components.css"
+        "components-misc.css"
       ],
       "rules": 7,
       "elements": [
@@ -11462,8 +12034,9 @@
     },
     {
       "name": "c-widget-state",
+      "maturity": "scaffold",
       "sheets": [
-        "components-data.css"
+        "components-data-widgets.css"
       ],
       "rules": 5,
       "elements": [
@@ -11743,13 +12316,15 @@
       "c-btn",
       "c-callout",
       "c-chip",
+      "c-data-export",
       "c-dot",
       "c-icon-badge",
-      "c-live-badge",
       "c-meter",
       "c-pill",
       "c-progress",
+      "c-saved-view",
       "c-spatial-filter",
+      "c-split-view",
       "c-streaming-chart"
     ],
     "--color-accent-hover": [
@@ -11770,12 +12345,13 @@
       "c-badge",
       "c-callout",
       "c-chip",
-      "c-live-badge",
+      "c-dot",
       "c-panel",
       "c-pill",
       "c-readout"
     ],
     "--color-border": [
+      "c-activity-feed",
       "c-affordance",
       "c-alert",
       "c-annotation",
@@ -11794,7 +12370,6 @@
       "c-code",
       "c-code-tabs",
       "c-color-picker",
-      "c-combobox",
       "c-command-palette",
       "c-compare",
       "c-comparison",
@@ -11811,12 +12386,13 @@
       "c-divider",
       "c-do-dont",
       "c-docs-nav",
+      "c-draggable",
       "c-drawer",
-      "c-drop-zone",
       "c-empty",
       "c-error-boundary",
       "c-faq",
       "c-feature",
+      "c-feature-inspector",
       "c-file-upload",
       "c-filter-bar",
       "c-filter-pill",
@@ -11852,15 +12428,18 @@
       "c-popover",
       "c-price",
       "c-recipe",
-      "c-resize-handle",
+      "c-resizable",
+      "c-saved-view",
       "c-search-trigger",
       "c-segmented",
       "c-sheet",
       "c-shortcut-panel",
       "c-showcase",
       "c-sortable-list",
+      "c-spatial-filter",
       "c-split-button",
       "c-split-map",
+      "c-split-view",
       "c-steps",
       "c-streaming-chart",
       "c-style-panel",
@@ -11899,14 +12478,18 @@
       "c-version"
     ],
     "--color-border-subtle": [
+      "c-activity-feed",
       "c-bivariate",
       "c-code",
       "c-code-tabs",
       "c-command",
       "c-compare",
+      "c-data-export",
       "c-data-grid",
       "c-disclosure",
       "c-drawer",
+      "c-drop-zone",
+      "c-feature-inspector",
       "c-geocoder",
       "c-header",
       "c-input",
@@ -11915,10 +12498,13 @@
       "c-panel",
       "c-readout",
       "c-recipe",
+      "c-scroll-area",
       "c-select",
       "c-sheet",
+      "c-split-view",
       "c-table",
-      "c-textarea"
+      "c-textarea",
+      "c-tree"
     ],
     "--color-canvas": [
       "c-app",
@@ -11945,20 +12531,21 @@
       "c-field-group",
       "c-input",
       "c-layer-panel",
+      "c-live-badge",
       "c-panel",
       "c-radio",
       "c-resize-handle",
+      "c-scheme-toggle",
       "c-select",
       "c-switch",
       "c-textarea"
     ],
     "--color-danger": [
       "c-activity",
+      "c-activity-feed",
       "c-alert",
-      "c-banner",
       "c-btn",
       "c-callout",
-      "c-chart",
       "c-compass",
       "c-diff",
       "c-do-dont",
@@ -11966,16 +12553,12 @@
       "c-drop-zone",
       "c-field-group",
       "c-form",
-      "c-heatmap",
       "c-input",
       "c-isochrone",
       "c-live-badge",
       "c-pill",
-      "c-sparkline",
-      "c-status-light",
       "c-textarea",
-      "c-threshold",
-      "c-timeline"
+      "c-threshold"
     ],
     "--color-danger-border": [
       "c-legend"
@@ -12003,12 +12586,12 @@
       "c-destructive-hint",
       "c-diff",
       "c-do-dont",
+      "c-dot",
       "c-field",
       "c-field-group",
       "c-filter-pill",
       "c-form",
       "c-legend",
-      "c-live-badge",
       "c-menu",
       "c-panel",
       "c-pill"
@@ -12025,7 +12608,6 @@
       "c-badge"
     ],
     "--color-focus-halo": [
-      "c-combobox",
       "c-input",
       "c-range",
       "c-select",
@@ -12033,13 +12615,14 @@
     ],
     "--color-focus-ring": [
       "c-check",
-      "c-combobox",
       "c-command",
       "c-drag-handle",
+      "c-filter-bar",
       "c-input",
       "c-map-slot",
       "c-radio",
       "c-range",
+      "c-scheme-toggle",
       "c-segmented",
       "c-select",
       "c-switch",
@@ -12050,8 +12633,7 @@
     "--color-info": [
       "c-alert",
       "c-banner",
-      "c-callout",
-      "c-status-light"
+      "c-callout"
     ],
     "--color-info-soft": [
       "c-alert",
@@ -12084,11 +12666,13 @@
     ],
     "--color-on-primary-solid": [
       "c-btn",
+      "c-filter-bar",
       "c-segmented",
       "c-switch"
     ],
     "--color-primary": [
       "c-activity",
+      "c-activity-feed",
       "c-banner",
       "c-brush",
       "c-btn",
@@ -12098,7 +12682,6 @@
       "c-category",
       "c-check",
       "c-chip",
-      "c-combobox",
       "c-command",
       "c-comparison",
       "c-compass",
@@ -12135,12 +12718,12 @@
       "c-pullquote",
       "c-radio",
       "c-range",
-      "c-resize-handle",
       "c-segmented",
       "c-select",
       "c-showcase",
       "c-sparkline",
       "c-spinner",
+      "c-split-view",
       "c-stepper",
       "c-steps",
       "c-streaming-chart",
@@ -12165,6 +12748,7 @@
       "c-time-slider"
     ],
     "--color-primary-soft": [
+      "c-activity-feed",
       "c-avatar",
       "c-badge",
       "c-chip",
@@ -12174,8 +12758,6 @@
       "c-datamark",
       "c-disclosure",
       "c-docs-nav",
-      "c-drop-indicator",
-      "c-drop-zone",
       "c-empty",
       "c-faq",
       "c-file-upload",
@@ -12192,6 +12774,7 @@
     "--color-primary-solid": [
       "c-btn",
       "c-date-picker",
+      "c-filter-bar",
       "c-range",
       "c-segmented",
       "c-switch"
@@ -12207,6 +12790,7 @@
       "c-compare",
       "c-date-picker",
       "c-disclosure",
+      "c-dot",
       "c-faq",
       "c-file-tree",
       "c-flag",
@@ -12232,8 +12816,8 @@
       "c-skeleton"
     ],
     "--color-success": [
+      "c-activity-feed",
       "c-alert",
-      "c-banner",
       "c-callout",
       "c-diff",
       "c-do-dont",
@@ -12248,7 +12832,9 @@
       "c-badge",
       "c-callout",
       "c-compare",
-      "c-pill"
+      "c-data-export",
+      "c-pill",
+      "c-provenance"
     ],
     "--color-success-text": [
       "c-alert",
@@ -12256,14 +12842,17 @@
       "c-btn",
       "c-callout",
       "c-compare",
+      "c-data-export",
       "c-delta",
       "c-diff",
       "c-do-dont",
-      "c-live-badge",
+      "c-dot",
       "c-pill",
+      "c-provenance",
       "c-stat"
     ],
     "--color-surface-1": [
+      "c-activity-feed",
       "c-affordance",
       "c-alert",
       "c-annotation",
@@ -12294,10 +12883,12 @@
       "c-dialog",
       "c-do-dont",
       "c-drawer",
+      "c-drop-zone",
       "c-dropdown",
       "c-empty",
       "c-error-boundary",
       "c-faq",
+      "c-feature-inspector",
       "c-field-group",
       "c-filter-bar",
       "c-flow-map",
@@ -12313,6 +12904,7 @@
       "c-layer-panel",
       "c-layer-switch",
       "c-legend",
+      "c-live-badge",
       "c-map-footer",
       "c-map-panel",
       "c-map-popup",
@@ -12329,6 +12921,8 @@
       "c-price",
       "c-radio",
       "c-range",
+      "c-saved-view",
+      "c-scheme-toggle",
       "c-search-trigger",
       "c-segmented",
       "c-select",
@@ -12337,6 +12931,9 @@
       "c-shortcut-panel",
       "c-showcase",
       "c-side-sheet",
+      "c-spatial-filter",
+      "c-split-map",
+      "c-split-view",
       "c-streaming-chart",
       "c-style-panel",
       "c-switch",
@@ -12365,6 +12962,7 @@
       "c-datamark",
       "c-docs-nav",
       "c-drawer",
+      "c-filter-bar",
       "c-filter-pill",
       "c-flag",
       "c-geocoder",
@@ -12385,9 +12983,13 @@
       "c-pill",
       "c-pivot",
       "c-recipe",
+      "c-resizable",
+      "c-saved-view",
+      "c-scheme-toggle",
       "c-search-trigger",
       "c-select",
       "c-sheet",
+      "c-spatial-filter",
       "c-table",
       "c-tag",
       "c-textarea",
@@ -12403,6 +13005,7 @@
       "c-catchment",
       "c-command",
       "c-dialog",
+      "c-draggable",
       "c-drawer",
       "c-flow-map",
       "c-heatmap",
@@ -12421,6 +13024,7 @@
     ],
     "--color-text": [
       "c-activity",
+      "c-activity-feed",
       "c-advanced",
       "c-affordance",
       "c-annotation",
@@ -12430,7 +13034,6 @@
       "c-calendar",
       "c-catchment",
       "c-changelog",
-      "c-chart",
       "c-chip",
       "c-code",
       "c-code-tabs",
@@ -12439,8 +13042,13 @@
       "c-compare",
       "c-comparison",
       "c-coordinate",
+      "c-data-export",
       "c-dialog",
+      "c-dot",
       "c-drag-handle",
+      "c-drop-zone",
+      "c-feature-inspector",
+      "c-filter-bar",
       "c-filter-pill",
       "c-flow-map",
       "c-geocoder",
@@ -12453,27 +13061,32 @@
       "c-isochrone",
       "c-layer-panel",
       "c-layer-switch",
+      "c-live-badge",
       "c-map-slot",
       "c-measure",
       "c-menu",
       "c-popover",
       "c-prose",
+      "c-provenance",
+      "c-scheme-toggle",
       "c-select",
       "c-shortcut-row",
       "c-showcase",
       "c-sparkline",
+      "c-spatial-filter",
       "c-switch",
       "c-table",
       "c-tag",
       "c-tags-input",
       "c-textarea",
-      "c-timeline",
       "c-toast",
+      "c-tree",
       "c-version"
     ],
     "--color-text-muted": [
       "c-accordion",
       "c-activity",
+      "c-activity-feed",
       "c-affordance",
       "c-alert",
       "c-badge",
@@ -12486,19 +13099,17 @@
       "c-callout",
       "c-card",
       "c-carousel",
-      "c-catchment",
       "c-category",
       "c-changelog",
-      "c-chart",
       "c-code-tabs",
       "c-color-picker",
-      "c-combobox",
       "c-command",
       "c-compare",
       "c-comparison",
       "c-compass",
       "c-coordinate",
       "c-cta",
+      "c-data-export",
       "c-date-picker",
       "c-date-range",
       "c-delta",
@@ -12506,26 +13117,26 @@
       "c-disclosure",
       "c-docs-nav",
       "c-docs-shell",
-      "c-donut",
+      "c-dot",
       "c-empty",
       "c-error-boundary",
       "c-faq",
       "c-feature",
+      "c-feature-inspector",
       "c-field",
       "c-field-group",
       "c-file-tree",
       "c-file-upload",
+      "c-filter-bar",
       "c-flag",
       "c-flow-map",
       "c-footer",
       "c-gauge",
       "c-geocoder",
       "c-header",
-      "c-heatmap",
       "c-hexbin",
       "c-hover-card",
       "c-instrument",
-      "c-isochrone",
       "c-kbd",
       "c-kpi",
       "c-landing-features",
@@ -12533,6 +13144,7 @@
       "c-layer-panel",
       "c-layer-switch",
       "c-legend",
+      "c-live-badge",
       "c-map-popup",
       "c-map-slot",
       "c-measure",
@@ -12543,22 +13155,22 @@
       "c-pagination",
       "c-panel",
       "c-pill",
-      "c-pivot",
       "c-popover",
       "c-price",
       "c-prose",
-      "c-pull-to-refresh",
+      "c-provenance",
       "c-radio-list",
       "c-readout",
       "c-recipe",
       "c-resize-handle",
+      "c-saved-view",
       "c-scale-bar",
+      "c-scheme-toggle",
       "c-section-head",
       "c-segmented",
       "c-showcase",
       "c-sortable-list",
-      "c-sparkline",
-      "c-stacked-bar",
+      "c-spatial-filter",
       "c-stat",
       "c-stepper",
       "c-steps",
@@ -12569,7 +13181,6 @@
       "c-tags-input",
       "c-threshold",
       "c-time-picker",
-      "c-time-series",
       "c-timeline",
       "c-toc",
       "c-toolbar",
@@ -12578,6 +13189,7 @@
       "c-widget-state"
     ],
     "--color-text-strong": [
+      "c-activity-feed",
       "c-affordance",
       "c-alert",
       "c-brand",
@@ -12600,6 +13212,7 @@
       "c-expandable",
       "c-faq",
       "c-feature",
+      "c-feature-inspector",
       "c-file-tree",
       "c-filter-pill",
       "c-footer",
@@ -12620,6 +13233,7 @@
       "c-pullquote",
       "c-readout",
       "c-recipe",
+      "c-saved-view",
       "c-section-head",
       "c-segmented",
       "c-sheet",
@@ -12639,6 +13253,7 @@
     ],
     "--color-text-subtle": [
       "c-activity",
+      "c-activity-feed",
       "c-alert",
       "c-anchor",
       "c-brand",
@@ -12662,9 +13277,9 @@
       "c-divider",
       "c-docs-nav",
       "c-donut",
-      "c-dot",
       "c-drag-handle",
       "c-drawer",
+      "c-drop-indicator",
       "c-feature",
       "c-field",
       "c-field-group",
@@ -12690,11 +13305,13 @@
       "c-pager",
       "c-panel",
       "c-price",
+      "c-pull-to-refresh",
       "c-pullquote",
       "c-range-scale",
       "c-rating",
       "c-readout",
       "c-recipe",
+      "c-scroll-area",
       "c-search-trigger",
       "c-select",
       "c-sheet",
@@ -12709,8 +13326,7 @@
       "c-time-series",
       "c-time-slider",
       "c-timeline",
-      "c-toc",
-      "c-tree"
+      "c-toc"
     ],
     "--color-tooltip-bg": [
       "c-tooltip"
@@ -12727,36 +13343,40 @@
       "c-threshold"
     ],
     "--color-warning": [
+      "c-activity-feed",
       "c-alert",
-      "c-banner",
       "c-callout",
       "c-dot",
       "c-icon-badge",
       "c-live-badge",
       "c-pill",
       "c-rating",
-      "c-status-light",
       "c-threshold"
     ],
     "--color-warning-soft": [
       "c-alert",
       "c-badge",
       "c-callout",
+      "c-data-export",
       "c-icon-badge",
       "c-pill",
+      "c-provenance",
       "c-version-banner"
     ],
     "--color-warning-text": [
       "c-alert",
       "c-badge",
       "c-callout",
-      "c-live-badge",
+      "c-data-export",
+      "c-dot",
       "c-pill",
+      "c-provenance",
       "c-version-banner"
     ],
     "--density": [
       "c-accordion",
       "c-activity",
+      "c-activity-feed",
       "c-affordance",
       "c-affordances",
       "c-alert",
@@ -12764,12 +13384,17 @@
       "c-annotation",
       "c-app",
       "c-app-body",
+      "c-avatar",
+      "c-avatar-group",
       "c-axis",
+      "c-badge",
       "c-banner",
       "c-bivariate",
       "c-bivariate-legend",
       "c-box",
+      "c-brand",
       "c-breadcrumb",
+      "c-brush",
       "c-btn",
       "c-btn-group",
       "c-calendar",
@@ -12781,6 +13406,7 @@
       "c-changelog",
       "c-chart",
       "c-chart-grid",
+      "c-check",
       "c-chip",
       "c-cluster",
       "c-code",
@@ -12791,8 +13417,10 @@
       "c-command-palette",
       "c-compare",
       "c-comparison",
+      "c-compass",
       "c-container",
       "c-context-menu",
+      "c-contour-plot",
       "c-coordinate",
       "c-cta",
       "c-dash-kpi-row",
@@ -12800,6 +13428,7 @@
       "c-dash-toolbar",
       "c-data-export",
       "c-data-grid",
+      "c-data-table",
       "c-date-picker",
       "c-date-range",
       "c-delta",
@@ -12810,18 +13439,23 @@
       "c-docs-nav",
       "c-docs-shell",
       "c-donut",
+      "c-dot",
       "c-drag-handle",
       "c-drawer",
-      "c-drop-indicator",
       "c-drop-zone",
       "c-empty",
       "c-error-boundary",
       "c-expandable",
+      "c-fab",
       "c-faq",
       "c-feature",
+      "c-feature-inspector",
+      "c-field",
       "c-field-group",
+      "c-file-tree",
       "c-file-upload",
       "c-filter-bar",
+      "c-filter-pill",
       "c-flag",
       "c-flow-map",
       "c-footer",
@@ -12832,46 +13466,67 @@
       "c-heatmap",
       "c-hexbin",
       "c-hover-card",
+      "c-icon-badge",
       "c-input",
+      "c-input-group",
       "c-install",
       "c-instrument",
       "c-isochrone",
+      "c-kbd",
       "c-kpi",
       "c-landing-features",
       "c-landing-hero",
       "c-layer-panel",
       "c-layer-switch",
       "c-legend",
+      "c-link",
       "c-live-badge",
       "c-loading",
       "c-logos",
       "c-map-footer",
       "c-map-panel",
       "c-map-popup",
+      "c-map-slot",
+      "c-mark",
       "c-measure",
       "c-menu",
       "c-meter",
       "c-metrics",
+      "c-minimap",
       "c-notification-center",
       "c-number-field",
       "c-pager",
       "c-pagination",
       "c-palette-editor",
       "c-panel",
+      "c-pill",
       "c-pivot",
       "c-plate",
       "c-popover",
       "c-price",
       "c-pricing",
+      "c-provenance",
+      "c-pull-to-refresh",
+      "c-pullquote",
       "c-radio",
       "c-radio-list",
+      "c-range",
+      "c-range-scale",
       "c-rating",
       "c-readout",
       "c-recipe",
+      "c-reserved",
+      "c-resizable",
+      "c-resize-handle",
+      "c-resize-observer",
       "c-row",
+      "c-saved-view",
       "c-scale-bar",
+      "c-scheme-toggle",
+      "c-scroll-area",
       "c-search-trigger",
       "c-section-head",
+      "c-segmented",
       "c-select",
       "c-sheet",
       "c-shortcut",
@@ -12882,11 +13537,15 @@
       "c-showcase",
       "c-side-sheet",
       "c-sidebar",
+      "c-skeleton",
       "c-skeleton-group",
       "c-sortable-list",
       "c-sparkline",
       "c-spatial-filter",
+      "c-spinner",
       "c-split-map",
+      "c-split-pane",
+      "c-split-view",
       "c-stack",
       "c-stacked-bar",
       "c-stat",
@@ -12897,15 +13556,21 @@
       "c-style-panel",
       "c-style-switcher",
       "c-survey",
+      "c-swatch",
+      "c-switch",
       "c-table",
+      "c-table-wrap",
       "c-tabs",
+      "c-tag",
       "c-tags-input",
       "c-testimonial",
       "c-textarea",
       "c-threshold",
       "c-time-picker",
+      "c-time-range",
       "c-time-series",
       "c-time-slider",
+      "c-timeline",
       "c-toast",
       "c-toast-host",
       "c-toc",
@@ -12913,6 +13578,8 @@
       "c-tooltip",
       "c-tour",
       "c-tree",
+      "c-version",
+      "c-version-banner",
       "c-virtual-list",
       "c-widget-state"
     ],
@@ -12928,7 +13595,6 @@
       "c-dialog",
       "c-disclosure",
       "c-docs-nav",
-      "c-draggable",
       "c-drawer",
       "c-faq",
       "c-logos",
@@ -12936,8 +13602,7 @@
       "c-sheet",
       "c-side-sheet",
       "c-switch",
-      "c-tabs",
-      "c-tree"
+      "c-tabs"
     ],
     "--dur-copy-tick": [
       "c-btn"
@@ -12950,15 +13615,12 @@
       "c-check",
       "c-chip",
       "c-code-tabs",
-      "c-combobox",
       "c-data-export",
       "c-dialog",
       "c-disclosure",
       "c-docs-nav",
-      "c-draggable",
-      "c-drop-indicator",
-      "c-drop-zone",
       "c-faq",
+      "c-filter-bar",
       "c-filter-pill",
       "c-flow-map",
       "c-header",
@@ -12979,7 +13641,6 @@
       "c-range",
       "c-rating",
       "c-resize-handle",
-      "c-scheme-toggle",
       "c-search-trigger",
       "c-segmented",
       "c-select",
@@ -12992,12 +13653,9 @@
       "c-textarea",
       "c-toc",
       "c-toolbar",
-      "c-tree",
       "c-version"
     ],
     "--dur-ping": [
-      "c-dot",
-      "c-live-badge",
       "c-streaming-chart"
     ],
     "--dur-slow": [
@@ -13022,9 +13680,7 @@
       "c-check",
       "c-disclosure",
       "c-docs-nav",
-      "c-dot",
       "c-faq",
-      "c-live-badge",
       "c-progress",
       "c-scheme-toggle",
       "c-streaming-chart",
@@ -13040,17 +13696,14 @@
       "c-check",
       "c-chip",
       "c-code-tabs",
-      "c-combobox",
       "c-command",
       "c-data-export",
       "c-dialog",
       "c-disclosure",
       "c-docs-nav",
-      "c-draggable",
       "c-drawer",
-      "c-drop-indicator",
-      "c-drop-zone",
       "c-faq",
+      "c-filter-bar",
       "c-filter-pill",
       "c-flow-map",
       "c-header",
@@ -13087,14 +13740,15 @@
       "c-textarea",
       "c-toc",
       "c-toolbar",
-      "c-tree",
       "c-version"
     ],
     "--focus-width": [
       "c-check",
       "c-drag-handle",
+      "c-filter-bar",
       "c-map-slot",
       "c-radio",
+      "c-scheme-toggle",
       "c-segmented",
       "c-switch"
     ],
@@ -13137,6 +13791,7 @@
     ],
     "--font-mono": [
       "c-activity",
+      "c-activity-feed",
       "c-avatar",
       "c-axis",
       "c-badge",
@@ -13159,7 +13814,6 @@
       "c-diff",
       "c-do-dont",
       "c-docs-nav",
-      "c-drop-indicator",
       "c-feature",
       "c-field",
       "c-field-group",
@@ -13191,6 +13845,7 @@
       "c-recipe",
       "c-scale-bar",
       "c-shortcut",
+      "c-spatial-filter",
       "c-stat",
       "c-steps",
       "c-survey",
@@ -13249,7 +13904,8 @@
       "c-steps"
     ],
     "--leading-tight": [
-      "c-landing-hero"
+      "c-landing-hero",
+      "c-tree"
     ],
     "--map-attribution-gap": [
       "c-map-slot"
@@ -13287,8 +13943,10 @@
       "c-code",
       "c-code-tabs",
       "c-dash-toolbar",
+      "c-data-export",
       "c-drawer",
       "c-empty",
+      "c-feature-inspector",
       "c-filter-bar",
       "c-gauge",
       "c-kpi",
@@ -13299,6 +13957,7 @@
       "c-table-wrap"
     ],
     "--radius-md": [
+      "c-activity-feed",
       "c-affordance",
       "c-alert",
       "c-box",
@@ -13310,6 +13969,7 @@
       "c-comparison",
       "c-context-menu",
       "c-contour-plot",
+      "c-data-export",
       "c-date-picker",
       "c-diff",
       "c-do-dont",
@@ -13339,8 +13999,11 @@
       "c-pager",
       "c-popover",
       "c-recipe",
+      "c-saved-view",
+      "c-scheme-toggle",
       "c-select",
       "c-split-map",
+      "c-split-view",
       "c-streaming-chart",
       "c-style-panel",
       "c-tags-input",
@@ -13357,6 +14020,8 @@
       "c-category",
       "c-chip",
       "c-container",
+      "c-data-export",
+      "c-filter-bar",
       "c-filter-pill",
       "c-heatmap",
       "c-kpi",
@@ -13365,6 +14030,7 @@
       "c-panel",
       "c-pill",
       "c-progress",
+      "c-provenance",
       "c-range",
       "c-resize-handle",
       "c-scale-bar",
@@ -13379,6 +14045,7 @@
       "c-theme-scope"
     ],
     "--radius-sm": [
+      "c-activity-feed",
       "c-affordance",
       "c-annotation",
       "c-banner",
@@ -13407,6 +14074,9 @@
       "c-minimap",
       "c-pagination",
       "c-palette-editor",
+      "c-resizable",
+      "c-saved-view",
+      "c-spatial-filter",
       "c-stacked-bar",
       "c-swatch",
       "c-tooltip",
@@ -13481,27 +14151,31 @@
       "c-toast"
     ],
     "--shadow-md": [
-      "c-combobox",
       "c-command-palette",
       "c-context-menu",
+      "c-data-export",
       "c-date-picker",
       "c-elevation",
       "c-hover-card",
       "c-map-popup",
       "c-notification-center",
       "c-popover",
+      "c-saved-view",
       "c-toolbar",
       "c-tooltip",
       "c-tour"
     ],
     "--shadow-sm": [
       "c-annotation",
+      "c-combobox",
       "c-header"
     ],
     "--shadow-xl": [
       "c-command",
+      "c-data-export",
       "c-dialog",
-      "c-drawer"
+      "c-drawer",
+      "c-feature-inspector"
     ],
     "--shadow-xs": [
       "c-switch"
@@ -13525,19 +14199,18 @@
       "c-brush",
       "c-btn",
       "c-btn-group",
-      "c-calendar",
       "c-card",
       "c-catchment",
       "c-category",
       "c-chart",
       "c-chip",
       "c-color-picker",
-      "c-combobox",
       "c-command",
       "c-command-palette",
       "c-container",
       "c-context-menu",
       "c-coordinate",
+      "c-data-export",
       "c-data-grid",
       "c-date-picker",
       "c-date-range",
@@ -13546,7 +14219,6 @@
       "c-donut",
       "c-drag-handle",
       "c-drawer",
-      "c-drop-indicator",
       "c-dropdown",
       "c-empty",
       "c-faq",
@@ -13565,7 +14237,6 @@
       "c-layer-panel",
       "c-layer-switch",
       "c-legend",
-      "c-live-badge",
       "c-map-panel",
       "c-map-popup",
       "c-measure",
@@ -13576,6 +14247,7 @@
       "c-pivot",
       "c-popover",
       "c-price",
+      "c-provenance",
       "c-radio",
       "c-rating",
       "c-recipe",
@@ -13601,7 +14273,6 @@
       "c-toast-host",
       "c-tooltip",
       "c-tour",
-      "c-tree",
       "c-virtual-list",
       "c-widget-state"
     ],
@@ -13658,6 +14329,7 @@
     "--space-md": [
       "c-accordion",
       "c-activity",
+      "c-activity-feed",
       "c-affordance",
       "c-affordances",
       "c-alert",
@@ -13666,9 +14338,9 @@
       "c-banner",
       "c-box",
       "c-breadcrumb",
+      "c-btn",
       "c-callout",
       "c-card",
-      "c-category",
       "c-changelog",
       "c-chart-grid",
       "c-code-tabs",
@@ -13678,14 +14350,14 @@
       "c-dash-kpi-row",
       "c-dash-shell",
       "c-dash-toolbar",
+      "c-data-export",
       "c-do-dont",
       "c-docs-nav",
       "c-docs-shell",
-      "c-donut",
       "c-drawer",
-      "c-drop-zone",
       "c-error-boundary",
       "c-faq",
+      "c-feature-inspector",
       "c-form",
       "c-gauge",
       "c-header",
@@ -13704,7 +14376,6 @@
       "c-pager",
       "c-pagination",
       "c-panel",
-      "c-pivot",
       "c-popover",
       "c-price",
       "c-pricing",
@@ -13718,7 +14389,6 @@
       "c-shortcut-row",
       "c-showcase",
       "c-side-sheet",
-      "c-stacked-bar",
       "c-stat",
       "c-steps",
       "c-streaming-chart",
@@ -13727,17 +14397,17 @@
       "c-tabs",
       "c-testimonial",
       "c-threshold",
-      "c-time-series",
       "c-toast-host",
       "c-toc",
-      "c-tree",
       "c-widget-state"
     ],
     "--space-sm": [
       "c-accordion",
       "c-activity",
+      "c-activity-feed",
       "c-app",
       "c-banner",
+      "c-btn",
       "c-card",
       "c-carousel",
       "c-changelog",
@@ -13754,6 +14424,7 @@
       "c-empty",
       "c-expandable",
       "c-faq",
+      "c-feature-inspector",
       "c-form",
       "c-geocoder",
       "c-header",
@@ -13773,11 +14444,14 @@
       "c-popover",
       "c-readout",
       "c-row",
+      "c-saved-view",
       "c-sheet",
       "c-shortcut-overlay",
       "c-side-sheet",
       "c-sidebar",
       "c-split-map",
+      "c-split-pane",
+      "c-split-view",
       "c-stack",
       "c-stepper",
       "c-style-panel",
@@ -13798,15 +14472,16 @@
       "c-testimonial"
     ],
     "--space-xs": [
+      "c-activity-feed",
       "c-alert",
       "c-annotation",
+      "c-brand",
       "c-calendar",
       "c-carousel",
       "c-catchment",
       "c-category",
       "c-changelog",
       "c-chart",
-      "c-combobox",
       "c-command-palette",
       "c-comparison",
       "c-container",
@@ -13817,6 +14492,7 @@
       "c-donut",
       "c-error-boundary",
       "c-feature",
+      "c-feature-inspector",
       "c-field-group",
       "c-file-upload",
       "c-flow-map",
@@ -13830,14 +14506,19 @@
       "c-layer-panel",
       "c-layer-switch",
       "c-legend",
-      "c-live-badge",
       "c-loading",
       "c-measure",
       "c-notification-center",
       "c-panel",
+      "c-provenance",
+      "c-pull-to-refresh",
+      "c-resizable",
+      "c-saved-view",
+      "c-scroll-area",
       "c-shortcut-list",
       "c-sortable-list",
       "c-sparkline",
+      "c-spatial-filter",
       "c-stepper",
       "c-style-panel",
       "c-table",
@@ -13845,27 +14526,16 @@
       "c-time-series",
       "c-time-slider",
       "c-toast",
-      "c-tour",
-      "c-tree"
+      "c-tour"
     ],
     "--target-chart": [
       "c-chart"
     ],
     "--target-control": [
-      "c-badge",
       "c-btn",
-      "c-calendar",
-      "c-chip",
-      "c-color-picker",
-      "c-combobox",
       "c-filter-pill",
       "c-header",
       "c-input",
-      "c-pagination",
-      "c-palette-editor",
-      "c-pill",
-      "c-rating",
-      "c-segmented",
       "c-select",
       "c-tabs",
       "c-tag",
@@ -13879,6 +14549,7 @@
       "c-calendar",
       "c-chip",
       "c-filter-pill",
+      "c-legend",
       "c-menu",
       "c-pill",
       "c-radio",
@@ -13906,7 +14577,6 @@
       "c-command",
       "c-do-dont",
       "c-docs-nav",
-      "c-drop-indicator",
       "c-feature",
       "c-field",
       "c-field-group",
@@ -13932,8 +14602,7 @@
       "c-survey"
     ],
     "--tracking-wide": [
-      "c-instrument",
-      "c-live-badge"
+      "c-instrument"
     ],
     "--type-body": [
       "c-btn",
@@ -14015,7 +14684,6 @@
       "c-dash-freshness",
       "c-do-dont",
       "c-docs-nav",
-      "c-drop-indicator",
       "c-feature",
       "c-field",
       "c-field-group",
@@ -14060,6 +14728,7 @@
       "c-version"
     ],
     "--type-sm": [
+      "c-activity-feed",
       "c-advanced",
       "c-alert",
       "c-avatar",
@@ -14074,14 +14743,17 @@
       "c-command",
       "c-command-palette",
       "c-compare",
+      "c-data-export",
       "c-date-picker",
       "c-dialog",
       "c-disclosure",
       "c-donut",
+      "c-drop-zone",
       "c-empty",
       "c-error-boundary",
       "c-faq",
       "c-feature",
+      "c-feature-inspector",
       "c-footer",
       "c-form",
       "c-hover-card",
@@ -14098,6 +14770,8 @@
       "c-radio",
       "c-recipe",
       "c-responsive-content",
+      "c-saved-view",
+      "c-scheme-toggle",
       "c-select",
       "c-showcase",
       "c-stepper",
@@ -14117,6 +14791,7 @@
     ],
     "--type-xs": [
       "c-activity",
+      "c-activity-feed",
       "c-affordance",
       "c-annotation",
       "c-avatar",
@@ -14133,6 +14808,7 @@
       "c-compare",
       "c-comparison",
       "c-coordinate",
+      "c-data-export",
       "c-date-picker",
       "c-date-range",
       "c-delta",
@@ -14140,6 +14816,8 @@
       "c-divider",
       "c-docs-nav",
       "c-donut",
+      "c-drop-indicator",
+      "c-feature-inspector",
       "c-field",
       "c-field-group",
       "c-file-upload",
@@ -14161,10 +14839,15 @@
       "c-pagination",
       "c-panel",
       "c-price",
+      "c-provenance",
+      "c-pull-to-refresh",
       "c-readout",
       "c-recipe",
+      "c-saved-view",
+      "c-scroll-area",
       "c-search-trigger",
       "c-shortcut",
+      "c-spatial-filter",
       "c-stat",
       "c-status-light",
       "c-steps",
@@ -14202,6 +14885,7 @@
       "c-annotation",
       "c-badge",
       "c-changelog",
+      "c-combobox",
       "c-command",
       "c-compare",
       "c-docs-nav",
@@ -14213,15 +14897,17 @@
       "c-header",
       "c-kpi",
       "c-layer-panel",
+      "c-live-badge",
       "c-pill",
+      "c-scheme-toggle",
       "c-table",
-      "c-toc",
-      "c-tree"
+      "c-toc"
     ],
     "--weight-regular": [
       "c-anchor"
     ],
     "--weight-semibold": [
+      "c-activity-feed",
       "c-affordance",
       "c-alert",
       "c-app",
@@ -14233,6 +14919,7 @@
       "c-chip",
       "c-compare",
       "c-dash-toolbar",
+      "c-data-export",
       "c-date-picker",
       "c-dialog",
       "c-disclosure",
@@ -14243,10 +14930,10 @@
       "c-expandable",
       "c-faq",
       "c-feature",
+      "c-feature-inspector",
       "c-hover-card",
       "c-landing-features",
       "c-link",
-      "c-live-badge",
       "c-logos",
       "c-map-popup",
       "c-pager",
@@ -14254,7 +14941,10 @@
       "c-popover",
       "c-price",
       "c-prose",
+      "c-provenance",
       "c-recipe",
+      "c-saved-view",
+      "c-scroll-area",
       "c-segmented",
       "c-sheet",
       "c-sidebar",
@@ -14296,7 +14986,6 @@
     "--z-tooltip": [
       "c-catchment",
       "c-chart",
-      "c-combobox",
       "c-dropdown",
       "c-flow-map",
       "c-heatmap",
@@ -14305,6 +14994,7 @@
       "c-notification-center",
       "c-sparkline",
       "c-split-button",
+      "c-split-view",
       "c-tour"
     ]
   }

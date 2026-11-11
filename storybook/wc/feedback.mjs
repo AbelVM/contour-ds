@@ -288,6 +288,8 @@ class ContourCallout extends ContourBase {
     static get properties() { return { variant: { attribute: "variant" }, title: { attribute: "title" }, icon: { attribute: "icon" }, closable: { attribute: "closable", type: Boolean } }; }
     render() {
       this.classList.add("c-callout");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "note");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("title") || "Callout");
       Array.from(this.classList).forEach((c) => { if (c.startsWith("c-callout--")) this.classList.remove(c); });
       const variant = this.getAttribute("variant");
       if (variant) this.classList.add("c-callout--" + variant);
@@ -466,6 +468,8 @@ class ContourAccordion extends ContourBase {
       // The host is a plain container; the children carry .c-disclosure, which
       // is the block that owns the styling. No .c-accordion rule exists, so the
       // host class is dropped rather than invented.
+      if (!this.hasAttribute("role")) this.setAttribute("role", "region");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Accordion");
       const authored = Array.from(this.children).filter((n) => n.tagName === "DETAILS");
       wireStates(this);
       loadRemote(this, "items");
@@ -792,6 +796,8 @@ class ContourExpandable extends ContourBase {
     }
     render() {
       this.classList.add("c-expandable");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "region");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("summary") || "Expandable");
       const summary = this.getAttribute("summary");
       if (summary) {
         let captured = this.innerHTML.trim() ? this.innerHTML : (this._expandableContent || "");
@@ -835,6 +841,7 @@ class ContourToastHost extends ContourBase {
     render() {
       this.classList.add("c-toast-host");
       if (!this.hasAttribute("role")) this.setAttribute("role", "status");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Toast host");
       if (!this.hasAttribute("aria-live")) this.setAttribute("aria-live", "polite");
       if (!this.hasAttribute("aria-atomic")) this.setAttribute("aria-atomic", "true");
     }

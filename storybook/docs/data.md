@@ -58,6 +58,10 @@ The contract a third party follows. A component is a CSS block in the right laye
 
 A migration aid: the names a consumer may already know, and the Contour class that replaces them.
 
+Semantic table (.c-table + .c-table-wrap) is a native table element with sorting, selection, responsive column hiding, and density control. It is the default for tabular data that fits in the DOM.
+
+Data grid (.c-data-grid + ) adds virtualization, cell keyboard navigation, column resizing, client-side filtering, and pagination. Use it when row counts exceed ~500 or when grid-style cell focus is required. The two contracts are separate: a semantic table does not virtualize; a data grid does not use native table semantics for its rows.
+
 ## Subsections
 
 - Engine readout
@@ -93,7 +97,7 @@ A migration aid: the names a consumer may already know, and the Contour class th
 
 ## Blocks documented here
 
-38 block(s). Their facts live in `../contour.components.json`;
+39 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
@@ -109,6 +113,7 @@ starts disagreeing with itself.
 - `.c-catchment`
 - `.c-category`
 - `.c-chart`
+- `.c-cluster`
 - `.c-contour-plot`
 - `.c-data-grid`
 - `.c-data-table`
@@ -138,4 +143,4 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `1beb0033376e73f1` · last committed 2026-11-07T12:44:19+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0102caa891dd1fdf` · last committed 2026-11-11T00:01:36+01:00 · no URL: the project is private until v1.0.

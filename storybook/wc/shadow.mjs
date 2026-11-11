@@ -70,10 +70,19 @@ import { define, MODS, REGISTERED, CONTOUR_EVENTS, contourId } from './core.mjs'
     static get observedAttributes() { return MODS; }
     constructor() {
       super();
-      const root = this.attachShadow({ mode: "open" });
+      // Reuse a Declarative Shadow Root when the platform already attached one
+      // (SSR/DSD hydration); otherwise create and populate the shadow root.
+      let root = this.shadowRoot;
+      if (!root) {
+        root = this.attachShadow({ mode: "open" });
+        if (this.constructor.contourTemplate) {
+          root.appendChild(this.constructor.contourTemplate.content.cloneNode(true));
+        }
+      }
       const sheets = adoptedSheets();
-      if (sheets.length) root.adoptedStyleSheets = sheets;
-      root.appendChild(this.constructor.contourTemplate.content.cloneNode(true));
+      if (sheets.length) {
+        try { root.adoptedStyleSheets = sheets; } catch (e) { /* unsupported or read-only */ }
+      }
       this._shadowBase = root.firstElementChild ? root.firstElementChild.className : "";
     }
     // Subclasses with behaviour beyond the template override this.
@@ -205,16 +214,22 @@ connectedCallback() {
     }
   }
 
-  // Registers a wrapper. The template is parsed once into a <template> and
-  // cloned per instance, so the markup below is the markup the root gets.
+  // Registers a wrapper. The template markup is always recorded so Node/SSR
+  // tooling can emit Declarative Shadow DOM strings; in a browser the template
+  // is also parsed once into a <template> and cloned per instance.
   const SHADOW_PARTS_PUBLIC = {};
+  const SHADOW_MARKUP = {};
+  const recordParts = (name, markup) => {
+    SHADOW_PARTS_PUBLIC[name] = [...markup.matchAll(/part="([^"]+)"/g)]
+      .flatMap((m) => m[1].split(/\s+/))
+      .filter(Boolean);
+  };
   const shadow = (name, markup) => {
+    SHADOW_MARKUP[name] = markup;
+    recordParts(name, markup);
     if (typeof document === "undefined") return;
     const tpl = document.createElement("template");
     tpl.innerHTML = markup;
-    SHADOW_PARTS_PUBLIC[name] = [...tpl.content.querySelectorAll("[part]")]
-      .flatMap((node) => (node.getAttribute("part") || "").split(/\s+/))
-      .filter(Boolean);
     const cls = class extends ContourShadow {};
     cls.contourTemplate = tpl;
     define(name, cls);
@@ -345,10 +360,13 @@ shadow("contour-shadow-filter-pill", `<span class="c-filter-pill" part="filter-p
 
   // The dialog is the one wrapper with behaviour, because a close button that
   // does not close is a control the reader cannot use.
+  const DIALOG_MARKUP = "<dialog class=\"c-dialog\" part=\"dialog\"> <div class=\"c-dialog__head\" part=\"head\"> <slot name=\"title\"></slot> <button class=\"c-btn c-btn--icon c-btn--ghost\" part=\"close\" type=\"button\" aria-label=\"Close\"> <svg aria-hidden=\"true\"><use href=\"#i-close\" /></svg> </button> </div> <div class=\"c-dialog__body\" part=\"body\"><slot></slot></div> <div class=\"c-dialog__foot\" part=\"foot\"><slot name=\"foot\"></slot></div> </dialog>";
+  SHADOW_MARKUP["contour-shadow-dialog"] = DIALOG_MARKUP;
+  recordParts("contour-shadow-dialog", DIALOG_MARKUP);
   class ContourShadowDialog extends ContourShadow {
     static contourTemplate = (typeof document !== "undefined") ? (() => {
       const tpl = document.createElement("template");
-      tpl.innerHTML = "<dialog class=\"c-dialog\" part=\"dialog\"> <div class=\"c-dialog__head\" part=\"head\"> <slot name=\"title\"></slot> <button class=\"c-btn c-btn--icon c-btn--ghost\" part=\"close\" type=\"button\" aria-label=\"Close\"> <svg aria-hidden=\"true\"><use href=\"#i-close\" /></svg> </button> </div> <div class=\"c-dialog__body\" part=\"body\"><slot></slot></div> <div class=\"c-dialog__foot\" part=\"foot\"><slot name=\"foot\"></slot></div> </dialog>";
+      tpl.innerHTML = DIALOG_MARKUP;
       return tpl;
     })() : null;
     enhance(root) {
@@ -407,10 +425,25 @@ shadow("contour-shadow-filter-pill", `<span class="c-filter-pill" part="filter-p
   }
   define("contour-shadow-dialog", ContourShadowDialog);
 
+  /**
+   * Render a Declarative Shadow DOM string for a registered contour-shadow-* element.
+   * Intended for SSR/string emission; returns null for unknown tags.
+   */
+  const renderShadowDSD = (tag, attrs = "", light = "") => {
+    const markup = SHADOW_MARKUP[tag];
+    if (typeof markup !== "string") return null;
+    const attrStr = attrs ? (attrs.startsWith(" ") ? attrs : " " + attrs) : "";
+    return `<${tag}${attrStr}><template shadowrootmode="open">${markup}</template>${light}</${tag}>`;
+  };
+
   // Published once, at the end, so the array holds what the browser was actually
   // handed rather than what the source appears to say. Frozen: a page that
   // reshapes it would make the next reader's count wrong, which is the failure
   // this array exists to prevent.
+  const FROZEN_SHADOW_MARKUP = Object.freeze({ ...SHADOW_MARKUP });
+  if (typeof globalThis !== "undefined") {
+    globalThis.ContourShadowTemplates = FROZEN_SHADOW_MARKUP;
+  }
   if (typeof window !== "undefined") {
     window.ContourElements = Object.freeze(REGISTERED.slice());
     window.ContourShadowParts = Object.freeze(Object.fromEntries(
@@ -420,4 +453,8 @@ shadow("contour-shadow-filter-pill", `<span class="c-filter-pill" part="filter-p
     // page cannot add names the source never emitted, which would make the gate's
     // "every dispatchEvent name has an entry" read meaningless.
     window.ContourEvents = Object.freeze(CONTOUR_EVENTS);
+    if (!window.Contour) window.Contour = {};
+    try { window.Contour.shadowTemplates = FROZEN_SHADOW_MARKUP; } catch {}
   }
+
+  export { SHADOW_MARKUP, renderShadowDSD };

@@ -104,6 +104,8 @@
   export const CONTOUR_EVENTS = Object.freeze({
     "contour:activate": { payload: ["row"], composed: true },
     "contour:add": { payload: ["value"], composed: true },
+    "contour:activity-clear": { payload: [], composed: true },
+    "contour:activity-filter": { payload: ["unread"], composed: true },
     "contour:activity-select": { payload: ["index", "text"], composed: true },
     "contour:break-change": { payload: ["layer", "value"], composed: true },
     "contour:style-resolved": { payload: ["applied", "items", "layer", "property", "value"], composed: true },
@@ -122,6 +124,7 @@
     "contour:clear-all": { payload: [], composed: true },
     "contour:close": { payload: ["index", "label"], composed: true },
     "contour:copy": { payload: ["text"], composed: true },
+    "contour:apply": { payload: ["name"], composed: true },
     "contour:dash-action": { payload: ["label"], composed: true },
     "contour:diff-activate": { payload: ["kind", "text"], composed: true },
     "contour:draw-start": { payload: ["mode"], composed: true },
@@ -133,16 +136,19 @@
     "contour:drop": { payload: ["value", "label"], composed: true },
     "contour:empty-action": { payload: ["state"], composed: true },
     "contour:filter": { payload: ["query"], composed: true },
+    "contour:filter-change": { payload: ["source", "filter"], composed: true },
      "contour:error": { payload: ["src", "message", "name", "status"], composed: true },
      "contour:export": { payload: ["format"], composed: true },
      "contour:refresh": { payload: [], composed: true },
     "contour:hide": { payload: [], composed: true },
     "contour:hover": { payload: ["row"], composed: true },
     "contour:input": { payload: ["name", "value", "checked"], composed: true },
+    "contour:inspect-action": { payload: ["label"], composed: true },
     "contour:layer-opacity": { payload: ["name", "opacity"], composed: true },
     "contour:layer-rename": { payload: ["name", "newName"], composed: true },
     "contour:layer-duplicate": { payload: ["name"], composed: true },
     "contour:layer-zoom": { payload: ["name"], composed: true },
+    "contour:zoom": { payload: ["row", "index"], composed: true },
     "contour:layer-projection": { payload: ["name", "projection"], composed: true },
     "contour:layer-remove": { payload: ["name"], composed: true },
     "contour:layer-reorder": { payload: ["layerIds"], composed: true },
@@ -154,7 +160,9 @@
     "contour:map-control": { payload: ["control"], composed: true },
     "contour:map-attach": { payload: [], composed: true },
     "contour:map-detach": { payload: [], composed: true },
+    "contour:map-popup-reposition": { payload: ["anchor", "flippedX", "flippedY", "left", "top"], composed: true },
     "contour:mode-change": { payload: ["mode"], composed: true },
+    "contour:scope-change": { payload: ["scope"], composed: true },
     "contour:move": { payload: ["direction", "from", "to"], composed: true },
     "contour:open": { payload: [], composed: true },
     "contour:page": { payload: ["page"], composed: true },
@@ -170,6 +178,8 @@
     "contour:seek": { payload: ["progress", "value"], composed: true },
     "contour:select": { payload: ["area", "col", "index", "key", "label", "labels", "path", "row", "rows", "series", "value"], composed: true },
     "contour:search": { payload: ["query"], composed: true },
+    "contour:spatial-filter": { payload: ["action", "mode", "operator"], composed: true },
+    "contour:split-change": { payload: ["value", "width", "height"], composed: true },
     "contour:speed-change": { payload: ["speed"], composed: true },
     "contour:showcase-activate": { payload: ["title"], composed: true },
     "contour:step-activate": { payload: ["index", "title"], composed: true },
@@ -233,15 +243,17 @@
   // Adding one of those back to this list makes that component recurse.
   /** Shared attribute vocabulary used by components that opt into defaults. */
   export const OBSERVED = [
-    "accept", "action", "actions", "active", "after", "allow-duplicate", "allow-remove", "allow-rename", "allow-zoom", "alpha", "anchor", "answer", "area", "article", "attribution", "attribution-mark", "audit", "autoplay", "axis", "axis-x", "axis-y", "brownout", "brownout-level", "before", "body", "brand", "breakpoint", "breaks", "brush", "brush-end", "brush-max", "brush-min", "brush-start", "cache-key", "canvas", "center", "clearable", "cols", "columns", "color", "command",
-    "cells", "checked", "chrome", "debounce", "closable", "collapsed", "collapsible", "classification", "colors", "continuous", "content", "controls", "copyable", "count", "data", "data-table", "date", "delta", "description", "glyphs", "demo", "density", "desc", "dir", "direction", "disabled", "distance", "dismissible", "divider", "do", "dont", "dot", "ends", "high", "input", "layer", "low", "mode", "modes", "n", "opacity", "palette", "polarity", "precision", "range", "single",
+    "accept", "action", "actions", "active", "after", "allow-duplicate", "allow-remove", "allow-rename", "allow-zoom", "alpha", "anchor", "answer", "area", "article", "attribution", "attribution-mark", "audit", "autoplay", "axis", "axis-x", "axis-y", "brownout", "brownout-level", "before", "body", "brand", "bounds", "breakpoint", "breaks", "brush", "brush-end", "brush-max", "brush-min", "brush-start", "cache-key", "canvas", "center", "clearable", "cols", "columns", "color", "command",
+    "cells", "checked", "chrome", "confidence", "coverage", "debounce", "closable", "collapsed", "collapsible", "classification", "colors", "continuous", "content", "controls", "copyable", "count", "data", "data-table", "date", "delta",     "description", "glyphs", "graduated", "demo", "density", "desc", "dir", "direction", "disabled", "distance", "dismissible", "divider", "do", "dont", "dot", "ends", "high", "input", "layer", "low", "mode", "modes", "n", "opacity", "palette", "polarity", "precision", "range", "single",
     "empty", "exclusive", "fallback", "filename", "format", "heading", "help", "hint", "href", "icon", "illustration", "instrument", "interval", "items", "key", "layers", "level", "range-end", "range-start",
-    "label", "lazy", "lede", "legend", "line", "limit", "link", "links", "live", "loading", "locale", "loop", "max", "media", "message", "method", "menu", "min", "multiple", "name", "needle", "next", "no", "no-cache", "no-data-message", "nodes", "note", "norm", "normalize",
+    "label", "lazy", "lede", "legend", "left-label", "right-label", "line", "limit", "link", "links", "live", "loading", "locale", "loop", "max", "media", "message", "method", "methodology", "menu", "min", "multiple", "name", "needle", "next", "no", "no-cache", "no-data-message", "nodes", "note", "norm", "normalize",
     "options", "orientation", "page-size", "pages", "pause", "paused", "pausable", "persist", "placeholder", "playing", "point", "points", "prev", "presets", "progress", "prompt", "question", "recent", "required",
     "quote", "ramp", "refresh", "removable", "resolution", "reverse", "rings", "retry", "results", "rows", "scale", "selectable", "segments", "show-header", "sparkline", "threshold", "thresholds", "selected", "separator", "series", "shortcut", "side", "size", "skeleton", "sort", "sort-dir", "speed", "status", "step", "submit", "submitting", "timeout", "trigger", "virtual", "sticky", "cluster-count", "cluster-expanded", "time", "resizable",
-    "state", "steps", "style", "subtitle", "summary", "src", "table", "tabs", "tag", "text", "ticks", "title", "type", "unit", "cluster-items", "row-height",
-    "variant", "values", "viewport", "yes", "zoomable", "x", "y",
-    "caption", "current-time", "is-playing", "loop-label", "no-data-color", "property", "show-loop", "show-thumb", "show-thumb-caption", "speeds", "item-height", "pause-label", "play-label", "speed-label", "time-label", "shimmer",
+    "state", "steps", "style", "subtitle", "summary", "src", "source", "table", "tabs", "tag", "text", "ticks",     "title", "type", "unread-only", "unit", "updated", "cluster-items", "row-height",
+    "variant", "values", "viewport", "warning", "yes", "zoomable", "x", "y",
+    "caption", "current-time", "is-playing", "loop-label",     "no-data-color", "no-data-label", "property", "show-loop", "show-thumb", "show-thumb-caption", "speeds", "item-height", "pause-label", "play-label", "speed-label", "time-label", "shimmer",
+    "search",
+    "bucket-count", "limit-values",
   ];
 
   /** Resolve an authored heading level while keeping the fallback valid. */
@@ -425,21 +437,30 @@
          // dropped and rebuilt, so without this a host attribute change wipes
          // whatever the user typed.
          const savedControls = Array.from(this.querySelectorAll("input, textarea, select"));
-         const savedValues = savedControls.map((el) => ({ key: el.name || el.id || null, value: el.value, checked: el.checked, type: el.type }));
+         const savedValues = savedControls.map((el) => ({
+           key: el.name || el.id || null,
+           preserveKey: el.getAttribute("data-contour-preserve-key") || null,
+           value: el.value,
+           checked: el.checked,
+           type: el.type,
+         }));
          // Preserve focus, scroll position and <details> open state across the
          // rebuild, so a host attribute change does not yank focus to <body>
          // or collapse an open disclosure.
           const hadFocus = this.contains(document.activeElement) ? document.activeElement : null;
           // Capture a recovery key for unkeyed active elements: an id is the
-          // strongest key, then a `name`, then the relative index among all
-          // focusable controls inside the host. Without these, an attribute
-          // update that rebuilds an unkeyed input drops focus to <body>.
+          // strongest key, then a `data-contour-preserve-key`, then a `name`,
+          // then the relative index among all focusable controls inside the host.
+          // Without these, an attribute update that rebuilds an unkeyed input
+          // drops focus to <body>.
           const _focusableSelector = "button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])";
           const _focusablesBefore = Array.from(this.querySelectorAll(_focusableSelector));
           const hadFocusIndex = hadFocus ? _focusablesBefore.indexOf(hadFocus) : -1;
+          const hadFocusKey = hadFocus ? (hadFocus.id || null) : null;
+          const hadFocusPreserveKey = hadFocus ? (hadFocus.getAttribute("data-contour-preserve-key") || null) : null;
           const hadFocusName = hadFocus ? (hadFocus.getAttribute("name") || null) : null;
-         const savedScrolls = Array.from(this.querySelectorAll("*")).filter((el) => el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth).map((el) => ({ el, top: el.scrollTop, left: el.scrollLeft }));
-         const savedDetails = Array.from(this.querySelectorAll("details")).map((d) => ({ id: d.id || null, open: d.open }));
+         const savedScrolls = Array.from(this.querySelectorAll("*")).filter((el) => el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth).map((el) => ({ el, id: el.id || null, preserveKey: el.getAttribute("data-contour-preserve-key") || null, top: el.scrollTop, left: el.scrollLeft }));
+         const savedDetails = Array.from(this.querySelectorAll("details")).map((d) => ({ id: d.id || null, preserveKey: d.getAttribute("data-contour-preserve-key") || null, open: d.open }));
          // Unwrap authored content from generated wrappers before dropping them,
          // so an attribute re-render cannot destroy authored light-DOM children
          // that render() moved into a body/pre wrapper (B3-05).
@@ -483,13 +504,13 @@
         // the two lists, so a field removed at the end does not shift values
         // onto the wrong input.
         const newControls = Array.from(this.querySelectorAll("input, textarea, select"));
-        const keyed = savedValues.filter((sv) => sv.key);
-        const unkeyed = savedValues.filter((sv) => !sv.key);
+        const keyed = savedValues.filter((sv) => sv.key || sv.preserveKey);
+        const unkeyed = savedValues.filter((sv) => !sv.key && !sv.preserveKey);
         const used = new Set();
         for (const el of newControls) {
-          const key = el.name || el.id || null;
+          const key = el.name || el.id || el.getAttribute("data-contour-preserve-key") || null;
           if (!key) continue;
-          const match = keyed.find((sv) => sv.key === key && !used.has(sv));
+          const match = keyed.find((sv) => (sv.key === key || sv.preserveKey === key) && !used.has(sv));
           if (!match) continue;
           used.add(match);
           if (el.value === "" && el.getAttribute("value") === null) {
@@ -499,18 +520,32 @@
              el.checked = match.checked;
            }
         }
-        let u = 0;
+        // Restore unkeyed controls by type-aware index matching: group saved
+        // unkeyed controls by type, then match new unkeyed controls by type and
+        // index within that type group. This prevents misalignment when elements
+        // are inserted or removed between renders (F-R4). A textarea removed
+        // from the middle no longer shifts its value onto a following input.
+        const savedByType = new Map();
+        for (const sv of unkeyed) {
+          const group = savedByType.get(sv.type) || [];
+          group.push(sv);
+          savedByType.set(sv.type, group);
+        }
+        const usedByType = new Map();
         for (const el of newControls) {
           if (el.name || el.id) continue;
-          const saved = unkeyed[u];
-          u += 1;
-          if (!saved) continue;
+          const type = el.type;
+          const group = savedByType.get(type) || [];
+          const used = usedByType.get(type) || 0;
+          if (used >= group.length) continue;
+          const saved = group[used];
+          usedByType.set(type, used + 1);
           if (el.value === "" && el.getAttribute("value") === null) {
             el.value = saved.value;
           }
            if ((el.type === "checkbox" || el.type === "radio") && typeof saved.checked === "boolean" && !this._checkedAttrChanged) {
-             el.checked = saved.checked;
-           }
+            el.checked = saved.checked;
+          }
         }
         // Restore <details> open state. A disclosure carries an `id` when it is
         // stable across renders (a faq item, a doc section); match those by id
@@ -519,14 +554,15 @@
         // the shorter list, which is the behaviour the length guard existed
         // to protect and still protects for the tail of either list.
         const newDetails = Array.from(this.querySelectorAll("details"));
-        const keyedDetails = savedDetails.filter((sd) => sd.id);
+        const keyedDetails = savedDetails.filter((sd) => sd.id || sd.preserveKey);
         const usedIds = new Set();
         for (const d of newDetails) {
           const id = d.id || null;
-          if (!id) continue;
-          const match = keyedDetails.find((sd) => sd.id === id && !usedIds.has(sd.id));
+          const preserveKey = d.getAttribute("data-contour-preserve-key") || null;
+          if (!id && !preserveKey) continue;
+          const match = keyedDetails.find((sd) => (sd.id === id || sd.preserveKey === preserveKey) && !usedIds.has(sd.id || sd.preserveKey));
           if (!match) continue;
-          usedIds.add(match.id);
+          usedIds.add(match.id || match.preserveKey);
           d.open = match.open;
         }
         let di = 0;
@@ -543,19 +579,20 @@
         // the wrong container; the rest fall back to index matching up to the
         // shorter list, which is what the old length guard protected.
         const newScrolls = Array.from(this.querySelectorAll("*")).filter((el) => el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth);
-        const keyedScrolls = savedScrolls.filter((s) => s.el.id);
+        const keyedScrolls = savedScrolls.filter((s) => s.id || s.preserveKey);
         const usedScrolls = new Set();
         for (const el of newScrolls) {
           const id = el.id || null;
-          if (!id) continue;
-          const match = keyedScrolls.find((s) => s.el.id === id && !usedScrolls.has(s.el));
+          const preserveKey = el.getAttribute("data-contour-preserve-key") || null;
+          if (!id && !preserveKey) continue;
+          const match = keyedScrolls.find((s) => (s.id === id || s.preserveKey === preserveKey) && !usedScrolls.has(s.el));
           if (!match) continue;
           usedScrolls.add(match.el);
           el.scrollTop = match.top;
           el.scrollLeft = match.left;
         }
         let si = 0;
-        const plainScrolls = savedScrolls.filter((s) => !s.el.id);
+        const plainScrolls = savedScrolls.filter((s) => !s.id && !s.preserveKey);
         for (const el of newScrolls) {
           if (el.id) continue;
           const s = plainScrolls[si];
@@ -569,19 +606,22 @@
          // their relative index among focusable controls, so an attribute update
          // that rebuilds an unkeyed input no longer drops focus to <body>.
          if (hadFocus) {
-           let target = null;
-           if (hadFocus.id) {
-             try { target = this.querySelector("#" + CSS.escape(hadFocus.id)); } catch (e) { target = null; }
-           }
-           if (!target && hadFocusName) {
-             try { target = this.querySelector('[name="' + CSS.escape(hadFocusName) + '"]'); } catch (e) { target = null; }
-           }
-           if (!target && hadFocusIndex >= 0) {
-             const after = Array.from(this.querySelectorAll(_focusableSelector));
-             if (after.length) {
-               target = after[Math.min(hadFocusIndex, after.length - 1)];
-             }
-           }
+            let target = null;
+            if (hadFocusKey) {
+              try { target = this.querySelector("#" + CSS.escape(hadFocusKey)); } catch (e) { target = null; }
+            }
+            if (!target && hadFocusPreserveKey) {
+              try { target = this.querySelector('[data-contour-preserve-key="' + CSS.escape(hadFocusPreserveKey) + '"]'); } catch (e) { target = null; }
+            }
+            if (!target && hadFocusName) {
+              try { target = this.querySelector('[name="' + CSS.escape(hadFocusName) + '"]'); } catch (e) { target = null; }
+            }
+            if (!target && hadFocusIndex >= 0) {
+              const after = Array.from(this.querySelectorAll(_focusableSelector));
+              if (after.length) {
+                target = after[Math.min(hadFocusIndex, after.length - 1)];
+              }
+            }
            if (target && typeof target.focus === "function") {
              try { target.focus(); } catch (e) {}
            } else if (document.contains(hadFocus)) {
@@ -1022,6 +1062,49 @@
     }
     try { return new Intl.NumberFormat(loc, opts).format(Number(value)); }
     catch (e) { return value; }
+  }
+
+  // Shared keyboard navigation for roving-tabindex patterns.
+  // `items`: array of focusable elements, `e`: KeyboardEvent.
+  // Options: `{ wrap (default true), enter (default true), homeEnd (false),
+  //           onKey(key, idx, item) }` — return truthy to preventDefault.
+  //           `onNavigate(newIdx)` — called after focus moves with new index.
+  //           `rtl` — if true, ArrowRight/Left swap direction; defaults to dir attribute.
+  /** Navigate a roving-tabindex group with arrow keys, Home/End, Enter/Space. */
+  export function navKey(e, items, { wrap = true, enter = true, homeEnd = false, onKey, onNavigate, rtl } = {}) {
+    const idx = items.indexOf(document.activeElement);
+    if (idx < 0) return;
+    let next = -1;
+    // Determine direction: ArrowRight/Down always advance forward in LTR.
+    // With RTL, ArrowRight goes back and ArrowLeft goes forward.
+    const fwdKey = rtl ? "ArrowLeft" : "ArrowRight";
+    const revKey = rtl ? "ArrowRight" : "ArrowLeft";
+    if (e.key === fwdKey || e.key === "ArrowDown") next = wrap ? (idx + 1) % items.length : Math.min(idx + 1, items.length - 1);
+    else if (e.key === revKey || e.key === "ArrowUp") next = wrap ? (idx - 1 + items.length) % items.length : Math.max(0, idx - 1);
+    else if ((homeEnd || wrap) && e.key === "Home") next = 0;
+    else if ((homeEnd || wrap) && e.key === "End") next = items.length - 1;
+    if (next >= 0 && next !== idx) {
+      e.preventDefault();
+      try { items[next].focus(); } catch (_) {}
+      if (onNavigate) onNavigate(next);
+      if (onKey) onKey(e.key, idx, items[idx]);
+    } else if ((enter || wrap) && (e.key === "Enter" || e.key === " ")) {
+      e.preventDefault();
+      if (onKey) onKey(e.key, idx, items[idx]);
+    }
+  }
+
+  // Resolve RTL direction from element or document. Returns true for RTL layout.
+  /** Check whether the given element uses right-to-left text direction. */
+  export function isRtl(el) {
+    let node = el;
+    while (node && node.nodeType === 1) {
+      const d = node.getAttribute && node.getAttribute("dir");
+      if (d) return d.toLowerCase() === "rtl";
+      node = node.parentElement;
+    }
+    try { return (typeof document !== "undefined" && (document.documentElement.getAttribute("dir") || "").toLowerCase() === "rtl"); }
+    catch (e) { return false; }
   }
 
   // Spatial maths (BY-23): pure functions on the host's own attributes.

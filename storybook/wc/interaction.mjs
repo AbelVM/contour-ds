@@ -6,6 +6,7 @@ class ContourPressableFull extends ContourBase {
     render() {
       this.classList.add("c-pressable");
       if (!this.hasAttribute("role")) this.setAttribute("role", "button");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("label") || "Pressable");
       if (this.hasAttribute("disabled")) {
         this.setAttribute("aria-disabled", "true");
         this.setAttribute("tabindex", "-1");
@@ -27,9 +28,33 @@ class ContourResizeHandleFull extends ContourBase {
     render() {
       this.classList.add("c-resize-handle");
       if (!this.hasAttribute("role")) this.setAttribute("role", "separator");
+      if (!this.hasAttribute("aria-valuenow")) this.setAttribute("aria-valuenow", "0");
       if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Resize handle");
       if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
       if (!this.hasAttribute("aria-orientation")) this.setAttribute("aria-orientation", "horizontal");
+    }
+    enhance() {
+      if (this._wiredResizeHandle) return;
+      this._wiredResizeHandle = true;
+      // Keyboard alternative for pointer resize: arrow keys nudge the split
+      // value by 5%, Home/End jump to min/max. Dispatches contour:resize so a
+      // host (c-resizable, c-split-view) can apply the change.
+      this.addEventListener("keydown", (e) => {
+        let delta = 0;
+        if (e.key === "ArrowLeft" || e.key === "ArrowDown") delta = -5;
+        else if (e.key === "ArrowRight" || e.key === "ArrowUp") delta = 5;
+        else if (e.key === "Home") delta = -Infinity;
+        else if (e.key === "End") delta = Infinity;
+        else return;
+        e.preventDefault();
+        const cur = Number(this.getAttribute("aria-valuenow")) || 0;
+        let next;
+        if (delta === -Infinity) next = 0;
+        else if (delta === Infinity) next = 100;
+        else next = Math.min(100, Math.max(0, cur + delta));
+        this.setAttribute("aria-valuenow", String(next));
+        this.dispatchEvent(new CustomEvent("contour:resize", { bubbles: true, composed: true, detail: { value: next, delta } }));
+      });
     }
   }
   define("contour-resize-handle", ContourResizeHandleFull);
@@ -68,7 +93,6 @@ class ContourShortcutRowFull extends ContourBase {
     static get properties() { return { desc: { attribute: "desc" }, key: { attribute: "key" } }; }
     render() {
       this.classList.add("c-shortcut-row");
-      this.setAttribute("role", "listitem");
       const key = this.getAttribute("key");
       const desc = this.getAttribute("desc");
       if (key) {
@@ -111,6 +135,9 @@ class ContourShortcutPanelFull extends ContourBase {
     static get properties() { return { title: { attribute: "title" }, open: { attribute: "open", type: Boolean } }; }
     render() {
       this.classList.add("c-shortcut-overlay");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "dialog");
+      if (!this.hasAttribute("aria-modal")) this.setAttribute("aria-modal", "true");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("title") || "Keyboard shortcuts");
       const title = this.getAttribute("title");
       if (title) {
         const t = this.ensure(".c-shortcut-overlay__title", () => { const el = document.createElement("div"); el.className = "c-shortcut-overlay__title"; return el; });
@@ -159,6 +186,7 @@ class ContourRowActionFull extends ContourBase {
       }
       const label = this.getAttribute("label");
       if (label && !this.hasChildNodes()) this.textContent = label;
+      if (label && !this.hasAttribute("aria-label")) this.setAttribute("aria-label", label);
     }
     enhance() {
       if (this._wiredRowAction) return;
@@ -209,6 +237,7 @@ class ContourDraggable extends ContourBase {
       if (!this.hasAttribute("role")) this.setAttribute("role", "button");
       if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
       if (!this.hasAttribute("draggable")) this.setAttribute("draggable", "true");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("label") || "Draggable item");
     }
     // The value a drop partner receives: the authored `value` attribute, else
     // the `label`, else the element's own text. One shape, so a consumer's
@@ -257,7 +286,9 @@ class ContourDragHandle extends ContourBase {
     render() {
       this.classList.add("c-drag-handle");
       if (!this.hasAttribute("role")) this.setAttribute("role", "separator");
+      if (!this.hasAttribute("aria-valuenow")) this.setAttribute("aria-valuenow", "0");
       if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("label") || "Drag handle");
       if (!this.hasAttribute("aria-orientation")) this.setAttribute("aria-orientation", "horizontal");
     }
     enhance() {
@@ -282,6 +313,13 @@ class ContourDropIndicator extends ContourBase {
     render() {
       this.classList.add("c-drop-indicator");
       this.classList.add("c-drop-indicator--visible");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "presentation");
+      // A presentation role is purely decorative: strip any accessible name
+      // so axe does not flag aria-label/aria-labelledby as prohibited.
+      if (this.getAttribute("role") === "presentation") {
+        this.removeAttribute("aria-label");
+        this.removeAttribute("aria-labelledby");
+      }
       Array.from(this.childNodes).forEach((n) => { if (n.nodeType === Node.TEXT_NODE) n.remove(); else if (n.nodeType === Node.ELEMENT_NODE && n.tagName === "SPAN") n.remove(); });
       const label = this.getAttribute("label");
       if (label) {
@@ -296,6 +334,8 @@ class ContourDropZone extends ContourBase {
     static get properties() { return { label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-drop-zone");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "region");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("label") || "Drop zone");
       Array.from(this.childNodes).forEach((n) => { if (n.nodeType === Node.TEXT_NODE) n.remove(); else if (n.nodeType === Node.ELEMENT_NODE && n.tagName === "SPAN") n.remove(); });
       const label = this.getAttribute("label");
       if (label) {
@@ -352,6 +392,7 @@ class ContourResizable extends ContourBase {
         handle.className = "c-resize-handle";
         handle.setAttribute("tabindex", "0");
         handle.setAttribute("role", "separator");
+        handle.setAttribute("aria-valuenow", "0");
         const p2 = document.createElement("div");
         p2.className = "c-resizable__pane";
         p2.textContent = "Pane B";
@@ -398,6 +439,8 @@ class ContourResizable extends ContourBase {
         if (!this._resizing) return;
         this._resizing = false;
         if (this._splitValue) { this.setAttribute("value", this._splitValue); this._splitValue = null; }
+        const rect = this.getBoundingClientRect();
+        this.dispatchEvent(new CustomEvent("contour:resize", { bubbles: true, composed: true, detail: { width: Math.round(rect.width), height: Math.round(rect.height) } }));
         const handle = this.querySelector(".c-resize-handle");
         if (handle) {
           handle.classList.remove("c-resize-handle--dragging");
@@ -415,10 +458,105 @@ class ContourResizable extends ContourBase {
         const cur = parseFloat(this.getAttribute("value")) || 50;
         if (e.key === "ArrowLeft" || e.key === "ArrowDown") { e.preventDefault(); setSplit && setSplit; const p1 = this.querySelector(".c-resizable__pane"); if (p1) { const nv = Math.max(10, cur - 5); p1.style.flex = `0 0 ${nv}%`; this.setAttribute("value", String(nv)); } }
         else if (e.key === "ArrowRight" || e.key === "ArrowUp") { e.preventDefault(); const p1 = this.querySelector(".c-resizable__pane"); if (p1) { const nv = Math.min(90, cur + 5); p1.style.flex = `0 0 ${nv}%`; this.setAttribute("value", String(nv)); } }
+        const r = this.getBoundingClientRect();
+        this.dispatchEvent(new CustomEvent("contour:resize", { bubbles: true, composed: true, detail: { width: Math.round(r.width), height: Math.round(r.height) } }));
       });
     }
   }
   define("contour-resizable", ContourResizable);
+class ContourSplitView extends ContourBase {
+    static get observed() { return ["direction", "value", "left-label", "right-label"]; }
+    static get properties() { return { direction: { attribute: "direction" }, value: { attribute: "value" }, "left-label": { attribute: "left-label" }, "right-label": { attribute: "right-label" } }; }
+    render() {
+      this.classList.add("c-split-view");
+      this.setAttribute("role", "region");
+      const vertical = this.getAttribute("direction") === "vertical";
+      if (vertical) {
+        this.classList.add("c-split-view--vertical");
+        this.classList.remove("c-split-view--horizontal");
+      } else {
+        this.classList.add("c-split-view--horizontal");
+        this.classList.remove("c-split-view--vertical");
+      }
+      if (this.getAttribute("left-label")) this.setAttribute("aria-label", this.getAttribute("left-label"));
+      if (!this.querySelector(".c-split-view__pane")) {
+        const p1 = document.createElement("div");
+        p1.className = "c-split-view__pane c-split-view__pane--left";
+        p1.setAttribute("aria-label", this.getAttribute("left-label") || "Left pane");
+        const divider = document.createElement("div");
+        divider.className = "c-split-view__divider";
+        divider.setAttribute("tabindex", "0");
+        divider.setAttribute("role", "separator");
+        divider.setAttribute("aria-valuenow", this.getAttribute("value") || "50");
+        divider.setAttribute("aria-label", "Split divider");
+        const p2 = document.createElement("div");
+        p2.className = "c-split-view__pane c-split-view__pane--right";
+        p2.setAttribute("aria-label", this.getAttribute("right-label") || "Right pane");
+        this.appendChild(p1);
+        this.appendChild(divider);
+        this.appendChild(p2);
+      }
+      const v = this.getAttribute("value") || "50";
+      const p1 = this.querySelector(".c-split-view__pane--left");
+      if (p1) p1.style.flex = `0 0 ${v}%`;
+      const divider = this.querySelector(".c-split-view__divider");
+      if (divider) divider.setAttribute("aria-valuenow", v);
+    }
+    enhance() {
+      if (this._wiredSplitView) return;
+      this._wiredSplitView = true;
+      const setSplit = (clientX, clientY) => {
+        const rect = this.getBoundingClientRect();
+        const vertical = this.classList.contains("c-split-view--vertical");
+        const span = vertical ? rect.height : rect.width;
+        const pos = vertical ? clientY - rect.top : clientX - rect.left;
+        const frac = span > 0 ? Math.min(0.9, Math.max(0.1, pos / span)) : 0.5;
+        const pct = Math.round(frac * 100);
+        const p1 = this.querySelector(".c-split-view__pane--left");
+        if (p1) p1.style.flex = `0 0 ${pct}%`;
+        const divider = this.querySelector(".c-split-view__divider");
+        if (divider) divider.setAttribute("aria-valuenow", String(pct));
+        this.setAttribute("value", String(pct));
+      };
+      this.addEventListener("pointerdown", (e) => {
+        const divider = this.querySelector(".c-split-view__divider");
+        if (!divider || e.target !== divider) return;
+        this._resizing = true;
+        divider.classList.add("c-split-view__divider--dragging");
+        if (divider.setPointerCapture) { try { divider.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ } }
+        e.preventDefault();
+      });
+      this.addEventListener("pointermove", (e) => {
+        if (!this._resizing) return;
+        setSplit(e.clientX, e.clientY);
+      });
+      const stopResize = (e) => {
+        if (!this._resizing) return;
+        this._resizing = false;
+        const divider = this.querySelector(".c-split-view__divider");
+        if (divider) {
+          divider.classList.remove("c-split-view__divider--dragging");
+          if (divider.hasPointerCapture && divider.hasPointerCapture(e.pointerId)) {
+            try { divider.releasePointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+          }
+        }
+        const r = this.getBoundingClientRect();
+        this.dispatchEvent(new CustomEvent("contour:split-change", { bubbles: true, composed: true, detail: { value: this.getAttribute("value"), width: Math.round(r.width), height: Math.round(r.height) } }));
+      };
+      this.addEventListener("pointerup", stopResize);
+      this.addEventListener("pointercancel", stopResize);
+      this.addEventListener("keydown", (e) => {
+        const divider = this.querySelector(".c-split-view__divider");
+        if (!divider || document.activeElement !== divider) return;
+        const cur = parseFloat(this.getAttribute("value")) || 50;
+        if (e.key === "ArrowLeft" || e.key === "ArrowDown") { e.preventDefault(); const nv = Math.max(10, cur - 5); const p1 = this.querySelector(".c-split-view__pane--left"); if (p1) p1.style.flex = `0 0 ${nv}%`; this.setAttribute("value", String(nv)); const d = this.querySelector(".c-split-view__divider"); if (d) d.setAttribute("aria-valuenow", String(nv)); }
+        else if (e.key === "ArrowRight" || e.key === "ArrowUp") { e.preventDefault(); const nv = Math.min(90, cur + 5); const p1 = this.querySelector(".c-split-view__pane--left"); if (p1) p1.style.flex = `0 0 ${nv}%`; this.setAttribute("value", String(nv)); const d = this.querySelector(".c-split-view__divider"); if (d) d.setAttribute("aria-valuenow", String(nv)); }
+        const r = this.getBoundingClientRect();
+        this.dispatchEvent(new CustomEvent("contour:split-change", { bubbles: true, composed: true, detail: { value: this.getAttribute("value"), width: Math.round(r.width), height: Math.round(r.height) } }));
+      });
+    }
+  }
+  define("contour-split-view", ContourSplitView);
 class ContourTableWrap extends ContourBase {
     static get observed() { return []; }
     static get properties() { return {}; }

@@ -49,6 +49,6 @@ export const Legend = {
   play: async ({ canvasElement }) => {
     const legend = canvasElement.querySelector("contour-bivariate-legend");
     await expect(legend).toHaveAttribute("aria-label", "Bivariate legend");
-    await expect(legend.querySelectorAll(".c-bivariate__cell").length).toBe(9);
+    await expect(legend.querySelectorAll(".c-bivariate-legend__cell").length).toBe(9);
   },
 };

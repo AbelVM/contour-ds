@@ -104,6 +104,8 @@
   export const CONTOUR_EVENTS = Object.freeze({
     "contour:activate": { payload: ["row"], composed: true },
     "contour:add": { payload: ["value"], composed: true },
+    "contour:activity-clear": { payload: [], composed: true },
+    "contour:activity-filter": { payload: ["unread"], composed: true },
     "contour:activity-select": { payload: ["index", "text"], composed: true },
     "contour:break-change": { payload: ["layer", "value"], composed: true },
     "contour:style-resolved": { payload: ["applied", "items", "layer", "property", "value"], composed: true },
@@ -122,6 +124,7 @@
     "contour:clear-all": { payload: [], composed: true },
     "contour:close": { payload: ["index", "label"], composed: true },
     "contour:copy": { payload: ["text"], composed: true },
+    "contour:apply": { payload: ["name"], composed: true },
     "contour:dash-action": { payload: ["label"], composed: true },
     "contour:diff-activate": { payload: ["kind", "text"], composed: true },
     "contour:draw-start": { payload: ["mode"], composed: true },
@@ -133,16 +136,19 @@
     "contour:drop": { payload: ["value", "label"], composed: true },
     "contour:empty-action": { payload: ["state"], composed: true },
     "contour:filter": { payload: ["query"], composed: true },
+    "contour:filter-change": { payload: ["source", "filter"], composed: true },
      "contour:error": { payload: ["src", "message", "name", "status"], composed: true },
      "contour:export": { payload: ["format"], composed: true },
      "contour:refresh": { payload: [], composed: true },
     "contour:hide": { payload: [], composed: true },
     "contour:hover": { payload: ["row"], composed: true },
     "contour:input": { payload: ["name", "value", "checked"], composed: true },
+    "contour:inspect-action": { payload: ["label"], composed: true },
     "contour:layer-opacity": { payload: ["name", "opacity"], composed: true },
     "contour:layer-rename": { payload: ["name", "newName"], composed: true },
     "contour:layer-duplicate": { payload: ["name"], composed: true },
     "contour:layer-zoom": { payload: ["name"], composed: true },
+    "contour:zoom": { payload: ["row", "index"], composed: true },
     "contour:layer-projection": { payload: ["name", "projection"], composed: true },
     "contour:layer-remove": { payload: ["name"], composed: true },
     "contour:layer-reorder": { payload: ["layerIds"], composed: true },
@@ -154,7 +160,9 @@
     "contour:map-control": { payload: ["control"], composed: true },
     "contour:map-attach": { payload: [], composed: true },
     "contour:map-detach": { payload: [], composed: true },
+    "contour:map-popup-reposition": { payload: ["anchor", "flippedX", "flippedY", "left", "top"], composed: true },
     "contour:mode-change": { payload: ["mode"], composed: true },
+    "contour:scope-change": { payload: ["scope"], composed: true },
     "contour:move": { payload: ["direction", "from", "to"], composed: true },
     "contour:open": { payload: [], composed: true },
     "contour:page": { payload: ["page"], composed: true },
@@ -170,6 +178,8 @@
     "contour:seek": { payload: ["progress", "value"], composed: true },
     "contour:select": { payload: ["area", "col", "index", "key", "label", "labels", "path", "row", "rows", "series", "value"], composed: true },
     "contour:search": { payload: ["query"], composed: true },
+    "contour:spatial-filter": { payload: ["action", "mode", "operator"], composed: true },
+    "contour:split-change": { payload: ["value", "width", "height"], composed: true },
     "contour:speed-change": { payload: ["speed"], composed: true },
     "contour:showcase-activate": { payload: ["title"], composed: true },
     "contour:step-activate": { payload: ["index", "title"], composed: true },
@@ -233,15 +243,17 @@
   // Adding one of those back to this list makes that component recurse.
   /** Shared attribute vocabulary used by components that opt into defaults. */
   export const OBSERVED = [
-    "accept", "action", "actions", "active", "after", "allow-duplicate", "allow-remove", "allow-rename", "allow-zoom", "alpha", "anchor", "answer", "area", "article", "attribution", "attribution-mark", "audit", "autoplay", "axis", "axis-x", "axis-y", "brownout", "brownout-level", "before", "body", "brand", "breakpoint", "breaks", "brush", "brush-end", "brush-max", "brush-min", "brush-start", "cache-key", "canvas", "center", "clearable", "cols", "columns", "color", "command",
-    "cells", "checked", "chrome", "debounce", "closable", "collapsed", "collapsible", "classification", "colors", "continuous", "content", "controls", "copyable", "count", "data", "data-table", "date", "delta", "description", "glyphs", "demo", "density", "desc", "dir", "direction", "disabled", "distance", "dismissible", "divider", "do", "dont", "dot", "ends", "high", "input", "layer", "low", "mode", "modes", "n", "opacity", "palette", "polarity", "precision", "range", "single",
+    "accept", "action", "actions", "active", "after", "allow-duplicate", "allow-remove", "allow-rename", "allow-zoom", "alpha", "anchor", "answer", "area", "article", "attribution", "attribution-mark", "audit", "autoplay", "axis", "axis-x", "axis-y", "brownout", "brownout-level", "before", "body", "brand", "bounds", "breakpoint", "breaks", "brush", "brush-end", "brush-max", "brush-min", "brush-start", "cache-key", "canvas", "center", "clearable", "cols", "columns", "color", "command",
+    "cells", "checked", "chrome", "confidence", "coverage", "debounce", "closable", "collapsed", "collapsible", "classification", "colors", "continuous", "content", "controls", "copyable", "count", "data", "data-table", "date", "delta",     "description", "glyphs", "graduated", "demo", "density", "desc", "dir", "direction", "disabled", "distance", "dismissible", "divider", "do", "dont", "dot", "ends", "high", "input", "layer", "low", "mode", "modes", "n", "opacity", "palette", "polarity", "precision", "range", "single",
     "empty", "exclusive", "fallback", "filename", "format", "heading", "help", "hint", "href", "icon", "illustration", "instrument", "interval", "items", "key", "layers", "level", "range-end", "range-start",
-    "label", "lazy", "lede", "legend", "line", "limit", "link", "links", "live", "loading", "locale", "loop", "max", "media", "message", "method", "menu", "min", "multiple", "name", "needle", "next", "no", "no-cache", "no-data-message", "nodes", "note", "norm", "normalize",
+    "label", "lazy", "lede", "legend", "left-label", "right-label", "line", "limit", "link", "links", "live", "loading", "locale", "loop", "max", "media", "message", "method", "methodology", "menu", "min", "multiple", "name", "needle", "next", "no", "no-cache", "no-data-message", "nodes", "note", "norm", "normalize",
     "options", "orientation", "page-size", "pages", "pause", "paused", "pausable", "persist", "placeholder", "playing", "point", "points", "prev", "presets", "progress", "prompt", "question", "recent", "required",
     "quote", "ramp", "refresh", "removable", "resolution", "reverse", "rings", "retry", "results", "rows", "scale", "selectable", "segments", "show-header", "sparkline", "threshold", "thresholds", "selected", "separator", "series", "shortcut", "side", "size", "skeleton", "sort", "sort-dir", "speed", "status", "step", "submit", "submitting", "timeout", "trigger", "virtual", "sticky", "cluster-count", "cluster-expanded", "time", "resizable",
-    "state", "steps", "style", "subtitle", "summary", "src", "table", "tabs", "tag", "text", "ticks", "title", "type", "unit", "cluster-items", "row-height",
-    "variant", "values", "viewport", "yes", "zoomable", "x", "y",
-    "caption", "current-time", "is-playing", "loop-label", "no-data-color", "property", "show-loop", "show-thumb", "show-thumb-caption", "speeds", "item-height", "pause-label", "play-label", "speed-label", "time-label", "shimmer",
+    "state", "steps", "style", "subtitle", "summary", "src", "source", "table", "tabs", "tag", "text", "ticks",     "title", "type", "unread-only", "unit", "updated", "cluster-items", "row-height",
+    "variant", "values", "viewport", "warning", "yes", "zoomable", "x", "y",
+    "caption", "current-time", "is-playing", "loop-label",     "no-data-color", "no-data-label", "property", "show-loop", "show-thumb", "show-thumb-caption", "speeds", "item-height", "pause-label", "play-label", "speed-label", "time-label", "shimmer",
+    "search",
+    "bucket-count", "limit-values",
   ];
 
   /** Resolve an authored heading level while keeping the fallback valid. */
@@ -425,21 +437,30 @@
          // dropped and rebuilt, so without this a host attribute change wipes
          // whatever the user typed.
          const savedControls = Array.from(this.querySelectorAll("input, textarea, select"));
-         const savedValues = savedControls.map((el) => ({ key: el.name || el.id || null, value: el.value, checked: el.checked, type: el.type }));
+         const savedValues = savedControls.map((el) => ({
+           key: el.name || el.id || null,
+           preserveKey: el.getAttribute("data-contour-preserve-key") || null,
+           value: el.value,
+           checked: el.checked,
+           type: el.type,
+         }));
          // Preserve focus, scroll position and <details> open state across the
          // rebuild, so a host attribute change does not yank focus to <body>
          // or collapse an open disclosure.
           const hadFocus = this.contains(document.activeElement) ? document.activeElement : null;
           // Capture a recovery key for unkeyed active elements: an id is the
-          // strongest key, then a `name`, then the relative index among all
-          // focusable controls inside the host. Without these, an attribute
-          // update that rebuilds an unkeyed input drops focus to <body>.
+          // strongest key, then a `data-contour-preserve-key`, then a `name`,
+          // then the relative index among all focusable controls inside the host.
+          // Without these, an attribute update that rebuilds an unkeyed input
+          // drops focus to <body>.
           const _focusableSelector = "button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])";
           const _focusablesBefore = Array.from(this.querySelectorAll(_focusableSelector));
           const hadFocusIndex = hadFocus ? _focusablesBefore.indexOf(hadFocus) : -1;
+          const hadFocusKey = hadFocus ? (hadFocus.id || null) : null;
+          const hadFocusPreserveKey = hadFocus ? (hadFocus.getAttribute("data-contour-preserve-key") || null) : null;
           const hadFocusName = hadFocus ? (hadFocus.getAttribute("name") || null) : null;
-         const savedScrolls = Array.from(this.querySelectorAll("*")).filter((el) => el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth).map((el) => ({ el, top: el.scrollTop, left: el.scrollLeft }));
-         const savedDetails = Array.from(this.querySelectorAll("details")).map((d) => ({ id: d.id || null, open: d.open }));
+         const savedScrolls = Array.from(this.querySelectorAll("*")).filter((el) => el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth).map((el) => ({ el, id: el.id || null, preserveKey: el.getAttribute("data-contour-preserve-key") || null, top: el.scrollTop, left: el.scrollLeft }));
+         const savedDetails = Array.from(this.querySelectorAll("details")).map((d) => ({ id: d.id || null, preserveKey: d.getAttribute("data-contour-preserve-key") || null, open: d.open }));
          // Unwrap authored content from generated wrappers before dropping them,
          // so an attribute re-render cannot destroy authored light-DOM children
          // that render() moved into a body/pre wrapper (B3-05).
@@ -483,13 +504,13 @@
         // the two lists, so a field removed at the end does not shift values
         // onto the wrong input.
         const newControls = Array.from(this.querySelectorAll("input, textarea, select"));
-        const keyed = savedValues.filter((sv) => sv.key);
-        const unkeyed = savedValues.filter((sv) => !sv.key);
+        const keyed = savedValues.filter((sv) => sv.key || sv.preserveKey);
+        const unkeyed = savedValues.filter((sv) => !sv.key && !sv.preserveKey);
         const used = new Set();
         for (const el of newControls) {
-          const key = el.name || el.id || null;
+          const key = el.name || el.id || el.getAttribute("data-contour-preserve-key") || null;
           if (!key) continue;
-          const match = keyed.find((sv) => sv.key === key && !used.has(sv));
+          const match = keyed.find((sv) => (sv.key === key || sv.preserveKey === key) && !used.has(sv));
           if (!match) continue;
           used.add(match);
           if (el.value === "" && el.getAttribute("value") === null) {
@@ -499,18 +520,32 @@
              el.checked = match.checked;
            }
         }
-        let u = 0;
+        // Restore unkeyed controls by type-aware index matching: group saved
+        // unkeyed controls by type, then match new unkeyed controls by type and
+        // index within that type group. This prevents misalignment when elements
+        // are inserted or removed between renders (F-R4). A textarea removed
+        // from the middle no longer shifts its value onto a following input.
+        const savedByType = new Map();
+        for (const sv of unkeyed) {
+          const group = savedByType.get(sv.type) || [];
+          group.push(sv);
+          savedByType.set(sv.type, group);
+        }
+        const usedByType = new Map();
         for (const el of newControls) {
           if (el.name || el.id) continue;
-          const saved = unkeyed[u];
-          u += 1;
-          if (!saved) continue;
+          const type = el.type;
+          const group = savedByType.get(type) || [];
+          const used = usedByType.get(type) || 0;
+          if (used >= group.length) continue;
+          const saved = group[used];
+          usedByType.set(type, used + 1);
           if (el.value === "" && el.getAttribute("value") === null) {
             el.value = saved.value;
           }
            if ((el.type === "checkbox" || el.type === "radio") && typeof saved.checked === "boolean" && !this._checkedAttrChanged) {
-             el.checked = saved.checked;
-           }
+            el.checked = saved.checked;
+          }
         }
         // Restore <details> open state. A disclosure carries an `id` when it is
         // stable across renders (a faq item, a doc section); match those by id
@@ -519,14 +554,15 @@
         // the shorter list, which is the behaviour the length guard existed
         // to protect and still protects for the tail of either list.
         const newDetails = Array.from(this.querySelectorAll("details"));
-        const keyedDetails = savedDetails.filter((sd) => sd.id);
+        const keyedDetails = savedDetails.filter((sd) => sd.id || sd.preserveKey);
         const usedIds = new Set();
         for (const d of newDetails) {
           const id = d.id || null;
-          if (!id) continue;
-          const match = keyedDetails.find((sd) => sd.id === id && !usedIds.has(sd.id));
+          const preserveKey = d.getAttribute("data-contour-preserve-key") || null;
+          if (!id && !preserveKey) continue;
+          const match = keyedDetails.find((sd) => (sd.id === id || sd.preserveKey === preserveKey) && !usedIds.has(sd.id || sd.preserveKey));
           if (!match) continue;
-          usedIds.add(match.id);
+          usedIds.add(match.id || match.preserveKey);
           d.open = match.open;
         }
         let di = 0;
@@ -543,19 +579,20 @@
         // the wrong container; the rest fall back to index matching up to the
         // shorter list, which is what the old length guard protected.
         const newScrolls = Array.from(this.querySelectorAll("*")).filter((el) => el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth);
-        const keyedScrolls = savedScrolls.filter((s) => s.el.id);
+        const keyedScrolls = savedScrolls.filter((s) => s.id || s.preserveKey);
         const usedScrolls = new Set();
         for (const el of newScrolls) {
           const id = el.id || null;
-          if (!id) continue;
-          const match = keyedScrolls.find((s) => s.el.id === id && !usedScrolls.has(s.el));
+          const preserveKey = el.getAttribute("data-contour-preserve-key") || null;
+          if (!id && !preserveKey) continue;
+          const match = keyedScrolls.find((s) => (s.id === id || s.preserveKey === preserveKey) && !usedScrolls.has(s.el));
           if (!match) continue;
           usedScrolls.add(match.el);
           el.scrollTop = match.top;
           el.scrollLeft = match.left;
         }
         let si = 0;
-        const plainScrolls = savedScrolls.filter((s) => !s.el.id);
+        const plainScrolls = savedScrolls.filter((s) => !s.id && !s.preserveKey);
         for (const el of newScrolls) {
           if (el.id) continue;
           const s = plainScrolls[si];
@@ -569,19 +606,22 @@
          // their relative index among focusable controls, so an attribute update
          // that rebuilds an unkeyed input no longer drops focus to <body>.
          if (hadFocus) {
-           let target = null;
-           if (hadFocus.id) {
-             try { target = this.querySelector("#" + CSS.escape(hadFocus.id)); } catch (e) { target = null; }
-           }
-           if (!target && hadFocusName) {
-             try { target = this.querySelector('[name="' + CSS.escape(hadFocusName) + '"]'); } catch (e) { target = null; }
-           }
-           if (!target && hadFocusIndex >= 0) {
-             const after = Array.from(this.querySelectorAll(_focusableSelector));
-             if (after.length) {
-               target = after[Math.min(hadFocusIndex, after.length - 1)];
-             }
-           }
+            let target = null;
+            if (hadFocusKey) {
+              try { target = this.querySelector("#" + CSS.escape(hadFocusKey)); } catch (e) { target = null; }
+            }
+            if (!target && hadFocusPreserveKey) {
+              try { target = this.querySelector('[data-contour-preserve-key="' + CSS.escape(hadFocusPreserveKey) + '"]'); } catch (e) { target = null; }
+            }
+            if (!target && hadFocusName) {
+              try { target = this.querySelector('[name="' + CSS.escape(hadFocusName) + '"]'); } catch (e) { target = null; }
+            }
+            if (!target && hadFocusIndex >= 0) {
+              const after = Array.from(this.querySelectorAll(_focusableSelector));
+              if (after.length) {
+                target = after[Math.min(hadFocusIndex, after.length - 1)];
+              }
+            }
            if (target && typeof target.focus === "function") {
              try { target.focus(); } catch (e) {}
            } else if (document.contains(hadFocus)) {
@@ -3078,10 +3118,19 @@ export function wireStates(host) {
     static get observedAttributes() { return MODS; }
     constructor() {
       super();
-      const root = this.attachShadow({ mode: "open" });
+      // Reuse a Declarative Shadow Root when the platform already attached one
+      // (SSR/DSD hydration); otherwise create and populate the shadow root.
+      let root = this.shadowRoot;
+      if (!root) {
+        root = this.attachShadow({ mode: "open" });
+        if (this.constructor.contourTemplate) {
+          root.appendChild(this.constructor.contourTemplate.content.cloneNode(true));
+        }
+      }
       const sheets = adoptedSheets();
-      if (sheets.length) root.adoptedStyleSheets = sheets;
-      root.appendChild(this.constructor.contourTemplate.content.cloneNode(true));
+      if (sheets.length) {
+        try { root.adoptedStyleSheets = sheets; } catch (e) { /* unsupported or read-only */ }
+      }
       this._shadowBase = root.firstElementChild ? root.firstElementChild.className : "";
     }
     // Subclasses with behaviour beyond the template override this.
@@ -3213,16 +3262,22 @@ connectedCallback() {
     }
   }
 
-  // Registers a wrapper. The template is parsed once into a <template> and
-  // cloned per instance, so the markup below is the markup the root gets.
+  // Registers a wrapper. The template markup is always recorded so Node/SSR
+  // tooling can emit Declarative Shadow DOM strings; in a browser the template
+  // is also parsed once into a <template> and cloned per instance.
   const SHADOW_PARTS_PUBLIC = {};
+  const SHADOW_MARKUP = {};
+  const recordParts = (name, markup) => {
+    SHADOW_PARTS_PUBLIC[name] = [...markup.matchAll(/part="([^"]+)"/g)]
+      .flatMap((m) => m[1].split(/\s+/))
+      .filter(Boolean);
+  };
   const shadow = (name, markup) => {
+    SHADOW_MARKUP[name] = markup;
+    recordParts(name, markup);
     if (typeof document === "undefined") return;
     const tpl = document.createElement("template");
     tpl.innerHTML = markup;
-    SHADOW_PARTS_PUBLIC[name] = [...tpl.content.querySelectorAll("[part]")]
-      .flatMap((node) => (node.getAttribute("part") || "").split(/\s+/))
-      .filter(Boolean);
     const cls = class extends ContourShadow {};
     cls.contourTemplate = tpl;
     define(name, cls);
@@ -3353,10 +3408,13 @@ shadow("contour-shadow-filter-pill", `<span class="c-filter-pill" part="filter-p
 
   // The dialog is the one wrapper with behaviour, because a close button that
   // does not close is a control the reader cannot use.
+  const DIALOG_MARKUP = "<dialog class=\"c-dialog\" part=\"dialog\"> <div class=\"c-dialog__head\" part=\"head\"> <slot name=\"title\"></slot> <button class=\"c-btn c-btn--icon c-btn--ghost\" part=\"close\" type=\"button\" aria-label=\"Close\"> <svg aria-hidden=\"true\"><use href=\"#i-close\" /></svg> </button> </div> <div class=\"c-dialog__body\" part=\"body\"><slot></slot></div> <div class=\"c-dialog__foot\" part=\"foot\"><slot name=\"foot\"></slot></div> </dialog>";
+  SHADOW_MARKUP["contour-shadow-dialog"] = DIALOG_MARKUP;
+  recordParts("contour-shadow-dialog", DIALOG_MARKUP);
   class ContourShadowDialog extends ContourShadow {
     static contourTemplate = (typeof document !== "undefined") ? (() => {
       const tpl = document.createElement("template");
-      tpl.innerHTML = "<dialog class=\"c-dialog\" part=\"dialog\"> <div class=\"c-dialog__head\" part=\"head\"> <slot name=\"title\"></slot> <button class=\"c-btn c-btn--icon c-btn--ghost\" part=\"close\" type=\"button\" aria-label=\"Close\"> <svg aria-hidden=\"true\"><use href=\"#i-close\" /></svg> </button> </div> <div class=\"c-dialog__body\" part=\"body\"><slot></slot></div> <div class=\"c-dialog__foot\" part=\"foot\"><slot name=\"foot\"></slot></div> </dialog>";
+      tpl.innerHTML = DIALOG_MARKUP;
       return tpl;
     })() : null;
     enhance(root) {
@@ -3415,10 +3473,25 @@ shadow("contour-shadow-filter-pill", `<span class="c-filter-pill" part="filter-p
   }
   define("contour-shadow-dialog", ContourShadowDialog);
 
+  /**
+   * Render a Declarative Shadow DOM string for a registered contour-shadow-* element.
+   * Intended for SSR/string emission; returns null for unknown tags.
+   */
+  const renderShadowDSD = (tag, attrs = "", light = "") => {
+    const markup = SHADOW_MARKUP[tag];
+    if (typeof markup !== "string") return null;
+    const attrStr = attrs ? (attrs.startsWith(" ") ? attrs : " " + attrs) : "";
+    return `<${tag}${attrStr}><template shadowrootmode="open">${markup}</template>${light}</${tag}>`;
+  };
+
   // Published once, at the end, so the array holds what the browser was actually
   // handed rather than what the source appears to say. Frozen: a page that
   // reshapes it would make the next reader's count wrong, which is the failure
   // this array exists to prevent.
+  const FROZEN_SHADOW_MARKUP = Object.freeze({ ...SHADOW_MARKUP });
+  if (typeof globalThis !== "undefined") {
+    globalThis.ContourShadowTemplates = FROZEN_SHADOW_MARKUP;
+  }
   if (typeof window !== "undefined") {
     window.ContourElements = Object.freeze(REGISTERED.slice());
     window.ContourShadowParts = Object.freeze(Object.fromEntries(
@@ -3428,7 +3501,11 @@ shadow("contour-shadow-filter-pill", `<span class="c-filter-pill" part="filter-p
     // page cannot add names the source never emitted, which would make the gate's
     // "every dispatchEvent name has an entry" read meaningless.
     window.ContourEvents = Object.freeze(CONTOUR_EVENTS);
+    if (!window.Contour) window.Contour = {};
+    try { window.Contour.shadowTemplates = FROZEN_SHADOW_MARKUP; } catch {}
   }
+
+  export { SHADOW_MARKUP, renderShadowDSD };
 
 
 
@@ -4149,7 +4226,7 @@ class ContourSkeletonGroup extends ContourBase {
  * `cluster-count`, `cluster-expanded`.
  */
 class ContourMapPopup extends ContourBase {
-  static get observed() { return ["title", "content", "cluster-count", "cluster-expanded", "cluster-items"]; }
+  static get observed() { return ["title", "content", "cluster-count", "cluster-expanded", "cluster-items", "anchor", "position", "collision"]; }
   static get properties() { return { title: { attribute: "title" }, content: { attribute: "content" }, "cluster-count": { attribute: "cluster-count", type: Number }, "cluster-expanded": { attribute: "cluster-expanded", type: Boolean }, "cluster-items": { attribute: "cluster-items" } }; }
     render() {
       this.classList.add("c-map-popup");
@@ -4215,6 +4292,46 @@ class ContourMapPopup extends ContourBase {
           this.dispatchEvent(new CustomEvent("contour:cluster-toggle", { bubbles: true, composed: true, detail: { count: Number(this.getAttribute("cluster-count")), expanded } }));
         }
       });
+      // CDS-072: anchor + collision handling.
+      const anchorSel = this.getAttribute("anchor");
+      let anchorEl = null;
+      if (anchorSel) {
+        anchorEl = anchorSel.startsWith("#") ? document.getElementById(anchorSel.slice(1)) : document.querySelector(anchorSel);
+      }
+      const anchorName = "--map-popup-" + this.id;
+      const applyAnchor = () => {
+        if (anchorEl) {
+          anchorEl.style.setProperty("anchor-name", anchorName);
+          this.style.setProperty("position-anchor", anchorName);
+        }
+      };
+      const flipIfNeeded = () => {
+        try {
+          const r = this.getBoundingClientRect();
+          const flipX = r.right > window.innerWidth || r.left < 0;
+          const flipY = r.bottom > window.innerHeight || r.top < 0;
+          const flipped = flipX || flipY;
+          this.classList.toggle("c-map-popup--flip-x", flipX && !flipY);
+          this.classList.toggle("c-map-popup--flip-y", flipY && !flipX);
+          this.classList.toggle("c-map-popup--flip-both", flipX && flipY);
+          if (flipped) {
+            this.dispatchEvent(new CustomEvent("contour:map-popup-reposition", {
+              bubbles: true, composed: true,
+              detail: { anchor: anchorSel || "", flippedX: flipX, flippedY: flipY, left: Math.round(r.left), top: Math.round(r.top) }
+            }));
+          }
+        } catch (e) {}
+      };
+      applyAnchor();
+      this.addEventListener("toggle", (e) => {
+        if (e.newState === "open") {
+          requestAnimationFrame(() => { applyAnchor(); flipIfNeeded(); });
+        }
+      });
+      // Re-check on resize/scroll so the popup stays in view.
+      const onResize = () => flipIfNeeded();
+      window.addEventListener("resize", onResize);
+      onDispose(this, () => { window.removeEventListener("resize", onResize); if (anchorEl) anchorEl.style.removeProperty("anchor-name"); });
     }
   }
   define("contour-map-popup", ContourMapPopup);
@@ -4225,8 +4342,8 @@ class ContourMapPopup extends ContourBase {
  * `caption`, `show-thumb`, `show-thumb-caption`.
  */
 class ContourAnimationControls extends ContourBase {
-    static get observed() { return ["playing", "speed", "progress", "min", "max", "caption", "show-thumb", "show-thumb-caption"]; }
-    static get properties() { return { playing: { attribute: "playing", type: Boolean }, speed: { attribute: "speed" }, progress: { attribute: "progress" }, min: { attribute: "min" }, max: { attribute: "max" } }; }
+    static get observed() { return ["playing", "speed", "progress", "min", "max", "caption", "show-thumb", "show-thumb-caption", "loop", "step", "markers"]; }
+    static get properties() { return { playing: { attribute: "playing", type: Boolean }, speed: { attribute: "speed" }, progress: { attribute: "progress" }, min: { attribute: "min" }, max: { attribute: "max" }, loop: { attribute: "loop", type: Boolean }, step: { attribute: "step" }, markers: { attribute: "markers" } }; }
     render() {
       this.classList.add("c-animation-controls");
       this.setAttribute("role", "toolbar");
@@ -4243,7 +4360,17 @@ class ContourAnimationControls extends ContourBase {
       else scrubber.classList.add("c-animation-controls__scrubber--thumb");
       scrubber.min = this.getAttribute("min") || "0";
       scrubber.max = this.getAttribute("max") || "100";
+      scrubber.step = this.getAttribute("step") || "1";
       scrubber.value = this.getAttribute("progress") || "0";
+      // Accessible time values: expose current position as aria-valuenow and a
+      // human-readable label as aria-valuetext so screen readers announce it.
+      const min = Number(scrubber.min) || 0;
+      const max = Number(scrubber.max) || 100;
+      const v = Number(scrubber.value) || min;
+      scrubber.setAttribute("aria-valuenow", String(v));
+      scrubber.setAttribute("aria-valuetext", String(Math.round(v)));
+      scrubber.setAttribute("aria-valuemin", String(min));
+      scrubber.setAttribute("aria-valuemax", String(max));
       const caption = this.getAttribute("caption");
       if (caption) scrubber.setAttribute("aria-label", caption);
       else if (!scrubber.getAttribute("aria-label")) scrubber.setAttribute("aria-label", "Playhead");
@@ -4255,6 +4382,10 @@ class ContourAnimationControls extends ContourBase {
       } else {
         const cap = this.querySelector(".c-animation-controls__caption");
         if (cap) cap.remove();
+      }
+      // loop indicator
+      if (this.hasAttribute("loop")) {
+        this.setAttribute("aria-label", "Animation controls, loop");
       }
       // showThumb: hide thumb via attribute? keep default
     }
@@ -4286,8 +4417,24 @@ class ContourAnimationControls extends ContourBase {
           const scrubber = this.querySelector(".c-animation-controls__scrubber");
           if (scrubber) {
             e.preventDefault();
-            const step = e.key === "ArrowRight" ? 1 : -1;
-            scrubber.value = String(Number(scrubber.value) + step);
+            const step = Number(scrubber.step || 1);
+            const delta = e.key === "ArrowRight" ? step : -step;
+            scrubber.value = String(Math.min(Number(scrubber.max || 100), Math.max(Number(scrubber.min || 0), Number(scrubber.value || 0) + delta)));
+            scrubber.dispatchEvent(new Event("input", { bubbles: true }));
+          }
+        } else if (e.key === "Home") {
+          const scrubber = this.querySelector(".c-animation-controls__scrubber");
+          if (scrubber) { e.preventDefault(); scrubber.value = scrubber.min || "0"; scrubber.dispatchEvent(new Event("input", { bubbles: true })); }
+        } else if (e.key === "End") {
+          const scrubber = this.querySelector(".c-animation-controls__scrubber");
+          if (scrubber) { e.preventDefault(); scrubber.value = scrubber.max || "100"; scrubber.dispatchEvent(new Event("input", { bubbles: true })); }
+        } else if (e.key === "PageUp" || e.key === "PageDown") {
+          const scrubber = this.querySelector(".c-animation-controls__scrubber");
+          if (scrubber) {
+            e.preventDefault();
+            const step = Number(scrubber.step || 1) * 10;
+            const delta = e.key === "PageUp" ? step : -step;
+            scrubber.value = String(Math.min(Number(scrubber.max || 100), Math.max(Number(scrubber.min || 0), Number(scrubber.value || 0) + delta)));
             scrubber.dispatchEvent(new Event("input", { bubbles: true }));
           }
         }
@@ -4306,7 +4453,10 @@ class ContourAnimationControls extends ContourBase {
         const min = Number(scrubber.min || 0);
         const max = Number(scrubber.max || 100);
         let v = Number(scrubber.value || 0) + speedFactor();
-        if (v > max) v = min;
+        if (v > max) {
+          if (this.hasAttribute("loop")) v = min;
+          else { v = max; stop(); }
+        }
         scrubber.value = String(v);
         this.dispatchEvent(new CustomEvent("contour:time-change", { bubbles: true, composed: true, detail: { progress: v, value: v } }));
       };

@@ -1,4 +1,4 @@
-import { ContourBase, define, onDispose, formatValue } from './core.mjs';
+import { ContourBase, define, onDispose, formatValue, navKey, isRtl } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { compassNeedle, scaleBarTicks } from './svg.mjs';
 
@@ -48,25 +48,11 @@ function wireMapItems(host, itemSelector, tooltipClass) {
       e.preventDefault();
       const all = items();
       const index = all.indexOf(item);
-      if (index < 0) return;
-      host.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index, label: item.getAttribute("title") || item.textContent.trim() } }));
+      if (index >= 0) host.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index, label: item.getAttribute("title") || item.textContent.trim() } }));
+    } else {
+      const all = items();
+      navKey(e, all, { wrap: false, homeEnd: true, rtl: isRtl(host), onNavigate: (i) => all.forEach((c, j) => c.setAttribute("tabindex", j === i ? "0" : "-1")) });
     }
-    // Roving tabindex keyboard nav.
-    const all = items();
-    const idx = all.indexOf(item);
-    if (idx < 0) return;
-    let next = -1;
-    const rtl = (host.getAttribute("dir") || document.documentElement.getAttribute("dir") || "").toLowerCase() === "rtl";
-    if (e.key === "ArrowDown") next = Math.min(idx + 1, all.length - 1);
-    else if (e.key === "ArrowUp") next = Math.max(idx - 1, 0);
-    else if (e.key === "ArrowRight") next = rtl ? Math.max(idx - 1, 0) : Math.min(idx + 1, all.length - 1);
-    else if (e.key === "ArrowLeft") next = rtl ? Math.min(idx + 1, all.length - 1) : Math.max(idx - 1, 0);
-    else if (e.key === "Home") next = 0;
-    else if (e.key === "End") next = all.length - 1;
-    if (next < 0 || next === idx) return;
-    e.preventDefault();
-    all.forEach((c, i) => c.setAttribute("tabindex", i === next ? "0" : "-1"));
-    try { all[next].focus(); } catch (err) {}
   });
 }
 
@@ -254,9 +240,16 @@ class ContourLayerPanel extends ContourBase {
       if (parsed) { parsed.forEach((it) => {
            const name = typeof it === "string" ? it : (it.name || it.label || "");
            const caption = (typeof it === "object" && it) ? (it.caption || it.subtitle || "") : "";
-           const item = document.createElement("div");
-           item.className = "c-layer-panel__item" + (it.dragging ? " c-layer-panel__item--dragging" : "");
-            const toggle = document.createElement("button");
+            const item = document.createElement("div");
+            item.className = "c-layer-panel__item" + (it.dragging ? " c-layer-panel__item--dragging" : "");
+            // Drag handle: focusable grip for keyboard reorder (CDS-049).
+            const drag = document.createElement("button");
+            drag.type = "button";
+            drag.className = "c-drag-handle--dots";
+            drag.setAttribute("aria-label", "Reorder " + (name || "layer"));
+            drag.setAttribute("tabindex", "0");
+            item.appendChild(drag);
+             const toggle = document.createElement("button");
             toggle.type = "button";
             toggle.className = "c-layer-panel__toggle";
             toggle.setAttribute("part", "visibility-toggle");
@@ -399,30 +392,34 @@ class ContourLayerPanel extends ContourBase {
            this.dispatchEvent(new CustomEvent("contour:layer-remove", { bubbles: true, composed: true, detail: { name } }));
          }
        });
-        this.addEventListener("keydown", (e) => {
-          if (e.target && e.target.classList && e.target.classList.contains("c-layer-panel__toggle") && (e.key === "Enter" || e.key === " ")) {
-            e.preventDefault();
-            e.target.click();
-            return;
-          }
-          const item = e.target && e.target.closest ? e.target.closest(".c-layer-panel__item") : null;
-          if (!item || !this.contains(item)) return;
-         if (!(e.altKey) || (e.key !== "ArrowUp" && e.key !== "ArrowDown")) return;
-         e.preventDefault();
-         const items = Array.from(this.querySelectorAll(".c-layer-panel__item"));
-         const idx = items.indexOf(item);
-         if (idx < 0) return;
-         const dir = e.key === "ArrowUp" ? -1 : 1;
-         const newIdx = idx + dir;
-         if (newIdx < 0 || newIdx >= items.length) return;
-         item.classList.add("c-layer-panel__item--dragging");
-         if (dir < 0) this.insertBefore(item, items[newIdx]);
-         else this.insertBefore(items[newIdx], item);
-         item.focus();
-         setTimeout(() => item.classList.remove("c-layer-panel__item--dragging"), 200);
-         const layerIds = Array.from(this.querySelectorAll(".c-layer-panel__item")).map((el) => el.querySelector(".c-layer-panel__name")?.textContent || "");
-         this.dispatchEvent(new CustomEvent("contour:layer-reorder", { bubbles: true, composed: true, detail: { layerIds } }));
-       });
+         this.addEventListener("keydown", (e) => {
+           if (e.target && e.target.classList && e.target.classList.contains("c-layer-panel__toggle") && (e.key === "Enter" || e.key === " ")) {
+             e.preventDefault();
+             e.target.click();
+             return;
+           }
+           const item = e.target && e.target.closest ? e.target.closest(".c-layer-panel__item") : null;
+           if (!item || !this.contains(item)) return;
+           const isDrag = e.target && e.target.classList && e.target.classList.contains("c-drag-handle--dots");
+           // Drag handle: ArrowUp/ArrowDown reorder without Alt modifier (CDS-049).
+           // Item-level: Alt+ArrowUp/ArrowDown as an alternative.
+           if ((isDrag && (e.key === "ArrowUp" || e.key === "ArrowDown")) || (e.altKey && (e.key === "ArrowUp" || e.key === "ArrowDown"))) {
+             e.preventDefault();
+             const items = Array.from(this.querySelectorAll(".c-layer-panel__item"));
+             const idx = items.indexOf(item);
+             if (idx < 0) return;
+             const dir = e.key === "ArrowUp" ? -1 : 1;
+             const newIdx = idx + dir;
+             if (newIdx < 0 || newIdx >= items.length) return;
+             item.classList.add("c-layer-panel__item--dragging");
+             if (dir < 0) this.insertBefore(item, items[newIdx]);
+             else this.insertBefore(items[newIdx], item);
+             (isDrag ? e.target : item).focus();
+             setTimeout(() => item.classList.remove("c-layer-panel__item--dragging"), 200);
+             const layerIds = Array.from(this.querySelectorAll(".c-layer-panel__item")).map((el) => el.querySelector(".c-layer-panel__name")?.textContent || "");
+             this.dispatchEvent(new CustomEvent("contour:layer-reorder", { bubbles: true, composed: true, detail: { layerIds } }));
+           }
+         });
      }
   }
 define("contour-layer-panel", ContourLayerPanel);
@@ -431,6 +428,8 @@ class ContourTimeSlider extends ContourBase {
     static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" }, distance: { attribute: "distance" }, resolution: { attribute: "resolution" }, latitude: { attribute: "latitude" }, src: { attribute: "src" }, loop: { attribute: "loop", type: Boolean }, speed: { attribute: "speed" }, speeds: { attribute: "speeds" }, showLoop: { attribute: "show-loop", type: Boolean }, loopLabel: { attribute: "loop-label" }, currentTime: { attribute: "current-time" }, timeFormat: { attribute: "time-format" }, isPlaying: { attribute: "is-playing", type: Boolean }, playLabel: { attribute: "play-label" }, pauseLabel: { attribute: "pause-label" }, timeLabel: { attribute: "time-label" }, speedLabel: { attribute: "speed-label" } }; }
     render() {
       this.classList.add("c-time-slider");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "group");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("label") || "Time slider");
       const play = this.ensure(".c-time-slider__play", () => {
         const el = document.createElement("button");
         el.className = "c-time-slider__play";
@@ -821,6 +820,7 @@ class ContourCompassFull extends ContourBase {
     static get properties() { return { label: { attribute: "label" }, needle: { attribute: "needle" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-compass");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("label") || "Compass");
       const label = this.getAttribute("label") || (this._remoteData && this._remoteData.label);
       wireStates(this);
       loadRemote(this, "needle");
@@ -1016,6 +1016,8 @@ class ContourMapArea extends ContourBase {
     static get properties() { return { attribution: { attribute: "attribution" }, "attribution-mark": { attribute: "attribution-mark" }, scale: { attribute: "scale" }, controls: { attribute: "controls" } }; }
     render() {
       this.classList.add("c-map-area");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "region");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Map area");
       const attribution = this.getAttribute("attribution");
       if (attribution) {
         const a = this.ensure(".c-map-slot__attribution", () => { const el = document.createElement("div"); el.className = "c-map-slot__attribution"; return el; });
@@ -1117,10 +1119,10 @@ class ContourMapFooter extends ContourBase {
       // The footer's own rule is `.c-map-footer > *`, which reaches any direct
       // child, so the brand is a plain span: visible, and inventing no name.
       if (brand) {
-        const b = this.ensure("[data-map-footer-brand]", () => { const el = document.createElement("span"); el.setAttribute("data-map-footer-brand", ""); return el; });
+        const b = this.ensure(".c-map-footer__brand", () => { const el = document.createElement("span"); el.className = "c-map-footer__brand"; return el; });
         b.textContent = brand;
       } else {
-        const b = this.querySelector("[data-map-footer-brand]");
+        const b = this.querySelector(".c-map-footer__brand");
         if (b) b.remove();
       }
     }

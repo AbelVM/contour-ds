@@ -2,6 +2,9 @@ import { expect, userEvent } from "storybook/test";
 import "../dist/wc/data.mjs";
 import "../dist/wc/forms.mjs";
 import "../dist/wc/feedback.mjs";
+import "../dist/wc/dashboard.mjs";
+import "../dist/wc/interaction.mjs";
+import "../dist/wc/misc.mjs";
 
 export default {
   title: "Contour/Workflows/Dashboard",
@@ -65,5 +68,108 @@ export const DashboardFilterToData = {
     await userEvent.type(input, "West");
     await expect(table.textContent).toContain("West");
     await expect(table.textContent).not.toContain("North");
+  },
+};
+
+export const SavedView = {
+  render: () => {
+    const wrap = document.createElement("div");
+    wrap.style.display = "grid";
+    wrap.style.gap = "0.5rem";
+    const saved = document.createElement("contour-saved-view");
+    saved.setAttribute("name", "default-view");
+    wrap.appendChild(saved);
+    return wrap;
+  },
+  play: async ({ canvasElement }) => {
+    await expect(canvasElement.querySelector("contour-saved-view")).toBeTruthy();
+    await expect(canvasElement.querySelectorAll("button").length).toBe(2);
+  },
+};
+
+export const Provenance = {
+  render: () => {
+    const wrap = document.createElement("div");
+    wrap.style.display = "grid";
+    wrap.style.gap = "0.5rem";
+    const prov = document.createElement("contour-provenance");
+    prov.setAttribute("source", "OpenStreetMap contributors");
+    prov.setAttribute("confidence", "high");
+    prov.setAttribute("resolution", "10m");
+    prov.setAttribute("coverage", "95%");
+    prov.setAttribute("methodology", "Automated extraction with manual review");
+    prov.setAttribute("warning", "Data may be outdated in rural areas");
+    wrap.appendChild(prov);
+    return wrap;
+  },
+  play: async ({ canvasElement }) => {
+    await expect(canvasElement.querySelector("contour-provenance")).toBeTruthy();
+    await expect(canvasElement.textContent).toContain("OpenStreetMap");
+    await expect(canvasElement.textContent).toContain("Confidence: high");
+  },
+};
+
+export const FeatureInspector = {
+  render: () => {
+    const wrap = document.createElement("div");
+    wrap.style.display = "grid";
+    wrap.style.gap = "0.5rem";
+    const inspector = document.createElement("contour-feature-inspector");
+    inspector.setAttribute("title", "Route 42");
+    inspector.setAttribute("open", "");
+    inspector.setAttribute("data", JSON.stringify({ length: "12.4 km", elevation: "340 m", surface: "paved" }));
+    wrap.appendChild(inspector);
+    return wrap;
+  },
+  play: async ({ canvasElement }) => {
+    await expect(canvasElement.querySelector("contour-feature-inspector")).toBeTruthy();
+    await expect(canvasElement.textContent).toContain("Route 42");
+  },
+};
+
+export const SplitView = {
+  render: () => {
+    const wrap = document.createElement("div");
+    wrap.style.display = "grid";
+    wrap.style.gap = "0.5rem";
+    wrap.style.height = "300px";
+    const split = document.createElement("contour-split-view");
+    split.setAttribute("value", "50");
+    split.innerHTML = `
+      <div class="c-split-view__pane c-split-view__pane--left" style="background:var(--color-surface-1)">Left pane</div>
+      <div class="c-split-view__pane c-split-view__pane--right" style="background:var(--color-surface-2)">Right pane</div>
+    `;
+    wrap.appendChild(split);
+    return wrap;
+  },
+  play: async ({ canvasElement }) => {
+    await expect(canvasElement.querySelector("contour-split-view")).toBeTruthy();
+    await expect(canvasElement.querySelector(".c-split-view__divider")).toBeTruthy();
+  },
+};
+
+export const ActivityFeed = {
+  render: () => {
+    const wrap = document.createElement("div");
+    wrap.style.display = "grid";
+    wrap.style.gap = "0.5rem";
+    const feed = document.createElement("contour-activity-feed");
+    feed.innerHTML = `
+      <div class="c-activity-feed__item c-activity-feed__item--unread" tabindex="0">
+        <span class="c-activity-feed__text">Route 42 updated</span>
+        <span class="c-activity-feed__time">2 min ago</span>
+      </div>
+      <div class="c-activity-feed__item" tabindex="0">
+        <span class="c-activity-feed__text">New alert in North region</span>
+        <span class="c-activity-feed__time">15 min ago</span>
+      </div>
+    `;
+    wrap.appendChild(feed);
+    return wrap;
+  },
+  play: async ({ canvasElement }) => {
+    await expect(canvasElement.querySelector("contour-activity-feed")).toBeTruthy();
+    await expect(canvasElement.querySelectorAll(".c-activity-feed__item").length).toBe(2);
+    await expect(canvasElement.querySelectorAll("button").length).toBe(2);
   },
 };

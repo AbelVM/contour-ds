@@ -44,12 +44,24 @@ By route volume
 
 48 rows · sorted by latency
 
+A documentation site is a reading instrument. Its grammar prioritises findability, reading comfort, technical precision, code discoverability and cross-referencing.
+
+The documentation shell composes these blocks in a fixed arrangement:
+
+Documentation uses the roomy density profile (--density-roomy: 1.28) for generous line height and paragraph spacing. The type scale follows the display/UI split: headings use the fluid display scale, body text uses the fixed UI scale.
+
+Every component reference in documentation must be a live link to its API reference entry.
+
 ## Subsections
 
 - Landing page
 - Documentation site
 - Technical dashboard
 - Web component counterpart
+- Documentation composition grammar
+- Anatomy
+- Density & rhythm
+- Cross-referencing contract
 
 ## Blocks documented here
 
@@ -107,4 +119,4 @@ part of the component contract and nothing in an installed package defines them:
 
 ---
 
-Source `index.html` @ `1beb0033376e73f1` · last committed 2026-11-07T12:44:19+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0102caa891dd1fdf` · last committed 2026-11-11T00:01:36+01:00 · no URL: the project is private until v1.0.

@@ -1,0 +1,4402 @@
+{
+  "Contour: contour-accordion": {
+    "prefix": [
+      "contour-accordion",
+      "c-accordion"
+    ],
+    "body": [
+      "<contour-accordion items=\"${1:items}\" src=\"${2:src}\">$0</contour-accordion>"
+    ],
+    "description": "Contour c-accordion (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-activity": {
+    "prefix": [
+      "contour-activity",
+      "c-activity"
+    ],
+    "body": [
+      "<contour-activity items=\"${1:items}\" src=\"${2:src}\">$0</contour-activity>"
+    ],
+    "description": "Contour c-activity (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-activity-feed": {
+    "prefix": [
+      "contour-activity-feed",
+      "c-activity-feed"
+    ],
+    "body": [
+      "<contour-activity-feed items=\"${1:items}\">$0</contour-activity-feed>"
+    ],
+    "description": "Contour c-activity-feed (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-advanced": {
+    "prefix": [
+      "contour-advanced",
+      "c-advanced"
+    ],
+    "body": [
+      "<contour-advanced title=\"${1:title}\">$0</contour-advanced>"
+    ],
+    "description": "Contour c-advanced (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-affordance": {
+    "prefix": [
+      "contour-affordance",
+      "c-affordance"
+    ],
+    "body": [
+      "<contour-affordance name=\"${1:name}\">$0</contour-affordance>"
+    ],
+    "description": "Contour c-affordance (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-affordances": {
+    "prefix": [
+      "contour-affordances",
+      "c-affordances"
+    ],
+    "body": [
+      "<contour-affordances name=\"${1:name}\" title=\"${2:title}\">$0</contour-affordances>"
+    ],
+    "description": "Contour c-affordances (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-alert": {
+    "prefix": [
+      "contour-alert",
+      "c-alert"
+    ],
+    "body": [
+      "<contour-alert title=\"${1:title}\" src=\"${2:src}\">$0</contour-alert>"
+    ],
+    "description": "Contour c-alert (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-anchor": {
+    "prefix": [
+      "contour-anchor",
+      "c-anchor"
+    ],
+    "body": [
+      "<contour-anchor label=\"${1:label}\">$0</contour-anchor>"
+    ],
+    "description": "Contour c-anchor (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-animation-controls": {
+    "prefix": [
+      "contour-animation-controls",
+      "c-animation-controls"
+    ],
+    "body": [
+      "<contour-animation-controls>$0</contour-animation-controls>"
+    ],
+    "description": "Contour c-animation-controls (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-annotation": {
+    "prefix": [
+      "contour-annotation",
+      "c-annotation"
+    ],
+    "body": [
+      "<contour-annotation label=\"${1:label}\">$0</contour-annotation>"
+    ],
+    "description": "Contour c-annotation (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-app": {
+    "prefix": [
+      "contour-app",
+      "c-app"
+    ],
+    "body": [
+      "<contour-app title=\"${1:title}\">$0</contour-app>"
+    ],
+    "description": "Contour c-app (composition)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-app-body": {
+    "prefix": [
+      "contour-app-body",
+      "c-app-body"
+    ],
+    "body": [
+      "<contour-app-body title=\"${1:title}\">$0</contour-app-body>"
+    ],
+    "description": "Contour c-app-body (composition)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-avatar": {
+    "prefix": [
+      "contour-avatar",
+      "c-avatar"
+    ],
+    "body": [
+      "<contour-avatar name=\"${1:name}\" src=\"${2:src}\">$0</contour-avatar>"
+    ],
+    "description": "Contour c-avatar (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-avatar-group": {
+    "prefix": [
+      "contour-avatar-group",
+      "c-avatar-group"
+    ],
+    "body": [
+      "<contour-avatar-group items=\"${1:items}\">$0</contour-avatar-group>"
+    ],
+    "description": "Contour c-avatar-group (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-axis": {
+    "prefix": [
+      "contour-axis",
+      "c-axis"
+    ],
+    "body": [
+      "<contour-axis src=\"${1:src}\">$0</contour-axis>"
+    ],
+    "description": "Contour c-axis (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-badge": {
+    "prefix": [
+      "contour-badge",
+      "c-badge"
+    ],
+    "body": [
+      "<contour-badge label=\"${1:label}\">$0</contour-badge>"
+    ],
+    "description": "Contour c-badge (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-badge-overflow": {
+    "prefix": [
+      "contour-badge-overflow",
+      "c-badge-overflow"
+    ],
+    "body": [
+      "<contour-badge-overflow>$0</contour-badge-overflow>"
+    ],
+    "description": "Contour c-badge-overflow (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-banner": {
+    "prefix": [
+      "contour-banner",
+      "c-banner"
+    ],
+    "body": [
+      "<contour-banner>$0</contour-banner>"
+    ],
+    "description": "Contour c-banner (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-bivariate": {
+    "prefix": [
+      "contour-bivariate",
+      "c-bivariate"
+    ],
+    "body": [
+      "<contour-bivariate>$0</contour-bivariate>"
+    ],
+    "description": "Contour c-bivariate (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-bivariate-legend": {
+    "prefix": [
+      "contour-bivariate-legend",
+      "c-bivariate-legend"
+    ],
+    "body": [
+      "<contour-bivariate-legend>$0</contour-bivariate-legend>"
+    ],
+    "description": "Contour c-bivariate-legend (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-box": {
+    "prefix": [
+      "contour-box",
+      "c-box"
+    ],
+    "body": [
+      "<contour-box>$0</contour-box>"
+    ],
+    "description": "Contour c-box (primitive)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-brand": {
+    "prefix": [
+      "contour-brand",
+      "c-brand"
+    ],
+    "body": [
+      "<contour-brand name=\"${1:name}\">$0</contour-brand>"
+    ],
+    "description": "Contour c-brand (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-breadcrumb": {
+    "prefix": [
+      "contour-breadcrumb",
+      "c-breadcrumb"
+    ],
+    "body": [
+      "<contour-breadcrumb items=\"${1:items}\" src=\"${2:src}\">$0</contour-breadcrumb>"
+    ],
+    "description": "Contour c-breadcrumb (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-brownout": {
+    "prefix": [
+      "contour-brownout",
+      "c-brownout"
+    ],
+    "body": [
+      "<contour-brownout>$0</contour-brownout>"
+    ],
+    "description": "Contour c-brownout (scaffold)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-brush": {
+    "prefix": [
+      "contour-brush",
+      "c-brush"
+    ],
+    "body": [
+      "<contour-brush src=\"${1:src}\">$0</contour-brush>"
+    ],
+    "description": "Contour c-brush (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-btn": {
+    "prefix": [
+      "contour-btn",
+      "c-btn"
+    ],
+    "body": [
+      "<contour-btn label=\"${1:label}\">$0</contour-btn>"
+    ],
+    "description": "Contour c-btn (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-btn-group": {
+    "prefix": [
+      "contour-btn-group",
+      "c-btn-group"
+    ],
+    "body": [
+      "<contour-btn-group title=\"${1:title}\">$0</contour-btn-group>"
+    ],
+    "description": "Contour c-btn-group (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-calendar": {
+    "prefix": [
+      "contour-calendar",
+      "c-calendar"
+    ],
+    "body": [
+      "<contour-calendar value=\"${1:value}\">$0</contour-calendar>"
+    ],
+    "description": "Contour c-calendar (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-callout": {
+    "prefix": [
+      "contour-callout",
+      "c-callout"
+    ],
+    "body": [
+      "<contour-callout title=\"${1:title}\">$0</contour-callout>"
+    ],
+    "description": "Contour c-callout (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-card": {
+    "prefix": [
+      "contour-card",
+      "c-card"
+    ],
+    "body": [
+      "<contour-card title=\"${1:title}\">$0</contour-card>"
+    ],
+    "description": "Contour c-card (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-carousel": {
+    "prefix": [
+      "contour-carousel",
+      "c-carousel"
+    ],
+    "body": [
+      "<contour-carousel items=\"${1:items}\">$0</contour-carousel>"
+    ],
+    "description": "Contour c-carousel (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-catchment": {
+    "prefix": [
+      "contour-catchment",
+      "c-catchment"
+    ],
+    "body": [
+      "<contour-catchment label=\"${1:label}\" src=\"${2:src}\">$0</contour-catchment>"
+    ],
+    "description": "Contour c-catchment (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-category": {
+    "prefix": [
+      "contour-category",
+      "c-category"
+    ],
+    "body": [
+      "<contour-category items=\"${1:items}\" src=\"${2:src}\">$0</contour-category>"
+    ],
+    "description": "Contour c-category (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-changelog": {
+    "prefix": [
+      "contour-changelog",
+      "c-changelog"
+    ],
+    "body": [
+      "<contour-changelog src=\"${1:src}\">$0</contour-changelog>"
+    ],
+    "description": "Contour c-changelog (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-chart": {
+    "prefix": [
+      "contour-chart",
+      "c-chart"
+    ],
+    "body": [
+      "<contour-chart series=\"${1:series}\">$0</contour-chart>"
+    ],
+    "description": "Contour c-chart (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-chart-grid": {
+    "prefix": [
+      "contour-chart-grid",
+      "c-chart-grid"
+    ],
+    "body": [
+      "<contour-chart-grid title=\"${1:title}\" series=\"${2:series}\" src=\"${3:src}\">$0</contour-chart-grid>"
+    ],
+    "description": "Contour c-chart-grid (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-check": {
+    "prefix": [
+      "contour-check",
+      "c-check"
+    ],
+    "body": [
+      "<contour-check label=\"${1:label}\" name=\"${2:name}\" value=\"${3:value}\">$0</contour-check>"
+    ],
+    "description": "Contour c-check (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-chip": {
+    "prefix": [
+      "contour-chip",
+      "c-chip"
+    ],
+    "body": [
+      "<contour-chip value=\"${1:value}\">$0</contour-chip>"
+    ],
+    "description": "Contour c-chip (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-cluster": {
+    "prefix": [
+      "contour-cluster",
+      "c-cluster"
+    ],
+    "body": [
+      "<contour-cluster>$0</contour-cluster>"
+    ],
+    "description": "Contour c-cluster (primitive)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-code": {
+    "prefix": [
+      "contour-code",
+      "c-code"
+    ],
+    "body": [
+      "<contour-code title=\"${1:title}\">$0</contour-code>"
+    ],
+    "description": "Contour c-code (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-code-tabs": {
+    "prefix": [
+      "contour-code-tabs",
+      "c-code-tabs"
+    ],
+    "body": [
+      "<contour-code-tabs src=\"${1:src}\">$0</contour-code-tabs>"
+    ],
+    "description": "Contour c-code-tabs (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-color-picker": {
+    "prefix": [
+      "contour-color-picker",
+      "c-color-picker"
+    ],
+    "body": [
+      "<contour-color-picker value=\"${1:value}\" label=\"${2:label}\">$0</contour-color-picker>"
+    ],
+    "description": "Contour c-color-picker (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-combobox": {
+    "prefix": [
+      "contour-combobox",
+      "c-combobox"
+    ],
+    "body": [
+      "<contour-combobox options=\"${1:options}\" placeholder=\"${2:placeholder}\" label=\"${3:label}\">$0</contour-combobox>"
+    ],
+    "description": "Contour c-combobox (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-command": {
+    "prefix": [
+      "contour-command",
+      "c-command"
+    ],
+    "body": [
+      "<contour-command placeholder=\"${1:placeholder}\" items=\"${2:items}\" src=\"${3:src}\">$0</contour-command>"
+    ],
+    "description": "Contour c-command (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-command-palette": {
+    "prefix": [
+      "contour-command-palette",
+      "c-command-palette"
+    ],
+    "body": [
+      "<contour-command-palette items=\"${1:items}\">$0</contour-command-palette>"
+    ],
+    "description": "Contour c-command-palette (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-compare": {
+    "prefix": [
+      "contour-compare",
+      "c-compare"
+    ],
+    "body": [
+      "<contour-compare src=\"${1:src}\">$0</contour-compare>"
+    ],
+    "description": "Contour c-compare (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-comparison": {
+    "prefix": [
+      "contour-comparison",
+      "c-comparison"
+    ],
+    "body": [
+      "<contour-comparison value=\"${1:value}\">$0</contour-comparison>"
+    ],
+    "description": "Contour c-comparison (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-compass": {
+    "prefix": [
+      "contour-compass",
+      "c-compass"
+    ],
+    "body": [
+      "<contour-compass label=\"${1:label}\" src=\"${2:src}\">$0</contour-compass>"
+    ],
+    "description": "Contour c-compass (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-container": {
+    "prefix": [
+      "contour-container",
+      "c-container"
+    ],
+    "body": [
+      "<contour-container>$0</contour-container>"
+    ],
+    "description": "Contour c-container (primitive)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-context-menu": {
+    "prefix": [
+      "contour-context-menu",
+      "c-context-menu"
+    ],
+    "body": [
+      "<contour-context-menu items=\"${1:items}\">$0</contour-context-menu>"
+    ],
+    "description": "Contour c-context-menu (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-coordinate": {
+    "prefix": [
+      "contour-coordinate",
+      "c-coordinate"
+    ],
+    "body": [
+      "<contour-coordinate value=\"${1:value}\" src=\"${2:src}\">$0</contour-coordinate>"
+    ],
+    "description": "Contour c-coordinate (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-cta": {
+    "prefix": [
+      "contour-cta",
+      "c-cta"
+    ],
+    "body": [
+      "<contour-cta title=\"${1:title}\">$0</contour-cta>"
+    ],
+    "description": "Contour c-cta (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-dash-freshness": {
+    "prefix": [
+      "contour-dash-freshness",
+      "c-dash-freshness"
+    ],
+    "body": [
+      "<contour-dash-freshness label=\"${1:label}\" value=\"${2:value}\">$0</contour-dash-freshness>"
+    ],
+    "description": "Contour c-dash-freshness (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-dash-kpi-row": {
+    "prefix": [
+      "contour-dash-kpi-row",
+      "c-dash-kpi-row"
+    ],
+    "body": [
+      "<contour-dash-kpi-row items=\"${1:items}\">$0</contour-dash-kpi-row>"
+    ],
+    "description": "Contour c-dash-kpi-row (composition)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-dash-shell": {
+    "prefix": [
+      "contour-dash-shell",
+      "c-dash-shell"
+    ],
+    "body": [
+      "<contour-dash-shell title=\"${1:title}\">$0</contour-dash-shell>"
+    ],
+    "description": "Contour c-dash-shell (composition)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-dash-toolbar": {
+    "prefix": [
+      "contour-dash-toolbar",
+      "c-dash-toolbar"
+    ],
+    "body": [
+      "<contour-dash-toolbar title=\"${1:title}\">$0</contour-dash-toolbar>"
+    ],
+    "description": "Contour c-dash-toolbar (composition)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-data-export": {
+    "prefix": [
+      "contour-data-export",
+      "c-data-export"
+    ],
+    "body": [
+      "<contour-data-export data=\"${1:data}\" label=\"${2:label}\">$0</contour-data-export>"
+    ],
+    "description": "Contour c-data-export (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-data-grid": {
+    "prefix": [
+      "contour-data-grid",
+      "c-data-grid"
+    ],
+    "body": [
+      "<contour-data-grid columns=\"${1:columns}\" rows=\"${2:rows}\">$0</contour-data-grid>"
+    ],
+    "description": "Contour c-data-grid (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-data-table": {
+    "prefix": [
+      "contour-data-table",
+      "c-data-table"
+    ],
+    "body": [
+      "<contour-data-table>$0</contour-data-table>"
+    ],
+    "description": "Contour c-data-table (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-datamark": {
+    "prefix": [
+      "contour-datamark",
+      "c-datamark"
+    ],
+    "body": [
+      "<contour-datamark value=\"${1:value}\" label=\"${2:label}\">$0</contour-datamark>"
+    ],
+    "description": "Contour c-datamark (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-date-picker": {
+    "prefix": [
+      "contour-date-picker",
+      "c-date-picker"
+    ],
+    "body": [
+      "<contour-date-picker value=\"${1:value}\" label=\"${2:label}\">$0</contour-date-picker>"
+    ],
+    "description": "Contour c-date-picker (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-date-range": {
+    "prefix": [
+      "contour-date-range",
+      "c-date-range"
+    ],
+    "body": [
+      "<contour-date-range label=\"${1:label}\">$0</contour-date-range>"
+    ],
+    "description": "Contour c-date-range (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-delta": {
+    "prefix": [
+      "contour-delta",
+      "c-delta"
+    ],
+    "body": [
+      "<contour-delta value=\"${1:value}\" src=\"${2:src}\">$0</contour-delta>"
+    ],
+    "description": "Contour c-delta (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-destructive-hint": {
+    "prefix": [
+      "contour-destructive-hint",
+      "c-destructive-hint"
+    ],
+    "body": [
+      "<contour-destructive-hint>$0</contour-destructive-hint>"
+    ],
+    "description": "Contour c-destructive-hint (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-dialog": {
+    "prefix": [
+      "contour-dialog",
+      "c-dialog"
+    ],
+    "body": [
+      "<contour-dialog title=\"${1:title}\">$0</contour-dialog>"
+    ],
+    "description": "Contour c-dialog (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-diff": {
+    "prefix": [
+      "contour-diff",
+      "c-diff"
+    ],
+    "body": [
+      "<contour-diff>$0</contour-diff>"
+    ],
+    "description": "Contour c-diff (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-disclosure": {
+    "prefix": [
+      "contour-disclosure",
+      "c-disclosure"
+    ],
+    "body": [
+      "<contour-disclosure>$0</contour-disclosure>"
+    ],
+    "description": "Contour c-disclosure (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-divider": {
+    "prefix": [
+      "contour-divider",
+      "c-divider"
+    ],
+    "body": [
+      "<contour-divider label=\"${1:label}\">$0</contour-divider>"
+    ],
+    "description": "Contour c-divider (primitive)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-do-dont": {
+    "prefix": [
+      "contour-do-dont",
+      "c-do-dont"
+    ],
+    "body": [
+      "<contour-do-dont>$0</contour-do-dont>"
+    ],
+    "description": "Contour c-do-dont (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-docs-nav": {
+    "prefix": [
+      "contour-docs-nav",
+      "c-docs-nav"
+    ],
+    "body": [
+      "<contour-docs-nav items=\"${1:items}\" title=\"${2:title}\" src=\"${3:src}\">$0</contour-docs-nav>"
+    ],
+    "description": "Contour c-docs-nav (composition)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-docs-shell": {
+    "prefix": [
+      "contour-docs-shell",
+      "c-docs-shell"
+    ],
+    "body": [
+      "<contour-docs-shell title=\"${1:title}\">$0</contour-docs-shell>"
+    ],
+    "description": "Contour c-docs-shell (composition)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-donut": {
+    "prefix": [
+      "contour-donut",
+      "c-donut"
+    ],
+    "body": [
+      "<contour-donut value=\"${1:value}\" items=\"${2:items}\" label=\"${3:label}\">$0</contour-donut>"
+    ],
+    "description": "Contour c-donut (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-dot": {
+    "prefix": [
+      "contour-dot",
+      "c-dot"
+    ],
+    "body": [
+      "<contour-dot>$0</contour-dot>"
+    ],
+    "description": "Contour c-dot (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-drag-handle": {
+    "prefix": [
+      "contour-drag-handle",
+      "c-drag-handle"
+    ],
+    "body": [
+      "<contour-drag-handle label=\"${1:label}\">$0</contour-drag-handle>"
+    ],
+    "description": "Contour c-drag-handle (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-draggable": {
+    "prefix": [
+      "contour-draggable",
+      "c-draggable"
+    ],
+    "body": [
+      "<contour-draggable label=\"${1:label}\">$0</contour-draggable>"
+    ],
+    "description": "Contour c-draggable (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-drawer": {
+    "prefix": [
+      "contour-drawer",
+      "c-drawer"
+    ],
+    "body": [
+      "<contour-drawer title=\"${1:title}\">$0</contour-drawer>"
+    ],
+    "description": "Contour c-drawer (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-drop-indicator": {
+    "prefix": [
+      "contour-drop-indicator",
+      "c-drop-indicator"
+    ],
+    "body": [
+      "<contour-drop-indicator label=\"${1:label}\">$0</contour-drop-indicator>"
+    ],
+    "description": "Contour c-drop-indicator (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-drop-zone": {
+    "prefix": [
+      "contour-drop-zone",
+      "c-drop-zone"
+    ],
+    "body": [
+      "<contour-drop-zone label=\"${1:label}\">$0</contour-drop-zone>"
+    ],
+    "description": "Contour c-drop-zone (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-dropdown": {
+    "prefix": [
+      "contour-dropdown",
+      "c-dropdown"
+    ],
+    "body": [
+      "<contour-dropdown label=\"${1:label}\" items=\"${2:items}\">$0</contour-dropdown>"
+    ],
+    "description": "Contour c-dropdown (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-elevation": {
+    "prefix": [
+      "contour-elevation",
+      "c-elevation"
+    ],
+    "body": [
+      "<contour-elevation>$0</contour-elevation>"
+    ],
+    "description": "Contour c-elevation (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-empty": {
+    "prefix": [
+      "contour-empty",
+      "c-empty"
+    ],
+    "body": [
+      "<contour-empty title=\"${1:title}\">$0</contour-empty>"
+    ],
+    "description": "Contour c-empty (scaffold)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-error-boundary": {
+    "prefix": [
+      "contour-error-boundary",
+      "c-error-boundary"
+    ],
+    "body": [
+      "<contour-error-boundary>$0</contour-error-boundary>"
+    ],
+    "description": "Contour c-error-boundary (scaffold)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-expandable": {
+    "prefix": [
+      "contour-expandable",
+      "c-expandable"
+    ],
+    "body": [
+      "<contour-expandable>$0</contour-expandable>"
+    ],
+    "description": "Contour c-expandable (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-fab": {
+    "prefix": [
+      "contour-fab",
+      "c-fab"
+    ],
+    "body": [
+      "<contour-fab label=\"${1:label}\">$0</contour-fab>"
+    ],
+    "description": "Contour c-fab (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-faq": {
+    "prefix": [
+      "contour-faq",
+      "c-faq"
+    ],
+    "body": [
+      "<contour-faq items=\"${1:items}\" src=\"${2:src}\">$0</contour-faq>"
+    ],
+    "description": "Contour c-faq (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-feature": {
+    "prefix": [
+      "contour-feature",
+      "c-feature"
+    ],
+    "body": [
+      "<contour-feature title=\"${1:title}\">$0</contour-feature>"
+    ],
+    "description": "Contour c-feature (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-feature-inspector": {
+    "prefix": [
+      "contour-feature-inspector",
+      "c-feature-inspector"
+    ],
+    "body": [
+      "<contour-feature-inspector title=\"${1:title}\">$0</contour-feature-inspector>"
+    ],
+    "description": "Contour c-feature-inspector (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-field": {
+    "prefix": [
+      "contour-field",
+      "c-field"
+    ],
+    "body": [
+      "<contour-field label=\"${1:label}\" placeholder=\"${2:placeholder}\">$0</contour-field>"
+    ],
+    "description": "Contour c-field (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-field-group": {
+    "prefix": [
+      "contour-field-group",
+      "c-field-group"
+    ],
+    "body": [
+      "<contour-field-group label=\"${1:label}\">$0</contour-field-group>"
+    ],
+    "description": "Contour c-field-group (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-file-tree": {
+    "prefix": [
+      "contour-file-tree",
+      "c-file-tree"
+    ],
+    "body": [
+      "<contour-file-tree items=\"${1:items}\">$0</contour-file-tree>"
+    ],
+    "description": "Contour c-file-tree (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-file-upload": {
+    "prefix": [
+      "contour-file-upload",
+      "c-file-upload"
+    ],
+    "body": [
+      "<contour-file-upload label=\"${1:label}\">$0</contour-file-upload>"
+    ],
+    "description": "Contour c-file-upload (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-filter-bar": {
+    "prefix": [
+      "contour-filter-bar",
+      "c-filter-bar"
+    ],
+    "body": [
+      "<contour-filter-bar label=\"${1:label}\" items=\"${2:items}\" placeholder=\"${3:placeholder}\">$0</contour-filter-bar>"
+    ],
+    "description": "Contour c-filter-bar (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-filter-pill": {
+    "prefix": [
+      "contour-filter-pill",
+      "c-filter-pill"
+    ],
+    "body": [
+      "<contour-filter-pill value=\"${1:value}\">$0</contour-filter-pill>"
+    ],
+    "description": "Contour c-filter-pill (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-flag": {
+    "prefix": [
+      "contour-flag",
+      "c-flag"
+    ],
+    "body": [
+      "<contour-flag label=\"${1:label}\">$0</contour-flag>"
+    ],
+    "description": "Contour c-flag (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-flow-map": {
+    "prefix": [
+      "contour-flow-map",
+      "c-flow-map"
+    ],
+    "body": [
+      "<contour-flow-map label=\"${1:label}\" src=\"${2:src}\">$0</contour-flow-map>"
+    ],
+    "description": "Contour c-flow-map (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-footer": {
+    "prefix": [
+      "contour-footer",
+      "c-footer"
+    ],
+    "body": [
+      "<contour-footer>$0</contour-footer>"
+    ],
+    "description": "Contour c-footer (composition)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-form": {
+    "prefix": [
+      "contour-form",
+      "c-form"
+    ],
+    "body": [
+      "<contour-form>$0</contour-form>"
+    ],
+    "description": "Contour c-form (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-gauge": {
+    "prefix": [
+      "contour-gauge",
+      "c-gauge"
+    ],
+    "body": [
+      "<contour-gauge value=\"${1:value}\" src=\"${2:src}\">$0</contour-gauge>"
+    ],
+    "description": "Contour c-gauge (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-geocoder": {
+    "prefix": [
+      "contour-geocoder",
+      "c-geocoder"
+    ],
+    "body": [
+      "<contour-geocoder placeholder=\"${1:placeholder}\" value=\"${2:value}\" src=\"${3:src}\">$0</contour-geocoder>"
+    ],
+    "description": "Contour c-geocoder (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-header": {
+    "prefix": [
+      "contour-header",
+      "c-header"
+    ],
+    "body": [
+      "<contour-header>$0</contour-header>"
+    ],
+    "description": "Contour c-header (composition)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-heatmap": {
+    "prefix": [
+      "contour-heatmap",
+      "c-heatmap"
+    ],
+    "body": [
+      "<contour-heatmap src=\"${1:src}\">$0</contour-heatmap>"
+    ],
+    "description": "Contour c-heatmap (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-hexbin": {
+    "prefix": [
+      "contour-hexbin",
+      "c-hexbin"
+    ],
+    "body": [
+      "<contour-hexbin label=\"${1:label}\" src=\"${2:src}\">$0</contour-hexbin>"
+    ],
+    "description": "Contour c-hexbin (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-hover-card": {
+    "prefix": [
+      "contour-hover-card",
+      "c-hover-card"
+    ],
+    "body": [
+      "<contour-hover-card title=\"${1:title}\">$0</contour-hover-card>"
+    ],
+    "description": "Contour c-hover-card (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-icon-badge": {
+    "prefix": [
+      "contour-icon-badge",
+      "c-icon-badge"
+    ],
+    "body": [
+      "<contour-icon-badge>$0</contour-icon-badge>"
+    ],
+    "description": "Contour c-icon-badge (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-input": {
+    "prefix": [
+      "contour-input",
+      "c-input"
+    ],
+    "body": [
+      "<contour-input placeholder=\"${1:placeholder}\" value=\"${2:value}\" label=\"${3:label}\">$0</contour-input>"
+    ],
+    "description": "Contour c-input (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-input-group": {
+    "prefix": [
+      "contour-input-group",
+      "c-input-group"
+    ],
+    "body": [
+      "<contour-input-group label=\"${1:label}\" placeholder=\"${2:placeholder}\">$0</contour-input-group>"
+    ],
+    "description": "Contour c-input-group (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-install": {
+    "prefix": [
+      "contour-install",
+      "c-install"
+    ],
+    "body": [
+      "<contour-install>$0</contour-install>"
+    ],
+    "description": "Contour c-install (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-instrument": {
+    "prefix": [
+      "contour-instrument",
+      "c-instrument"
+    ],
+    "body": [
+      "<contour-instrument rows=\"${1:rows}\" src=\"${2:src}\">$0</contour-instrument>"
+    ],
+    "description": "Contour c-instrument (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-isochrone": {
+    "prefix": [
+      "contour-isochrone",
+      "c-isochrone"
+    ],
+    "body": [
+      "<contour-isochrone label=\"${1:label}\" src=\"${2:src}\">$0</contour-isochrone>"
+    ],
+    "description": "Contour c-isochrone (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-kbd": {
+    "prefix": [
+      "contour-kbd",
+      "c-kbd"
+    ],
+    "body": [
+      "<contour-kbd>$0</contour-kbd>"
+    ],
+    "description": "Contour c-kbd (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-kpi": {
+    "prefix": [
+      "contour-kpi",
+      "c-kpi"
+    ],
+    "body": [
+      "<contour-kpi value=\"${1:value}\" label=\"${2:label}\" src=\"${3:src}\">$0</contour-kpi>"
+    ],
+    "description": "Contour c-kpi (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-landing-features": {
+    "prefix": [
+      "contour-landing-features",
+      "c-landing-features"
+    ],
+    "body": [
+      "<contour-landing-features items=\"${1:items}\" src=\"${2:src}\">$0</contour-landing-features>"
+    ],
+    "description": "Contour c-landing-features (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-landing-hero": {
+    "prefix": [
+      "contour-landing-hero",
+      "c-landing-hero"
+    ],
+    "body": [
+      "<contour-landing-hero title=\"${1:title}\">$0</contour-landing-hero>"
+    ],
+    "description": "Contour c-landing-hero (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-layer-panel": {
+    "prefix": [
+      "contour-layer-panel",
+      "c-layer-panel"
+    ],
+    "body": [
+      "<contour-layer-panel label=\"${1:label}\" items=\"${2:items}\" src=\"${3:src}\">$0</contour-layer-panel>"
+    ],
+    "description": "Contour c-layer-panel (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-layer-switch": {
+    "prefix": [
+      "contour-layer-switch",
+      "c-layer-switch"
+    ],
+    "body": [
+      "<contour-layer-switch items=\"${1:items}\" src=\"${2:src}\">$0</contour-layer-switch>"
+    ],
+    "description": "Contour c-layer-switch (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-legend": {
+    "prefix": [
+      "contour-legend",
+      "c-legend"
+    ],
+    "body": [
+      "<contour-legend title=\"${1:title}\" items=\"${2:items}\" src=\"${3:src}\">$0</contour-legend>"
+    ],
+    "description": "Contour c-legend (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-link": {
+    "prefix": [
+      "contour-link",
+      "c-link"
+    ],
+    "body": [
+      "<contour-link label=\"${1:label}\">$0</contour-link>"
+    ],
+    "description": "Contour c-link (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-linkish": {
+    "prefix": [
+      "contour-linkish",
+      "c-linkish"
+    ],
+    "body": [
+      "<contour-linkish>$0</contour-linkish>"
+    ],
+    "description": "Contour c-linkish (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-live-badge": {
+    "prefix": [
+      "contour-live-badge",
+      "c-live-badge"
+    ],
+    "body": [
+      "<contour-live-badge label=\"${1:label}\">$0</contour-live-badge>"
+    ],
+    "description": "Contour c-live-badge (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-loading": {
+    "prefix": [
+      "contour-loading",
+      "c-loading"
+    ],
+    "body": [
+      "<contour-loading>$0</contour-loading>"
+    ],
+    "description": "Contour c-loading (scaffold)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-logos": {
+    "prefix": [
+      "contour-logos",
+      "c-logos"
+    ],
+    "body": [
+      "<contour-logos>$0</contour-logos>"
+    ],
+    "description": "Contour c-logos (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-map-area": {
+    "prefix": [
+      "contour-map-area",
+      "c-map-area"
+    ],
+    "body": [
+      "<contour-map-area>$0</contour-map-area>"
+    ],
+    "description": "Contour c-map-area (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-map-footer": {
+    "prefix": [
+      "contour-map-footer",
+      "c-map-footer"
+    ],
+    "body": [
+      "<contour-map-footer>$0</contour-map-footer>"
+    ],
+    "description": "Contour c-map-footer (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-map-panel": {
+    "prefix": [
+      "contour-map-panel",
+      "c-map-panel"
+    ],
+    "body": [
+      "<contour-map-panel title=\"${1:title}\">$0</contour-map-panel>"
+    ],
+    "description": "Contour c-map-panel (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-map-popup": {
+    "prefix": [
+      "contour-map-popup",
+      "c-map-popup"
+    ],
+    "body": [
+      "<contour-map-popup title=\"${1:title}\">$0</contour-map-popup>"
+    ],
+    "description": "Contour c-map-popup (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-map-slot": {
+    "prefix": [
+      "contour-map-slot",
+      "c-map-slot"
+    ],
+    "body": [
+      "<contour-map-slot>$0</contour-map-slot>"
+    ],
+    "description": "Contour c-map-slot (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-mark": {
+    "prefix": [
+      "contour-mark",
+      "c-mark"
+    ],
+    "body": [
+      "<contour-mark>$0</contour-mark>"
+    ],
+    "description": "Contour c-mark (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-measure": {
+    "prefix": [
+      "contour-measure",
+      "c-measure"
+    ],
+    "body": [
+      "<contour-measure label=\"${1:label}\" value=\"${2:value}\" src=\"${3:src}\">$0</contour-measure>"
+    ],
+    "description": "Contour c-measure (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-menu": {
+    "prefix": [
+      "contour-menu",
+      "c-menu"
+    ],
+    "body": [
+      "<contour-menu items=\"${1:items}\" src=\"${2:src}\">$0</contour-menu>"
+    ],
+    "description": "Contour c-menu (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-meter": {
+    "prefix": [
+      "contour-meter",
+      "c-meter"
+    ],
+    "body": [
+      "<contour-meter value=\"${1:value}\" label=\"${2:label}\" src=\"${3:src}\">$0</contour-meter>"
+    ],
+    "description": "Contour c-meter (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-metrics": {
+    "prefix": [
+      "contour-metrics",
+      "c-metrics"
+    ],
+    "body": [
+      "<contour-metrics items=\"${1:items}\" src=\"${2:src}\">$0</contour-metrics>"
+    ],
+    "description": "Contour c-metrics (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-minimap": {
+    "prefix": [
+      "contour-minimap",
+      "c-minimap"
+    ],
+    "body": [
+      "<contour-minimap label=\"${1:label}\" src=\"${2:src}\">$0</contour-minimap>"
+    ],
+    "description": "Contour c-minimap (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-notification-center": {
+    "prefix": [
+      "contour-notification-center",
+      "c-notification-center"
+    ],
+    "body": [
+      "<contour-notification-center items=\"${1:items}\">$0</contour-notification-center>"
+    ],
+    "description": "Contour c-notification-center (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-number-field": {
+    "prefix": [
+      "contour-number-field",
+      "c-number-field"
+    ],
+    "body": [
+      "<contour-number-field value=\"${1:value}\" label=\"${2:label}\">$0</contour-number-field>"
+    ],
+    "description": "Contour c-number-field (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-pager": {
+    "prefix": [
+      "contour-pager",
+      "c-pager"
+    ],
+    "body": [
+      "<contour-pager>$0</contour-pager>"
+    ],
+    "description": "Contour c-pager (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-pagination": {
+    "prefix": [
+      "contour-pagination",
+      "c-pagination"
+    ],
+    "body": [
+      "<contour-pagination src=\"${1:src}\">$0</contour-pagination>"
+    ],
+    "description": "Contour c-pagination (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-palette-editor": {
+    "prefix": [
+      "contour-palette-editor",
+      "c-palette-editor"
+    ],
+    "body": [
+      "<contour-palette-editor>$0</contour-palette-editor>"
+    ],
+    "description": "Contour c-palette-editor (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-panel": {
+    "prefix": [
+      "contour-panel",
+      "c-panel"
+    ],
+    "body": [
+      "<contour-panel title=\"${1:title}\">$0</contour-panel>"
+    ],
+    "description": "Contour c-panel (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-pill": {
+    "prefix": [
+      "contour-pill",
+      "c-pill"
+    ],
+    "body": [
+      "<contour-pill label=\"${1:label}\">$0</contour-pill>"
+    ],
+    "description": "Contour c-pill (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-pivot": {
+    "prefix": [
+      "contour-pivot",
+      "c-pivot"
+    ],
+    "body": [
+      "<contour-pivot rows=\"${1:rows}\" columns=\"${2:columns}\" data=\"${3:data}\">$0</contour-pivot>"
+    ],
+    "description": "Contour c-pivot (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-plate": {
+    "prefix": [
+      "contour-plate",
+      "c-plate"
+    ],
+    "body": [
+      "<contour-plate>$0</contour-plate>"
+    ],
+    "description": "Contour c-plate (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-popover": {
+    "prefix": [
+      "contour-popover",
+      "c-popover"
+    ],
+    "body": [
+      "<contour-popover title=\"${1:title}\">$0</contour-popover>"
+    ],
+    "description": "Contour c-popover (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-pressable": {
+    "prefix": [
+      "contour-pressable",
+      "c-pressable"
+    ],
+    "body": [
+      "<contour-pressable>$0</contour-pressable>"
+    ],
+    "description": "Contour c-pressable (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-price": {
+    "prefix": [
+      "contour-price",
+      "c-price"
+    ],
+    "body": [
+      "<contour-price value=\"${1:value}\">$0</contour-price>"
+    ],
+    "description": "Contour c-price (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-pricing": {
+    "prefix": [
+      "contour-pricing",
+      "c-pricing"
+    ],
+    "body": [
+      "<contour-pricing>$0</contour-pricing>"
+    ],
+    "description": "Contour c-pricing (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-progress": {
+    "prefix": [
+      "contour-progress",
+      "c-progress"
+    ],
+    "body": [
+      "<contour-progress value=\"${1:value}\" label=\"${2:label}\">$0</contour-progress>"
+    ],
+    "description": "Contour c-progress (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-prose": {
+    "prefix": [
+      "contour-prose",
+      "c-prose"
+    ],
+    "body": [
+      "<contour-prose>$0</contour-prose>"
+    ],
+    "description": "Contour c-prose (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-provenance": {
+    "prefix": [
+      "contour-provenance",
+      "c-provenance"
+    ],
+    "body": [
+      "<contour-provenance>$0</contour-provenance>"
+    ],
+    "description": "Contour c-provenance (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-pull-to-refresh": {
+    "prefix": [
+      "contour-pull-to-refresh",
+      "c-pull-to-refresh"
+    ],
+    "body": [
+      "<contour-pull-to-refresh>$0</contour-pull-to-refresh>"
+    ],
+    "description": "Contour c-pull-to-refresh (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-pullquote": {
+    "prefix": [
+      "contour-pullquote",
+      "c-pullquote"
+    ],
+    "body": [
+      "<contour-pullquote name=\"${1:name}\">$0</contour-pullquote>"
+    ],
+    "description": "Contour c-pullquote (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-radio": {
+    "prefix": [
+      "contour-radio",
+      "c-radio"
+    ],
+    "body": [
+      "<contour-radio label=\"${1:label}\" name=\"${2:name}\" value=\"${3:value}\">$0</contour-radio>"
+    ],
+    "description": "Contour c-radio (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-radio-list": {
+    "prefix": [
+      "contour-radio-list",
+      "c-radio-list"
+    ],
+    "body": [
+      "<contour-radio-list items=\"${1:items}\" name=\"${2:name}\" src=\"${3:src}\">$0</contour-radio-list>"
+    ],
+    "description": "Contour c-radio-list (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-range": {
+    "prefix": [
+      "contour-range",
+      "c-range"
+    ],
+    "body": [
+      "<contour-range value=\"${1:value}\" label=\"${2:label}\">$0</contour-range>"
+    ],
+    "description": "Contour c-range (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-range-scale": {
+    "prefix": [
+      "contour-range-scale",
+      "c-range-scale"
+    ],
+    "body": [
+      "<contour-range-scale label=\"${1:label}\" value=\"${2:value}\">$0</contour-range-scale>"
+    ],
+    "description": "Contour c-range-scale (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-rating": {
+    "prefix": [
+      "contour-rating",
+      "c-rating"
+    ],
+    "body": [
+      "<contour-rating value=\"${1:value}\">$0</contour-rating>"
+    ],
+    "description": "Contour c-rating (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-readout": {
+    "prefix": [
+      "contour-readout",
+      "c-readout"
+    ],
+    "body": [
+      "<contour-readout rows=\"${1:rows}\" src=\"${2:src}\">$0</contour-readout>"
+    ],
+    "description": "Contour c-readout (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-recipe": {
+    "prefix": [
+      "contour-recipe",
+      "c-recipe"
+    ],
+    "body": [
+      "<contour-recipe title=\"${1:title}\">$0</contour-recipe>"
+    ],
+    "description": "Contour c-recipe (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-reserved": {
+    "prefix": [
+      "contour-reserved",
+      "c-reserved"
+    ],
+    "body": [
+      "<contour-reserved title=\"${1:title}\">$0</contour-reserved>"
+    ],
+    "description": "Contour c-reserved (scaffold)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-resizable": {
+    "prefix": [
+      "contour-resizable",
+      "c-resizable"
+    ],
+    "body": [
+      "<contour-resizable value=\"${1:value}\">$0</contour-resizable>"
+    ],
+    "description": "Contour c-resizable (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-resize-handle": {
+    "prefix": [
+      "contour-resize-handle",
+      "c-resize-handle"
+    ],
+    "body": [
+      "<contour-resize-handle label=\"${1:label}\">$0</contour-resize-handle>"
+    ],
+    "description": "Contour c-resize-handle (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-resize-observer": {
+    "prefix": [
+      "contour-resize-observer",
+      "c-resize-observer"
+    ],
+    "body": [
+      "<contour-resize-observer>$0</contour-resize-observer>"
+    ],
+    "description": "Contour c-resize-observer (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-responsive-content": {
+    "prefix": [
+      "contour-responsive-content",
+      "c-responsive-content"
+    ],
+    "body": [
+      "<contour-responsive-content>$0</contour-responsive-content>"
+    ],
+    "description": "Contour c-responsive-content (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-row": {
+    "prefix": [
+      "contour-row",
+      "c-row"
+    ],
+    "body": [
+      "<contour-row>$0</contour-row>"
+    ],
+    "description": "Contour c-row (primitive)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-row-action": {
+    "prefix": [
+      "contour-row-action",
+      "c-row-action"
+    ],
+    "body": [
+      "<contour-row-action label=\"${1:label}\">$0</contour-row-action>"
+    ],
+    "description": "Contour c-row-action (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-saved-view": {
+    "prefix": [
+      "contour-saved-view",
+      "c-saved-view"
+    ],
+    "body": [
+      "<contour-saved-view name=\"${1:name}\">$0</contour-saved-view>"
+    ],
+    "description": "Contour c-saved-view (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-scale-bar": {
+    "prefix": [
+      "contour-scale-bar",
+      "c-scale-bar"
+    ],
+    "body": [
+      "<contour-scale-bar label=\"${1:label}\" value=\"${2:value}\" src=\"${3:src}\">$0</contour-scale-bar>"
+    ],
+    "description": "Contour c-scale-bar (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-scheme-toggle": {
+    "prefix": [
+      "contour-scheme-toggle",
+      "c-scheme-toggle"
+    ],
+    "body": [
+      "<contour-scheme-toggle>$0</contour-scheme-toggle>"
+    ],
+    "description": "Contour c-scheme-toggle (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-scrim": {
+    "prefix": [
+      "contour-scrim",
+      "c-scrim"
+    ],
+    "body": [
+      "<contour-scrim>$0</contour-scrim>"
+    ],
+    "description": "Contour c-scrim (primitive)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-scroll-area": {
+    "prefix": [
+      "contour-scroll-area",
+      "c-scroll-area"
+    ],
+    "body": [
+      "<contour-scroll-area title=\"${1:title}\">$0</contour-scroll-area>"
+    ],
+    "description": "Contour c-scroll-area (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-search-trigger": {
+    "prefix": [
+      "contour-search-trigger",
+      "c-search-trigger"
+    ],
+    "body": [
+      "<contour-search-trigger label=\"${1:label}\">$0</contour-search-trigger>"
+    ],
+    "description": "Contour c-search-trigger (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-section-head": {
+    "prefix": [
+      "contour-section-head",
+      "c-section-head"
+    ],
+    "body": [
+      "<contour-section-head title=\"${1:title}\">$0</contour-section-head>"
+    ],
+    "description": "Contour c-section-head (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-segmented": {
+    "prefix": [
+      "contour-segmented",
+      "c-segmented"
+    ],
+    "body": [
+      "<contour-segmented options=\"${1:options}\" label=\"${2:label}\" value=\"${3:value}\">$0</contour-segmented>"
+    ],
+    "description": "Contour c-segmented (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-select": {
+    "prefix": [
+      "contour-select",
+      "c-select"
+    ],
+    "body": [
+      "<contour-select options=\"${1:options}\" label=\"${2:label}\" placeholder=\"${3:placeholder}\">$0</contour-select>"
+    ],
+    "description": "Contour c-select (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-accordion": {
+    "prefix": [
+      "contour-shadow-accordion",
+      "contour-shadow-accordion"
+    ],
+    "body": [
+      "<contour-shadow-accordion>$0</contour-shadow-accordion>"
+    ],
+    "description": "Contour element contour-shadow-accordion",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-activity": {
+    "prefix": [
+      "contour-shadow-activity",
+      "contour-shadow-activity"
+    ],
+    "body": [
+      "<contour-shadow-activity>$0</contour-shadow-activity>"
+    ],
+    "description": "Contour element contour-shadow-activity",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-advanced": {
+    "prefix": [
+      "contour-shadow-advanced",
+      "contour-shadow-advanced"
+    ],
+    "body": [
+      "<contour-shadow-advanced>$0</contour-shadow-advanced>"
+    ],
+    "description": "Contour element contour-shadow-advanced",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-affordance": {
+    "prefix": [
+      "contour-shadow-affordance",
+      "contour-shadow-affordance"
+    ],
+    "body": [
+      "<contour-shadow-affordance>$0</contour-shadow-affordance>"
+    ],
+    "description": "Contour element contour-shadow-affordance",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-affordances": {
+    "prefix": [
+      "contour-shadow-affordances",
+      "contour-shadow-affordances"
+    ],
+    "body": [
+      "<contour-shadow-affordances>$0</contour-shadow-affordances>"
+    ],
+    "description": "Contour element contour-shadow-affordances",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-alert": {
+    "prefix": [
+      "contour-shadow-alert",
+      "contour-shadow-alert"
+    ],
+    "body": [
+      "<contour-shadow-alert>$0</contour-shadow-alert>"
+    ],
+    "description": "Contour element contour-shadow-alert",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-anchor": {
+    "prefix": [
+      "contour-shadow-anchor",
+      "contour-shadow-anchor"
+    ],
+    "body": [
+      "<contour-shadow-anchor>$0</contour-shadow-anchor>"
+    ],
+    "description": "Contour element contour-shadow-anchor",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-app": {
+    "prefix": [
+      "contour-shadow-app",
+      "contour-shadow-app"
+    ],
+    "body": [
+      "<contour-shadow-app>$0</contour-shadow-app>"
+    ],
+    "description": "Contour element contour-shadow-app",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-app-body": {
+    "prefix": [
+      "contour-shadow-app-body",
+      "contour-shadow-app-body"
+    ],
+    "body": [
+      "<contour-shadow-app-body>$0</contour-shadow-app-body>"
+    ],
+    "description": "Contour element contour-shadow-app-body",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-avatar": {
+    "prefix": [
+      "contour-shadow-avatar",
+      "contour-shadow-avatar"
+    ],
+    "body": [
+      "<contour-shadow-avatar>$0</contour-shadow-avatar>"
+    ],
+    "description": "Contour element contour-shadow-avatar",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-axis": {
+    "prefix": [
+      "contour-shadow-axis",
+      "contour-shadow-axis"
+    ],
+    "body": [
+      "<contour-shadow-axis>$0</contour-shadow-axis>"
+    ],
+    "description": "Contour element contour-shadow-axis",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-badge": {
+    "prefix": [
+      "contour-shadow-badge",
+      "contour-shadow-badge"
+    ],
+    "body": [
+      "<contour-shadow-badge>$0</contour-shadow-badge>"
+    ],
+    "description": "Contour element contour-shadow-badge",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-bivariate": {
+    "prefix": [
+      "contour-shadow-bivariate",
+      "contour-shadow-bivariate"
+    ],
+    "body": [
+      "<contour-shadow-bivariate>$0</contour-shadow-bivariate>"
+    ],
+    "description": "Contour element contour-shadow-bivariate",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-bivariate-legend": {
+    "prefix": [
+      "contour-shadow-bivariate-legend",
+      "contour-shadow-bivariate-legend"
+    ],
+    "body": [
+      "<contour-shadow-bivariate-legend>$0</contour-shadow-bivariate-legend>"
+    ],
+    "description": "Contour element contour-shadow-bivariate-legend",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-box": {
+    "prefix": [
+      "contour-shadow-box",
+      "contour-shadow-box"
+    ],
+    "body": [
+      "<contour-shadow-box>$0</contour-shadow-box>"
+    ],
+    "description": "Contour element contour-shadow-box",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-brand": {
+    "prefix": [
+      "contour-shadow-brand",
+      "contour-shadow-brand"
+    ],
+    "body": [
+      "<contour-shadow-brand>$0</contour-shadow-brand>"
+    ],
+    "description": "Contour element contour-shadow-brand",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-breadcrumb": {
+    "prefix": [
+      "contour-shadow-breadcrumb",
+      "contour-shadow-breadcrumb"
+    ],
+    "body": [
+      "<contour-shadow-breadcrumb>$0</contour-shadow-breadcrumb>"
+    ],
+    "description": "Contour element contour-shadow-breadcrumb",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-brownout": {
+    "prefix": [
+      "contour-shadow-brownout",
+      "contour-shadow-brownout"
+    ],
+    "body": [
+      "<contour-shadow-brownout>$0</contour-shadow-brownout>"
+    ],
+    "description": "Contour element contour-shadow-brownout",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-brush": {
+    "prefix": [
+      "contour-shadow-brush",
+      "contour-shadow-brush"
+    ],
+    "body": [
+      "<contour-shadow-brush>$0</contour-shadow-brush>"
+    ],
+    "description": "Contour element contour-shadow-brush",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-btn": {
+    "prefix": [
+      "contour-shadow-btn",
+      "contour-shadow-btn"
+    ],
+    "body": [
+      "<contour-shadow-btn>$0</contour-shadow-btn>"
+    ],
+    "description": "Contour element contour-shadow-btn",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-btn-group": {
+    "prefix": [
+      "contour-shadow-btn-group",
+      "contour-shadow-btn-group"
+    ],
+    "body": [
+      "<contour-shadow-btn-group>$0</contour-shadow-btn-group>"
+    ],
+    "description": "Contour element contour-shadow-btn-group",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-callout": {
+    "prefix": [
+      "contour-shadow-callout",
+      "contour-shadow-callout"
+    ],
+    "body": [
+      "<contour-shadow-callout>$0</contour-shadow-callout>"
+    ],
+    "description": "Contour element contour-shadow-callout",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-card": {
+    "prefix": [
+      "contour-shadow-card",
+      "contour-shadow-card"
+    ],
+    "body": [
+      "<contour-shadow-card>$0</contour-shadow-card>"
+    ],
+    "description": "Contour element contour-shadow-card",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-catchment": {
+    "prefix": [
+      "contour-shadow-catchment",
+      "contour-shadow-catchment"
+    ],
+    "body": [
+      "<contour-shadow-catchment>$0</contour-shadow-catchment>"
+    ],
+    "description": "Contour element contour-shadow-catchment",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-category": {
+    "prefix": [
+      "contour-shadow-category",
+      "contour-shadow-category"
+    ],
+    "body": [
+      "<contour-shadow-category>$0</contour-shadow-category>"
+    ],
+    "description": "Contour element contour-shadow-category",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-chart": {
+    "prefix": [
+      "contour-shadow-chart",
+      "contour-shadow-chart"
+    ],
+    "body": [
+      "<contour-shadow-chart>$0</contour-shadow-chart>"
+    ],
+    "description": "Contour element contour-shadow-chart",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-chart-grid": {
+    "prefix": [
+      "contour-shadow-chart-grid",
+      "contour-shadow-chart-grid"
+    ],
+    "body": [
+      "<contour-shadow-chart-grid>$0</contour-shadow-chart-grid>"
+    ],
+    "description": "Contour element contour-shadow-chart-grid",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-check": {
+    "prefix": [
+      "contour-shadow-check",
+      "contour-shadow-check"
+    ],
+    "body": [
+      "<contour-shadow-check>$0</contour-shadow-check>"
+    ],
+    "description": "Contour element contour-shadow-check",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-chip": {
+    "prefix": [
+      "contour-shadow-chip",
+      "contour-shadow-chip"
+    ],
+    "body": [
+      "<contour-shadow-chip>$0</contour-shadow-chip>"
+    ],
+    "description": "Contour element contour-shadow-chip",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-cluster": {
+    "prefix": [
+      "contour-shadow-cluster",
+      "contour-shadow-cluster"
+    ],
+    "body": [
+      "<contour-shadow-cluster>$0</contour-shadow-cluster>"
+    ],
+    "description": "Contour element contour-shadow-cluster",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-code": {
+    "prefix": [
+      "contour-shadow-code",
+      "contour-shadow-code"
+    ],
+    "body": [
+      "<contour-shadow-code>$0</contour-shadow-code>"
+    ],
+    "description": "Contour element contour-shadow-code",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-code-tabs": {
+    "prefix": [
+      "contour-shadow-code-tabs",
+      "contour-shadow-code-tabs"
+    ],
+    "body": [
+      "<contour-shadow-code-tabs>$0</contour-shadow-code-tabs>"
+    ],
+    "description": "Contour element contour-shadow-code-tabs",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-combobox": {
+    "prefix": [
+      "contour-shadow-combobox",
+      "contour-shadow-combobox"
+    ],
+    "body": [
+      "<contour-shadow-combobox>$0</contour-shadow-combobox>"
+    ],
+    "description": "Contour element contour-shadow-combobox",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-command": {
+    "prefix": [
+      "contour-shadow-command",
+      "contour-shadow-command"
+    ],
+    "body": [
+      "<contour-shadow-command>$0</contour-shadow-command>"
+    ],
+    "description": "Contour element contour-shadow-command",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-compare": {
+    "prefix": [
+      "contour-shadow-compare",
+      "contour-shadow-compare"
+    ],
+    "body": [
+      "<contour-shadow-compare>$0</contour-shadow-compare>"
+    ],
+    "description": "Contour element contour-shadow-compare",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-comparison": {
+    "prefix": [
+      "contour-shadow-comparison",
+      "contour-shadow-comparison"
+    ],
+    "body": [
+      "<contour-shadow-comparison>$0</contour-shadow-comparison>"
+    ],
+    "description": "Contour element contour-shadow-comparison",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-compass": {
+    "prefix": [
+      "contour-shadow-compass",
+      "contour-shadow-compass"
+    ],
+    "body": [
+      "<contour-shadow-compass>$0</contour-shadow-compass>"
+    ],
+    "description": "Contour element contour-shadow-compass",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-container": {
+    "prefix": [
+      "contour-shadow-container",
+      "contour-shadow-container"
+    ],
+    "body": [
+      "<contour-shadow-container>$0</contour-shadow-container>"
+    ],
+    "description": "Contour element contour-shadow-container",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-contour-plot": {
+    "prefix": [
+      "contour-shadow-contour-plot",
+      "contour-shadow-contour-plot"
+    ],
+    "body": [
+      "<contour-shadow-contour-plot>$0</contour-shadow-contour-plot>"
+    ],
+    "description": "Contour element contour-shadow-contour-plot",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-coordinate": {
+    "prefix": [
+      "contour-shadow-coordinate",
+      "contour-shadow-coordinate"
+    ],
+    "body": [
+      "<contour-shadow-coordinate>$0</contour-shadow-coordinate>"
+    ],
+    "description": "Contour element contour-shadow-coordinate",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-cta": {
+    "prefix": [
+      "contour-shadow-cta",
+      "contour-shadow-cta"
+    ],
+    "body": [
+      "<contour-shadow-cta>$0</contour-shadow-cta>"
+    ],
+    "description": "Contour element contour-shadow-cta",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-dash-freshness": {
+    "prefix": [
+      "contour-shadow-dash-freshness",
+      "contour-shadow-dash-freshness"
+    ],
+    "body": [
+      "<contour-shadow-dash-freshness>$0</contour-shadow-dash-freshness>"
+    ],
+    "description": "Contour element contour-shadow-dash-freshness",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-dash-kpi-row": {
+    "prefix": [
+      "contour-shadow-dash-kpi-row",
+      "contour-shadow-dash-kpi-row"
+    ],
+    "body": [
+      "<contour-shadow-dash-kpi-row>$0</contour-shadow-dash-kpi-row>"
+    ],
+    "description": "Contour element contour-shadow-dash-kpi-row",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-dash-shell": {
+    "prefix": [
+      "contour-shadow-dash-shell",
+      "contour-shadow-dash-shell"
+    ],
+    "body": [
+      "<contour-shadow-dash-shell>$0</contour-shadow-dash-shell>"
+    ],
+    "description": "Contour element contour-shadow-dash-shell",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-dash-toolbar": {
+    "prefix": [
+      "contour-shadow-dash-toolbar",
+      "contour-shadow-dash-toolbar"
+    ],
+    "body": [
+      "<contour-shadow-dash-toolbar>$0</contour-shadow-dash-toolbar>"
+    ],
+    "description": "Contour element contour-shadow-dash-toolbar",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-datamark": {
+    "prefix": [
+      "contour-shadow-datamark",
+      "contour-shadow-datamark"
+    ],
+    "body": [
+      "<contour-shadow-datamark>$0</contour-shadow-datamark>"
+    ],
+    "description": "Contour element contour-shadow-datamark",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-delta": {
+    "prefix": [
+      "contour-shadow-delta",
+      "contour-shadow-delta"
+    ],
+    "body": [
+      "<contour-shadow-delta>$0</contour-shadow-delta>"
+    ],
+    "description": "Contour element contour-shadow-delta",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-destructive-hint": {
+    "prefix": [
+      "contour-shadow-destructive-hint",
+      "contour-shadow-destructive-hint"
+    ],
+    "body": [
+      "<contour-shadow-destructive-hint>$0</contour-shadow-destructive-hint>"
+    ],
+    "description": "Contour element contour-shadow-destructive-hint",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-dialog": {
+    "prefix": [
+      "contour-shadow-dialog",
+      "contour-shadow-dialog"
+    ],
+    "body": [
+      "<contour-shadow-dialog>$0</contour-shadow-dialog>"
+    ],
+    "description": "Contour element contour-shadow-dialog",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-diff": {
+    "prefix": [
+      "contour-shadow-diff",
+      "contour-shadow-diff"
+    ],
+    "body": [
+      "<contour-shadow-diff>$0</contour-shadow-diff>"
+    ],
+    "description": "Contour element contour-shadow-diff",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-disclosure": {
+    "prefix": [
+      "contour-shadow-disclosure",
+      "contour-shadow-disclosure"
+    ],
+    "body": [
+      "<contour-shadow-disclosure>$0</contour-shadow-disclosure>"
+    ],
+    "description": "Contour element contour-shadow-disclosure",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-do-dont": {
+    "prefix": [
+      "contour-shadow-do-dont",
+      "contour-shadow-do-dont"
+    ],
+    "body": [
+      "<contour-shadow-do-dont>$0</contour-shadow-do-dont>"
+    ],
+    "description": "Contour element contour-shadow-do-dont",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-docs-nav": {
+    "prefix": [
+      "contour-shadow-docs-nav",
+      "contour-shadow-docs-nav"
+    ],
+    "body": [
+      "<contour-shadow-docs-nav>$0</contour-shadow-docs-nav>"
+    ],
+    "description": "Contour element contour-shadow-docs-nav",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-docs-shell": {
+    "prefix": [
+      "contour-shadow-docs-shell",
+      "contour-shadow-docs-shell"
+    ],
+    "body": [
+      "<contour-shadow-docs-shell>$0</contour-shadow-docs-shell>"
+    ],
+    "description": "Contour element contour-shadow-docs-shell",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-donut": {
+    "prefix": [
+      "contour-shadow-donut",
+      "contour-shadow-donut"
+    ],
+    "body": [
+      "<contour-shadow-donut>$0</contour-shadow-donut>"
+    ],
+    "description": "Contour element contour-shadow-donut",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-dot": {
+    "prefix": [
+      "contour-shadow-dot",
+      "contour-shadow-dot"
+    ],
+    "body": [
+      "<contour-shadow-dot>$0</contour-shadow-dot>"
+    ],
+    "description": "Contour element contour-shadow-dot",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-drag-handle": {
+    "prefix": [
+      "contour-shadow-drag-handle",
+      "contour-shadow-drag-handle"
+    ],
+    "body": [
+      "<contour-shadow-drag-handle>$0</contour-shadow-drag-handle>"
+    ],
+    "description": "Contour element contour-shadow-drag-handle",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-draggable": {
+    "prefix": [
+      "contour-shadow-draggable",
+      "contour-shadow-draggable"
+    ],
+    "body": [
+      "<contour-shadow-draggable>$0</contour-shadow-draggable>"
+    ],
+    "description": "Contour element contour-shadow-draggable",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-drawer": {
+    "prefix": [
+      "contour-shadow-drawer",
+      "contour-shadow-drawer"
+    ],
+    "body": [
+      "<contour-shadow-drawer>$0</contour-shadow-drawer>"
+    ],
+    "description": "Contour element contour-shadow-drawer",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-drop-indicator": {
+    "prefix": [
+      "contour-shadow-drop-indicator",
+      "contour-shadow-drop-indicator"
+    ],
+    "body": [
+      "<contour-shadow-drop-indicator>$0</contour-shadow-drop-indicator>"
+    ],
+    "description": "Contour element contour-shadow-drop-indicator",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-drop-zone": {
+    "prefix": [
+      "contour-shadow-drop-zone",
+      "contour-shadow-drop-zone"
+    ],
+    "body": [
+      "<contour-shadow-drop-zone>$0</contour-shadow-drop-zone>"
+    ],
+    "description": "Contour element contour-shadow-drop-zone",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-elevation": {
+    "prefix": [
+      "contour-shadow-elevation",
+      "contour-shadow-elevation"
+    ],
+    "body": [
+      "<contour-shadow-elevation>$0</contour-shadow-elevation>"
+    ],
+    "description": "Contour element contour-shadow-elevation",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-empty": {
+    "prefix": [
+      "contour-shadow-empty",
+      "contour-shadow-empty"
+    ],
+    "body": [
+      "<contour-shadow-empty>$0</contour-shadow-empty>"
+    ],
+    "description": "Contour element contour-shadow-empty",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-expandable": {
+    "prefix": [
+      "contour-shadow-expandable",
+      "contour-shadow-expandable"
+    ],
+    "body": [
+      "<contour-shadow-expandable>$0</contour-shadow-expandable>"
+    ],
+    "description": "Contour element contour-shadow-expandable",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-faq": {
+    "prefix": [
+      "contour-shadow-faq",
+      "contour-shadow-faq"
+    ],
+    "body": [
+      "<contour-shadow-faq>$0</contour-shadow-faq>"
+    ],
+    "description": "Contour element contour-shadow-faq",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-feature": {
+    "prefix": [
+      "contour-shadow-feature",
+      "contour-shadow-feature"
+    ],
+    "body": [
+      "<contour-shadow-feature>$0</contour-shadow-feature>"
+    ],
+    "description": "Contour element contour-shadow-feature",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-field": {
+    "prefix": [
+      "contour-shadow-field",
+      "contour-shadow-field"
+    ],
+    "body": [
+      "<contour-shadow-field>$0</contour-shadow-field>"
+    ],
+    "description": "Contour element contour-shadow-field",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-filter-bar": {
+    "prefix": [
+      "contour-shadow-filter-bar",
+      "contour-shadow-filter-bar"
+    ],
+    "body": [
+      "<contour-shadow-filter-bar>$0</contour-shadow-filter-bar>"
+    ],
+    "description": "Contour element contour-shadow-filter-bar",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-filter-pill": {
+    "prefix": [
+      "contour-shadow-filter-pill",
+      "contour-shadow-filter-pill"
+    ],
+    "body": [
+      "<contour-shadow-filter-pill>$0</contour-shadow-filter-pill>"
+    ],
+    "description": "Contour element contour-shadow-filter-pill",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-flag": {
+    "prefix": [
+      "contour-shadow-flag",
+      "contour-shadow-flag"
+    ],
+    "body": [
+      "<contour-shadow-flag>$0</contour-shadow-flag>"
+    ],
+    "description": "Contour element contour-shadow-flag",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-flow-map": {
+    "prefix": [
+      "contour-shadow-flow-map",
+      "contour-shadow-flow-map"
+    ],
+    "body": [
+      "<contour-shadow-flow-map>$0</contour-shadow-flow-map>"
+    ],
+    "description": "Contour element contour-shadow-flow-map",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-footer": {
+    "prefix": [
+      "contour-shadow-footer",
+      "contour-shadow-footer"
+    ],
+    "body": [
+      "<contour-shadow-footer>$0</contour-shadow-footer>"
+    ],
+    "description": "Contour element contour-shadow-footer",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-gauge": {
+    "prefix": [
+      "contour-shadow-gauge",
+      "contour-shadow-gauge"
+    ],
+    "body": [
+      "<contour-shadow-gauge>$0</contour-shadow-gauge>"
+    ],
+    "description": "Contour element contour-shadow-gauge",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-header": {
+    "prefix": [
+      "contour-shadow-header",
+      "contour-shadow-header"
+    ],
+    "body": [
+      "<contour-shadow-header>$0</contour-shadow-header>"
+    ],
+    "description": "Contour element contour-shadow-header",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-heatmap": {
+    "prefix": [
+      "contour-shadow-heatmap",
+      "contour-shadow-heatmap"
+    ],
+    "body": [
+      "<contour-shadow-heatmap>$0</contour-shadow-heatmap>"
+    ],
+    "description": "Contour element contour-shadow-heatmap",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-hexbin": {
+    "prefix": [
+      "contour-shadow-hexbin",
+      "contour-shadow-hexbin"
+    ],
+    "body": [
+      "<contour-shadow-hexbin>$0</contour-shadow-hexbin>"
+    ],
+    "description": "Contour element contour-shadow-hexbin",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-icon-badge": {
+    "prefix": [
+      "contour-shadow-icon-badge",
+      "contour-shadow-icon-badge"
+    ],
+    "body": [
+      "<contour-shadow-icon-badge>$0</contour-shadow-icon-badge>"
+    ],
+    "description": "Contour element contour-shadow-icon-badge",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-input": {
+    "prefix": [
+      "contour-shadow-input",
+      "contour-shadow-input"
+    ],
+    "body": [
+      "<contour-shadow-input>$0</contour-shadow-input>"
+    ],
+    "description": "Contour element contour-shadow-input",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-input-group": {
+    "prefix": [
+      "contour-shadow-input-group",
+      "contour-shadow-input-group"
+    ],
+    "body": [
+      "<contour-shadow-input-group>$0</contour-shadow-input-group>"
+    ],
+    "description": "Contour element contour-shadow-input-group",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-install": {
+    "prefix": [
+      "contour-shadow-install",
+      "contour-shadow-install"
+    ],
+    "body": [
+      "<contour-shadow-install>$0</contour-shadow-install>"
+    ],
+    "description": "Contour element contour-shadow-install",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-instrument": {
+    "prefix": [
+      "contour-shadow-instrument",
+      "contour-shadow-instrument"
+    ],
+    "body": [
+      "<contour-shadow-instrument>$0</contour-shadow-instrument>"
+    ],
+    "description": "Contour element contour-shadow-instrument",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-isochrone": {
+    "prefix": [
+      "contour-shadow-isochrone",
+      "contour-shadow-isochrone"
+    ],
+    "body": [
+      "<contour-shadow-isochrone>$0</contour-shadow-isochrone>"
+    ],
+    "description": "Contour element contour-shadow-isochrone",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-kbd": {
+    "prefix": [
+      "contour-shadow-kbd",
+      "contour-shadow-kbd"
+    ],
+    "body": [
+      "<contour-shadow-kbd>$0</contour-shadow-kbd>"
+    ],
+    "description": "Contour element contour-shadow-kbd",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-kpi": {
+    "prefix": [
+      "contour-shadow-kpi",
+      "contour-shadow-kpi"
+    ],
+    "body": [
+      "<contour-shadow-kpi>$0</contour-shadow-kpi>"
+    ],
+    "description": "Contour element contour-shadow-kpi",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-landing-features": {
+    "prefix": [
+      "contour-shadow-landing-features",
+      "contour-shadow-landing-features"
+    ],
+    "body": [
+      "<contour-shadow-landing-features>$0</contour-shadow-landing-features>"
+    ],
+    "description": "Contour element contour-shadow-landing-features",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-landing-hero": {
+    "prefix": [
+      "contour-shadow-landing-hero",
+      "contour-shadow-landing-hero"
+    ],
+    "body": [
+      "<contour-shadow-landing-hero>$0</contour-shadow-landing-hero>"
+    ],
+    "description": "Contour element contour-shadow-landing-hero",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-layer-panel": {
+    "prefix": [
+      "contour-shadow-layer-panel",
+      "contour-shadow-layer-panel"
+    ],
+    "body": [
+      "<contour-shadow-layer-panel>$0</contour-shadow-layer-panel>"
+    ],
+    "description": "Contour element contour-shadow-layer-panel",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-layer-switch": {
+    "prefix": [
+      "contour-shadow-layer-switch",
+      "contour-shadow-layer-switch"
+    ],
+    "body": [
+      "<contour-shadow-layer-switch>$0</contour-shadow-layer-switch>"
+    ],
+    "description": "Contour element contour-shadow-layer-switch",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-legend": {
+    "prefix": [
+      "contour-shadow-legend",
+      "contour-shadow-legend"
+    ],
+    "body": [
+      "<contour-shadow-legend>$0</contour-shadow-legend>"
+    ],
+    "description": "Contour element contour-shadow-legend",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-link": {
+    "prefix": [
+      "contour-shadow-link",
+      "contour-shadow-link"
+    ],
+    "body": [
+      "<contour-shadow-link>$0</contour-shadow-link>"
+    ],
+    "description": "Contour element contour-shadow-link",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-linkish": {
+    "prefix": [
+      "contour-shadow-linkish",
+      "contour-shadow-linkish"
+    ],
+    "body": [
+      "<contour-shadow-linkish>$0</contour-shadow-linkish>"
+    ],
+    "description": "Contour element contour-shadow-linkish",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-live-badge": {
+    "prefix": [
+      "contour-shadow-live-badge",
+      "contour-shadow-live-badge"
+    ],
+    "body": [
+      "<contour-shadow-live-badge>$0</contour-shadow-live-badge>"
+    ],
+    "description": "Contour element contour-shadow-live-badge",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-loading": {
+    "prefix": [
+      "contour-shadow-loading",
+      "contour-shadow-loading"
+    ],
+    "body": [
+      "<contour-shadow-loading>$0</contour-shadow-loading>"
+    ],
+    "description": "Contour element contour-shadow-loading",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-logos": {
+    "prefix": [
+      "contour-shadow-logos",
+      "contour-shadow-logos"
+    ],
+    "body": [
+      "<contour-shadow-logos>$0</contour-shadow-logos>"
+    ],
+    "description": "Contour element contour-shadow-logos",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-map-area": {
+    "prefix": [
+      "contour-shadow-map-area",
+      "contour-shadow-map-area"
+    ],
+    "body": [
+      "<contour-shadow-map-area>$0</contour-shadow-map-area>"
+    ],
+    "description": "Contour element contour-shadow-map-area",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-map-footer": {
+    "prefix": [
+      "contour-shadow-map-footer",
+      "contour-shadow-map-footer"
+    ],
+    "body": [
+      "<contour-shadow-map-footer>$0</contour-shadow-map-footer>"
+    ],
+    "description": "Contour element contour-shadow-map-footer",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-map-panel": {
+    "prefix": [
+      "contour-shadow-map-panel",
+      "contour-shadow-map-panel"
+    ],
+    "body": [
+      "<contour-shadow-map-panel>$0</contour-shadow-map-panel>"
+    ],
+    "description": "Contour element contour-shadow-map-panel",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-map-slot": {
+    "prefix": [
+      "contour-shadow-map-slot",
+      "contour-shadow-map-slot"
+    ],
+    "body": [
+      "<contour-shadow-map-slot>$0</contour-shadow-map-slot>"
+    ],
+    "description": "Contour element contour-shadow-map-slot",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-mark": {
+    "prefix": [
+      "contour-shadow-mark",
+      "contour-shadow-mark"
+    ],
+    "body": [
+      "<contour-shadow-mark>$0</contour-shadow-mark>"
+    ],
+    "description": "Contour element contour-shadow-mark",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-measure": {
+    "prefix": [
+      "contour-shadow-measure",
+      "contour-shadow-measure"
+    ],
+    "body": [
+      "<contour-shadow-measure>$0</contour-shadow-measure>"
+    ],
+    "description": "Contour element contour-shadow-measure",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-menu": {
+    "prefix": [
+      "contour-shadow-menu",
+      "contour-shadow-menu"
+    ],
+    "body": [
+      "<contour-shadow-menu>$0</contour-shadow-menu>"
+    ],
+    "description": "Contour element contour-shadow-menu",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-meter": {
+    "prefix": [
+      "contour-shadow-meter",
+      "contour-shadow-meter"
+    ],
+    "body": [
+      "<contour-shadow-meter>$0</contour-shadow-meter>"
+    ],
+    "description": "Contour element contour-shadow-meter",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-metrics": {
+    "prefix": [
+      "contour-shadow-metrics",
+      "contour-shadow-metrics"
+    ],
+    "body": [
+      "<contour-shadow-metrics>$0</contour-shadow-metrics>"
+    ],
+    "description": "Contour element contour-shadow-metrics",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-minimap": {
+    "prefix": [
+      "contour-shadow-minimap",
+      "contour-shadow-minimap"
+    ],
+    "body": [
+      "<contour-shadow-minimap>$0</contour-shadow-minimap>"
+    ],
+    "description": "Contour element contour-shadow-minimap",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-pager": {
+    "prefix": [
+      "contour-shadow-pager",
+      "contour-shadow-pager"
+    ],
+    "body": [
+      "<contour-shadow-pager>$0</contour-shadow-pager>"
+    ],
+    "description": "Contour element contour-shadow-pager",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-pagination": {
+    "prefix": [
+      "contour-shadow-pagination",
+      "contour-shadow-pagination"
+    ],
+    "body": [
+      "<contour-shadow-pagination>$0</contour-shadow-pagination>"
+    ],
+    "description": "Contour element contour-shadow-pagination",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-panel": {
+    "prefix": [
+      "contour-shadow-panel",
+      "contour-shadow-panel"
+    ],
+    "body": [
+      "<contour-shadow-panel>$0</contour-shadow-panel>"
+    ],
+    "description": "Contour element contour-shadow-panel",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-pill": {
+    "prefix": [
+      "contour-shadow-pill",
+      "contour-shadow-pill"
+    ],
+    "body": [
+      "<contour-shadow-pill>$0</contour-shadow-pill>"
+    ],
+    "description": "Contour element contour-shadow-pill",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-plate": {
+    "prefix": [
+      "contour-shadow-plate",
+      "contour-shadow-plate"
+    ],
+    "body": [
+      "<contour-shadow-plate>$0</contour-shadow-plate>"
+    ],
+    "description": "Contour element contour-shadow-plate",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-pressable": {
+    "prefix": [
+      "contour-shadow-pressable",
+      "contour-shadow-pressable"
+    ],
+    "body": [
+      "<contour-shadow-pressable>$0</contour-shadow-pressable>"
+    ],
+    "description": "Contour element contour-shadow-pressable",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-price": {
+    "prefix": [
+      "contour-shadow-price",
+      "contour-shadow-price"
+    ],
+    "body": [
+      "<contour-shadow-price>$0</contour-shadow-price>"
+    ],
+    "description": "Contour element contour-shadow-price",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-pricing": {
+    "prefix": [
+      "contour-shadow-pricing",
+      "contour-shadow-pricing"
+    ],
+    "body": [
+      "<contour-shadow-pricing>$0</contour-shadow-pricing>"
+    ],
+    "description": "Contour element contour-shadow-pricing",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-progress": {
+    "prefix": [
+      "contour-shadow-progress",
+      "contour-shadow-progress"
+    ],
+    "body": [
+      "<contour-shadow-progress>$0</contour-shadow-progress>"
+    ],
+    "description": "Contour element contour-shadow-progress",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-prose": {
+    "prefix": [
+      "contour-shadow-prose",
+      "contour-shadow-prose"
+    ],
+    "body": [
+      "<contour-shadow-prose>$0</contour-shadow-prose>"
+    ],
+    "description": "Contour element contour-shadow-prose",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-pullquote": {
+    "prefix": [
+      "contour-shadow-pullquote",
+      "contour-shadow-pullquote"
+    ],
+    "body": [
+      "<contour-shadow-pullquote>$0</contour-shadow-pullquote>"
+    ],
+    "description": "Contour element contour-shadow-pullquote",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-radio": {
+    "prefix": [
+      "contour-shadow-radio",
+      "contour-shadow-radio"
+    ],
+    "body": [
+      "<contour-shadow-radio>$0</contour-shadow-radio>"
+    ],
+    "description": "Contour element contour-shadow-radio",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-radio-list": {
+    "prefix": [
+      "contour-shadow-radio-list",
+      "contour-shadow-radio-list"
+    ],
+    "body": [
+      "<contour-shadow-radio-list>$0</contour-shadow-radio-list>"
+    ],
+    "description": "Contour element contour-shadow-radio-list",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-range": {
+    "prefix": [
+      "contour-shadow-range",
+      "contour-shadow-range"
+    ],
+    "body": [
+      "<contour-shadow-range>$0</contour-shadow-range>"
+    ],
+    "description": "Contour element contour-shadow-range",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-range-scale": {
+    "prefix": [
+      "contour-shadow-range-scale",
+      "contour-shadow-range-scale"
+    ],
+    "body": [
+      "<contour-shadow-range-scale>$0</contour-shadow-range-scale>"
+    ],
+    "description": "Contour element contour-shadow-range-scale",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-readout": {
+    "prefix": [
+      "contour-shadow-readout",
+      "contour-shadow-readout"
+    ],
+    "body": [
+      "<contour-shadow-readout>$0</contour-shadow-readout>"
+    ],
+    "description": "Contour element contour-shadow-readout",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-recipe": {
+    "prefix": [
+      "contour-shadow-recipe",
+      "contour-shadow-recipe"
+    ],
+    "body": [
+      "<contour-shadow-recipe>$0</contour-shadow-recipe>"
+    ],
+    "description": "Contour element contour-shadow-recipe",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-reserved": {
+    "prefix": [
+      "contour-shadow-reserved",
+      "contour-shadow-reserved"
+    ],
+    "body": [
+      "<contour-shadow-reserved>$0</contour-shadow-reserved>"
+    ],
+    "description": "Contour element contour-shadow-reserved",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-resizable": {
+    "prefix": [
+      "contour-shadow-resizable",
+      "contour-shadow-resizable"
+    ],
+    "body": [
+      "<contour-shadow-resizable>$0</contour-shadow-resizable>"
+    ],
+    "description": "Contour element contour-shadow-resizable",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-resize-handle": {
+    "prefix": [
+      "contour-shadow-resize-handle",
+      "contour-shadow-resize-handle"
+    ],
+    "body": [
+      "<contour-shadow-resize-handle>$0</contour-shadow-resize-handle>"
+    ],
+    "description": "Contour element contour-shadow-resize-handle",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-row": {
+    "prefix": [
+      "contour-shadow-row",
+      "contour-shadow-row"
+    ],
+    "body": [
+      "<contour-shadow-row>$0</contour-shadow-row>"
+    ],
+    "description": "Contour element contour-shadow-row",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-row-action": {
+    "prefix": [
+      "contour-shadow-row-action",
+      "contour-shadow-row-action"
+    ],
+    "body": [
+      "<contour-shadow-row-action>$0</contour-shadow-row-action>"
+    ],
+    "description": "Contour element contour-shadow-row-action",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-scale-bar": {
+    "prefix": [
+      "contour-shadow-scale-bar",
+      "contour-shadow-scale-bar"
+    ],
+    "body": [
+      "<contour-shadow-scale-bar>$0</contour-shadow-scale-bar>"
+    ],
+    "description": "Contour element contour-shadow-scale-bar",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-scheme-toggle": {
+    "prefix": [
+      "contour-shadow-scheme-toggle",
+      "contour-shadow-scheme-toggle"
+    ],
+    "body": [
+      "<contour-shadow-scheme-toggle>$0</contour-shadow-scheme-toggle>"
+    ],
+    "description": "Contour element contour-shadow-scheme-toggle",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-scrim": {
+    "prefix": [
+      "contour-shadow-scrim",
+      "contour-shadow-scrim"
+    ],
+    "body": [
+      "<contour-shadow-scrim>$0</contour-shadow-scrim>"
+    ],
+    "description": "Contour element contour-shadow-scrim",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-scroll-area": {
+    "prefix": [
+      "contour-shadow-scroll-area",
+      "contour-shadow-scroll-area"
+    ],
+    "body": [
+      "<contour-shadow-scroll-area>$0</contour-shadow-scroll-area>"
+    ],
+    "description": "Contour element contour-shadow-scroll-area",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-search-trigger": {
+    "prefix": [
+      "contour-shadow-search-trigger",
+      "contour-shadow-search-trigger"
+    ],
+    "body": [
+      "<contour-shadow-search-trigger>$0</contour-shadow-search-trigger>"
+    ],
+    "description": "Contour element contour-shadow-search-trigger",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-section-head": {
+    "prefix": [
+      "contour-shadow-section-head",
+      "contour-shadow-section-head"
+    ],
+    "body": [
+      "<contour-shadow-section-head>$0</contour-shadow-section-head>"
+    ],
+    "description": "Contour element contour-shadow-section-head",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-segmented": {
+    "prefix": [
+      "contour-shadow-segmented",
+      "contour-shadow-segmented"
+    ],
+    "body": [
+      "<contour-shadow-segmented>$0</contour-shadow-segmented>"
+    ],
+    "description": "Contour element contour-shadow-segmented",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-select": {
+    "prefix": [
+      "contour-shadow-select",
+      "contour-shadow-select"
+    ],
+    "body": [
+      "<contour-shadow-select>$0</contour-shadow-select>"
+    ],
+    "description": "Contour element contour-shadow-select",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-sheet": {
+    "prefix": [
+      "contour-shadow-sheet",
+      "contour-shadow-sheet"
+    ],
+    "body": [
+      "<contour-shadow-sheet>$0</contour-shadow-sheet>"
+    ],
+    "description": "Contour element contour-shadow-sheet",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-shortcut-list": {
+    "prefix": [
+      "contour-shadow-shortcut-list",
+      "contour-shadow-shortcut-list"
+    ],
+    "body": [
+      "<contour-shadow-shortcut-list>$0</contour-shadow-shortcut-list>"
+    ],
+    "description": "Contour element contour-shadow-shortcut-list",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-shortcut-overlay": {
+    "prefix": [
+      "contour-shadow-shortcut-overlay",
+      "contour-shadow-shortcut-overlay"
+    ],
+    "body": [
+      "<contour-shadow-shortcut-overlay>$0</contour-shadow-shortcut-overlay>"
+    ],
+    "description": "Contour element contour-shadow-shortcut-overlay",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-shortcut-panel": {
+    "prefix": [
+      "contour-shadow-shortcut-panel",
+      "contour-shadow-shortcut-panel"
+    ],
+    "body": [
+      "<contour-shadow-shortcut-panel>$0</contour-shadow-shortcut-panel>"
+    ],
+    "description": "Contour element contour-shadow-shortcut-panel",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-shortcut-row": {
+    "prefix": [
+      "contour-shadow-shortcut-row",
+      "contour-shadow-shortcut-row"
+    ],
+    "body": [
+      "<contour-shadow-shortcut-row>$0</contour-shadow-shortcut-row>"
+    ],
+    "description": "Contour element contour-shadow-shortcut-row",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-showcase": {
+    "prefix": [
+      "contour-shadow-showcase",
+      "contour-shadow-showcase"
+    ],
+    "body": [
+      "<contour-shadow-showcase>$0</contour-shadow-showcase>"
+    ],
+    "description": "Contour element contour-shadow-showcase",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-sidebar": {
+    "prefix": [
+      "contour-shadow-sidebar",
+      "contour-shadow-sidebar"
+    ],
+    "body": [
+      "<contour-shadow-sidebar>$0</contour-shadow-sidebar>"
+    ],
+    "description": "Contour element contour-shadow-sidebar",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-skeleton": {
+    "prefix": [
+      "contour-shadow-skeleton",
+      "contour-shadow-skeleton"
+    ],
+    "body": [
+      "<contour-shadow-skeleton>$0</contour-shadow-skeleton>"
+    ],
+    "description": "Contour element contour-shadow-skeleton",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-sparkline": {
+    "prefix": [
+      "contour-shadow-sparkline",
+      "contour-shadow-sparkline"
+    ],
+    "body": [
+      "<contour-shadow-sparkline>$0</contour-shadow-sparkline>"
+    ],
+    "description": "Contour element contour-shadow-sparkline",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-spinner": {
+    "prefix": [
+      "contour-shadow-spinner",
+      "contour-shadow-spinner"
+    ],
+    "body": [
+      "<contour-shadow-spinner>$0</contour-shadow-spinner>"
+    ],
+    "description": "Contour element contour-shadow-spinner",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-stack": {
+    "prefix": [
+      "contour-shadow-stack",
+      "contour-shadow-stack"
+    ],
+    "body": [
+      "<contour-shadow-stack>$0</contour-shadow-stack>"
+    ],
+    "description": "Contour element contour-shadow-stack",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-stacked-bar": {
+    "prefix": [
+      "contour-shadow-stacked-bar",
+      "contour-shadow-stacked-bar"
+    ],
+    "body": [
+      "<contour-shadow-stacked-bar>$0</contour-shadow-stacked-bar>"
+    ],
+    "description": "Contour element contour-shadow-stacked-bar",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-stat": {
+    "prefix": [
+      "contour-shadow-stat",
+      "contour-shadow-stat"
+    ],
+    "body": [
+      "<contour-shadow-stat>$0</contour-shadow-stat>"
+    ],
+    "description": "Contour element contour-shadow-stat",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-steps": {
+    "prefix": [
+      "contour-shadow-steps",
+      "contour-shadow-steps"
+    ],
+    "body": [
+      "<contour-shadow-steps>$0</contour-shadow-steps>"
+    ],
+    "description": "Contour element contour-shadow-steps",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-streaming-chart": {
+    "prefix": [
+      "contour-shadow-streaming-chart",
+      "contour-shadow-streaming-chart"
+    ],
+    "body": [
+      "<contour-shadow-streaming-chart>$0</contour-shadow-streaming-chart>"
+    ],
+    "description": "Contour element contour-shadow-streaming-chart",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-survey": {
+    "prefix": [
+      "contour-shadow-survey",
+      "contour-shadow-survey"
+    ],
+    "body": [
+      "<contour-shadow-survey>$0</contour-shadow-survey>"
+    ],
+    "description": "Contour element contour-shadow-survey",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-switch": {
+    "prefix": [
+      "contour-shadow-switch",
+      "contour-shadow-switch"
+    ],
+    "body": [
+      "<contour-shadow-switch>$0</contour-shadow-switch>"
+    ],
+    "description": "Contour element contour-shadow-switch",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-table": {
+    "prefix": [
+      "contour-shadow-table",
+      "contour-shadow-table"
+    ],
+    "body": [
+      "<contour-shadow-table>$0</contour-shadow-table>"
+    ],
+    "description": "Contour element contour-shadow-table",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-table-wrap": {
+    "prefix": [
+      "contour-shadow-table-wrap",
+      "contour-shadow-table-wrap"
+    ],
+    "body": [
+      "<contour-shadow-table-wrap>$0</contour-shadow-table-wrap>"
+    ],
+    "description": "Contour element contour-shadow-table-wrap",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-tabs": {
+    "prefix": [
+      "contour-shadow-tabs",
+      "contour-shadow-tabs"
+    ],
+    "body": [
+      "<contour-shadow-tabs>$0</contour-shadow-tabs>"
+    ],
+    "description": "Contour element contour-shadow-tabs",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-tag": {
+    "prefix": [
+      "contour-shadow-tag",
+      "contour-shadow-tag"
+    ],
+    "body": [
+      "<contour-shadow-tag>$0</contour-shadow-tag>"
+    ],
+    "description": "Contour element contour-shadow-tag",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-testimonial": {
+    "prefix": [
+      "contour-shadow-testimonial",
+      "contour-shadow-testimonial"
+    ],
+    "body": [
+      "<contour-shadow-testimonial>$0</contour-shadow-testimonial>"
+    ],
+    "description": "Contour element contour-shadow-testimonial",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-textarea": {
+    "prefix": [
+      "contour-shadow-textarea",
+      "contour-shadow-textarea"
+    ],
+    "body": [
+      "<contour-shadow-textarea>$0</contour-shadow-textarea>"
+    ],
+    "description": "Contour element contour-shadow-textarea",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-theme-scope": {
+    "prefix": [
+      "contour-shadow-theme-scope",
+      "contour-shadow-theme-scope"
+    ],
+    "body": [
+      "<contour-shadow-theme-scope>$0</contour-shadow-theme-scope>"
+    ],
+    "description": "Contour element contour-shadow-theme-scope",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-threshold": {
+    "prefix": [
+      "contour-shadow-threshold",
+      "contour-shadow-threshold"
+    ],
+    "body": [
+      "<contour-shadow-threshold>$0</contour-shadow-threshold>"
+    ],
+    "description": "Contour element contour-shadow-threshold",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-time-range": {
+    "prefix": [
+      "contour-shadow-time-range",
+      "contour-shadow-time-range"
+    ],
+    "body": [
+      "<contour-shadow-time-range>$0</contour-shadow-time-range>"
+    ],
+    "description": "Contour element contour-shadow-time-range",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-time-slider": {
+    "prefix": [
+      "contour-shadow-time-slider",
+      "contour-shadow-time-slider"
+    ],
+    "body": [
+      "<contour-shadow-time-slider>$0</contour-shadow-time-slider>"
+    ],
+    "description": "Contour element contour-shadow-time-slider",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-timeline": {
+    "prefix": [
+      "contour-shadow-timeline",
+      "contour-shadow-timeline"
+    ],
+    "body": [
+      "<contour-shadow-timeline>$0</contour-shadow-timeline>"
+    ],
+    "description": "Contour element contour-shadow-timeline",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-toast": {
+    "prefix": [
+      "contour-shadow-toast",
+      "contour-shadow-toast"
+    ],
+    "body": [
+      "<contour-shadow-toast>$0</contour-shadow-toast>"
+    ],
+    "description": "Contour element contour-shadow-toast",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-toast-host": {
+    "prefix": [
+      "contour-shadow-toast-host",
+      "contour-shadow-toast-host"
+    ],
+    "body": [
+      "<contour-shadow-toast-host>$0</contour-shadow-toast-host>"
+    ],
+    "description": "Contour element contour-shadow-toast-host",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-toc": {
+    "prefix": [
+      "contour-shadow-toc",
+      "contour-shadow-toc"
+    ],
+    "body": [
+      "<contour-shadow-toc>$0</contour-shadow-toc>"
+    ],
+    "description": "Contour element contour-shadow-toc",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-toolbar": {
+    "prefix": [
+      "contour-shadow-toolbar",
+      "contour-shadow-toolbar"
+    ],
+    "body": [
+      "<contour-shadow-toolbar>$0</contour-shadow-toolbar>"
+    ],
+    "description": "Contour element contour-shadow-toolbar",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-tooltip": {
+    "prefix": [
+      "contour-shadow-tooltip",
+      "contour-shadow-tooltip"
+    ],
+    "body": [
+      "<contour-shadow-tooltip>$0</contour-shadow-tooltip>"
+    ],
+    "description": "Contour element contour-shadow-tooltip",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-tree": {
+    "prefix": [
+      "contour-shadow-tree",
+      "contour-shadow-tree"
+    ],
+    "body": [
+      "<contour-shadow-tree>$0</contour-shadow-tree>"
+    ],
+    "description": "Contour element contour-shadow-tree",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-version": {
+    "prefix": [
+      "contour-shadow-version",
+      "contour-shadow-version"
+    ],
+    "body": [
+      "<contour-shadow-version>$0</contour-shadow-version>"
+    ],
+    "description": "Contour element contour-shadow-version",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-version-banner": {
+    "prefix": [
+      "contour-shadow-version-banner",
+      "contour-shadow-version-banner"
+    ],
+    "body": [
+      "<contour-shadow-version-banner>$0</contour-shadow-version-banner>"
+    ],
+    "description": "Contour element contour-shadow-version-banner",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shadow-widget-state": {
+    "prefix": [
+      "contour-shadow-widget-state",
+      "contour-shadow-widget-state"
+    ],
+    "body": [
+      "<contour-shadow-widget-state>$0</contour-shadow-widget-state>"
+    ],
+    "description": "Contour element contour-shadow-widget-state",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-sheet": {
+    "prefix": [
+      "contour-sheet",
+      "c-sheet"
+    ],
+    "body": [
+      "<contour-sheet title=\"${1:title}\">$0</contour-sheet>"
+    ],
+    "description": "Contour c-sheet (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shortcut": {
+    "prefix": [
+      "contour-shortcut",
+      "c-shortcut"
+    ],
+    "body": [
+      "<contour-shortcut label=\"${1:label}\">$0</contour-shortcut>"
+    ],
+    "description": "Contour c-shortcut (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shortcut-list": {
+    "prefix": [
+      "contour-shortcut-list",
+      "c-shortcut-list"
+    ],
+    "body": [
+      "<contour-shortcut-list title=\"${1:title}\">$0</contour-shortcut-list>"
+    ],
+    "description": "Contour c-shortcut-list (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shortcut-overlay": {
+    "prefix": [
+      "contour-shortcut-overlay",
+      "c-shortcut-overlay"
+    ],
+    "body": [
+      "<contour-shortcut-overlay title=\"${1:title}\">$0</contour-shortcut-overlay>"
+    ],
+    "description": "Contour c-shortcut-overlay (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shortcut-panel": {
+    "prefix": [
+      "contour-shortcut-panel",
+      "c-shortcut-panel"
+    ],
+    "body": [
+      "<contour-shortcut-panel title=\"${1:title}\">$0</contour-shortcut-panel>"
+    ],
+    "description": "Contour c-shortcut-panel (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-shortcut-row": {
+    "prefix": [
+      "contour-shortcut-row",
+      "c-shortcut-row"
+    ],
+    "body": [
+      "<contour-shortcut-row>$0</contour-shortcut-row>"
+    ],
+    "description": "Contour c-shortcut-row (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-showcase": {
+    "prefix": [
+      "contour-showcase",
+      "c-showcase"
+    ],
+    "body": [
+      "<contour-showcase title=\"${1:title}\" items=\"${2:items}\" src=\"${3:src}\">$0</contour-showcase>"
+    ],
+    "description": "Contour c-showcase (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-side-sheet": {
+    "prefix": [
+      "contour-side-sheet",
+      "c-side-sheet"
+    ],
+    "body": [
+      "<contour-side-sheet title=\"${1:title}\">$0</contour-side-sheet>"
+    ],
+    "description": "Contour c-side-sheet (composition)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-sidebar": {
+    "prefix": [
+      "contour-sidebar",
+      "c-sidebar"
+    ],
+    "body": [
+      "<contour-sidebar title=\"${1:title}\" items=\"${2:items}\">$0</contour-sidebar>"
+    ],
+    "description": "Contour c-sidebar (composition)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-skeleton": {
+    "prefix": [
+      "contour-skeleton",
+      "c-skeleton"
+    ],
+    "body": [
+      "<contour-skeleton>$0</contour-skeleton>"
+    ],
+    "description": "Contour c-skeleton (scaffold)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-skeleton-group": {
+    "prefix": [
+      "contour-skeleton-group",
+      "c-skeleton-group"
+    ],
+    "body": [
+      "<contour-skeleton-group>$0</contour-skeleton-group>"
+    ],
+    "description": "Contour c-skeleton-group (scaffold)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-sortable-list": {
+    "prefix": [
+      "contour-sortable-list",
+      "c-sortable-list"
+    ],
+    "body": [
+      "<contour-sortable-list items=\"${1:items}\">$0</contour-sortable-list>"
+    ],
+    "description": "Contour c-sortable-list (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-sparkline": {
+    "prefix": [
+      "contour-sparkline",
+      "c-sparkline"
+    ],
+    "body": [
+      "<contour-sparkline src=\"${1:src}\">$0</contour-sparkline>"
+    ],
+    "description": "Contour c-sparkline (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-spatial-filter": {
+    "prefix": [
+      "contour-spatial-filter",
+      "c-spatial-filter"
+    ],
+    "body": [
+      "<contour-spatial-filter src=\"${1:src}\">$0</contour-spatial-filter>"
+    ],
+    "description": "Contour c-spatial-filter (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-spinner": {
+    "prefix": [
+      "contour-spinner",
+      "c-spinner"
+    ],
+    "body": [
+      "<contour-spinner>$0</contour-spinner>"
+    ],
+    "description": "Contour c-spinner (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-split-button": {
+    "prefix": [
+      "contour-split-button",
+      "c-split-button"
+    ],
+    "body": [
+      "<contour-split-button label=\"${1:label}\">$0</contour-split-button>"
+    ],
+    "description": "Contour c-split-button (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-split-map": {
+    "prefix": [
+      "contour-split-map",
+      "c-split-map"
+    ],
+    "body": [
+      "<contour-split-map>$0</contour-split-map>"
+    ],
+    "description": "Contour c-split-map (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-split-view": {
+    "prefix": [
+      "contour-split-view",
+      "c-split-view"
+    ],
+    "body": [
+      "<contour-split-view value=\"${1:value}\">$0</contour-split-view>"
+    ],
+    "description": "Contour c-split-view (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-stack": {
+    "prefix": [
+      "contour-stack",
+      "c-stack"
+    ],
+    "body": [
+      "<contour-stack>$0</contour-stack>"
+    ],
+    "description": "Contour c-stack (primitive)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-stacked-bar": {
+    "prefix": [
+      "contour-stacked-bar",
+      "c-stacked-bar"
+    ],
+    "body": [
+      "<contour-stacked-bar src=\"${1:src}\">$0</contour-stacked-bar>"
+    ],
+    "description": "Contour c-stacked-bar (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-stat": {
+    "prefix": [
+      "contour-stat",
+      "c-stat"
+    ],
+    "body": [
+      "<contour-stat value=\"${1:value}\" label=\"${2:label}\" src=\"${3:src}\">$0</contour-stat>"
+    ],
+    "description": "Contour c-stat (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-status-light": {
+    "prefix": [
+      "contour-status-light",
+      "c-status-light"
+    ],
+    "body": [
+      "<contour-status-light label=\"${1:label}\">$0</contour-status-light>"
+    ],
+    "description": "Contour c-status-light (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-stepper": {
+    "prefix": [
+      "contour-stepper",
+      "c-stepper"
+    ],
+    "body": [
+      "<contour-stepper>$0</contour-stepper>"
+    ],
+    "description": "Contour c-stepper (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-steps": {
+    "prefix": [
+      "contour-steps",
+      "c-steps"
+    ],
+    "body": [
+      "<contour-steps src=\"${1:src}\">$0</contour-steps>"
+    ],
+    "description": "Contour c-steps (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-streaming-chart": {
+    "prefix": [
+      "contour-streaming-chart",
+      "c-streaming-chart"
+    ],
+    "body": [
+      "<contour-streaming-chart src=\"${1:src}\">$0</contour-streaming-chart>"
+    ],
+    "description": "Contour c-streaming-chart (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-style-panel": {
+    "prefix": [
+      "contour-style-panel",
+      "c-style-panel"
+    ],
+    "body": [
+      "<contour-style-panel title=\"${1:title}\">$0</contour-style-panel>"
+    ],
+    "description": "Contour c-style-panel (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-style-switcher": {
+    "prefix": [
+      "contour-style-switcher",
+      "c-style-switcher"
+    ],
+    "body": [
+      "<contour-style-switcher items=\"${1:items}\" value=\"${2:value}\">$0</contour-style-switcher>"
+    ],
+    "description": "Contour c-style-switcher (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-survey": {
+    "prefix": [
+      "contour-survey",
+      "c-survey"
+    ],
+    "body": [
+      "<contour-survey src=\"${1:src}\">$0</contour-survey>"
+    ],
+    "description": "Contour c-survey (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-swatch": {
+    "prefix": [
+      "contour-swatch",
+      "c-swatch"
+    ],
+    "body": [
+      "<contour-swatch label=\"${1:label}\">$0</contour-swatch>"
+    ],
+    "description": "Contour c-swatch (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-switch": {
+    "prefix": [
+      "contour-switch",
+      "c-switch"
+    ],
+    "body": [
+      "<contour-switch label=\"${1:label}\">$0</contour-switch>"
+    ],
+    "description": "Contour c-switch (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-table": {
+    "prefix": [
+      "contour-table",
+      "c-table"
+    ],
+    "body": [
+      "<contour-table columns=\"${1:columns}\" rows=\"${2:rows}\">$0</contour-table>"
+    ],
+    "description": "Contour c-table (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-table-wrap": {
+    "prefix": [
+      "contour-table-wrap",
+      "c-table-wrap"
+    ],
+    "body": [
+      "<contour-table-wrap>$0</contour-table-wrap>"
+    ],
+    "description": "Contour c-table-wrap (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-tabs": {
+    "prefix": [
+      "contour-tabs",
+      "c-tabs"
+    ],
+    "body": [
+      "<contour-tabs src=\"${1:src}\">$0</contour-tabs>"
+    ],
+    "description": "Contour c-tabs (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-tag": {
+    "prefix": [
+      "contour-tag",
+      "c-tag"
+    ],
+    "body": [
+      "<contour-tag label=\"${1:label}\">$0</contour-tag>"
+    ],
+    "description": "Contour c-tag (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-tags-input": {
+    "prefix": [
+      "contour-tags-input",
+      "c-tags-input"
+    ],
+    "body": [
+      "<contour-tags-input value=\"${1:value}\" placeholder=\"${2:placeholder}\">$0</contour-tags-input>"
+    ],
+    "description": "Contour c-tags-input (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-testimonial": {
+    "prefix": [
+      "contour-testimonial",
+      "c-testimonial"
+    ],
+    "body": [
+      "<contour-testimonial name=\"${1:name}\">$0</contour-testimonial>"
+    ],
+    "description": "Contour c-testimonial (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-textarea": {
+    "prefix": [
+      "contour-textarea",
+      "c-textarea"
+    ],
+    "body": [
+      "<contour-textarea placeholder=\"${1:placeholder}\">$0</contour-textarea>"
+    ],
+    "description": "Contour c-textarea (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-theme-scope": {
+    "prefix": [
+      "contour-theme-scope",
+      "c-theme-scope"
+    ],
+    "body": [
+      "<contour-theme-scope title=\"${1:title}\">$0</contour-theme-scope>"
+    ],
+    "description": "Contour c-theme-scope (composition)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-threshold": {
+    "prefix": [
+      "contour-threshold",
+      "c-threshold"
+    ],
+    "body": [
+      "<contour-threshold label=\"${1:label}\" value=\"${2:value}\" src=\"${3:src}\">$0</contour-threshold>"
+    ],
+    "description": "Contour c-threshold (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-time-picker": {
+    "prefix": [
+      "contour-time-picker",
+      "c-time-picker"
+    ],
+    "body": [
+      "<contour-time-picker value=\"${1:value}\" label=\"${2:label}\">$0</contour-time-picker>"
+    ],
+    "description": "Contour c-time-picker (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-time-range": {
+    "prefix": [
+      "contour-time-range",
+      "c-time-range"
+    ],
+    "body": [
+      "<contour-time-range label=\"${1:label}\" value=\"${2:value}\">$0</contour-time-range>"
+    ],
+    "description": "Contour c-time-range (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-time-series": {
+    "prefix": [
+      "contour-time-series",
+      "c-time-series"
+    ],
+    "body": [
+      "<contour-time-series series=\"${1:series}\" src=\"${2:src}\">$0</contour-time-series>"
+    ],
+    "description": "Contour c-time-series (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-time-slider": {
+    "prefix": [
+      "contour-time-slider",
+      "c-time-slider"
+    ],
+    "body": [
+      "<contour-time-slider label=\"${1:label}\" value=\"${2:value}\">$0</contour-time-slider>"
+    ],
+    "description": "Contour c-time-slider (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-timeline": {
+    "prefix": [
+      "contour-timeline",
+      "c-timeline"
+    ],
+    "body": [
+      "<contour-timeline items=\"${1:items}\" src=\"${2:src}\">$0</contour-timeline>"
+    ],
+    "description": "Contour c-timeline (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-toast": {
+    "prefix": [
+      "contour-toast",
+      "c-toast"
+    ],
+    "body": [
+      "<contour-toast>$0</contour-toast>"
+    ],
+    "description": "Contour c-toast (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-toast-host": {
+    "prefix": [
+      "contour-toast-host",
+      "c-toast-host"
+    ],
+    "body": [
+      "<contour-toast-host>$0</contour-toast-host>"
+    ],
+    "description": "Contour c-toast-host (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-toc": {
+    "prefix": [
+      "contour-toc",
+      "c-toc"
+    ],
+    "body": [
+      "<contour-toc title=\"${1:title}\" items=\"${2:items}\" src=\"${3:src}\">$0</contour-toc>"
+    ],
+    "description": "Contour c-toc (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-toolbar": {
+    "prefix": [
+      "contour-toolbar",
+      "c-toolbar"
+    ],
+    "body": [
+      "<contour-toolbar title=\"${1:title}\">$0</contour-toolbar>"
+    ],
+    "description": "Contour c-toolbar (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-tooltip": {
+    "prefix": [
+      "contour-tooltip",
+      "c-tooltip"
+    ],
+    "body": [
+      "<contour-tooltip>$0</contour-tooltip>"
+    ],
+    "description": "Contour c-tooltip (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-tour": {
+    "prefix": [
+      "contour-tour",
+      "c-tour"
+    ],
+    "body": [
+      "<contour-tour>$0</contour-tour>"
+    ],
+    "description": "Contour c-tour (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-tree": {
+    "prefix": [
+      "contour-tree",
+      "c-tree"
+    ],
+    "body": [
+      "<contour-tree items=\"${1:items}\" src=\"${2:src}\">$0</contour-tree>"
+    ],
+    "description": "Contour c-tree (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-tree-grid": {
+    "prefix": [
+      "contour-tree-grid",
+      "c-tree-grid"
+    ],
+    "body": [
+      "<contour-tree-grid items=\"${1:items}\">$0</contour-tree-grid>"
+    ],
+    "description": "Contour c-tree-grid (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-version": {
+    "prefix": [
+      "contour-version",
+      "c-version"
+    ],
+    "body": [
+      "<contour-version options=\"${1:options}\">$0</contour-version>"
+    ],
+    "description": "Contour c-version (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-version-banner": {
+    "prefix": [
+      "contour-version-banner",
+      "c-version-banner"
+    ],
+    "body": [
+      "<contour-version-banner>$0</contour-version-banner>"
+    ],
+    "description": "Contour c-version-banner (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-virtual-list": {
+    "prefix": [
+      "contour-virtual-list",
+      "c-virtual-list"
+    ],
+    "body": [
+      "<contour-virtual-list items=\"${1:items}\">$0</contour-virtual-list>"
+    ],
+    "description": "Contour c-virtual-list (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-widget-state": {
+    "prefix": [
+      "contour-widget-state",
+      "c-widget-state"
+    ],
+    "body": [
+      "<contour-widget-state src=\"${1:src}\">$0</contour-widget-state>"
+    ],
+    "description": "Contour c-widget-state (scaffold)",
+    "scope": "html,vue,jsx,tsx"
+  }
+}

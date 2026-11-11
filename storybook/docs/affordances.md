@@ -118,6 +118,14 @@ Sidebar
 
 Main content area
 
+A landing page is a persuasive argument. Its grammar prioritises storytelling, typography, large-scale composition, editorial rhythm, rich media, persuasive CTA and generous whitespace.
+
+The landing shell composes these blocks in a narrative sequence:
+
+Landing pages use the roomy density profile (--density-roomy: 1.28) with the display type scale for headings and generous section spacing.
+
+Landing pages use the fluid display scale for headlines and the fixed UI scale for body text. The display scale responds to viewport width; the UI scale does not.
+
 ## Subsections
 
 - Layout primitives
@@ -128,6 +136,10 @@ Main content area
 - Palette editor
 - Widget state
 - Web component counterpart
+- Landing page composition grammar
+- Anatomy
+- Density & rhythm
+- Type scale
 
 ## Blocks documented here
 
@@ -186,4 +198,4 @@ part of the component contract and nothing in an installed package defines them:
 
 ---
 
-Source `index.html` @ `1beb0033376e73f1` · last committed 2026-11-07T12:44:19+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0102caa891dd1fdf` · last committed 2026-11-11T00:01:36+01:00 · no URL: the project is private until v1.0.

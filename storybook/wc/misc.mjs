@@ -25,7 +25,7 @@ class ContourResizeObserver extends ContourBase {
     }
   }
   define("contour-resize-observer", ContourResizeObserver);
-import { ContourBase, define, onDispose } from './core.mjs';
+import { ContourBase, define, onDispose, navKey } from './core.mjs';
 import { loadRemote, remoteData, remoteRefresh, renderStates, renderEmpty, wireStates } from './states.mjs';
 class ContourReservedFull extends ContourBase {
     static get observed() { return ["title"]; }
@@ -70,8 +70,9 @@ class ContourActivity extends ContourBase {
           parsed.forEach((it, i) => {
             const item = document.createElement("div");
             item.className = "c-activity__item";
-            item.setAttribute("role", "listitem");
-            item.tabIndex = -1;
+            item.setAttribute("role", "button");
+            item.setAttribute("tabindex", "-1");
+            if (!item.hasAttribute("aria-label")) item.setAttribute("aria-label", text.textContent);
             const dot = document.createElement("span");
             dot.className = "c-activity__dot c-activity__dot--" + (it.variant || "primary");
             dot.setAttribute("aria-hidden", "true");
@@ -108,28 +109,106 @@ class ContourActivity extends ContourBase {
       this.addEventListener("keydown", (e) => {
         const items = Array.from(this.querySelectorAll(".c-activity__item"));
         if (!items.length) return;
-        const active = document.activeElement;
-        const idx = items.indexOf(active);
-        let next = -1;
-        if (e.key === "ArrowDown") next = idx < 0 ? 0 : Math.min(items.length - 1, idx + 1);
-        else if (e.key === "ArrowUp") next = idx < 0 ? 0 : Math.max(0, idx - 1);
-        else if (e.key === "Home") next = 0;
-        else if (e.key === "End") next = items.length - 1;
-        if (next >= 0 && next !== idx) {
-          e.preventDefault();
-          items[next].focus();
-          items[next].tabIndex = 0;
-          if (idx >= 0) items[idx].tabIndex = -1;
-        }
-        if ((e.key === "Enter" || e.key === " ") && idx >= 0) {
-          e.preventDefault();
-          const text = items[idx].querySelector(".c-activity__text")?.textContent || "";
-          this.dispatchEvent(new CustomEvent("contour:activity-select", { bubbles: true, composed: true, detail: { index: idx, text } }));
-        }
+        navKey(e, items, { wrap: false, homeEnd: true, onNavigate: (i) => { items.forEach((it, j) => it.tabIndex = j === i ? 0 : -1); }, onKey: () => { if (e.key === "Enter" || e.key === " ") { const idx = items.indexOf(document.activeElement); this.dispatchEvent(new CustomEvent("contour:activity-select", { bubbles: true, composed: true, detail: { index: idx, text: document.activeElement.querySelector(".c-activity__text")?.textContent || "" } })); } } });
       });
     }
   }
   define("contour-activity", ContourActivity);
+class ContourActivityFeed extends ContourBase {
+    static get observed() { return ["items", "filter", "unread-only", "empty", "loading", "error"]; }
+    static get properties() { return { items: { attribute: "items" }, filter: { attribute: "filter" }, "unread-only": { attribute: "unread-only", type: Boolean } }; }
+    render() {
+      this.classList.add("c-activity-feed");
+      this.setAttribute("role", "region");
+      this.setAttribute("aria-label", "Activity feed");
+      wireStates(this);
+      loadRemote(this, "items");
+      if (renderStates(this, "activity-feed")) return;
+      const items = remoteData(this, "items");
+      const filter = this.getAttribute("filter");
+      const unreadOnly = this.hasAttribute("unread-only");
+      let header = this.querySelector(".c-activity-feed__header");
+      if (!header) { header = document.createElement("div"); header.className = "c-activity-feed__header"; this.insertBefore(header, this.firstChild); }
+      let title = header.querySelector(".c-activity-feed__title");
+      if (!title) { title = document.createElement("div"); title.className = "c-activity-feed__title"; header.appendChild(title); }
+      title.textContent = "Activity feed";
+      let toolbar = this.querySelector(".c-activity-feed__toolbar");
+      if (!toolbar) { toolbar = document.createElement("div"); toolbar.className = "c-activity-feed__toolbar"; this.appendChild(toolbar); }
+      const clear = toolbar.querySelector(".c-activity-feed__clear") || (() => { const b = document.createElement("button"); b.type = "button"; b.className = "c-btn c-btn--ghost c-btn--sm"; b.textContent = "Clear all"; toolbar.appendChild(b); return b; })();
+      const unreadBtn = toolbar.querySelector(".c-activity-feed__unread") || (() => { const b = document.createElement("button"); b.type = "button"; b.className = "c-btn c-btn--ghost c-btn--sm"; b.textContent = "Unread only"; toolbar.appendChild(b); return b; })();
+      if (unreadOnly) unreadBtn.setAttribute("aria-pressed", "true");
+      let list = this.querySelector(".c-activity-feed__list");
+      if (!list) { list = document.createElement("div"); list.className = "c-activity-feed__list"; this.appendChild(list); }
+      if (items) {
+        try {
+          const parsed = JSON.parse(items);
+          let filtered = parsed;
+          if (filter) filtered = filtered.filter((it) => String(it.severity || it.type || "").toLowerCase() === filter.toLowerCase());
+          if (unreadOnly) filtered = filtered.filter((it) => !it.read);
+          Array.from(list.querySelectorAll(".c-activity-feed__item")).forEach((n) => n.remove());
+          if (filtered.length === 0) {
+            let empty = list.querySelector(".c-activity-feed__empty");
+            if (!empty) { empty = document.createElement("div"); empty.className = "c-activity-feed__empty"; empty.textContent = "No activity"; list.appendChild(empty); }
+          } else {
+            const empty = list.querySelector(".c-activity-feed__empty");
+            if (empty) empty.remove();
+            filtered.forEach((it) => {
+              const item = document.createElement("div");
+              item.className = "c-activity-feed__item" + (it.read ? "" : " c-activity-feed__item--unread");
+              item.setAttribute("role", "button");
+              item.setAttribute("tabindex", "-1");
+              const dot = document.createElement("span");
+              dot.className = "c-activity-feed__dot c-activity-feed__dot--" + (it.severity || "info");
+              dot.setAttribute("aria-hidden", "true");
+              item.appendChild(dot);
+              const text = document.createElement("span");
+              text.className = "c-activity-feed__text";
+              text.textContent = typeof it === "string" ? it : (it.text || it.label || "");
+              item.appendChild(text);
+              const time = document.createElement("span");
+              time.className = "c-activity-feed__time";
+              time.textContent = it.time || "";
+              item.appendChild(time);
+              const sev = document.createElement("span");
+              sev.className = "c-activity-feed__severity";
+              sev.textContent = it.severity || "";
+              item.appendChild(sev);
+              list.appendChild(item);
+            });
+          }
+        } catch (e) { /* keep existing */ }
+      }
+    }
+    enhance() {
+      if (this._wiredActivityFeed) return;
+      this._wiredActivityFeed = true;
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest("button") : null;
+        if (!btn || !this.contains(btn)) return;
+        if (btn.textContent === "Clear all") {
+          this.dispatchEvent(new CustomEvent("contour:activity-clear", { bubbles: true, composed: true, detail: {} }));
+        } else if (btn.textContent === "Unread only") {
+          this.toggleAttribute("unread-only");
+          this.dispatchEvent(new CustomEvent("contour:activity-filter", { bubbles: true, composed: true, detail: { unread: this.hasAttribute("unread-only") } }));
+        } else {
+          const item = e.target.closest(".c-activity-feed__item");
+          if (item && this.contains(item)) {
+            const items = Array.from(this.querySelectorAll(".c-activity-feed__item"));
+            const index = items.indexOf(item);
+            const text = item.querySelector(".c-activity-feed__text")?.textContent || "";
+            item.classList.remove("c-activity-feed__item--unread");
+            this.dispatchEvent(new CustomEvent("contour:activity-select", { bubbles: true, composed: true, detail: { index, text } }));
+          }
+        }
+      });
+      this.addEventListener("keydown", (e) => {
+        const items = Array.from(this.querySelectorAll(".c-activity-feed__item"));
+        if (!items.length) return;
+        navKey(e, items, { wrap: false, homeEnd: true, onNavigate: (i) => { items.forEach((it, j) => it.tabIndex = j === i ? 0 : -1); }, onKey: () => { if (e.key === "Enter" || e.key === " ") { const idx = items.indexOf(document.activeElement); this.dispatchEvent(new CustomEvent("contour:activity-select", { bubbles: true, composed: true, detail: { index: idx, text: document.activeElement.querySelector(".c-activity-feed__text")?.textContent || "" } })); } } });
+      });
+    }
+  }
+  define("contour-activity-feed", ContourActivityFeed);
 class ContourAdvanced extends ContourBase {
     static get observed() { return ["title"]; }
     static get properties() { return { title: { attribute: "title" } }; }
@@ -198,6 +277,13 @@ class ContourAffordance extends ContourBase {
       this.addEventListener("click", (e) => {
         const name = this.getAttribute("name") || "";
         this.dispatchEvent(new CustomEvent("contour:affordance-activate", { bubbles: true, composed: true, detail: { name } }));
+      });
+      this.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          const name = this.getAttribute("name") || "";
+          this.dispatchEvent(new CustomEvent("contour:affordance-activate", { bubbles: true, composed: true, detail: { name } }));
+        }
       });
     }
   }

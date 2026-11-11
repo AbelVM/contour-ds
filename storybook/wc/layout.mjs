@@ -1,4 +1,4 @@
-import { ContourBase, define } from './core.mjs';
+import { ContourBase, define, navKey, isRtl } from './core.mjs';
   class ContourApp extends ContourBase {
     static get observed() { return ["title"]; }
     static get properties() { return { title: { attribute: "title" } }; }
@@ -64,20 +64,7 @@ class ContourBtnGroup extends ContourBase {
       this.addEventListener("keydown", (e) => {
         const buttons = Array.from(this.querySelectorAll(".c-btn"));
         if (!buttons.length) return;
-        const active = document.activeElement;
-        const idx = buttons.indexOf(active);
-        let next = -1;
-        const rtl = (this.getAttribute("dir") || document.documentElement.getAttribute("dir") || "").toLowerCase() === "rtl";
-        if (e.key === "ArrowDown") next = idx < 0 ? 0 : Math.min(buttons.length - 1, idx + 1);
-        else if (e.key === "ArrowUp") next = idx < 0 ? 0 : Math.max(0, idx - 1);
-        else if (e.key === "ArrowRight") next = rtl ? (idx < 0 ? 0 : Math.max(0, idx - 1)) : (idx < 0 ? 0 : Math.min(buttons.length - 1, idx + 1));
-        else if (e.key === "ArrowLeft") next = rtl ? (idx < 0 ? 0 : Math.min(buttons.length - 1, idx + 1)) : (idx < 0 ? 0 : Math.max(0, idx - 1));
-        else if (e.key === "Home") next = 0;
-        else if (e.key === "End") next = buttons.length - 1;
-        if (next >= 0 && next !== idx) {
-          e.preventDefault();
-          buttons[next].focus();
-        }
+        navKey(e, buttons, { wrap: false, homeEnd: true, rtl: isRtl(this) });
       });
     }
   }

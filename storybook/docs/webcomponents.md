@@ -56,6 +56,8 @@ Dialog body content.
 
 Content behind the scrim.
 
+Every attribute, boolean attribute, slot and part declared by each block, counted from dist/contour.components.json. Boolean attributes are set by presence; all others take a string value. Blocks with no declared attributes are omitted.
+
 ## Subsections
 
 - Composition and states
@@ -65,23 +67,29 @@ Content behind the scrim.
 - Reactivity playground
 - Form association
 - Event emission
+- Attribute & property reference
 
 ## Blocks documented here
 
-22 block(s). Their facts live in `../contour.components.json`;
+28 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
+- `.c-activity-feed`
 - `.c-btn`
 - `.c-card`
 - `.c-cluster`
+- `.c-feature-inspector`
+- `.c-filter-pill`
 - `.c-geocoder`
 - `.c-icon-badge`
 - `.c-kbd`
 - `.c-link`
 - `.c-panel`
 - `.c-price`
+- `.c-provenance`
 - `.c-range`
+- `.c-saved-view`
 - `.c-scrim`
 - `.c-section-head`
 - `.c-select`
@@ -91,10 +99,11 @@ starts disagreeing with itself.
 - `.c-shortcut-panel`
 - `.c-shortcut-row`
 - `.c-spatial-filter`
+- `.c-split-view`
 - `.c-stack`
 - `.c-table`
 - `.c-table-wrap`
 
 ---
 
-Source `index.html` @ `1beb0033376e73f1` · last committed 2026-11-07T12:44:19+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0102caa891dd1fdf` · last committed 2026-11-11T00:01:36+01:00 · no URL: the project is private until v1.0.

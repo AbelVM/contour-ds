@@ -211,6 +211,7 @@ class ContourField extends ContourBase {
       // Associate the label with the input so the control is labelled.
       const lbl = this.querySelector(".c-field__label");
       if (lbl) { if (!input.id) input.id = contourId("contour-field"); lbl.setAttribute("for", input.id); input.setAttribute("aria-label", lbl.textContent); }
+      else if (!input.hasAttribute("aria-label")) input.setAttribute("aria-label", "Field");
       if (hint) {
         const h = this.ensure(".c-field__hint", () => { const el = document.createElement("span"); el.className = "c-field__hint"; return el; });
         h.textContent = hint;
@@ -568,6 +569,7 @@ class ContourSwitch extends ContourBase {
         const txt = this.querySelector(":scope > span:not([class]):not(.c-switch__track)") || (() => { const el = document.createElement("span"); this.appendChild(el); return el; })();
         txt.textContent = label;
       }
+      if (!input.hasAttribute("aria-label")) input.setAttribute("aria-label", "Switch");
     }
     enhance() {
       const input = this.querySelector("input");
@@ -619,6 +621,7 @@ class ContourCheck extends ContourBase {
         const txt = this.querySelector(":scope > span:not([class]):not(.c-check__box)") || (() => { const el = document.createElement("span"); this.appendChild(el); return el; })();
         txt.textContent = label;
       }
+      if (!input.hasAttribute("aria-label")) input.setAttribute("aria-label", "Checkbox");
       if (this.hasAttribute("name")) input.name = this.getAttribute("name");
       if (this.hasAttribute("value")) input.value = this.getAttribute("value");
       if (this.hasAttribute("disabled")) { input.setAttribute("disabled", ""); this.classList.add("is-disabled"); }
@@ -685,6 +688,7 @@ class ContourRadio extends ContourBase {
         const txt = this.querySelector(":scope > span:not([class])") || (() => { const el = document.createElement("span"); this.appendChild(el); return el; })();
         txt.textContent = label;
       }
+      if (!input.hasAttribute("aria-label")) input.setAttribute("aria-label", "Radio");
     }
     enhance() {
       const input = this.querySelector("input");
@@ -783,6 +787,10 @@ class ContourSelect extends ContourBase {
         lbl.textContent = label;
         if (sel) sel.setAttribute("aria-label", label);
       }
+      if (!this.querySelector("select")?.hasAttribute("aria-label")) {
+        const sel = this.querySelector("select");
+        if (sel) sel.setAttribute("aria-label", "Select");
+      }
       const err = this.getAttribute("error");
       const help = this.getAttribute("help");
       let msg = this.querySelector(".c-select__message");
@@ -871,7 +879,11 @@ class ContourTextarea extends ContourBase {
     render() {
       const ta = this.ensure("textarea", () => { const el = document.createElement("textarea"); el.className = "c-textarea"; return el; });
       ta.className = "c-textarea";
-      ta.placeholder = this.getAttribute("placeholder") || "";
+      if (this.hasAttribute("aria-label") && !ta.hasAttribute("aria-label")) ta.setAttribute("aria-label", this.getAttribute("aria-label"));
+      if (this.hasAttribute("label") && !ta.hasAttribute("aria-label")) ta.setAttribute("aria-label", this.getAttribute("label"));
+      if (!ta.hasAttribute("aria-label")) ta.setAttribute("aria-label", "Textarea");
+      if (this.hasAttribute("placeholder")) ta.placeholder = this.getAttribute("placeholder");
+      else ta.removeAttribute("placeholder");
       if (this.hasAttribute("required")) ta.setAttribute("required", "");
       else ta.removeAttribute("required");
       if (this.hasAttribute("disabled")) { ta.setAttribute("disabled", ""); this.classList.add("is-disabled"); }
@@ -987,6 +999,8 @@ class ContourInputGroup extends ContourBase {
       const icon = this.ensure("svg", () => { const el = document.createElementNS("http://www.w3.org/2000/svg", "svg"); el.setAttribute("aria-hidden", "true"); const use = document.createElementNS("http://www.w3.org/2000/svg", "use"); use.setAttribute("href", "#i-search"); el.appendChild(use); return el; });
       const input = this.ensure("input.c-input", () => { const el = document.createElement("input"); el.className = "c-input"; el.type = "text"; return el; });
       input.placeholder = this.getAttribute("placeholder") || this.getAttribute("label") || "";
+      const label = this.getAttribute("label");
+      if (!input.hasAttribute("aria-label")) input.setAttribute("aria-label", label || "Search");
       // Clear affordance.
       const oldClear = this.querySelector(".c-input-group__clear");
       if (oldClear) oldClear.remove();

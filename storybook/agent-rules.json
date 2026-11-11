@@ -221,6 +221,22 @@
           ]
         }
       ]
+    },
+    {
+      "id": "install-by-specifier",
+      "rule": "Import Contour by the specifier the package's `exports` map publishes (`contour-ds/contour.min.css`, `contour-ds/contour-wc.esm.js`, `contour-ds/tokens.json`, …). Never import a path under `dist/` or a fragment name the map does not define — the file may exist on disk (it is copied by `files`) and still blow up at resolution time.",
+      "why": "Four consumer-facing documents pointed at `contour-ds/css/ds.css` and `contour-ds/dist/wc/contour-wc-button.esm.min.js`, both of which the exports map refuses. Nothing but a resolver caught them, because `existsSync` on the installed package returns true for anything `files` copied.",
+      "enforcement": [
+        {
+          "gate": "tools/check-consumer-install.mjs",
+          "command": "node tools/check-consumer-install.mjs",
+          "note": "installs the generated tarball into every framework fixture and resolves each specifier the fixtures actually import",
+          "exists": true,
+          "jobs": [
+            "validate"
+          ]
+        }
+      ]
     }
   ]
 }

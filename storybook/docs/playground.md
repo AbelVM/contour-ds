@@ -12,10 +12,22 @@ Equivalent contour-* elements are catalogued in §23.
 
 The playground writes directly to the scoped container. Nothing here is a special case — it is the same custom-property contract the tokens expose.
 
+An analytical dashboard is a workspace. Its grammar prioritises density, interpretation, cross-filtering, context preservation, comparison, rapid navigation, monitoring and freshness.
+
+The dashboard shell composes these 10 blocks into a spatial workspace:
+
+Dashboards use the compact density profile (--density-compact: 0.72) for maximum information density. Each component family consumes density independently.
+
+Dashboard components synchronize through contour:* events. The host owns selection state; components emit intent and reflect host state.
+
 ## Subsections
 
 - A component under test
 - Web component counterpart
+- Dashboard composition grammar
+- Spatial workspace family
+- Density & rhythm
+- Cross-view interaction contract
 
 ## Blocks documented here
 
@@ -38,4 +50,4 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `1beb0033376e73f1` · last committed 2026-11-07T12:44:19+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0102caa891dd1fdf` · last committed 2026-11-11T00:01:36+01:00 · no URL: the project is private until v1.0.

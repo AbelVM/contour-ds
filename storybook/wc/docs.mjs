@@ -1,4 +1,4 @@
-import { ContourBase, define, sanitizeHtml, headingTag } from './core.mjs';
+import { ContourBase, define, sanitizeHtml, headingTag, navKey } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 class ContourDocsNav extends ContourBase {
     static get observed() { return ["items", "title", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
@@ -87,6 +87,13 @@ class ContourDocsNav extends ContourBase {
           const label = link.textContent || "";
           this.dispatchEvent(new CustomEvent("contour:docs-nav-select", { bubbles: true, composed: true, detail: { label, href: link.getAttribute("href") } }));
         }
+      });
+      // Keyboard: roving tabindex over docs-nav links, Enter follows the link.
+      this.addEventListener("keydown", (e) => {
+        const links = Array.from(this.querySelectorAll(".c-docs-nav__link"));
+        if (!links.length) return;
+        if (!links.some((l) => l.tabIndex === 0)) links.forEach((l, i) => l.tabIndex = i === 0 ? 0 : -1);
+        navKey(e, links, { wrap: true, homeEnd: true, onNavigate: (i) => { links.forEach((l, j) => l.tabIndex = j === i ? 0 : -1); }, onKey: (k) => { if (k === "Enter") { const a = document.activeElement; if (a) { e.preventDefault(); a.click(); } } } });
       });
     }
   }

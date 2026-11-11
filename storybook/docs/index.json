@@ -1,15 +1,15 @@
 {
   "version": "1.0",
   "source": "index.html",
-  "sourceSha256": "1beb0033376e73f1",
-  "lastUpdated": "2026-11-07T12:44:19+01:00",
+  "sourceSha256": "0102caa891dd1fdf",
+  "lastUpdated": "2026-11-11T00:01:36+01:00",
   "generatedBy": "tools/build.mjs, from index.html",
   "statement": "Machine-readable copy of the style guide's prose, generated and never hand-edited. Sections are listed in guide order; titles, prose and counts are quoted or counted, not authored. Prose is verbatim: a paragraph here is the guide's own sentence, never a sentence this generator wrote. Contains no URL: the project is private until v1.0.",
   "counts": {
     "sections": 27,
     "inRail": 27,
     "titled": 26,
-    "blocksReferenced": 221,
+    "blocksReferenced": 231,
     "guideOnlyClasses": 1
   },
   "sections": [
@@ -66,7 +66,7 @@
       "title": "Actions",
       "marker": "06",
       "file": "docs/actions.md",
-      "blocks": 8,
+      "blocks": 9,
       "inRail": true
     },
     {
@@ -122,7 +122,7 @@
       "title": "Data display",
       "marker": "13",
       "file": "docs/data.md",
-      "blocks": 38,
+      "blocks": 39,
       "inRail": true
     },
     {
@@ -202,7 +202,7 @@
       "title": "Web components",
       "marker": "23",
       "file": "docs/webcomponents.md",
-      "blocks": 22,
+      "blocks": 28,
       "inRail": true
     },
     {
@@ -218,7 +218,7 @@
       "title": "Map engine integration.",
       "marker": "25",
       "file": "docs/mapengine.md",
-      "blocks": 5,
+      "blocks": 8,
       "inRail": true
     },
     {
@@ -226,19 +226,14 @@
       "title": "Component index.",
       "marker": "26",
       "file": "docs/componentindex.md",
-      "blocks": 15,
+      "blocks": 19,
       "inRail": true
     }
   ],
   "coverage": {
-    "contractBlocks": 225,
-    "namedBySections": 221,
-    "notNamedByAnySection": [
-      "c-changelog",
-      "c-data-export",
-      "c-pull-to-refresh",
-      "c-split-map"
-    ]
+    "contractBlocks": 231,
+    "namedBySections": 231,
+    "notNamedByAnySection": []
   },
   "contracts": {
     "tokens": "../contour.tokens.json",
@@ -246,7 +241,7 @@
     "components": "../contour.components.json"
   },
   "tables": {
-    "taxonomy-table": "| Group | Count | Read | Unread | Covers |\n|---|---|---|---|---|\n| Colour ramps | 53 | 53 | — | `--basalt-…`, `--tidal-…`, `--lumen-…`, `--plasma-…`, `--sol-…`, `--clay-…` |\n| Brand ramp | 8 | 8 | — | `--brand-hue` and the ramp derived from it |\n| Semantic colours | 69 | 69 | — | `--color-…` — text, surface, border, primary; every one `light-dark()` |\n| Chart | 45 | 45 | — | categorical, sequential, diverging, dash patterns, chart chrome |\n| Fill patterns | 6 | 6 | — | `--fill-hatch-…`, `--fill-dot` — the shape branch of a filled mark |\n| Gradients | 4 | 4 | — | canvas, plate, heat, rule |\n| Typography | 31 | 31 | — | families, sizes, weights, leading, tracking, measures |\n| Space and layout | 22 | 22 | — | the 4 px scale, containers, gutter, header height, target sizes |\n| Shape | 20 | 20 | — | radii, borders, hairline, shadows, elevation |\n| Motion | 16 | 14 | 2 | durations and easings |\n| Z-index | 7 | 7 | — | `--z-raised` … `--z-tooltip` |\n| Density | 6 | 6 | — | row height, cell padding, label size |\n| Focus | 1 | 1 | — | the focus ring perimeter |\n| Miscellaneous | 13 | 12 | 1 | no documented prefix — fix the taxonomy |\n| **Total** | **301** | **298** | **3** | unique custom properties in `src/css/tokens.css` |"
+    "taxonomy-table": "| Group | Count | Read | Unread | Covers |\n|---|---|---|---|---|\n| Colour ramps | 53 | 53 | — | `--basalt-…`, `--tidal-…`, `--lumen-…`, `--plasma-…`, `--sol-…`, `--clay-…` |\n| Brand ramp | 8 | 8 | — | `--brand-hue` and the ramp derived from it |\n| Semantic colours | 74 | 69 | 5 | `--color-…` — text, surface, border, primary; every one `light-dark()` |\n| Chart | 45 | 45 | — | categorical, sequential, diverging, dash patterns, chart chrome |\n| Fill patterns | 6 | 6 | — | `--fill-hatch-…`, `--fill-dot` — the shape branch of a filled mark |\n| Gradients | 4 | 4 | — | canvas, plate, heat, rule |\n| Typography | 31 | 31 | — | families, sizes, weights, leading, tracking, measures |\n| Space and layout | 22 | 22 | — | the 4 px scale, containers, gutter, header height, target sizes |\n| Shape | 20 | 20 | — | radii, borders, hairline, shadows, elevation |\n| Motion | 16 | 14 | 2 | durations and easings |\n| Z-index | 7 | 7 | — | `--z-raised` … `--z-tooltip` |\n| Density | 6 | 6 | — | row height, cell padding, label size |\n| Focus | 1 | 1 | — | the focus ring perimeter |\n| Miscellaneous | 13 | 12 | 1 | no documented prefix — fix the taxonomy |\n| **Total** | **306** | **298** | **8** | unique custom properties in `src/css/tokens.css` |"
   },
   "missingRail": []
 }
