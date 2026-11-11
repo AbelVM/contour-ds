@@ -121,6 +121,7 @@ const MEASURE = () => {
     scrollW: de.scrollWidth,
     clientW: vw,
     bare,
+    tableCount: document.querySelectorAll("table.c-table").length,
     wide: wide.slice(0, 3),
     mask: getComputedStyle(document.body).overflowX,
     overflowingComponents: [...new Set(overflowingComponents)],
@@ -147,6 +148,7 @@ const budgets = new Set();
 const themeStyles = {};
 let compared = 0;
 let jsOffCompared = 0;
+let tablesSeen = 0;
 const browser = await chromium.launch();
 try {
   for (const page_path of PAGES) {
@@ -157,9 +159,16 @@ try {
       for (const theme of THEMES) {
         await page.goto(`http://127.0.0.1:${PORT}/${page_path}`, { waitUntil: "load", timeout: 60000 });
         await page.addScriptTag({ content: `(()=>{const m=document.querySelector('meta[name="color-scheme"]');if(m)m.setAttribute('content',${JSON.stringify(theme)});})()` });
-        await page.waitForTimeout(120);
+        // Wait for the component registry to publish (contour:ready fires in a
+        // microtask after define()), then let layout settle. The old fixed 120 ms
+        // measured a half-mounted page: a table that had not upgraded yet was
+        // counted as bare, and a late reflow was missed.
+        await page.waitForFunction(() => !!window.Contour, { timeout: 8000 }).catch(() => {});
+        await page.waitForTimeout(250);
         const r = await page.evaluate(MEASURE).catch(() => null);
         compared++;
+        if (!r) { failures.push(`${page_path} ${theme} ${view.label}: page did not load`); continue; }
+        tablesSeen += r.tableCount;
         if (!r) { failures.push(`${page_path} ${theme} ${view.label}: page did not load`); continue; }
         budgets.add(r.clientW);
         (themeStyles[page_path] ||= {})[theme] = r.bodyBg;
@@ -213,9 +222,13 @@ if (process.argv.includes("--strict")) {
 }
 for (const line of proofs) console.log("  proof: " + line);
 for (const a of advisories) console.log("  NOTED (not the published contract, is WCAG 1.4.10): " + a);
-console.log(`check-reflow: ${compared} measurements (${PAGES.length} pages x ${THEMES.length} themes x ${VIEWS.length} widths) + ${jsOffCompared} with JavaScript off.`);
+console.log(`check-reflow: ${compared} measurements (${PAGES.length} pages x ${THEMES.length} themes x ${VIEWS.length} widths) + ${jsOffCompared} with JavaScript off; ${tablesSeen} rendered table.c-table inspected.`);
 if (!compared || !jsOffCompared) {
   console.error("check-reflow: a sweep that compared nothing is not a pass.");
+  process.exit(1);
+}
+if (tablesSeen === 0) {
+  console.error("check-reflow: no table.c-table was rendered in any page — the bare-table rule is vacuous, so this sweep cannot certify it.");
   process.exit(1);
 }
 if (failures.length) {
