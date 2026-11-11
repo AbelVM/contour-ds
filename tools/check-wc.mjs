@@ -58,6 +58,13 @@ for (const m of src.matchAll(/define\("(contour-[a-z0-9-]+)"/g)) {
 if (dupes.length)
   fail(`duplicate define() of: ${[...new Set(dupes)].slice(0, 8).join(", ")}`);
 
+// The shadow factory registers `contour-shadow-<name>` through the same define()
+// door, but the name is an argument to shadow() rather than a literal define()
+// call, so the guide-registration check below has to know about them too.
+for (const m of src.matchAll(/shadow\("contour-shadow-([a-z0-9-]+)"/g)) seen.add("contour-shadow-" + m[1]);
+const slotsMatch = /const\s+SHADOW_SLOTS\s*=\s*\{([\s\S]*?)\n\s*\};/.exec(src);
+if (slotsMatch) for (const m of slotsMatch[1].matchAll(/"([a-z0-9-]+)"/g)) seen.add("contour-shadow-" + m[1]);
+
 // 6. dist bundle must exist and be valid (the shipped artifact)
 const distBundle = join(ROOT, "dist/contour-wc.js");
 if (existsSync(distBundle)) {
@@ -110,6 +117,20 @@ if (existsSync(indexHtmlPath) && eventsBlock) {
     fail(`§23 event table is missing manifest entries: ${missingInTable.slice(0, 10).join(", ")} — add the rows or remove them from CONTOUR_EVENTS`);
   if (extraInTable.length)
     fail(`§23 event table names events not in the manifest: ${extraInTable.slice(0, 10).join(", ")} — add them to CONTOUR_EVENTS or remove the rows`);
+}
+
+// 10. every contour-* tag the guide shows is registered (R18-49)
+// A tag the guide documents but the bundle never defines renders as an unknown
+// element: the markup is in the page, the class is in the CSS, and nothing
+// upgrades it. This is the gate that would have caught contour-contour-plot.
+if (existsSync(indexHtmlPath)) {
+  const html = readFileSync(indexHtmlPath, "utf-8");
+  // Only real tags: a snippet escapes its angle bracket, so `&lt;contour-…` is
+  // documentation and must not be counted as a rendered element.
+  const guideTags = new Set([...html.matchAll(/<contour-([a-z0-9-]+)[\s>/]/g)].map((m) => "contour-" + m[1]));
+  const unregistered = [...guideTags].filter((t) => !seen.has(t)).sort();
+  if (unregistered.length)
+    fail(`guide uses tags with no define(): ${unregistered.slice(0, 12).join(", ")}${unregistered.length > 12 ? ", …" : ""} — a tag the guide shows but the bundle never registers renders as an unknown element`);
 }
 
 if (errors.length) {

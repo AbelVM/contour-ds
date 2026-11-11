@@ -365,6 +365,16 @@ const WC_FAMILIES = {
   misc: ["misc.mjs"],
 };
 
+// A family bundle is core + its own fragment + the fragments of the families it
+// depends on. `contour-dash-kpi-row` creates `contour-kpi`, which the data
+// family defines; without this the dashboard bundle creates a tag it never
+// defines and the row renders empty. The dependency is declared here rather
+// than discovered by a consumer, and the gate below fails the build if a family
+// creates a tag its bundle does not define.
+const WC_DEPENDENCIES = {
+  dashboard: ["data"],
+};
+
 // Verify the family map covers every fragment exactly once.
 const allFamilyFiles = [...WC_CORE, ...Object.values(WC_FAMILIES).flat()].sort();
 if (JSON.stringify(allFamilyFiles) !== JSON.stringify([...wcFragNames].sort())) {
@@ -375,8 +385,38 @@ if (JSON.stringify(allFamilyFiles) !== JSON.stringify([...wcFragNames].sort())) 
 }
 
 const familySizes = {};
+// Bundle-dependency gate (R18-50): every contour-* a family creates must be
+// defined in that bundle (core + own + declared dependencies). A tag created
+// but not defined renders as an unknown element, which is exactly what the
+// dashboard bundle did with contour-kpi before the dependency was declared.
+const tagDefsIn = (files) => {
+  const tags = new Set();
+  for (const f of files) {
+    const s = readFileSync(join(root, "src/js/wc", f), "utf-8");
+    for (const m of s.matchAll(/define\("(contour-[a-z0-9-]+)"/g)) tags.add(m[1]);
+    for (const m of s.matchAll(/shadow\("contour-shadow-([a-z0-9-]+)"/g)) tags.add("contour-shadow-" + m[1]);
+  }
+  return tags;
+};
 for (const [family, files] of Object.entries(WC_FAMILIES)) {
-  const familyBody = [...WC_CORE, ...files].map((f) => stripWcEsm(readFileSync(join(root, "src/js/wc", f), "utf-8"))).join("\n");
+  const depFiles = (WC_DEPENDENCIES[family] || []).flatMap((d) => WC_FAMILIES[d] || []);
+  const defined = tagDefsIn([...WC_CORE, ...depFiles, ...files]);
+  const created = new Set();
+  for (const f of files) {
+    const s = readFileSync(join(root, "src/js/wc", f), "utf-8");
+    for (const m of s.matchAll(/createElement\("(contour-[a-z0-9-]+)"/g)) created.add(m[1]);
+    for (const m of s.matchAll(/querySelector(?:All)?\("(contour-[a-z0-9-]+)/g)) created.add(m[1]);
+  }
+  const missing = [...created].filter((t) => !defined.has(t)).sort();
+  if (missing.length) {
+    console.error(`build: contour-wc-${family} creates tags its bundle does not define: ${missing.join(", ")}`);
+    console.error("  declare the family in WC_DEPENDENCIES or stop creating the tag");
+    process.exit(1);
+  }
+}
+for (const [family, files] of Object.entries(WC_FAMILIES)) {
+  const depFiles = (WC_DEPENDENCIES[family] || []).flatMap((d) => WC_FAMILIES[d] || []);
+  const familyBody = [...WC_CORE, ...depFiles, ...files].map((f) => stripWcEsm(readFileSync(join(root, "src/js/wc", f), "utf-8"))).join("\n");
   const familyEsm = `${familyBody}\n`;
   writeFileSync(join(dist, `contour-wc-${family}.esm.js`), familyEsm, "utf-8");
   const familyMin = `${minifyJs(familyEsm)}\n`;
