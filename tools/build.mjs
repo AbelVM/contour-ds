@@ -70,6 +70,13 @@ function inline(file, seen = new Set()) {
     (_, target, layer) => {
       const resolved = join(dirname(file), target);
       const inlined = inline(resolved, seen);
+      // If the inlined content already declares its own @layer, don't double-wrap.
+      // Component files declare @layer components { ... } for standalone importability;
+      // ds.css imports them with layer(components). Strip leading comments/whitespace to check.
+      const trimmed = inlined.replace(/^\s*\/\*[\s\S]*?\*\/\s*/, "").trimStart();
+      if (trimmed.startsWith("@layer")) {
+        return inlined;
+      }
       // Preserve the layer() semantics of the @import: wrap the inlined
       // sheet in its named layer so unlayered rules in the source cannot
       // escape into the bundle's top level.

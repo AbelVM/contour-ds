@@ -795,3 +795,4 @@
   .c-live-badge--disconnected::before {
     background: var(--color-danger);
   }
+}

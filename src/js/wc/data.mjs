@@ -2871,7 +2871,8 @@ class ContourLegend extends ContourBase {
           if (this.hasAttribute("selectable")) {
             list.setAttribute("role", "group");
           } else {
-            list.setAttribute("role", "list");
+            // Host already has role="list"; inner container should be generic
+            list.removeAttribute("role");
           }
           if (title) list.setAttribute("aria-label", title);
           list.innerHTML = "";
@@ -2887,7 +2888,7 @@ class ContourLegend extends ContourBase {
               item.dataset.key = key;
             } else {
               item.setAttribute("role", "listitem");
-              item.setAttribute("aria-selected", "false");
+              // aria-selected is not valid on role="listitem"; omit for non-selectable legends
             }
             const sw = document.createElement("span");
             if (graduated) {
@@ -3115,22 +3116,15 @@ class ContourLegend extends ContourBase {
     enhance() {
       if (this._wiredLegend) return;
       this._wiredLegend = true;
+      const selectable = this.hasAttribute("selectable");
       this.addEventListener("click", (e) => {
+        if (!selectable) return;
         const btn = e.target && e.target.closest ? e.target.closest(".c-legend__item") : null;
         if (!btn || !this.contains(btn)) return;
-        let selected;
-        const isPressed = btn.getAttribute("aria-pressed");
-        if (btn.getAttribute("aria-pressed") !== null) {
-          const pressed = btn.getAttribute("aria-pressed") !== "true";
-          btn.setAttribute("aria-pressed", String(pressed));
-          selected = pressed;
-        } else {
-          const selected2 = btn.getAttribute("aria-selected") !== "true";
-          btn.setAttribute("aria-selected", String(selected2));
-          selected = selected2;
-        }
+        const pressed = btn.getAttribute("aria-pressed") !== "true";
+        btn.setAttribute("aria-pressed", String(pressed));
         this.dispatchEvent(new CustomEvent("contour:legend-toggle", {
-          detail: { label: btn.textContent.trim(), key: btn.dataset.key || btn.textContent.trim(), pressed: selected },
+          detail: { label: btn.textContent.trim(), key: btn.dataset.key || btn.textContent.trim(), pressed },
           bubbles: true,
           composed: true,
         }));
@@ -3153,50 +3147,52 @@ class ContourLegend extends ContourBase {
           this.dispatchEvent(new CustomEvent("contour:break-change", { detail: { value: t.value }, bubbles: true, composed: true }));
         }
       });
-      // keyboard nav (listbox)
-      this.addEventListener("keydown", (e) => {
-        const items = Array.from(this.querySelectorAll(".c-legend__item"));
-        if (!items.length) return;
-        const active = document.activeElement;
-        const idx = items.indexOf(active);
-        if (e.key === "Escape") {
-          // clear selection
-          items.forEach((o) => { if (o.getAttribute("role") === "option") o.setAttribute("aria-selected", "false"); else o.setAttribute("aria-pressed", "false"); });
-          this.dispatchEvent(new CustomEvent("contour:clear", { bubbles: true, composed: true }));
-          return;
-        }
-        if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
-          // type-ahead
-          if (items.length > 7) {
-            const start = idx >= 0 ? idx + 1 : 0;
-            for (let i = 0; i < items.length; i++) {
-              const ii = (start + i) % items.length;
-              const txt = (items[ii].textContent || "").trim().toLowerCase();
-              if (txt.startsWith(e.key.toLowerCase())) {
-                e.preventDefault();
-                items[ii].focus();
-                items.forEach((o,j)=>o.setAttribute("tabindex", j===ii?"0":"-1"));
-                break;
+      // keyboard nav (listbox) - only for selectable legends
+      if (selectable) {
+        this.addEventListener("keydown", (e) => {
+          const items = Array.from(this.querySelectorAll(".c-legend__item"));
+          if (!items.length) return;
+          const active = document.activeElement;
+          const idx = items.indexOf(active);
+          if (e.key === "Escape") {
+            // clear selection
+            items.forEach((o) => o.setAttribute("aria-pressed", "false"));
+            this.dispatchEvent(new CustomEvent("contour:clear", { bubbles: true, composed: true }));
+            return;
+          }
+          if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+            // type-ahead
+            if (items.length > 7) {
+              const start = idx >= 0 ? idx + 1 : 0;
+              for (let i = 0; i < items.length; i++) {
+                const ii = (start + i) % items.length;
+                const txt = (items[ii].textContent || "").trim().toLowerCase();
+                if (txt.startsWith(e.key.toLowerCase())) {
+                  e.preventDefault();
+                  items[ii].focus();
+                  items.forEach((o,j)=>o.setAttribute("tabindex", j===ii?"0":"-1"));
+                  break;
+                }
               }
             }
+            return;
           }
-          return;
-        }
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          if (active && active.classList.contains("c-legend__item")) {
-            active.click();
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            if (active && active.classList.contains("c-legend__item")) {
+              active.click();
+            }
+            return;
           }
-          return;
-        }
-        navKey(e, items, {
-          wrap: true,
-          homeEnd: true,
-          rtl: isRtl(this),
-          onNavigate: (i) => items.forEach((o, j) => o.setAttribute("tabindex", j === i ? "0" : "-1")),
-          onKey: () => {}
+          navKey(e, items, {
+            wrap: true,
+            homeEnd: true,
+            rtl: isRtl(this),
+            onNavigate: (i) => items.forEach((o, j) => o.setAttribute("tabindex", j === i ? "0" : "-1")),
+            onKey: () => {}
+          });
         });
-      });
+      }
       // Cross-filter contract (R16-16): clear-all resets legend selection.
       this.addEventListener("contour:clear-all", () => {
         const items = Array.from(this.querySelectorAll(".c-legend__item"));
@@ -3204,10 +3200,6 @@ class ContourLegend extends ContourBase {
         items.forEach((o) => {
           if (o.getAttribute("role") === "button" && o.getAttribute("aria-pressed") === "true") {
             o.setAttribute("aria-pressed", "false");
-            changed = true;
-          }
-          if (o.getAttribute("aria-selected") === "true") {
-            o.setAttribute("aria-selected", "false");
             changed = true;
           }
         });
