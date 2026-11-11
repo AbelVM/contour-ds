@@ -57,6 +57,9 @@ const LEDGER = {
   "--color-lumen-500": { action: "wire", task: "R16-33", verified: true, note: "Tailwind v4 bridge color alias; read by integrations/tailwind/contour-theme.css" },
   "--color-sol-500": { action: "wire", task: "R16-33", verified: true, note: "Tailwind v4 bridge color alias; read by integrations/tailwind/contour-theme.css" },
   "--color-clay-500": { action: "wire", task: "R16-33", verified: true, note: "Tailwind v4 bridge color alias; read by integrations/tailwind/contour-theme.css" },
+  "--data-grid-row-height": { action: "wire", task: "R18-33", verified: true, note: "read by JS via getComputedStyle for the virtualized data grid" },
+  "--combobox-row-height": { action: "wire", task: "R18-33", verified: true, note: "read by JS via getComputedStyle for the virtualized combobox" },
+  "--virtual-list-item-height": { action: "wire", task: "R18-33", verified: true, note: "read by JS via getComputedStyle for the virtual list and tree" },
 };
 
 // Referenced-but-undefined tokens that are deliberate author hooks (component-scoped

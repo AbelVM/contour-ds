@@ -11,7 +11,7 @@
  * @module contour-wc/forms
  */
 
-import { ContourBase, define, contourId } from './core.mjs';
+import { ContourBase, define, contourId, cssLength } from './core.mjs';
 import { wireCombobox } from './behaviours.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 /**
@@ -95,7 +95,7 @@ class ContourCombobox extends ContourBase {
         value: typeof opt === "string" ? opt : opt.value,
       })).filter((item) => !q || String(item.label).toLowerCase().includes(q));
       this._comboboxFiltered = filtered;
-      const rowHeight = 32;
+      const rowHeight = cssLength("--combobox-row-height", 32);
       const windowSize = 20;
       const overscan = 6;
       const oldScrollTop = list.scrollTop;

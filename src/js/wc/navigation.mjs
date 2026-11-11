@@ -1,4 +1,4 @@
-import { ContourBase, define, onDispose, supportsUntilFound, contourId, headingTag, navKey, safeHref } from './core.mjs';
+import { ContourBase, define, onDispose, supportsUntilFound, contourId, headingTag, navKey, safeHref, cssLength } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { wireMenu, wirePagination, wireTabs, wireTree, wireRemovable } from './behaviours.mjs';
 class ContourMenu extends ContourBase {
@@ -453,7 +453,8 @@ class ContourTree extends ContourBase {
     static get properties() { return { items: { attribute: "items" }, src: { attribute: "src" }, "item-height": { attribute: "item-height" } }; }
     _itemHeight() {
       const h = Number(this.getAttribute("item-height"));
-      return Number.isFinite(h) && h > 0 ? h : 28;
+      if (Number.isFinite(h) && h > 0) return h;
+      return cssLength("--virtual-list-item-height", 28);
     }
     _labelToPaths(nodes, pathPrefix, map) {
       (nodes || []).forEach((node, i) => {

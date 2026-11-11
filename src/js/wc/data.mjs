@@ -1,4 +1,4 @@
-import { ContourBase, define, onDispose, formatValue, contourId, navKey, isRtl } from './core.mjs';
+import { ContourBase, define, onDispose, formatValue, contourId, navKey, isRtl, cssLength } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates, remoteInvalidate, watchViewport } from './states.mjs';
 import { donutSlices, barRects, smoothPath, polylinePoints, contourPaths } from './svg.mjs';
 /**
@@ -332,7 +332,7 @@ class ContourTable extends ContourBase {
           const tbody = table.querySelector("tbody");
           tbody.innerHTML = "";
           const useVirtual = this.hasAttribute("virtual") && !usePaging && pageData.length > 100;
-          const rowHeight = this._measuredRowHeight || 36;
+          const rowHeight = this._measuredRowHeight || cssLength("--data-grid-row-height", 36);
           const windowSize = 30;
           const overscan = 10;
           let windowStart = 0;

@@ -1,4 +1,4 @@
-import { ContourBase, define, contourId, onDispose, navKey, safeColor, safeHref } from './core.mjs';
+import { ContourBase, define, contourId, onDispose, navKey, safeColor, safeHref, cssLength } from './core.mjs';
 import { wireRemovable, modalContain } from './behaviours.mjs';
 /**
  * Avatar: a circular avatar with initials (from `name`) or an image (`src`),
@@ -2547,7 +2547,8 @@ class ContourVirtualList extends ContourBase {
     }
     _itemHeight() {
       const h = Number(this.getAttribute("item-height"));
-      return Number.isFinite(h) && h > 0 ? h : 28;
+      if (Number.isFinite(h) && h > 0) return h;
+      return cssLength("--virtual-list-item-height", 28);
     }
     _autoHeight() {
       return this.getAttribute("item-height") === "auto";
@@ -2567,7 +2568,7 @@ class ContourVirtualList extends ContourBase {
     }
     _measureHeights(inner, horizontal) {
       const rows = Array.from(inner.querySelectorAll(".c-virtual-list__item"));
-      return rows.map((r) => horizontal ? (r.getBoundingClientRect().width || 28) : (r.getBoundingClientRect().height || 28));
+      return rows.map((r) => horizontal ? (r.getBoundingClientRect().width || this._itemHeight()) : (r.getBoundingClientRect().height || this._itemHeight()));
     }
     _renderWindow(scroller, inner, scrollTop) {
       const items = this._items();
@@ -2582,9 +2583,9 @@ class ContourVirtualList extends ContourBase {
       let cumulative = null;
       if (autoHeight && heights && heights.length === total) {
         cumulative = [0];
-        for (let i = 0; i < total; i++) cumulative.push(cumulative[i] + (heights[i] || 28));
+        for (let i = 0; i < total; i++) cumulative.push(cumulative[i] + (heights[i] || this._itemHeight()));
       }
-      const visibleCount = autoHeight && !cumulative ? total : (autoHeight ? Math.ceil(viewportSize / 28) + 6 : Math.ceil(viewportSize / ih) + 4);
+      const visibleCount = autoHeight && !cumulative ? total : (autoHeight ? Math.ceil(viewportSize / this._itemHeight()) + 6 : Math.ceil(viewportSize / ih) + 4);
       let start = 0;
       if (autoHeight && cumulative) {
         // binary search for start
@@ -3456,7 +3457,9 @@ class ContourDataGrid extends ContourBase {
     }
     _rowHeight() {
       const h = Number(this.getAttribute("row-height"));
-      return Number.isFinite(h) && h > 0 ? h : 32;
+      if (Number.isFinite(h) && h > 0) return h;
+      if (this._measuredRowHeight > 0) return this._measuredRowHeight;
+      return cssLength("--data-grid-row-height", 32);
     }
     _renderDataGridWindow(scrollTop) {
       const table = this.querySelector(".c-data-grid__table");

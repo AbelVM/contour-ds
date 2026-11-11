@@ -636,6 +636,12 @@
     /* The scroll ceiling for a data grid's virtualized body. A component reads
        it so the height is a token a product can re-point, not an inline 400px. */
     --data-grid-max-height: 400px;
+
+    /* Virtualized row heights, derived from density so a compact page packs
+       more rows. The JS reads the computed value rather than hard-coding 36/32/28. */
+    --data-grid-row-height: calc(32px * var(--density, 1));
+    --combobox-row-height: calc(32px * var(--density, 1));
+    --virtual-list-item-height: calc(28px * var(--density, 1));
   }
   /* =======================================================================
      17. THEME SET — the extension point, not a set of themes
