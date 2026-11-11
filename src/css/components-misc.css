@@ -1894,6 +1894,11 @@
      GENERATED CLASS CONTRACT (R18-13, batch 2)
      ======================================================================= */
   .c-badge--dot { inline-size: 0.5rem; block-size: 0.5rem; padding: 0; border-radius: 50%; }
+  /* Native list containers: the <ol> carries the semantics, the class only
+     removes the platform marker so the component's own counter shows. */
+  .c-steps__list,
+  .c-timeline__list { list-style: none; margin: 0; padding: 0; }
+  .c-showcase__caption { font-size: var(--type-xs); color: var(--color-text-subtle); }
   .c-badge__remove {
     margin-inline-start: calc(0.25rem * var(--density, 1));
     /* WCAG 2.5.8 floor: the remove control is a 24px target, not a 19px glyph. */

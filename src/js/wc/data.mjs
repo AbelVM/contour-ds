@@ -3359,25 +3359,27 @@ class ContourTimeline extends ContourBase {
     static get properties() { return { items: { attribute: "items" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-timeline");
-      this.setAttribute("role", "list");
-      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Timeline");
+      // Native list semantics: an <ol> with <li> items, not a role="list" on a
+      // <div> recreating the platform's list numbering and association.
+      let list = this.querySelector(".c-timeline__list");
+      if (!list) { list = document.createElement("ol"); list.className = "c-timeline__list"; list.setAttribute("aria-label", this.getAttribute("aria-label") || "Timeline"); this.appendChild(list); }
       wireStates(this);
       loadRemote(this, "items");
       if (renderStates(this, "timeline")) return;
       const authored = Array.from(this.children).filter((n) => n.classList && n.classList.contains("c-timeline__item"));
       const items = remoteData(this, "items");
       if (items && !authored.length) {
-        Array.from(this.querySelectorAll(".c-timeline__item")).forEach((n) => n.remove());
+        Array.from(list.querySelectorAll(".c-timeline__item")).forEach((n) => n.remove());
         try {
           const parsed = JSON.parse(items);
           parsed.forEach((it) => {
-            const item = document.createElement("div");
+            const item = document.createElement("li");
             item.className = "c-timeline__item";
-            item.setAttribute("role", "listitem");
             item.setAttribute("tabindex", "-1");
             if (it.time) {
               const t = document.createElement("time");
               t.className = "c-timeline__time";
+              t.setAttribute("datetime", String(it.time));
               t.textContent = it.time;
               item.appendChild(t);
             }
@@ -3393,7 +3395,7 @@ class ContourTimeline extends ContourBase {
               tx.textContent = it.text;
               item.appendChild(tx);
             }
-            this.appendChild(item);
+            list.appendChild(item);
           });
         } catch (e) { /* keep existing */ }
       } else if (!authored.length) {

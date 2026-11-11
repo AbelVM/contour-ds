@@ -138,7 +138,7 @@ class ContourActivityFeed extends ContourBase {
       const unreadBtn = toolbar.querySelector(".c-activity-feed__unread") || (() => { const b = document.createElement("button"); b.type = "button"; b.className = "c-btn c-btn--ghost c-btn--sm"; b.textContent = "Unread only"; toolbar.appendChild(b); return b; })();
       if (unreadOnly) unreadBtn.setAttribute("aria-pressed", "true");
       let list = this.querySelector(".c-activity-feed__list");
-      if (!list) { list = document.createElement("div"); list.className = "c-activity-feed__list"; this.appendChild(list); }
+      if (!list) { list = document.createElement("ol"); list.className = "c-activity-feed__list"; this.appendChild(list); }
       if (items) {
         try {
           const parsed = JSON.parse(items);
@@ -153,7 +153,7 @@ class ContourActivityFeed extends ContourBase {
             const empty = list.querySelector(".c-activity-feed__empty");
             if (empty) empty.remove();
             filtered.forEach((it) => {
-              const item = document.createElement("div");
+              const item = document.createElement("li");
               item.className = "c-activity-feed__item" + (it.read ? "" : " c-activity-feed__item--unread");
               item.setAttribute("role", "button");
               item.setAttribute("tabindex", "-1");
@@ -165,8 +165,9 @@ class ContourActivityFeed extends ContourBase {
               text.className = "c-activity-feed__text";
               text.textContent = typeof it === "string" ? it : (it.text || it.label || "");
               item.appendChild(text);
-              const time = document.createElement("span");
+              const time = document.createElement("time");
               time.className = "c-activity-feed__time";
+              if (it.time) time.setAttribute("datetime", String(it.time));
               time.textContent = it.time || "";
               item.appendChild(time);
               const sev = document.createElement("span");
