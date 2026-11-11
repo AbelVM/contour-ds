@@ -267,6 +267,7 @@ const RENDER_CONTRACT = [
   ["contour-dialog", { title: "Move layer" }, ".c-dialog__title"],
   ["contour-meter", { value: "0.72", label: "Confidence" }, ".c-meter__core"],
   ["contour-field", { label: "Search", placeholder: "q" }, "label"],
+  ["contour-form", { title: "Route form", "submit-label": "Save" }, ".c-form__title"],
   ["contour-alert", { title: "Heads up", body: "text", variant: "warning" }, ".c-alert__title"],
   ["contour-pagination", { pages: "5", current: "2" }, ".c-pagination__link"],
   ["contour-accordion", { items: '[{"q":"A","a":"B"}]' }, ".c-disclosure"],

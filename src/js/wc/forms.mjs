@@ -23,9 +23,9 @@ import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from '.
  * filter. ArrowUp/Down/Home/End rove the cursor; Enter commits; Escape closes.
  */
 class ContourCombobox extends ContourBase {
-  static get observed() { return ["options", "placeholder", "label", "value", "multiple", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "empty", "skeleton", "virtual"]; }
+  static get observed() { return ["options", "placeholder", "label", "value", "multiple", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "empty", "skeleton", "virtual", "disabled", "required", "name"]; }
     static get formAssociated() { return true; }
-    static get properties() { return { options: { attribute: "options" }, placeholder: { attribute: "placeholder" }, label: { attribute: "label" }, value: { attribute: "value" }, multiple: { attribute: "multiple", type: Boolean }, virtual: { attribute: "virtual", type: Boolean }, src: { attribute: "src" } }; }
+    static get properties() { return { options: { attribute: "options" }, placeholder: { attribute: "placeholder" }, label: { attribute: "label" }, value: { attribute: "value" }, multiple: { attribute: "multiple", type: Boolean }, virtual: { attribute: "virtual", type: Boolean }, src: { attribute: "src" }, disabled: { attribute: "disabled", type: Boolean }, required: { attribute: "required", type: Boolean }, name: { attribute: "name" } }; }
     render() {
       this.classList.add("c-combobox");
       wireStates(this);
@@ -42,6 +42,13 @@ class ContourCombobox extends ContourBase {
           input.type = "text";
           input.placeholder = this.getAttribute("placeholder") || "Search…";
           input.setAttribute("aria-label", this.getAttribute("label") || "Search");
+          // Reflect the native constraint state so the platform validates the
+          // field and FormData sees the name.
+          if (this.hasAttribute("disabled")) { input.setAttribute("disabled", ""); this.classList.add("is-disabled"); }
+          else { input.removeAttribute("disabled"); this.classList.remove("is-disabled"); }
+          if (this.hasAttribute("required")) { input.setAttribute("required", ""); input.setAttribute("aria-required", "true"); }
+          else { input.removeAttribute("required"); input.removeAttribute("aria-required"); }
+          if (this.hasAttribute("name")) input.setAttribute("name", this.getAttribute("name"));
           const val = this.getAttribute("value");
           if (val !== null) {
             // The attribute holds the submitted value; the field shows the
