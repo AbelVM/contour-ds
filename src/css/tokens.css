@@ -632,6 +632,10 @@
     --color-selection: light-dark(oklch(92% 0.04 var(--brand-hue)), oklch(28% 0.05 var(--brand-hue)));
     --color-link: light-dark(var(--brand-700), var(--brand-300));
     --color-link-hover: light-dark(var(--brand-800), var(--brand-200));
+
+    /* The scroll ceiling for a data grid's virtualized body. A component reads
+       it so the height is a token a product can re-point, not an inline 400px. */
+    --data-grid-max-height: 400px;
   }
   /* =======================================================================
      17. THEME SET — the extension point, not a set of themes

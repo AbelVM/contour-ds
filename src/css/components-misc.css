@@ -1435,7 +1435,8 @@
   /* -- Data grid --------------------------------------------------------- */
   .c-data-grid { display: block; overflow: auto; content-visibility: auto; contain-intrinsic-size: auto 300px; }
   .c-data-grid__table { inline-size: 100%; }
-  .c-data-grid__wrap { max-block-size: 400px; overflow: auto; }
+  .c-data-grid__wrap { max-block-size: var(--data-grid-max-height, 400px); overflow: auto; }
+  .c-tree-grid__wrap { max-block-size: var(--data-grid-max-height, 400px); overflow: auto; }
   .c-data-grid__row {
     display: flex;
     flex-wrap: wrap;

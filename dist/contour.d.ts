@@ -133,7 +133,7 @@ export interface ContourTocFullElement extends ContourElement{src?:S;}
 export interface ContourToolbarElement extends ContourElement{overflow?:number;}
 export interface ContourTooltipElement extends ContourElement{delay?:number;trigger?:S;}
 export interface ContourTreeElement extends ContourElement{src?:S;"item-height"?:S;}
-export interface ContourTreeGridElement extends ContourElement{expanded?:S;}
+export interface ContourTreeGridElement extends ContourElement{expanded?:S;loading?:S;}
 export interface ContourVersionElement extends ContourFormElement{options?:S;}
 export interface ContourVersionBannerFullElement extends ContourElement{link?:S;dismissible?:boolean;}
 export interface ContourVirtualListElement extends ContourElement{"item-height"?:S;orientation?:S;sticky?:boolean;}

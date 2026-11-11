@@ -3352,8 +3352,8 @@ class ContourCarousel extends ContourBase {
  */
 class ContourDataGrid extends ContourBase {
     static get updateMode() { return "keyed"; }
-  static get observed() { return ["columns", "rows", "page", "filter", "page-size", "resizable", "virtual", "row-height"]; }
-  static get properties() { return { columns: { attribute: "columns" }, rows: { attribute: "rows" }, page: { attribute: "page" }, filter: { attribute: "filter" }, "page-size": { attribute: "page-size" }, resizable: { attribute: "resizable", type: Boolean }, virtual: { attribute: "virtual", type: Boolean }, "row-height": { attribute: "row-height" } }; }
+  static get observed() { return ["columns", "rows", "page", "filter", "page-size", "resizable", "virtual", "row-height", "loading", "error", "empty"]; }
+  static get properties() { return { columns: { attribute: "columns" }, rows: { attribute: "rows" }, page: { attribute: "page" }, filter: { attribute: "filter" }, "page-size": { attribute: "page-size" }, resizable: { attribute: "resizable", type: Boolean }, virtual: { attribute: "virtual", type: Boolean }, "row-height": { attribute: "row-height" }, loading: { attribute: "loading" }, error: { attribute: "error" }, empty: { attribute: "empty" } }; }
     render() {
       this.classList.add("c-data-grid");
       if (this.hasAttribute("loading") || this.hasAttribute("error") || this.hasAttribute("empty")) {
@@ -3373,7 +3373,7 @@ class ContourDataGrid extends ContourBase {
         tbody.appendChild(tr);
         // Wrap in a scroll container for virtualization of large datasets.
       let wrap = this.querySelector(".c-data-grid__wrap");
-      if (!wrap) { wrap = document.createElement("div"); wrap.className = "c-data-grid__wrap"; wrap.style.maxHeight = "400px"; wrap.style.overflow = "auto"; }
+      if (!wrap) { wrap = document.createElement("div"); wrap.className = "c-table-wrap c-data-grid__wrap"; }
       if (table.parentNode !== wrap) wrap.appendChild(table);
       if (wrap.parentNode !== this) this.appendChild(wrap);
         return;
@@ -3444,7 +3444,7 @@ class ContourDataGrid extends ContourBase {
       }
       // Wrap in a scroll container for virtualization of large datasets.
       let wrap = this.querySelector(".c-data-grid__wrap");
-      if (!wrap) { wrap = document.createElement("div"); wrap.className = "c-data-grid__wrap"; wrap.style.maxHeight = "400px"; wrap.style.overflow = "auto"; }
+      if (!wrap) { wrap = document.createElement("div"); wrap.className = "c-table-wrap c-data-grid__wrap"; }
       if (table.parentNode !== wrap) wrap.appendChild(table);
       if (wrap.parentNode !== this) this.appendChild(wrap);
     }
@@ -3542,28 +3542,43 @@ class ContourDataGrid extends ContourBase {
           const idx = Array.from(th.parentElement.children).indexOf(th);
           if (sortCol === idx) sortDir = sortDir === "asc" ? "desc" : "asc";
           else { sortCol = idx; sortDir = "asc"; }
-          // Re-render sorted rows.
+          // Sort the full filtered dataset, not just the rendered page: a page
+          // slice sorted on its own leaves the other pages in the wrong order.
           const table = this.querySelector(".c-data-grid__table");
           const tbody = table && table.querySelector("tbody");
           const thead = table && table.querySelector("thead");
-          if (tbody && thead) {
-            const cols = Array.from(thead.querySelectorAll("th")).map((h) => h.textContent);
-            const rows = Array.from(tbody.querySelectorAll("tr")).map((tr) => Array.from(tr.querySelectorAll("td")).map((td) => td.textContent));
-            rows.sort((a, b) => {
-              const va = a[idx] || "", vb = b[idx] || "";
-              const na = Number(va), nb = Number(vb);
-              const cmp = (!isNaN(na) && !isNaN(nb)) ? na - nb : String(va).localeCompare(String(vb));
-              return sortDir === "asc" ? cmp : -cmp;
-            });
+          const cols = this._dgCols || [];
+          const key = cols[idx] ? (typeof cols[idx] === "string" ? cols[idx] : (cols[idx].key || cols[idx].label || "")) : String(idx);
+          const full = (this._dgFilteredRows || []).slice();
+          full.sort((a, b) => {
+            const va = a && a[key] != null ? a[key] : "";
+            const vb = b && b[key] != null ? b[key] : "";
+            const na = Number(va), nb = Number(vb);
+            const cmp = (!isNaN(na) && !isNaN(nb)) ? na - nb : String(va).localeCompare(String(vb));
+            return sortDir === "asc" ? cmp : -cmp;
+          });
+          this._dgFilteredRows = full;
+          if (tbody) {
+            const page = Number(this.getAttribute("page") || 1);
+            const pageSize = Number(this.getAttribute("page-size") || 0);
+            let pageRows = full;
+            if (pageSize > 0) { const start = (page - 1) * pageSize; pageRows = full.slice(start, start + pageSize); }
             tbody.innerHTML = "";
-            rows.forEach((r) => {
+            pageRows.forEach((r) => {
               const tr = document.createElement("tr");
-              r.forEach((v) => { const td = document.createElement("td"); td.textContent = v; tr.appendChild(td); });
+              cols.forEach((c) => {
+                const k = typeof c === "string" ? c : (c.key || c.label || "");
+                const td = document.createElement("td");
+                td.setAttribute("role", "gridcell");
+                td.setAttribute("tabindex", "0");
+                td.textContent = r && r[k] != null ? r[k] : "";
+                tr.appendChild(td);
+              });
               tbody.appendChild(tr);
             });
           }
           // Update aria-sort on headers.
-          Array.from(thead.querySelectorAll("th")).forEach((h, i) => {
+          if (thead) Array.from(thead.querySelectorAll("th")).forEach((h, i) => {
             h.setAttribute("aria-sort", i === idx ? (sortDir === "asc" ? "ascending" : "descending") : "none");
           });
           this.dispatchEvent(new CustomEvent("contour:sort", { bubbles: true, composed: true, detail: { column: idx, direction: sortDir } }));
@@ -3597,8 +3612,8 @@ class ContourDataGrid extends ContourBase {
  */
 class ContourTreeGrid extends ContourBase {
     static get updateMode() { return "keyed"; }
-    static get observed() { return ["items", "expanded"]; }
-    static get properties() { return { items: { attribute: "items" }, expanded: { attribute: "expanded" } }; }
+    static get observed() { return ["items", "expanded", "loading", "error", "empty"]; }
+    static get properties() { return { items: { attribute: "items" }, expanded: { attribute: "expanded" }, loading: { attribute: "loading" }, error: { attribute: "error" }, empty: { attribute: "empty" } }; }
     _expandedSet() {
       const raw = this.getAttribute("expanded");
       if (!raw) return new Set();
@@ -3650,7 +3665,12 @@ class ContourTreeGrid extends ContourBase {
         }
       };
       parsed.forEach((n, i) => renderNode(n, 0, String(i)));
-      if (table.parentNode !== this) this.appendChild(table);
+      // Wrap the table in the same scroller the reflow gate requires, so a
+      // tree grid is not a bare .c-table that stretches the page.
+      let wrap = this.querySelector(".c-tree-grid__wrap");
+      if (!wrap) { wrap = document.createElement("div"); wrap.className = "c-table-wrap c-tree-grid__wrap"; }
+      if (table.parentNode !== wrap) wrap.appendChild(table);
+      if (wrap.parentNode !== this) this.appendChild(wrap);
     }
     enhance() {
       if (this._wiredTreeGrid) return;
