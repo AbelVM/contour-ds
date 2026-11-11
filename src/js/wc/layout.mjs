@@ -40,15 +40,8 @@ class ContourBtnGroup extends ContourBase {
       this.classList.add("c-btn-group");
       this.setAttribute("role", "group");
       if (this.getAttribute("title")) this.setAttribute("aria-label", this.getAttribute("title"));
-      if (!this.querySelector(".c-btn")) {
-        for (const lbl of ["One", "Two", "Three"]) {
-          const b = document.createElement("button");
-          b.className = "c-btn c-btn--sm";
-          b.type = "button";
-          b.textContent = lbl;
-          this.appendChild(b);
-        }
-      }
+      // A shipped component must not invent its own buttons: the author supplies
+      // the <button> children. The old code rendered One/Two/Three when empty.
     }
     enhance() {
       if (this._wiredBtnGroup) return;
