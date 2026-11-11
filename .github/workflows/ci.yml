@@ -293,8 +293,12 @@ jobs:
         run: npm run test:storybook
       - name: Check Storybook coverage
         run: npm run check:storybook-coverage
-      - name: Capture Storybook screenshot baseline
+      - name: Capture Storybook screenshot baseline (legacy)
         run: |
           npx serve storybook -l 6006 &
           sleep 5
           npm run screenshot:baseline
+      - name: Visual regression check (CDS-019, armed baselines)
+        run: npm run visual:check
+        env:
+          STORYBOOK_URL: file://${{ github.workspace }}/storybook

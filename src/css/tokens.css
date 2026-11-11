@@ -577,11 +577,8 @@
      15. OVERRIDE CONTRACT
      These two values are the global retheming surface. A consumer only ever
      needs to set them on :root to retint and reshape the whole system.
+     (Declared earlier in the token layer; repeated here for documentation.)
      ======================================================================= */
-  :root {
-    --brand-hue: 182.5; /* re-tints every primary surface */
-    --radius-scale: 1; /* scales every radius at once */
-  }
 
   /* =======================================================================
      16. THEME SCOPE

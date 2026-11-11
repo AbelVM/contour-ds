@@ -16,7 +16,7 @@ export const DialogWithFormValidation = {
     trigger.textContent = "Open form";
     const dlg = document.createElement("contour-dialog");
     dlg.setAttribute("title", "Edit profile");
-    dlg.innerHTML = "<p>Test dialog content</p>";
+    dlg.innerHTML = "<p>Test dialog content</p><button class=\"c-dialog__close\" aria-label=\"Close\">×</button>";
     trigger.addEventListener("click", () => dlg.show());
     wrap.appendChild(trigger);
     wrap.appendChild(dlg);
@@ -27,6 +27,8 @@ export const DialogWithFormValidation = {
     const dlg = canvasElement.querySelector("contour-dialog");
     trigger.click();
     await expect(dlg).toHaveAttribute("open", "");
+    const closeBtn = dlg.querySelector(".c-dialog__close");
+    if (closeBtn) closeBtn.click();
     await expect(dlg).not.toHaveAttribute("open");
   },
 };

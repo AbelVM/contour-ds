@@ -9,7 +9,7 @@
     "preview": "astro preview"
   },
   "dependencies": {
-    "astro": "^4.0.0",
+    "astro": "^7.4.10",
     "contour-ds": "file:../../dist"
   }
 }

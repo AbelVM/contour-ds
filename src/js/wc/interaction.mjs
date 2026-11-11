@@ -496,6 +496,17 @@ class ContourSplitView extends ContourBase {
         this.appendChild(divider);
         this.appendChild(p2);
       }
+      // The divider is the control surface: an author who supplies their own
+      // panes still needs it, so create it independently of the pane guard.
+      if (!this.querySelector(".c-split-view__divider")) {
+        const divider = document.createElement("div");
+        divider.className = "c-split-view__divider";
+        divider.setAttribute("tabindex", "0");
+        divider.setAttribute("role", "separator");
+        divider.setAttribute("aria-valuenow", this.getAttribute("value") || "50");
+        divider.setAttribute("aria-label", "Split divider");
+        this.appendChild(divider);
+      }
       const v = this.getAttribute("value") || "50";
       const p1 = this.querySelector(".c-split-view__pane--left");
       if (p1) p1.style.flex = `0 0 ${v}%`;

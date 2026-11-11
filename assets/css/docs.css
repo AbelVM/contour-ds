@@ -182,6 +182,7 @@
 
   .ds-layout > main {
     min-inline-size: 0;
+    overflow-x: clip;
   }
 
   @media (width < 68rem) {
@@ -1416,6 +1417,20 @@
   inset: auto !important;
   transform: none !important;
 }
+
+/* Guide-only: list spacing for composition grammar sections — keeps inline
+   styles out of snippets so consumers don't copy guide-specific spacing. */
+.ds-list {
+  margin-block-start: 0.5rem;
+  padding-inline-start: 1.5rem;
+  line-height: var(--leading-relaxed);
+}
+
+.ds-list--two-col {
+  columns: 2;
+  column-gap: 2rem;
+}
+
 .ds-example .c-side-sheet {
   inline-size: 100%;
   max-inline-size: 24rem;

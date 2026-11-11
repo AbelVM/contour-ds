@@ -125,6 +125,8 @@ for (const f of files) {
   // invented tags check
   const tagsInFile = [...src.matchAll(/contour-[a-z][a-z0-9-]*/g)].map((m) => m[0]);
   for (const t of tagsInFile) {
+    // contour-ds is a package name, not a custom element — ignore in code snippets
+    if (t === "contour-ds") continue;
     if (!definedTags.has(t)) inventedTags.add(t);
   }
   // CSS class leak check: any c- class referenced must exist in the inventory's
@@ -185,6 +187,8 @@ for (const f of files) {
 
   // inventory block existence: every contour- tag must map to a c- block in the inventory
   for (const t of new Set(tagsInFile)) {
+    // contour-ds is a package name, not a custom element — ignore in code snippets
+    if (t === "contour-ds") continue;
     if (t.includes("shadow-")) continue;
     const blockName = "c-" + t.replace("contour-", "");
     if (inventoryBlocks.length && !inventoryBlocks.includes(blockName)) {

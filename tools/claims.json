@@ -39,7 +39,7 @@
     {
       "id": "C-06-i",
       "doc": "src/css/tokens.css",
-      "sentence": "re-tints every primary surface",
+      "sentence": "One hue drives the whole brand layer. Change it and every primary surface, ring and tint follows.",
       "owner": "node tools/audit/theme-render-probe.mjs",
       "threshold": "a root --brand-hue re-point must move a freshly mounted .c-btn--primary"
     },

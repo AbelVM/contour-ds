@@ -110,6 +110,7 @@ export const Provenance = {
 };
 
 export const FeatureInspector = {
+  id: "feature-inspector",
   render: () => {
     const wrap = document.createElement("div");
     wrap.style.display = "grid";
@@ -128,6 +129,7 @@ export const FeatureInspector = {
 };
 
 export const SplitView = {
+  id: "split-view",
   render: () => {
     const wrap = document.createElement("div");
     wrap.style.display = "grid";
@@ -143,8 +145,14 @@ export const SplitView = {
     return wrap;
   },
   play: async ({ canvasElement }) => {
-    await expect(canvasElement.querySelector("contour-split-view")).toBeTruthy();
-    await expect(canvasElement.querySelector(".c-split-view__divider")).toBeTruthy();
+    // SplitView test - verify split view renders with divider
+    const split = canvasElement.querySelector("contour-split-view");
+    await expect(split).toBeTruthy();
+    const divider = canvasElement.querySelector(".c-split-view__divider");
+    await expect(divider).toBeTruthy();
+    // Verify it's not the feature inspector
+    const inspector = canvasElement.querySelector("contour-feature-inspector");
+    await expect(inspector).toBeNull();
   },
 };
 

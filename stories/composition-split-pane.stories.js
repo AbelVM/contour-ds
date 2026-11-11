@@ -39,16 +39,18 @@ export const SplitPaneWithDialog = {
     const handle = canvasElement.querySelector(".c-resize-handle");
     await expect(handle).toBeTruthy();
     await expect(handle).toHaveAttribute("role", "separator");
-    handle.focus();
-    await expect(handle).toHaveFocus();
     const btn = canvasElement.querySelector(".c-button");
+    // A click focuses its target, so drive the interaction through focus first
+    // rather than relying on the synthetic click to land focus before show().
+    btn.focus();
+    await expect(btn).toHaveFocus();
     btn.click();
     const dlg = canvasElement.querySelector("contour-dialog");
     await expect(dlg).toHaveAttribute("open", "");
-    // Focus moves to dialog; after closing, verify handle can be focused again
+    // Close with Escape
     await userEvent.keyboard("{Escape}");
     await expect(dlg).not.toHaveAttribute("open");
-    handle.focus();
-    await expect(handle).toHaveFocus();
+    // Focus should return to trigger button
+    await expect(btn).toHaveFocus();
   },
 };

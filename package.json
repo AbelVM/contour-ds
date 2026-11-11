@@ -44,7 +44,12 @@
     "test:storybook": "npm run build && vitest run --project storybook",
     "check:storybook-coverage": "node tools/check-storybook-coverage.mjs",
     "screenshot:baseline": "node tools/screenshot-baseline.mjs",
-    "check:storybook": "npm run build-storybook && npm run test:storybook && npm run check:storybook-coverage"
+    "check:storybook": "npm run build-storybook && npm run test:storybook && npm run check:storybook-coverage",
+    "check:diagnostics": "node tools/check-diagnostics.mjs",
+    "check:dsd": "node tools/check-dsd.mjs",
+    "check:visual": "node tools/check-visual.mjs",
+    "visual:baseline": "node tools/check-visual.mjs --baseline",
+    "visual:check": "node tools/check-visual.mjs --compare"
   },
   "keywords": [
     "design-system",
@@ -117,11 +122,11 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
     "@playwright/test": "^1.65.0",
-    "@storybook/addon-a11y": "^10.6.6",
-    "@storybook/addon-docs": "^10.6.6",
-    "@storybook/addon-mcp": "^10.6.6",
-    "@storybook/addon-vitest": "^10.6.6",
-    "@storybook/web-components-vite": "^10.6.6",
+    "@storybook/addon-a11y": "^10.6.7",
+    "@storybook/addon-docs": "^10.6.7",
+    "@storybook/addon-mcp": "^10.6.7",
+    "@storybook/addon-vitest": "^10.6.7",
+    "@storybook/web-components-vite": "^10.6.7",
     "@vitest/browser-playwright": "^5.1.0",
     "@vitest/coverage-v8": "^5.1.0",
     "ajv": "8.20.0",
@@ -130,8 +135,8 @@
     "jsdom": "^31.0.0",
     "lit": "3.3.3",
     "playwright-core": "1.65.0",
-    "storybook": "^10.6.6",
-    "vite": "^8.3.7",
+    "storybook": "^10.6.7",
+    "vite": "^8.3.8",
     "vitest": "^5.1.0"
   },
   "author": "Abel V\u00e1zquez Montoro",

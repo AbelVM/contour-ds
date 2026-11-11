@@ -92,7 +92,7 @@ const BUDGETS = {
   // partition — and a directory key is measured by summing the files under it,
   // because `statSync` on a directory reports the inode's size, which would make
   // this budget a pass at 4 kB over a 42 kB package.
-  "docs/": 67 * 1024,  // raised 2026-11-09: CSS split documentation lists all 13 component files; raised 2026-11-09: +R16-25 to R16-32 Libreship support section in §25; measured 66.4 kB
+  "docs/": 70 * 1024,  // raised 2026-11-10: added composition grammar sections for Landing (16a), Dashboard (17a) and Documentation (15a); measured 68.2 kB
   "docs/index.json": 8 * 1024,
   // The registry (C-46). Measured 2026-10-24 at 16,443 bytes across 5 files:
   // registry.json 8,952 B plus four item files of 1,869–1,884 B — figures this gate
@@ -130,18 +130,18 @@ const BUDGETS = {
   "contour-wc.esm.min.js": 650 * 1024,  // raised 2026-11-08: +event emission (batch); raised 2026-11-09: +data-contour-preserve-key; raised 2026-11-09: +contour:scope-change event; raised 2026-11-09: +R16-16 cross-filter contract events; raised 2026-11-09: +R16-17 map-linked table click-to-zoom; raised 2026-11-09: +R16-21 time-series series management; raised 2026-11-09: +contour-saved-view, contour-provenance, contour-feature-inspector WC classes; measured 625.0 kB
   // Per-family wc bundles (R16-60): each = core infrastructure + one family's
   // components, so a consumer who doesn't use a bundler can load just one family.
-  "contour-wc-navigation.esm.min.js": 151 * 1024,  // measured 145.3 kB; raised 2026-11-09: +data-contour-preserve-key; raised 2026-11-09: +contour:scope-change event; measured 147.2 kB; raised 2026-11-09: +c-split-view WC class; measured 150.3 kB
-  "contour-wc-data.esm.min.js": 228 * 1024,  // measured 212.5 kB; raised 2026-11-09: +data-contour-preserve-key; measured 213.8 kB; raised 2026-11-09: +R16-16 cross-filter contract; measured 217.9 kB; raised 2026-11-09: +R16-17 map-linked table click-to-zoom; raised 2026-11-09: +R16-21 time-series series management; measured 219.8 kB; raised 2026-11-09: +contour-provenance WC class; measured 221.2 kB
-  "contour-wc-map.esm.min.js": 137 * 1024,  // measured 134.0 kB; raised 2026-11-09: +R16-17 map-linked table click-to-zoom; measured 135.0 kB; raised 2026-11-10: +CDS-049 drag handle button + keyboard reorder on layer panel items; measured 136.3 kB
-  "contour-wc-forms.esm.min.js": 131 * 1024,  // measured 128.2 kB; raised 2026-11-09: +data-contour-preserve-key; measured 129.8 kB; raised 2026-11-09: +R16-16 cross-filter contract; measured 130.0 kB
-  "contour-wc-ui.esm.min.js": 232 * 1024,  // measured 226.2 kB; raised 2026-11-09: +data-contour-preserve-key; measured 227.9 kB; raised 2026-11-09: +R16-16 cross-filter contract; measured 228.1 kB; raised 2026-11-09: +c-map-popup collision/anchoring (CDS-072); measured 230.3 kB; raised 2026-11-09: +c-animation-controls keyboard + loop + step + accessible values (CDS-067); measured 231.8 kB
-  "contour-wc-content.esm.min.js": 124 * 1024,  // measured 120.4 kB
-  "contour-wc-dashboard.esm.min.js": 105 * 1024,  // measured 93.2 kB; raised 2026-11-09: +contour-saved-view, contour-dash-freshness, contour-feature-inspector WC classes; measured 101.8 kB
-  "contour-wc-docs.esm.min.js": 99 * 1024,  // measured 96.7 kB; raised 2026-11-09: +data-contour-preserve-key; measured 97.6 kB; raised 2026-11-09: +maturity mapping in components.mjs; measured 98.1 kB
-  "contour-wc-feedback.esm.min.js": 124 * 1024,  // measured 120.5 kB
-  "contour-wc-interaction.esm.min.js": 115 * 1024,  // measured 107.0 kB; raised 2026-11-09: +data-contour-preserve-key; measured 108.3 kB; raised 2026-11-09: +c-split-view WC class; measured 113.7 kB; raised 2026-11-09: +c-map-popup collision/anchoring (CDS-072); measured 113.8 kB; raised 2026-11-09: +c-resize-handle keyboard alternative (CDS-028); measured 114.5 kB
-  "contour-wc-layout.esm.min.js": 96 * 1024,  // measured 93.2 kB
-  "contour-wc-misc.esm.min.js": 103 * 1024,  // measured 95.4 kB; raised 2026-11-09: +data-contour-preserve-key; measured 96.3 kB; raised 2026-11-09: +c-split-view WC class; measured 102.1 kB
+  "contour-wc-navigation.esm.min.js": 152 * 1024,  // raised 2026-11-10: +DSD template registry/export for SSR string emission (SHADOW_MARKUP, renderShadowDSD); measured 151.4 kB
+  "contour-wc-data.esm.min.js": 227 * 1024,  // raised 2026-11-10: +DSD template registry/export for SSR string emission; measured 225.8 kB
+  "contour-wc-map.esm.min.js": 138 * 1024,  // raised 2026-11-10: +DSD template registry/export for SSR string emission; measured 137.3 kB
+  "contour-wc-forms.esm.min.js": 132 * 1024,  // measured 128.2 kB; raised 2026-11-09: +data-contour-preserve-key; measured 129.8 kB; raised 2026-11-09: +R16-16 cross-filter contract; measured 130.0 kB; raised 2026-11-10: +DSD shadow-root reuse in shadow base (ContourShadow constructor); measured 131.0 kB
+  "contour-wc-ui.esm.min.js": 234 * 1024,  // raised 2026-11-10: +DSD template registry/export for SSR string emission; measured 232.8 kB
+  "contour-wc-content.esm.min.js": 124 * 1024,  // raised 2026-11-10: +DSD template registry/export for SSR string emission; measured 123.3 kB
+  "contour-wc-dashboard.esm.min.js": 104 * 1024,  // raised 2026-11-10: +DSD template registry/export for SSR string emission; measured 103.2 kB
+  "contour-wc-docs.esm.min.js": 101 * 1024,  // raised 2026-11-10: +DSD template registry/export for SSR string emission; measured 99.7 kB
+  "contour-wc-feedback.esm.min.js": 124 * 1024,  // raised 2026-11-10: +DSD template registry/export for SSR string emission; measured 123.5 kB
+  "contour-wc-interaction.esm.min.js": 116 * 1024,  // raised 2026-11-10: +DSD template registry/export for SSR string emission; measured 115.5 kB
+  "contour-wc-layout.esm.min.js": 97 * 1024,  // raised 2026-11-10: +DSD template registry/export for SSR string emission; measured 96.1 kB
+  "contour-wc-misc.esm.min.js": 104 * 1024,  // raised 2026-11-10: +DSD template registry/export for SSR string emission; measured 103.2 kB
 };
 
 const kB = (n) => `${(n / 1024).toFixed(1)} kB`;

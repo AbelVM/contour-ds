@@ -1481,8 +1481,8 @@
   .c-tree__toggle {
     display: inline-grid;
     place-items: center;
-    inline-size: calc(1.25rem * var(--density, 1));
-    block-size: calc(1.25rem * var(--density, 1));
+    inline-size: calc(1.5rem * var(--density, 1));
+    block-size: calc(1.5rem * var(--density, 1));
     border: none;
     background: transparent;
     color: var(--color-text-muted);

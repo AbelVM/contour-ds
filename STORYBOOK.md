@@ -80,11 +80,11 @@ API stabilizes. `agent-rules.json` and `llms*.txt` remain authoritative.
 
 ## Measured evidence (SB-29)
 
-- Story files: 50; stories: 587; stories with play functions: 587.
+- Story files: 56; stories: 611; stories with play functions: 611.
 - High-risk families covered: 13/13.
-- A11y status (files): error 0, todo 11, off 0, unset 31.
-- Maturity counts: complete-widget 36, composition 3, primitive 2, scaffold 1.
-- Defined custom elements: 209; inventory blocks: 214.
+- A11y status (files): error 0, todo 2, off 0, unset 54.
+- Maturity counts: complete-widget 530, composition 41, primitive 24, scaffold 16.
+- Defined custom elements: 230; inventory blocks: 231.
 - Screenshot baseline: 12 stories × 2 themes × 2 widths = 48 PNGs in `tmp/screenshots/`.
 - Protected visual contracts: `contour-forms-input--default` (form validation),
   `contour-overlays-dialog--default` (overlay framing),

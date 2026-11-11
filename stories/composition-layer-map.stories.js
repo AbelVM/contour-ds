@@ -25,7 +25,9 @@ export const LayerPanelEmitsVisibilityIntent = {
   play: async ({ canvasElement }) => {
     const panel = canvasElement.querySelector("contour-layer-panel");
     await expect(panel).toBeTruthy();
-    const toggle = panel.querySelector("button, .c-layer-panel__toggle, .c-layer-switch__toggle, [aria-pressed]");
+    // Wait for component to render
+    await new Promise(r => setTimeout(r, 100));
+    const toggle = panel.querySelector(".c-layer-panel__toggle");
     await expect(toggle).toBeTruthy();
     toggle.click();
     await expect(canvasElement.querySelector("#comp-layer-status").textContent).toBe("toggled");

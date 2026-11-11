@@ -27,7 +27,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `45468f2944533b8d` · last committed 2026-11-10T17:45:40+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0102caa891dd1fdf` · last committed 2026-11-11T00:01:36+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -78,7 +78,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `45468f2944533b8d` · last committed 2026-11-10T17:45:40+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0102caa891dd1fdf` · last committed 2026-11-11T00:01:36+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -128,7 +128,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `45468f2944533b8d` · last committed 2026-11-10T17:45:40+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0102caa891dd1fdf` · last committed 2026-11-11T00:01:36+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -165,7 +165,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `45468f2944533b8d` · last committed 2026-11-10T17:45:40+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0102caa891dd1fdf` · last committed 2026-11-11T00:01:36+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -209,7 +209,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `45468f2944533b8d` · last committed 2026-11-10T17:45:40+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0102caa891dd1fdf` · last committed 2026-11-11T00:01:36+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -265,7 +265,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `45468f2944533b8d` · last committed 2026-11-10T17:45:40+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0102caa891dd1fdf` · last committed 2026-11-11T00:01:36+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -306,7 +306,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `45468f2944533b8d` · last committed 2026-11-10T17:45:40+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0102caa891dd1fdf` · last committed 2026-11-11T00:01:36+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -384,7 +384,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `45468f2944533b8d` · last committed 2026-11-10T17:45:40+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0102caa891dd1fdf` · last committed 2026-11-11T00:01:36+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -436,7 +436,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `45468f2944533b8d` · last committed 2026-11-10T17:45:40+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0102caa891dd1fdf` · last committed 2026-11-11T00:01:36+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -514,7 +514,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `45468f2944533b8d` · last committed 2026-11-10T17:45:40+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0102caa891dd1fdf` · last committed 2026-11-11T00:01:36+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -580,7 +580,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `45468f2944533b8d` · last committed 2026-11-10T17:45:40+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0102caa891dd1fdf` · last committed 2026-11-11T00:01:36+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -661,7 +661,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `45468f2944533b8d` · last committed 2026-11-10T17:45:40+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0102caa891dd1fdf` · last committed 2026-11-11T00:01:36+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -750,7 +750,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `45468f2944533b8d` · last committed 2026-11-10T17:45:40+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0102caa891dd1fdf` · last committed 2026-11-11T00:01:36+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -816,6 +816,10 @@ Direction is drawn as well as named — an arrow, a word, and a colour that agre
 The contract a third party follows. A component is a CSS block in the right layer, a specimen in the guide, and a snippet the tool extracts.
 
 A migration aid: the names a consumer may already know, and the Contour class that replaces them.
+
+Semantic table (.c-table + .c-table-wrap) is a native table element with sorting, selection, responsive column hiding, and density control. It is the default for tabular data that fits in the DOM.
+
+Data grid (.c-data-grid + ) adds virtualization, cell keyboard navigation, column resizing, client-side filtering, and pagination. Use it when row counts exceed ~500 or when grid-style cell focus is required. The two contracts are separate: a semantic table does not virtualize; a data grid does not use native table semantics for its rows.
 
 ## Subsections
 
@@ -898,7 +902,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `45468f2944533b8d` · last committed 2026-11-10T17:45:40+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0102caa891dd1fdf` · last committed 2026-11-11T00:01:36+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -969,7 +973,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `45468f2944533b8d` · last committed 2026-11-10T17:45:40+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0102caa891dd1fdf` · last committed 2026-11-11T00:01:36+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1081,7 +1085,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `45468f2944533b8d` · last committed 2026-11-10T17:45:40+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0102caa891dd1fdf` · last committed 2026-11-11T00:01:36+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1157,7 +1161,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `45468f2944533b8d` · last committed 2026-11-10T17:45:40+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0102caa891dd1fdf` · last committed 2026-11-11T00:01:36+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1233,7 +1237,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `45468f2944533b8d` · last committed 2026-11-10T17:45:40+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0102caa891dd1fdf` · last committed 2026-11-11T00:01:36+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1360,6 +1364,14 @@ Sidebar
 
 Main content area
 
+A landing page is a persuasive argument. Its grammar prioritises storytelling, typography, large-scale composition, editorial rhythm, rich media, persuasive CTA and generous whitespace.
+
+The landing shell composes these blocks in a narrative sequence:
+
+Landing pages use the roomy density profile (--density-roomy: 1.28) with the display type scale for headings and generous section spacing.
+
+Landing pages use the fluid display scale for headlines and the fixed UI scale for body text. The display scale responds to viewport width; the UI scale does not.
+
 ## Subsections
 
 - Layout primitives
@@ -1370,6 +1382,10 @@ Main content area
 - Palette editor
 - Widget state
 - Web component counterpart
+- Landing page composition grammar
+- Anatomy
+- Density & rhythm
+- Type scale
 
 ## Blocks documented here
 
@@ -1428,7 +1444,7 @@ part of the component contract and nothing in an installed package defines them:
 
 ---
 
-Source `index.html` @ `45468f2944533b8d` · last committed 2026-11-10T17:45:40+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0102caa891dd1fdf` · last committed 2026-11-11T00:01:36+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1481,12 +1497,24 @@ By route volume
 
 48 rows · sorted by latency
 
+A documentation site is a reading instrument. Its grammar prioritises findability, reading comfort, technical precision, code discoverability and cross-referencing.
+
+The documentation shell composes these blocks in a fixed arrangement:
+
+Documentation uses the roomy density profile (--density-roomy: 1.28) for generous line height and paragraph spacing. The type scale follows the display/UI split: headings use the fluid display scale, body text uses the fixed UI scale.
+
+Every component reference in documentation must be a live link to its API reference entry.
+
 ## Subsections
 
 - Landing page
 - Documentation site
 - Technical dashboard
 - Web component counterpart
+- Documentation composition grammar
+- Anatomy
+- Density & rhythm
+- Cross-referencing contract
 
 ## Blocks documented here
 
@@ -1544,7 +1572,7 @@ part of the component contract and nothing in an installed package defines them:
 
 ---
 
-Source `index.html` @ `45468f2944533b8d` · last committed 2026-11-10T17:45:40+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0102caa891dd1fdf` · last committed 2026-11-11T00:01:36+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1565,10 +1593,22 @@ Equivalent contour-* elements are catalogued in §23.
 
 The playground writes directly to the scoped container. Nothing here is a special case — it is the same custom-property contract the tokens expose.
 
+An analytical dashboard is a workspace. Its grammar prioritises density, interpretation, cross-filtering, context preservation, comparison, rapid navigation, monitoring and freshness.
+
+The dashboard shell composes these 10 blocks into a spatial workspace:
+
+Dashboards use the compact density profile (--density-compact: 0.72) for maximum information density. Each component family consumes density independently.
+
+Dashboard components synchronize through contour:* events. The host owns selection state; components emit intent and reflect host state.
+
 ## Subsections
 
 - A component under test
 - Web component counterpart
+- Dashboard composition grammar
+- Spatial workspace family
+- Density & rhythm
+- Cross-view interaction contract
 
 ## Blocks documented here
 
@@ -1591,7 +1631,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `45468f2944533b8d` · last committed 2026-11-10T17:45:40+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0102caa891dd1fdf` · last committed 2026-11-11T00:01:36+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1668,7 +1708,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `45468f2944533b8d` · last committed 2026-11-10T17:45:40+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0102caa891dd1fdf` · last committed 2026-11-11T00:01:36+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1706,7 +1746,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `45468f2944533b8d` · last committed 2026-11-10T17:45:40+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0102caa891dd1fdf` · last committed 2026-11-11T00:01:36+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1821,7 +1861,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `45468f2944533b8d` · last committed 2026-11-10T17:45:40+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0102caa891dd1fdf` · last committed 2026-11-11T00:01:36+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1857,7 +1897,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `45468f2944533b8d` · last committed 2026-11-10T17:45:40+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0102caa891dd1fdf` · last committed 2026-11-11T00:01:36+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1916,7 +1956,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `45468f2944533b8d` · last committed 2026-11-10T17:45:40+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0102caa891dd1fdf` · last committed 2026-11-11T00:01:36+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1965,5 +2005,5 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `45468f2944533b8d` · last committed 2026-11-10T17:45:40+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0102caa891dd1fdf` · last committed 2026-11-11T00:01:36+01:00 · no URL: the project is private until v1.0.
 

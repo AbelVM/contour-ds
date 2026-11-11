@@ -23,7 +23,8 @@ import "./misc.mjs";
 import "./navigation.mjs";
 import "./ui.mjs";
 import "./registration.mjs";
-import "./shadow.mjs";
+import { SHADOW_MARKUP, renderShadowDSD } from "./shadow.mjs";
+export { SHADOW_MARKUP, renderShadowDSD };
 
 // Published version + readiness signal. Fires after every fragment has run, so
 // a consumer listening for `contour:ready` can assume the full registry exists.
