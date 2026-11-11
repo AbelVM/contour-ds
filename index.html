@@ -393,7 +393,7 @@
           <a href="#recipes">Recipes</a>
         </nav>
 
-        <details class="c-header__mobile-nav">
+        <details class="ds-header__mobile-nav">
           <summary aria-label="Sections"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="2" y1="4" x2="14" y2="4" /><line x1="2" y1="8" x2="14" y2="8" /><line x1="2" y1="12" x2="14" y2="12" /></svg></summary>
           <nav aria-label="Mobile sections">
             <a href="#colour">Colour</a>
@@ -409,7 +409,7 @@
         </details>
 
         <div class="c-header__actions">
-          <button class="c-search-trigger c-search-trigger--header" type="button" data-command-open popovertarget="command-palette" aria-label="Search">
+          <button class="c-search-trigger ds-search-trigger--header" type="button" data-command-open popovertarget="command-palette" aria-label="Search">
             <svg aria-hidden="true"><use href="#i-search" /></svg>
             <span class="c-search-trigger__text">Search</span>
             <span class="c-search-trigger__kbd" aria-hidden="true">
@@ -429,7 +429,7 @@
 
     <!-- In-page nav at 390px: a section list within the content, visible only
        on narrow viewports where the rail is hidden. Works without JS. -->
-    <nav class="c-inpage-nav" aria-label="In-page sections">
+    <nav class="ds-inpage-nav" aria-label="In-page sections">
       <a href="#overview">Overview</a>
       <a href="#principles">Principles</a>
       <a href="#colour">Colour</a>
@@ -3857,7 +3857,7 @@ means obvious.
                     <a href="#data">Data</a>
                   </nav>
                   <div class="c-header__actions">
-                    <button class="c-search-trigger c-search-trigger--header" type="button" data-command-open popovertarget="command-palette" aria-label="Search">
+                    <button class="c-search-trigger ds-search-trigger--header" type="button" data-command-open popovertarget="command-palette" aria-label="Search">
                       <svg aria-hidden="true"><use href="#i-search" /></svg>
                       <span class="c-search-trigger__text">Search</span>
                     </button>
@@ -3898,7 +3898,7 @@ means obvious.
       &lt;a href="#data"&gt;Data&lt;/a&gt;
     &lt;/nav&gt;
     &lt;div class="c-header__actions"&gt;
-      &lt;button class="c-search-trigger c-search-trigger--header" type="button" data-command-open popovertarget="command-palette" aria-label="Search"&gt;
+      &lt;button class="c-search-trigger ds-search-trigger--header" type="button" data-command-open popovertarget="command-palette" aria-label="Search"&gt;
         &lt;svg aria-hidden="true"&gt;
           &lt;use href="#i-search" /&gt;
         &lt;/svg&gt;
@@ -11614,7 +11614,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
 
             <div class="ds-example" data-generated="wrap"><div class="c-affordance" data-snippet>
               <div class="c-affordance__demo">
-                <span class="c-cursor-demo" style="display: inline-flex; align-items: center; gap: 0.4rem; font-family: var(--font-mono); font-size: var(--type-micro); color: var(--color-text-muted)">
+                <span class="ds-cursor-demo" style="display: inline-flex; align-items: center; gap: 0.4rem; font-family: var(--font-mono); font-size: var(--type-micro); color: var(--color-text-muted)">
                   <svg aria-hidden="true" style="width: 0.9rem; height: 0.9rem"><use href="#i-crosshair" /></svg>
                   pointer
                 </span>
@@ -11638,7 +11638,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                       <div class="ds-code__body">
                         <pre class="ds-code__pre"><code id="ds-code-227">&lt;div class="c-affordance"&gt;
   &lt;div class="c-affordance__demo"&gt;
-    &lt;span class="c-cursor-demo" style="display: inline-flex; align-items: center; gap: 0.4rem; font-family: var(--font-mono); font-size: var(--type-micro); color: var(--color-text-muted)"&gt;
+    &lt;span class="ds-cursor-demo" style="display: inline-flex; align-items: center; gap: 0.4rem; font-family: var(--font-mono); font-size: var(--type-micro); color: var(--color-text-muted)"&gt;
       &lt;svg aria-hidden="true" style="width: 0.9rem; height: 0.9rem"&gt;
         &lt;use href="#i-crosshair" /&gt;
       &lt;/svg&gt;
@@ -13258,7 +13258,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                           <p class="c-panel__subtitle">48 rows · sorted by latency</p>
                         </div>
                         <div class="c-panel__actions">
-                          <span class="c-cursor-demo" style="display: inline-flex; align-items: center; gap: 0.35rem; font-family: var(--font-mono); font-size: var(--type-micro); color: var(--color-text-subtle)">
+                          <span class="ds-cursor-demo" style="display: inline-flex; align-items: center; gap: 0.35rem; font-family: var(--font-mono); font-size: var(--type-micro); color: var(--color-text-subtle)">
                             <svg aria-hidden="true" style="width: 0.85rem; height: 0.85rem"><use href="#i-drag" /></svg>
                             reorder
                           </span>
@@ -14693,7 +14693,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                    <tr><td>Pagination</td><td>contour-shadow-pagination</td><td>Supported</td></tr>
                    <tr><td>Copy</td><td>contour-shadow-code</td><td>Supported</td></tr>
                    <tr><td>Removable</td><td>contour-shadow-tag, contour-shadow-chip</td><td>Supported</td></tr>
-                   <tr><td>ARIA setup only</td><td>remaining 43 wrappers</td><td>Shell-only (intentional)</td></tr>
+                   <tr><td>ARIA setup only</td><td>remaining wrappers</td><td>Shell-only (intentional)</td></tr>
                  </tbody>
                </table></div>
                <p class="c-section-head__desc">
