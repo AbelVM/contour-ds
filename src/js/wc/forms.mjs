@@ -37,16 +37,21 @@ class ContourCombobox extends ContourBase {
       if ((options) && !authored.length) {
         try {
           const parsed = options ? JSON.parse(options) : [];
+          this._comboboxOptions = parsed;
           const input = this.ensure(".c-combobox__input", () => { const el = document.createElement("input"); el.className = "c-combobox__input"; el.type = "text"; return el; });
           input.type = "text";
           input.placeholder = this.getAttribute("placeholder") || "Search…";
           input.setAttribute("aria-label", this.getAttribute("label") || "Search");
           const val = this.getAttribute("value");
-          if (val !== null) input.value = val;
+          if (val !== null) {
+            // The attribute holds the submitted value; the field shows the
+            // matching option's label so the two can differ (value "us" -> "United States").
+            const match = parsed.find((o) => String(typeof o === "string" ? o : o.value) === String(val));
+            input.value = match ? String(typeof match === "string" ? match : match.label) : val;
+          }
           const list = this.ensure(".c-combobox__list", () => { const el = document.createElement("ul"); el.className = "c-combobox__list"; el.setAttribute("hidden", ""); return el; });
           list.innerHTML = "";
           list.setAttribute("hidden", "");
-          this._comboboxOptions = parsed;
           this._comboboxVirtual = this.hasAttribute("virtual") && parsed.length > 100;
           if (this._comboboxVirtual) {
             list.classList.add("c-combobox__list--virtual");
@@ -121,6 +126,7 @@ class ContourCombobox extends ContourBase {
         const li = document.createElement("li");
         li.className = "c-combobox__option";
         li.dataset.optionIndex = String(item.index);
+        li.dataset.optionValue = String(item.value != null ? item.value : item.label);
         li.setAttribute("role", "option");
         const label = String(item.label);
         const q = String(query || "").toLowerCase();
@@ -147,6 +153,15 @@ class ContourCombobox extends ContourBase {
       if (this._comboboxVirtual) addSpacer(Math.max(0, filtered.length - end) * rowHeight);
       if (this._comboboxVirtual && !reset) list.scrollTop = oldScrollTop;
     }
+     _syncFormValue() {
+       if (!this._internals) return;
+       // The committed value lives on the host attribute, not in the text field
+       // (which shows the option label), so the form submits the value.
+       const raw = this.getAttribute("value");
+       const value = raw != null && raw !== "" ? raw : null;
+       this._internals.setFormValue(value);
+       this._syncValidity(this.hasAttribute("required") && !value);
+     }
      enhance() {
        wireCombobox(this);
        // Form sync (D-02): commit writes the input value; mirror it into the
@@ -184,9 +199,9 @@ define("contour-combobox", ContourCombobox);
  * sync via `_internals.setFormValue`. Emits `contour:input` / `contour:change`.
  */
 class ContourField extends ContourBase {
-    static get observed() { return ["label", "hint", "error", "placeholder", "type", "required"]; }
+    static get observed() { return ["label", "hint", "error", "placeholder", "type", "required", "name", "value", "disabled"]; }
     static get formAssociated() { return true; }
-    static get properties() { return { label: { attribute: "label" }, hint: { attribute: "hint" }, error: { attribute: "error" }, placeholder: { attribute: "placeholder" }, type: { attribute: "type" }, required: { attribute: "required", type: Boolean } }; }
+    static get properties() { return { label: { attribute: "label" }, hint: { attribute: "hint" }, error: { attribute: "error" }, placeholder: { attribute: "placeholder" }, type: { attribute: "type" }, required: { attribute: "required", type: Boolean }, name: { attribute: "name" }, value: { attribute: "value" }, disabled: { attribute: "disabled", type: Boolean } }; }
     render() {
       this.classList.add("c-field");
       const label = this.getAttribute("label");
@@ -235,7 +250,15 @@ class ContourField extends ContourBase {
       if (hintEl) { if (!hintEl.id) hintEl.id = contourId("hint"); describedBy.push(hintEl.id); }
       if (errEl) { if (!errEl.id) errEl.id = contourId("err"); describedBy.push(errEl.id); }
       if (describedBy.length) input.setAttribute("aria-describedby", describedBy.join(" "));
-      if (this.hasAttribute("required")) input.setAttribute("aria-required", "true");
+      // Reflect the native constraint state, not only ARIA: `checkValidity()`
+      // and the form's own validation must see `required`, and FormData must
+      // see `name`/`value`. ARIA alone never blocks submit.
+      if (this.hasAttribute("required")) { input.setAttribute("aria-required", "true"); input.setAttribute("required", ""); }
+      else { input.removeAttribute("aria-required"); input.removeAttribute("required"); }
+      if (this.hasAttribute("name")) input.setAttribute("name", this.getAttribute("name"));
+      if (this.hasAttribute("value")) input.value = this.getAttribute("value");
+      if (this.hasAttribute("disabled")) { input.setAttribute("disabled", ""); this.classList.add("is-disabled"); }
+      else { input.removeAttribute("disabled"); this.classList.remove("is-disabled"); }
     }
   }
   ContourField.prototype.enhance = function() {
@@ -269,6 +292,16 @@ class ContourField extends ContourBase {
         input.setAttribute("aria-invalid", "false");
         this.classList.remove("is-invalid");
         this.removeAttribute("data-invalid");
+        // Clear a transient validation error the blur handler surfaced, but
+        // never an error the author set explicitly.
+        if (!this.getAttribute("error")) {
+          const stale = this.querySelector(".c-field__error");
+          if (stale) {
+            const id = stale.id;
+            stale.remove();
+            if (id) input.setAttribute("aria-describedby", (input.getAttribute("aria-describedby") || "").split(" ").filter((x) => x && x !== id).join(" "));
+          }
+        }
       } else {
         input.setAttribute("aria-invalid", "true");
         this.classList.add("is-invalid");
@@ -346,11 +379,19 @@ class ContourFieldGroup extends ContourBase {
  * listing the invalid fields. Emits `contour:submit` on valid submit.
  */
 class ContourForm extends ContourBase {
-    static get observed() { return ["submitting", "error", "summary"]; }
-    static get properties() { return { submitting: { attribute: "submitting", type: Boolean }, error: { attribute: "error" }, summary: { attribute: "summary" } }; }
+    static get observed() { return ["submitting", "error", "summary", "title", "submit-label"]; }
+    static get properties() { return { submitting: { attribute: "submitting", type: Boolean }, error: { attribute: "error" }, summary: { attribute: "summary" }, title: { attribute: "title" }, submitLabel: { attribute: "submit-label" } }; }
     render() {
       this.classList.add("c-form");
       if (this.hasAttribute("submitting")) this.classList.add("is-submitting"); else this.classList.remove("is-submitting");
+      const title = this.getAttribute("title");
+      let titleEl = this.querySelector(".c-form__title");
+      if (title) {
+        if (!titleEl) { titleEl = document.createElement("h2"); titleEl.className = "c-form__title"; this.prepend(titleEl); }
+        titleEl.textContent = title;
+      } else if (titleEl) {
+        titleEl.remove();
+      }
       const summaryText = this.getAttribute("summary") || this.getAttribute("error");
       let summary = this.querySelector(".c-form__summary");
       if (summaryText) {
@@ -360,34 +401,57 @@ class ContourForm extends ContourBase {
       } else if (summary) {
         summary.setAttribute("hidden", "");
       }
-      const submit = this.querySelector("[type='submit'], .c-form__submit");
-      if (submit) {
-        if (this.hasAttribute("submitting")) submit.setAttribute("disabled", "");
-        else submit.removeAttribute("disabled");
+      // The component owns submission: it renders its own submit control when
+      // the author gives a `submit-label`, so an empty <contour-form> still
+      // shows a title and a button instead of rendering nothing.
+      const submitLabel = this.getAttribute("submit-label");
+      let submit = this.querySelector(".c-form__submit");
+      if (!submit) {
+        submit = document.createElement("button");
+        submit.type = "submit";
+        submit.className = "c-btn c-btn--primary c-form__submit";
+        this.appendChild(submit);
       }
+      if (submitLabel) submit.textContent = submitLabel;
+      else if (!submit.textContent) submit.textContent = "Submit";
+      if (this.hasAttribute("submitting")) submit.setAttribute("disabled", "");
+      else submit.removeAttribute("disabled");
     }
     enhance() {
       if (this._wiredForm) return;
       this._wiredForm = true;
+      // A click on the component's own submit control is the submission path
+      // when there is no nested real <form>; prevent the default (there is no
+      // form to submit) and run the same validate-then-emit flow.
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest(".c-form__submit") : null;
+        if (!btn || !this.contains(btn)) return;
+        if (e.target.closest("form")) return; // a nested real form handles it
+        e.preventDefault();
+        this._submit();
+      });
       this.addEventListener("submit", (e) => {
         const form = e.target;
+        // The component claims ownership of submission: never let a nested
+        // real <form> navigate away.
+        e.preventDefault();
         if (form && typeof form.checkValidity === "function" && !form.checkValidity()) {
-          e.preventDefault();
           const invalid = Array.from(form.querySelectorAll(":invalid"));
           const names = invalid.map((el) => el.getAttribute("aria-label") || el.name || el.id || "field").join(", ");
-          // Update DOM directly (avoid setAttribute on observed attr -> re-entrancy).
           let summary = this.querySelector(".c-form__summary");
           if (!summary) { summary = document.createElement("div"); summary.className = "c-form__summary"; summary.setAttribute("role", "alert"); this.prepend(summary); }
           summary.textContent = "Please fix: " + (names || "invalid fields");
           summary.removeAttribute("hidden");
           return;
         }
-        // submitting state via class + button, not attribute.
-        this.classList.add("is-submitting");
-        const submit = this.querySelector("[type='submit'], .c-form__submit");
-        if (submit) submit.setAttribute("disabled", "");
-        this.dispatchEvent(new CustomEvent("contour:submit", { bubbles: true, composed: true, detail: { submitting: true } }));
+        this._submit();
       });
+    }
+    _submit() {
+      this.classList.add("is-submitting");
+      const submit = this.querySelector("[type='submit'], .c-form__submit");
+      if (submit) submit.setAttribute("disabled", "");
+      this.dispatchEvent(new CustomEvent("contour:submit", { bubbles: true, composed: true, detail: { submitting: true } }));
     }
   }
   define("contour-form", ContourForm);
@@ -400,9 +464,9 @@ class ContourForm extends ContourBase {
  * filled track.
  */
 class ContourRange extends ContourBase {
-    static get observed() { return ["min", "max", "value", "low", "high", "range", "sparkline", "label", "disabled", "error", "help"]; }
+    static get observed() { return ["min", "max", "value", "low", "high", "range", "sparkline", "label", "disabled", "error", "help", "name"]; }
     static get formAssociated() { return true; }
-    static get properties() { return { min: { attribute: "min" }, max: { attribute: "max" }, value: { attribute: "value" }, label: { attribute: "label" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" } }; }
+    static get properties() { return { min: { attribute: "min" }, max: { attribute: "max" }, value: { attribute: "value" }, label: { attribute: "label" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" }, name: { attribute: "name" } }; }
      render() {
        this.classList.add("c-range");
        const min = this.getAttribute("min") || "0";
@@ -422,9 +486,9 @@ class ContourRange extends ContourBase {
          const single = this.querySelector("input.c-range:not(.c-range__low):not(.c-range__high)");
          // keep generic input? We'll use two named inputs
          let lowInput = this.querySelector("input.c-range__low");
-         if (!lowInput) { lowInput = document.createElement("input"); lowInput.type = "range"; lowInput.className = "c-range c-range__low"; this.appendChild(lowInput); }
+         if (!lowInput) { lowInput = document.createElement("input"); lowInput.type = "range"; lowInput.className = "c-range c-range__low"; lowInput.setAttribute("part", "input"); this.appendChild(lowInput); }
          let highInput = this.querySelector("input.c-range__high");
-         if (!highInput) { highInput = document.createElement("input"); highInput.type = "range"; highInput.className = "c-range c-range__high"; this.appendChild(highInput); }
+         if (!highInput) { highInput = document.createElement("input"); highInput.type = "range"; highInput.className = "c-range c-range__high"; highInput.setAttribute("part", "input"); this.appendChild(highInput); }
          lowInput.min = min; lowInput.max = max;
          highInput.min = min; highInput.max = max;
          const lowVal = this.getAttribute("low") || min;
@@ -435,10 +499,23 @@ class ContourRange extends ContourBase {
          else { highInput.value = highVal; this._rangeUserHigh = null; this._rangeAttrHighAtDirty = null; }
          const label = this.getAttribute("label");
          if (label) { lowInput.setAttribute("aria-label", label + " low"); highInput.setAttribute("aria-label", label + " high"); }
+         // A dual range submits two entries, not one comma-joined value: a
+         // form-associated custom element can only set one value, so the two
+         // handles are mirrored into hidden native inputs that the ancestor
+         // form submits as separate entries under the host's name.
+         const hostName = this.getAttribute("name");
+         if (hostName) {
+           const lo = this.ensure('input[type="hidden"][data-range="low"]', () => { const el = document.createElement("input"); el.type = "hidden"; el.setAttribute("data-range", "low"); return el; });
+           const hi = this.ensure('input[type="hidden"][data-range="high"]', () => { const el = document.createElement("input"); el.type = "hidden"; el.setAttribute("data-range", "high"); return el; });
+           lo.name = hostName; hi.name = hostName;
+           lo.value = lowInput.value; hi.value = highInput.value;
+         } else {
+           Array.from(this.querySelectorAll('input[type="hidden"][data-range]')).forEach((n) => n.remove());
+         }
        } else {
          // remove dual inputs
          Array.from(this.querySelectorAll("input.c-range__low, input.c-range__high")).forEach((n) => n.remove());
-         const input = this.ensure("input.c-range", () => { const el = document.createElement("input"); el.type = "range"; return el; });
+         const input = this.ensure("input.c-range", () => { const el = document.createElement("input"); el.type = "range"; el.setAttribute("part", "input"); return el; });
          // ensure class
          input.className = "c-range";
          input.type = "range";
@@ -485,9 +562,16 @@ class ContourRange extends ContourBase {
        const low = this.querySelector("input.c-range__low");
        const high = this.querySelector("input.c-range__high");
        const single = this.querySelector("input.c-range:not(.c-range__low):not(.c-range__high)");
-       if (this._internals) {
-         if (low && high) this._internals.setFormValue(low.value + "," + high.value);
-         else if (single) this._internals.setFormValue(single.value);
+       if (low && high) {
+         // Mirror the handles into the hidden inputs so the ancestor form
+         // submits two entries; the host itself sets no single value.
+         const lo = this.querySelector('input[type="hidden"][data-range="low"]');
+         const hi = this.querySelector('input[type="hidden"][data-range="high"]');
+         if (lo) lo.value = low.value;
+         if (hi) hi.value = high.value;
+         if (this._internals) this._internals.setFormValue(null);
+       } else if (single && this._internals) {
+         this._internals.setFormValue(single.value);
        }
      };
      this.addEventListener("input", (e) => {
@@ -581,6 +665,16 @@ class ContourSwitch extends ContourBase {
       }
       if (this._wiredSwitch) return;
       this._wiredSwitch = true;
+      // Label activation: the host is not a native <label>, so a click on the
+      // text or track must toggle the input. The input's own click is left to
+      // the platform (early return) so it toggles exactly once.
+      this.addEventListener("click", (e) => {
+        if (e.target && e.target.closest && e.target.closest("input")) return;
+        const inp = this.querySelector("input");
+        if (!inp || inp.disabled) return;
+        e.preventDefault();
+        inp.click();
+      });
       this.addEventListener("change", (e) => {
         const inp = this.querySelector("input");
         if (!inp || e.target !== inp || !this._internals) return;
@@ -645,6 +739,16 @@ class ContourCheck extends ContourBase {
       }
       if (this._wiredCheck) return;
       this._wiredCheck = true;
+      // Label activation: the host is not a native <label>, so a click on the
+      // text or box must toggle the input. The input's own click is left to
+      // the platform (early return) so it toggles exactly once.
+      this.addEventListener("click", (e) => {
+        if (e.target && e.target.closest && e.target.closest("input")) return;
+        const inp = this.querySelector("input");
+        if (!inp || inp.disabled) return;
+        e.preventDefault();
+        inp.click();
+      });
       this.addEventListener("change", (e) => {
         const inp = this.querySelector("input");
         if (!inp || e.target !== inp || !this._internals) return;
@@ -699,6 +803,16 @@ class ContourRadio extends ContourBase {
       }
       if (this._wiredRadio) return;
       this._wiredRadio = true;
+      // Label activation: the host is not a native <label>, so a click on the
+      // text must select the radio. The input's own click is left to the
+      // platform (early return) so it toggles exactly once.
+      this.addEventListener("click", (e) => {
+        if (e.target && e.target.closest && e.target.closest("input")) return;
+        const inp = this.querySelector("input");
+        if (!inp || inp.disabled) return;
+        e.preventDefault();
+        inp.click();
+      });
       this.addEventListener("change", (e) => {
         const inp = this.querySelector("input");
         if (!inp || e.target !== inp || !this._internals) return;
@@ -718,8 +832,8 @@ class ContourRadio extends ContourBase {
  * required, disabled, error and help. Form associated; emits `contour:change`.
  */
 class ContourSelect extends ContourBase {
-    static get observed() { return ["options", "required", "label", "placeholder", "disabled", "error", "help"]; }
-    static get properties() { return { options: { attribute: "options" }, required: { attribute: "required", type: Boolean }, label: { attribute: "label" }, placeholder: { attribute: "placeholder" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" } }; }
+    static get observed() { return ["options", "required", "label", "placeholder", "disabled", "error", "help", "value", "name", "multiple", "autocomplete"]; }
+    static get properties() { return { options: { attribute: "options" }, required: { attribute: "required", type: Boolean }, label: { attribute: "label" }, placeholder: { attribute: "placeholder" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" }, value: { attribute: "value" }, name: { attribute: "name" }, multiple: { attribute: "multiple", type: Boolean }, autocomplete: { attribute: "autocomplete" } }; }
     static get formAssociated() { return true; }
     render() {
       this.classList.add("c-select");
@@ -778,6 +892,22 @@ class ContourSelect extends ContourBase {
       if (sel) {
         if (this.hasAttribute("disabled")) { sel.setAttribute("disabled", ""); this.classList.add("is-disabled"); }
         else { sel.removeAttribute("disabled"); this.classList.remove("is-disabled"); }
+        // Reflect the native attributes the platform reads: FormData needs
+        // `name`, a multi-select needs `multiple`, and the value must be the
+        // committed selection rather than whatever the first option happens to be.
+        if (this.hasAttribute("name")) sel.setAttribute("name", this.getAttribute("name"));
+        if (this.hasAttribute("multiple")) sel.setAttribute("multiple", ""); else sel.removeAttribute("multiple");
+        if (this.hasAttribute("autocomplete")) sel.setAttribute("autocomplete", this.getAttribute("autocomplete"));
+        if (this.hasAttribute("required")) sel.setAttribute("required", ""); else sel.removeAttribute("required");
+        const val = this.getAttribute("value");
+        if (val !== null) {
+          if (sel.multiple) {
+            const wanted = new Set(String(val).split(",").map((v) => v.trim()).filter(Boolean));
+            Array.from(sel.options).forEach((o) => { o.selected = wanted.has(o.value); });
+          } else {
+            sel.value = val;
+          }
+        }
       }
       // Label (applies to both JSON and authored options).
       const label = this.getAttribute("label");
@@ -785,7 +915,11 @@ class ContourSelect extends ContourBase {
         let lbl = this.querySelector("label.c-select__label");
         if (!lbl) { lbl = document.createElement("label"); lbl.className = "c-select__label"; this.insertBefore(lbl, sel || this.firstChild); }
         lbl.textContent = label;
-        if (sel) sel.setAttribute("aria-label", label);
+        if (sel) {
+          if (!sel.id) sel.id = contourId("contour-select");
+          lbl.setAttribute("for", sel.id);
+          sel.setAttribute("aria-label", label);
+        }
       }
       if (!this.querySelector("select")?.hasAttribute("aria-label")) {
         const sel = this.querySelector("select");
@@ -809,10 +943,18 @@ class ContourSelect extends ContourBase {
       }
       if (this._wiredSelect) return;
       this._wiredSelect = true;
+      this.addEventListener("input", (e) => {
+        const sel = this.querySelector("select");
+        if (!sel || e.target !== sel) return;
+        this._emitForm("contour:input");
+      });
       this.addEventListener("change", (e) => {
         const sel = this.querySelector("select");
         if (!sel || e.target !== sel || !this._internals) return;
         this._internals.setFormValue(sel.value);
+        // Reflect the committed selection back to the host attribute so a
+        // consumer reading `value` sees what the user picked.
+        this.setAttribute("value", sel.value);
         this._emitForm("contour:change");
         this._syncValidity(this.hasAttribute("required") && !sel.value);
       });

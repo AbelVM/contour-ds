@@ -380,7 +380,7 @@
     inline-size: calc(1.15rem * var(--density, 1));
     block-size: calc(1.15rem * var(--density, 1));
     margin: calc(0.15rem * var(--density, 1)) 0 0;
-    border: 1px solid var(--color-border-strong);
+    border: 1px solid var(--color-control-edge);
     border-radius: var(--radius-xs);
     background: var(--color-surface-1);
     cursor: pointer;

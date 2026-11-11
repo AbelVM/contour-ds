@@ -1,4 +1,4 @@
-import { ContourBase, define, onDispose, sanitizeHtml, headingTag, navKey } from './core.mjs';
+import { ContourBase, define, onDispose, sanitizeHtml, headingTag, navKey, safeHref } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 
 /* Route matching (CDS-075). The URL is the state for a documentation surface, so
@@ -75,7 +75,7 @@ class ContourDocsNav extends ContourBase {
             (g.links || g.items || []).forEach((l) => {
               const a = document.createElement("a");
               a.className = "c-docs-nav__link";
-              a.href = (typeof l === "string" ? "#" : (l.href || "#"));
+              a.href = safeHref(typeof l === "string" ? "#" : (l.href || "#"));
               const label = typeof l === "string" ? l : (l.label || l);
               if (typeof l === "object" && l !== null && l.badge) {
                 const b = document.createElement("span");
@@ -97,7 +97,7 @@ class ContourDocsNav extends ContourBase {
                 l.items.forEach((nl) => {
                   const na = document.createElement("a");
                   na.className = "c-docs-nav__link";
-                  na.href = (typeof nl === "string" ? "#" : (nl.href || "#"));
+                  na.href = safeHref(typeof nl === "string" ? "#" : (nl.href || "#"));
                   na.textContent = typeof nl === "string" ? nl : (nl.label || nl);
                   nested.appendChild(na);
                 });

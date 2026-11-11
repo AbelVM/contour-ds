@@ -41,7 +41,18 @@ const templates = fs.readdirSync(path.join(ROOT, "templates"))
 
 // Hooks are marker/utility classes that are not standalone components and are
 // ledgered rather than specimened.
-const HOOKS = new Set([]);
+//
+// The five below are generated internals: the JS builds them inside a host
+// component (tabs panel, combobox list/option, command list) and the CSS rule
+// styles the generated node. They are not blocks an author composes, so they
+// are ledgered here rather than given a specimen of their own.
+const HOOKS = new Set([
+  "c-code-tabs-panel",
+  "c-combobox-list",
+  "c-combobox-option",
+  "c-command-list",
+  "c-tabs-panel",
+]);
 const isHook = (b) => HOOKS.has(b) || b.startsWith("is-") || b.startsWith("u-");
 
 const noSpecimen = [];

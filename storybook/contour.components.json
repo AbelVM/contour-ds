@@ -4,11 +4,11 @@
   "generatedBy": "tools/build.mjs, from tools/lib/inventory.mjs",
   "statement": "Generated, never hand-edited. Every block, element, variant, state and token below is read from src/css by the same inventory that publishes every count in this repository, and tools/check-components.mjs fails if the shipped bytes are not that derivation. `tokens` lists the custom properties a block's rules read; a rule naming two blocks (`.c-alert, .c-callout`) is credited to both, because that is what a retune does.",
   "counts": {
-    "blocks": 231,
-    "elements": 754,
-    "variants": 106,
-    "states": 314,
-    "tokens": 2520,
+    "blocks": 232,
+    "elements": 763,
+    "variants": 107,
+    "states": 320,
+    "tokens": 2542,
     "vars": 16,
     "inputs": 17,
     "tokensIndexed": 198
@@ -2142,20 +2142,26 @@
       "sheets": [
         "components-display.css"
       ],
-      "rules": 7,
+      "rules": 12,
       "elements": [
         "c-code__copy",
         "c-code__head",
+        "c-code__line",
+        "c-code__line-number",
         "c-code__title"
       ],
-      "variants": [],
+      "variants": [
+        "c-code--numbered"
+      ],
       "states": [],
       "attributes": [
         "title",
-        "copyable"
+        "copyable",
+        "numbered"
       ],
       "booleanAttributes": [
-        "copyable"
+        "copyable",
+        "numbered"
       ],
       "slots": [
         ""
@@ -3827,17 +3833,22 @@
       "sheets": [
         "patterns.css"
       ],
-      "rules": 13,
+      "rules": 19,
       "elements": [
         "c-docs-shell__article",
         "c-docs-shell__header",
         "c-docs-shell__lede",
         "c-docs-shell__nav",
+        "c-docs-shell__nav-toggle",
         "c-docs-shell__title",
         "c-docs-shell__toc"
       ],
       "variants": [],
-      "states": [],
+      "states": [
+        "::backdrop",
+        ":popover-open",
+        "[popover]"
+      ],
       "attributes": [
         "title",
         "lede",
@@ -3852,19 +3863,29 @@
         "docs-shell"
       ],
       "tokens": [
+        "--color-border",
+        "--color-scrim",
+        "--color-surface-1",
         "--color-text-muted",
         "--color-text-strong",
         "--density",
         "--font-display",
         "--header-height",
         "--leading-normal",
+        "--radius-pill",
+        "--shadow-lg",
+        "--shadow-sm",
         "--space-2xl",
         "--space-lg",
         "--space-md",
+        "--space-sm",
+        "--space-xs",
+        "--target-control",
         "--tracking-heading",
         "--type-h1",
         "--type-lead",
-        "--weight-bold"
+        "--weight-bold",
+        "--z-raised"
       ],
       "vars": [],
       "inputs": [],
@@ -12078,6 +12099,52 @@
         "guide": true,
         "templates": []
       }
+    },
+    {
+      "name": "c-workspace-shell",
+      "maturity": "complete-widget",
+      "sheets": [
+        "patterns.css"
+      ],
+      "rules": 17,
+      "elements": [
+        "c-workspace-shell__body",
+        "c-workspace-shell__inspector",
+        "c-workspace-shell__inspector-toggle",
+        "c-workspace-shell__resize",
+        "c-workspace-shell__sidebar",
+        "c-workspace-shell__stage"
+      ],
+      "variants": [],
+      "states": [
+        "::backdrop",
+        ":popover-open",
+        "[popover]"
+      ],
+      "attributes": [],
+      "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
+      "tokens": [
+        "--color-border",
+        "--color-scrim",
+        "--color-surface-1",
+        "--color-text-strong",
+        "--density",
+        "--header-height",
+        "--radius-pill",
+        "--shadow-lg",
+        "--shadow-sm",
+        "--space-md",
+        "--space-sm",
+        "--target-control"
+      ],
+      "vars": [],
+      "inputs": [],
+      "renderedIn": {
+        "guide": true,
+        "templates": []
+      }
     }
   ],
   "tokensIndex": {
@@ -12386,6 +12453,7 @@
       "c-divider",
       "c-do-dont",
       "c-docs-nav",
+      "c-docs-shell",
       "c-draggable",
       "c-drawer",
       "c-empty",
@@ -12456,7 +12524,8 @@
       "c-toolbar",
       "c-tour",
       "c-version",
-      "c-virtual-list"
+      "c-virtual-list",
+      "c-workspace-shell"
     ],
     "--color-border-strong": [
       "c-card",
@@ -12807,7 +12876,9 @@
     "--color-scrim": [
       "c-command",
       "c-dialog",
-      "c-scrim"
+      "c-docs-shell",
+      "c-scrim",
+      "c-workspace-shell"
     ],
     "--color-selection": [
       "c-table"
@@ -12882,6 +12953,7 @@
       "c-date-picker",
       "c-dialog",
       "c-do-dont",
+      "c-docs-shell",
       "c-drawer",
       "c-drop-zone",
       "c-dropdown",
@@ -12947,7 +13019,8 @@
       "c-toast",
       "c-toolbar",
       "c-tooltip",
-      "c-version"
+      "c-version",
+      "c-workspace-shell"
     ],
     "--color-surface-2": [
       "c-affordance",
@@ -13249,7 +13322,8 @@
       "c-threshold",
       "c-timeline",
       "c-toc",
-      "c-toolbar"
+      "c-toolbar",
+      "c-workspace-shell"
     ],
     "--color-text-subtle": [
       "c-activity",
@@ -13581,7 +13655,8 @@
       "c-version",
       "c-version-banner",
       "c-virtual-list",
-      "c-widget-state"
+      "c-widget-state",
+      "c-workspace-shell"
     ],
     "--density-row": [
       "c-table"
@@ -13877,7 +13952,8 @@
       "c-dash-toolbar",
       "c-docs-shell",
       "c-header",
-      "c-prose"
+      "c-prose",
+      "c-workspace-shell"
     ],
     "--leading-normal": [
       "c-affordance",
@@ -14021,6 +14097,7 @@
       "c-chip",
       "c-container",
       "c-data-export",
+      "c-docs-shell",
       "c-filter-bar",
       "c-filter-pill",
       "c-heatmap",
@@ -14039,7 +14116,8 @@
       "c-switch",
       "c-threshold",
       "c-toolbar",
-      "c-version"
+      "c-version",
+      "c-workspace-shell"
     ],
     "--radius-scale": [
       "c-theme-scope"
@@ -14142,13 +14220,15 @@
       "c-range"
     ],
     "--shadow-lg": [
+      "c-docs-shell",
       "c-fab",
       "c-landing-hero",
       "c-map-panel",
       "c-menu",
       "c-shortcut-panel",
       "c-side-sheet",
-      "c-toast"
+      "c-toast",
+      "c-workspace-shell"
     ],
     "--shadow-md": [
       "c-command-palette",
@@ -14168,7 +14248,9 @@
     "--shadow-sm": [
       "c-annotation",
       "c-combobox",
-      "c-header"
+      "c-docs-shell",
+      "c-header",
+      "c-workspace-shell"
     ],
     "--shadow-xl": [
       "c-command",
@@ -14399,7 +14481,8 @@
       "c-threshold",
       "c-toast-host",
       "c-toc",
-      "c-widget-state"
+      "c-widget-state",
+      "c-workspace-shell"
     ],
     "--space-sm": [
       "c-accordion",
@@ -14420,6 +14503,7 @@
       "c-dialog",
       "c-disclosure",
       "c-divider",
+      "c-docs-shell",
       "c-drawer",
       "c-empty",
       "c-expandable",
@@ -14458,7 +14542,8 @@
       "c-table",
       "c-time-slider",
       "c-tour",
-      "c-virtual-list"
+      "c-virtual-list",
+      "c-workspace-shell"
     ],
     "--space-xl": [
       "c-command",
@@ -14489,6 +14574,7 @@
       "c-data-export",
       "c-data-grid",
       "c-date-picker",
+      "c-docs-shell",
       "c-donut",
       "c-error-boundary",
       "c-feature",
@@ -14533,13 +14619,15 @@
     ],
     "--target-control": [
       "c-btn",
+      "c-docs-shell",
       "c-filter-pill",
       "c-header",
       "c-input",
       "c-select",
       "c-tabs",
       "c-tag",
-      "c-textarea"
+      "c-textarea",
+      "c-workspace-shell"
     ],
     "--target-mark": [
       "c-datamark"
@@ -14967,6 +15055,7 @@
       "c-sheet"
     ],
     "--z-raised": [
+      "c-docs-shell",
       "c-map-panel",
       "c-map-slot",
       "c-measure",

@@ -198,4 +198,4 @@ part of the component contract and nothing in an installed package defines them:
 
 ---
 
-Source `index.html` @ `0102caa891dd1fdf` · last committed 2026-11-11T00:01:36+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0d7cf97ba136a27a` · last committed 2026-11-11T17:17:27+01:00 · no URL: the project is private until v1.0.

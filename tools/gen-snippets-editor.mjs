@@ -11,7 +11,7 @@ const DIST = join(ROOT, "dist");
 
 function blockToTag(name) {
   const base = name.replace(/^c-/, "");
-  return base.startsWith("contour-") ? base : "contour-" + base;
+  return "contour-" + base;
 }
 
 const components = JSON.parse(readFileSync(join(DIST, "contour.components.json"), "utf8"));

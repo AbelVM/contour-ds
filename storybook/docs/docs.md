@@ -66,6 +66,10 @@ Contour ships no syntax highlighter (zero runtime dependencies); highlighting is
 
 The way out of a long page, at the foot of it. Both links are real links, so they survive a right-click and a middle click.
 
+numbered splits the source into .c-code__line rows, each carrying an aria-hidden .c-code__line-number. A screen reader reads the code and not the ruler, a drag leaves the numbers behind, and the copy action writes the code alone.
+
+current takes a path or a bare hash; without it the component reads the document location. The matching link carries aria-current="page" and no other does, so a reader who cannot see the highlight still hears which page they are on.
+
 ## Subsections
 
 - Web component counterpart
@@ -79,15 +83,18 @@ The way out of a long page, at the foot of it. Both links are real links, so the
 - File tree
 - Pager
 - Web component counterpart
+- Line numbers
+- Route matching
 
 ## Blocks documented here
 
-14 block(s). Their facts live in `../contour.components.json`;
+15 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
 - `.c-btn`
 - `.c-callout`
+- `.c-code`
 - `.c-code-tabs`
 - `.c-diff`
 - `.c-do-dont`
@@ -103,4 +110,4 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0102caa891dd1fdf` · last committed 2026-11-11T00:01:36+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0d7cf97ba136a27a` · last committed 2026-11-11T17:17:27+01:00 · no URL: the project is private until v1.0.

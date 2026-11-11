@@ -29,14 +29,21 @@ accessibility score is 100 on desktop and mobile, in both themes.
 - **Keyboard.** All interactive components (tabs, combobox, tree, menu,
   segmented, dialog, tag, filter-pill, pagination) are keyboard-navigable and
   dispatch `contour:*` events.
-- **RTL.** Structural support via logical properties; not yet fully audited.
+- **RTL.** Structural support via logical properties, measured rather than
+  asserted: `tools/audit/check-rtl.mjs` renders every shipped page in LTR and
+  RTL at each published width in both themes and fails on any horizontal
+  overflow (48 measurements). It is dispatched by `tools/doctor.mjs`.
 
 ## Known limitations
 
 - `light-dark()` is newly available (2024-05) and widely available from
   2026-11; older browsers use `src/css/light-dark-fallback.css`.
 - Anchor positioning is behind `@supports` for tooltips/menus.
-- RTL is structural only; a full audit is pending.
+- RTL is measured for layout overflow and logical properties. The
+  cross-browser assistive-technology matrix (NVDA, VoiceOver, TalkBack) is not
+  automated; `tools/audit/contrast-and-aria-cross-browser.mjs` covers the
+  contrast and ARIA legs on Chromium, Firefox and WebKit at desktop and mobile
+  viewports, and needs each engine's own `npx playwright install`.
 
 ## How to report
 

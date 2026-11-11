@@ -456,7 +456,6 @@ const ORPHAN_LEDGER = {
   // __empty rule yet (placeholder components tracked under D-07).
   // Pagination prev/next are modifier classes on .c-pagination__link; the base
   // rule styles the link, the modifiers only carry layout hooks.
-  "c-pagination__next": "modifier on .c-pagination__link; the base link rule carries the styling",
   // Toast variant modifier; variant styling is applied via the host class.
   "c-toast--success": "variant modifier on .c-toast; variant colour is carried by the host data-variant hook",
 
@@ -471,8 +470,6 @@ const ORPHAN_LEDGER = {
   // no dedicated __empty rule exists yet (tracked under D-07).
   "c-catchment__empty": "empty-state placeholder styled by the host data-state hook",
   "c-category__empty": "empty-state placeholder styled by the host data-state hook",
-  "c-chart__empty": "empty-state placeholder styled by the host data-state hook",
-  "c-combobox__empty": "empty-state placeholder styled by the host data-state hook",
   "c-donut__empty": "empty-state placeholder styled by the host data-state hook",
   "c-heatmap__empty": "empty-state placeholder styled by the host data-state hook",
   "c-isochrone__empty": "empty-state placeholder styled by the host data-state hook",
@@ -482,7 +479,6 @@ const ORPHAN_LEDGER = {
   "c-table__empty": "empty-state placeholder styled by the host data-state hook",
   "c-time-series__empty": "empty-state placeholder styled by the host data-state hook",
   "c-timeline__empty": "empty-state placeholder styled by the host data-state hook",
-  "c-tree__empty": "empty-state placeholder styled by the host data-state hook",
 
   // Combobox internals: defined in components-forms.css (§11), so the host
   // rule is a real one and this name is no longer scaffolding.
@@ -506,19 +502,14 @@ const ORPHAN_LEDGER = {
   // the block class; struck off with the rules that landed.)
 
   // Drag/drop/resize/sort scaffolding styled by host attribute hooks.
-  "c-sortable-list__live": "sortable live region styled by host data-sortable hook",
-  "c-tags-input__live": "tags input live region styled by host data-tags hook",
 
   // Map/layout scaffolding styled by host rules.
 
   // Animation controls.
-  "c-animation-controls__scrubber--thumb": "animation scrubber thumb styled by host data-scrubber hook",
 
   // Split view orientation modifier; base .c-split-view rule carries the styling.
-  "c-split-view--horizontal": "split-view orientation modifier; base .c-split-view rule carries the layout",
 
   // Spatial filter operator select; styled by the host contour-spatial-filter rule.
-  "c-spatial-filter__operator-select": "operator select styled by the host contour-spatial-filter rule",
 };
 
 const browser = await chromium.launch({ args: ["--no-sandbox"] });
@@ -732,6 +723,39 @@ try {
           host.dataset.case = name;
           return { name, sel, ok: !!(host.matches(sel) || host.querySelector(sel)) };
         });
+
+        // ---- render-all arm (R18-20) --------------------------------------
+        // The render contract above is a hand-picked set. This arm mounts EVERY
+        // registered tag with its fixture (or bare) and fails on the three
+        // things a per-tag render gets wrong: the swallowed "Component failed
+        // to render." text, a console.error during mount, and a fixture that
+        // produced no node. It is the arm that would have caught the donut,
+        // brush and activity crashes, which the hand-picked set missed.
+        const fixture = new Map(RENDER_CONTRACT.map(([n, a]) => [n, a]));
+        const consoleErrors = [];
+        const origError = console.error;
+        console.error = (...args) => { consoleErrors.push(args.map((a) => String(a)).join(" ").slice(0, 240)); };
+        const renderAllBad = [];
+        let renderAllChecked = 0;
+        let renderAllEmpty = 0;
+        for (const n of registry) {
+          const host = document.createElement(n);
+          const attrs = fixture.get(n);
+          if (attrs) for (const [k, v] of Object.entries(attrs)) host.setAttribute(k, v);
+          document.body.appendChild(host);
+          renderAllChecked++;
+          const text = (host.textContent || "").trim();
+          if (/Component failed to render\./.test(text)) {
+            renderAllBad.push(`${n}: rendered the failure text`);
+          } else if (attrs) {
+            // A fixture case must produce a node: the host itself, a child, or
+            // a shadow root. An empty fixture is a render that produced nothing.
+            const produced = host.children.length > 0 || host.shadowRoot || (host.className && host.className !== "");
+            if (!produced) { renderAllEmpty++; renderAllBad.push(`${n}: fixture produced no node`); }
+          }
+          host.remove();
+        }
+        console.error = origError;
 
         // ---- 8. a Shadow wrapper is styled --------------------------------
         const docRules = (() => {
@@ -1038,6 +1062,7 @@ try {
         return {
           missing, anonymous, mounted, registry: registry.length,
           bad: rendered.filter((r) => !r.ok), renderedCount: rendered.length,
+          renderAllBad, renderAllChecked, renderAllEmpty, consoleErrors,
           thin, unshared, parity, wrappers: wrappers.length, docRules,
           bareTable, reactivity: { changed: before !== after, duplicated: titles > 1, keptAuthored, discKept, discSummary, expKept, listenerSurvived },
           closeWorked, mod, orphan: [...new Set(orphan)], orphanChecked,
@@ -1053,6 +1078,12 @@ try {
       fail(`${out.anonymous.length} scaffolded components resolved to the class-only factory instead of their own class: ${out.anonymous.slice(0, 8).join(", ")} — their markup never renders. This is the registration race: the class-only table must be registered LAST`);
     if (out.bad.length)
       fail(`render contract produced no matching node for: ${out.bad.map((b) => `${b.name} (needs ${b.sel})`).join(", ")}`);
+    if (out.renderAllBad.length)
+      fail(`render-all arm: ${out.renderAllBad.length} of ${out.renderAllChecked} registered tags failed to render — ${out.renderAllBad.slice(0, 8).join("; ")}${out.renderAllBad.length > 8 ? ", …" : ""}`);
+    if (out.consoleErrors.length)
+      fail(`render-all arm: ${out.consoleErrors.length} console.error call(s) during mount — ${out.consoleErrors.slice(0, 4).join(" | ")}`);
+    if (out.renderAllChecked < out.registry)
+      fail(`render-all arm mounted ${out.renderAllChecked} of ${out.registry} registered tags — a sweep that skips tags cannot certify them`);
     if (!out.reactivity.changed)
       fail("changing `title` did not change the rendered text — the render contract is guarded so a second render cannot update anything");
     if (out.reactivity.duplicated)
@@ -1099,6 +1130,7 @@ try {
     console.log(
       `wc-contract: ${out.registry} names registered, ${out.mounted} mounted and upgraded, ${out.wrappers} shadow wrappers each adopting ${out.docRules} rules, ` +
         `${out.anonymous.length} shadowed by the factory, ${out.renderedCount - out.bad.length}/${out.renderedCount} render cases produced their node, ` +
+        `the render-all arm mounted ${out.renderAllChecked}/${out.registry} tags (${out.renderAllEmpty} empty fixtures), ` +
         `and the orphan sweep compared ${out.orphanChecked} generated class names`
     );
   }

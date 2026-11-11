@@ -1393,10 +1393,14 @@
         },
         {
           "name": "contour-code",
-          "description": "Contour component `c-code` (complete-widget). Elements: c-code__copy, c-code__head, c-code__title. Parts: code, copy. Slots: (default).",
+          "description": "Contour component `c-code` (complete-widget). Variants: c-code--numbered. Elements: c-code__copy, c-code__head, c-code__line, c-code__line-number, c-code__title. Parts: code, copy. Slots: (default).",
           "attributes": [
             {
               "name": "copyable",
+              "description": "Boolean attribute for c-code."
+            },
+            {
+              "name": "numbered",
               "description": "Boolean attribute for c-code."
             },
             {
@@ -2475,7 +2479,7 @@
         },
         {
           "name": "contour-docs-shell",
-          "description": "Contour component `c-docs-shell` (composition). Elements: c-docs-shell__article, c-docs-shell__header, c-docs-shell__lede, c-docs-shell__nav, c-docs-shell__title, c-docs-shell__toc. Parts: docs-shell. Slots: (default).",
+          "description": "Contour component `c-docs-shell` (composition). Elements: c-docs-shell__article, c-docs-shell__header, c-docs-shell__lede, c-docs-shell__nav, c-docs-shell__nav-toggle, c-docs-shell__title, c-docs-shell__toc. Parts: docs-shell. Slots: (default).",
           "attributes": [
             {
               "name": "article",

@@ -255,6 +255,7 @@ const OBSERVED = [
     "variant", "values", "viewport", "warning", "yes", "zoomable", "x", "y",
     "caption", "current-time", "is-playing", "loop-label",     "no-data-color", "no-data-label", "property", "show-loop", "show-thumb", "show-thumb-caption", "speeds", "item-height", "pause-label", "play-label", "speed-label", "time-label", "shimmer",
     "search",
+    "numbered",
     "bucket-count", "limit-values",
   ];
 
@@ -2300,7 +2301,18 @@ function wireCopy(host) {
     if (!btn) return;
     const owner = wcClosest(host, btn, ".c-code") || wcClosest(host, btn, ".c-install") || host;
     const src = owner.querySelector("code, .c-install__command");
-    const text = (src ? src.textContent : owner.textContent) || "";
+    // A numbered block carries its gutter as elements inside the <code>, so
+    // `textContent` would copy the numbers and lose the line breaks between the
+    // line spans. Read the lines back instead: the gutter is dropped, the breaks
+    // are restored, and the clipboard gets the code the reader sees.
+    const readSource = (el) => {
+      const lines = el && el.querySelectorAll ? el.querySelectorAll(".c-code__line") : null;
+      if (!lines || !lines.length) return el ? el.textContent || "" : "";
+      return Array.from(lines).map((l) => Array.from(l.childNodes)
+        .filter((n) => !(n.classList && n.classList.contains("c-code__line-number")))
+        .map((n) => n.textContent).join("")).join("\n");
+    };
+    const text = readSource(src) || (src ? "" : owner.textContent) || "";
     // The confirmation is the one the system script paints for the guide's own
     // copy buttons: a label swap, `data-copied` (which the shipped CSS styles)
     // and an icon check on the trigger, reverted after the same beat. The
@@ -3033,6 +3045,66 @@ function wireStates(host) {
 
 
 
+
+/* Line numbers for a code block (CDS-075).
+
+   The numbers are real elements rather than a CSS counter on `::before`, for two
+   reasons: a counter cannot be left out of a selection, and a number that is not
+   in the DOM cannot be excluded from the copied text. `.c-code__line-number`
+   carries `user-select: none` so a drag does not take it, and `wireCopy` drops it
+   before writing to the clipboard, so the copied text is the code and nothing
+   else.
+
+   Splitting walks the top level only. A text node is split on its newlines; an
+   element that contains a newline of its own (a multi-line highlighted token) is
+   kept whole on the line it starts on, because taking it apart would break the
+   markup the highlighter produced. */
+const splitCodeLines = (code) => {
+  const lines = [];
+  let line = null;
+  const add = (n) => {
+    if (!line) {
+      line = document.createElement("span");
+      line.className = "c-code__line";
+      lines.push(line);
+    }
+    line.appendChild(n);
+  };
+  Array.from(code.childNodes).forEach((n) => {
+    if (n.nodeType !== 3) { add(n); return; }
+    String(n.textContent || "").split("\n").forEach((p, i) => {
+      if (i) line = null;
+      if (p) add(document.createTextNode(p));
+    });
+  });
+  const last = lines[lines.length - 1];
+  if (last && !last.textContent && lines.length > 1) lines.pop();
+  if (!lines.length) return;
+  const frag = document.createDocumentFragment();
+  lines.forEach((l, i) => {
+    const num = document.createElement("span");
+    num.className = "c-code__line-number";
+    num.setAttribute("aria-hidden", "true");
+    num.textContent = String(i + 1);
+    l.prepend(num);
+    frag.appendChild(l);
+  });
+  code.textContent = "";
+  code.appendChild(frag);
+};
+
+const joinCodeLines = (code) => {
+  const frag = document.createDocumentFragment();
+  Array.from(code.querySelectorAll(".c-code__line")).forEach((l) => {
+    Array.from(l.childNodes).forEach((n) => {
+      if (n.classList && n.classList.contains("c-code__line-number")) return;
+      frag.appendChild(n);
+    });
+    frag.appendChild(document.createTextNode("\n"));
+  });
+  code.textContent = "";
+  code.appendChild(frag);
+};
 
 class ContourCard extends ContourBase {
     static get observed() { return ["title", "variant", "heading"]; }
@@ -3806,8 +3878,8 @@ class ContourCta extends ContourBase {
   }
   define("contour-cta", ContourCta);
 class ContourCode extends ContourBase {
-    static get observed() { return ["title", "copyable"]; }
-    static get properties() { return { title: { attribute: "title" }, copyable: { attribute: "copyable", type: Boolean } }; }
+    static get observed() { return ["title", "copyable", "numbered"]; }
+    static get properties() { return { title: { attribute: "title" }, copyable: { attribute: "copyable", type: Boolean }, numbered: { attribute: "numbered", type: Boolean } }; }
     render() {
       this.classList.add("c-code");
       const title = this.getAttribute("title");
@@ -3850,6 +3922,22 @@ class ContourCode extends ContourBase {
       const head = this.querySelector(".c-code__head");
       if (head && head.parentNode === this && pre.parentNode === this && head.compareDocumentPosition(pre) & Node.DOCUMENT_POSITION_PRECEDING) {
         this.insertBefore(pre, head.nextSibling);
+      }
+      // Line numbers are applied after the code is wrapped, and are idempotent:
+      // the split is guarded by a flag on the <code>, so a re-render cannot
+      // number the same source twice.
+      const numbered = this.hasAttribute("numbered");
+      this.classList.toggle("c-code--numbered", numbered);
+      const codeEl = pre.querySelector("code");
+      if (codeEl) {
+        const split = codeEl.dataset.contourLines === "1";
+        if (numbered && !split) {
+          splitCodeLines(codeEl);
+          codeEl.dataset.contourLines = "1";
+        } else if (!numbered && split) {
+          joinCodeLines(codeEl);
+          delete codeEl.dataset.contourLines;
+        }
       }
     }
     enhance() {
@@ -8182,6 +8270,45 @@ class ContourDataExport extends ContourBase {
 
 
 
+/* Route matching (CDS-075). The URL is the state for a documentation surface, so
+   the sidebar says where the reader is by marking the matching link
+   `aria-current="page"` — the shipped CSS already styles that attribute, and a
+   reader who cannot see the highlight still hears "current page".
+
+   Two ways to say where the reader is, in order:
+     1. a `current` attribute on the host, which is what a client-side router
+        sets after it navigates (a path, or a bare `#hash`);
+     2. the document's own location, which is what a static docs site has.
+
+   A bare hash also matches the last path segment, because that is the shape a
+   docs URL takes: `/docs/install` is the page `#install` points at. */
+const routeKey = (value) => {
+  const raw = String(value == null ? "" : value).trim();
+  if (!raw) return "";
+  if (raw.startsWith("#")) return "hash:" + raw;
+  try {
+    const base = typeof location !== "undefined" ? location.href : "http://localhost/";
+    const url = new URL(raw, base);
+    return "path:" + url.pathname.replace(/\/+$/, "") + url.search;
+  } catch (e) {
+    return "raw:" + raw;
+  }
+};
+
+const hereKey = (explicit) => {
+  const raw = String(explicit == null ? "" : explicit).trim();
+  if (raw) return routeKey(raw);
+  if (typeof location === "undefined") return "";
+  return "path:" + String(location.pathname || "").replace(/\/+$/, "") + (location.search || "");
+};
+
+const hashMatchesHere = (hash) => {
+  if (typeof location === "undefined") return false;
+  if (location.hash && location.hash === hash) return true;
+  const segment = String(location.pathname || "").split("/").filter(Boolean).pop() || "";
+  return Boolean(segment) && hash === "#" + segment;
+};
+
 class ContourDocsNav extends ContourBase {
     static get observed() { return ["items", "title", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { items: { attribute: "items" }, title: { attribute: "title" }, src: { attribute: "src" } }; }
@@ -8259,6 +8386,25 @@ class ContourDocsNav extends ContourBase {
       } else if (!items && !list) {
         renderEmpty(this, "docs-nav");
       }
+      this.applyCurrent();
+    }
+    /* Mark the link the reader is on. Idempotent: it clears every other link
+       first, so a re-render or a route change cannot leave two "current" items. */
+    applyCurrent() {
+      const links = Array.from(this.querySelectorAll(".c-docs-nav__link"));
+      if (!links.length) return;
+      const explicit = this.getAttribute("current");
+      const here = hereKey(explicit);
+      links.forEach((a) => {
+        const href = a.getAttribute("href") || "";
+        const key = routeKey(href);
+        const hit = Boolean(here) && (
+          (key && key === here) ||
+          (href.startsWith("#") && !explicit && hashMatchesHere(href))
+        );
+        if (hit) a.setAttribute("aria-current", "page");
+        else a.removeAttribute("aria-current");
+      });
     }
     enhance() {
       if (this._wiredDocsNav) return;
@@ -8277,6 +8423,18 @@ class ContourDocsNav extends ContourBase {
         if (!links.some((l) => l.tabIndex === 0)) links.forEach((l, i) => l.tabIndex = i === 0 ? 0 : -1);
         navKey(e, links, { wrap: true, homeEnd: true, onNavigate: (i) => { links.forEach((l, j) => l.tabIndex = j === i ? 0 : -1); }, onKey: (k) => { if (k === "Enter") { const a = document.activeElement; if (a) { e.preventDefault(); a.click(); } } } });
       });
+      // A static docs site navigates by changing the URL, so the highlight has to
+      // follow the URL rather than the click. A host that passes `current` owns
+      // the state and this listener is a no-op next to it.
+      if (typeof window !== "undefined" && window.addEventListener) {
+        const sync = () => this.applyCurrent();
+        window.addEventListener("hashchange", sync);
+        window.addEventListener("popstate", sync);
+        onDispose(this, () => {
+          window.removeEventListener("hashchange", sync);
+          window.removeEventListener("popstate", sync);
+        });
+      }
     }
   }
   define("contour-docs-nav", ContourDocsNav);
@@ -11037,6 +11195,17 @@ class ContourSplitView extends ContourBase {
         this.appendChild(p1);
         this.appendChild(divider);
         this.appendChild(p2);
+      }
+      // The divider is the control surface: an author who supplies their own
+      // panes still needs it, so create it independently of the pane guard.
+      if (!this.querySelector(".c-split-view__divider")) {
+        const divider = document.createElement("div");
+        divider.className = "c-split-view__divider";
+        divider.setAttribute("tabindex", "0");
+        divider.setAttribute("role", "separator");
+        divider.setAttribute("aria-valuenow", this.getAttribute("value") || "50");
+        divider.setAttribute("aria-label", "Split divider");
+        this.appendChild(divider);
       }
       const v = this.getAttribute("value") || "50";
       const p1 = this.querySelector(".c-split-view__pane--left");
@@ -13873,37 +14042,79 @@ class ContourTocFull extends ContourBase {
       }
     }
     enhance() {
-      // Scroll-spy (BY-29). The toc links point at page sections by href; when
-      // IntersectionObserver exists, the section currently in the reading band
+      // Scroll-spy (BY-29, CDS-075). The toc links point at page sections by
+      // href; the section whose top has most recently crossed the reading line
       // marks its link aria-current="true" and clears the rest. The shipped CSS
       // already styles .c-toc__link[aria-current="true"], so the hook needs no
-      // new rule. Enhancement-only: without IntersectionObserver the links stay
-      // as rendered, with author-provided aria-current left untouched.
+      // new rule.
+      //
+      // This reads geometry on scroll rather than IntersectionObserver: an
+      // observer callback reports the entries that changed, not the current
+      // reading position, so `visible[0]` is whichever section happened to
+      // fire first — order is delivery, not document order. Geometry has one
+      // answer for one scroll position. rAF-throttled, passive listener.
+      // Enhancement-only: without it the links stay as rendered, with any
+      // author-provided aria-current left untouched.
       if (this._wiredTocSpy) return;
-      if (typeof IntersectionObserver !== "function") return;
       const links = () => Array.from(this.querySelectorAll(".c-toc__link"));
-      const targets = links()
+      const pairs = () => links()
         .map((a) => {
           const href = a.getAttribute("href") || "";
           if (!href.startsWith("#") || href.length < 2) return null;
-          return document.getElementById(href.slice(1));
+          const el = document.getElementById(href.slice(1));
+          return el ? { a, el } : null;
         })
         .filter(Boolean);
-      if (!targets.length) return;
+      if (!pairs().length) return;
       this._wiredTocSpy = true;
-      const spy = new IntersectionObserver((entries) => {
-        const visible = entries.filter((en) => en.isIntersecting).map((en) => en.target.id);
-        if (!visible.length) return;
-        const top = visible[0];
+
+      const readingLine = () => {
+        const raw = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--header-height"));
+        return (Number.isFinite(raw) ? raw : 0) + Math.min(120, window.innerHeight * 0.2);
+      };
+
+      const update = () => {
+        const all = pairs();
+        if (!all.length) return;
+        const line = readingLine();
+        let current = all[0];
+        for (const p of all) {
+          if (p.el.getBoundingClientRect().top <= line) current = p;
+        }
+        // The last section never crosses the line on a short page; at the
+        // bottom of a scrollable document the last link is the honest answer.
+        // A document shorter than the viewport is not "at the bottom" — it is
+        // simply not scrollable, and the first section is where the reader is.
+        const scrollable = document.documentElement.scrollHeight > window.innerHeight + 2;
+        if (scrollable && window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) {
+          current = all[all.length - 1];
+        }
+        const id = current.el.id;
         links().forEach((a) => {
-          const href = a.getAttribute("href") || "";
-          const isCurrent = href === "#" + top;
-          if (isCurrent && a.getAttribute("aria-current") !== "true") a.setAttribute("aria-current", "true");
-          else if (!isCurrent && a.hasAttribute("aria-current")) a.removeAttribute("aria-current");
+          const isCurrent = a.getAttribute("href") === "#" + id;
+          if (isCurrent) {
+            if (a.getAttribute("aria-current") !== "true") a.setAttribute("aria-current", "true");
+          } else if (a.hasAttribute("aria-current")) {
+            a.removeAttribute("aria-current");
+          }
         });
-      }, { rootMargin: "0px 0px -60% 0px", threshold: 0 });
-      targets.forEach((t) => spy.observe(t));
-      onDispose(this, () => spy.disconnect());
+      };
+
+      let queued = 0;
+      const schedule = () => {
+        if (queued) return;
+        queued = requestAnimationFrame(() => { queued = 0; update(); });
+      };
+      window.addEventListener("scroll", schedule, { passive: true });
+      window.addEventListener("resize", schedule);
+      window.addEventListener("hashchange", schedule);
+      update();
+      onDispose(this, () => {
+        window.removeEventListener("scroll", schedule);
+        window.removeEventListener("resize", schedule);
+        window.removeEventListener("hashchange", schedule);
+        if (queued) cancelAnimationFrame(queued);
+      });
       // Smooth scroll on link click (F-23).
       if (!this._wiredTocScroll) {
         this._wiredTocScroll = true;

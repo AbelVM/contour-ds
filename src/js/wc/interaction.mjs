@@ -1,5 +1,5 @@
 import { ContourBase, define, onDispose } from './core.mjs';
-import { wireSegmented } from './behaviours.mjs';
+import { wireSegmented, modalContain } from './behaviours.mjs';
 class ContourPressableFull extends ContourBase {
     static get observed() { return ["disabled"]; }
     static get properties() { return { disabled: { attribute: "disabled", type: Boolean } }; }
@@ -146,8 +146,8 @@ class ContourShortcutPanelFull extends ContourBase {
       if (this.hasAttribute("open")) this.removeAttribute("hidden");
       else if (!this.hasAttribute("hidden")) this.setAttribute("hidden", "");
     }
-    show() { this.setAttribute("open", ""); this.removeAttribute("hidden"); this.dispatchEvent(new CustomEvent("contour:open", { bubbles: true, composed: true })); }
-    hide() { this.removeAttribute("open"); this.setAttribute("hidden", ""); this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true })); }
+    show() { this.setAttribute("open", ""); this.removeAttribute("hidden"); modalContain(this, true); this.dispatchEvent(new CustomEvent("contour:open", { bubbles: true, composed: true })); }
+    hide() { this.removeAttribute("open"); this.setAttribute("hidden", ""); modalContain(this, false); this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true })); }
     toggle() { if (this.hasAttribute("open")) this.hide(); else this.show(); }
     enhance() {
       if (this._wiredShortcutOverlay) return;
@@ -308,11 +308,14 @@ class ContourDragHandle extends ContourBase {
   }
   define("contour-drag-handle", ContourDragHandle);
 class ContourDropIndicator extends ContourBase {
-    static get observed() { return ["label"]; }
-    static get properties() { return { label: { attribute: "label" } }; }
+    static get observed() { return ["label", "open"]; }
+    static get properties() { return { label: { attribute: "label" }, open: { attribute: "open", type: Boolean } }; }
     render() {
       this.classList.add("c-drop-indicator");
-      this.classList.add("c-drop-indicator--visible");
+      // Visibility is a state, not a constant: the indicator is shown while a
+      // drag is over a drop target, so it is only visible when `open` is set.
+      // The old code stamped --visible on every render, so it was always on.
+      this.classList.toggle("c-drop-indicator--visible", this.hasAttribute("open"));
       if (!this.hasAttribute("role")) this.setAttribute("role", "presentation");
       // A presentation role is purely decorative: strip any accessible name
       // so axe does not flag aria-label/aria-labelledby as prohibited.

@@ -80,14 +80,14 @@ API stabilizes. `agent-rules.json` and `llms*.txt` remain authoritative.
 
 ## Measured evidence (SB-29)
 
-- Story files: 60; stories: 626; stories with play functions: 626.
+- Story files: 60; stories: 627; stories with play functions: 627.
 - A11y status (files): error 0, todo 2, off 0, unset 58.
-- Maturity counts (from `tmp/audit/storybook-coverage.json`): complete-widget 125, composition 490, primitive 11.
-- Defined custom elements: 230; inventory blocks: 231.
+- Maturity counts (from `tmp/audit/storybook-coverage.json`): complete-widget 125, composition 491, primitive 11.
+- Defined custom elements: 230; inventory blocks: 232.
 - Composition titles covered: `Contour/Compositions/ChartLegend`, `Contour/Compositions/ChartTable`, `Contour/Compositions/ComboboxField`, `Contour/Compositions/RealWorldDemos`, `Contour/Compositions/DialogForm`, `Contour/Compositions/DocsBehaviors`, `Contour/Compositions/LayerPanelMap`, `Contour/Compositions/SplitPaneOverlays`, `Contour/Compositions/TableFilters`, `Contour/Compositions/WorkspaceShell`.
 - Additional interaction/composition coverage added in existing families: toast-host async action (`Contour/Feedback/Toast`), sidebar + responsive shell (`Contour/Layout/Primitives`), dialog+form validation flow, and table+pagination state interaction.
 - New composition stories in this pass: `stories/composition-workspace-shell.stories.js` (header + sidebar nav + central stage + resize handle + docked collapsible inspector) and `stories/composition-docs-behaviors.stories.js` (docs-nav selection event, TOC current-heading marker, code copy control presence, docs-nav route matching via `current`, and `contour-code` `numbered` gutter) with `play` assertions.
 - Protected visual contracts (baseline/configured): `contour-forms-input--default` (form validation), `contour-overlays-dialog--default` (overlay framing), `contour-data-table--default` (narrow-table reflow), `contour-data-chart--default` (chart rendering), `contour-map-panel--default` (map chrome), `contour-workflows-dashboard--default` (dashboard composition), plus select/textarea overflow and layer/style control layout stories at 390px and 1440px in light and dark themes with reduced motion.
-- Executed 2026-11-11: `node tools/storybook-tests.mjs` → **60/60 files, 626/626 tests, exit 0, 17 s**, against the static build served on loopback by the script. `node tools/check-storybook-coverage.mjs` → PASS (60 files, 626 stories, 626 with play, 230/230 defined elements covered, high-risk families 13/13). `node tools/check-visual.mjs --compare` → 166 compared, 0 differ.
+- Executed 2026-11-11: `node tools/storybook-tests.mjs` → **60/60 files, 627/627 tests, exit 0, 20 s**, against the static build served on loopback by the script. `node tools/check-storybook-coverage.mjs` → PASS (60 files, 627 stories, 627 with play, 230/230 defined elements covered, high-risk families 13/13). `node tools/check-visual.mjs --compare` → **174 compared, 0 differ** (36 story ids × 3 axes: default, forced-colors, compact).
 - The run is self-contained: `npm run test:storybook` builds, serves `storybook/` on 127.0.0.1:6006, runs Vitest against it and stops the server. Previously the script assumed a server on 6006 that no step started, so CI could not execute it.
 - Two story-level lessons from the first green run: a hash link in a story navigates the test iframe away unless the host calls `preventDefault` (the docs shell now owns routing), and Storybook's patched `focus` accessor makes focus-dependent assertions measure the harness — drive a field through its `input` event and keep focus-return checks in a real-browser probe.

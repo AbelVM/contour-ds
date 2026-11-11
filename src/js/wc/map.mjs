@@ -444,7 +444,7 @@ class ContourTimeSlider extends ContourBase {
         el.appendChild(svg);
         return el;
       });
-      const track = this.ensure(".c-time-slider__track", () => { const el = document.createElement("input"); el.className = "c-time-slider__track"; el.type = "range"; el.min = "0"; el.max = "100"; el.setAttribute("aria-label", this.getAttribute("time-label") || "Time"); return el; });
+      const track = this.ensure(".c-time-slider__track", () => { const el = document.createElement("input"); el.className = "c-time-slider__track"; el.type = "range"; el.min = "0"; el.max = "100"; el.setAttribute("part", "input"); el.setAttribute("aria-label", this.getAttribute("time-label") || "Time"); return el; });
       const _attrVal = this.getAttribute("value") || "0";
       if (this._timeSliderAttrLast !== _attrVal) {
         track.value = _attrVal;

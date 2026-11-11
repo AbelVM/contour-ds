@@ -35,7 +35,7 @@ function parseRegisteredTags(dts) {
 
 function blockToTag(name) {
   const base = name.replace(/^c-/, "");
-  return base.startsWith("contour-") ? base : "contour-" + base;
+  return "contour-" + base;
 }
 
 function attrDescription(block, attr) {

@@ -1,4 +1,4 @@
-import { ContourBase, define, onDispose, supportsUntilFound, contourId, headingTag, navKey } from './core.mjs';
+import { ContourBase, define, onDispose, supportsUntilFound, contourId, headingTag, navKey, safeHref } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { wireMenu, wirePagination, wireTabs, wireTree, wireRemovable } from './behaviours.mjs';
 class ContourMenu extends ContourBase {
@@ -97,7 +97,10 @@ class ContourMenu extends ContourBase {
              } else {
                const li = document.createElement("li");
                li.className = "c-menu__item" + (item.danger ? " c-menu__item--danger" : "") + (item.disabled ? " c-menu__item--disabled" : "");
-               li.setAttribute("role", "menuitem");
+               // A checkbox/radio item carries its state, not just a label.
+               const role = item.type === "checkbox" ? "menuitemcheckbox" : item.type === "radio" ? "menuitemradio" : "menuitem";
+               li.setAttribute("role", role);
+               if (item.type === "checkbox" || item.type === "radio") li.setAttribute("aria-checked", String(!!item.checked));
                if (item.disabled) li.setAttribute("aria-disabled", "true");
                if (item.items && Array.isArray(item.items)) {
                  li.setAttribute("aria-haspopup", "menu");
@@ -114,6 +117,27 @@ class ContourMenu extends ContourBase {
                  sc.className = "c-menu__shortcut";
                  sc.textContent = item.shortcut;
                  li.appendChild(sc);
+               }
+               // Build the nested submenu the haspopup promised: without it the
+               // item advertises a menu that opens onto nothing.
+               if (item.items && Array.isArray(item.items)) {
+                 const sub = document.createElement("ul");
+                 sub.className = "c-menu";
+                 sub.setAttribute("role", "menu");
+                 item.items.forEach((subItem) => {
+                   const sli = document.createElement("li");
+                   sli.className = "c-menu__item" + (subItem.danger ? " c-menu__item--danger" : "") + (subItem.disabled ? " c-menu__item--disabled" : "");
+                   sli.setAttribute("role", "menuitem");
+                   if (subItem.disabled) sli.setAttribute("aria-disabled", "true");
+                   if (subItem.label || subItem.title) {
+                     const sl = document.createElement("span");
+                     sl.className = "c-menu__label";
+                     sl.textContent = subItem.label || subItem.title || "";
+                     sli.appendChild(sl);
+                   }
+                   sub.appendChild(sli);
+                 });
+                 li.appendChild(sub);
                }
                ul.appendChild(li);
              }
@@ -348,7 +372,7 @@ class ContourHeader extends ContourBase {
           nav.innerHTML = "";
           parsed.forEach((l) => {
             const a = document.createElement("a");
-            a.href = l.href || "#";
+            a.href = safeHref(l.href || "#");
             a.textContent = l.label || l;
             nav.appendChild(a);
           });
@@ -868,7 +892,7 @@ class ContourBreadcrumb extends ContourBase {
           shown.forEach((item, i) => {
             if (i < shown.length - 1) {
               const a = document.createElement("a");
-              a.href = item.href || "#";
+              a.href = safeHref(item.href || "#");
               a.textContent = item.label || item;
               n.appendChild(a);
               const s = document.createElement("span");
@@ -962,7 +986,7 @@ class ContourPagerFull extends ContourBase {
       if (prev) {
         const a = document.createElement("a");
         a.className = "c-pager__link";
-        a.href = prev.split("|")[1] || "#";
+        a.href = safeHref(prev.split("|")[1] || "#");
         const dir = document.createElement("span");
         dir.className = "c-pager__dir";
         dir.textContent = "← Previous";
@@ -976,7 +1000,7 @@ class ContourPagerFull extends ContourBase {
       if (next) {
         const a = document.createElement("a");
         a.className = "c-pager__link c-pager__link--next";
-        a.href = next.split("|")[1] || "#";
+        a.href = safeHref(next.split("|")[1] || "#");
         const dir = document.createElement("span");
         dir.className = "c-pager__dir";
         dir.textContent = "Next →";
@@ -1015,7 +1039,7 @@ class ContourTocFull extends ContourBase {
           parsed.forEach((item, i) => {
             const a = document.createElement("a");
             a.className = "c-toc__link" + (item.sub ? " c-toc__link--sub" : "");
-            a.href = item.href || "#";
+            a.href = safeHref(item.href || "#");
             a.textContent = item.label || item;
             a.tabIndex = i === 0 ? 0 : -1;
             if (item.current) a.setAttribute("aria-current", "true");
@@ -1548,7 +1572,7 @@ class ContourFooter extends ContourBase {
           wrap.innerHTML = "";
           parsed.forEach((l) => {
             const a = document.createElement("a");
-            a.href = typeof l === "string" ? "#" : (l.href || "#");
+            a.href = safeHref(typeof l === "string" ? "#" : (l.href || "#"));
             a.textContent = typeof l === "string" ? l : (l.label || l);
             wrap.appendChild(a);
           });
@@ -1573,7 +1597,7 @@ class ContourFooter extends ContourBase {
             }
             (col.links || []).forEach((l) => {
               const a = document.createElement("a");
-              a.href = typeof l === "string" ? "#" : (l.href || "#");
+              a.href = safeHref(typeof l === "string" ? "#" : (l.href || "#"));
               a.textContent = typeof l === "string" ? l : (l.label || l);
               c.appendChild(a);
             });
@@ -1641,7 +1665,7 @@ class ContourSidebar extends ContourBase {
           parsed.forEach((it, i) => {
             const a = document.createElement("a");
             a.className = "c-sidebar__link";
-            a.href = (it && it.href) || "#";
+            a.href = safeHref((it && it.href) || "#");
             a.textContent = (it && (it.label || it)) || "";
             a.tabIndex = i === 0 ? 0 : -1;
             nav.appendChild(a);

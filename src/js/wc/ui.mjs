@@ -1,5 +1,5 @@
-import { ContourBase, define, contourId, onDispose, navKey } from './core.mjs';
-import { wireRemovable } from './behaviours.mjs';
+import { ContourBase, define, contourId, onDispose, navKey, safeColor, safeHref } from './core.mjs';
+import { wireRemovable, modalContain } from './behaviours.mjs';
 /**
  * Avatar: a circular avatar with initials (from `name`) or an image (`src`),
  * optional size/variant modifiers and a status dot. Attributes: `name`, `size`,
@@ -249,9 +249,10 @@ class ContourSkeleton extends ContourBase {
       Array.from(this.classList).forEach((c) => { if (c.startsWith("c-skeleton--")) this.classList.remove(c); });
       const size = this.getAttribute("size");
       if (size) this.classList.add("c-skeleton--" + size);
-      if (!this.hasAttribute("role")) this.setAttribute("role", "status");
-      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Loading");
-      if (!this.hasAttribute("aria-busy")) this.setAttribute("aria-busy", "true");
+      // A skeleton is a decorative placeholder: it is hidden from assistive
+      // technology, and the loading state (contour-loading) is what announces.
+      // The old code set role=status AND aria-hidden=true, which is a live
+      // region that can never speak.
       if (!this.hasAttribute("aria-hidden")) this.setAttribute("aria-hidden", "true");
       const shimmer = this.getAttribute("shimmer");
       if (shimmer === "false" || shimmer === "off") this.classList.add("c-skeleton--static");
@@ -413,25 +414,45 @@ class ContourProgress extends ContourBase {
        if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", label || "Progress");
       const min = this.getAttribute("min");
       const max = this.getAttribute("max");
+      const minV = min !== null ? Number(min) : 0;
+      const maxV = max !== null ? Number(max) : 100;
       if (min !== null) this.setAttribute("aria-valuemin", min);
       else if (!this.hasAttribute("aria-valuemin")) this.setAttribute("aria-valuemin", "0");
       if (max !== null) this.setAttribute("aria-valuemax", max);
       else if (!this.hasAttribute("aria-valuemax")) this.setAttribute("aria-valuemax", "100");
+      // aria-valuenow must sit inside the declared min/max, not always 0-100.
+      if (this.hasAttribute("aria-valuenow")) {
+        const now = Number(this.getAttribute("aria-valuenow"));
+        if (Number.isFinite(now)) this.setAttribute("aria-valuenow", String(Math.max(minV, Math.min(maxV, now))));
+      }
       if (this.hasAttribute("paused")) this.classList.add("c-progress--paused");
       else Array.from(this.classList).forEach((c) => { if (c === "c-progress--paused") this.classList.remove(c); });
       if (this.hasAttribute("pausable")) {
-        this.ensure(".c-progress__pause", () => {
-          const btn = document.createElement("button");
-          btn.className = "c-progress__pause";
-          btn.type = "button";
-          btn.setAttribute("aria-label", "Pause");
-          btn.textContent = "⏸";
-          return btn;
+        const paused = this.hasAttribute("paused");
+        const btn = this.ensure(".c-progress__pause", () => {
+          const el = document.createElement("button");
+          el.className = "c-progress__pause";
+          el.type = "button";
+          return el;
         });
+        btn.setAttribute("aria-label", paused ? "Resume" : "Pause");
+        btn.textContent = paused ? "▶" : "⏸";
       } else {
         const btn = this.querySelector(".c-progress__pause");
         if (btn) btn.remove();
       }
+    }
+    enhance() {
+      if (this._wiredProgress) return;
+      this._wiredProgress = true;
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest(".c-progress__pause") : null;
+        if (!btn || !this.contains(btn)) return;
+        e.preventDefault();
+        const paused = !this.hasAttribute("paused");
+        this.toggleAttribute("paused", paused);
+        this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { paused } }));
+      });
     }
   }
   define("contour-progress", ContourProgress);
@@ -448,11 +469,20 @@ class ContourMark extends ContourBase {
  * Loading: a spinner wrapped in a container. No attributes.
  */
 class ContourLoading extends ContourBase {
+    static get observed() { return ["label"]; }
+    static get properties() { return { label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-loading");
       if (!this.hasAttribute("role")) this.setAttribute("role", "status");
       if (!this.hasAttribute("aria-live")) this.setAttribute("aria-live", "polite");
       this.ensure(".c-spinner", () => { const el = document.createElement("span"); el.className = "c-spinner"; el.setAttribute("aria-hidden", "true"); return el; });
+      // A status region with no text announces nothing: give it a label the
+      // reader can hear, visually hidden so the spinner stays the visual.
+      const label = this.getAttribute("label") || "Loading";
+      let text = this.querySelector("[data-loading-label]");
+      if (!text) { text = document.createElement("span"); text.className = "visually-hidden"; text.setAttribute("data-loading-label", ""); this.appendChild(text); }
+      text.textContent = label;
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", label);
     }
   }
   define("contour-loading", ContourLoading);
@@ -498,7 +528,7 @@ class ContourVersionBannerFull extends ContourBase {
       if (link && href) {
         const a = document.createElement("a");
         a.className = "c-version-banner__link";
-        a.href = href;
+        a.href = safeHref(href);
         a.textContent = link;
         this.appendChild(a);
       }
@@ -1767,6 +1797,18 @@ class ContourDatePicker extends ContourBase {
       next.addEventListener("click", () => { this._calMonth = new Date(y, m + 1, 1); this._renderCalendar(); });
       if (this._internals) this._syncFormValue();
     }
+    _syncFormValue() {
+      if (!this._internals) return;
+      const start = this.querySelector(".c-date-picker__input");
+      const end = this.querySelector(".c-date-picker__end");
+      // A range picker submits both ends; a single picker submits its value.
+      if (this.hasAttribute("range") && end) {
+        this._internals.setFormValue((start ? start.value : "") + "," + end.value);
+      } else {
+        this._internals.setFormValue(start && start.value ? start.value : null);
+      }
+      this._syncValidity(this.hasAttribute("required") && !(start && start.value));
+    }
     enhance() {
       if (this._wiredDatePicker) return;
       this._wiredDatePicker = true;
@@ -1817,7 +1859,15 @@ class ContourRating extends ContourBase {
         star.type = "button";
         star.setAttribute("role", "radio");
         star.setAttribute("aria-checked", String(i === value));
-        star.innerHTML = '<span class="c-rating__swatch' + (i <= value ? ' c-rating__swatch--filled' : '') + '" aria-hidden="true"' + (color && i <= value ? ' style="background:' + color + ';border-color:' + color + '"' : '') + '></span>';
+        star.innerHTML = '<span class="c-rating__swatch' + (i <= value ? ' c-rating__swatch--filled' : '') + '" aria-hidden="true"></span>';
+        if (color && i <= value) {
+          const sw = star.firstChild;
+          const safe = safeColor(color);
+          if (sw && safe) {
+            sw.style.backgroundColor = safe;
+            sw.style.borderColor = safe;
+          }
+        }
         star.dataset.value = String(i);
         star.setAttribute("aria-label", i + " star" + (i > 1 ? "s" : ""));
         this.appendChild(star);
@@ -2149,8 +2199,8 @@ class ContourHoverCard extends ContourBase {
  * Attributes: `items`.
  */
 class ContourContextMenu extends ContourBase {
-    static get observed() { return ["items"]; }
-    static get properties() { return { items: { attribute: "items" } }; }
+    static get observed() { return ["items", "trigger"]; }
+    static get properties() { return { items: { attribute: "items" }, trigger: { attribute: "trigger" } }; }
     render() {
       this.classList.add("c-context-menu");
       if (!this.hasAttribute("role")) this.setAttribute("role", "menu");
@@ -2175,10 +2225,30 @@ class ContourContextMenu extends ContourBase {
     enhance() {
       if (this._wiredContextMenu) return;
       this._wiredContextMenu = true;
+      const openAt = (x, y) => {
+        if (typeof this.showPopover === "function") { try { this.showPopover(); } catch (err) {} }
+        else this.classList.add("is-open");
+        if (Number.isFinite(x) && Number.isFinite(y)) {
+          this.style.position = "fixed";
+          this.style.left = x + "px";
+          this.style.top = y + "px";
+        }
+      };
+      // A context menu is opened by its trigger, not by a right-click on the
+      // menu itself (which is empty until opened). `trigger` names the element.
+      const triggerSel = this.getAttribute("trigger");
+      if (triggerSel) {
+        const trigger = document.querySelector(triggerSel);
+        if (trigger) {
+          if (!trigger.hasAttribute("aria-haspopup")) trigger.setAttribute("aria-haspopup", "menu");
+          const onCtx = (e) => { e.preventDefault(); openAt(e.clientX, e.clientY); };
+          trigger.addEventListener("contextmenu", onCtx);
+          onDispose(this, () => trigger.removeEventListener("contextmenu", onCtx));
+        }
+      }
       this.addEventListener("contextmenu", (e) => {
         e.preventDefault();
-        if (typeof this.showPopover === "function") { try { this.showPopover(); } catch (err) {} }
-        else this.classList.toggle("is-open");
+        openAt(e.clientX, e.clientY);
       });
       this.addEventListener("click", (e) => {
         const item = e.target && e.target.closest ? e.target.closest(".c-menu__item") : null;
@@ -2232,8 +2302,8 @@ class ContourFab extends ContourBase {
  */
 class ContourFileUpload extends ContourBase {
     static get formAssociated() { return true; }
-    static get observed() { return ["label", "accept", "multiple", "progress"]; }
-    static get properties() { return { label: { attribute: "label" }, accept: { attribute: "accept" }, multiple: { attribute: "multiple", type: Boolean }, progress: { attribute: "progress" } }; }
+    static get observed() { return ["label", "accept", "multiple", "progress", "name"]; }
+    static get properties() { return { label: { attribute: "label" }, accept: { attribute: "accept" }, multiple: { attribute: "multiple", type: Boolean }, progress: { attribute: "progress" }, name: { attribute: "name" } }; }
     render() {
       this.classList.add("c-file-upload");
       if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("label") || "File upload");
@@ -2303,7 +2373,10 @@ class ContourFileUpload extends ContourBase {
       const inp = this.querySelector(".c-file-upload__input");
       if (inp && inp.files && inp.files.length) {
         const fd = new FormData();
-        Array.from(inp.files).forEach((f) => fd.append("file", f));
+        // Use the host's name so the entry matches the control the author
+        // declared, not a hard-coded "file" key.
+        const key = this.getAttribute("name") || "file";
+        Array.from(inp.files).forEach((f) => fd.append(key, f));
         this._internals.setFormValue(fd);
       } else {
         this._internals.setFormValue(null);
@@ -2639,19 +2712,27 @@ class ContourCommandPalette extends ContourBase {
         } catch (e) { /* keep */ }
       }
     }
-    show() { if (typeof this.showPopover === "function") { try { this.showPopover(); } catch (e) {} } this.classList.add("is-open"); const s = this.querySelector(".c-command-palette__search"); if (s) s.setAttribute("aria-expanded", "true"); }
-    hide() { if (typeof this.hidePopover === "function") { try { this.hidePopover(); } catch (e) {} } this.classList.remove("is-open"); const s = this.querySelector(".c-command-palette__search"); if (s) s.setAttribute("aria-expanded", "false"); }
+    show() { if (typeof this.showPopover === "function") { try { this.showPopover(); } catch (e) {} } this.classList.add("is-open"); modalContain(this, true); const s = this.querySelector(".c-command-palette__search"); if (s) s.setAttribute("aria-expanded", "true"); }
+    hide() { if (typeof this.hidePopover === "function") { try { this.hidePopover(); } catch (e) {} } this.classList.remove("is-open"); modalContain(this, false); const s = this.querySelector(".c-command-palette__search"); if (s) s.setAttribute("aria-expanded", "false"); }
     toggle() { if (this.classList.contains("is-open") || this.matches(":popover-open")) this.hide(); else this.show(); }
     enhance() {
+      if (this._wiredCmdPalette) return;
       this._wiredCmdPalette = true;
       const search = () => this.querySelector(".c-command-palette__search");
       const list = () => this.querySelector(".c-command-palette__list");
       const items = () => Array.from(this.querySelectorAll(".c-command-palette__item"));
       const visibleItems = () => items().filter((it) => !it.hidden);
+      // A cursor, not the focus position: the items are not focusable (focus
+      // stays in the search field), so asking `navKey` about the active element
+      // always returned -1 and the arrow keys did nothing. The cursor is the
+      // single source of truth for the active option.
+      let cursor = 0;
       const setActive = (idx) => {
         const vis = visibleItems();
-        vis.forEach((it, i) => it.classList.toggle("is-active", i === idx));
-        const active = vis[idx];
+        if (!vis.length) { cursor = 0; return; }
+        cursor = Math.max(0, Math.min(idx, vis.length - 1));
+        vis.forEach((it, i) => it.classList.toggle("is-active", i === cursor));
+        const active = vis[cursor];
         const s = search();
         if (s && active) s.setAttribute("aria-activedescendant", active.id);
         else if (s) s.removeAttribute("aria-activedescendant");
@@ -2667,8 +2748,7 @@ class ContourCommandPalette extends ContourBase {
       const select = (it) => {
         if (!it) return;
         this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index: Number(it.dataset.index), label: it.dataset.label || it.textContent } }));
-        try { this.hidePopover(); } catch (e) {}
-        this.classList.remove("is-open");
+        this.hide();
       };
       const s = search();
       if (s) {
@@ -2680,7 +2760,13 @@ class ContourCommandPalette extends ContourBase {
         s.addEventListener("input", (e) => filter(e.target.value));
         s.addEventListener("keydown", (e) => {
           const vis = visibleItems();
-          navKey(e, vis, { wrap: false, homeEnd: true, onNavigate: (i) => setActive(i), onKey: () => { if (e.key === "Enter") { const active = this.querySelector(".c-command-palette__item.is-active"); if (active) select(active); } else if (e.key === "Escape") { e.preventDefault(); try { this.hidePopover(); } catch (err) {} this.classList.remove("is-open"); } } });
+          if (!vis.length) return;
+          if (e.key === "ArrowDown") { e.preventDefault(); setActive(cursor + 1); }
+          else if (e.key === "ArrowUp") { e.preventDefault(); setActive(cursor - 1); }
+          else if (e.key === "Home") { e.preventDefault(); setActive(0); }
+          else if (e.key === "End") { e.preventDefault(); setActive(vis.length - 1); }
+          else if (e.key === "Enter") { e.preventDefault(); select(vis[cursor]); }
+          else if (e.key === "Escape") { e.preventDefault(); this.hide(); }
         });
       }
       // click selection
@@ -2774,15 +2860,17 @@ class ContourSideSheet extends ContourBase {
         if (this.hasAttribute("open")) {
           this.dispatchEvent(new CustomEvent("contour:open", { bubbles: true, composed: true }));
           lastFocus = document.activeElement;
+          modalContain(this, true);
           const first = this.querySelector("button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])");
           if (first) try { first.focus(); } catch (err) {}
         } else if (lastFocus) {
+          modalContain(this, false);
           try { lastFocus.focus(); } catch (err) {}
           lastFocus = null;
         }
       });
       obs.observe(this, { attributes: true, attributeFilter: ["open"] });
-      onDispose(this, () => obs.disconnect());
+      onDispose(this, () => { obs.disconnect(); if (this.hasAttribute("open")) modalContain(this, false); });
     }
   }
   define("contour-side-sheet", ContourSideSheet);
@@ -2815,6 +2903,8 @@ class ContourTour extends ContourBase {
       this._wiredTour = true;
       const nextBtn = this.querySelector(".c-tour__next");
       if (nextBtn) try { nextBtn.focus(); } catch (err) {}
+      if (!this.hasAttribute("hidden")) modalContain(this, true);
+      onDispose(this, () => { if (!this.hasAttribute("hidden")) modalContain(this, false); });
       this.addEventListener("click", (e) => {
         const next = e.target && e.target.closest ? e.target.closest(".c-tour__next") : null;
         if (next && this.contains(next)) this.dispatchEvent(new CustomEvent("contour:step-change", { bubbles: true, composed: true, detail: { direction: "next" } }));
@@ -3082,7 +3172,7 @@ class ContourSwatch extends ContourBase {
  * Attributes: `value`.
  */
 class ContourCalendar extends ContourBase {
-    static get observed() { return ["value"]; }
+    static get observed() { return ["value", "month", "year"]; }
     static get properties() { return { value: { attribute: "value" }, month: { attribute: "month" }, year: { attribute: "year" } }; }
     render() {
       this.classList.add("c-calendar");
@@ -3149,7 +3239,6 @@ class ContourCalendar extends ContourBase {
           if (m < 0) { m = 11; y -= 1; }
           this.setAttribute("month", String(m));
           this.setAttribute("year", String(y));
-          this.render();
           this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { month: m, year: y } }));
           return;
         }
@@ -3160,7 +3249,6 @@ class ContourCalendar extends ContourBase {
           if (m > 11) { m = 0; y += 1; }
           this.setAttribute("month", String(m));
           this.setAttribute("year", String(y));
-          this.render();
           this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { month: m, year: y } }));
           return;
         }

@@ -1,15 +1,15 @@
 {
   "version": "1.0",
   "source": "index.html",
-  "sourceSha256": "0102caa891dd1fdf",
-  "lastUpdated": "2026-11-11T00:01:36+01:00",
+  "sourceSha256": "0d7cf97ba136a27a",
+  "lastUpdated": "2026-11-11T17:17:27+01:00",
   "generatedBy": "tools/build.mjs, from index.html",
   "statement": "Machine-readable copy of the style guide's prose, generated and never hand-edited. Sections are listed in guide order; titles, prose and counts are quoted or counted, not authored. Prose is verbatim: a paragraph here is the guide's own sentence, never a sentence this generator wrote. Contains no URL: the project is private until v1.0.",
   "counts": {
     "sections": 27,
     "inRail": 27,
     "titled": 26,
-    "blocksReferenced": 231,
+    "blocksReferenced": 232,
     "guideOnlyClasses": 1
   },
   "sections": [
@@ -138,7 +138,7 @@
       "title": "Documentation",
       "marker": "15",
       "file": "docs/docs.md",
-      "blocks": 14,
+      "blocks": 15,
       "inRail": true
     },
     {
@@ -178,7 +178,7 @@
       "title": "Playground",
       "marker": "20",
       "file": "docs/playground.md",
-      "blocks": 12,
+      "blocks": 15,
       "inRail": true
     },
     {
@@ -231,8 +231,8 @@
     }
   ],
   "coverage": {
-    "contractBlocks": 231,
-    "namedBySections": 231,
+    "contractBlocks": 232,
+    "namedBySections": 232,
     "notNamedByAnySection": []
   },
   "contracts": {

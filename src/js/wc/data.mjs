@@ -1,6 +1,6 @@
 import { ContourBase, define, onDispose, formatValue, contourId, navKey, isRtl } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates, remoteInvalidate, watchViewport } from './states.mjs';
-import { donutSlices, barRects, smoothPath, polylinePoints } from './svg.mjs';
+import { donutSlices, barRects, smoothPath, polylinePoints, contourPaths } from './svg.mjs';
 /**
  * Readout: web component wrapper.
  * Attributes: `rows`, `empty`, `loading`, `error`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`, `format`, `locale`.
@@ -889,7 +889,8 @@ const series = this.getAttribute("series");
               brush.setAttribute("max", this.getAttribute("brush-max") || "100");
               brush.setAttribute("start", this.getAttribute("brush-start") || this.getAttribute("brush-min") || "0");
               brush.setAttribute("end", this.getAttribute("brush-end") || this.getAttribute("brush-max") || "100");
-              if (brush.previousElementSibling !== plot) this.appendChild(brush);
+              const plotEl = this.querySelector(".c-chart__plot");
+              if (brush.previousElementSibling !== plotEl) this.insertBefore(brush, plotEl ? plotEl.nextSibling : null);
             } else {
               const brush = this.querySelector("contour-brush");
               if (brush) brush.remove();
@@ -2000,13 +2001,13 @@ class ContourDonut extends ContourBase {
       const values = items.map((it) => (typeof it === "object" ? (it.value || 0) : Number(it) || 0));
       const total = values.reduce((a, b) => a + b, 0) || 1;
       const brownoutLevel = this.brownoutLevel();
+      const layerColor = this.getAttribute("color");
       const shedRing = this.shed("ring", 3);
       if (!shedRing) {
         const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         svg.setAttribute("class", "c-donut__ring");
         svg.setAttribute("viewBox", "0 0 32 32");
         let offset = 0;
-        const layerColor = this.getAttribute("color");
         items.forEach((it, i) => {
           const v = values[i];
           const pct = v / total;
@@ -3689,50 +3690,63 @@ class ContourChartGrid extends ContourBase {
   define("contour-chart-grid", ContourChartGrid);
 /**
  * Contour Plot: web component wrapper.
- * Attributes: `axis`, `label`.
+ * Attributes: `values` (row-major 2D field), `levels`, `label`.
  */
 class ContourContourPlot extends ContourBase {
-    static get observed() { return ["axis", "label"]; }
-    static get properties() { return { axis: { attribute: "axis" }, label: { attribute: "label" } }; }
+    static get observed() { return ["values", "levels", "label"]; }
+    static get properties() { return { values: { attribute: "values" }, levels: { attribute: "levels" }, label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-contour-plot");
       this.setAttribute("role", "img");
-      this.setAttribute("aria-label", "Contour plot");
-      const axis = this.getAttribute("axis");
-      if (axis) {
-        let svg = this.querySelector("svg");
-        if (!svg) {
-          svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-          svg.setAttribute("viewBox", "0 0 100 100");
-          svg.setAttribute("aria-hidden", "true");
-          this.appendChild(svg);
-        }
-        let ax = svg.querySelector(".c-contour-plot__axis");
-        if (!ax) {
-          ax = document.createElementNS("http://www.w3.org/2000/svg", "line");
-          ax.setAttribute("class", "c-contour-plot__axis");
-          svg.appendChild(ax);
-        }
-      }
       const label = this.getAttribute("label");
-      if (label) {
-        let svg = this.querySelector("svg");
-        if (!svg) {
-          svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-          svg.setAttribute("viewBox", "0 0 100 100");
-          svg.setAttribute("aria-hidden", "true");
-          this.appendChild(svg);
+      this.setAttribute("aria-label", label || "Contour plot");
+      const valuesAttr = this.getAttribute("values");
+      const levelsAttr = this.getAttribute("levels");
+      let grid = null;
+      if (valuesAttr) { try { grid = JSON.parse(valuesAttr); } catch (e) { grid = null; } }
+      let levels = [0.3, 0.5, 0.7];
+      if (levelsAttr) { try { const l = JSON.parse(levelsAttr); if (Array.isArray(l) && l.length) levels = l; } catch (e) { /* keep defaults */ } }
+
+      let svg = this.querySelector("svg");
+      if (!svg) {
+        svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("class", "c-contour-plot__svg");
+        svg.setAttribute("aria-hidden", "true");
+        this.appendChild(svg);
+      }
+      // Clear previous contours so a re-render cannot stack a second set.
+      Array.from(svg.querySelectorAll(".c-contour-plot__contour")).forEach((n) => n.remove());
+
+      if (Array.isArray(grid) && grid.length > 1 && Array.isArray(grid[0]) && grid[0].length > 1) {
+        const draw = () => {
+          const w = this.clientWidth || 300;
+          const h = this.clientHeight || 300;
+          svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+          svg.querySelectorAll(".c-contour-plot__contour").forEach((n) => n.remove());
+          contourPaths(grid, levels, w, h).forEach((line, li) => {
+            if (!line.d) return;
+            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            path.setAttribute("d", line.d);
+            path.setAttribute("class", "c-contour-plot__contour" + (li > 0 ? " c-contour-plot__contour--level-" + (li + 1) : ""));
+            svg.appendChild(path);
+          });
+        };
+        draw();
+        // Re-render on resize so pixel-space paths track the container.
+        if (typeof ResizeObserver !== "undefined" && !this._contourResize) {
+          this._contourResize = new ResizeObserver(() => draw());
+          this._contourResize.observe(this);
+          onDispose(this, () => { this._contourResize.disconnect(); this._contourResize = null; });
         }
-        let lbl = svg.querySelector(".c-contour-plot__label");
-        if (!lbl) {
-          lbl = document.createElementNS("http://www.w3.org/2000/svg", "text");
-          lbl.setAttribute("class", "c-contour-plot__label");
-          svg.appendChild(lbl);
-        }
-        lbl.textContent = label;
+      } else if (!Array.isArray(grid)) {
+        const empty = document.createElement("div");
+        empty.className = "c-contour-plot__empty";
+        empty.textContent = this.getAttribute("empty") || "No field";
+        this.appendChild(empty);
       }
     }
   }
+define("contour-contour-plot", ContourContourPlot);
 /**
  * Error Boundary: web component wrapper.
  * Attributes: `fallback`, `error`.

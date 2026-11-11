@@ -1,4 +1,4 @@
-import { ContourBase, define, sanitizeHtml, headingTag, formatValue, navKey, isRtl } from './core.mjs';
+import { ContourBase, define, sanitizeHtml, headingTag, formatValue, navKey, isRtl, safeHref } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { wireCopy } from './behaviours.mjs';
 
@@ -211,7 +211,7 @@ class ContourLink extends ContourBase {
       if (prevLink) prevLink.remove();
       if (href && label) {
         const a = document.createElement("a");
-        a.href = href;
+        a.href = safeHref(href);
         a.textContent = label;
         const ariaLabel = this.getAttribute("aria-label");
         if (ariaLabel) a.setAttribute("aria-label", ariaLabel);
@@ -947,7 +947,7 @@ class ContourAnchor extends ContourBase {
       if (prevAnchor) prevAnchor.remove();
       if (href && label) {
         const a = document.createElement("a");
-        a.href = href;
+        a.href = safeHref(href);
         a.textContent = label;
         const ariaLabel = this.getAttribute("aria-label");
         if (ariaLabel) a.setAttribute("aria-label", ariaLabel);

@@ -23,7 +23,7 @@ class ContourDialog extends ContourBase {
           closeBtn.className = "c-btn c-btn--icon c-btn--ghost c-dialog__close";
           closeBtn.setAttribute("type", "button");
           closeBtn.setAttribute("aria-label", "Close");
-          closeBtn.innerHTML = '<svg aria-hidden="true"><use href="#i-close" /></svg>';
+          closeBtn.innerHTML = '<svg aria-hidden="true"><use href="#i-x" /></svg>';
           head.appendChild(closeBtn);
         }
         const h = head.querySelector(".c-dialog__title");
@@ -572,7 +572,7 @@ class ContourDrawer extends ContourBase {
           closeBtn.className = "c-btn c-btn--icon c-btn--ghost c-drawer__close";
           closeBtn.setAttribute("type", "button");
           closeBtn.setAttribute("aria-label", "Close");
-          closeBtn.innerHTML = '<svg aria-hidden="true"><use href="#i-close" /></svg>';
+          closeBtn.innerHTML = '<svg aria-hidden="true"><use href="#i-x" /></svg>';
           head.appendChild(closeBtn);
         }
         const t = head.querySelector(".c-drawer__title");
@@ -670,7 +670,7 @@ class ContourSheet extends ContourBase {
           closeBtn.className = "c-btn c-btn--icon c-btn--ghost c-sheet__close";
           closeBtn.setAttribute("type", "button");
           closeBtn.setAttribute("aria-label", "Close");
-          closeBtn.innerHTML = '<svg aria-hidden="true"><use href="#i-close" /></svg>';
+          closeBtn.innerHTML = '<svg aria-hidden="true"><use href="#i-x" /></svg>';
           head.appendChild(closeBtn);
         }
         const t = head.querySelector(".c-sheet__title");

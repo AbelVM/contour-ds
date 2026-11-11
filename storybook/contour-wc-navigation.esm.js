@@ -253,6 +253,7 @@
     "variant", "values", "viewport", "warning", "yes", "zoomable", "x", "y",
     "caption", "current-time", "is-playing", "loop-label",     "no-data-color", "no-data-label", "property", "show-loop", "show-thumb", "show-thumb-caption", "speeds", "item-height", "pause-label", "play-label", "speed-label", "time-label", "shimmer",
     "search",
+    "numbered",
     "bucket-count", "limit-values",
   ];
 
@@ -2298,7 +2299,18 @@ export function wireCopy(host) {
     if (!btn) return;
     const owner = wcClosest(host, btn, ".c-code") || wcClosest(host, btn, ".c-install") || host;
     const src = owner.querySelector("code, .c-install__command");
-    const text = (src ? src.textContent : owner.textContent) || "";
+    // A numbered block carries its gutter as elements inside the <code>, so
+    // `textContent` would copy the numbers and lose the line breaks between the
+    // line spans. Read the lines back instead: the gutter is dropped, the breaks
+    // are restored, and the clipboard gets the code the reader sees.
+    const readSource = (el) => {
+      const lines = el && el.querySelectorAll ? el.querySelectorAll(".c-code__line") : null;
+      if (!lines || !lines.length) return el ? el.textContent || "" : "";
+      return Array.from(lines).map((l) => Array.from(l.childNodes)
+        .filter((n) => !(n.classList && n.classList.contains("c-code__line-number")))
+        .map((n) => n.textContent).join("")).join("\n");
+    };
+    const text = readSource(src) || (src ? "" : owner.textContent) || "";
     // The confirmation is the one the system script paints for the guide's own
     // copy buttons: a label swap, `data-copied` (which the shipped CSS styles)
     // and an icon check on the trigger, reverted after the same beat. The
@@ -4539,37 +4551,79 @@ class ContourTocFull extends ContourBase {
       }
     }
     enhance() {
-      // Scroll-spy (BY-29). The toc links point at page sections by href; when
-      // IntersectionObserver exists, the section currently in the reading band
+      // Scroll-spy (BY-29, CDS-075). The toc links point at page sections by
+      // href; the section whose top has most recently crossed the reading line
       // marks its link aria-current="true" and clears the rest. The shipped CSS
       // already styles .c-toc__link[aria-current="true"], so the hook needs no
-      // new rule. Enhancement-only: without IntersectionObserver the links stay
-      // as rendered, with author-provided aria-current left untouched.
+      // new rule.
+      //
+      // This reads geometry on scroll rather than IntersectionObserver: an
+      // observer callback reports the entries that changed, not the current
+      // reading position, so `visible[0]` is whichever section happened to
+      // fire first — order is delivery, not document order. Geometry has one
+      // answer for one scroll position. rAF-throttled, passive listener.
+      // Enhancement-only: without it the links stay as rendered, with any
+      // author-provided aria-current left untouched.
       if (this._wiredTocSpy) return;
-      if (typeof IntersectionObserver !== "function") return;
       const links = () => Array.from(this.querySelectorAll(".c-toc__link"));
-      const targets = links()
+      const pairs = () => links()
         .map((a) => {
           const href = a.getAttribute("href") || "";
           if (!href.startsWith("#") || href.length < 2) return null;
-          return document.getElementById(href.slice(1));
+          const el = document.getElementById(href.slice(1));
+          return el ? { a, el } : null;
         })
         .filter(Boolean);
-      if (!targets.length) return;
+      if (!pairs().length) return;
       this._wiredTocSpy = true;
-      const spy = new IntersectionObserver((entries) => {
-        const visible = entries.filter((en) => en.isIntersecting).map((en) => en.target.id);
-        if (!visible.length) return;
-        const top = visible[0];
+
+      const readingLine = () => {
+        const raw = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--header-height"));
+        return (Number.isFinite(raw) ? raw : 0) + Math.min(120, window.innerHeight * 0.2);
+      };
+
+      const update = () => {
+        const all = pairs();
+        if (!all.length) return;
+        const line = readingLine();
+        let current = all[0];
+        for (const p of all) {
+          if (p.el.getBoundingClientRect().top <= line) current = p;
+        }
+        // The last section never crosses the line on a short page; at the
+        // bottom of a scrollable document the last link is the honest answer.
+        // A document shorter than the viewport is not "at the bottom" — it is
+        // simply not scrollable, and the first section is where the reader is.
+        const scrollable = document.documentElement.scrollHeight > window.innerHeight + 2;
+        if (scrollable && window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) {
+          current = all[all.length - 1];
+        }
+        const id = current.el.id;
         links().forEach((a) => {
-          const href = a.getAttribute("href") || "";
-          const isCurrent = href === "#" + top;
-          if (isCurrent && a.getAttribute("aria-current") !== "true") a.setAttribute("aria-current", "true");
-          else if (!isCurrent && a.hasAttribute("aria-current")) a.removeAttribute("aria-current");
+          const isCurrent = a.getAttribute("href") === "#" + id;
+          if (isCurrent) {
+            if (a.getAttribute("aria-current") !== "true") a.setAttribute("aria-current", "true");
+          } else if (a.hasAttribute("aria-current")) {
+            a.removeAttribute("aria-current");
+          }
         });
-      }, { rootMargin: "0px 0px -60% 0px", threshold: 0 });
-      targets.forEach((t) => spy.observe(t));
-      onDispose(this, () => spy.disconnect());
+      };
+
+      let queued = 0;
+      const schedule = () => {
+        if (queued) return;
+        queued = requestAnimationFrame(() => { queued = 0; update(); });
+      };
+      window.addEventListener("scroll", schedule, { passive: true });
+      window.addEventListener("resize", schedule);
+      window.addEventListener("hashchange", schedule);
+      update();
+      onDispose(this, () => {
+        window.removeEventListener("scroll", schedule);
+        window.removeEventListener("resize", schedule);
+        window.removeEventListener("hashchange", schedule);
+        if (queued) cancelAnimationFrame(queued);
+      });
       // Smooth scroll on link click (F-23).
       if (!this._wiredTocScroll) {
         this._wiredTocScroll = true;

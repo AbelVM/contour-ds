@@ -72,7 +72,6 @@ class ContourActivity extends ContourBase {
             item.className = "c-activity__item";
             item.setAttribute("role", "button");
             item.setAttribute("tabindex", "-1");
-            if (!item.hasAttribute("aria-label")) item.setAttribute("aria-label", text.textContent);
             const dot = document.createElement("span");
             dot.className = "c-activity__dot c-activity__dot--" + (it.variant || "primary");
             dot.setAttribute("aria-hidden", "true");
@@ -80,6 +79,7 @@ class ContourActivity extends ContourBase {
             const text = document.createElement("span");
             text.className = "c-activity__text";
             text.textContent = typeof it === "string" ? it : (it.text || it.label || "");
+            if (!item.hasAttribute("aria-label")) item.setAttribute("aria-label", text.textContent);
             item.appendChild(text);
             if (it.time) {
               const time = document.createElement("span");

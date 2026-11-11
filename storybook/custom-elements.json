@@ -4114,13 +4114,20 @@
         },
         {
           "kind": "class",
-          "name": "ContourElement",
+          "name": "ContourCodeElement",
           "tagName": "contour-code",
           "customElement": true,
           "description": "Contour component c-code (complete-widget).",
           "attributes": [
             {
               "name": "copyable",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Boolean attribute for c-code."
+            },
+            {
+              "name": "numbered",
               "type": {
                 "text": "boolean"
               },
@@ -4142,6 +4149,14 @@
                 "text": "boolean"
               },
               "attribute": "copyable"
+            },
+            {
+              "kind": "field",
+              "name": "numbered",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "numbered"
             },
             {
               "kind": "field",
@@ -25430,7 +25445,7 @@
           "kind": "custom-element-definition",
           "name": "contour-code",
           "declaration": {
-            "name": "ContourElement",
+            "name": "ContourCodeElement",
             "module": "dist/contour-wc.esm.js"
           }
         },

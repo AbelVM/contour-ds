@@ -29,16 +29,17 @@ const classToTag = (className) => {
   const base = className.replace(/^Contour/, "");
   // Convert PascalCase to kebab-case
   const kebab = base.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
-  // Avoid double "contour-" prefix (e.g. ContourContourPlot → contour-plot, not contour-contour-plot)
-  if (kebab.startsWith("contour-")) return kebab;
+  // Always prefix: a class whose own name starts with "Contour" (ContourContourPlot)
+  // maps to contour-contour-plot, which is the tag define() actually registers.
   return "contour-" + kebab;
 };
 
 /** Map a block name (c-btn) to its tag name (contour-btn). */
 const blockToTag = (block) => {
   const base = block.replace(/^c-/, "");
-  // Avoid double "contour-" prefix (e.g. c-contour-plot → contour-plot, not contour-contour-plot)
-  if (base.startsWith("contour-")) return base;
+  // Always prefix: c-contour-plot -> contour-contour-plot (the registered tag),
+  // not contour-plot. The old "avoid double prefix" rule silently dropped the
+  // one component whose block name already carries the namespace.
   return "contour-" + base;
 };
 

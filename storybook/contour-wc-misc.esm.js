@@ -253,6 +253,7 @@
     "variant", "values", "viewport", "warning", "yes", "zoomable", "x", "y",
     "caption", "current-time", "is-playing", "loop-label",     "no-data-color", "no-data-label", "property", "show-loop", "show-thumb", "show-thumb-caption", "speeds", "item-height", "pause-label", "play-label", "speed-label", "time-label", "shimmer",
     "search",
+    "numbered",
     "bucket-count", "limit-values",
   ];
 
@@ -2298,7 +2299,18 @@ export function wireCopy(host) {
     if (!btn) return;
     const owner = wcClosest(host, btn, ".c-code") || wcClosest(host, btn, ".c-install") || host;
     const src = owner.querySelector("code, .c-install__command");
-    const text = (src ? src.textContent : owner.textContent) || "";
+    // A numbered block carries its gutter as elements inside the <code>, so
+    // `textContent` would copy the numbers and lose the line breaks between the
+    // line spans. Read the lines back instead: the gutter is dropped, the breaks
+    // are restored, and the clipboard gets the code the reader sees.
+    const readSource = (el) => {
+      const lines = el && el.querySelectorAll ? el.querySelectorAll(".c-code__line") : null;
+      if (!lines || !lines.length) return el ? el.textContent || "" : "";
+      return Array.from(lines).map((l) => Array.from(l.childNodes)
+        .filter((n) => !(n.classList && n.classList.contains("c-code__line-number")))
+        .map((n) => n.textContent).join("")).join("\n");
+    };
+    const text = readSource(src) || (src ? "" : owner.textContent) || "";
     // The confirmation is the one the system script paints for the guide's own
     // copy buttons: a label swap, `data-copied` (which the shipped CSS styles)
     // and an icon check on the trigger, reverted after the same beat. The

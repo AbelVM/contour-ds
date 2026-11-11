@@ -1,4 +1,4 @@
-import{n as e}from"./rolldown-runtime-sJBDdmOt.js";import{M as t,a as n,j as r,o as i,y as a}from"./blocks-DSCCLprU.js";function o(e){let r={code:`code`,h1:`h1`,h2:`h2`,p:`p`,...t(),...e.components};return(0,c.jsxs)(c.Fragment,{children:[(0,c.jsx)(n,{title:`Contour/Foundations/Overview`}),`
+import{n as e}from"./rolldown-runtime-sJBDdmOt.js";import{M as t,a as n,j as r,o as i,y as a}from"./blocks-CvhZDU21.js";function o(e){let r={code:`code`,h1:`h1`,h2:`h2`,p:`p`,...t(),...e.components};return(0,c.jsxs)(c.Fragment,{children:[(0,c.jsx)(n,{title:`Contour/Foundations/Overview`}),`
 `,(0,c.jsx)(r.h1,{id:`contour-design-system`,children:`Contour design system`}),`
 `,(0,c.jsx)(r.p,{children:`Contour is a token-driven design system for spatial interfaces.`}),`
 `,(0,c.jsx)(r.h2,{id:`themes`,children:`Themes`}),`

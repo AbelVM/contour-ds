@@ -28,6 +28,7 @@ export interface ContourChangelogElement extends ContourElement{src?:S;}
 export interface ContourChartElement extends ContourDataElement{axis?:S;color?:S;zoomable?:boolean;brush?:boolean;note?:S;"bucket-count"?:S;"limit-values"?:S;}
 export interface ContourChartGridElement extends ContourElement{src?:S;}
 export interface ContourCheckElement extends ContourFormElement{label?:S;type?:S;error?:S;help?:S;}
+export interface ContourCodeElement extends ContourElement{numbered?:boolean;}
 export interface ContourCodeTabsElement extends ContourElement{src?:S;}
 export interface ContourColorPickerElement extends ContourFormElement{label?:S;error?:S;help?:S;alpha?:boolean;presets?:S;}
 export interface ContourComboboxElement extends ContourFormElement{options?:S;label?:S;multiple?:boolean;virtual?:boolean;src?:S;}
@@ -174,7 +175,7 @@ declare global { interface HTMLElementTagNameMap {
   "contour-check":ContourCheckElement;
   "contour-chip":ContourElement;
   "contour-cluster":ContourElement;
-  "contour-code":ContourElement;
+  "contour-code":ContourCodeElement;
   "contour-code-tabs":ContourCodeTabsElement;
   "contour-color-picker":ContourColorPickerElement;
   "contour-combobox":ContourComboboxElement;

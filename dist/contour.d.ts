@@ -35,6 +35,8 @@ export interface ContourComboboxElement extends ContourFormElement{options?:S;la
 export interface ContourCommandPaletteElement extends ContourElement{open?:boolean;}
 export interface ContourCompareElement extends ContourElement{src?:S;}
 export interface ContourCompassFullElement extends ContourElement{src?:S;}
+export interface ContourContextMenuElement extends ContourElement{trigger?:S;}
+export interface ContourContourPlotElement extends ContourElement{values?:S;levels?:S;}
 export interface ContourCoordinateElement extends ContourElement{format?:S;locale?:S;precision?:S;src?:S;}
 export interface ContourDashFreshnessElement extends ContourDataElement{label?:S;value?:S;format?:S;locale?:S;}
 export interface ContourDashKpiRowElement extends ContourDataElement{items?:S;}
@@ -46,14 +48,16 @@ export interface ContourDeltaElement extends ContourDataElement{value?:S;directi
 export interface ContourDividerElement extends ContourElement{orientation?:S;}
 export interface ContourDocsNavElement extends ContourElement{src?:S;}
 export interface ContourDonutElement extends ContourDataElement{value?:S;values?:S;items?:S;label?:S;color?:S;note?:S;}
+export interface ContourDropIndicatorElement extends ContourElement{open?:boolean;}
 export interface ContourEmptyElement extends ContourElement{illustration?:S;}
 export interface ContourErrorBoundaryElement extends ContourElement{fallback?:S;}
 export interface ContourFaqElement extends ContourElement{src?:S;}
 export interface ContourFeatureInspectorElement extends ContourElement{open?:boolean;}
+export interface ContourFieldElement extends ContourElement{disabled?:boolean;}
 export interface ContourFileUploadElement extends ContourFormElement{label?:S;accept?:S;multiple?:boolean;progress?:S;}
 export interface ContourFilterBarElement extends ContourElement{src?:S;clearable?:S;scope?:S;}
 export interface ContourFlowMapElement extends ContourDataElement{label?:S;nodes?:S;}
-export interface ContourFormElement extends ContourElement{submitting?:boolean;}
+export interface ContourFormElement extends ContourElement{submitting?:boolean;submitLabel?:S;}
 export interface ContourGaugeElement extends ContourDataElement{value?:S;min?:S;max?:S;heading?:S;thresholds?:S;format?:S;locale?:S;unit?:S;brownout?:S;}
 export interface ContourGeocoderElement extends ContourElement{results?:S;src?:S;}
 export interface ContourHeatmapElement extends ContourDataElement{cells?:S;count?:S;legend?:S;}
@@ -79,7 +83,6 @@ export interface ContourPaginationElement extends ContourElement{src?:S;}
 export interface ContourPaletteEditorElement extends ContourElement{colors?:S;}
 export interface ContourPanelElement extends ContourElement{collapsible?:boolean;collapsed?:boolean;}
 export interface ContourPivotElement extends ContourDataElement{rows?:S;columns?:S;values?:S;filter?:S;aggregate?:S;}
-export interface ContourContourPlotElement extends ContourDataElement{axis?:S;label?:S;}
 export interface ContourPopoverElement extends ContourElement{content?:S;}
 export interface ContourPressableFullElement extends ContourElement{disabled?:boolean;}
 export interface ContourPriceFullElement extends ContourElement{format?:S;locale?:S;}
@@ -97,7 +100,7 @@ export interface ContourRowActionFullElement extends ContourElement{disabled?:bo
 export interface ContourSavedViewElement extends ContourElement{updated?:S;source?:S;active?:boolean;}
 export interface ContourScaleBarElement extends ContourElement{distance?:S;resolution?:S;latitude?:S;src?:S;}
 export interface ContourSegmentedElement extends ContourFormElement{options?:S;selected?:S;label?:S;}
-export interface ContourSelectElement extends ContourFormElement{options?:S;label?:S;error?:S;help?:S;}
+export interface ContourSelectElement extends ContourFormElement{options?:S;label?:S;error?:S;help?:S;multiple?:boolean;autocomplete?:S;}
 export interface ContourShowcaseFullElement extends ContourElement{src?:S;}
 export interface ContourSideSheetElement extends ContourElement{open?:boolean;side?:S;}
 export interface ContourSidebarElement extends ContourElement{collapsed?:boolean;}
@@ -185,7 +188,8 @@ declare global { interface HTMLElementTagNameMap {
   "contour-comparison":ContourElement;
   "contour-compass":ContourElement;
   "contour-container":ContourElement;
-  "contour-context-menu":ContourElement;
+  "contour-context-menu":ContourContextMenuElement;
+  "contour-contour-plot":ContourContourPlotElement;
   "contour-coordinate":ContourCoordinateElement;
   "contour-cta":ContourElement;
   "contour-dash-freshness":ContourDashFreshnessElement;
@@ -212,7 +216,7 @@ declare global { interface HTMLElementTagNameMap {
   "contour-drag-handle":ContourElement;
   "contour-draggable":ContourElement;
   "contour-drawer":ContourElement;
-  "contour-drop-indicator":ContourElement;
+  "contour-drop-indicator":ContourDropIndicatorElement;
   "contour-drop-zone":ContourElement;
   "contour-dropdown":ContourElement;
   "contour-elevation":ContourElement;
@@ -223,7 +227,7 @@ declare global { interface HTMLElementTagNameMap {
   "contour-faq":ContourFaqElement;
   "contour-feature":ContourElement;
   "contour-feature-inspector":ContourFeatureInspectorElement;
-  "contour-field":ContourElement;
+  "contour-field":ContourFieldElement;
   "contour-field-group":ContourElement;
   "contour-file-tree":ContourElement;
   "contour-file-upload":ContourFileUploadElement;

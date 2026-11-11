@@ -44,7 +44,7 @@ By route volume
 
 48 rows · sorted by latency
 
-A documentation site is a reading instrument. Its grammar prioritises findability, reading comfort, technical precision, code discoverability and cross-referencing.
+A documentation site is a reading instrument. Its grammar prioritises findability, reading comfort, technical precision, code discoverability and cross-referencing. Below 56rem the navigation column leaves the page: it carries popover, its controller is a popovertarget button (.c-docs-shell__nav-toggle), and the platform supplies Escape, light dismiss and focus return. node tools/audit/docs-behaviours.mjs asserts the drawer and the TOC scroll-spy in a real scrolling page.
 
 The documentation shell composes these blocks in a fixed arrangement:
 
@@ -119,4 +119,4 @@ part of the component contract and nothing in an installed package defines them:
 
 ---
 
-Source `index.html` @ `0102caa891dd1fdf` · last committed 2026-11-11T00:01:36+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `0d7cf97ba136a27a` · last committed 2026-11-11T17:17:27+01:00 · no URL: the project is private until v1.0.
