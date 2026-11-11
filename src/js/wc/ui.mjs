@@ -3434,7 +3434,7 @@ class ContourDataGrid extends ContourBase {
             const key = typeof c === "string" ? c : (c.key || c.label || "");
             const td = document.createElement("td");
             td.setAttribute("role", "gridcell");
-            td.setAttribute("tabindex", "0");
+            td.setAttribute("tabindex", "-1");
             td.textContent = r && r[key] != null ? r[key] : "";
             if (!String(td.textContent).trim()) td.setAttribute("aria-label", "Empty");
             tr.appendChild(td);
@@ -3447,6 +3447,12 @@ class ContourDataGrid extends ContourBase {
       if (!wrap) { wrap = document.createElement("div"); wrap.className = "c-table-wrap c-data-grid__wrap"; }
       if (table.parentNode !== wrap) wrap.appendChild(table);
       if (wrap.parentNode !== this) this.appendChild(wrap);
+      // One tab stop per grid: cells are -1 and the arrow keys move a roving
+      // tabindex, so a 1,000-row grid is not 1,000 tab stops.
+      if (!table.querySelector('[tabindex="0"]')) {
+        const first = table.querySelector("tbody td, thead th");
+        if (first) first.setAttribute("tabindex", "0");
+      }
     }
     _rowHeight() {
       const h = Number(this.getAttribute("row-height"));
@@ -3484,7 +3490,7 @@ class ContourDataGrid extends ContourBase {
           const key = typeof c === "string" ? c : (c.key || c.label || "");
           const td = document.createElement("td");
           td.setAttribute("role", "gridcell");
-          td.setAttribute("tabindex", "0");
+          td.setAttribute("tabindex", "-1");
           td.textContent = r && r[key] != null ? r[key] : "";
           if (!String(td.textContent).trim()) td.setAttribute("aria-label", "Empty");
           tr.appendChild(td);
@@ -3499,6 +3505,12 @@ class ContourDataGrid extends ContourBase {
         td.style.padding = "0";
         sp.appendChild(td);
         tbody.appendChild(sp);
+      }
+      // The window re-renders rows, so the single tab stop has to be re-seeded
+      // here too, or a scroll would leave the grid with no tabbable cell.
+      if (!tbody.querySelector('[tabindex="0"]')) {
+        const first = tbody.querySelector("tr[data-index] td");
+        if (first) first.setAttribute("tabindex", "0");
       }
     }
     enhance() {
@@ -3529,7 +3541,13 @@ class ContourDataGrid extends ContourBase {
         else if (e.key === "ArrowLeft") target = row.children[ci - 1];
         else if (e.key === "ArrowDown") target = rows[ri + 1] && rows[ri + 1].children[ci];
         else if (e.key === "ArrowUp") target = rows[ri - 1] && rows[ri - 1].children[ci];
-        if (target) { e.preventDefault(); try { target.focus(); } catch (err) {} }
+        if (target) {
+          e.preventDefault();
+          // Move the single tab stop with the focus.
+          table.querySelectorAll('[tabindex="0"]').forEach((c) => c.setAttribute("tabindex", "-1"));
+          target.setAttribute("tabindex", "0");
+          try { target.focus(); } catch (err) {}
+        }
       });
       this.addEventListener("click", (e) => {
         const tr = e.target && e.target.closest ? e.target.closest("tr") : null;
@@ -3570,7 +3588,7 @@ class ContourDataGrid extends ContourBase {
                 const k = typeof c === "string" ? c : (c.key || c.label || "");
                 const td = document.createElement("td");
                 td.setAttribute("role", "gridcell");
-                td.setAttribute("tabindex", "0");
+                td.setAttribute("tabindex", "-1");
                 td.textContent = r && r[k] != null ? r[k] : "";
                 tr.appendChild(td);
               });

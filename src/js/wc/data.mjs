@@ -253,6 +253,10 @@ class ContourTable extends ContourBase {
           this._page = page;
           this._totalPages = totalPages;
           this._pageSize = pageSize;
+          // Keep the row objects in memory instead of serializing each one into
+          // a data-row attribute: the JSON duplicated the data the component
+          // already holds and bloated every row.
+          this._rowData = pageData;
 
           const wrap = this.ensure(".c-table-wrap", () => { const el = document.createElement("div"); el.className = "c-table-wrap"; return el; });
           // Reuse the existing table when columns are unchanged, rebuilding
@@ -328,7 +332,7 @@ class ContourTable extends ContourBase {
           const tbody = table.querySelector("tbody");
           tbody.innerHTML = "";
           const useVirtual = this.hasAttribute("virtual") && !usePaging && pageData.length > 100;
-          const rowHeight = 36;
+          const rowHeight = this._measuredRowHeight || 36;
           const windowSize = 30;
           const overscan = 10;
           let windowStart = 0;
@@ -365,8 +369,10 @@ class ContourTable extends ContourBase {
             visibleData.forEach((row, ri) => {
               const tr = document.createElement("tr");
               tr.dataset.rowIndex = String(windowStart + ri);
-              tr.setAttribute("tabindex", "0");
-              tr.setAttribute("data-row", JSON.stringify(row));
+              // One tab stop per grid, not one per row: every row is -1 and the
+              // arrow keys move a roving tabindex. A 1,000-row table was 1,000
+              // tab stops before this.
+              tr.setAttribute("tabindex", "-1");
               cols.forEach((c, ci) => {
                 const isSelect = (typeof c === "object" && c !== null && c.select);
                 const td = document.createElement("td");
@@ -386,6 +392,26 @@ class ContourTable extends ContourBase {
             });
           }
           if (useVirtual) addSpacer(Math.max(0, pageData.length - windowStart - visibleData.length) * rowHeight);
+          // Keep exactly one row in the tab order: the first rendered row when
+          // none is active yet, so the grid is a single tab stop.
+          if (!tbody.querySelector('tr[tabindex="0"]')) {
+            const first = tbody.querySelector("tr[data-row-index]");
+            if (first) first.setAttribute("tabindex", "0");
+          }
+          // Measure a real row so the virtual window uses the rendered height,
+          // not a guess: the old fixed 36px disagreed with the measured 64.1px,
+          // so the spacers and the scroll math were both wrong.
+          if (!this._measuredRowHeight && !this._measuringRow) {
+            const firstRow = tbody.querySelector("tr[data-row-index]");
+            const h = firstRow ? firstRow.getBoundingClientRect().height : 0;
+            if (h > 0) {
+              this._measuredRowHeight = h;
+              if (Math.abs(h - rowHeight) > 1) {
+                this._measuringRow = true;
+                requestAnimationFrame(() => { this._measuringRow = false; this.render(); });
+              }
+            }
+          }
           if (table.parentNode !== wrap) {
             wrap.innerHTML = "";
             wrap.appendChild(table);
@@ -556,16 +582,33 @@ class ContourTable extends ContourBase {
         if (!tr || !this.contains(tr)) return;
         const idx = Number(tr.dataset.rowIndex);
         if (!Number.isFinite(idx)) return;
-        const rowData = tr.getAttribute("data-row") || "";
+        const rowData = (this._rowData && this._rowData[idx]) || null;
         this.dispatchEvent(new CustomEvent("contour:zoom", { bubbles: true, composed: true, detail: { row: idx, index: idx, data: rowData } }));
       });
       this.addEventListener("keydown", (e) => {
-        if (e.key !== "Enter" && e.key !== " ") return;
         const tr = e.target && e.target.closest ? e.target.closest("tbody tr") : null;
         if (!tr || !this.contains(tr)) return;
-        e.preventDefault();
         const idx = Number(tr.dataset.rowIndex);
         if (!Number.isFinite(idx)) return;
+        // Roving tabindex: arrows move the single tab stop, Home/End jump.
+        if (e.key === "ArrowDown" || e.key === "ArrowUp" || e.key === "Home" || e.key === "End") {
+          const rows = Array.from(this.querySelectorAll("tbody tr[data-row-index]"));
+          const at = rows.indexOf(tr);
+          let next = at;
+          if (e.key === "ArrowDown") next = Math.min(rows.length - 1, at + 1);
+          else if (e.key === "ArrowUp") next = Math.max(0, at - 1);
+          else if (e.key === "Home") next = 0;
+          else if (e.key === "End") next = rows.length - 1;
+          if (next !== at && rows[next]) {
+            e.preventDefault();
+            rows.forEach((r) => r.setAttribute("tabindex", "-1"));
+            rows[next].setAttribute("tabindex", "0");
+            try { rows[next].focus(); } catch (err) {}
+          }
+          return;
+        }
+        if (e.key !== "Enter" && e.key !== " ") return;
+        e.preventDefault();
         this.dispatchEvent(new CustomEvent("contour:activate", { bubbles: true, composed: true, detail: { row: idx } }));
       });
       // Cross-filter contract (R16-16): clear-all resets table sort/page/filter state.
