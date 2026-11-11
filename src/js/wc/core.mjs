@@ -253,6 +253,7 @@
     "variant", "values", "viewport", "warning", "yes", "zoomable", "x", "y",
     "caption", "current-time", "is-playing", "loop-label",     "no-data-color", "no-data-label", "property", "show-loop", "show-thumb", "show-thumb-caption", "speeds", "item-height", "pause-label", "play-label", "speed-label", "time-label", "shimmer",
     "search",
+    "numbered",
     "bucket-count", "limit-values",
   ];
 

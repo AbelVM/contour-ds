@@ -1,5 +1,45 @@
-import { ContourBase, define, sanitizeHtml, headingTag, navKey } from './core.mjs';
+import { ContourBase, define, onDispose, sanitizeHtml, headingTag, navKey } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
+
+/* Route matching (CDS-075). The URL is the state for a documentation surface, so
+   the sidebar says where the reader is by marking the matching link
+   `aria-current="page"` — the shipped CSS already styles that attribute, and a
+   reader who cannot see the highlight still hears "current page".
+
+   Two ways to say where the reader is, in order:
+     1. a `current` attribute on the host, which is what a client-side router
+        sets after it navigates (a path, or a bare `#hash`);
+     2. the document's own location, which is what a static docs site has.
+
+   A bare hash also matches the last path segment, because that is the shape a
+   docs URL takes: `/docs/install` is the page `#install` points at. */
+const routeKey = (value) => {
+  const raw = String(value == null ? "" : value).trim();
+  if (!raw) return "";
+  if (raw.startsWith("#")) return "hash:" + raw;
+  try {
+    const base = typeof location !== "undefined" ? location.href : "http://localhost/";
+    const url = new URL(raw, base);
+    return "path:" + url.pathname.replace(/\/+$/, "") + url.search;
+  } catch (e) {
+    return "raw:" + raw;
+  }
+};
+
+const hereKey = (explicit) => {
+  const raw = String(explicit == null ? "" : explicit).trim();
+  if (raw) return routeKey(raw);
+  if (typeof location === "undefined") return "";
+  return "path:" + String(location.pathname || "").replace(/\/+$/, "") + (location.search || "");
+};
+
+const hashMatchesHere = (hash) => {
+  if (typeof location === "undefined") return false;
+  if (location.hash && location.hash === hash) return true;
+  const segment = String(location.pathname || "").split("/").filter(Boolean).pop() || "";
+  return Boolean(segment) && hash === "#" + segment;
+};
+
 class ContourDocsNav extends ContourBase {
     static get observed() { return ["items", "title", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { items: { attribute: "items" }, title: { attribute: "title" }, src: { attribute: "src" } }; }
@@ -77,6 +117,25 @@ class ContourDocsNav extends ContourBase {
       } else if (!items && !list) {
         renderEmpty(this, "docs-nav");
       }
+      this.applyCurrent();
+    }
+    /* Mark the link the reader is on. Idempotent: it clears every other link
+       first, so a re-render or a route change cannot leave two "current" items. */
+    applyCurrent() {
+      const links = Array.from(this.querySelectorAll(".c-docs-nav__link"));
+      if (!links.length) return;
+      const explicit = this.getAttribute("current");
+      const here = hereKey(explicit);
+      links.forEach((a) => {
+        const href = a.getAttribute("href") || "";
+        const key = routeKey(href);
+        const hit = Boolean(here) && (
+          (key && key === here) ||
+          (href.startsWith("#") && !explicit && hashMatchesHere(href))
+        );
+        if (hit) a.setAttribute("aria-current", "page");
+        else a.removeAttribute("aria-current");
+      });
     }
     enhance() {
       if (this._wiredDocsNav) return;
@@ -95,6 +154,18 @@ class ContourDocsNav extends ContourBase {
         if (!links.some((l) => l.tabIndex === 0)) links.forEach((l, i) => l.tabIndex = i === 0 ? 0 : -1);
         navKey(e, links, { wrap: true, homeEnd: true, onNavigate: (i) => { links.forEach((l, j) => l.tabIndex = j === i ? 0 : -1); }, onKey: (k) => { if (k === "Enter") { const a = document.activeElement; if (a) { e.preventDefault(); a.click(); } } } });
       });
+      // A static docs site navigates by changing the URL, so the highlight has to
+      // follow the URL rather than the click. A host that passes `current` owns
+      // the state and this listener is a no-op next to it.
+      if (typeof window !== "undefined" && window.addEventListener) {
+        const sync = () => this.applyCurrent();
+        window.addEventListener("hashchange", sync);
+        window.addEventListener("popstate", sync);
+        onDispose(this, () => {
+          window.removeEventListener("hashchange", sync);
+          window.removeEventListener("popstate", sync);
+        });
+      }
     }
   }
   define("contour-docs-nav", ContourDocsNav);

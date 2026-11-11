@@ -42,3 +42,43 @@ export const Reactivity = {
     await expect(canvasElement.textContent).toContain("Updated");
   },
 };
+
+
+export const ToastHostAsyncAction = {
+  render: () => {
+    const wrap = document.createElement("div");
+    wrap.style.display = "grid";
+    wrap.style.gap = "0.75rem";
+    const host = document.createElement("contour-toast-host");
+    host.setAttribute("id", "demo-toast-host");
+    const btn = document.createElement("button");
+    btn.className = "c-button";
+    btn.type = "button";
+    btn.textContent = "Trigger async action";
+    const status = document.createElement("p");
+    status.id = "toast-async-status";
+    status.textContent = "idle";
+    btn.addEventListener("click", async () => {
+      status.textContent = "loading";
+      await new Promise((r) => setTimeout(r, 10));
+      host.show("Saved successfully", { variant: "success", duration: 1200 });
+      status.textContent = "done";
+    });
+    wrap.append(host, btn, status);
+    return wrap;
+  },
+  play: async ({ canvasElement }) => {
+    const host = canvasElement.querySelector("contour-toast-host");
+    const btn = canvasElement.querySelector("button");
+    const status = canvasElement.querySelector("#toast-async-status");
+    await expect(host).toBeTruthy();
+    await expect(host).toHaveAttribute("role", "status");
+    await expect(host).toHaveAttribute("aria-live", "polite");
+    await expect(host).toHaveAttribute("aria-atomic", "true");
+    btn.click();
+    await new Promise((r) => setTimeout(r, 30));
+    await expect(status.textContent).toBe("done");
+    await expect(host.querySelector(".c-toast")).toBeTruthy();
+    await expect(host.textContent).toContain("Saved successfully");
+  },
+};

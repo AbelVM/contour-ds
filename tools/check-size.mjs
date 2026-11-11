@@ -55,7 +55,7 @@ const DIST = join(ROOT, "dist");
  *  which the Format Module has no legal place for (C-43). It states values only —
  *  a token's meaning is published once, in the Format document. */
 const BUDGETS = {
-  "contour.min.css": 256 * 1024,  // raised 2026-11-07: +layout fixes; raised 2026-11-09: +c-scheme-toggle, c-split-map CSS blocks; raised 2026-11-09: +c-filter-bar__mode scope toggle CSS; raised 2026-11-09: +c-saved-view, c-provenance, c-feature-inspector CSS blocks; measured 243.5 kB
+  "contour.min.css": 258 * 1024,  // raised 2026-11-07: +layout fixes; raised 2026-11-09: +c-scheme-toggle, c-split-map CSS blocks; raised 2026-11-09: +c-filter-bar__mode scope toggle CSS; raised 2026-11-09: +c-saved-view, c-provenance, c-feature-inspector CSS blocks; raised 2026-11-11: +CDS-070/075 workspace shell and docs drawer popover rules; measured 256.7 kB
   "contour.min.js": 39 * 1024,  // raised 2026-11-04: focus restoration + changelog; measured 38.0 kB
   "contour.d.ts": 32 * 1024,  // raised 2026-11-04: +3 new components (data-export, pull-to-refresh, split-map)
   "contour.tokens.json": 52 * 1024,  // raised 2026-11-09: +5 brand color aliases (--color-tidal-500 etc.) for Tailwind v4 bridge; measured 51.3 kB
@@ -92,7 +92,7 @@ const BUDGETS = {
   // partition — and a directory key is measured by summing the files under it,
   // because `statSync` on a directory reports the inode's size, which would make
   // this budget a pass at 4 kB over a 42 kB package.
-  "docs/": 70 * 1024,  // raised 2026-11-10: added composition grammar sections for Landing (16a), Dashboard (17a) and Documentation (15a); measured 68.2 kB
+  "docs/": 72 * 1024,  // raised 2026-11-10: added composition grammar sections for Landing (16a), Dashboard (17a) and Documentation (15a); measured 68.2 kB; raised 2026-11-11: +CDS-070/075 drawer prose and the workspace-shell specimen snippet; measured 70.2 kB
   "docs/index.json": 8 * 1024,
   // The registry (C-46). Measured 2026-10-24 at 16,443 bytes across 5 files:
   // registry.json 8,952 B plus four item files of 1,869–1,884 B — figures this gate
@@ -122,24 +122,24 @@ const BUDGETS = {
   "contour.vue.d.ts": 22 * 1024,  // Vue GlobalComponents augmentation (CDS-037); measured 20.6 kB
   "custom-elements.json": 780 * 1024,  // Custom Elements Manifest CEM 1.0 (CDS-037); 400 declarations + event vocab; measured 756.6 kB
   "contour.code-snippets": 124 * 1024,  // VS Code editor snippets (CDS-037); 400 snippets; measured 117.0 kB
-  "surfaces/contour-core.min.css": 164 * 1024,  // raised 2026-11-07: +layout fixes; measured 157.3 kB; raised 2026-11-10: +c-combobox, c-live-badge, c-dot variants, c-tree elements, c-split-pane, c-scheme-toggle icons CSS; measured 163.6 kB
-  "surfaces/contour-docs.min.css": 181 * 1024,  // raised 2026-11-07: +layout fixes; raised 2026-11-10: +CDS-046 CSS anchor positioning (c-popover, c-hover-card, c-context-menu); raised 2026-11-10: +c-combobox, c-live-badge, c-dot variants, c-tree elements, c-split-pane, c-scheme-toggle icons CSS; measured 180.7 kB
-  "surfaces/contour-data.min.css": 229 * 1024,  // raised 2026-11-07: +layout fixes; raised 2026-11-09: +c-split-map CSS block; raised 2026-11-09: +c-filter-bar__mode scope toggle CSS; raised 2026-11-09: +c-saved-view, c-provenance, c-feature-inspector CSS blocks; raised 2026-11-10: +c-combobox, c-live-badge, c-dot variants, c-tree elements, c-split-pane, c-scheme-toggle icons CSS; measured 228.2 kB
-  "surfaces/contour-landing.min.css": 173 * 1024,  // raised 2026-11-08: +forced-colors form controls; raised 2026-11-10: +c-combobox, c-live-badge, c-dot variants, c-tree elements, c-split-pane, c-scheme-toggle icons CSS; measured 172.3 kB
+  "surfaces/contour-core.min.css": 168 * 1024,  // raised 2026-11-07: +layout fixes; measured 157.3 kB; raised 2026-11-10: +c-combobox, c-live-badge, c-dot variants, c-tree elements, c-split-pane, c-scheme-toggle icons CSS; measured 163.6 kB; raised 2026-11-11: +CDS-070/075 drawer rules; measured 166.2 kB
+  "surfaces/contour-docs.min.css": 185 * 1024,  // raised 2026-11-07: +layout fixes; raised 2026-11-10: +CDS-046 CSS anchor positioning (c-popover, c-hover-card, c-context-menu); raised 2026-11-10: +c-combobox, c-live-badge, c-dot variants, c-tree elements, c-split-pane, c-scheme-toggle icons CSS; measured 180.7 kB; raised 2026-11-11: +CDS-075 .c-code--numbered gutter (.c-code__line, .c-code__line-number); measured 181.1 kB; raised 2026-11-11: +CDS-070/075 drawer rules; measured 183.3 kB
+  "surfaces/contour-data.min.css": 232 * 1024,  // raised 2026-11-07: +layout fixes; raised 2026-11-09: +c-split-map CSS block; raised 2026-11-09: +c-filter-bar__mode scope toggle CSS; raised 2026-11-09: +c-saved-view, c-provenance, c-feature-inspector CSS blocks; raised 2026-11-10: +c-combobox, c-live-badge, c-dot variants, c-tree elements, c-split-pane, c-scheme-toggle icons CSS; measured 228.2 kB; raised 2026-11-11: +CDS-070/075 drawer rules; measured 230.8 kB
+  "surfaces/contour-landing.min.css": 176 * 1024,  // raised 2026-11-08: +forced-colors form controls; raised 2026-11-10: +c-combobox, c-live-badge, c-dot variants, c-tree elements, c-split-pane, c-scheme-toggle icons CSS; measured 172.3 kB; raised 2026-11-11: +CDS-070/075 drawer rules; measured 174.9 kB
   "contour.esm.min.js": 39 * 1024,
   "contour-wc.esm.min.js": 650 * 1024,  // raised 2026-11-08: +event emission (batch); raised 2026-11-09: +data-contour-preserve-key; raised 2026-11-09: +contour:scope-change event; raised 2026-11-09: +R16-16 cross-filter contract events; raised 2026-11-09: +R16-17 map-linked table click-to-zoom; raised 2026-11-09: +R16-21 time-series series management; raised 2026-11-09: +contour-saved-view, contour-provenance, contour-feature-inspector WC classes; measured 625.0 kB
   // Per-family wc bundles (R16-60): each = core infrastructure + one family's
   // components, so a consumer who doesn't use a bundler can load just one family.
-  "contour-wc-navigation.esm.min.js": 152 * 1024,  // raised 2026-11-10: +DSD template registry/export for SSR string emission (SHADOW_MARKUP, renderShadowDSD); measured 151.4 kB
+  "contour-wc-navigation.esm.min.js": 153 * 1024,  // raised 2026-11-10: +DSD template registry/export for SSR string emission (SHADOW_MARKUP, renderShadowDSD); measured 151.4 kB; raised 2026-11-11: +CDS-075 geometry scroll-spy; measured 152.3 kB
   "contour-wc-data.esm.min.js": 227 * 1024,  // raised 2026-11-10: +DSD template registry/export for SSR string emission; measured 225.8 kB
   "contour-wc-map.esm.min.js": 138 * 1024,  // raised 2026-11-10: +DSD template registry/export for SSR string emission; measured 137.3 kB
-  "contour-wc-forms.esm.min.js": 132 * 1024,  // measured 128.2 kB; raised 2026-11-09: +data-contour-preserve-key; measured 129.8 kB; raised 2026-11-09: +R16-16 cross-filter contract; measured 130.0 kB; raised 2026-11-10: +DSD shadow-root reuse in shadow base (ContourShadow constructor); measured 131.0 kB
+  "contour-wc-forms.esm.min.js": 133 * 1024,  // measured 128.2 kB; raised 2026-11-09: +data-contour-preserve-key; measured 129.8 kB; raised 2026-11-09: +R16-16 cross-filter contract; measured 130.0 kB; raised 2026-11-10: +DSD shadow-root reuse in shadow base (ContourShadow constructor); measured 131.0 kB; raised 2026-11-11: +CDS-075 wireCopy readSource (numbered code gutter excluded from the clipboard); measured 132.1 kB
   "contour-wc-ui.esm.min.js": 234 * 1024,  // raised 2026-11-10: +DSD template registry/export for SSR string emission; measured 232.8 kB
-  "contour-wc-content.esm.min.js": 124 * 1024,  // raised 2026-11-10: +DSD template registry/export for SSR string emission; measured 123.3 kB
+  "contour-wc-content.esm.min.js": 126 * 1024,  // raised 2026-11-10: +DSD template registry/export for SSR string emission; measured 123.3 kB; raised 2026-11-11: +CDS-075 contour-code `numbered` (splitCodeLines/joinCodeLines); measured 125.1 kB
   "contour-wc-dashboard.esm.min.js": 104 * 1024,  // raised 2026-11-10: +DSD template registry/export for SSR string emission; measured 103.2 kB
-  "contour-wc-docs.esm.min.js": 101 * 1024,  // raised 2026-11-10: +DSD template registry/export for SSR string emission; measured 99.7 kB
+  "contour-wc-docs.esm.min.js": 102 * 1024,  // raised 2026-11-10: +DSD template registry/export for SSR string emission; measured 99.7 kB; raised 2026-11-11: +CDS-075 contour-docs-nav route matching (applyCurrent, hashchange/popstate); measured 101.4 kB
   "contour-wc-feedback.esm.min.js": 124 * 1024,  // raised 2026-11-10: +DSD template registry/export for SSR string emission; measured 123.5 kB
-  "contour-wc-interaction.esm.min.js": 116 * 1024,  // raised 2026-11-10: +DSD template registry/export for SSR string emission; measured 115.5 kB
+  "contour-wc-interaction.esm.min.js": 117 * 1024,  // raised 2026-11-10: +DSD template registry/export for SSR string emission; measured 115.5 kB; raised 2026-11-11: +CDS-075 wireCopy readSource (numbered code gutter excluded from the clipboard); measured 116.1 kB
   "contour-wc-layout.esm.min.js": 97 * 1024,  // raised 2026-11-10: +DSD template registry/export for SSR string emission; measured 96.1 kB
   "contour-wc-misc.esm.min.js": 104 * 1024,  // raised 2026-11-10: +DSD template registry/export for SSR string emission; measured 103.2 kB
 };

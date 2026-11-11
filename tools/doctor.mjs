@@ -44,6 +44,11 @@ const gates = [
   ["check-large-data", "node", ["tools/check-large-data.mjs"]],
   ["check-diagnostics", "node", ["tools/check-diagnostics.mjs"]],
   ["check-dsd", "node", ["tools/check-dsd.mjs"]],
+  ["docs-behaviours", "node", ["tools/audit/docs-behaviours.mjs"]],
+  ["workspace-shell", "node", ["tools/audit/workspace-shell.mjs"]],
+  ["glass-budget", "node", ["tools/audit/glass-budget.mjs"]],
+  ["check-recipes", "node", ["tools/check-recipes.mjs"]],
+  ["perf-budget", "node", ["tools/audit/perf-budget.mjs"]],
   ["check-visual", "node", ["tools/check-visual.mjs", "--verify"]],
 ];
 

@@ -1,6 +1,67 @@
 import { ContourBase, define, sanitizeHtml, headingTag, formatValue, navKey, isRtl } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { wireCopy } from './behaviours.mjs';
+
+/* Line numbers for a code block (CDS-075).
+
+   The numbers are real elements rather than a CSS counter on `::before`, for two
+   reasons: a counter cannot be left out of a selection, and a number that is not
+   in the DOM cannot be excluded from the copied text. `.c-code__line-number`
+   carries `user-select: none` so a drag does not take it, and `wireCopy` drops it
+   before writing to the clipboard, so the copied text is the code and nothing
+   else.
+
+   Splitting walks the top level only. A text node is split on its newlines; an
+   element that contains a newline of its own (a multi-line highlighted token) is
+   kept whole on the line it starts on, because taking it apart would break the
+   markup the highlighter produced. */
+const splitCodeLines = (code) => {
+  const lines = [];
+  let line = null;
+  const add = (n) => {
+    if (!line) {
+      line = document.createElement("span");
+      line.className = "c-code__line";
+      lines.push(line);
+    }
+    line.appendChild(n);
+  };
+  Array.from(code.childNodes).forEach((n) => {
+    if (n.nodeType !== 3) { add(n); return; }
+    String(n.textContent || "").split("\n").forEach((p, i) => {
+      if (i) line = null;
+      if (p) add(document.createTextNode(p));
+    });
+  });
+  const last = lines[lines.length - 1];
+  if (last && !last.textContent && lines.length > 1) lines.pop();
+  if (!lines.length) return;
+  const frag = document.createDocumentFragment();
+  lines.forEach((l, i) => {
+    const num = document.createElement("span");
+    num.className = "c-code__line-number";
+    num.setAttribute("aria-hidden", "true");
+    num.textContent = String(i + 1);
+    l.prepend(num);
+    frag.appendChild(l);
+  });
+  code.textContent = "";
+  code.appendChild(frag);
+};
+
+const joinCodeLines = (code) => {
+  const frag = document.createDocumentFragment();
+  Array.from(code.querySelectorAll(".c-code__line")).forEach((l) => {
+    Array.from(l.childNodes).forEach((n) => {
+      if (n.classList && n.classList.contains("c-code__line-number")) return;
+      frag.appendChild(n);
+    });
+    frag.appendChild(document.createTextNode("\n"));
+  });
+  code.textContent = "";
+  code.appendChild(frag);
+};
+
 class ContourCard extends ContourBase {
     static get observed() { return ["title", "variant", "heading"]; }
     static get properties() { return { title: { attribute: "title" }, variant: { attribute: "variant" } }; }
@@ -773,8 +834,8 @@ class ContourCta extends ContourBase {
   }
   define("contour-cta", ContourCta);
 class ContourCode extends ContourBase {
-    static get observed() { return ["title", "copyable"]; }
-    static get properties() { return { title: { attribute: "title" }, copyable: { attribute: "copyable", type: Boolean } }; }
+    static get observed() { return ["title", "copyable", "numbered"]; }
+    static get properties() { return { title: { attribute: "title" }, copyable: { attribute: "copyable", type: Boolean }, numbered: { attribute: "numbered", type: Boolean } }; }
     render() {
       this.classList.add("c-code");
       const title = this.getAttribute("title");
@@ -817,6 +878,22 @@ class ContourCode extends ContourBase {
       const head = this.querySelector(".c-code__head");
       if (head && head.parentNode === this && pre.parentNode === this && head.compareDocumentPosition(pre) & Node.DOCUMENT_POSITION_PRECEDING) {
         this.insertBefore(pre, head.nextSibling);
+      }
+      // Line numbers are applied after the code is wrapped, and are idempotent:
+      // the split is guarded by a flag on the <code>, so a re-render cannot
+      // number the same source twice.
+      const numbered = this.hasAttribute("numbered");
+      this.classList.toggle("c-code--numbered", numbered);
+      const codeEl = pre.querySelector("code");
+      if (codeEl) {
+        const split = codeEl.dataset.contourLines === "1";
+        if (numbered && !split) {
+          splitCodeLines(codeEl);
+          codeEl.dataset.contourLines = "1";
+        } else if (!numbered && split) {
+          joinCodeLines(codeEl);
+          delete codeEl.dataset.contourLines;
+        }
       }
     }
     enhance() {

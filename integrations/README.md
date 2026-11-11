@@ -10,5 +10,6 @@ of these are required to use the system; `src/` and `dist/` remain the product.
 | `integrations/ai/.cursorrules` | Drop-in rules file for Cursor / Claude Code / similar agents |
 | `integrations/ai/v0-prompt.md` | System prompt for v0 / Bolt / Lovable / similar generators |
 | `integrations/ai/CLAUDE.md` | Snippet to append to a project's `CLAUDE.md` |
+| `integrations/frameworks/README.md` | React, Vue, Svelte and Astro recipes; every import, tag and event is checked by `node tools/check-recipes.mjs` |
 
 These ship in the npm tarball under `integrations/` (see `package.json` `files`).
