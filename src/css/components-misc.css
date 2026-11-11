@@ -1896,6 +1896,11 @@
   .c-badge--dot { inline-size: 0.5rem; block-size: 0.5rem; padding: 0; border-radius: 50%; }
   .c-badge__remove {
     margin-inline-start: calc(0.25rem * var(--density, 1));
+    /* WCAG 2.5.8 floor: the remove control is a 24px target, not a 19px glyph. */
+    display: inline-grid;
+    place-items: center;
+    min-inline-size: 24px;
+    min-block-size: 24px;
     border: 0;
     background: none;
     color: inherit;

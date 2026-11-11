@@ -148,7 +148,8 @@
   /* -- Sizes -------------------------------------------------------- */
   .c-btn--sm {
     padding: calc(0.35rem * var(--density, 1)) calc(0.75rem * var(--density, 1));
-    min-block-size: calc(2rem * var(--density, 1));
+    /* WCAG 2.5.8 floor: never below 24px, even at compact density. */
+    min-block-size: max(24px, calc(2rem * var(--density, 1)));
     font-size: var(--type-micro);
     letter-spacing: 0.01em;
   }

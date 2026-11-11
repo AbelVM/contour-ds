@@ -753,6 +753,14 @@ try {
             const produced = host.children.length > 0 || host.shadowRoot || (host.className && host.className !== "");
             if (!produced) { renderAllEmpty++; renderAllBad.push(`${n}: fixture produced no node`); }
           }
+          // Parts contract (R18-48): the range and time-slider inputs must
+          // expose part="input" so ::part(input) reaches them.
+          if (n === "contour-range" || n === "contour-time-slider") {
+            const input = host.querySelector("input");
+            if (input && input.getAttribute("part") !== "input") {
+              renderAllBad.push(`${n}: input has no part="input" (got ${JSON.stringify(input.getAttribute("part"))})`);
+            }
+          }
           host.remove();
         }
         console.error = origError;
