@@ -642,10 +642,23 @@ class ContourChart extends ContourBase {
     static get updateMode() { return "keyed"; }
   static get observed() { return ["series", "axis", "color", "empty", "loading", "error", "retry", "skeleton", "zoomable", "data-table", "brush", "brush-min", "brush-max", "brush-start", "brush-end", "note", "bucket-count", "limit-values"]; }
   static get properties() { return { series: { attribute: "series" }, axis: { attribute: "axis" }, color: { attribute: "color" }, zoomable: { attribute: "zoomable", type: Boolean }, brush: { attribute: "brush", type: Boolean }, note: { attribute: "note" }, "bucket-count": { attribute: "bucket-count" }, "limit-values": { attribute: "limit-values" } }; }
+    _axisLabel() {
+      const raw = this.getAttribute("axis");
+      if (!raw) return "";
+      try {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === "object") return parsed.label || parsed.title || parsed.name || "";
+        return String(parsed);
+      } catch (e) { return raw; }
+    }
     render() {
       this.classList.add("c-chart");
-      if (!this.hasAttribute("role")) this.setAttribute("role", "img");
-      if (this.getAttribute("axis") && !this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("axis"));
+      // A chart with brush handles has focusable descendants, which role="img"
+      // forbids (an img is a leaf). A named group exposes the marks and keeps
+      // the controls reachable; the data table remains the alternative.
+      if (!this.hasAttribute("role")) this.setAttribute("role", "group");
+      if (!this.hasAttribute("aria-roledescription")) this.setAttribute("aria-roledescription", "chart");
+      if (this.getAttribute("axis") && !this.hasAttribute("aria-label")) this.setAttribute("aria-label", this._axisLabel());
       if (this.hasAttribute("loading")) {
         const plot = this.ensure(".c-chart__plot", () => { const el = document.createElement("div"); el.className = "c-chart__plot"; return el; });
         plot.innerHTML = "";
@@ -660,7 +673,7 @@ class ContourChart extends ContourBase {
         const axis = this.getAttribute("axis");
         if (axis) {
           const ax = this.ensure(".c-chart__axis", () => { const el = document.createElement("div"); el.className = "c-chart__axis"; return el; });
-          ax.textContent = axis;
+          ax.textContent = this._axisLabel();
         }
         return;
       }
@@ -687,7 +700,7 @@ class ContourChart extends ContourBase {
         const axis = this.getAttribute("axis");
         if (axis) {
           const ax = this.ensure(".c-chart__axis", () => { const el = document.createElement("div"); el.className = "c-chart__axis"; return el; });
-          ax.textContent = axis;
+          ax.textContent = this._axisLabel();
         }
         return;
       }
@@ -707,14 +720,14 @@ class ContourChart extends ContourBase {
         const axis = this.getAttribute("axis");
         if (axis) {
           const ax = this.ensure(".c-chart__axis", () => { const el = document.createElement("div"); el.className = "c-chart__axis"; return el; });
-          ax.textContent = axis;
+          ax.textContent = this._axisLabel();
         }
         return;
       }
       const axis = this.getAttribute("axis");
       if (axis) {
         const ax = this.ensure(".c-chart__axis", () => { const el = document.createElement("div"); el.className = "c-chart__axis"; return el; });
-        ax.textContent = axis;
+        ax.textContent = this._axisLabel();
       } else {
         const ax = this.querySelector(".c-chart__axis");
         if (ax) ax.remove();
@@ -971,19 +984,26 @@ const series = this.getAttribute("series");
       if (this._wiredChart) return;
       this._wiredChart = true;
       // Series toggle responding to legend (F-10): hide/show series when a
-      // legend item is toggled.
-      this.addEventListener("contour:legend-toggle", (e) => {
-        const key = e && e.detail && (e.detail.key || e.detail.label);
+      // legend item is toggled. The legend may be a sibling of the chart, so
+      // listen on the shared parent (which catches both a child and a sibling
+      // legend) and match by key, data-key, or the item's index.
+      const legendHost = this.parentElement || document;
+      const onLegendToggle = (e) => {
+        const key = e && e.detail && (e.detail.key != null ? e.detail.key : e.detail.label);
+        const index = e && e.detail && e.detail.index;
         const pressed = e && e.detail && e.detail.pressed;
-        if (key == null) return;
+        if (key == null && index == null) return;
         const nodes = this.querySelectorAll("[data-series]");
         nodes.forEach((n) => {
           const s = n.getAttribute("data-series");
-          if (String(s) === String(key) || n.getAttribute("data-key") === String(key)) {
-            n.style.display = pressed === false ? "none" : "";
-          }
+          const match = String(s) === String(key)
+            || n.getAttribute("data-key") === String(key)
+            || (index != null && String(s) === String(index + 1));
+          if (match) n.style.display = pressed === false ? "none" : "";
         });
-      });
+      };
+      legendHost.addEventListener("contour:legend-toggle", onLegendToggle);
+      onDispose(this, () => legendHost.removeEventListener("contour:legend-toggle", onLegendToggle));
       this.addEventListener("contour:brush-end", (e) => {
         if (!this.hasAttribute("brush") || !e.target || !e.target.matches("contour-brush")) return;
         this.dispatchEvent(new CustomEvent("contour:select", {
@@ -3167,8 +3187,10 @@ class ContourLegend extends ContourBase {
         if (!btn || !this.contains(btn)) return;
         const pressed = btn.getAttribute("aria-pressed") !== "true";
         btn.setAttribute("aria-pressed", String(pressed));
+        const items = Array.from(this.querySelectorAll(".c-legend__item"));
+        const index = items.indexOf(btn);
         this.dispatchEvent(new CustomEvent("contour:legend-toggle", {
-          detail: { label: btn.textContent.trim(), key: btn.dataset.key || btn.textContent.trim(), pressed },
+          detail: { label: btn.textContent.trim(), key: btn.dataset.key || btn.textContent.trim(), pressed, index },
           bubbles: true,
           composed: true,
         }));
