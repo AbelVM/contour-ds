@@ -2487,12 +2487,29 @@ class ContourNotificationCenter extends ContourBase {
           panel.innerHTML = "";
           parsed.forEach((it) => {
             const row = document.createElement("div");
-            row.className = "c-notification-center__item";
+            row.className = "c-notification-center__item" + (it && it.read ? " is-read" : "");
             row.setAttribute("tabindex", "0");
             row.setAttribute("role", "option");
-            row.textContent = typeof it === "string" ? it : (it.text || it.title || "");
+            row.dataset.read = it && it.read ? "true" : "false";
+            const label = document.createElement("span");
+            label.className = "c-notification-center__item-label";
+            label.textContent = typeof it === "string" ? it : (it.text || it.title || "");
+            row.appendChild(label);
+            // Dismiss control: a notification the reader can clear, not just read.
+            const dismiss = document.createElement("button");
+            dismiss.type = "button";
+            dismiss.className = "c-notification-center__dismiss";
+            dismiss.setAttribute("aria-label", "Dismiss notification");
+            dismiss.textContent = "×";
+            row.appendChild(dismiss);
             panel.appendChild(row);
           });
+          if (!parsed.length) {
+            const empty = document.createElement("div");
+            empty.className = "c-notification-center__empty";
+            empty.textContent = "No notifications";
+            panel.appendChild(empty);
+          }
         } catch (e) { /* keep */ }
       }
     }
@@ -2507,8 +2524,23 @@ class ContourNotificationCenter extends ContourBase {
         }
       });
       this.addEventListener("click", (e) => {
+        const dismiss = e.target && e.target.closest ? e.target.closest(".c-notification-center__dismiss") : null;
+        if (dismiss && this.contains(dismiss)) {
+          const item = dismiss.closest(".c-notification-center__item");
+          if (item) {
+            item.remove();
+            this.dispatchEvent(new CustomEvent("contour:dismiss", { bubbles: true, composed: true, detail: { label: item.textContent } }));
+          }
+          return;
+        }
         const item = e.target && e.target.closest ? e.target.closest(".c-notification-center__item") : null;
         if (item && this.contains(item)) {
+          // Mark read on open: the unread dot is the state the reader clears.
+          if (item.dataset.read !== "true") {
+            item.dataset.read = "true";
+            item.classList.add("is-read");
+            this.dispatchEvent(new CustomEvent("contour:read", { bubbles: true, composed: true, detail: { label: item.textContent } }));
+          }
           this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { label: item.textContent } }));
         }
       });
@@ -2588,8 +2620,18 @@ class ContourStepper extends ContourBase {
       this.addEventListener("click", (e) => {
         const prev = e.target && e.target.closest ? e.target.closest(".c-stepper__prev") : null;
         const next = e.target && e.target.closest ? e.target.closest(".c-stepper__next") : null;
-        if (prev && this.contains(prev)) go("prev");
-        if (next && this.contains(next)) go("next");
+        if (prev && this.contains(prev)) { go("prev"); return; }
+        if (next && this.contains(next)) { go("next"); return; }
+        // Click a step to jump to it: the step is a control, not just a label.
+        const step = e.target && e.target.closest ? e.target.closest(".c-stepper__step") : null;
+        if (step && this.contains(step)) {
+          const items = Array.from(this.querySelectorAll(".c-stepper__step"));
+          const idx = items.indexOf(step);
+          if (idx >= 0 && idx !== Number(this.getAttribute("current") || 0)) {
+            this.setAttribute("current", String(idx));
+            this.dispatchEvent(new CustomEvent("contour:step-change", { bubbles: true, composed: true, detail: { direction: "jump", index: idx } }));
+          }
+        }
       });
       this.addEventListener("keydown", (e) => {
         if (e.key === "ArrowLeft") { e.preventDefault(); go("prev"); }
@@ -2993,8 +3035,22 @@ class ContourTour extends ContourBase {
       const tip = this.ensure(".c-tour__tip", () => { const el = document.createElement("div"); el.className = "c-tour__tip"; return el; });
       tip.textContent = typeof step === "string" ? step : (step.text || step.title || "");
       const nav = this.ensure(".c-tour__nav", () => { const el = document.createElement("div"); el.className = "c-tour__nav c-btn-group"; return el; });
-      const next = this.ensure(".c-tour__next", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-tour__next"; el.type = "button"; el.textContent = "Next"; return el; });
-      if (!nav.contains(next)) nav.appendChild(next);
+      const back = this.ensure(".c-tour__back", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-tour__back"; el.type = "button"; el.textContent = "Back"; return el; }, nav);
+      const next = this.ensure(".c-tour__next", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-tour__next"; el.type = "button"; el.textContent = "Next"; return el; }, nav);
+      const close = this.ensure(".c-tour__close", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-tour__close"; el.type = "button"; el.textContent = "Close"; return el; }, nav);
+      // Keep the three controls in order regardless of which were just created.
+      if (nav.firstChild !== back) nav.insertBefore(back, nav.firstChild);
+      if (next.previousSibling !== back) nav.insertBefore(next, back.nextSibling);
+      if (close.previousSibling !== next) nav.insertBefore(close, next.nextSibling);
+      // Target highlight: a step may name the element it points at, so the
+      // reader sees what the tip is about instead of a floating box.
+      if (this._tourTarget && this._tourTarget.classList) this._tourTarget.classList.remove("c-tour__target");
+      this._tourTarget = null;
+      const targetSel = typeof step === "object" && step ? step.target : null;
+      if (targetSel) {
+        const target = document.querySelector(targetSel);
+        if (target && target.classList) { target.classList.add("c-tour__target"); this._tourTarget = target; }
+      }
     }
     enhance() {
       if (this._wiredTour) return;
@@ -3005,7 +3061,11 @@ class ContourTour extends ContourBase {
       onDispose(this, () => { if (!this.hasAttribute("hidden")) modalContain(this, false); });
       this.addEventListener("click", (e) => {
         const next = e.target && e.target.closest ? e.target.closest(".c-tour__next") : null;
-        if (next && this.contains(next)) this.dispatchEvent(new CustomEvent("contour:step-change", { bubbles: true, composed: true, detail: { direction: "next" } }));
+        const back = e.target && e.target.closest ? e.target.closest(".c-tour__back") : null;
+        const close = e.target && e.target.closest ? e.target.closest(".c-tour__close") : null;
+        if (next && this.contains(next)) { this.dispatchEvent(new CustomEvent("contour:step-change", { bubbles: true, composed: true, detail: { direction: "next" } })); return; }
+        if (back && this.contains(back)) { this.dispatchEvent(new CustomEvent("contour:step-change", { bubbles: true, composed: true, detail: { direction: "prev" } })); return; }
+        if (close && this.contains(close)) { this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true })); }
       });
       const keyHandler = (e) => { if (e.key === "Escape") this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true })); };
       document.addEventListener("keydown", keyHandler);
@@ -3415,6 +3475,20 @@ class ContourCarousel extends ContourBase {
       const next = this.ensure(".c-carousel__next", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-carousel__next"; el.type = "button"; el.textContent = "›"; el.setAttribute("aria-label", "Next slide"); return el; });
       const status = this.ensure(".c-carousel__status", () => { const el = document.createElement("span"); el.className = "c-carousel__status"; el.setAttribute("aria-live", "polite"); return el; });
       status.textContent = (idx + 1) + " of " + items.length;
+      // Indicators: one dot per slide, so a reader can jump directly and see
+      // where they are without reading the status text.
+      const dots = this.ensure(".c-carousel__dots", () => { const el = document.createElement("div"); el.className = "c-carousel__dots"; el.setAttribute("role", "tablist"); el.setAttribute("aria-label", "Slides"); return el; });
+      dots.innerHTML = "";
+      items.forEach((it, i) => {
+        const dot = document.createElement("button");
+        dot.type = "button";
+        dot.className = "c-carousel__dot" + (i === idx ? " is-active" : "");
+        dot.setAttribute("role", "tab");
+        dot.setAttribute("aria-label", "Go to slide " + (i + 1));
+        dot.setAttribute("aria-selected", i === idx ? "true" : "false");
+        dot.dataset.index = String(i);
+        dots.appendChild(dot);
+      });
     }
     enhance() {
       if (this._wiredCarousel) return;
@@ -3431,9 +3505,27 @@ class ContourCarousel extends ContourBase {
       this.addEventListener("click", (e) => {
         const prev = e.target && e.target.closest ? e.target.closest(".c-carousel__prev") : null;
         const next = e.target && e.target.closest ? e.target.closest(".c-carousel__next") : null;
-        if (prev && this.contains(prev)) go("prev");
-        if (next && this.contains(next)) go("next");
+        if (prev && this.contains(prev)) { go("prev"); return; }
+        if (next && this.contains(next)) { go("next"); return; }
+        const dot = e.target && e.target.closest ? e.target.closest(".c-carousel__dot") : null;
+        if (dot && this.contains(dot)) {
+          const i = Number(dot.dataset.index);
+          if (Number.isFinite(i) && i !== this._index()) {
+            this.setAttribute("index", String(i));
+            this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { index: i, direction: "jump" } }));
+          }
+        }
       });
+      // Swipe: a horizontal drag past the threshold advances one slide.
+      let startX = null;
+      this.addEventListener("pointerdown", (e) => { startX = e.clientX; });
+      this.addEventListener("pointerup", (e) => {
+        if (startX === null) return;
+        const dx = e.clientX - startX;
+        startX = null;
+        if (Math.abs(dx) > 40) { if (dx < 0) go("next"); else go("prev"); }
+      });
+      this.addEventListener("pointercancel", () => { startX = null; });
       this.addEventListener("keydown", (e) => {
         if (e.key === "ArrowLeft") { e.preventDefault(); go("prev"); }
         else if (e.key === "ArrowRight") { e.preventDefault(); go("next"); }
