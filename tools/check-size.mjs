@@ -57,7 +57,7 @@ const DIST = join(ROOT, "dist");
 const BUDGETS = {
   "contour.min.css": 274 * 1024,  // raised 2026-11-11: +R18-13 generated-class CSS; measured 265.8 kB raised 2026-11-07: +layout fixes; raised 2026-11-09: +c-scheme-toggle, c-split-map CSS blocks; raised 2026-11-09: +c-filter-bar__mode scope toggle CSS; raised 2026-11-09: +c-saved-view, c-provenance, c-feature-inspector CSS blocks; raised 2026-11-11: +CDS-070/075 workspace shell and docs drawer popover rules; measured 256.7 kB
   "contour.min.js": 39 * 1024,  // raised 2026-11-04: focus restoration + changelog; measured 38.0 kB
-  "contour.d.ts": 32 * 1024,  // raised 2026-11-04: +3 new components (data-export, pull-to-refresh, split-map)
+  "contour.d.ts": 33 * 1024,  // raised 2026-11-12: +R18-38 SSR surface (renderShadowDSD, SHADOW_MARKUP, ContourShadowMarkup, widened Window); measured 32.1 kB raised 2026-11-04: +3 new components (data-export, pull-to-refresh, split-map)
   "contour.tokens.json": 53 * 1024,  // raised 2026-11-11: +R18-33 row-height tokens; measured 52.0 kB raised 2026-11-09: +5 brand color aliases (--color-tidal-500 etc.) for Tailwind v4 bridge; measured 51.3 kB
   "contour.themes.json": 23 * 1024,
   // Measured 2026-10-23 at 128.4 kB (C-44), ~3% headroom. Large and correct:

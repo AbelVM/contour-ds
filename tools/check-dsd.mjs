@@ -144,7 +144,7 @@ async function main() {
     if (hasSR) {
       ok("DSD: jsdom auto-attached shadow root from template[shadowrootmode] (hydration-ready)");
     } else if (hasTemplateLeft) {
-      note("DSD: template[shadowrootmode] parsed but not auto-hydrated by jsdom — Declarative Shadow DOM requires browser/platform DSD support for zero-JS hydration; server output can still emit DSD markup for supporting browsers (evaluation: feasible as progressive enhancement, not yet implemented)");
+      note("DSD: template[shadowrootmode] parsed but not auto-hydrated by jsdom — jsdom does not implement Declarative Shadow DOM, so this step measures the parse, not the hydration. Hydration is measured separately in chromium below; renderShadowDSD is implemented and emits the string (see the template count in the emission step)");
       ok("DSD parsing evaluated (template preserved; no silent failure)");
     } else {
       note("DSD: template consumed without shadow root — behavior environment-specific");
@@ -165,6 +165,38 @@ async function main() {
     const mod = await import(pathToFileURL(join(ROOT, "src/js/wc/shadow.mjs")).href);
     const { SHADOW_MARKUP, renderShadowDSD } = mod;
     const count = SHADOW_MARKUP ? Object.keys(SHADOW_MARKUP).length : 0;
+
+    // The count is asserted, not printed. It used to be printed only, and the
+    // slot-wrapper loop sat inside a `typeof document !== "undefined"` guard, so
+    // Node saw 50 of 171 and this gate said "50 templates available" and passed.
+    // The expected number is derived from the source rather than from the module
+    // under test: 121 slot blocks from SHADOW_SLOTS plus the hand-written
+    // wrappers. A count that disagrees means a loop moved behind a browser guard
+    // again, which is exactly the regression this step exists to catch.
+    const src = readFileSync(join(ROOT, "src/js/wc/shadow.mjs"), "utf8");
+    const slotsBlock = /const SHADOW_SLOTS = \{([\s\S]*?)\n  \};/.exec(src);
+    if (!slotsBlock) {
+      fail("DSD: SHADOW_SLOTS is gone from shadow.mjs — the expected template count cannot be derived, so this step would pass on any number");
+    } else {
+      const slotBlocks = [...slotsBlock[1].matchAll(/"([a-z0-9-]+)"/g)].map((m) => m[1]);
+      // Hand-written wrappers: a literal `shadow("contour-shadow-x", …)` call or a
+      // direct `SHADOW_MARKUP["contour-shadow-x"] = …` assignment. The loop's own
+      // `shadow("contour-shadow-" + block, …)` is excluded by requiring a closing
+      // quote after the tag, so it is counted once via SHADOW_SLOTS instead.
+      const handWritten = new Set([
+        ...[...src.matchAll(/shadow\("contour-shadow-([a-z0-9-]+)"/g)].map((m) => m[1]),
+        ...[...src.matchAll(/SHADOW_MARKUP\["contour-shadow-([a-z0-9-]+)"\]/g)].map((m) => m[1]),
+      ]).size;
+      const expected = slotBlocks.length + handWritten;
+      if (expected < 100) {
+        fail(`DSD: only ${expected} shadow wrappers found in the source (${slotBlocks.length} slot + ${handWritten} hand-written) — the derivation is broken, not the module`);
+      } else if (count !== expected) {
+        fail(`DSD: SHADOW_MARKUP holds ${count} templates in Node but the source declares ${expected} (${slotBlocks.length} slot + ${handWritten} hand-written) — a wrapper loop is not running without a document, so renderShadowDSD returns null for the difference in the environment it exists for`);
+      } else {
+        ok(`DSD: all ${count} shadow wrappers are recorded in Node (${slotBlocks.length} slot + ${handWritten} hand-written), so renderShadowDSD resolves every tag without a document`);
+      }
+    }
+
     if (count > 0 && typeof renderShadowDSD === "function") {
       const dsdHtml = renderShadowDSD("contour-shadow-dialog", "", "<span>Hi</span>");
       const okStr = dsdHtml && dsdHtml.includes('<template shadowrootmode="open">') && dsdHtml.includes('class="c-dialog"') && dsdHtml.includes('</contour-shadow-dialog>');

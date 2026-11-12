@@ -289,12 +289,16 @@ connectedCallback() {
     "contour-plot": "plot",
   };
 
-  if (typeof document !== "undefined") {
-    for (const [tag, blocks] of Object.entries(SHADOW_SLOTS)) {
-      for (const block of blocks) {
-        const part = SHADOW_PARTS[block] || block;
-        shadow("contour-shadow-" + block, slotWrapper(tag, block, part));
-      }
+  // The slot wrappers are recorded wherever this module runs. `shadow()` already
+  // returns before touching `document` when there is none, so the markup is
+  // available to Node/SSR either way — which is the whole point of recording it.
+  // This loop used to sit inside the browser guard, so `renderShadowDSD` could
+  // only resolve the 50 hand-written wrappers in Node and returned null for the
+  // 121 slot wrappers, i.e. it failed in the one environment it exists for.
+  for (const [tag, blocks] of Object.entries(SHADOW_SLOTS)) {
+    for (const block of blocks) {
+      const part = SHADOW_PARTS[block] || block;
+      shadow("contour-shadow-" + block, slotWrapper(tag, block, part));
     }
   }
 

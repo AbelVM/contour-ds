@@ -441,6 +441,34 @@ Full reference: [style guide](index.html).
 
 Light DOM (`<contour-*>`) and Shadow DOM (`<contour-shadow-*>`) wrappers. Attribute-reactive, form-associated, keyboard-navigable. See [§23](https://abelvm.github.io/contour-ds/index.html#webcomponents).
 
+### Server-side rendering
+
+The shadow layer can emit Declarative Shadow DOM, so a server-rendered page
+arrives with its shadow trees already attached and needs no JavaScript to look
+right. `renderShadowDSD` is exported from the web-component entry and returns a
+string, or `null` for a tag it does not know:
+
+```js
+import { renderShadowDSD, SHADOW_MARKUP } from "contour-ds/contour-wc.esm.js";
+
+const html = renderShadowDSD(
+  "contour-shadow-badge",
+  'class="c-badge c-badge--primary"',
+  "Live"
+);
+// <contour-shadow-badge class="c-badge c-badge--primary"><template shadowrootmode="open">…</template>Live</contour-shadow-badge>
+```
+
+`SHADOW_MARKUP` is the full tag → markup record (171 entries), frozen and also
+published as `globalThis.ContourShadowTemplates` for tooling that reads the
+registry rather than calling the function. The markup is recorded wherever the
+module runs, including Node with no `document`, which is the environment this
+exists for.
+
+The light-DOM elements need no server help: they are plain custom elements and
+upgrade on the client. What DSD buys is the shadow wrappers, which would
+otherwise render empty until their upgrade.
+
 Interactive stories, controls, keyboard paths and workflow demonstrations live in the
 optional [Storybook workshop](https://abelvm.github.io/contour-ds/storybook/) (`npm run storybook`).
 

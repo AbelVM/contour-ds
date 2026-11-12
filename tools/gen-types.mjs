@@ -288,7 +288,15 @@ for (const tag of [...actualShadowTags].sort()) {
   lines.push(`  "${tag}":ContourElement;`);
 }
 lines.push("  }");
-lines.push("interface Window { Contour: ContourAPI; } }");
+// The SSR surface. `renderShadowDSD` and `SHADOW_MARKUP` are exported from
+// `contour-wc` for Node/string emission, and `ContourShadowTemplates` is the
+// frozen global the browser build publishes. Without these a TypeScript
+// consumer importing the SSR entry gets an implicit `any`, which is the one
+// place the package asks a build tool to run it.
+lines.push("export type ContourShadowMarkup = Record<string, string>;");
+lines.push("export declare function renderShadowDSD(tag: string, attrs?: string, light?: string): string | null;");
+lines.push("export declare const SHADOW_MARKUP: ContourShadowMarkup;");
+lines.push("interface Window { Contour: ContourAPI; ContourShadowTemplates: ContourShadowMarkup; ContourShadowParts: Record<string, string[]>; ContourEvents: Record<string, { payload: string[]; composed: boolean }>; } }");
 
 const out = join(ROOT, "dist", "contour.d.ts");
 
