@@ -27103,14 +27103,22 @@ area.addEventListener("contour:map-control", (e) =&gt; {
     <script>
       if (window.hljs) {
         var blocks = document.querySelectorAll("pre code");
+        var skipped = 0;
         blocks.forEach(function (block) {
+          // A block that already carries markup is already rendered: the
+          // c-code line numbers and the t-* token spans are authored, and
+          // highlight.js would replace them with its own text — and warn that
+          // the block "includes unescaped HTML", which is the markup it is
+          // looking at. `nohighlight` is the author saying the same thing.
+          if (block.children.length || block.hasAttribute("data-highlighted") || block.classList.contains("nohighlight")) {
+            skipped += 1;
+            return;
+          }
           if (!block.className.includes("language-")) block.classList.add("language-html");
-        });
-        blocks.forEach(function (block) {
           try { hljs.highlightElement(block); }
           catch (e) { console.error("hljs error:", e.message); }
         });
-        console.log("hljs highlighted", document.querySelectorAll("pre code.hljs").length, "of", blocks.length, "blocks");
+        console.log("hljs highlighted", document.querySelectorAll("pre code.hljs").length, "of", blocks.length, "blocks;", skipped, "already carried their own markup");
       } else {
         console.log("hljs not loaded");
       }

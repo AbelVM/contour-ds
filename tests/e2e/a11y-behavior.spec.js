@@ -26,9 +26,18 @@ test.describe("behavioral a11y probes (R12-04/R12-33)", () => {
     await page.goto("/");
     const menuBtn = page.locator("button[aria-haspopup='menu'], button[data-menu-toggle]").first();
     if (await menuBtn.count() === 0) test.skip();
+    // Resolve the menu this trigger OWNS. The guide renders several
+    // `[role='menu']` specimens, so an unscoped `.first()` measures a static
+    // example that is always visible and the close assertion can never pass.
+    // `aria-controls` is the trigger's own pointer; the trigger's parent (the
+    // dropdown/menu host) is the fallback for a trigger that omits it.
+    const controls = await menuBtn.getAttribute("aria-controls");
+    const menu = controls
+      ? page.locator(`#${controls}`)
+      : menuBtn.locator("xpath=..").locator("[role='menu']").first();
+    if (await menu.count() === 0) test.skip();
     await menuBtn.focus();
     await page.keyboard.press("Enter");
-    const menu = page.locator("[role='menu']").first();
     await expect(menu).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(menu).toBeHidden();

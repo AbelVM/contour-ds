@@ -499,6 +499,11 @@ results.live = await page.evaluate(async () => {
   // example must stay in it, and closing must release every inert.
   const details = document.querySelector("details.ds-code");
   if (details) {
+    // The page may ship inert of its own — the guide specimens `<contour-app
+    // inert>` and `<contour-app-body inert>` are the point of those examples.
+    // What the disclosure must prove is that it leaves nothing BEHIND, so the
+    // baseline is what was inert before it opened, not zero.
+    const inertBefore = document.querySelectorAll("[inert]").length;
     details.open = true;
     details.dispatchEvent(new Event("toggle"));
     await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
@@ -506,6 +511,7 @@ results.live = await page.evaluate(async () => {
     const outside = [...document.querySelectorAll(FOCUSABLE)].filter((el) => !example.contains(el));
     const reachable = outside.filter((el) => !el.closest("[inert]"));
     out.inert = {
+      beforeOpen: inertBefore,
       openInertCount: document.querySelectorAll("[inert]").length,
       focusablesOutside: outside.length,
       reachableOutside: reachable.length,
@@ -709,16 +715,16 @@ if (!l || !l.inert) {
   // is about a focused target being obscured, and a hidden-but-tabbable control
   // under a scrim is the worse half of that.
   const i = l.inert;
-  if (i.openInertCount === 0)
-    failures.push("scrim: opening a snippet inerted nothing — the rest of the page is still tabbable behind the scrim");
+  if (i.openInertCount <= i.beforeOpen)
+    failures.push(`scrim: opening a snippet inerted nothing (${i.openInertCount} inert, ${i.beforeOpen} before) — the rest of the page is still tabbable behind the scrim`);
   if (i.focusablesOutside === 0)
     failures.push("scrim: no focusable was outside the open example, so the tab-order sweep measured nothing");
   if (i.reachableOutside > 0)
     failures.push(`scrim: ${i.reachableOutside}/${i.focusablesOutside} focusables outside the open snippet are still reachable ${JSON.stringify(i.reachableSample)}`);
   if (i.exampleInert) failures.push("scrim: the open example itself is inert — the markup a reader came to read cannot be reached");
   if (!i.railInert) failures.push("scrim: the rail stayed live while a snippet was open — the guide's own navigation is behind the scrim");
-  if (i.afterClose !== 0)
-    failures.push(`scrim: ${i.afterClose} inert attribute(s) left after closing — a leak makes the page permanently untabbable`);
+  if (i.afterClose !== i.beforeOpen)
+    failures.push(`scrim: ${i.afterClose} inert attribute(s) left after closing, ${i.beforeOpen} before opening — a leak makes the page permanently untabbable`);
 
   if (!l.header) failures.push("scrim: no .c-header measured, so scroll padding was compared against nothing");
   else if (l.scrollPadding < l.header)
