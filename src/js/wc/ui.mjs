@@ -1171,25 +1171,32 @@ class ContourStylePanel extends ContourBase {
        if (singleMode) {
          const body = this.ensure(".c-style-panel__body", () => { const el = document.createElement("div"); el.className = "c-style-panel__body"; return el; });
          body.innerHTML = "";
+         // Unique ids: the old code used the global "property"/"policy"/"palette"/"n",
+         // so two panels on a page produced duplicate ids and broken label[for].
+         const uid = contourId("style-panel");
+         const propId = uid + "-property";
+         const policyId = uid + "-policy";
+         const paletteId = uid + "-palette";
+         const nId = uid + "-n";
          // property field
-         const propLabel = document.createElement("label"); propLabel.textContent = "Colour field"; propLabel.setAttribute("for", "property"); body.appendChild(propLabel);
-         const propIn = document.createElement("input"); propIn.type = "text"; propIn.id = "property"; propIn.className = "c-style-panel__property c-input"; propIn.setAttribute("aria-label", "Colour field");
+         const propLabel = document.createElement("label"); propLabel.textContent = "Colour field"; propLabel.setAttribute("for", propId); body.appendChild(propLabel);
+         const propIn = document.createElement("input"); propIn.type = "text"; propIn.id = propId; propIn.className = "c-style-panel__property c-input"; propIn.setAttribute("aria-label", "Colour field");
          const pv = this.getAttribute("property"); if (pv) propIn.value = pv;
          body.appendChild(propIn);
          // classification method selector (policy)
-         const clsLabel = document.createElement("label"); clsLabel.textContent = "Classification"; clsLabel.setAttribute("for", "policy"); body.appendChild(clsLabel);
-         const clsSel = document.createElement("select"); clsSel.id = "policy"; clsSel.className = "c-style-panel__classification c-input"; clsSel.setAttribute("aria-label", "Classification method");
+         const clsLabel = document.createElement("label"); clsLabel.textContent = "Classification"; clsLabel.setAttribute("for", policyId); body.appendChild(clsLabel);
+         const clsSel = document.createElement("select"); clsSel.id = policyId; clsSel.className = "c-style-panel__classification c-input"; clsSel.setAttribute("aria-label", "Classification method");
          ["equal","quantile","jenks","manual"].forEach((m) => { const o = document.createElement("option"); o.value = m; o.textContent = m; clsSel.appendChild(o); });
          const cls = this.getAttribute("classification"); if (cls) clsSel.value = cls;
          body.appendChild(clsSel);
          // palette picker
-         const palLabel = document.createElement("label"); palLabel.textContent = "Palette"; palLabel.setAttribute("for", "palette"); body.appendChild(palLabel);
-         const pal = document.createElement("input"); pal.type = "text"; pal.id = "palette"; pal.className = "c-style-panel__palette c-input"; pal.placeholder = "palette"; pal.setAttribute("aria-label", "Palette");
+         const palLabel = document.createElement("label"); palLabel.textContent = "Palette"; palLabel.setAttribute("for", paletteId); body.appendChild(palLabel);
+         const pal = document.createElement("input"); pal.type = "text"; pal.id = paletteId; pal.className = "c-style-panel__palette c-input"; pal.placeholder = "palette"; pal.setAttribute("aria-label", "Palette");
          const palv = this.getAttribute("palette"); if (palv) pal.value = palv;
          body.appendChild(pal);
          // n (class count)
-         const nLabel = document.createElement("label"); nLabel.textContent = "Classes"; nLabel.setAttribute("for", "n"); body.appendChild(nLabel);
-         const nIn = document.createElement("input"); nIn.type = "number"; nIn.id = "n"; nIn.className = "c-style-panel__n c-input"; nIn.min = "2"; nIn.max = "12"; nIn.setAttribute("aria-label", "Class count");
+         const nLabel = document.createElement("label"); nLabel.textContent = "Classes"; nLabel.setAttribute("for", nId); body.appendChild(nLabel);
+         const nIn = document.createElement("input"); nIn.type = "number"; nIn.id = nId; nIn.className = "c-style-panel__n c-input"; nIn.min = "2"; nIn.max = "12"; nIn.setAttribute("aria-label", "Class count");
          const nv = this.getAttribute("n"); if (nv) nIn.value = nv; else nIn.value = "5";
          body.appendChild(nIn);
          // opacity slider
@@ -1336,7 +1343,23 @@ class ContourStylePanel extends ContourBase {
         const t = e.target && e.target.closest ? e.target.closest("button") : null;
         if (!t || !this.contains(t)) return;
         if (t.textContent.trim() === "Apply") {
-          this.dispatchEvent(new CustomEvent("contour:style-resolved", { detail: { applied: true }, bubbles: true, composed: true }));
+          // Carry the current control values, not just { applied: true }: a
+          // consumer listening for the apply needs to know what was applied.
+          const body = this.querySelector(".c-style-panel__body");
+          const payload = { applied: true };
+          if (body) {
+            const prop = body.querySelector(".c-style-panel__property");
+            const cls = body.querySelector(".c-style-panel__classification");
+            const pal = body.querySelector(".c-style-panel__palette");
+            const n = body.querySelector(".c-style-panel__n");
+            const colors = Array.from(body.querySelectorAll(".c-style-panel__color")).map((c) => c.value);
+            if (prop) payload.property = prop.value;
+            if (cls) payload.classification = cls.value;
+            if (pal) payload.palette = pal.value;
+            if (n) payload.n = Number(n.value);
+            if (colors.length) payload.colors = colors;
+          }
+          this.dispatchEvent(new CustomEvent("contour:style-resolved", { detail: payload, bubbles: true, composed: true }));
         } else if (t.textContent.trim() === "Revert") {
           this.dispatchEvent(new CustomEvent("contour:style-resolved", { detail: { applied: false }, bubbles: true, composed: true }));
         }
