@@ -12,13 +12,23 @@ for (const file of readdirSync(wcDir)) {
   for (const match of source.matchAll(/define\("([^"]+)"\s*,/g)) tags.add(match[1]);
 }
 
+// Per-block maturity from the inventory, so a generated story carries the same
+// maturity the inventory records rather than a blanket "composition" (R18-23).
+const inventory = JSON.parse(readFileSync(join(root, "dist", "contour.components.json"), "utf8"));
+const maturityByBlock = new Map(inventory.blocks.map((b) => [b.name, b.maturity]));
+const maturityFor = (tag) => maturityByBlock.get("c-" + tag.replace(/^contour-/, "")) || "composition";
+
 const name = (tag) => tag
   .replace(/^contour-/, "")
   .split("-")
   .map((part) => part[0].toUpperCase() + part.slice(1))
   .join("");
 
-const stories = [...tags].sort().map((tag) => `export const ${name(tag)} = makeStory("${tag}");\nexport const ${name(tag)}Playground = makeStory("${tag}");`).join("\n");
+const stories = [...tags].sort().map((tag) => {
+  const n = name(tag);
+  const m = maturityFor(tag);
+  return `export const ${n} = { ...makeStory("${tag}"), parameters: { contour: { maturity: "${m}" } } };\nexport const ${n}Playground = { ...makeStory("${tag}"), parameters: { contour: { maturity: "${m}" } } };`;
+}).join("\n");
 const content = `import { expect } from "storybook/test";
 import "../dist/wc/content.mjs";
 import "../dist/wc/dashboard.mjs";
@@ -42,7 +52,6 @@ export default {
   title: "Contour/Elements",
   tags: ["autodocs"],
   parameters: {
-    contour: { maturity: "composition" },
     a11y: { test: "todo" },
     issue: "SB-04a",
     a11yTodo: {
