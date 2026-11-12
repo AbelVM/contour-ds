@@ -249,10 +249,15 @@ class ContourChangelog extends ContourBase {
         // clear
         Array.from(this.querySelectorAll(".c-changelog__entry, .c-changelog__error")).forEach((n) => n.remove());
         if (!this.querySelector(".c-changelog__loading")) this.appendChild(loading);
-        fetch(src).then((r) => {
+        // Abort the in-flight fetch when the host leaves the page, so a slow
+        // changelog cannot write into a detached element.
+        try { if (this._changelogAbort) this._changelogAbort.abort(); } catch (e) {}
+        this._changelogAbort = typeof AbortController !== "undefined" ? new AbortController() : null;
+        fetch(src, this._changelogAbort ? { signal: this._changelogAbort.signal } : undefined).then((r) => {
           if (!r.ok) throw new Error("HTTP " + r.status);
           return r.text();
         }).then((text) => {
+          if (!this.isConnected) return;
           const ld = this.querySelector(".c-changelog__loading");
           if (ld) ld.remove();
           this.dataset.loaded = src;
@@ -289,6 +294,7 @@ class ContourChangelog extends ContourBase {
             this.appendChild(det);
           });
         }).catch((err) => {
+          if (!this.isConnected) return;
           const ld = this.querySelector(".c-changelog__loading");
           if (ld) ld.remove();
           const er = document.createElement("div");
@@ -297,6 +303,11 @@ class ContourChangelog extends ContourBase {
           this.appendChild(er);
         });
       }
+    }
+    disconnectedCallback() {
+      super.disconnectedCallback();
+      try { if (this._changelogAbort) this._changelogAbort.abort(); } catch (e) {}
+      this._changelogAbort = null;
     }
   }
   define("contour-changelog", ContourChangelog);

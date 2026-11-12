@@ -2187,11 +2187,23 @@ class ContourHoverCard extends ContourBase {
           const hasPopover = typeof this.showPopover === "function";
           const show = () => { if (hasPopover) { try { this.showPopover(); } catch (e) {} } else this.classList.add("is-open"); this.dispatchEvent(new CustomEvent("contour:open", { bubbles: true, composed: true })); };
           const hide = () => { if (showTimer) clearTimeout(showTimer); if (hasPopover) { try { this.hidePopover(); } catch (e) {} } else this.classList.remove("is-open"); this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true })); };
-          trigger.addEventListener("mouseenter", () => { showTimer = setTimeout(show, 300); });
-          trigger.addEventListener("mouseleave", () => { hide(); });
-          trigger.addEventListener("focus", show);
-          trigger.addEventListener("blur", () => { setTimeout(hide, 100); });
-          onDispose(this, () => { if (showTimer) { clearTimeout(showTimer); showTimer = null; } });
+          const onEnter = () => { showTimer = setTimeout(show, 300); };
+          const onLeave = () => { hide(); };
+          const onFocus = () => show();
+          const onBlur = () => { setTimeout(hide, 100); };
+          trigger.addEventListener("mouseenter", onEnter);
+          trigger.addEventListener("mouseleave", onLeave);
+          trigger.addEventListener("focus", onFocus);
+          trigger.addEventListener("blur", onBlur);
+          // Remove the trigger listeners too: the old cleanup only cleared the
+          // timer, so a removed trigger kept four live handlers.
+          onDispose(this, () => {
+            if (showTimer) { clearTimeout(showTimer); showTimer = null; }
+            trigger.removeEventListener("mouseenter", onEnter);
+            trigger.removeEventListener("mouseleave", onLeave);
+            trigger.removeEventListener("focus", onFocus);
+            trigger.removeEventListener("blur", onBlur);
+          });
         }
       }
       const keyHandler = (e) => { if (e.key === "Escape" && (this.classList.contains("is-open") || this.matches(":popover-open"))) { e.preventDefault(); if (typeof this.hidePopover === "function") { try { this.hidePopover(); } catch (err) {} } this.classList.remove("is-open"); this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true })); } };
@@ -2355,6 +2367,9 @@ class ContourFileUpload extends ContourBase {
       const renderPreview = (files) => {
         const preview = this.querySelector(".c-file-upload__preview");
         if (!preview) return;
+        // Revoke the previous object URLs before dropping the <img> nodes, or
+        // every re-render leaks a blob.
+        this._revokeObjectUrls();
         preview.innerHTML = "";
         Array.from(files || []).forEach((f) => {
           const item = document.createElement("div");
@@ -2365,7 +2380,7 @@ class ContourFileUpload extends ContourBase {
             img.alt = f.name;
             img.loading = "lazy";
             img.decoding = "async";
-            try { img.src = URL.createObjectURL(f); } catch (e) {}
+            try { const u = URL.createObjectURL(f); img.src = u; (this._objectUrls || (this._objectUrls = [])).push(u); } catch (e) {}
             item.appendChild(img);
           } else {
             const name = document.createElement("span");
@@ -2380,7 +2395,16 @@ class ContourFileUpload extends ContourBase {
       // drag-drop already dispatches contour:change; also render preview there
       this.addEventListener("dragover", (e) => { e.preventDefault(); this.classList.add("is-dragover"); });
       this.addEventListener("dragleave", () => this.classList.remove("is-dragover"));
-      this.addEventListener("drop", (e) => { e.preventDefault(); this.classList.remove("is-dragover"); const i = input(); if (i && e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) { try { i.files = e.dataTransfer.files; } catch (err) { /* some browsers disallow */ } const preview = this.querySelector(".c-file-upload__preview"); if (preview) { preview.innerHTML = ""; Array.from(e.dataTransfer.files).forEach((f) => { const item = document.createElement("div"); item.className = "c-file-upload__preview-item"; if (f.type && f.type.startsWith("image/")) { const img = document.createElement("img"); img.className = "c-file-upload__preview-thumb"; img.alt = f.name; try { img.src = URL.createObjectURL(f); } catch (err2) {} item.appendChild(img); } else { const name = document.createElement("span"); name.className = "c-file-upload__preview-name"; name.textContent = f.name; item.appendChild(name); } preview.appendChild(item); }); } this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { files: e.dataTransfer.files } })); } });
+      this.addEventListener("drop", (e) => { e.preventDefault(); this.classList.remove("is-dragover"); const i = input(); if (i && e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) { try { i.files = e.dataTransfer.files; } catch (err) { /* some browsers disallow */ } renderPreview(e.dataTransfer.files); this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { files: e.dataTransfer.files } })); } });
+    }
+    disconnectedCallback() {
+      super.disconnectedCallback();
+      this._revokeObjectUrls();
+    }
+    _revokeObjectUrls() {
+      if (!this._objectUrls) return;
+      this._objectUrls.forEach((u) => { try { URL.revokeObjectURL(u); } catch (e) {} });
+      this._objectUrls = [];
     }
     // Form-value sync override (R16-06): submit the selected File(s) via
     // FormData rather than the input's (useless) path string.
