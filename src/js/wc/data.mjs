@@ -281,6 +281,9 @@ class ContourTable extends ContourBase {
                     inp.type = "search";
                     inp.className = "c-table__filter-input";
                     inp.placeholder = colLabel;
+                    // A placeholder is not a label: a reader who tabs into the
+                    // filter hears "edit text" with no column name. Name it.
+                    inp.setAttribute("aria-label", "Filter " + colLabel);
                     inp.dataset.filterIndex = String(i);
                     if (this._filters && this._filters[i]) inp.value = this._filters[i];
                     th.appendChild(inp);
@@ -977,14 +980,22 @@ const series = this.getAttribute("series");
               this.appendChild(table);
             }
             table.innerHTML = "";
+            // A caption names the table: a reader who lands on it hears what it
+            // holds before the first cell, not "table, 5 rows, 3 columns".
+            const title = this.getAttribute("title") || this.getAttribute("aria-label") || "Chart data";
+            const cap = document.createElement("caption");
+            cap.textContent = title;
+            table.appendChild(cap);
             const thead = document.createElement("thead");
             const hr = document.createElement("tr");
             const h = document.createElement("th");
+            h.setAttribute("scope", "col");
             h.textContent = "Series";
             hr.appendChild(h);
             const maxLen = parsed.reduce((m, s) => Math.max(m, Array.isArray(s.values) ? s.values.length : (Array.isArray(s) ? s.length : 0)), 0);
             for (let i = 0; i < maxLen; i++) {
               const th = document.createElement("th");
+              th.setAttribute("scope", "col");
               th.textContent = "Value " + (i + 1);
               hr.appendChild(th);
             }
@@ -994,7 +1005,8 @@ const series = this.getAttribute("series");
             parsed.forEach((s, si) => {
               const vals = Array.isArray(s.values) ? s.values : (Array.isArray(s) ? s : []);
               const tr = document.createElement("tr");
-              const td0 = document.createElement("td");
+              const td0 = document.createElement("th");
+              td0.setAttribute("scope", "row");
               td0.textContent = s.label || ("Series " + (si + 1));
               tr.appendChild(td0);
               for (let i = 0; i < maxLen; i++) {

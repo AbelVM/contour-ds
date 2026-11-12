@@ -924,6 +924,10 @@ class ContourPagination extends ContourBase {
     static get properties() { return { pages: { attribute: "pages" }, current: { attribute: "current" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-pagination");
+      // A pagination control is a navigation landmark: the APG names it, and a
+      // screen reader's landmark list is where a reader looks for "page N of M".
+      if (!this.hasAttribute("role")) this.setAttribute("role", "navigation");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Pagination");
       wireStates(this);
       loadRemote(this, "pages");
       if (renderStates(this, "pagination")) return;
@@ -1551,6 +1555,9 @@ class ContourFooter extends ContourBase {
     static get properties() { return { brand: { attribute: "brand" }, note: { attribute: "note" }, links: { attribute: "links" }, cols: { attribute: "cols" } }; }
     render() {
       this.classList.add("c-footer");
+      // A footer is a contentinfo landmark: the APG names it, and a reader who
+      // jumps to the landmark list expects the page's footer there.
+      if (!this.hasAttribute("role")) this.setAttribute("role", "contentinfo");
       const brand = this.getAttribute("brand");
       if (brand) {
         const b = this.ensure(".c-footer__brand", () => { const el = document.createElement("div"); el.className = "c-footer__brand"; return el; });

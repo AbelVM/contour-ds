@@ -1005,7 +1005,13 @@ class ContourDropdown extends ContourBase {
       if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Dropdown");
       const btn = this.ensure(".c-dropdown__trigger", () => { const el = document.createElement("button"); el.className = "c-dropdown__trigger c-btn c-btn--sm"; el.type = "button"; return el; });
       btn.textContent = this.getAttribute("label") || "Menu";
+      // The trigger advertises the menu it opens before it is opened: a reader
+      // who tabs to it hears "has popup menu, collapsed", not "button".
+      btn.setAttribute("aria-haspopup", "menu");
+      btn.setAttribute("aria-expanded", "false");
       const menu = this.ensure(".c-dropdown__menu", () => { const el = document.createElement("div"); el.className = "c-dropdown__menu c-menu"; el.setAttribute("role", "menu"); el.hidden = true; return el; });
+      if (!menu.id) menu.id = (this.id || contourId("dd")) + "-menu";
+      btn.setAttribute("aria-controls", menu.id);
       // Slotted content: authored .c-menu__item children take precedence over
       // the JSON `items` attribute.
       const authoredItems = Array.from(this.querySelectorAll(":scope > .c-menu__item"));
