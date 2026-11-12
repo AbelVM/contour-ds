@@ -215,6 +215,31 @@
     text-align: center;
   }
 
+  .c-chart__tick {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .c-chart__legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--space-xs) * var(--density, 1));
+    font-size: var(--type-micro);
+    color: var(--chart-label);
+  }
+
+  .c-chart__legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: calc(0.3rem * var(--density, 1));
+  }
+
+  .c-chart__legend-swatch {
+    inline-size: 0.7rem;
+    block-size: 0.7rem;
+    border-radius: 2px;
+    background: var(--c, var(--chart-1));
+  }
+
   @media (width < 40rem) {
     .c-chart__axis--centered {
       grid-template-columns: repeat(auto-fit, minmax(min(100%, 4rem), 1fr));

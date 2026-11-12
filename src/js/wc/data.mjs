@@ -651,6 +651,70 @@ class ContourChart extends ContourBase {
         return String(parsed);
       } catch (e) { return raw; }
     }
+    _axisConfig() {
+      const raw = this.getAttribute("axis");
+      if (!raw) return null;
+      try {
+        const parsed = JSON.parse(raw);
+        return (parsed && typeof parsed === "object") ? parsed : null;
+      } catch (e) { return null; }
+    }
+    _valueDomain() {
+      const series = this.getAttribute("series");
+      if (!series) return null;
+      try {
+        const parsed = JSON.parse(series);
+        let min = Infinity, max = -Infinity;
+        (Array.isArray(parsed) ? parsed : []).forEach((s) => {
+          if (s && Array.isArray(s.values)) s.values.forEach((v) => {
+            const n = Number(v);
+            if (Number.isFinite(n)) { if (n < min) min = n; if (n > max) max = n; }
+          });
+        });
+        return Number.isFinite(min) && Number.isFinite(max) ? [min, max] : null;
+      } catch (e) { return null; }
+    }
+    _renderValueAxis() {
+      const ax = this.querySelector(".c-chart__axis");
+      if (!ax) return;
+      const cfg = this._axisConfig();
+      const y = cfg && cfg.y;
+      const domain = (y && y.domain) || this._valueDomain();
+      if (!domain) { ax.textContent = this._axisLabel(); return; }
+      const chart = (typeof window !== "undefined" && window.Contour && window.Contour.chart) || null;
+      const ticks = (y && y.ticks) || (chart && chart.ticks ? chart.ticks(domain[0], domain[1], 5) : [domain[0], domain[1]]);
+      const format = (y && y.format) || ((v) => String(v));
+      ax.textContent = "";
+      ticks.forEach((t) => {
+        const span = document.createElement("span");
+        span.className = "c-chart__tick";
+        span.textContent = typeof format === "function" ? format(t) : String(t);
+        ax.appendChild(span);
+      });
+      this.style.setProperty("--chart-ticks", String(ticks.length));
+    }
+    _renderLegend() {
+      const series = this.getAttribute("series");
+      if (!series) return;
+      try {
+        const parsed = JSON.parse(series);
+        const labelled = (Array.isArray(parsed) ? parsed : []).filter((s) => s && s.label);
+        let legend = this.querySelector(".c-chart__legend");
+        if (!labelled.length) { if (legend) legend.remove(); return; }
+        if (!legend) { legend = document.createElement("div"); legend.className = "c-chart__legend"; this.appendChild(legend); }
+        legend.textContent = "";
+        labelled.forEach((s, i) => {
+          const item = document.createElement("span");
+          item.className = "c-chart__legend-item";
+          const swatch = document.createElement("span");
+          swatch.className = "c-chart__legend-swatch";
+          swatch.style.setProperty("--c", this.getAttribute("color") || `var(--chart-${i + 1})`);
+          item.appendChild(swatch);
+          item.appendChild(document.createTextNode(s.label));
+          legend.appendChild(item);
+        });
+      } catch (e) { /* ignore */ }
+    }
     render() {
       this.classList.add("c-chart");
       // A chart with brush handles has focusable descendants, which role="img"
@@ -732,6 +796,12 @@ class ContourChart extends ContourBase {
         const ax = this.querySelector(".c-chart__axis");
         if (ax) ax.remove();
       }
+      // Value axis: when `axis` is {y:{domain,ticks,format}} (or the series
+      // carries values), print the ticks and publish --chart-ticks.
+      this._renderValueAxis();
+      // Legend from series[].label, so a chart with named series is readable
+      // without the consumer hand-building a legend.
+      this._renderLegend();
 const series = this.getAttribute("series");
        if (series) {
          let parsed = null;
