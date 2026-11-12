@@ -14,7 +14,7 @@ engines, pedestrian simulators, geospatial dashboards). It ships three
 surfaces: a **landing page**, a **documentation site** and a **technical
 dashboard**.
 
-- Dark and light themes, <!-- ds:components -->237<!-- /ds:components --> components, <!-- ds:tokens -->310<!-- /ds:tokens --> design tokens.
+- Dark and light themes, <!-- ds:components -->246<!-- /ds:components --> components, <!-- ds:tokens -->310<!-- /ds:tokens --> design tokens.
 - **Zero runtime dependencies, no build step.** `src/css/ds.css` is the whole
   system and can be linked straight off a disk.
 - The style guide (`index.html`) is the documentation *and* the test suite.

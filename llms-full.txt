@@ -27,7 +27,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0b19b8c2d791f38a` · last committed 2026-11-12T17:19:00+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `7a0e34f7b2e2baa1` · last committed 2026-11-12T19:25:01+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -78,7 +78,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0b19b8c2d791f38a` · last committed 2026-11-12T17:19:00+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `7a0e34f7b2e2baa1` · last committed 2026-11-12T19:25:01+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -128,7 +128,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0b19b8c2d791f38a` · last committed 2026-11-12T17:19:00+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `7a0e34f7b2e2baa1` · last committed 2026-11-12T19:25:01+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -165,7 +165,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0b19b8c2d791f38a` · last committed 2026-11-12T17:19:00+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `7a0e34f7b2e2baa1` · last committed 2026-11-12T19:25:01+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -209,7 +209,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0b19b8c2d791f38a` · last committed 2026-11-12T17:19:00+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `7a0e34f7b2e2baa1` · last committed 2026-11-12T19:25:01+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -265,7 +265,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0b19b8c2d791f38a` · last committed 2026-11-12T17:19:00+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `7a0e34f7b2e2baa1` · last committed 2026-11-12T19:25:01+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -306,7 +306,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0b19b8c2d791f38a` · last committed 2026-11-12T17:19:00+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `7a0e34f7b2e2baa1` · last committed 2026-11-12T19:25:01+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -384,7 +384,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0b19b8c2d791f38a` · last committed 2026-11-12T17:19:00+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `7a0e34f7b2e2baa1` · last committed 2026-11-12T19:25:01+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -403,6 +403,8 @@ Badges carry a category. Chips carry a value. Pills carry a state. The waypoint 
 
 Equivalent contour-* elements are catalogued in §23.
 
+A list of field / operator / value rows. The rows are the whole component: there is no hidden state, and the serialised query is what the consumer reads back.
+
 ## Subsections
 
 - Web component counterpart
@@ -410,24 +412,34 @@ Equivalent contour-* elements are catalogued in §23.
 - Skeleton
 - Loading
 - Web component counterparts
+- Fieldset and checkbox group
+- Search field and density toggle
+- Query builder
 
 ## Blocks documented here
 
-16 block(s). Their facts live in `../contour.components.json`;
+23 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
 - `.c-avatar`
 - `.c-badge`
 - `.c-btn`
+- `.c-check`
+- `.c-checkbox-group`
 - `.c-chip`
+- `.c-density-toggle`
 - `.c-dot`
 - `.c-empty`
+- `.c-fieldset`
 - `.c-icon-badge`
+- `.c-input`
 - `.c-kbd`
 - `.c-live-badge`
 - `.c-loading`
 - `.c-pill`
+- `.c-query-builder`
+- `.c-search-field`
 - `.c-section-head`
 - `.c-skeleton`
 - `.c-skeleton-group`
@@ -436,7 +448,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0b19b8c2d791f38a` · last committed 2026-11-12T17:19:00+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `7a0e34f7b2e2baa1` · last committed 2026-11-12T19:25:01+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -514,7 +526,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0b19b8c2d791f38a` · last committed 2026-11-12T17:19:00+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `7a0e34f7b2e2baa1` · last committed 2026-11-12T19:25:01+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -580,7 +592,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0b19b8c2d791f38a` · last committed 2026-11-12T17:19:00+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `7a0e34f7b2e2baa1` · last committed 2026-11-12T19:25:01+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -661,7 +673,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0b19b8c2d791f38a` · last committed 2026-11-12T17:19:00+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `7a0e34f7b2e2baa1` · last committed 2026-11-12T19:25:01+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -750,7 +762,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0b19b8c2d791f38a` · last committed 2026-11-12T17:19:00+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `7a0e34f7b2e2baa1` · last committed 2026-11-12T19:25:01+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -902,7 +914,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0b19b8c2d791f38a` · last committed 2026-11-12T17:19:00+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `7a0e34f7b2e2baa1` · last committed 2026-11-12T19:25:01+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -973,7 +985,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0b19b8c2d791f38a` · last committed 2026-11-12T17:19:00+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `7a0e34f7b2e2baa1` · last committed 2026-11-12T19:25:01+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1092,7 +1104,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0b19b8c2d791f38a` · last committed 2026-11-12T17:19:00+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `7a0e34f7b2e2baa1` · last committed 2026-11-12T19:25:01+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1168,7 +1180,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0b19b8c2d791f38a` · last committed 2026-11-12T17:19:00+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `7a0e34f7b2e2baa1` · last committed 2026-11-12T19:25:01+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1244,7 +1256,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0b19b8c2d791f38a` · last committed 2026-11-12T17:19:00+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `7a0e34f7b2e2baa1` · last committed 2026-11-12T19:25:01+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1371,6 +1383,10 @@ Sidebar
 
 Main content area
 
+Two composition primitives for a dashboard shell. The grid lays its authored children out in a responsive set of columns; the stack is a vertical rhythm with a shared header. Both take their geometry from custom properties, so the consumer sets the column count and the gap rather than overriding the rule.
+
+The first focusable element on the page. It is visually hidden until it takes focus, then slides into view at the top-left corner, so a keyboard user can jump past the navigation without a mouse. It is positioned against its containing block rather than the viewport, which is what keeps it inside a scrolling container.
+
 A landing page is a persuasive argument. Its grammar prioritises storytelling, typography, large-scale composition, editorial rhythm, rich media, persuasive CTA and generous whitespace.
 
 The landing shell composes these blocks in a narrative sequence:
@@ -1382,6 +1398,8 @@ Landing pages use the fluid display scale for headlines and the fixed UI scale f
 ## Subsections
 
 - Layout primitives
+- Dashboard grid and analysis stack
+- Skip link
 - Tour
 - Resize observer
 - Style panel
@@ -1396,12 +1414,13 @@ Landing pages use the fluid display scale for headlines and the fixed UI scale f
 
 ## Blocks documented here
 
-41 block(s). Their facts live in `../contour.components.json`;
+44 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
 - `.c-affordance`
 - `.c-affordances`
+- `.c-analysis-stack`
 - `.c-app`
 - `.c-app-body`
 - `.c-badge`
@@ -1409,6 +1428,7 @@ starts disagreeing with itself.
 - `.c-btn`
 - `.c-cluster`
 - `.c-container`
+- `.c-dashboard-grid`
 - `.c-destructive-hint`
 - `.c-disclosure`
 - `.c-drag-handle`
@@ -1434,6 +1454,7 @@ starts disagreeing with itself.
 - `.c-section-head`
 - `.c-select`
 - `.c-sidebar`
+- `.c-skip-link`
 - `.c-stack`
 - `.c-style-panel`
 - `.c-style-switcher`
@@ -1444,7 +1465,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0b19b8c2d791f38a` · last committed 2026-11-12T17:19:00+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `7a0e34f7b2e2baa1` · last committed 2026-11-12T19:25:01+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1565,7 +1586,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0b19b8c2d791f38a` · last committed 2026-11-12T17:19:00+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `7a0e34f7b2e2baa1` · last committed 2026-11-12T19:25:01+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1632,7 +1653,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0b19b8c2d791f38a` · last committed 2026-11-12T17:19:00+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `7a0e34f7b2e2baa1` · last committed 2026-11-12T19:25:01+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1709,7 +1730,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0b19b8c2d791f38a` · last committed 2026-11-12T17:19:00+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `7a0e34f7b2e2baa1` · last committed 2026-11-12T19:25:01+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1747,7 +1768,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0b19b8c2d791f38a` · last committed 2026-11-12T17:19:00+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `7a0e34f7b2e2baa1` · last committed 2026-11-12T19:25:01+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1862,7 +1883,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0b19b8c2d791f38a` · last committed 2026-11-12T17:19:00+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `7a0e34f7b2e2baa1` · last committed 2026-11-12T19:25:01+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1898,7 +1919,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0b19b8c2d791f38a` · last committed 2026-11-12T17:19:00+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `7a0e34f7b2e2baa1` · last committed 2026-11-12T19:25:01+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -1957,7 +1978,7 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0b19b8c2d791f38a` · last committed 2026-11-12T17:19:00+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `7a0e34f7b2e2baa1` · last committed 2026-11-12T19:25:01+01:00 · no URL: the project is private until v1.0.
 
 
 ---
@@ -2006,5 +2027,5 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `0b19b8c2d791f38a` · last committed 2026-11-12T17:19:00+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `7a0e34f7b2e2baa1` · last committed 2026-11-12T19:25:01+01:00 · no URL: the project is private until v1.0.
 
