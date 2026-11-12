@@ -1281,3 +1281,139 @@ class ContourRadioList extends ContourBase {
     }
   }
 define("contour-radio-list", ContourRadioList);
+
+// Fieldset: a <fieldset> with a <legend>, for grouping related controls. The
+// platform already draws the group boundary; the component wraps it so a
+// consumer can drop <contour-fieldset legend="…"> and get the semantics.
+class ContourFieldset extends ContourBase {
+  static get observed() { return ["legend", "disabled"]; }
+  static get properties() { return { legend: { attribute: "legend" }, disabled: { attribute: "disabled", type: Boolean } }; }
+  render() {
+    const fs = this.ensure("fieldset", () => { const el = document.createElement("fieldset"); el.className = "c-fieldset"; return el; });
+    if (this.hasAttribute("disabled")) fs.setAttribute("disabled", ""); else fs.removeAttribute("disabled");
+    const legend = this.getAttribute("legend");
+    let lg = fs.querySelector("legend");
+    if (legend) {
+      if (!lg) { lg = document.createElement("legend"); lg.className = "c-fieldset__legend"; fs.prepend(lg); }
+      lg.textContent = legend;
+    } else if (lg) lg.remove();
+    // Move authored children into the fieldset (light DOM).
+    const authored = Array.from(this.children).filter((c) => c !== fs);
+    if (authored.length) { authored.forEach((c) => fs.appendChild(c)); }
+  }
+}
+define("contour-fieldset", ContourFieldset);
+
+// Checkbox group: a fieldset of checkboxes with a shared name. The platform
+// groups checkboxes by name; the component adds the group semantics and a
+// legend, and emits contour:change with the group value.
+class ContourCheckboxGroup extends ContourBase {
+  static get observed() { return ["legend", "name", "options", "value"]; }
+  static get properties() { return { legend: { attribute: "legend" }, name: { attribute: "name" }, options: { attribute: "options" }, value: { attribute: "value" } }; }
+  render() {
+    this.classList.add("c-checkbox-group");
+    const fs = this.ensure("fieldset", () => { const el = document.createElement("fieldset"); el.className = "c-checkbox-group__fieldset"; return el; });
+    const legend = this.getAttribute("legend");
+    let lg = fs.querySelector("legend");
+    if (legend) {
+      if (!lg) { lg = document.createElement("legend"); lg.className = "c-checkbox-group__legend"; fs.prepend(lg); }
+      lg.textContent = legend;
+    } else if (lg) lg.remove();
+    const name = this.getAttribute("name") || "group";
+    const options = this.getAttribute("options");
+    const selected = (this.getAttribute("value") || "").split(",").map((s) => s.trim()).filter(Boolean);
+    if (options) {
+      try {
+        const parsed = JSON.parse(options);
+        Array.from(fs.querySelectorAll(".c-check")).forEach((n) => n.remove());
+        parsed.forEach((opt) => {
+          const label = typeof opt === "string" ? opt : (opt.label || opt.value || "");
+          const value = typeof opt === "string" ? opt : (opt.value || opt.label || "");
+          const wrap = document.createElement("label");
+          wrap.className = "c-check";
+          const input = document.createElement("input");
+          input.type = "checkbox";
+          input.className = "c-check__input";
+          input.name = name;
+          input.value = value;
+          if (selected.includes(value)) input.checked = true;
+          const span = document.createElement("span");
+          span.textContent = label;
+          wrap.appendChild(input);
+          wrap.appendChild(span);
+          fs.appendChild(wrap);
+        });
+      } catch (e) { warnBadJson(this, "attribute", e); }
+    }
+  }
+  enhance() {
+    if (this._wiredCheckboxGroup) return;
+    this._wiredCheckboxGroup = true;
+    this.addEventListener("change", (e) => {
+      const t = e.target;
+      if (t && t.matches && t.matches("input[type=checkbox]")) {
+        const values = Array.from(this.querySelectorAll("input[type=checkbox]:checked")).map((i) => i.value);
+        this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: values.join(","), values } }));
+      }
+    });
+  }
+}
+define("contour-checkbox-group", ContourCheckboxGroup);
+
+// Search field: a text input with a search icon and a clear button. The
+// platform's type=search gives the clear affordance; the component adds the
+// icon and the accessible name.
+class ContourSearchField extends ContourBase {
+  static get observed() { return ["value", "placeholder", "label", "name"]; }
+  static get properties() { return { value: { attribute: "value" }, placeholder: { attribute: "placeholder" }, label: { attribute: "label" }, name: { attribute: "name" } }; }
+  render() {
+    this.classList.add("c-search-field");
+    const input = this.ensure("input", () => { const el = document.createElement("input"); el.type = "search"; el.className = "c-search-field__input"; return el; });
+    input.placeholder = this.getAttribute("placeholder") || "Search";
+    if (this.getAttribute("value") !== null) input.value = this.getAttribute("value");
+    if (this.hasAttribute("name")) input.name = this.getAttribute("name");
+    const label = this.getAttribute("label");
+    if (label) input.setAttribute("aria-label", label);
+    else if (!input.hasAttribute("aria-label")) input.setAttribute("aria-label", "Search");
+  }
+  enhance() {
+    if (this._wiredSearchField) return;
+    this._wiredSearchField = true;
+    this.addEventListener("input", (e) => {
+      const t = e.target;
+      if (t && t.matches && t.matches("input")) {
+        this.dispatchEvent(new CustomEvent("contour:input", { bubbles: true, composed: true, detail: { value: t.value } }));
+      }
+    });
+  }
+}
+define("contour-search-field", ContourSearchField);
+
+// Density toggle: a two-state control (comfortable / compact) that sets a
+// data-density attribute on the host. The consumer's CSS reads it.
+class ContourDensityToggle extends ContourBase {
+  static get observed() { return ["value", "label"]; }
+  static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" } }; }
+  render() {
+    this.classList.add("c-density-toggle");
+    const value = this.getAttribute("value") || "comfortable";
+    this.setAttribute("data-density", value);
+    const btn = this.ensure("button", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-density-toggle__btn"; el.type = "button"; return el; });
+    const label = this.getAttribute("label") || (value === "compact" ? "Compact" : "Comfortable");
+    btn.textContent = label;
+    btn.setAttribute("aria-pressed", value === "compact" ? "true" : "false");
+  }
+  enhance() {
+    if (this._wiredDensityToggle) return;
+    this._wiredDensityToggle = true;
+    this.addEventListener("click", () => {
+      const next = this.getAttribute("data-density") === "compact" ? "comfortable" : "compact";
+      this.setAttribute("value", next);
+      this.setAttribute("data-density", next);
+      const btn = this.querySelector(".c-density-toggle__btn");
+      if (btn) { btn.textContent = next === "compact" ? "Compact" : "Comfortable"; btn.setAttribute("aria-pressed", next === "compact" ? "true" : "false"); }
+      this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: next } }));
+    });
+  }
+}
+define("contour-density-toggle", ContourDensityToggle);

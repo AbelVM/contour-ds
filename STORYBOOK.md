@@ -80,10 +80,10 @@ API stabilizes. `agent-rules.json` and `llms*.txt` remain authoritative.
 
 ## Measured evidence (SB-29)
 
-- Story files: 60; stories: 629; stories with play functions: 629.
+- Story files: 60; stories: 647; stories with play functions: 647.
 - A11y status (files): error 0, todo 2, off 0, unset 58.
-- Maturity counts (from `tmp/audit/storybook-coverage.json`): complete-widget 531, composition 57, primitive 25, scaffold 16.
-- Defined custom elements: 231; inventory blocks: 232.
+- Maturity counts (from `tmp/audit/storybook-coverage.json`): complete-widget 547, composition 59, primitive 25, scaffold 16.
+- Defined custom elements: 240; inventory blocks: 232.
 - Composition titles covered: `Contour/Compositions/ChartLegend`, `Contour/Compositions/ChartTable`, `Contour/Compositions/ComboboxField`, `Contour/Compositions/RealWorldDemos`, `Contour/Compositions/DialogForm`, `Contour/Compositions/DocsBehaviors`, `Contour/Compositions/LayerPanelMap`, `Contour/Compositions/SplitPaneOverlays`, `Contour/Compositions/TableFilters`, `Contour/Compositions/WorkspaceShell`.
 - Additional interaction/composition coverage added in existing families: toast-host async action (`Contour/Feedback/Toast`), sidebar + responsive shell (`Contour/Layout/Primitives`), dialog+form validation flow, and table+pagination state interaction.
 - New composition stories in this pass: `stories/composition-workspace-shell.stories.js` (header + sidebar nav + central stage + resize handle + docked collapsible inspector) and `stories/composition-docs-behaviors.stories.js` (docs-nav selection event, TOC current-heading marker, code copy control presence, docs-nav route matching via `current`, and `contour-code` `numbered` gutter) with `play` assertions.

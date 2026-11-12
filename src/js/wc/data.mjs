@@ -3992,3 +3992,72 @@ class ContourDataExport extends ContourBase {
     }
   }
   define("contour-data-export", ContourDataExport);
+
+// Query builder: a list of field/operator/value rows with an Add rule button.
+// The component renders the rows from a `query` JSON attribute and emits
+// contour:change with the serialised query.
+class ContourQueryBuilder extends ContourBase {
+  static get observed() { return ["query", "fields"]; }
+  static get properties() { return { query: { attribute: "query" }, fields: { attribute: "fields" } }; }
+  render() {
+    this.classList.add("c-query-builder");
+    const fields = this.getAttribute("fields");
+    let fieldList = [];
+    if (fields) { try { fieldList = JSON.parse(fields); } catch (e) { fieldList = []; } }
+    const query = this.getAttribute("query");
+    let rules = [];
+    if (query) { try { rules = JSON.parse(query); } catch (e) { rules = []; } }
+    const list = this.ensure(".c-query-builder__list", () => { const el = document.createElement("div"); el.className = "c-query-builder__list"; return el; });
+    Array.from(list.querySelectorAll(".c-query-builder__row")).forEach((n) => n.remove());
+    rules.forEach((rule, i) => {
+      const row = document.createElement("div");
+      row.className = "c-query-builder__row";
+      const field = document.createElement("select");
+      field.className = "c-query-builder__field";
+      field.setAttribute("aria-label", "Field " + (i + 1));
+      fieldList.forEach((f) => {
+        const opt = document.createElement("option");
+        opt.value = typeof f === "string" ? f : (f.value || f.label || "");
+        opt.textContent = typeof f === "string" ? f : (f.label || f.value || "");
+        if (opt.value === rule.field) opt.selected = true;
+        field.appendChild(opt);
+      });
+      const op = document.createElement("select");
+      op.className = "c-query-builder__op";
+      op.setAttribute("aria-label", "Operator " + (i + 1));
+      ["=", "!=", ">", "<", "contains"].forEach((o) => {
+        const opt = document.createElement("option");
+        opt.value = o; opt.textContent = o;
+        if (o === rule.op) opt.selected = true;
+        op.appendChild(opt);
+      });
+      const val = document.createElement("input");
+      val.className = "c-query-builder__value";
+      val.type = "text";
+      val.value = rule.value || "";
+      val.setAttribute("aria-label", "Value " + (i + 1));
+      row.appendChild(field); row.appendChild(op); row.appendChild(val);
+      list.appendChild(row);
+    });
+    const add = this.ensure(".c-query-builder__add", () => { const b = document.createElement("button"); b.type = "button"; b.className = "c-btn c-btn--sm c-query-builder__add"; b.textContent = "Add rule"; return b; });
+    if (add.parentNode !== this) this.appendChild(add);
+  }
+  enhance() {
+    if (this._wiredQueryBuilder) return;
+    this._wiredQueryBuilder = true;
+    this.addEventListener("click", (e) => {
+      const t = e.target;
+      if (t && t.closest && t.closest(".c-query-builder__add")) {
+        const rows = Array.from(this.querySelectorAll(".c-query-builder__row")).map((r) => ({
+          field: r.querySelector(".c-query-builder__field")?.value || "",
+          op: r.querySelector(".c-query-builder__op")?.value || "=",
+          value: r.querySelector(".c-query-builder__value")?.value || "",
+        }));
+        rows.push({ field: "", op: "=", value: "" });
+        this.setAttribute("query", JSON.stringify(rows));
+        this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { query: rows } }));
+      }
+    });
+  }
+}
+define("contour-query-builder", ContourQueryBuilder);

@@ -470,4 +470,22 @@
     color: var(--color-primary-text);
     font-weight: var(--weight-medium);
   }
+
+  /* Fieldset (R18-34): the platform draws the group boundary; the component
+     only adds the legend spacing. */
+  .c-fieldset { border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 0.75rem 1rem; }
+  .c-fieldset__legend { padding-inline: 0.25rem; font-weight: var(--weight-semibold); color: var(--color-text); }
+
+  /* Checkbox group (R18-34): a fieldset of checkboxes. */
+  .c-checkbox-group { border: 0; padding: 0; margin: 0; }
+  .c-checkbox-group__fieldset { border: 0; padding: 0; margin: 0; }
+  .c-checkbox-group__legend { padding: 0; font-weight: var(--weight-semibold); color: var(--color-text); }
+  .c-checkbox-group .c-check { display: flex; align-items: center; gap: 0.5rem; }
+
+  /* Search field (R18-34): a type=search input with the platform clear. */
+  .c-search-field { display: inline-flex; align-items: center; }
+  .c-search-field__input { inline-size: 100%; }
+
+  /* Density toggle (R18-34): a two-state control. */
+  .c-density-toggle { display: inline-flex; }
 }

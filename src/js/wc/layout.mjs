@@ -145,3 +145,74 @@ class ContourBtnGroup extends ContourBase {
     }
   }
   define("contour-time-range", ContourTimeRange);
+
+// Skip link: an <a> that is visually hidden until focused, then slides in at
+// the top-left. The class does the work; the component wraps it so a consumer
+// can drop <contour-skip-link href="#main"> into a page and get the link.
+class ContourSkipLink extends ContourBase {
+  static get observed() { return ["href", "label"]; }
+  static get properties() { return { href: { attribute: "href" }, label: { attribute: "label" } }; }
+  render() {
+    const a = this.ensure("a", () => { const el = document.createElement("a"); el.className = "c-skip-link"; return el; });
+    a.setAttribute("href", this.getAttribute("href") || "#main");
+    a.textContent = this.getAttribute("label") || "Skip to content";
+  }
+}
+define("contour-skip-link", ContourSkipLink);
+
+// Icon: renders a sprite <use> by name. The icon set is the guide's sprite;
+// a consumer points `name` at an id and the <use> resolves it.
+class ContourIcon extends ContourBase {
+  static get observed() { return ["name", "size", "label"]; }
+  static get properties() { return { name: { attribute: "name" }, size: { attribute: "size" }, label: { attribute: "label" } }; }
+  render() {
+    const name = this.getAttribute("name") || "";
+    const size = this.getAttribute("size");
+    const label = this.getAttribute("label");
+    this.innerHTML = "";
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("class", "c-icon");
+    svg.setAttribute("aria-hidden", "true");
+    if (size) svg.style.width = size, svg.style.height = size;
+    const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+    use.setAttribute("href", "#i-" + name);
+    svg.appendChild(use);
+    this.appendChild(svg);
+    if (label) { this.setAttribute("role", "img"); this.setAttribute("aria-label", label); }
+    else { this.removeAttribute("role"); this.removeAttribute("aria-label"); }
+  }
+}
+define("contour-icon", ContourIcon);
+
+// Dashboard grid: a CSS grid of widget cells. The component is a layout
+// primitive — it lays out its authored children in a responsive grid.
+class ContourDashboardGrid extends ContourBase {
+  static get observed() { return ["cols", "gap"]; }
+  static get properties() { return { cols: { attribute: "cols" }, gap: { attribute: "gap" } }; }
+  render() {
+    this.classList.add("c-dashboard-grid");
+    const cols = this.getAttribute("cols");
+    if (cols) this.style.setProperty("--dashboard-grid-cols", cols);
+    const gap = this.getAttribute("gap");
+    if (gap) this.style.setProperty("--dashboard-grid-gap", gap);
+  }
+}
+define("contour-dashboard-grid", ContourDashboardGrid);
+
+// Analysis stack: a vertical stack of analysis panels with a shared header.
+class ContourAnalysisStack extends ContourBase {
+  static get observed() { return ["title"]; }
+  static get properties() { return { title: { attribute: "title" } }; }
+  render() {
+    this.classList.add("c-analysis-stack");
+    const title = this.getAttribute("title");
+    let header = this.querySelector(".c-analysis-stack__header");
+    if (title) {
+      if (!header) { header = document.createElement("div"); header.className = "c-analysis-stack__header"; this.prepend(header); }
+      let h = header.querySelector(".c-analysis-stack__title");
+      if (!h) { h = document.createElement("h3"); h.className = "c-analysis-stack__title"; header.appendChild(h); }
+      h.textContent = title;
+    } else if (header) header.remove();
+  }
+}
+define("contour-analysis-stack", ContourAnalysisStack);
