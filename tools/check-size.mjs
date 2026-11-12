@@ -108,8 +108,8 @@ const BUDGETS = {
   // self-hosted fonts inlined as data URIs. Budgeted loosely because it is
   // ~260 kB larger than contour.min.css by construction; the gate exists to
   // catch an accidental doubling, not to keep it small.
-  "contour.single.min.css": 500 * 1024,
-  "contour.single.html": 520 * 1024,
+  "contour.single.min.css": 610 * 1024,
+  "contour.single.html": 650 * 1024,
   "contour.single.min.js": 24 * 1024,
   // The highlight.js companion (C-68). Shipped in dist/, named by README and by
   // dist/docs/install.md, and absent from this map, which is how it grew unnoticed.

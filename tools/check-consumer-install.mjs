@@ -144,6 +144,18 @@ for (const fixture of fixtures) {
     const pkg = JSON.parse(readFileSync(join(pkgDir, 'package.json'), 'utf8'));
     const exports = Object.keys(pkg.exports || {});
     ok(`package.json declares ${exports.length} export paths`);
+    // Every concrete (non-wildcard) export target must resolve to a file that
+    // actually shipped. The old gate checked 8 hand-picked files, so a specifier
+    // pointing at a file the build never emitted (contour.single.min.*) passed.
+    let resolved = 0;
+    for (const [key, target] of Object.entries(pkg.exports || {})) {
+      const rel = typeof target === 'string' ? target
+        : (target && (target.default || target.style || target.types));
+      if (typeof rel !== 'string' || rel.includes('*')) continue;
+      if (existsSync(join(pkgDir, rel))) { resolved++; }
+      else fail(`export path missing: ${key} -> ${rel}`);
+    }
+    ok(`${resolved} concrete export path(s) resolve to a shipped file`);
   } catch (err) {
     fail('could not read installed package.json', err);
   }
