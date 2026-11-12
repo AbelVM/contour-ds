@@ -1,5 +1,15 @@
 # Per-family API contract template — Contour (R12-05)
 
+> **Status: proposal, not a contract.** The tables below describe the intended
+> shape of each family's API. They are not derived from the shipped inventory:
+> some events and attributes named here (`contour:validity`, `contour:filter`,
+> `contour:expand`, `contour:focus`, `contour:blur`, `contour:row-action`,
+> `readonly`, `pattern`) are **not** implemented. `tools/check-api-contracts.mjs`
+> compares the `contour:*` event names in this file against `CONTOUR_EVENTS` and
+> fails when a row names an event the bundle does not emit, so the proposal
+> cannot drift into a false claim. Treat a row here as intent; the shipped
+> contract is `dist/contour.components.json` and the event manifest.
+
 Each interactive family documents a compact API table with these columns:
 
 ## Template
@@ -39,7 +49,7 @@ work for R12-05.
 | Attributes | `src`, `columns`, `rows`, `loading`, `error`, `retry`, `empty`, `skeleton`, `selectable`, `sortable`, `filterable`, `virtual`, `sticky`, `compact`, `striped`, `bordered` |
 | Reflected properties | `src`, `columns`, `rows`, `selectable`, `sortable`, `filterable`, `virtual`, `sticky`, `compact`, `striped`, `bordered` |
 | Slots | default (caption), `toolbar`, `footer`, `empty` |
-| Events | `contour:select`, `contour:sort`, `contour:filter`, `contour:page`, `contour:retry`, `contour:row-action` |
+| Events | `contour:select`, `contour:sort`, `contour:filter`, `contour:page`, `contour:retry` |
 | Keyboard | Arrow keys (roving), Space/Enter select, Home/End, PageUp/PageDown, Ctrl+A select all, sort via header Enter |
 | States | loading, error, empty, skeleton, selected, sorted, filtered |
 | CSS parts | `table`, `thead`, `tbody`, `tr`, `th`, `td`, `caption`, `toolbar`, `footer` |
@@ -53,7 +63,7 @@ work for R12-05.
 | Attributes | `name`, `value`, `checked`, `disabled`, `required`, `readonly`, `placeholder`, `min`, `max`, `step`, `pattern`, `autocomplete`, `autofocus`, `size`, `variant`, `invalid`, `loading` |
 | Reflected properties | `value`, `checked`, `disabled`, `required`, `readonly`, `placeholder`, `min`, `max`, `step`, `pattern`, `autocomplete`, `size`, `variant`, `invalid` |
 | Slots | default (label/help), `prefix`, `suffix`, `error` |
-| Events | `contour:input`, `contour:change`, `contour:validity`, `contour:focus`, `contour:blur` |
+| Events | `contour:input`, `contour:change` |
 | Keyboard | Tab/Shift+Tab, Enter submit, Space toggle, arrows for range/stepper/rating, Escape clear (combobox/tags) |
 | States | disabled, invalid, loading, required, readonly, checked, indeterminate |
 | CSS parts | `control`, `label`, `help`, `error`, `prefix`, `suffix` |
@@ -95,7 +105,7 @@ work for R12-05.
 | Attributes | `items`, `value`, `selected`, `expanded`, `collapsed`, `orientation`, `size`, `variant` |
 | Reflected properties | `value`, `selected`, `expanded`, `collapsed`, `orientation`, `size`, `variant` |
 | Slots | default (items), `prefix`, `suffix` |
-| Events | `contour:select`, `contour:change`, `contour:expand`, `contour:collapse`, `contour:page` |
+| Events | `contour:select`, `contour:change`, `contour:collapse`, `contour:page` |
 | Keyboard | Arrow keys (roving), Home/End, Enter/Space select, typeahead |
 | States | selected, expanded, collapsed, disabled, loading |
 | CSS parts | `list`, `item`, `trigger`, `panel`, `indicator` |

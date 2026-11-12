@@ -52,6 +52,7 @@ const gates = [
   ["perf-budget", "node", ["tools/audit/perf-budget.mjs"]],
   ["check-visual", "node", ["tools/check-visual.mjs", "--verify"]],
   ["contrast-cross-browser", "node", ["tools/audit/contrast-and-aria-cross-browser.mjs"]],
+  ["check-api-contracts", "node", ["tools/check-api-contracts.mjs"]],
 ];
 
 // A gate that is not in this artifact cannot pass, fail, or mean anything.
