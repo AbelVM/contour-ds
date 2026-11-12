@@ -103,9 +103,9 @@
     /* ---------------------------------------------------------------------
        7. TYPOGRAPHY
        --------------------------------------------------------------------- */
-    --font-display: "Contour Plex Sans Condensed", "Contour Plex Sans", ui-sans-serif,
+    --font-display: "Contour Plex Sans Condensed", "Contour Plex Sans", "Contour Plex Sans Fallback", ui-sans-serif,
       system-ui, sans-serif;
-    --font-sans: "Contour Plex Sans", ui-sans-serif, system-ui, -apple-system,
+    --font-sans: "Contour Plex Sans", "Contour Plex Sans Fallback", ui-sans-serif, system-ui, -apple-system,
       "Segoe UI", sans-serif;
     --font-mono: "Contour Plex Mono", ui-monospace, "SFMono-Regular", "Cascadia Mono",
       Menlo, monospace;
