@@ -515,7 +515,9 @@ class ContourVersionBannerFull extends ContourBase {
       Array.from(this.children).forEach((n) => n.remove());
       const message = this.getAttribute("message");
       if (message) {
-        const icon = document.createElement("svg");
+        // createElement("svg") builds an HTMLUnknownElement, not an SVG: the
+        // <use> inside it never renders. SVG needs the SVG namespace.
+        const icon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         icon.setAttribute("aria-hidden", "true");
         icon.innerHTML = '<use href="#i-info" />';
         this.appendChild(icon);
@@ -1425,7 +1427,12 @@ class ContourStatusLight extends ContourBase {
       this.classList.add("c-status-light");
       const status = this.getAttribute("status") || "neutral";
       this.classList.add("c-status-light--" + status);
+      // A status light is a labelled graphic: give it a role and a name so the
+      // colour is not the only carrier of the state.
+      if (!this.hasAttribute("role")) this.setAttribute("role", "img");
       const label = this.getAttribute("label");
+      if (label && !this.hasAttribute("aria-label")) this.setAttribute("aria-label", label);
+      else if (!label && !this.hasAttribute("aria-label")) this.setAttribute("aria-label", status);
       if (label) {
         const l = this.ensure(".c-status-light__label", () => { const el = document.createElement("span"); el.className = "c-status-light__label"; return el; });
         l.textContent = label;
@@ -2281,7 +2288,16 @@ class ContourFab extends ContourBase {
       const label = this.getAttribute("label");
       if (label) this.setAttribute("aria-label", label);
       const icon = this.getAttribute("icon");
-      if (icon && !this.hasChildNodes()) this.textContent = icon;
+      if (icon && !this.querySelector("svg")) {
+        // Render the icon through the sprite, not as text: an <svg><use> paints
+        // the glyph; the old code wrote the icon name into the button.
+        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("aria-hidden", "true");
+        const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+        use.setAttribute("href", icon.startsWith("#") ? icon : "#" + icon);
+        svg.appendChild(use);
+        this.appendChild(svg);
+      }
     }
     enhance() {
       if (this._wiredFab) return;
@@ -2804,7 +2820,10 @@ class ContourBadgeOverflow extends ContourBase {
       const count = Number(this.getAttribute("count") || 0);
       const max = Number(this.getAttribute("max") || 3);
       const extra = Math.max(0, count - max);
-      this.textContent = "";
+      // Keep authored children: the component adds the "+N" overflow badge, it
+      // does not replace whatever the author put inside.
+      const existing = this.querySelector(".c-badge-overflow__more");
+      if (existing) existing.remove();
       if (extra > 0) {
         const b = document.createElement("span");
         b.className = "c-badge c-badge-overflow__more";
