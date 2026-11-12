@@ -1,4 +1,4 @@
-import { ContourBase, define, onDispose, sanitizeHtml, headingTag, navKey, safeHref , warnBadJson } from './core.mjs';
+import { ContourBase, define, onDispose, sanitizeHtml, headingTag, navKey, safeHref , warnBadJson, label } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 
 /* Route matching (CDS-075). The URL is the state for a documentation surface, so
@@ -245,7 +245,7 @@ class ContourChangelog extends ContourBase {
       if (src) {
         if (this.dataset.loaded === src) return;
         this.dataset.loaded = "";
-        const loading = this.ensure(".c-changelog__loading", () => { const el = document.createElement("div"); el.className = "c-changelog__loading"; el.textContent = "Loading…"; return el; });
+        const loading = this.ensure(".c-changelog__loading", () => { const el = document.createElement("div"); el.className = "c-changelog__loading"; el.textContent = label(this, "loading", "Loading…"); return el; });
         // clear
         Array.from(this.querySelectorAll(".c-changelog__entry, .c-changelog__error")).forEach((n) => n.remove());
         if (!this.querySelector(".c-changelog__loading")) this.appendChild(loading);
@@ -267,7 +267,7 @@ class ContourChangelog extends ContourBase {
           if (!list.length) {
             const empty = document.createElement("div");
             empty.className = "c-changelog__empty";
-            empty.textContent = "No releases found.";
+            empty.textContent = label(this, "empty", "No releases found.");
             this.appendChild(empty);
             return;
           }

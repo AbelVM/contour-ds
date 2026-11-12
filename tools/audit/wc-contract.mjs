@@ -776,6 +776,18 @@ try {
             if (!reflected || !readBack)
               renderAllBad.push(`${n}: default reflection broken (${dbg})`);
           }
+          // Localised labels (R18-63): a host with a `labels` JSON attribute
+          // must use it over the English default. contour-activity-feed names
+          // its empty copy; set labels and check the rendered text changes.
+          if (n === "contour-activity-feed") {
+            host.setAttribute("items", "[]");
+            host.setAttribute("labels", JSON.stringify({ empty: "Aucun" }));
+            await new Promise((r) => requestAnimationFrame(r));
+            const empty = host.querySelector(".c-activity-feed__empty");
+            if (!empty || empty.textContent !== "Aucun")
+              renderAllBad.push(`${n}: labels override not applied (empty=${empty ? JSON.stringify(empty.textContent) : "none"})`);
+            host.removeAttribute("labels");
+          }
           host.remove();
         }
         console.error = origError;

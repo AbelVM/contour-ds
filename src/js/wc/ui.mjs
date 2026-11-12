@@ -1,4 +1,4 @@
-import { ContourBase, define, contourId, onDispose, navKey, safeColor, safeHref, cssLength , warnBadJson } from './core.mjs';
+import { ContourBase, define, contourId, onDispose, navKey, safeColor, safeHref, cssLength , warnBadJson, label } from './core.mjs';
 import { wireRemovable, modalContain } from './behaviours.mjs';
 /**
  * Avatar: a circular avatar with initials (from `name`) or an image (`src`),
@@ -2514,7 +2514,7 @@ class ContourNotificationCenter extends ContourBase {
           if (!parsed.length) {
             const empty = document.createElement("div");
             empty.className = "c-notification-center__empty";
-            empty.textContent = "No notifications";
+            empty.textContent = label(this, "empty", "No notifications");
             panel.appendChild(empty);
           }
         } catch (e) { /* keep */ }
@@ -3948,11 +3948,11 @@ class ContourPullToRefresh extends ContourBase {
     render() {
       this.classList.add("c-pull-to-refresh");
       if (!this.hasAttribute("role")) this.setAttribute("role", "region");
-      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Pull to refresh");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", label(this, "label", "Pull to refresh"));
       const ind = this.ensure(".c-pull-to-refresh__indicator", () => {
         const e = document.createElement("div");
         e.className = "c-pull-to-refresh__indicator";
-        e.textContent = "Pull to refresh";
+        e.textContent = label(this, "label", "Pull to refresh");
         return e;
       });
       if (ind.parentNode !== this) this.prepend(ind);
