@@ -2657,7 +2657,10 @@ class ContourVirtualList extends ContourBase {
         const row = document.createElement("div");
         row.className = "c-virtual-list__item";
         row.setAttribute("role", "listitem");
-        // aria-rowindex omitted: not allowed on role="listitem" (axe aria-allowed-attr)
+        // A windowed list must publish its position in the whole set, or a
+        // screen reader cannot tell "item 3 of 1,000" from "item 3 of 12".
+        row.setAttribute("aria-setsize", String(total));
+        row.setAttribute("aria-posinset", String(i + 1));
         row.setAttribute("tabindex", i === 0 ? "0" : "-1");
         row.textContent = typeof items[i] === "string" ? items[i] : (items[i].label || items[i].text || JSON.stringify(items[i]));
         if (this.hasAttribute("sticky") && items[i] && items[i].sticky) {
@@ -2709,6 +2712,29 @@ class ContourVirtualList extends ContourBase {
       this.addEventListener("keydown", (e) => {
         const rows = Array.from(this.querySelectorAll(".c-virtual-list__item"));
         if (!rows.length) return;
+        const horizontal = this.getAttribute("orientation") === "horizontal";
+        const fwd = horizontal ? "ArrowRight" : "ArrowDown";
+        const back = horizontal ? "ArrowLeft" : "ArrowUp";
+        const active = document.activeElement;
+        const at = rows.indexOf(active);
+        const scroller = this.querySelector(".c-virtual-list__scroller");
+        const inner = this.querySelector(".c-virtual-list__inner");
+        // At the window edge the next item is not rendered: scroll one row and
+        // re-render, then move focus, instead of stopping at the last node.
+        if ((e.key === fwd && at === rows.length - 1) || (e.key === back && at === 0 && Number(active && active.dataset.index) > 0)) {
+          e.preventDefault();
+          if (scroller && inner) {
+            const delta = (e.key === fwd ? 1 : -1) * this._itemHeight();
+            if (horizontal) scroller.scrollLeft += delta; else scroller.scrollTop += delta;
+            this._renderWindow(scroller, inner, horizontal ? scroller.scrollLeft : scroller.scrollTop);
+            const targetIndex = Number(active && active.dataset.index) + (e.key === fwd ? 1 : -1);
+            requestAnimationFrame(() => {
+              const next = this.querySelector(`.c-virtual-list__item[data-index="${targetIndex}"]`);
+              if (next) { rows.forEach((r) => r.setAttribute("tabindex", "-1")); next.setAttribute("tabindex", "0"); try { next.focus(); } catch (err) {} }
+            });
+          }
+          return;
+        }
         navKey(e, rows, { wrap: false, homeEnd: true, onNavigate: (i) => rows.forEach((r, j) => r.setAttribute("tabindex", j === i ? "0" : "-1")), onKey: () => { if (e.key === "Enter" || e.key === " ") { const i = Number(document.activeElement.dataset.index); this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index: i, value: document.activeElement.textContent } })); } } });
       });
       this.addEventListener("click", (e) => {
