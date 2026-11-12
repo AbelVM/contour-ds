@@ -1,4 +1,4 @@
-import { ContourBase, define, formatValue, navKey } from './core.mjs';
+import { ContourBase, define, formatValue, navKey , warnBadJson } from './core.mjs';
 
 /**
  * Dashboard state machine (R13-06).
@@ -87,7 +87,7 @@ class ContourDashToolbar extends ContourBase {
             btn.textContent = typeof a === "string" ? a : (a.label || a);
             wrap.appendChild(btn);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else {
         const w = this.querySelector(".c-dash-toolbar__actions");
         if (w) w.remove();
@@ -211,7 +211,18 @@ class ContourSavedView extends ContourBase {
       if (!meta) { meta = document.createElement("div"); meta.className = "c-saved-view__meta"; this.appendChild(meta); }
       const updated = this.getAttribute("updated");
       const source = this.getAttribute("source");
-      meta.innerHTML = [updated && `<span>Updated ${updated}</span>`, source && `<span>Source: ${source}</span>`].filter(Boolean).join(" · ");
+      meta.replaceChildren();
+      if (updated) {
+        const wrap = document.createElement("span");
+        wrap.textContent = `Updated ${updated}`;
+        meta.appendChild(wrap);
+      }
+      if (source) {
+        if (meta.childNodes.length) meta.appendChild(document.createTextNode(" · "));
+        const wrap = document.createElement("span");
+        wrap.textContent = `Source: ${source}`;
+        meta.appendChild(wrap);
+      }
       let actions = this.querySelector(".c-saved-view__actions");
       if (!actions) { actions = document.createElement("div"); actions.className = "c-saved-view__actions"; this.appendChild(actions); }
       const apply = actions.querySelector(".c-saved-view__apply") || (() => { const b = document.createElement("button"); b.type = "button"; b.className = "c-btn c-btn--ghost c-btn--sm"; b.textContent = "Apply"; actions.appendChild(b); return b; })();
@@ -242,7 +253,9 @@ class ContourProvenance extends ContourBase {
       const source = this.getAttribute("source");
       if (source) {
         const s = this.ensure(".c-provenance__source", () => { const el = document.createElement("span"); el.className = "c-provenance__source"; return el; });
-        s.innerHTML = `<b>Source:</b> ${source}`;
+        const b = document.createElement("b");
+        b.textContent = "Source:";
+        s.replaceChildren(b, document.createTextNode(" " + source));
       } else {
         const s = this.querySelector(".c-provenance__source");
         if (s) s.remove();
@@ -323,7 +336,7 @@ class ContourFeatureInspector extends ContourBase {
             field.appendChild(value);
             body.appendChild(field);
           }
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       }
       const actions = this.ensure(".c-feature-inspector__actions", () => { const el = document.createElement("div"); el.className = "c-feature-inspector__actions"; return el; });
     }

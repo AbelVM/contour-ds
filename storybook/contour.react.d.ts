@@ -1,4 +1,4 @@
-import type { ContourElement, ContourAccordionElement, ContourActivityElement, ContourActivityFeedElement, ContourAnimationControlsElement, ContourAnnotationElement, ContourAvatarElement, ContourAxisElement, ContourBivariateElement, ContourBreadcrumbElement, ContourBrownoutElement, ContourBrushElement, ContourBtnElement, ContourCalendarElement, ContourCatchmentElement, ContourCategoryElement, ContourChangelogElement, ContourChartElement, ContourChartGridElement, ContourCheckElement, ContourCodeElement, ContourCodeTabsElement, ContourColorPickerElement, ContourComboboxElement, ContourCommandPaletteElement, ContourCompareElement, ContourCoordinateElement, ContourDashFreshnessElement, ContourDashKpiRowElement, ContourDataExportElement, ContourDataGridElement, ContourDatePickerElement, ContourDateRangeElement, ContourDeltaElement, ContourDividerElement, ContourDocsNavElement, ContourDonutElement, ContourEmptyElement, ContourErrorBoundaryElement, ContourFaqElement, ContourFeatureInspectorElement, ContourFileUploadElement, ContourFilterBarElement, ContourFlowMapElement, ContourFormElement, ContourGaugeElement, ContourGeocoderElement, ContourHeatmapElement, ContourHexbinElement, ContourHoverCardElement, ContourInputGroupElement, ContourInstrumentElement, ContourIsochroneElement, ContourKpiElement, ContourLayerPanelElement, ContourLayerSwitchElement, ContourLegendElement, ContourMapPopupElement, ContourMeasureElement, ContourMenuElement, ContourMeterElement, ContourMinimapElement, ContourNumberFieldElement, ContourPaginationElement, ContourPaletteEditorElement, ContourPanelElement, ContourPivotElement, ContourPopoverElement, ContourProgressElement, ContourProvenanceElement, ContourPullToRefreshElement, ContourRadioElement, ContourRadioListElement, ContourRangeElement, ContourRatingElement, ContourReadoutElement, ContourResizeObserverElement, ContourResponsiveContentElement, ContourSavedViewElement, ContourScaleBarElement, ContourSegmentedElement, ContourSelectElement, ContourSideSheetElement, ContourSidebarElement, ContourSkeletonElement, ContourSparklineElement, ContourSpatialFilterElement, ContourSplitButtonElement, ContourSplitMapElement, ContourSplitViewElement, ContourStackedBarElement, ContourStatElement, ContourStepsElement, ContourStreamingChartElement, ContourStylePanelElement, ContourSurveyElement, ContourSwatchElement, ContourSwitchElement, ContourTableElement, ContourTabsElement, ContourTagsInputElement, ContourTextareaElement, ContourThresholdElement, ContourTimePickerElement, ContourTimeSeriesElement, ContourTimeSliderElement, ContourTimelineElement, ContourToastElement, ContourToolbarElement, ContourTooltipElement, ContourTreeElement, ContourTreeGridElement, ContourVersionElement, ContourVirtualListElement, ContourWidgetStateElement } from "./contour";
+import type { ContourElement, ContourAccordionElement, ContourActivityElement, ContourActivityFeedElement, ContourAnimationControlsElement, ContourAnnotationElement, ContourAvatarElement, ContourAxisElement, ContourBivariateElement, ContourBreadcrumbElement, ContourBrownoutElement, ContourBrushElement, ContourBtnElement, ContourCalendarElement, ContourCatchmentElement, ContourCategoryElement, ContourChangelogElement, ContourChartElement, ContourChartGridElement, ContourCheckElement, ContourCodeElement, ContourCodeTabsElement, ContourColorPickerElement, ContourComboboxElement, ContourCommandPaletteElement, ContourCompareElement, ContourContextMenuElement, ContourContourPlotElement, ContourCoordinateElement, ContourDashFreshnessElement, ContourDashKpiRowElement, ContourDashboardGridElement, ContourDataExportElement, ContourDataGridElement, ContourDatePickerElement, ContourDateRangeElement, ContourDeltaElement, ContourDividerElement, ContourDocsNavElement, ContourDonutElement, ContourDropIndicatorElement, ContourEmptyElement, ContourErrorBoundaryElement, ContourFaqElement, ContourFeatureInspectorElement, ContourFieldElement, ContourFieldsetElement, ContourFileUploadElement, ContourFilterBarElement, ContourFlowMapElement, ContourFormElement, ContourGaugeElement, ContourGeocoderElement, ContourHeatmapElement, ContourHexbinElement, ContourHoverCardElement, ContourInputGroupElement, ContourInstrumentElement, ContourIsochroneElement, ContourKpiElement, ContourLayerPanelElement, ContourLayerSwitchElement, ContourLegendElement, ContourMapPopupElement, ContourMeasureElement, ContourMenuElement, ContourMeterElement, ContourMinimapElement, ContourNumberFieldElement, ContourPaginationElement, ContourPaletteEditorElement, ContourPanelElement, ContourPivotElement, ContourPopoverElement, ContourProgressElement, ContourProvenanceElement, ContourPullToRefreshElement, ContourQueryBuilderElement, ContourRadioElement, ContourRadioListElement, ContourRangeElement, ContourRatingElement, ContourReadoutElement, ContourResizeObserverElement, ContourResponsiveContentElement, ContourSavedViewElement, ContourScaleBarElement, ContourSegmentedElement, ContourSelectElement, ContourSideSheetElement, ContourSidebarElement, ContourSkeletonElement, ContourSparklineElement, ContourSpatialFilterElement, ContourSplitButtonElement, ContourSplitMapElement, ContourSplitViewElement, ContourStackedBarElement, ContourStatElement, ContourStepsElement, ContourStreamingChartElement, ContourStylePanelElement, ContourSurveyElement, ContourSwatchElement, ContourSwitchElement, ContourTableElement, ContourTabsElement, ContourTagsInputElement, ContourTextareaElement, ContourThresholdElement, ContourTimePickerElement, ContourTimeSeriesElement, ContourTimeSliderElement, ContourTimelineElement, ContourToastElement, ContourToolbarElement, ContourTooltipElement, ContourTreeElement, ContourTreeGridElement, ContourVersionElement, ContourVirtualListElement, ContourWidgetStateElement } from "./contour";
 
 declare global {
   namespace JSX {
@@ -10,6 +10,7 @@ declare global {
       "contour-affordance": Partial<ContourElement> & Record<string, any>;
       "contour-affordances": Partial<ContourElement> & Record<string, any>;
       "contour-alert": Partial<ContourElement> & Record<string, any>;
+      "contour-analysis-stack": Partial<ContourElement> & Record<string, any>;
       "contour-anchor": Partial<ContourElement> & Record<string, any>;
       "contour-animation-controls": Partial<ContourAnimationControlsElement> & Record<string, any>;
       "contour-annotation": Partial<ContourAnnotationElement> & Record<string, any>;
@@ -40,6 +41,7 @@ declare global {
       "contour-chart": Partial<ContourChartElement> & Record<string, any>;
       "contour-chart-grid": Partial<ContourChartGridElement> & Record<string, any>;
       "contour-check": Partial<ContourCheckElement> & Record<string, any>;
+      "contour-checkbox-group": Partial<ContourElement> & Record<string, any>;
       "contour-chip": Partial<ContourElement> & Record<string, any>;
       "contour-cluster": Partial<ContourElement> & Record<string, any>;
       "contour-code": Partial<ContourCodeElement> & Record<string, any>;
@@ -52,13 +54,15 @@ declare global {
       "contour-comparison": Partial<ContourElement> & Record<string, any>;
       "contour-compass": Partial<ContourElement> & Record<string, any>;
       "contour-container": Partial<ContourElement> & Record<string, any>;
-      "contour-context-menu": Partial<ContourElement> & Record<string, any>;
+      "contour-context-menu": Partial<ContourContextMenuElement> & Record<string, any>;
+      "contour-contour-plot": Partial<ContourContourPlotElement> & Record<string, any>;
       "contour-coordinate": Partial<ContourCoordinateElement> & Record<string, any>;
       "contour-cta": Partial<ContourElement> & Record<string, any>;
       "contour-dash-freshness": Partial<ContourDashFreshnessElement> & Record<string, any>;
       "contour-dash-kpi-row": Partial<ContourDashKpiRowElement> & Record<string, any>;
       "contour-dash-shell": Partial<ContourElement> & Record<string, any>;
       "contour-dash-toolbar": Partial<ContourElement> & Record<string, any>;
+      "contour-dashboard-grid": Partial<ContourDashboardGridElement> & Record<string, any>;
       "contour-data-export": Partial<ContourDataExportElement> & Record<string, any>;
       "contour-data-grid": Partial<ContourDataGridElement> & Record<string, any>;
       "contour-data-table": Partial<ContourElement> & Record<string, any>;
@@ -66,6 +70,7 @@ declare global {
       "contour-date-picker": Partial<ContourDatePickerElement> & Record<string, any>;
       "contour-date-range": Partial<ContourDateRangeElement> & Record<string, any>;
       "contour-delta": Partial<ContourDeltaElement> & Record<string, any>;
+      "contour-density-toggle": Partial<ContourElement> & Record<string, any>;
       "contour-destructive-hint": Partial<ContourElement> & Record<string, any>;
       "contour-dialog": Partial<ContourElement> & Record<string, any>;
       "contour-diff": Partial<ContourElement> & Record<string, any>;
@@ -79,7 +84,7 @@ declare global {
       "contour-drag-handle": Partial<ContourElement> & Record<string, any>;
       "contour-draggable": Partial<ContourElement> & Record<string, any>;
       "contour-drawer": Partial<ContourElement> & Record<string, any>;
-      "contour-drop-indicator": Partial<ContourElement> & Record<string, any>;
+      "contour-drop-indicator": Partial<ContourDropIndicatorElement> & Record<string, any>;
       "contour-drop-zone": Partial<ContourElement> & Record<string, any>;
       "contour-dropdown": Partial<ContourElement> & Record<string, any>;
       "contour-elevation": Partial<ContourElement> & Record<string, any>;
@@ -90,8 +95,9 @@ declare global {
       "contour-faq": Partial<ContourFaqElement> & Record<string, any>;
       "contour-feature": Partial<ContourElement> & Record<string, any>;
       "contour-feature-inspector": Partial<ContourFeatureInspectorElement> & Record<string, any>;
-      "contour-field": Partial<ContourElement> & Record<string, any>;
+      "contour-field": Partial<ContourFieldElement> & Record<string, any>;
       "contour-field-group": Partial<ContourElement> & Record<string, any>;
+      "contour-fieldset": Partial<ContourFieldsetElement> & Record<string, any>;
       "contour-file-tree": Partial<ContourElement> & Record<string, any>;
       "contour-file-upload": Partial<ContourFileUploadElement> & Record<string, any>;
       "contour-filter-bar": Partial<ContourFilterBarElement> & Record<string, any>;
@@ -106,6 +112,7 @@ declare global {
       "contour-heatmap": Partial<ContourHeatmapElement> & Record<string, any>;
       "contour-hexbin": Partial<ContourHexbinElement> & Record<string, any>;
       "contour-hover-card": Partial<ContourHoverCardElement> & Record<string, any>;
+      "contour-icon": Partial<ContourElement> & Record<string, any>;
       "contour-icon-badge": Partial<ContourElement> & Record<string, any>;
       "contour-input": Partial<ContourElement> & Record<string, any>;
       "contour-input-group": Partial<ContourInputGroupElement> & Record<string, any>;
@@ -153,6 +160,7 @@ declare global {
       "contour-provenance": Partial<ContourProvenanceElement> & Record<string, any>;
       "contour-pull-to-refresh": Partial<ContourPullToRefreshElement> & Record<string, any>;
       "contour-pullquote": Partial<ContourElement> & Record<string, any>;
+      "contour-query-builder": Partial<ContourQueryBuilderElement> & Record<string, any>;
       "contour-radio": Partial<ContourRadioElement> & Record<string, any>;
       "contour-radio-list": Partial<ContourRadioListElement> & Record<string, any>;
       "contour-range": Partial<ContourRangeElement> & Record<string, any>;
@@ -172,6 +180,7 @@ declare global {
       "contour-scheme-toggle": Partial<ContourElement> & Record<string, any>;
       "contour-scrim": Partial<ContourElement> & Record<string, any>;
       "contour-scroll-area": Partial<ContourElement> & Record<string, any>;
+      "contour-search-field": Partial<ContourElement> & Record<string, any>;
       "contour-search-trigger": Partial<ContourElement> & Record<string, any>;
       "contour-section-head": Partial<ContourElement> & Record<string, any>;
       "contour-segmented": Partial<ContourSegmentedElement> & Record<string, any>;
@@ -187,6 +196,7 @@ declare global {
       "contour-sidebar": Partial<ContourSidebarElement> & Record<string, any>;
       "contour-skeleton": Partial<ContourSkeletonElement> & Record<string, any>;
       "contour-skeleton-group": Partial<ContourElement> & Record<string, any>;
+      "contour-skip-link": Partial<ContourElement> & Record<string, any>;
       "contour-sortable-list": Partial<ContourElement> & Record<string, any>;
       "contour-sparkline": Partial<ContourSparklineElement> & Record<string, any>;
       "contour-spatial-filter": Partial<ContourSpatialFilterElement> & Record<string, any>;

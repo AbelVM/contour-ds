@@ -102,7 +102,7 @@
   // {index, label} and {value} across its sites, so all three are listed.
   /** Frozen event vocabulary with the public detail keys for each event. */
   export const CONTOUR_EVENTS = Object.freeze({
-    "contour:activate": { payload: ["row"], composed: true },
+    "contour:activate": { payload: ["files", "label", "row", "value"], composed: true },
     "contour:add": { payload: ["value"], composed: true },
     "contour:activity-clear": { payload: [], composed: true },
     "contour:activity-filter": { payload: ["unread"], composed: true },
@@ -117,16 +117,17 @@
     "contour:brush-start": { payload: ["end", "start", "value"], composed: true },
     "contour:brush-end": { payload: ["end", "start", "value"], composed: true },
     "contour:brush": { payload: ["end", "start", "value"], composed: true },
-    "contour:change": { payload: ["checked", "color", "direction", "end", "files", "high", "index", "low", "month", "name", "speed", "start", "unit", "value", "year"], composed: true },
+    "contour:change": { payload: ["checked", "color", "direction", "end", "files", "high", "index", "low", "month", "name", "paused", "query", "speed", "start", "unit", "value", "values", "year"], composed: true },
     "contour:collapse": { payload: ["collapsed"], composed: true },
       "contour:cluster-toggle": { payload: ["count", "expanded"], composed: true },
     "contour:clear": { payload: [], composed: true },
     "contour:clear-all": { payload: [], composed: true },
-    "contour:close": { payload: ["index", "label"], composed: true },
+    "contour:close": { payload: ["count", "index", "label", "message", "open", "value"], composed: true },
     "contour:copy": { payload: ["text"], composed: true },
     "contour:apply": { payload: ["name"], composed: true },
     "contour:dash-action": { payload: ["label"], composed: true },
     "contour:diff-activate": { payload: ["kind", "text"], composed: true },
+    "contour:dismiss": { payload: ["label"], composed: true },
     "contour:draw-start": { payload: ["mode"], composed: true },
     "contour:drag": { payload: ["delta", "key", "value"], composed: true },
     "contour:do-dont-activate": { payload: ["kind", "text"], composed: true },
@@ -148,13 +149,13 @@
     "contour:layer-rename": { payload: ["name", "newName"], composed: true },
     "contour:layer-duplicate": { payload: ["name"], composed: true },
     "contour:layer-zoom": { payload: ["name"], composed: true },
-    "contour:zoom": { payload: ["row", "index"], composed: true },
+    "contour:zoom": { payload: ["data", "index", "row"], composed: true },
     "contour:layer-projection": { payload: ["name", "projection"], composed: true },
     "contour:layer-remove": { payload: ["name"], composed: true },
     "contour:layer-reorder": { payload: ["layerIds"], composed: true },
     "contour:layer-toggle": { payload: ["name", "visible"], composed: true },
     "contour:layer-visibility": { payload: ["name", "visible"], composed: true },
-    "contour:legend-toggle": { payload: ["key", "label", "pressed"], composed: true },
+    "contour:legend-toggle": { payload: ["index", "key", "label", "pressed"], composed: true },
     "contour:leave": { payload: [], composed: true },
     "contour:load": { payload: ["src", "count"], composed: true },
     "contour:map-control": { payload: ["control"], composed: true },
@@ -167,16 +168,17 @@
     "contour:open": { payload: [], composed: true },
     "contour:page": { payload: ["page"], composed: true },
     "contour:ready": { payload: ["version", "count"], composed: true },
-    "contour:remove": { payload: ["key", "label", "value"], composed: true },
+    "contour:read": { payload: ["label"], composed: true },
+    "contour:remove": { payload: ["key", "label", "name", "value"], composed: true },
     "contour:reorder": { payload: ["from", "to"], composed: true },
     "contour:range-change": { payload: ["value"], composed: true },
-    "contour:resize": { payload: ["height", "width"], composed: true },
+    "contour:resize": { payload: ["delta", "height", "value", "width"], composed: true },
     "contour:retry": { payload: ["src"], composed: true },
     "contour:loop-change": { payload: ["loop"], composed: true },
     "contour:pause": { payload: [], composed: true },
     "contour:play": { payload: [], composed: true },
     "contour:seek": { payload: ["progress", "value"], composed: true },
-    "contour:select": { payload: ["area", "col", "index", "key", "label", "labels", "path", "row", "rows", "series", "value"], composed: true },
+    "contour:select": { payload: ["area", "col", "expanded", "href", "index", "key", "label", "labels", "path", "result", "row", "rows", "series", "value"], composed: true },
     "contour:search": { payload: ["query"], composed: true },
     "contour:spatial-filter": { payload: ["action", "mode", "operator"], composed: true },
     "contour:split-change": { payload: ["value", "width", "height"], composed: true },
@@ -193,7 +195,7 @@
     "contour:tick": { payload: ["frame"], composed: true },
     "contour:time-change": { payload: ["progress", "value"], composed: true },
     "contour:time-range-change": { payload: ["value"], composed: true },
-    "contour:toggle": { payload: ["expanded", "label", "open", "path", "playing"], composed: true },
+    "contour:toggle": { payload: ["collapsed", "expanded", "label", "open", "path", "playing"], composed: true },
     "contour:view-enter": { payload: [], composed: true },
     "contour:view-leave": { payload: [], composed: true },
   });
@@ -234,6 +236,84 @@
     walk(doc.body);
     return doc.body.innerHTML;
   }
+  /**
+   * Validate a CSS colour for use in an inline style.
+   *
+   * Returns the trimmed value when it is a plain colour (named, hex, or a
+   * known colour function) and an empty string otherwise. Anything that could
+   * break out of the declaration, load a resource, or run script is rejected,
+   * so a consumer-supplied `color` attribute cannot become an injection sink.
+   *
+   * @param {unknown} value candidate colour
+   * @returns {string} the safe colour, or "" when rejected
+   */
+  export function safeColor(value) {
+    const raw = String(value == null ? "" : value).trim();
+    if (!raw) return "";
+    if (/[;{}<>"'`\\]/.test(raw)) return "";
+    if (/url\s*\(/i.test(raw) || /expression\s*\(/i.test(raw)) return "";
+    if (/^#[0-9a-f]{3,8}$/i.test(raw)) return raw;
+    if (/^(rgb|rgba|hsl|hsla|hwb|lab|lch|oklab|oklch|color)\(/i.test(raw)) return raw;
+    if (/^[a-z]+$/i.test(raw)) return raw;
+    return "";
+  }
+  /**
+   * Resolve an href candidate to a value that is safe to assign to a sink.
+   *
+   * Fragments, relative paths and the schemes we can vouch for pass through
+   * unchanged; `javascript:`, `data:` and any other scheme collapse to "#".
+   * This closes the attribute-to-property path that `sanitizeHtml` does not
+   * cover, because assigning `a.href = "javascript:…"` executes on click.
+   *
+   * @param {unknown} value candidate href
+   * @returns {string} the safe href, or "#"
+   */
+  export function safeHref(value) {
+    const raw = String(value == null ? "" : value).trim();
+    if (!raw) return "#";
+    if (raw.startsWith("#") || raw.startsWith("/") || raw.startsWith("./") || raw.startsWith("../") || raw.startsWith("?")) return raw;
+    if (typeof document === "undefined" || !document.baseURI) return "#";
+    try {
+      const url = new URL(raw, document.baseURI);
+      return ["http:", "https:", "mailto:", "tel:"].includes(url.protocol) ? raw : "#";
+    } catch (e) {
+      return "#";
+    }
+  }
+  /**
+   * Read a length token from the document root, in pixels.
+   *
+   * Virtualized components used to hard-code 36/32/28 px row heights, which
+   * disagreed with the rendered row and ignored density. The height is now a
+   * token (`--data-grid-row-height`, …) and this reads its computed value.
+   *
+   * @param {string} name custom-property name
+   * @param {number} fallback pixels to use when the token is absent or invalid
+   * @returns {number} the resolved length in pixels
+   */
+  export function cssLength(name, fallback) {
+    if (typeof getComputedStyle === "undefined" || typeof document === "undefined") return fallback;
+    const v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name));
+    return Number.isFinite(v) && v > 0 ? v : fallback;
+  }
+  /**
+   * Surface a malformed JSON attribute instead of swallowing it.
+   *
+   * A bare `catch (e) { /* keep existing *\/ }` turns a typo in a component
+   * attribute into a silent no-op: the render keeps whatever was there before
+   * and the defect is invisible. This warns once, with the component name and
+   * the parser message, so the author can find it.
+   *
+   * @param {Element|null} host the component that owns the attribute
+   * @param {string} label the attribute (or a short description)
+   * @param {unknown} error the thrown parse error
+   */
+  export function warnBadJson(host, label, error) {
+    if (typeof console === "undefined" || !console.warn) return;
+    const name = host && host.tagName ? host.tagName.toLowerCase() : "component";
+    const msg = (error && error.message) || String(error);
+    console.warn(`[contour] ${name}: malformed ${label || "attribute"} — ${msg}`);
+  }
   // contract: an attribute that is not here cannot ask an element to re-render,
   // and an attribute a component WRITES to itself must never be here, because
   // that write would fire the callback that performs the render.
@@ -246,7 +326,7 @@
     "accept", "action", "actions", "active", "after", "allow-duplicate", "allow-remove", "allow-rename", "allow-zoom", "alpha", "anchor", "answer", "area", "article", "attribution", "attribution-mark", "audit", "autoplay", "axis", "axis-x", "axis-y", "brownout", "brownout-level", "before", "body", "brand", "bounds", "breakpoint", "breaks", "brush", "brush-end", "brush-max", "brush-min", "brush-start", "cache-key", "canvas", "center", "clearable", "cols", "columns", "color", "command",
     "cells", "checked", "chrome", "confidence", "coverage", "debounce", "closable", "collapsed", "collapsible", "classification", "colors", "continuous", "content", "controls", "copyable", "count", "data", "data-table", "date", "delta",     "description", "glyphs", "graduated", "demo", "density", "desc", "dir", "direction", "disabled", "distance", "dismissible", "divider", "do", "dont", "dot", "ends", "high", "input", "layer", "low", "mode", "modes", "n", "opacity", "palette", "polarity", "precision", "range", "single",
     "empty", "exclusive", "fallback", "filename", "format", "heading", "help", "hint", "href", "icon", "illustration", "instrument", "interval", "items", "key", "layers", "level", "range-end", "range-start",
-    "label", "lazy", "lede", "legend", "left-label", "right-label", "line", "limit", "link", "links", "live", "loading", "locale", "loop", "max", "media", "message", "method", "methodology", "menu", "min", "multiple", "name", "needle", "next", "no", "no-cache", "no-data-message", "nodes", "note", "norm", "normalize",
+    "label", "labels", "lazy", "lede", "legend", "left-label", "right-label", "line", "limit", "link", "links", "live", "loading", "locale", "loop", "max", "media", "message", "method", "methodology", "menu", "min", "multiple", "name", "needle", "next", "no", "no-cache", "no-data-message", "nodes", "note", "norm", "normalize",
     "options", "orientation", "page-size", "pages", "pause", "paused", "pausable", "persist", "placeholder", "playing", "point", "points", "prev", "presets", "progress", "prompt", "question", "recent", "required",
     "quote", "ramp", "refresh", "removable", "resolution", "reverse", "rings", "retry", "results", "rows", "scale", "selectable", "segments", "show-header", "sparkline", "threshold", "thresholds", "selected", "separator", "series", "shortcut", "side", "size", "skeleton", "sort", "sort-dir", "speed", "status", "step", "submit", "submitting", "timeout", "trigger", "virtual", "sticky", "cluster-count", "cluster-expanded", "time", "resizable",
     "state", "steps", "style", "subtitle", "summary", "src", "source", "table", "tabs", "tag", "text", "ticks",     "title", "type", "unread-only", "unit", "updated", "cluster-items", "row-height",
@@ -255,12 +335,31 @@
     "search",
     "numbered",
     "bucket-count", "limit-values",
+    "autocomplete", "levels", "submit-label",
   ];
 
   /** Resolve an authored heading level while keeping the fallback valid. */
   export function headingTag(host, fallback = "h3") {
     const v = host && host.getAttribute ? host.getAttribute("heading") : null;
     return /^h[1-6]$/.test(v || "") ? v : fallback;
+  }
+
+  /**
+   * Resolve a localised label for a host (R18-63). A consumer supplies a
+   * `labels` JSON attribute (e.g. `labels='{"clear":"Effacer"}'`); it is merged
+   * over the English `fallback`, so a partial object localises only the keys it
+   * names. A malformed attribute is ignored rather than thrown — a bad label
+   * must not take the widget down. Returns `fallback` when no override exists.
+   */
+  export function label(host, key, fallback) {
+    const def = fallback !== undefined ? fallback : key;
+    const raw = host && host.getAttribute ? host.getAttribute("labels") : null;
+    if (!raw) return def;
+    try {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === "object" && typeof parsed[key] === "string" && parsed[key]) return parsed[key];
+    } catch (e) { /* a malformed labels attribute is ignored, not fatal */ }
+    return def;
   }
 
   /**
@@ -359,8 +458,10 @@
       if (ctor._propsInstalled) return;
       ctor._propsInstalled = true;
       const props = ctor.properties || {};
+      const declared = new Set();
       for (const [name, spec] of Object.entries(props)) {
         const attr = (spec && spec.attribute) || name;
+        declared.add(attr);
         const type = (spec && spec.type) || String;
         Object.defineProperty(ctor.prototype, name, {
           get() {
@@ -373,6 +474,33 @@
           set(v) {
             if (v === null || v === undefined || v === false) this.removeAttribute(attr);
             else if (type === Boolean) { if (v) this.setAttribute(attr, ""); else this.removeAttribute(attr); }
+            else this.setAttribute(attr, String(v));
+          },
+          configurable: true,
+        });
+      }
+      // Default reflection (R18-54): every observed attribute a component reads
+      // but does not declare in properties() still gets an accessor, so
+      // `el.allowDuplicate = true` writes `allow-duplicate=""` instead of being
+      // a silent no-op. The property name is the camelCase form of the
+      // attribute (kebab -> camel); a kebab attribute with no valid identifier
+      // form is skipped rather than guessed. Declared properties win.
+      const observed = ctor.observed || OBSERVED;
+      for (const attr of observed) {
+        if (declared.has(attr)) continue;
+        const prop = attr.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+        if (!/^[a-zA-Z_$][\w$]*$/.test(prop)) continue;
+        if (prop in ctor.prototype) continue; // an inherited accessor already exists
+        const isBool = attr === "disabled" || attr === "checked" || attr === "required" || attr === "readonly" || attr === "multiple" || attr === "selected" || attr === "open" || attr === "hidden";
+        Object.defineProperty(ctor.prototype, prop, {
+          get() {
+            const raw = this.getAttribute(attr);
+            if (isBool) return raw !== null;
+            return raw;
+          },
+          set(v) {
+            if (v === null || v === undefined || v === false) this.removeAttribute(attr);
+            else if (isBool) { if (v) this.setAttribute(attr, ""); else this.removeAttribute(attr); }
             else this.setAttribute(attr, String(v));
           },
           configurable: true,
@@ -1368,6 +1496,110 @@ export function assignMarkers(items) {
   return (items || []).map((it, i) => ({ ...it, marker: MARKER_SHAPES[i % MARKER_SHAPES.length] }));
 }
 
+/* ---------------------------------------------------------------------------
+ * Contour lines — marching squares over a 2D field.
+ *
+ * The same algorithm as tools/contour-gen.py, ported to the browser. Iso-lines
+ * of different levels of one continuous field cannot cross; the asymptotic
+ * saddle decider below is what guarantees that, so a hand-drawn path is never
+ * a substitute. Shared by the `contour-contour-plot` element and the guide's
+ * `data-contour-plot` renderer so the two cannot drift.
+ * ------------------------------------------------------------------------- */
+
+/**
+ * Extract the iso-line segments of a scalar field at one level.
+ *
+ * @param {number[][]} grid row-major field values
+ * @param {number} level iso-level to extract
+ * @returns {Array<[{x:number,y:number},{x:number,y:number}]>} segments in grid space
+ */
+export function marchingSquares(grid, level) {
+  const rows = grid.length;
+  const cols = rows ? grid[0].length : 0;
+  const segments = [];
+  if (!rows || !cols) return segments;
+
+  const lerp = (a, b, va, vb) => (vb === va ? 0.5 : (level - va) / (vb - va));
+
+  for (let y = 0; y < rows - 1; y++) {
+    for (let x = 0; x < cols - 1; x++) {
+      const tl = grid[y][x];
+      const tr = grid[y][x + 1];
+      const bl = grid[y + 1][x];
+      const br = grid[y + 1][x + 1];
+      const code =
+        (tl >= level ? 8 : 0) |
+        (tr >= level ? 4 : 0) |
+        (br >= level ? 2 : 0) |
+        (bl >= level ? 1 : 0);
+      if (code === 0 || code === 15) continue;
+
+      const top = { x: x + lerp(tl, tr, tl, tr), y };
+      const right = { x: x + 1, y: y + lerp(tr, br, tr, br) };
+      const bottom = { x: x + lerp(bl, br, bl, br), y: y + 1 };
+      const left = { x, y: y + lerp(tl, bl, tl, bl) };
+
+      let connect;
+      if (code === 5) {
+        const center = (tl + tr + bl + br) / 4;
+        connect = center >= level ? "top-bottom" : "left-right";
+      } else if (code === 10) {
+        const center = (tl + tr + bl + br) / 4;
+        connect = center >= level ? "left-right" : "top-bottom";
+      }
+
+      switch (code) {
+        case 1: case 14: segments.push([left, bottom]); break;
+        case 2: case 13: segments.push([bottom, right]); break;
+        case 3: case 12: segments.push([left, right]); break;
+        case 4: case 11: segments.push([top, right]); break;
+        case 6: case 9: segments.push([top, bottom]); break;
+        case 7: case 8: segments.push([left, top]); break;
+        case 5:
+          if (connect === "top-bottom") {
+            segments.push([top, bottom], [left, right]);
+          } else {
+            segments.push([top, right], [left, bottom]);
+          }
+          break;
+        case 10:
+          if (connect === "left-right") {
+            segments.push([left, right], [top, bottom]);
+          } else {
+            segments.push([top, right], [left, bottom]);
+          }
+          break;
+      }
+    }
+  }
+  return segments;
+}
+
+/**
+ * Build the SVG `d` path for every level of a field.
+ *
+ * @param {number[][]} grid row-major field values
+ * @param {number[]} levels iso-levels, one path per level
+ * @param {number} width viewBox width in px
+ * @param {number} height viewBox height in px
+ * @returns {Array<{level:number, d:string}>} one entry per level
+ */
+export function contourPaths(grid, levels, width, height) {
+  const rows = grid.length;
+  const cols = rows ? grid[0].length : 0;
+  if (rows < 2 || cols < 2) return [];
+  const sx = width / (cols - 1);
+  const sy = height / (rows - 1);
+  return (levels || []).map((level) => {
+    const segs = marchingSquares(grid, level);
+    let d = "";
+    for (const [a, b] of segs) {
+      d += `M ${(a.x * sx).toFixed(2)} ${(a.y * sy).toFixed(2)} L ${(b.x * sx).toFixed(2)} ${(b.y * sy).toFixed(2)} `;
+    }
+    return { level, d: d.trim() };
+  });
+}
+
 /* ============================================================================
    CONTOUR — shared behaviour
    ----------------------------------------------------------------------------
@@ -1508,6 +1740,7 @@ export function wireTabs(host) {
     const tabsOf = () => wcGroup(host, list, "[role='tab']");
     const activate = (tab, focus) => {
       const tabs = tabsOf();
+      if (!tab.id) tab.id = contourId("c-tab");
       tabs.forEach((t) => {
         const selected = t === tab;
         t.setAttribute("aria-selected", String(selected));
@@ -1515,7 +1748,12 @@ export function wireTabs(host) {
         const ctrl = t.getAttribute("aria-controls");
         if (!ctrl) return;
         const panel = wcOne(host, "#" + CSS.escape(ctrl)) || document.getElementById(ctrl);
-        if (panel) panel.hidden = !selected;
+        if (panel) {
+          panel.hidden = !selected;
+          // A tabpanel is named by its tab: without this a screen reader
+          // announces the panel with no name.
+          if (selected) panel.setAttribute("aria-labelledby", t.id);
+        }
       });
       const panels = wcAll(host, panelSel);
       if (panels.length) {
@@ -1527,12 +1765,14 @@ export function wireTabs(host) {
       const name = tab.getAttribute("aria-controls") || tab.textContent || "";
       host.dispatchEvent(new CustomEvent("contour:tab-change", { bubbles: true, composed: true, detail: { index: tabs.indexOf(tab), label: name } }));
     };
-    // Same-document View Transitions (BY-24). A consumer who names elements via
-    // `data-view-transition` / `--view-transition-name` gets a cross-fade on a
-    // tab swap; the morph must run inside startViewTransition so the browser
-    // has an old and a new state to interpolate. The initial mount activation
-    // below stays direct — a transition on load is a page fade nobody asked
-    // for — and the plain swap is the entire fallback, because the CSS harness
+    // Same-document View Transitions (BY-24). A tab swap runs inside
+    // document.startViewTransition, so the browser cross-fades the whole
+    // document between the old and new panel. This is a document cross-fade,
+    // not a named-element morph: the component does not set
+    // --view-transition-name, and a consumer who names elements gets the
+    // browser's own morph on top of this. The initial mount activation below
+    // stays direct — a transition on load is a page fade nobody asked for —
+    // and the plain swap is the entire fallback, because the CSS harness
     // (components.css) is enhancement-only too.
     const runActivation = (tab, focus) => {
       // Keyboard activation must update aria-selected synchronously so assistive
@@ -1550,7 +1790,13 @@ export function wireTabs(host) {
     };
     wcListen(host, "click", (e) => {
       const tab = wcClosest(host, e.target, "[role='tab']");
-      if (tab && tabsOf().includes(tab)) runActivation(tab, false);
+      if (tab && tabsOf().includes(tab)) {
+        // A button nested inside a tab (a close control, say) is its own
+        // target: activating the tab underneath it would be a surprise.
+        const inner = e.target && e.target.closest ? e.target.closest("button") : null;
+        if (inner && inner !== tab && tab.contains(inner)) return;
+        runActivation(tab, false);
+      }
     });
     wcListen(host, "keydown", (e) => {
       let tab = wcClosest(host, e.target, "[role='tab']");
@@ -1806,7 +2052,7 @@ export function wireCombobox(host) {
       const selected = (host.getAttribute("value") || "").split(",").map((v) => v.trim()).filter(Boolean);
       const value = host._comboboxVirtual && host._comboboxFiltered
         ? host._comboboxFiltered.find((item) => item.index === Number(opt.dataset.optionIndex))?.value
-        : opt.textContent.trim();
+        : (opt.dataset.optionValue != null ? opt.dataset.optionValue : opt.textContent.trim());
       const position = selected.indexOf(String(value));
       if (now && position >= 0) selected.splice(position, 1);
       if (!now && position < 0) selected.push(String(value));
@@ -1816,8 +2062,13 @@ export function wireCombobox(host) {
       field.focus();
       return;
     }
+    // Commit the option's value, not its label: the field shows the label, the
+    // form submits the value, and `contour:select` carries the value.
+    const value = opt.dataset.optionValue != null ? opt.dataset.optionValue : opt.textContent.trim();
     field.value = opt.textContent;
-    wcEmit(host, "contour:select", { value: field.value });
+    host.setAttribute("value", value);
+    if (typeof host._syncFormValue === "function") host._syncFormValue();
+    wcEmit(host, "contour:select", { value });
     close();
     field.focus();
   };
@@ -2542,6 +2793,24 @@ export const STATE_FALLBACK = {
   error: "Could not load.",
 };
 
+/**
+ * Resolve a state label for a host (R18-63). A consumer supplies a `labels`
+ * JSON attribute (e.g. `labels='{"loading":"Chargement…"}'`); it is merged over
+ * the English default, so a partial object localises only the keys it names.
+ * A malformed attribute is ignored rather than thrown — a bad label must not
+ * take the widget down. Returns the default when no override is present.
+ */
+export function stateLabel(host, key) {
+  const fallback = STATE_FALLBACK[key] || key;
+  const raw = host && host.getAttribute ? host.getAttribute("labels") : null;
+  if (!raw) return fallback;
+  try {
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === "object" && typeof parsed[key] === "string" && parsed[key]) return parsed[key];
+  } catch (e) { /* a malformed labels attribute is ignored, not fatal */ }
+  return fallback;
+}
+
 // One in-flight request per URL, shared by every host that asked for it.
 const remoteInflight = new Map();
 // The last result per URL, so a re-mounted host paints instead of re-asking. A
@@ -2982,12 +3251,12 @@ export function renderStates(host, block, opts) {
   const options = opts || {};
   const loading = host.getAttribute("loading");
   if (loading !== null || host._remoteStatus === "loading") {
-    host.appendChild(stateNode(block, "loading", loading || STATE_FALLBACK.loading));
+    host.appendChild(stateNode(block, "loading", loading || stateLabel(host, "loading")));
     return true;
   }
   const error = host.getAttribute("error");
   if (error !== null || host._remoteStatus === "error") {
-    const message = (error !== null && error !== "") ? error : (host._remoteError || STATE_FALLBACK.error);
+    const message = (error !== null && error !== "") ? error : (host._remoteError || stateLabel(host, "error"));
     const node = stateNode(block, "error", message);
     // `retry` is the actionable half of an error. It reuses the button the system
     // already ships and the `contour:retry` event three components already emit,
@@ -3015,7 +3284,7 @@ export function renderStates(host, block, opts) {
 /** Paint the empty state — for a host with no data and no authored content. */
 /** Render the empty state for a block. */
 export function renderEmpty(host, block) {
-  host.appendChild(stateNode(block, "empty", host.getAttribute("empty") || STATE_FALLBACK.empty));
+  host.appendChild(stateNode(block, "empty", host.getAttribute("empty") || stateLabel(host, "empty")));
 }
 
 // Delegated on the host (AGENTS.md rule 12): the retry button is regenerated on
@@ -3420,7 +3689,7 @@ shadow("contour-shadow-filter-pill", `<span class="c-filter-pill" part="filter-p
 
   // The dialog is the one wrapper with behaviour, because a close button that
   // does not close is a control the reader cannot use.
-  const DIALOG_MARKUP = "<dialog class=\"c-dialog\" part=\"dialog\"> <div class=\"c-dialog__head\" part=\"head\"> <slot name=\"title\"></slot> <button class=\"c-btn c-btn--icon c-btn--ghost\" part=\"close\" type=\"button\" aria-label=\"Close\"> <svg aria-hidden=\"true\"><use href=\"#i-close\" /></svg> </button> </div> <div class=\"c-dialog__body\" part=\"body\"><slot></slot></div> <div class=\"c-dialog__foot\" part=\"foot\"><slot name=\"foot\"></slot></div> </dialog>";
+  const DIALOG_MARKUP = "<dialog class=\"c-dialog\" part=\"dialog\"> <div class=\"c-dialog__head\" part=\"head\"> <slot name=\"title\"></slot> <button class=\"c-btn c-btn--icon c-btn--ghost\" part=\"close\" type=\"button\" aria-label=\"Close\"> <svg aria-hidden=\"true\"><use href=\"#i-x\" /></svg> </button> </div> <div class=\"c-dialog__body\" part=\"body\"><slot></slot></div> <div class=\"c-dialog__foot\" part=\"foot\"><slot name=\"foot\"></slot></div> </dialog>";
   SHADOW_MARKUP["contour-shadow-dialog"] = DIALOG_MARKUP;
   recordParts("contour-shadow-dialog", DIALOG_MARKUP);
   class ContourShadowDialog extends ContourShadow {
@@ -3561,7 +3830,7 @@ class ContourReadout extends ContourBase {
             }
             this.appendChild(row);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else if (!rows && !authored.length) {
         renderEmpty(this, "readout");
       }
@@ -3774,6 +4043,10 @@ class ContourTable extends ContourBase {
           this._page = page;
           this._totalPages = totalPages;
           this._pageSize = pageSize;
+          // Keep the row objects in memory instead of serializing each one into
+          // a data-row attribute: the JSON duplicated the data the component
+          // already holds and bloated every row.
+          this._rowData = pageData;
 
           const wrap = this.ensure(".c-table-wrap", () => { const el = document.createElement("div"); el.className = "c-table-wrap"; return el; });
           // Reuse the existing table when columns are unchanged, rebuilding
@@ -3798,6 +4071,9 @@ class ContourTable extends ContourBase {
                     inp.type = "search";
                     inp.className = "c-table__filter-input";
                     inp.placeholder = colLabel;
+                    // A placeholder is not a label: a reader who tabs into the
+                    // filter hears "edit text" with no column name. Name it.
+                    inp.setAttribute("aria-label", "Filter " + colLabel);
                     inp.dataset.filterIndex = String(i);
                     if (this._filters && this._filters[i]) inp.value = this._filters[i];
                     th.appendChild(inp);
@@ -3849,7 +4125,7 @@ class ContourTable extends ContourBase {
           const tbody = table.querySelector("tbody");
           tbody.innerHTML = "";
           const useVirtual = this.hasAttribute("virtual") && !usePaging && pageData.length > 100;
-          const rowHeight = 36;
+          const rowHeight = this._measuredRowHeight || cssLength("--data-grid-row-height", 36);
           const windowSize = 30;
           const overscan = 10;
           let windowStart = 0;
@@ -3886,8 +4162,10 @@ class ContourTable extends ContourBase {
             visibleData.forEach((row, ri) => {
               const tr = document.createElement("tr");
               tr.dataset.rowIndex = String(windowStart + ri);
-              tr.setAttribute("tabindex", "0");
-              tr.setAttribute("data-row", JSON.stringify(row));
+              // One tab stop per grid, not one per row: every row is -1 and the
+              // arrow keys move a roving tabindex. A 1,000-row table was 1,000
+              // tab stops before this.
+              tr.setAttribute("tabindex", "-1");
               cols.forEach((c, ci) => {
                 const isSelect = (typeof c === "object" && c !== null && c.select);
                 const td = document.createElement("td");
@@ -3907,6 +4185,26 @@ class ContourTable extends ContourBase {
             });
           }
           if (useVirtual) addSpacer(Math.max(0, pageData.length - windowStart - visibleData.length) * rowHeight);
+          // Keep exactly one row in the tab order: the first rendered row when
+          // none is active yet, so the grid is a single tab stop.
+          if (!tbody.querySelector('tr[tabindex="0"]')) {
+            const first = tbody.querySelector("tr[data-row-index]");
+            if (first) first.setAttribute("tabindex", "0");
+          }
+          // Measure a real row so the virtual window uses the rendered height,
+          // not a guess: the old fixed 36px disagreed with the measured 64.1px,
+          // so the spacers and the scroll math were both wrong.
+          if (!this._measuredRowHeight && !this._measuringRow) {
+            const firstRow = tbody.querySelector("tr[data-row-index]");
+            const h = firstRow ? firstRow.getBoundingClientRect().height : 0;
+            if (h > 0) {
+              this._measuredRowHeight = h;
+              if (Math.abs(h - rowHeight) > 1) {
+                this._measuringRow = true;
+                requestAnimationFrame(() => { this._measuringRow = false; this.render(); });
+              }
+            }
+          }
           if (table.parentNode !== wrap) {
             wrap.innerHTML = "";
             wrap.appendChild(table);
@@ -3947,7 +4245,7 @@ class ContourTable extends ContourBase {
             const footer = this.querySelector(".c-table__pagination");
             if (footer) footer.remove();
           }
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else if (!rows && !authored.length) {
         renderEmpty(this, "table");
       }
@@ -4077,16 +4375,33 @@ class ContourTable extends ContourBase {
         if (!tr || !this.contains(tr)) return;
         const idx = Number(tr.dataset.rowIndex);
         if (!Number.isFinite(idx)) return;
-        const rowData = tr.getAttribute("data-row") || "";
+        const rowData = (this._rowData && this._rowData[idx]) || null;
         this.dispatchEvent(new CustomEvent("contour:zoom", { bubbles: true, composed: true, detail: { row: idx, index: idx, data: rowData } }));
       });
       this.addEventListener("keydown", (e) => {
-        if (e.key !== "Enter" && e.key !== " ") return;
         const tr = e.target && e.target.closest ? e.target.closest("tbody tr") : null;
         if (!tr || !this.contains(tr)) return;
-        e.preventDefault();
         const idx = Number(tr.dataset.rowIndex);
         if (!Number.isFinite(idx)) return;
+        // Roving tabindex: arrows move the single tab stop, Home/End jump.
+        if (e.key === "ArrowDown" || e.key === "ArrowUp" || e.key === "Home" || e.key === "End") {
+          const rows = Array.from(this.querySelectorAll("tbody tr[data-row-index]"));
+          const at = rows.indexOf(tr);
+          let next = at;
+          if (e.key === "ArrowDown") next = Math.min(rows.length - 1, at + 1);
+          else if (e.key === "ArrowUp") next = Math.max(0, at - 1);
+          else if (e.key === "Home") next = 0;
+          else if (e.key === "End") next = rows.length - 1;
+          if (next !== at && rows[next]) {
+            e.preventDefault();
+            rows.forEach((r) => r.setAttribute("tabindex", "-1"));
+            rows[next].setAttribute("tabindex", "0");
+            try { rows[next].focus(); } catch (err) {}
+          }
+          return;
+        }
+        if (e.key !== "Enter" && e.key !== " ") return;
+        e.preventDefault();
         this.dispatchEvent(new CustomEvent("contour:activate", { bubbles: true, composed: true, detail: { row: idx } }));
       });
       // Cross-filter contract (R16-16): clear-all resets table sort/page/filter state.
@@ -4120,10 +4435,87 @@ class ContourChart extends ContourBase {
     static get updateMode() { return "keyed"; }
   static get observed() { return ["series", "axis", "color", "empty", "loading", "error", "retry", "skeleton", "zoomable", "data-table", "brush", "brush-min", "brush-max", "brush-start", "brush-end", "note", "bucket-count", "limit-values"]; }
   static get properties() { return { series: { attribute: "series" }, axis: { attribute: "axis" }, color: { attribute: "color" }, zoomable: { attribute: "zoomable", type: Boolean }, brush: { attribute: "brush", type: Boolean }, note: { attribute: "note" }, "bucket-count": { attribute: "bucket-count" }, "limit-values": { attribute: "limit-values" } }; }
+    _axisLabel() {
+      const raw = this.getAttribute("axis");
+      if (!raw) return "";
+      try {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === "object") return parsed.label || parsed.title || parsed.name || "";
+        return String(parsed);
+      } catch (e) { return raw; }
+    }
+    _axisConfig() {
+      const raw = this.getAttribute("axis");
+      if (!raw) return null;
+      try {
+        const parsed = JSON.parse(raw);
+        return (parsed && typeof parsed === "object") ? parsed : null;
+      } catch (e) { return null; }
+    }
+    _valueDomain() {
+      const series = this.getAttribute("series");
+      if (!series) return null;
+      try {
+        const parsed = JSON.parse(series);
+        let min = Infinity, max = -Infinity;
+        (Array.isArray(parsed) ? parsed : []).forEach((s) => {
+          if (s && Array.isArray(s.values)) s.values.forEach((v) => {
+            const n = Number(v);
+            if (Number.isFinite(n)) { if (n < min) min = n; if (n > max) max = n; }
+          });
+        });
+        return Number.isFinite(min) && Number.isFinite(max) ? [min, max] : null;
+      } catch (e) { return null; }
+    }
+    _renderValueAxis() {
+      const ax = this.querySelector(".c-chart__axis");
+      if (!ax) return;
+      const cfg = this._axisConfig();
+      const y = cfg && cfg.y;
+      const domain = (y && y.domain) || this._valueDomain();
+      if (!domain) { ax.textContent = this._axisLabel(); return; }
+      const chart = (typeof window !== "undefined" && window.Contour && window.Contour.chart) || null;
+      const ticks = (y && y.ticks) || (chart && chart.ticks ? chart.ticks(domain[0], domain[1], 5) : [domain[0], domain[1]]);
+      const format = (y && y.format) || ((v) => String(v));
+      ax.textContent = "";
+      ticks.forEach((t) => {
+        const span = document.createElement("span");
+        span.className = "c-chart__tick";
+        span.textContent = typeof format === "function" ? format(t) : String(t);
+        ax.appendChild(span);
+      });
+      this.style.setProperty("--chart-ticks", String(ticks.length));
+    }
+    _renderLegend() {
+      const series = this.getAttribute("series");
+      if (!series) return;
+      try {
+        const parsed = JSON.parse(series);
+        const labelled = (Array.isArray(parsed) ? parsed : []).filter((s) => s && s.label);
+        let legend = this.querySelector(".c-chart__legend");
+        if (!labelled.length) { if (legend) legend.remove(); return; }
+        if (!legend) { legend = document.createElement("div"); legend.className = "c-chart__legend"; this.appendChild(legend); }
+        legend.textContent = "";
+        labelled.forEach((s, i) => {
+          const item = document.createElement("span");
+          item.className = "c-chart__legend-item";
+          const swatch = document.createElement("span");
+          swatch.className = "c-chart__legend-swatch";
+          swatch.style.setProperty("--c", this.getAttribute("color") || `var(--chart-${i + 1})`);
+          item.appendChild(swatch);
+          item.appendChild(document.createTextNode(s.label));
+          legend.appendChild(item);
+        });
+      } catch (e) { /* ignore */ }
+    }
     render() {
       this.classList.add("c-chart");
-      if (!this.hasAttribute("role")) this.setAttribute("role", "img");
-      if (this.getAttribute("axis") && !this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("axis"));
+      // A chart with brush handles has focusable descendants, which role="img"
+      // forbids (an img is a leaf). A named group exposes the marks and keeps
+      // the controls reachable; the data table remains the alternative.
+      if (!this.hasAttribute("role")) this.setAttribute("role", "group");
+      if (!this.hasAttribute("aria-roledescription")) this.setAttribute("aria-roledescription", "chart");
+      if (this.getAttribute("axis") && !this.hasAttribute("aria-label")) this.setAttribute("aria-label", this._axisLabel());
       if (this.hasAttribute("loading")) {
         const plot = this.ensure(".c-chart__plot", () => { const el = document.createElement("div"); el.className = "c-chart__plot"; return el; });
         plot.innerHTML = "";
@@ -4138,7 +4530,7 @@ class ContourChart extends ContourBase {
         const axis = this.getAttribute("axis");
         if (axis) {
           const ax = this.ensure(".c-chart__axis", () => { const el = document.createElement("div"); el.className = "c-chart__axis"; return el; });
-          ax.textContent = axis;
+          ax.textContent = this._axisLabel();
         }
         return;
       }
@@ -4165,7 +4557,7 @@ class ContourChart extends ContourBase {
         const axis = this.getAttribute("axis");
         if (axis) {
           const ax = this.ensure(".c-chart__axis", () => { const el = document.createElement("div"); el.className = "c-chart__axis"; return el; });
-          ax.textContent = axis;
+          ax.textContent = this._axisLabel();
         }
         return;
       }
@@ -4185,18 +4577,24 @@ class ContourChart extends ContourBase {
         const axis = this.getAttribute("axis");
         if (axis) {
           const ax = this.ensure(".c-chart__axis", () => { const el = document.createElement("div"); el.className = "c-chart__axis"; return el; });
-          ax.textContent = axis;
+          ax.textContent = this._axisLabel();
         }
         return;
       }
       const axis = this.getAttribute("axis");
       if (axis) {
         const ax = this.ensure(".c-chart__axis", () => { const el = document.createElement("div"); el.className = "c-chart__axis"; return el; });
-        ax.textContent = axis;
+        ax.textContent = this._axisLabel();
       } else {
         const ax = this.querySelector(".c-chart__axis");
         if (ax) ax.remove();
       }
+      // Value axis: when `axis` is {y:{domain,ticks,format}} (or the series
+      // carries values), print the ticks and publish --chart-ticks.
+      this._renderValueAxis();
+      // Legend from series[].label, so a chart with named series is readable
+      // without the consumer hand-building a legend.
+      this._renderLegend();
 const series = this.getAttribute("series");
        if (series) {
          let parsed = null;
@@ -4356,7 +4754,7 @@ const series = this.getAttribute("series");
              });
              plot.appendChild(svg);
            }
-          } catch (e) { /* keep existing */ }
+          } catch (e) { warnBadJson(this, "attribute", e); }
           // Styled tooltip element (positioned via --chart-tip-*).
           const tip = this.ensure(".c-chart__tooltip", () => { const el = document.createElement("div"); el.className = "c-chart__tooltip"; el.setAttribute("role", "tooltip"); el.setAttribute("hidden", ""); return el; });
           tip.setAttribute("hidden", "");
@@ -4372,14 +4770,22 @@ const series = this.getAttribute("series");
               this.appendChild(table);
             }
             table.innerHTML = "";
+            // A caption names the table: a reader who lands on it hears what it
+            // holds before the first cell, not "table, 5 rows, 3 columns".
+            const title = this.getAttribute("title") || this.getAttribute("aria-label") || "Chart data";
+            const cap = document.createElement("caption");
+            cap.textContent = title;
+            table.appendChild(cap);
             const thead = document.createElement("thead");
             const hr = document.createElement("tr");
             const h = document.createElement("th");
+            h.setAttribute("scope", "col");
             h.textContent = "Series";
             hr.appendChild(h);
             const maxLen = parsed.reduce((m, s) => Math.max(m, Array.isArray(s.values) ? s.values.length : (Array.isArray(s) ? s.length : 0)), 0);
             for (let i = 0; i < maxLen; i++) {
               const th = document.createElement("th");
+              th.setAttribute("scope", "col");
               th.textContent = "Value " + (i + 1);
               hr.appendChild(th);
             }
@@ -4389,7 +4795,8 @@ const series = this.getAttribute("series");
             parsed.forEach((s, si) => {
               const vals = Array.isArray(s.values) ? s.values : (Array.isArray(s) ? s : []);
               const tr = document.createElement("tr");
-              const td0 = document.createElement("td");
+              const td0 = document.createElement("th");
+              td0.setAttribute("scope", "row");
               td0.textContent = s.label || ("Series " + (si + 1));
               tr.appendChild(td0);
               for (let i = 0; i < maxLen; i++) {
@@ -4410,7 +4817,8 @@ const series = this.getAttribute("series");
               brush.setAttribute("max", this.getAttribute("brush-max") || "100");
               brush.setAttribute("start", this.getAttribute("brush-start") || this.getAttribute("brush-min") || "0");
               brush.setAttribute("end", this.getAttribute("brush-end") || this.getAttribute("brush-max") || "100");
-              if (brush.previousElementSibling !== plot) this.appendChild(brush);
+              const plotEl = this.querySelector(".c-chart__plot");
+              if (brush.previousElementSibling !== plotEl) this.insertBefore(brush, plotEl ? plotEl.nextSibling : null);
             } else {
               const brush = this.querySelector("contour-brush");
               if (brush) brush.remove();
@@ -4448,19 +4856,26 @@ const series = this.getAttribute("series");
       if (this._wiredChart) return;
       this._wiredChart = true;
       // Series toggle responding to legend (F-10): hide/show series when a
-      // legend item is toggled.
-      this.addEventListener("contour:legend-toggle", (e) => {
-        const key = e && e.detail && (e.detail.key || e.detail.label);
+      // legend item is toggled. The legend may be a sibling of the chart, so
+      // listen on the shared parent (which catches both a child and a sibling
+      // legend) and match by key, data-key, or the item's index.
+      const legendHost = this.parentElement || document;
+      const onLegendToggle = (e) => {
+        const key = e && e.detail && (e.detail.key != null ? e.detail.key : e.detail.label);
+        const index = e && e.detail && e.detail.index;
         const pressed = e && e.detail && e.detail.pressed;
-        if (key == null) return;
+        if (key == null && index == null) return;
         const nodes = this.querySelectorAll("[data-series]");
         nodes.forEach((n) => {
           const s = n.getAttribute("data-series");
-          if (String(s) === String(key) || n.getAttribute("data-key") === String(key)) {
-            n.style.display = pressed === false ? "none" : "";
-          }
+          const match = String(s) === String(key)
+            || n.getAttribute("data-key") === String(key)
+            || (index != null && String(s) === String(index + 1));
+          if (match) n.style.display = pressed === false ? "none" : "";
         });
-      });
+      };
+      legendHost.addEventListener("contour:legend-toggle", onLegendToggle);
+      onDispose(this, () => legendHost.removeEventListener("contour:legend-toggle", onLegendToggle));
       this.addEventListener("contour:brush-end", (e) => {
         if (!this.hasAttribute("brush") || !e.target || !e.target.matches("contour-brush")) return;
         this.dispatchEvent(new CustomEvent("contour:select", {
@@ -5521,13 +5936,13 @@ class ContourDonut extends ContourBase {
       const values = items.map((it) => (typeof it === "object" ? (it.value || 0) : Number(it) || 0));
       const total = values.reduce((a, b) => a + b, 0) || 1;
       const brownoutLevel = this.brownoutLevel();
+      const layerColor = this.getAttribute("color");
       const shedRing = this.shed("ring", 3);
       if (!shedRing) {
         const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         svg.setAttribute("class", "c-donut__ring");
         svg.setAttribute("viewBox", "0 0 32 32");
         let offset = 0;
-        const layerColor = this.getAttribute("color");
         items.forEach((it, i) => {
           const v = values[i];
           const pct = v / total;
@@ -5985,7 +6400,7 @@ class ContourInstrument extends ContourBase {
             item.appendChild(val);
             this.appendChild(item);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else {
         renderEmpty(this, "instrument");
       }
@@ -6464,7 +6879,7 @@ class ContourLegend extends ContourBase {
              }
             list.appendChild(item);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else {
         const list = this.querySelector(".c-legend__items");
         if (list) list.remove();
@@ -6644,8 +7059,10 @@ class ContourLegend extends ContourBase {
         if (!btn || !this.contains(btn)) return;
         const pressed = btn.getAttribute("aria-pressed") !== "true";
         btn.setAttribute("aria-pressed", String(pressed));
+        const items = Array.from(this.querySelectorAll(".c-legend__item"));
+        const index = items.indexOf(btn);
         this.dispatchEvent(new CustomEvent("contour:legend-toggle", {
-          detail: { label: btn.textContent.trim(), key: btn.dataset.key || btn.textContent.trim(), pressed },
+          detail: { label: btn.textContent.trim(), key: btn.dataset.key || btn.textContent.trim(), pressed, index },
           bubbles: true,
           composed: true,
         }));
@@ -6814,25 +7231,27 @@ class ContourTimeline extends ContourBase {
     static get properties() { return { items: { attribute: "items" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-timeline");
-      this.setAttribute("role", "list");
-      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Timeline");
+      // Native list semantics: an <ol> with <li> items, not a role="list" on a
+      // <div> recreating the platform's list numbering and association.
+      let list = this.querySelector(".c-timeline__list");
+      if (!list) { list = document.createElement("ol"); list.className = "c-timeline__list"; list.setAttribute("aria-label", this.getAttribute("aria-label") || "Timeline"); this.appendChild(list); }
       wireStates(this);
       loadRemote(this, "items");
       if (renderStates(this, "timeline")) return;
       const authored = Array.from(this.children).filter((n) => n.classList && n.classList.contains("c-timeline__item"));
       const items = remoteData(this, "items");
       if (items && !authored.length) {
-        Array.from(this.querySelectorAll(".c-timeline__item")).forEach((n) => n.remove());
+        Array.from(list.querySelectorAll(".c-timeline__item")).forEach((n) => n.remove());
         try {
           const parsed = JSON.parse(items);
           parsed.forEach((it) => {
-            const item = document.createElement("div");
+            const item = document.createElement("li");
             item.className = "c-timeline__item";
-            item.setAttribute("role", "listitem");
             item.setAttribute("tabindex", "-1");
             if (it.time) {
               const t = document.createElement("time");
               t.className = "c-timeline__time";
+              t.setAttribute("datetime", String(it.time));
               t.textContent = it.time;
               item.appendChild(t);
             }
@@ -6848,9 +7267,9 @@ class ContourTimeline extends ContourBase {
               tx.textContent = it.text;
               item.appendChild(tx);
             }
-            this.appendChild(item);
+            list.appendChild(item);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else if (!authored.length) {
         renderEmpty(this, "timeline");
       }
@@ -7210,50 +7629,63 @@ class ContourChartGrid extends ContourBase {
   define("contour-chart-grid", ContourChartGrid);
 /**
  * Contour Plot: web component wrapper.
- * Attributes: `axis`, `label`.
+ * Attributes: `values` (row-major 2D field), `levels`, `label`.
  */
 class ContourContourPlot extends ContourBase {
-    static get observed() { return ["axis", "label"]; }
-    static get properties() { return { axis: { attribute: "axis" }, label: { attribute: "label" } }; }
+    static get observed() { return ["values", "levels", "label"]; }
+    static get properties() { return { values: { attribute: "values" }, levels: { attribute: "levels" }, label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-contour-plot");
       this.setAttribute("role", "img");
-      this.setAttribute("aria-label", "Contour plot");
-      const axis = this.getAttribute("axis");
-      if (axis) {
-        let svg = this.querySelector("svg");
-        if (!svg) {
-          svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-          svg.setAttribute("viewBox", "0 0 100 100");
-          svg.setAttribute("aria-hidden", "true");
-          this.appendChild(svg);
-        }
-        let ax = svg.querySelector(".c-contour-plot__axis");
-        if (!ax) {
-          ax = document.createElementNS("http://www.w3.org/2000/svg", "line");
-          ax.setAttribute("class", "c-contour-plot__axis");
-          svg.appendChild(ax);
-        }
-      }
       const label = this.getAttribute("label");
-      if (label) {
-        let svg = this.querySelector("svg");
-        if (!svg) {
-          svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-          svg.setAttribute("viewBox", "0 0 100 100");
-          svg.setAttribute("aria-hidden", "true");
-          this.appendChild(svg);
+      this.setAttribute("aria-label", label || "Contour plot");
+      const valuesAttr = this.getAttribute("values");
+      const levelsAttr = this.getAttribute("levels");
+      let grid = null;
+      if (valuesAttr) { try { grid = JSON.parse(valuesAttr); } catch (e) { grid = null; } }
+      let levels = [0.3, 0.5, 0.7];
+      if (levelsAttr) { try { const l = JSON.parse(levelsAttr); if (Array.isArray(l) && l.length) levels = l; } catch (e) { /* keep defaults */ } }
+
+      let svg = this.querySelector("svg");
+      if (!svg) {
+        svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("class", "c-contour-plot__svg");
+        svg.setAttribute("aria-hidden", "true");
+        this.appendChild(svg);
+      }
+      // Clear previous contours so a re-render cannot stack a second set.
+      Array.from(svg.querySelectorAll(".c-contour-plot__contour")).forEach((n) => n.remove());
+
+      if (Array.isArray(grid) && grid.length > 1 && Array.isArray(grid[0]) && grid[0].length > 1) {
+        const draw = () => {
+          const w = this.clientWidth || 300;
+          const h = this.clientHeight || 300;
+          svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+          svg.querySelectorAll(".c-contour-plot__contour").forEach((n) => n.remove());
+          contourPaths(grid, levels, w, h).forEach((line, li) => {
+            if (!line.d) return;
+            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            path.setAttribute("d", line.d);
+            path.setAttribute("class", "c-contour-plot__contour" + (li > 0 ? " c-contour-plot__contour--level-" + (li + 1) : ""));
+            svg.appendChild(path);
+          });
+        };
+        draw();
+        // Re-render on resize so pixel-space paths track the container.
+        if (typeof ResizeObserver !== "undefined" && !this._contourResize) {
+          this._contourResize = new ResizeObserver(() => draw());
+          this._contourResize.observe(this);
+          onDispose(this, () => { this._contourResize.disconnect(); this._contourResize = null; });
         }
-        let lbl = svg.querySelector(".c-contour-plot__label");
-        if (!lbl) {
-          lbl = document.createElementNS("http://www.w3.org/2000/svg", "text");
-          lbl.setAttribute("class", "c-contour-plot__label");
-          svg.appendChild(lbl);
-        }
-        lbl.textContent = label;
+      } else if (!Array.isArray(grid)) {
+        const empty = document.createElement("div");
+        empty.className = "c-contour-plot__empty";
+        empty.textContent = this.getAttribute("empty") || "No field";
+        this.appendChild(empty);
       }
     }
   }
+define("contour-contour-plot", ContourContourPlot);
 /**
  * Error Boundary: web component wrapper.
  * Attributes: `fallback`, `error`.
@@ -7350,4 +7782,73 @@ class ContourDataExport extends ContourBase {
     }
   }
   define("contour-data-export", ContourDataExport);
+
+// Query builder: a list of field/operator/value rows with an Add rule button.
+// The component renders the rows from a `query` JSON attribute and emits
+// contour:change with the serialised query.
+class ContourQueryBuilder extends ContourBase {
+  static get observed() { return ["query", "fields"]; }
+  static get properties() { return { query: { attribute: "query" }, fields: { attribute: "fields" } }; }
+  render() {
+    this.classList.add("c-query-builder");
+    const fields = this.getAttribute("fields");
+    let fieldList = [];
+    if (fields) { try { fieldList = JSON.parse(fields); } catch (e) { fieldList = []; } }
+    const query = this.getAttribute("query");
+    let rules = [];
+    if (query) { try { rules = JSON.parse(query); } catch (e) { rules = []; } }
+    const list = this.ensure(".c-query-builder__list", () => { const el = document.createElement("div"); el.className = "c-query-builder__list"; return el; });
+    Array.from(list.querySelectorAll(".c-query-builder__row")).forEach((n) => n.remove());
+    rules.forEach((rule, i) => {
+      const row = document.createElement("div");
+      row.className = "c-query-builder__row";
+      const field = document.createElement("select");
+      field.className = "c-query-builder__field";
+      field.setAttribute("aria-label", "Field " + (i + 1));
+      fieldList.forEach((f) => {
+        const opt = document.createElement("option");
+        opt.value = typeof f === "string" ? f : (f.value || f.label || "");
+        opt.textContent = typeof f === "string" ? f : (f.label || f.value || "");
+        if (opt.value === rule.field) opt.selected = true;
+        field.appendChild(opt);
+      });
+      const op = document.createElement("select");
+      op.className = "c-query-builder__op";
+      op.setAttribute("aria-label", "Operator " + (i + 1));
+      ["=", "!=", ">", "<", "contains"].forEach((o) => {
+        const opt = document.createElement("option");
+        opt.value = o; opt.textContent = o;
+        if (o === rule.op) opt.selected = true;
+        op.appendChild(opt);
+      });
+      const val = document.createElement("input");
+      val.className = "c-query-builder__value";
+      val.type = "text";
+      val.value = rule.value || "";
+      val.setAttribute("aria-label", "Value " + (i + 1));
+      row.appendChild(field); row.appendChild(op); row.appendChild(val);
+      list.appendChild(row);
+    });
+    const add = this.ensure(".c-query-builder__add", () => { const b = document.createElement("button"); b.type = "button"; b.className = "c-btn c-btn--sm c-query-builder__add"; b.textContent = "Add rule"; return b; });
+    if (add.parentNode !== this) this.appendChild(add);
+  }
+  enhance() {
+    if (this._wiredQueryBuilder) return;
+    this._wiredQueryBuilder = true;
+    this.addEventListener("click", (e) => {
+      const t = e.target;
+      if (t && t.closest && t.closest(".c-query-builder__add")) {
+        const rows = Array.from(this.querySelectorAll(".c-query-builder__row")).map((r) => ({
+          field: r.querySelector(".c-query-builder__field")?.value || "",
+          op: r.querySelector(".c-query-builder__op")?.value || "=",
+          value: r.querySelector(".c-query-builder__value")?.value || "",
+        }));
+        rows.push({ field: "", op: "=", value: "" });
+        this.setAttribute("query", JSON.stringify(rows));
+        this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { query: rows } }));
+      }
+    });
+  }
+}
+define("contour-query-builder", ContourQueryBuilder);
 

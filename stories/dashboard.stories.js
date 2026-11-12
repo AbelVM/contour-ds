@@ -21,9 +21,8 @@ export const Default = {
     kpi.setAttribute("label", "Active users");
     kpi.setAttribute("value", "1,234");
     const chart = document.createElement("contour-chart");
-    chart.setAttribute("type", "bar");
     chart.setAttribute("axis", "Weekly activity");
-    chart.setAttribute("data", JSON.stringify({ labels: ["Mon", "Tue"], values: [10, 20] }));
+    chart.setAttribute("series", JSON.stringify([{ label: "Sessions", type: "bar", values: [10, 20] }]));
     const tableWrap = document.createElement("div");
     tableWrap.className = "c-table-wrap";
     const table = document.createElement("contour-table");
@@ -39,6 +38,8 @@ export const Default = {
     await expect(canvasElement.querySelector("contour-chart")).toBeTruthy();
     await expect(canvasElement.querySelector("contour-table")).toBeTruthy();
     await expect(canvasElement.textContent).toContain("Active users");
+    await expect(canvasElement.querySelector("contour-chart .c-chart__empty")).toBeNull();
+    await expect(canvasElement.querySelectorAll("contour-chart .c-chart__bar").length).toBe(2);
   },
 };
 

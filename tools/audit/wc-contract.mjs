@@ -285,6 +285,12 @@ const RENDER_CONTRACT = [
   ["contour-tree", { items: '[{"label":"Root","children":[{"label":"Child"}]}]' }, ".c-tree__toggle"],
   ["contour-segmented", {}, ".c-segmented"],
   ["contour-heatmap", { cells: "6", legend: "" }, ".c-heatmap__cell"],
+  // The chart's data attribute is `series`, not `data`. A chart fed `data=`
+  // renders its empty branch and still mounts, so the render-all arm passed
+  // while every chart in the guide's landing section painted "No data". The
+  // selector is the mark, not the host: a chart that renders no bar has not
+  // rendered, whatever its host looks like.
+  ["contour-chart", { series: '[{"label":"A","type":"bar","values":[1,2,3]}]', axis: "Value" }, ".c-chart__bar"],
   ["contour-compare", { yes: "Yes", no: "No", text: "Compare" }, ".c-compare__yes"],
   ["contour-timeline", { items: '[{"time":"1","title":"T","text":"x"}]' }, ".c-timeline__item"],
   ["contour-kpi", { value: "42", label: "Rows" }, ".c-kpi__value"],

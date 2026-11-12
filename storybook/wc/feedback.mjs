@@ -1,4 +1,4 @@
-import { ContourBase, define, onDispose, sanitizeHtml, headingTag } from './core.mjs';
+import { ContourBase, define, onDispose, sanitizeHtml, headingTag , warnBadJson, contourId } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { wireRemovable, modalContain } from './behaviours.mjs';
 class ContourDialog extends ContourBase {
@@ -23,11 +23,11 @@ class ContourDialog extends ContourBase {
           closeBtn.className = "c-btn c-btn--icon c-btn--ghost c-dialog__close";
           closeBtn.setAttribute("type", "button");
           closeBtn.setAttribute("aria-label", "Close");
-          closeBtn.innerHTML = '<svg aria-hidden="true"><use href="#i-close" /></svg>';
+          closeBtn.innerHTML = '<svg aria-hidden="true"><use href="#i-x" /></svg>';
           head.appendChild(closeBtn);
         }
         const h = head.querySelector(".c-dialog__title");
-        if (h) { h.textContent = title; if (!h.id) h.id = "contour-dialog-title-" + (this._dialogTitleId = (this._dialogTitleId || 0) + 1); this.setAttribute("aria-labelledby", h.id); }
+        if (h) { h.textContent = title; if (!h.id) h.id = contourId("contour-dialog-title"); this.setAttribute("aria-labelledby", h.id); }
       }
       if (head && head.parentNode !== this) this.prepend(head);
       // Wrap authored content in a body so it picks up the dialog's padding.
@@ -442,7 +442,7 @@ class ContourFaq extends ContourBase {
             item.appendChild(a);
             this.appendChild(item);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
        } else if (!items) {
          if (!question && !answer) {
            renderEmpty(this, "faq");
@@ -492,7 +492,7 @@ class ContourAccordion extends ContourBase {
             details.appendChild(body);
             this.appendChild(details);
           });
-         } catch (e) { /* keep existing */ }
+         } catch (e) { warnBadJson(this, "attribute", e); }
        } else if (!items && !authored.length) {
          renderEmpty(this, "accordion");
        }
@@ -572,7 +572,7 @@ class ContourDrawer extends ContourBase {
           closeBtn.className = "c-btn c-btn--icon c-btn--ghost c-drawer__close";
           closeBtn.setAttribute("type", "button");
           closeBtn.setAttribute("aria-label", "Close");
-          closeBtn.innerHTML = '<svg aria-hidden="true"><use href="#i-close" /></svg>';
+          closeBtn.innerHTML = '<svg aria-hidden="true"><use href="#i-x" /></svg>';
           head.appendChild(closeBtn);
         }
         const t = head.querySelector(".c-drawer__title");
@@ -670,7 +670,7 @@ class ContourSheet extends ContourBase {
           closeBtn.className = "c-btn c-btn--icon c-btn--ghost c-sheet__close";
           closeBtn.setAttribute("type", "button");
           closeBtn.setAttribute("aria-label", "Close");
-          closeBtn.innerHTML = '<svg aria-hidden="true"><use href="#i-close" /></svg>';
+          closeBtn.innerHTML = '<svg aria-hidden="true"><use href="#i-x" /></svg>';
           head.appendChild(closeBtn);
         }
         const t = head.querySelector(".c-sheet__title");

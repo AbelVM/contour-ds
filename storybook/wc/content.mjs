@@ -1,4 +1,4 @@
-import { ContourBase, define, sanitizeHtml, headingTag, formatValue, navKey, isRtl } from './core.mjs';
+import { ContourBase, define, sanitizeHtml, headingTag, formatValue, navKey, isRtl, safeHref , warnBadJson } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { wireCopy } from './behaviours.mjs';
 
@@ -121,8 +121,11 @@ class ContourSteps extends ContourBase {
     static get properties() { return { steps: { attribute: "steps" }, current: { attribute: "current", type: Number }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-steps");
-      this.setAttribute("role", "list");
-      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Steps");
+      // Native list semantics: an <ol> carries the numbering and the <li> items
+      // are list items, rather than a role="list" on a <div> with role="listitem"
+      // children recreating what the platform already provides.
+      let list = this.querySelector(".c-steps__list");
+      if (!list) { list = document.createElement("ol"); list.className = "c-steps__list"; list.setAttribute("aria-label", this.getAttribute("aria-label") || "Steps"); this.appendChild(list); }
       wireStates(this);
       loadRemote(this, "steps");
       if (renderStates(this, "steps")) return;
@@ -130,13 +133,12 @@ class ContourSteps extends ContourBase {
       const authored = Array.from(this.children).filter((n) => n.classList && n.classList.contains("c-steps__item"));
       if (steps && !authored.length) {
         // Drop previously generated items so a re-render cannot stack a second set.
-        Array.from(this.querySelectorAll(".c-steps__item")).forEach((n) => n.remove());
+        Array.from(list.querySelectorAll(".c-steps__item")).forEach((n) => n.remove());
         try {
           const parsed = JSON.parse(steps);
           parsed.forEach((st, i) => {
-            const item = document.createElement("div");
+            const item = document.createElement("li");
             item.className = "c-steps__item";
-            item.setAttribute("role", "listitem");
             item.tabIndex = -1;
             const title = typeof st === "string" ? st : st.title;
             const body = typeof st === "string" ? "" : st.body;
@@ -152,9 +154,9 @@ class ContourSteps extends ContourBase {
               p.textContent = body;
               item.appendChild(p);
             }
-            this.appendChild(item);
+            list.appendChild(item);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else if (!steps && !authored.length) {
         renderEmpty(this, "steps");
       }
@@ -211,7 +213,7 @@ class ContourLink extends ContourBase {
       if (prevLink) prevLink.remove();
       if (href && label) {
         const a = document.createElement("a");
-        a.href = href;
+        a.href = safeHref(href);
         a.textContent = label;
         const ariaLabel = this.getAttribute("aria-label");
         if (ariaLabel) a.setAttribute("aria-label", ariaLabel);
@@ -457,8 +459,8 @@ class ContourTestimonialFull extends ContourBase {
       const name = this.getAttribute("name");
       const role = this.getAttribute("role");
       if (name) {
-        const by = this.ensure(".c-testimonial__byline", () => { const el = document.createElement("div"); el.className = "c-testimonial__byline"; return el; });
-        const n = by.querySelector(".c-testimonial__name") || (() => { const el = document.createElement("span"); el.className = "c-testimonial__name"; by.appendChild(el); return el; })();
+        const by = this.ensure(".c-testimonial__byline", () => { const el = document.createElement("figcaption"); el.className = "c-testimonial__byline"; return el; });
+        const n = by.querySelector(".c-testimonial__name") || (() => { const el = document.createElement("cite"); el.className = "c-testimonial__name"; by.appendChild(el); return el; })();
         n.className = "c-testimonial__name";
         n.textContent = name;
         if (role) {
@@ -494,9 +496,15 @@ class ContourShowcaseFull extends ContourBase {
       const text = this.getAttribute("text");
       const media = this.getAttribute("media");
       if (media) {
-        const m = this.ensure(".c-showcase__media", () => { const el = document.createElement("div"); el.className = "c-showcase__media"; el.setAttribute("role", "img"); return el; });
+        // A figure with a figcaption is the native shape for an illustration
+        // with a caption; the old div[role=img] hid the caption from the reader.
+        const m = this.ensure(".c-showcase__media", () => { const el = document.createElement("figure"); el.className = "c-showcase__media"; return el; });
         m.innerHTML = sanitizeHtml(media);
-        if (title) m.setAttribute("aria-label", title);
+        if (title) {
+          let cap = m.querySelector(".c-showcase__caption");
+          if (!cap) { cap = document.createElement("figcaption"); cap.className = "c-showcase__caption"; m.appendChild(cap); }
+          cap.textContent = title;
+        }
       } else {
         const m = this.querySelector(".c-showcase__media");
         if (m) m.remove();
@@ -527,7 +535,7 @@ class ContourShowcaseFull extends ContourBase {
             li.textContent = typeof it === "string" ? it : it.label;
             l.appendChild(li);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else if (!items && !authored.length && !title && !text && !media) {
         renderEmpty(this, "showcase");
       } else if (!items && ul) {
@@ -651,7 +659,7 @@ class ContourLandingFeaturesFull extends ContourBase {
             }
             this.appendChild(item);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else if (!items && !authored.length) {
         this.querySelectorAll(".c-landing-features__item").forEach((el) => el.remove());
         renderEmpty(this, "landing-features");
@@ -666,7 +674,7 @@ class ContourLandingHeroFull extends ContourBase {
       this.classList.add("c-landing-hero");
       const title = this.getAttribute("title");
       if (title) {
-        const t = this.ensure(".c-landing-hero__title", () => { const el = document.createElement(headingTag(this, "h1")); el.className = "c-landing-hero__title"; return el; });
+        const t = this.ensure(".c-landing-hero__title", () => { const el = document.createElement(headingTag(this, "h2")); el.className = "c-landing-hero__title"; return el; });
         t.textContent = title;
       }
       const text = this.getAttribute("text");
@@ -828,7 +836,7 @@ class ContourCta extends ContourBase {
             wrap.appendChild(btn);
           });
           this.appendChild(wrap);
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       }
     }
   }
@@ -947,7 +955,7 @@ class ContourAnchor extends ContourBase {
       if (prevAnchor) prevAnchor.remove();
       if (href && label) {
         const a = document.createElement("a");
-        a.href = href;
+        a.href = safeHref(href);
         a.textContent = label;
         const ariaLabel = this.getAttribute("aria-label");
         if (ariaLabel) a.setAttribute("aria-label", ariaLabel);

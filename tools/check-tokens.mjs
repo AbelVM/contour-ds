@@ -81,6 +81,10 @@ const HOOK_LEDGER = new Set([
   "--dot-color", "--live-color", "--live-text", "--view-transition-name",
   "--comparison-pos",
   "--color-surface-0",
+  // Host-set layout inputs (R18-34): contour-dashboard-grid writes these from
+  // its `cols` / `gap` attributes, so they are inputs the author sets on the
+  // element, not tokens the system declares.
+  "--dashboard-grid-cols", "--dashboard-grid-gap",
 ]);
 
 const escapeRe = (s) => s.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");

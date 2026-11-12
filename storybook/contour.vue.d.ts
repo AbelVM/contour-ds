@@ -1,4 +1,4 @@
-import type { ContourElement, ContourAccordionElement, ContourActivityElement, ContourActivityFeedElement, ContourAnimationControlsElement, ContourAnnotationElement, ContourAvatarElement, ContourAxisElement, ContourBivariateElement, ContourBreadcrumbElement, ContourBrownoutElement, ContourBrushElement, ContourBtnElement, ContourCalendarElement, ContourCatchmentElement, ContourCategoryElement, ContourChangelogElement, ContourChartElement, ContourChartGridElement, ContourCheckElement, ContourCodeElement, ContourCodeTabsElement, ContourColorPickerElement, ContourComboboxElement, ContourCommandPaletteElement, ContourCompareElement, ContourCoordinateElement, ContourDashFreshnessElement, ContourDashKpiRowElement, ContourDataExportElement, ContourDataGridElement, ContourDatePickerElement, ContourDateRangeElement, ContourDeltaElement, ContourDividerElement, ContourDocsNavElement, ContourDonutElement, ContourEmptyElement, ContourErrorBoundaryElement, ContourFaqElement, ContourFeatureInspectorElement, ContourFileUploadElement, ContourFilterBarElement, ContourFlowMapElement, ContourFormElement, ContourGaugeElement, ContourGeocoderElement, ContourHeatmapElement, ContourHexbinElement, ContourHoverCardElement, ContourInputGroupElement, ContourInstrumentElement, ContourIsochroneElement, ContourKpiElement, ContourLayerPanelElement, ContourLayerSwitchElement, ContourLegendElement, ContourMapPopupElement, ContourMeasureElement, ContourMenuElement, ContourMeterElement, ContourMinimapElement, ContourNumberFieldElement, ContourPaginationElement, ContourPaletteEditorElement, ContourPanelElement, ContourPivotElement, ContourPopoverElement, ContourProgressElement, ContourProvenanceElement, ContourPullToRefreshElement, ContourRadioElement, ContourRadioListElement, ContourRangeElement, ContourRatingElement, ContourReadoutElement, ContourResizeObserverElement, ContourResponsiveContentElement, ContourSavedViewElement, ContourScaleBarElement, ContourSegmentedElement, ContourSelectElement, ContourSideSheetElement, ContourSidebarElement, ContourSkeletonElement, ContourSparklineElement, ContourSpatialFilterElement, ContourSplitButtonElement, ContourSplitMapElement, ContourSplitViewElement, ContourStackedBarElement, ContourStatElement, ContourStepsElement, ContourStreamingChartElement, ContourStylePanelElement, ContourSurveyElement, ContourSwatchElement, ContourSwitchElement, ContourTableElement, ContourTabsElement, ContourTagsInputElement, ContourTextareaElement, ContourThresholdElement, ContourTimePickerElement, ContourTimeSeriesElement, ContourTimeSliderElement, ContourTimelineElement, ContourToastElement, ContourToolbarElement, ContourTooltipElement, ContourTreeElement, ContourTreeGridElement, ContourVersionElement, ContourVirtualListElement, ContourWidgetStateElement } from "./contour";
+import type { ContourElement, ContourAccordionElement, ContourActivityElement, ContourActivityFeedElement, ContourAnimationControlsElement, ContourAnnotationElement, ContourAvatarElement, ContourAxisElement, ContourBivariateElement, ContourBreadcrumbElement, ContourBrownoutElement, ContourBrushElement, ContourBtnElement, ContourCalendarElement, ContourCatchmentElement, ContourCategoryElement, ContourChangelogElement, ContourChartElement, ContourChartGridElement, ContourCheckElement, ContourCodeElement, ContourCodeTabsElement, ContourColorPickerElement, ContourComboboxElement, ContourCommandPaletteElement, ContourCompareElement, ContourContextMenuElement, ContourContourPlotElement, ContourCoordinateElement, ContourDashFreshnessElement, ContourDashKpiRowElement, ContourDashboardGridElement, ContourDataExportElement, ContourDataGridElement, ContourDatePickerElement, ContourDateRangeElement, ContourDeltaElement, ContourDividerElement, ContourDocsNavElement, ContourDonutElement, ContourDropIndicatorElement, ContourEmptyElement, ContourErrorBoundaryElement, ContourFaqElement, ContourFeatureInspectorElement, ContourFieldElement, ContourFieldsetElement, ContourFileUploadElement, ContourFilterBarElement, ContourFlowMapElement, ContourFormElement, ContourGaugeElement, ContourGeocoderElement, ContourHeatmapElement, ContourHexbinElement, ContourHoverCardElement, ContourInputGroupElement, ContourInstrumentElement, ContourIsochroneElement, ContourKpiElement, ContourLayerPanelElement, ContourLayerSwitchElement, ContourLegendElement, ContourMapPopupElement, ContourMeasureElement, ContourMenuElement, ContourMeterElement, ContourMinimapElement, ContourNumberFieldElement, ContourPaginationElement, ContourPaletteEditorElement, ContourPanelElement, ContourPivotElement, ContourPopoverElement, ContourProgressElement, ContourProvenanceElement, ContourPullToRefreshElement, ContourQueryBuilderElement, ContourRadioElement, ContourRadioListElement, ContourRangeElement, ContourRatingElement, ContourReadoutElement, ContourResizeObserverElement, ContourResponsiveContentElement, ContourSavedViewElement, ContourScaleBarElement, ContourSegmentedElement, ContourSelectElement, ContourSideSheetElement, ContourSidebarElement, ContourSkeletonElement, ContourSparklineElement, ContourSpatialFilterElement, ContourSplitButtonElement, ContourSplitMapElement, ContourSplitViewElement, ContourStackedBarElement, ContourStatElement, ContourStepsElement, ContourStreamingChartElement, ContourStylePanelElement, ContourSurveyElement, ContourSwatchElement, ContourSwitchElement, ContourTableElement, ContourTabsElement, ContourTagsInputElement, ContourTextareaElement, ContourThresholdElement, ContourTimePickerElement, ContourTimeSeriesElement, ContourTimeSliderElement, ContourTimelineElement, ContourToastElement, ContourToolbarElement, ContourTooltipElement, ContourTreeElement, ContourTreeGridElement, ContourVersionElement, ContourVirtualListElement, ContourWidgetStateElement } from "./contour";
 
 declare module 'vue' {
   export interface GlobalComponents {
@@ -9,6 +9,7 @@ declare module 'vue' {
     "contour-affordance": ContourElement;
     "contour-affordances": ContourElement;
     "contour-alert": ContourElement;
+    "contour-analysis-stack": ContourElement;
     "contour-anchor": ContourElement;
     "contour-animation-controls": ContourAnimationControlsElement;
     "contour-annotation": ContourAnnotationElement;
@@ -39,6 +40,7 @@ declare module 'vue' {
     "contour-chart": ContourChartElement;
     "contour-chart-grid": ContourChartGridElement;
     "contour-check": ContourCheckElement;
+    "contour-checkbox-group": ContourElement;
     "contour-chip": ContourElement;
     "contour-cluster": ContourElement;
     "contour-code": ContourCodeElement;
@@ -51,13 +53,15 @@ declare module 'vue' {
     "contour-comparison": ContourElement;
     "contour-compass": ContourElement;
     "contour-container": ContourElement;
-    "contour-context-menu": ContourElement;
+    "contour-context-menu": ContourContextMenuElement;
+    "contour-contour-plot": ContourContourPlotElement;
     "contour-coordinate": ContourCoordinateElement;
     "contour-cta": ContourElement;
     "contour-dash-freshness": ContourDashFreshnessElement;
     "contour-dash-kpi-row": ContourDashKpiRowElement;
     "contour-dash-shell": ContourElement;
     "contour-dash-toolbar": ContourElement;
+    "contour-dashboard-grid": ContourDashboardGridElement;
     "contour-data-export": ContourDataExportElement;
     "contour-data-grid": ContourDataGridElement;
     "contour-data-table": ContourElement;
@@ -65,6 +69,7 @@ declare module 'vue' {
     "contour-date-picker": ContourDatePickerElement;
     "contour-date-range": ContourDateRangeElement;
     "contour-delta": ContourDeltaElement;
+    "contour-density-toggle": ContourElement;
     "contour-destructive-hint": ContourElement;
     "contour-dialog": ContourElement;
     "contour-diff": ContourElement;
@@ -78,7 +83,7 @@ declare module 'vue' {
     "contour-drag-handle": ContourElement;
     "contour-draggable": ContourElement;
     "contour-drawer": ContourElement;
-    "contour-drop-indicator": ContourElement;
+    "contour-drop-indicator": ContourDropIndicatorElement;
     "contour-drop-zone": ContourElement;
     "contour-dropdown": ContourElement;
     "contour-elevation": ContourElement;
@@ -89,8 +94,9 @@ declare module 'vue' {
     "contour-faq": ContourFaqElement;
     "contour-feature": ContourElement;
     "contour-feature-inspector": ContourFeatureInspectorElement;
-    "contour-field": ContourElement;
+    "contour-field": ContourFieldElement;
     "contour-field-group": ContourElement;
+    "contour-fieldset": ContourFieldsetElement;
     "contour-file-tree": ContourElement;
     "contour-file-upload": ContourFileUploadElement;
     "contour-filter-bar": ContourFilterBarElement;
@@ -105,6 +111,7 @@ declare module 'vue' {
     "contour-heatmap": ContourHeatmapElement;
     "contour-hexbin": ContourHexbinElement;
     "contour-hover-card": ContourHoverCardElement;
+    "contour-icon": ContourElement;
     "contour-icon-badge": ContourElement;
     "contour-input": ContourElement;
     "contour-input-group": ContourInputGroupElement;
@@ -152,6 +159,7 @@ declare module 'vue' {
     "contour-provenance": ContourProvenanceElement;
     "contour-pull-to-refresh": ContourPullToRefreshElement;
     "contour-pullquote": ContourElement;
+    "contour-query-builder": ContourQueryBuilderElement;
     "contour-radio": ContourRadioElement;
     "contour-radio-list": ContourRadioListElement;
     "contour-range": ContourRangeElement;
@@ -171,6 +179,7 @@ declare module 'vue' {
     "contour-scheme-toggle": ContourElement;
     "contour-scrim": ContourElement;
     "contour-scroll-area": ContourElement;
+    "contour-search-field": ContourElement;
     "contour-search-trigger": ContourElement;
     "contour-section-head": ContourElement;
     "contour-segmented": ContourSegmentedElement;
@@ -186,6 +195,7 @@ declare module 'vue' {
     "contour-sidebar": ContourSidebarElement;
     "contour-skeleton": ContourSkeletonElement;
     "contour-skeleton-group": ContourElement;
+    "contour-skip-link": ContourElement;
     "contour-sortable-list": ContourElement;
     "contour-sparkline": ContourSparklineElement;
     "contour-spatial-filter": ContourSpatialFilterElement;

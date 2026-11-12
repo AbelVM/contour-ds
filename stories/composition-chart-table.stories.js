@@ -19,9 +19,8 @@ export const ChartWithTableCrossSelection = {
         <h3>Volume by Region</h3>
         <contour-chart
           id="demo-chart"
-          type="bar"
           axis="Volume"
-          data='{"labels":["North","South","East","West"],"values":[842,617,423,291]}'
+          series='[{"label":"Volume","type":"bar","values":[842,617,423,291]}]'
         ></contour-chart>
         <contour-legend
           id="demo-legend"
@@ -45,6 +44,8 @@ export const ChartWithTableCrossSelection = {
     await expect(canvasElement.querySelector("contour-chart")).toBeTruthy();
     await expect(canvasElement.querySelector("contour-table")).toBeTruthy();
     await expect(canvasElement.querySelector("contour-legend")).toBeTruthy();
+    await expect(canvasElement.querySelector("contour-chart .c-chart__empty")).toBeNull();
+    await expect(canvasElement.querySelectorAll("contour-chart .c-chart__bar").length).toBe(4);
   },
 };
 
@@ -56,9 +57,8 @@ export const ChartWithTimeSlider = {
     wrap.innerHTML = `
       <contour-chart
         id="timeseries-chart"
-        type="line"
         axis="Time"
-        data='{"labels":["Jan","Feb","Mar","Apr","May","Jun"],"values":[10,15,13,18,22,20]}'
+        series='[{"label":"Volume","type":"line","values":[10,15,13,18,22,20]}]'
       ></contour-chart>
       <contour-animation-controls
         id="time-slider"
@@ -75,6 +75,8 @@ export const ChartWithTimeSlider = {
   play: async ({ canvasElement }) => {
     await expect(canvasElement.querySelector("contour-chart")).toBeTruthy();
     await expect(canvasElement.querySelector("contour-animation-controls")).toBeTruthy();
+    await expect(canvasElement.querySelector("contour-chart .c-chart__empty")).toBeNull();
+    await expect(canvasElement.querySelectorAll("contour-chart .c-chart__line").length).toBe(1);
   },
 };
 
@@ -86,9 +88,8 @@ export const MultiSeriesChartWithLegendToggle = {
     wrap.innerHTML = `
       <contour-chart
         id="multi-chart"
-        type="line"
         axis="Time"
-        data='{"labels":["Mon","Tue","Wed","Thu","Fri"],"datasets":[{"label":"Actual","values":[10,15,13,18,22]},{"label":"Target","values":[12,14,16,18,20]}]}'
+        series='[{"label":"Actual","type":"line","values":[10,15,13,18,22]},{"label":"Target","type":"line","values":[12,14,16,18,20]}]'
       ></contour-chart>
       <contour-legend
         id="multi-legend"
@@ -100,5 +101,7 @@ export const MultiSeriesChartWithLegendToggle = {
   play: async ({ canvasElement }) => {
     await expect(canvasElement.querySelector("contour-chart")).toBeTruthy();
     await expect(canvasElement.querySelector("contour-legend")).toBeTruthy();
+    await expect(canvasElement.querySelector("contour-chart .c-chart__empty")).toBeNull();
+    await expect(canvasElement.querySelectorAll("contour-chart .c-chart__line").length).toBe(2);
   },
 };

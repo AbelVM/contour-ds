@@ -1,4 +1,4 @@
-import { ContourBase, define, onDispose, sanitizeHtml, headingTag, navKey } from './core.mjs';
+import { ContourBase, define, onDispose, sanitizeHtml, headingTag, navKey, safeHref , warnBadJson, label } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 
 /* Route matching (CDS-075). The URL is the state for a documentation surface, so
@@ -75,7 +75,7 @@ class ContourDocsNav extends ContourBase {
             (g.links || g.items || []).forEach((l) => {
               const a = document.createElement("a");
               a.className = "c-docs-nav__link";
-              a.href = (typeof l === "string" ? "#" : (l.href || "#"));
+              a.href = safeHref(typeof l === "string" ? "#" : (l.href || "#"));
               const label = typeof l === "string" ? l : (l.label || l);
               if (typeof l === "object" && l !== null && l.badge) {
                 const b = document.createElement("span");
@@ -97,7 +97,7 @@ class ContourDocsNav extends ContourBase {
                 l.items.forEach((nl) => {
                   const na = document.createElement("a");
                   na.className = "c-docs-nav__link";
-                  na.href = (typeof nl === "string" ? "#" : (nl.href || "#"));
+                  na.href = safeHref(typeof nl === "string" ? "#" : (nl.href || "#"));
                   na.textContent = typeof nl === "string" ? nl : (nl.label || nl);
                   nested.appendChild(na);
                 });
@@ -110,7 +110,7 @@ class ContourDocsNav extends ContourBase {
             group.appendChild(ul);
             list.appendChild(group);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else if (!items && list) {
         list.remove();
         renderEmpty(this, "docs-nav");
@@ -177,7 +177,7 @@ class ContourDocsShell extends ContourBase {
       this.setAttribute("role", "region");
       const title = this.getAttribute("title");
       if (title) {
-        const h = this.ensure(".c-docs-shell__title", () => { const el = document.createElement(headingTag(this, "h1")); el.className = "c-docs-shell__title"; return el; });
+        const h = this.ensure(".c-docs-shell__title", () => { const el = document.createElement(headingTag(this, "h2")); el.className = "c-docs-shell__title"; return el; });
         h.textContent = title;
         this.setAttribute("aria-label", title);
       } else {
@@ -230,7 +230,7 @@ class ContourFileTree extends ContourBase {
           // clear generated
           Array.from(this.querySelectorAll(".c-file-tree__row")).forEach((n) => n.remove());
           parsed.forEach((n) => renderNode(n, 0));
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       }
     }
   }
@@ -245,14 +245,19 @@ class ContourChangelog extends ContourBase {
       if (src) {
         if (this.dataset.loaded === src) return;
         this.dataset.loaded = "";
-        const loading = this.ensure(".c-changelog__loading", () => { const el = document.createElement("div"); el.className = "c-changelog__loading"; el.textContent = "Loading…"; return el; });
+        const loading = this.ensure(".c-changelog__loading", () => { const el = document.createElement("div"); el.className = "c-changelog__loading"; el.textContent = label(this, "loading", "Loading…"); return el; });
         // clear
         Array.from(this.querySelectorAll(".c-changelog__entry, .c-changelog__error")).forEach((n) => n.remove());
         if (!this.querySelector(".c-changelog__loading")) this.appendChild(loading);
-        fetch(src).then((r) => {
+        // Abort the in-flight fetch when the host leaves the page, so a slow
+        // changelog cannot write into a detached element.
+        try { if (this._changelogAbort) this._changelogAbort.abort(); } catch (e) {}
+        this._changelogAbort = typeof AbortController !== "undefined" ? new AbortController() : null;
+        fetch(src, this._changelogAbort ? { signal: this._changelogAbort.signal } : undefined).then((r) => {
           if (!r.ok) throw new Error("HTTP " + r.status);
           return r.text();
         }).then((text) => {
+          if (!this.isConnected) return;
           const ld = this.querySelector(".c-changelog__loading");
           if (ld) ld.remove();
           this.dataset.loaded = src;
@@ -262,7 +267,7 @@ class ContourChangelog extends ContourBase {
           if (!list.length) {
             const empty = document.createElement("div");
             empty.className = "c-changelog__empty";
-            empty.textContent = "No releases found.";
+            empty.textContent = label(this, "empty", "No releases found.");
             this.appendChild(empty);
             return;
           }
@@ -289,6 +294,7 @@ class ContourChangelog extends ContourBase {
             this.appendChild(det);
           });
         }).catch((err) => {
+          if (!this.isConnected) return;
           const ld = this.querySelector(".c-changelog__loading");
           if (ld) ld.remove();
           const er = document.createElement("div");
@@ -297,6 +303,11 @@ class ContourChangelog extends ContourBase {
           this.appendChild(er);
         });
       }
+    }
+    disconnectedCallback() {
+      super.disconnectedCallback();
+      try { if (this._changelogAbort) this._changelogAbort.abort(); } catch (e) {}
+      this._changelogAbort = null;
     }
   }
   define("contour-changelog", ContourChangelog);
@@ -335,10 +346,13 @@ class ContourChangelog extends ContourBase {
       const line = raw.trimEnd();
       if (/^###\s+/.test(line)) {
         if (inList) { out.push("</ul>"); inList = false; }
-        out.push("<h4>" + escapeHtml(line.replace(/^###\s+/, "")) + "</h4>");
+        out.push("<h3>" + escapeHtml(line.replace(/^###\s+/, "")) + "</h3>");
       } else if (/^##\s+/.test(line)) {
         if (inList) { out.push("</ul>"); inList = false; }
-        out.push("<h3>" + escapeHtml(line.replace(/^##\s+/, "")) + "</h3>");
+        out.push("<h2>" + escapeHtml(line.replace(/^##\s+/, "")) + "</h2>");
+      } else if (/^#\s+/.test(line)) {
+        if (inList) { out.push("</ul>"); inList = false; }
+        out.push("<h2>" + escapeHtml(line.replace(/^#\s+/, "")) + "</h2>");
       } else if (/^[-*]\s+/.test(line)) {
         if (!inList) { out.push("<ul>"); inList = true; }
         out.push("<li>" + escapeHtml(line.replace(/^[-*]\s+/, "")) + "</li>");

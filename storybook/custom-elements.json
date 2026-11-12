@@ -416,6 +416,13 @@
               "description": "Attribute for c-activity-feed."
             },
             {
+              "name": "labels",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-activity-feed."
+            },
+            {
               "name": "loading",
               "type": {
                 "text": "string"
@@ -462,6 +469,14 @@
                 "text": "string | null"
               },
               "attribute": "items"
+            },
+            {
+              "kind": "field",
+              "name": "labels",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "labels"
             },
             {
               "kind": "field",
@@ -914,6 +929,32 @@
             },
             {
               "name": "close"
+            }
+          ]
+        },
+        {
+          "kind": "class",
+          "name": "ContourElement",
+          "tagName": "contour-analysis-stack",
+          "customElement": true,
+          "description": "Contour component c-analysis-stack (complete-widget).",
+          "attributes": [
+            {
+              "name": "title",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-analysis-stack."
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "title",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "title"
             }
           ]
         },
@@ -2648,7 +2689,21 @@
           "description": "Contour component c-calendar (complete-widget).",
           "attributes": [
             {
+              "name": "month",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-calendar."
+            },
+            {
               "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-calendar."
+            },
+            {
+              "name": "year",
               "type": {
                 "text": "string"
               },
@@ -2658,11 +2713,27 @@
           "members": [
             {
               "kind": "field",
+              "name": "month",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "month"
+            },
+            {
+              "kind": "field",
               "name": "value",
               "type": {
                 "text": "string | null"
               },
               "attribute": "value"
+            },
+            {
+              "kind": "field",
+              "name": "year",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "year"
             }
           ]
         },
@@ -4030,6 +4101,77 @@
         {
           "kind": "class",
           "name": "ContourElement",
+          "tagName": "contour-checkbox-group",
+          "customElement": true,
+          "description": "Contour component c-checkbox-group (complete-widget).",
+          "attributes": [
+            {
+              "name": "legend",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-checkbox-group."
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-checkbox-group."
+            },
+            {
+              "name": "options",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-checkbox-group."
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-checkbox-group."
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "legend",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "legend"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "name"
+            },
+            {
+              "kind": "field",
+              "name": "options",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "options"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "value"
+            }
+          ]
+        },
+        {
+          "kind": "class",
+          "name": "ContourElement",
           "tagName": "contour-chip",
           "customElement": true,
           "description": "Contour component c-chip (complete-widget).",
@@ -4499,6 +4641,13 @@
           "description": "Contour component c-combobox (complete-widget).",
           "attributes": [
             {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Boolean attribute for c-combobox."
+            },
+            {
               "name": "empty",
               "type": {
                 "text": "string"
@@ -4541,6 +4690,13 @@
               "description": "Boolean attribute for c-combobox."
             },
             {
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-combobox."
+            },
+            {
               "name": "options",
               "type": {
                 "text": "string"
@@ -4560,6 +4716,13 @@
                 "text": "string"
               },
               "description": "Attribute for c-combobox."
+            },
+            {
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Boolean attribute for c-combobox."
             },
             {
               "name": "retry",
@@ -4605,6 +4768,14 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "disabled"
+            },
             {
               "kind": "field",
               "name": "empty",
@@ -4655,6 +4826,14 @@
             },
             {
               "kind": "field",
+              "name": "name",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "name"
+            },
+            {
+              "kind": "field",
               "name": "options",
               "type": {
                 "text": "string | null"
@@ -4676,6 +4855,14 @@
                 "text": "string | null"
               },
               "attribute": "refresh"
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "required"
             },
             {
               "kind": "field",
@@ -5463,13 +5650,20 @@
         },
         {
           "kind": "class",
-          "name": "ContourElement",
+          "name": "ContourContextMenuElement",
           "tagName": "contour-context-menu",
           "customElement": true,
           "description": "Contour component c-context-menu (complete-widget).",
           "attributes": [
             {
               "name": "items",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-context-menu."
+            },
+            {
+              "name": "trigger",
               "type": {
                 "text": "string"
               },
@@ -5484,6 +5678,81 @@
                 "text": "string | null"
               },
               "attribute": "items"
+            },
+            {
+              "kind": "field",
+              "name": "trigger",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "trigger"
+            }
+          ]
+        },
+        {
+          "kind": "class",
+          "name": "ContourContourPlotElement",
+          "tagName": "contour-contour-plot",
+          "customElement": true,
+          "description": "Contour component c-contour-plot (complete-widget).",
+          "attributes": [
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-contour-plot."
+            },
+            {
+              "name": "levels",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-contour-plot."
+            },
+            {
+              "name": "values",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-contour-plot."
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "label",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "label"
+            },
+            {
+              "kind": "field",
+              "name": "levels",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "levels"
+            },
+            {
+              "kind": "field",
+              "name": "values",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "values"
+            }
+          ],
+          "slots": [
+            {
+              "name": "",
+              "description": "Default slot"
+            }
+          ],
+          "cssParts": [
+            {
+              "name": "plot"
             }
           ]
         },
@@ -5998,6 +6267,47 @@
         },
         {
           "kind": "class",
+          "name": "ContourDashboardGridElement",
+          "tagName": "contour-dashboard-grid",
+          "customElement": true,
+          "description": "Contour component c-dashboard-grid (complete-widget).",
+          "attributes": [
+            {
+              "name": "cols",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-dashboard-grid."
+            },
+            {
+              "name": "gap",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-dashboard-grid."
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "cols",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "cols"
+            },
+            {
+              "kind": "field",
+              "name": "gap",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "gap"
+            }
+          ]
+        },
+        {
+          "kind": "class",
           "name": "ContourDataExportElement",
           "tagName": "contour-data-export",
           "customElement": true,
@@ -6082,7 +6392,28 @@
               "description": "Attribute for c-data-grid."
             },
             {
+              "name": "empty",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-data-grid."
+            },
+            {
+              "name": "error",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-data-grid."
+            },
+            {
               "name": "filter",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-data-grid."
+            },
+            {
+              "name": "loading",
               "type": {
                 "text": "string"
               },
@@ -6142,11 +6473,35 @@
             },
             {
               "kind": "field",
+              "name": "empty",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "empty"
+            },
+            {
+              "kind": "field",
+              "name": "error",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "error"
+            },
+            {
+              "kind": "field",
               "name": "filter",
               "type": {
                 "text": "string | null"
               },
               "attribute": "filter"
+            },
+            {
+              "kind": "field",
+              "name": "loading",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "loading"
             },
             {
               "kind": "field",
@@ -6797,6 +7152,47 @@
           "cssParts": [
             {
               "name": "delta"
+            }
+          ]
+        },
+        {
+          "kind": "class",
+          "name": "ContourElement",
+          "tagName": "contour-density-toggle",
+          "customElement": true,
+          "description": "Contour component c-density-toggle (complete-widget).",
+          "attributes": [
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-density-toggle."
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-density-toggle."
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "label",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "label"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "value"
             }
           ]
         },
@@ -7720,6 +8116,13 @@
                 "text": "string"
               },
               "description": "Attribute for c-drag-handle."
+            },
+            {
+              "name": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Boolean attribute for c-drag-handle."
             }
           ],
           "members": [
@@ -7730,6 +8133,14 @@
                 "text": "string | null"
               },
               "attribute": "label"
+            },
+            {
+              "kind": "field",
+              "name": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "open"
             }
           ],
           "slots": [
@@ -7757,6 +8168,13 @@
                 "text": "string"
               },
               "description": "Attribute for c-draggable."
+            },
+            {
+              "name": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Boolean attribute for c-draggable."
             }
           ],
           "members": [
@@ -7767,6 +8185,14 @@
                 "text": "string | null"
               },
               "attribute": "label"
+            },
+            {
+              "kind": "field",
+              "name": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "open"
             }
           ],
           "slots": [
@@ -7850,7 +8276,7 @@
         },
         {
           "kind": "class",
-          "name": "ContourElement",
+          "name": "ContourDropIndicatorElement",
           "tagName": "contour-drop-indicator",
           "customElement": true,
           "description": "Contour component c-drop-indicator (complete-widget).",
@@ -7861,6 +8287,13 @@
                 "text": "string"
               },
               "description": "Attribute for c-drop-indicator."
+            },
+            {
+              "name": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Boolean attribute for c-drop-indicator."
             }
           ],
           "members": [
@@ -7871,6 +8304,14 @@
                 "text": "string | null"
               },
               "attribute": "label"
+            },
+            {
+              "kind": "field",
+              "name": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "open"
             }
           ],
           "slots": [
@@ -8665,11 +9106,18 @@
         },
         {
           "kind": "class",
-          "name": "ContourElement",
+          "name": "ContourFieldElement",
           "tagName": "contour-field",
           "customElement": true,
           "description": "Contour component c-field (complete-widget).",
           "attributes": [
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Boolean attribute for c-field."
+            },
             {
               "name": "error",
               "type": {
@@ -8686,6 +9134,13 @@
             },
             {
               "name": "label",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-field."
+            },
+            {
+              "name": "name",
               "type": {
                 "text": "string"
               },
@@ -8711,9 +9166,24 @@
                 "text": "string"
               },
               "description": "Attribute for c-field."
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-field."
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "disabled"
+            },
             {
               "kind": "field",
               "name": "error",
@@ -8740,6 +9210,14 @@
             },
             {
               "kind": "field",
+              "name": "name",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "name"
+            },
+            {
+              "kind": "field",
               "name": "placeholder",
               "type": {
                 "text": "string | null"
@@ -8761,6 +9239,14 @@
                 "text": "string | null"
               },
               "attribute": "type"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "value"
             }
           ],
           "slots": [
@@ -8859,6 +9345,47 @@
         },
         {
           "kind": "class",
+          "name": "ContourFieldsetElement",
+          "tagName": "contour-fieldset",
+          "customElement": true,
+          "description": "Contour component c-fieldset (complete-widget).",
+          "attributes": [
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Boolean attribute for c-fieldset."
+            },
+            {
+              "name": "legend",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-fieldset."
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
+              "name": "legend",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "legend"
+            }
+          ]
+        },
+        {
+          "kind": "class",
           "name": "ContourElement",
           "tagName": "contour-file-tree",
           "customElement": true,
@@ -8912,6 +9439,13 @@
               "description": "Boolean attribute for c-file-upload."
             },
             {
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-file-upload."
+            },
+            {
               "name": "progress",
               "type": {
                 "text": "string"
@@ -8943,6 +9477,14 @@
                 "text": "boolean"
               },
               "attribute": "multiple"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "name"
             },
             {
               "kind": "field",
@@ -9693,6 +10235,13 @@
               "description": "Attribute for c-form."
             },
             {
+              "name": "submit-label",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-form."
+            },
+            {
               "name": "submitting",
               "type": {
                 "text": "boolean"
@@ -9701,6 +10250,13 @@
             },
             {
               "name": "summary",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-form."
+            },
+            {
+              "name": "title",
               "type": {
                 "text": "string"
               },
@@ -9718,6 +10274,14 @@
             },
             {
               "kind": "field",
+              "name": "submitLabel",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "submit-label"
+            },
+            {
+              "kind": "field",
               "name": "submitting",
               "type": {
                 "text": "boolean"
@@ -9731,6 +10295,14 @@
                 "text": "string | null"
               },
               "attribute": "summary"
+            },
+            {
+              "kind": "field",
+              "name": "title",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "title"
             }
           ]
         },
@@ -10823,6 +11395,62 @@
                 "text": "string | null"
               },
               "attribute": "title"
+            }
+          ]
+        },
+        {
+          "kind": "class",
+          "name": "ContourElement",
+          "tagName": "contour-icon",
+          "customElement": true,
+          "description": "Contour component c-icon (complete-widget).",
+          "attributes": [
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-icon."
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-icon."
+            },
+            {
+              "name": "size",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-icon."
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "label",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "label"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "name"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "size"
             }
           ]
         },
@@ -13214,28 +13842,7 @@
           "description": "Contour component c-loading (scaffold).",
           "attributes": [
             {
-              "name": "dismissible",
-              "type": {
-                "text": "boolean"
-              },
-              "description": "Boolean attribute for c-loading."
-            },
-            {
-              "name": "href",
-              "type": {
-                "text": "string"
-              },
-              "description": "Attribute for c-loading."
-            },
-            {
-              "name": "link",
-              "type": {
-                "text": "string"
-              },
-              "description": "Attribute for c-loading."
-            },
-            {
-              "name": "message",
+              "name": "label",
               "type": {
                 "text": "string"
               },
@@ -13245,35 +13852,11 @@
           "members": [
             {
               "kind": "field",
-              "name": "dismissible",
-              "type": {
-                "text": "boolean"
-              },
-              "attribute": "dismissible"
-            },
-            {
-              "kind": "field",
-              "name": "href",
+              "name": "label",
               "type": {
                 "text": "string | null"
               },
-              "attribute": "href"
-            },
-            {
-              "kind": "field",
-              "name": "link",
-              "type": {
-                "text": "string | null"
-              },
-              "attribute": "link"
-            },
-            {
-              "kind": "field",
-              "name": "message",
-              "type": {
-                "text": "string | null"
-              },
-              "attribute": "message"
+              "attribute": "label"
             }
           ],
           "slots": [
@@ -13671,28 +14254,7 @@
           "description": "Contour component c-mark (complete-widget).",
           "attributes": [
             {
-              "name": "dismissible",
-              "type": {
-                "text": "boolean"
-              },
-              "description": "Boolean attribute for c-mark."
-            },
-            {
-              "name": "href",
-              "type": {
-                "text": "string"
-              },
-              "description": "Attribute for c-mark."
-            },
-            {
-              "name": "link",
-              "type": {
-                "text": "string"
-              },
-              "description": "Attribute for c-mark."
-            },
-            {
-              "name": "message",
+              "name": "label",
               "type": {
                 "text": "string"
               },
@@ -13702,35 +14264,11 @@
           "members": [
             {
               "kind": "field",
-              "name": "dismissible",
-              "type": {
-                "text": "boolean"
-              },
-              "attribute": "dismissible"
-            },
-            {
-              "kind": "field",
-              "name": "href",
+              "name": "label",
               "type": {
                 "text": "string | null"
               },
-              "attribute": "href"
-            },
-            {
-              "kind": "field",
-              "name": "link",
-              "type": {
-                "text": "string | null"
-              },
-              "attribute": "link"
-            },
-            {
-              "kind": "field",
-              "name": "message",
-              "type": {
-                "text": "string | null"
-              },
-              "attribute": "message"
+              "attribute": "label"
             }
           ],
           "slots": [
@@ -16159,6 +16697,47 @@
         },
         {
           "kind": "class",
+          "name": "ContourQueryBuilderElement",
+          "tagName": "contour-query-builder",
+          "customElement": true,
+          "description": "Contour component c-query-builder (complete-widget).",
+          "attributes": [
+            {
+              "name": "fields",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-query-builder."
+            },
+            {
+              "name": "query",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-query-builder."
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "fields",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "fields"
+            },
+            {
+              "kind": "field",
+              "name": "query",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "query"
+            }
+          ]
+        },
+        {
+          "kind": "class",
           "name": "ContourRadioElement",
           "tagName": "contour-radio",
           "customElement": true,
@@ -16550,6 +17129,13 @@
               "description": "Attribute for c-range."
             },
             {
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-range."
+            },
+            {
               "name": "range",
               "type": {
                 "text": "string"
@@ -16558,6 +17144,13 @@
             },
             {
               "name": "sparkline",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-range."
+            },
+            {
+              "name": "step",
               "type": {
                 "text": "string"
               },
@@ -16638,6 +17231,14 @@
             },
             {
               "kind": "field",
+              "name": "name",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "name"
+            },
+            {
+              "kind": "field",
               "name": "range",
               "type": {
                 "text": "string | null"
@@ -16651,6 +17252,14 @@
                 "text": "string | null"
               },
               "attribute": "sparkline"
+            },
+            {
+              "kind": "field",
+              "name": "step",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "step"
             },
             {
               "kind": "field",
@@ -17741,6 +18350,77 @@
         {
           "kind": "class",
           "name": "ContourElement",
+          "tagName": "contour-search-field",
+          "customElement": true,
+          "description": "Contour component c-search-field (complete-widget).",
+          "attributes": [
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-search-field."
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-search-field."
+            },
+            {
+              "name": "placeholder",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-search-field."
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-search-field."
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "label",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "label"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "name"
+            },
+            {
+              "kind": "field",
+              "name": "placeholder",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "placeholder"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "value"
+            }
+          ]
+        },
+        {
+          "kind": "class",
+          "name": "ContourElement",
           "tagName": "contour-search-trigger",
           "customElement": true,
           "description": "Contour component c-search-trigger (complete-widget).",
@@ -17957,6 +18637,13 @@
           "description": "Contour component c-select (complete-widget).",
           "attributes": [
             {
+              "name": "autocomplete",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-select."
+            },
+            {
               "name": "disabled",
               "type": {
                 "text": "boolean"
@@ -17985,6 +18672,20 @@
               "description": "Attribute for c-select."
             },
             {
+              "name": "multiple",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Boolean attribute for c-select."
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-select."
+            },
+            {
               "name": "options",
               "type": {
                 "text": "string"
@@ -18004,9 +18705,24 @@
                 "text": "boolean"
               },
               "description": "Boolean attribute for c-select."
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-select."
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "autocomplete",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "autocomplete"
+            },
             {
               "kind": "field",
               "name": "disabled",
@@ -18041,6 +18757,22 @@
             },
             {
               "kind": "field",
+              "name": "multiple",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "multiple"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "name"
+            },
+            {
+              "kind": "field",
               "name": "options",
               "type": {
                 "text": "string | null"
@@ -18062,6 +18794,14 @@
                 "text": "boolean"
               },
               "attribute": "required"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "value"
             }
           ],
           "slots": [
@@ -20004,6 +20744,47 @@
                 "text": "string | null"
               },
               "attribute": "count"
+            }
+          ]
+        },
+        {
+          "kind": "class",
+          "name": "ContourElement",
+          "tagName": "contour-skip-link",
+          "customElement": true,
+          "description": "Contour component c-skip-link (complete-widget).",
+          "attributes": [
+            {
+              "name": "href",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-skip-link."
+            },
+            {
+              "name": "label",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-skip-link."
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "href",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "href"
+            },
+            {
+              "kind": "field",
+              "name": "label",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "label"
             }
           ]
         },
@@ -24747,6 +25528,20 @@
           "description": "Contour component c-tree-grid (complete-widget).",
           "attributes": [
             {
+              "name": "empty",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-tree-grid."
+            },
+            {
+              "name": "error",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-tree-grid."
+            },
+            {
               "name": "expanded",
               "type": {
                 "text": "string"
@@ -24759,9 +25554,32 @@
                 "text": "string"
               },
               "description": "Attribute for c-tree-grid."
+            },
+            {
+              "name": "loading",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-tree-grid."
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "empty",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "empty"
+            },
+            {
+              "kind": "field",
+              "name": "error",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "error"
+            },
             {
               "kind": "field",
               "name": "expanded",
@@ -24777,6 +25595,14 @@
                 "text": "string | null"
               },
               "attribute": "items"
+            },
+            {
+              "kind": "field",
+              "name": "loading",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "loading"
             }
           ]
         },
@@ -25187,6 +26013,14 @@
         },
         {
           "kind": "custom-element-definition",
+          "name": "contour-analysis-stack",
+          "declaration": {
+            "name": "ContourElement",
+            "module": "dist/contour-wc.esm.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
           "name": "contour-anchor",
           "declaration": {
             "name": "ContourElement",
@@ -25427,6 +26261,14 @@
         },
         {
           "kind": "custom-element-definition",
+          "name": "contour-checkbox-group",
+          "declaration": {
+            "name": "ContourElement",
+            "module": "dist/contour-wc.esm.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
           "name": "contour-chip",
           "declaration": {
             "name": "ContourElement",
@@ -25525,7 +26367,15 @@
           "kind": "custom-element-definition",
           "name": "contour-context-menu",
           "declaration": {
-            "name": "ContourElement",
+            "name": "ContourContextMenuElement",
+            "module": "dist/contour-wc.esm.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "contour-contour-plot",
+          "declaration": {
+            "name": "ContourContourPlotElement",
             "module": "dist/contour-wc.esm.js"
           }
         },
@@ -25574,6 +26424,14 @@
           "name": "contour-dash-toolbar",
           "declaration": {
             "name": "ContourElement",
+            "module": "dist/contour-wc.esm.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "contour-dashboard-grid",
+          "declaration": {
+            "name": "ContourDashboardGridElement",
             "module": "dist/contour-wc.esm.js"
           }
         },
@@ -25630,6 +26488,14 @@
           "name": "contour-delta",
           "declaration": {
             "name": "ContourDeltaElement",
+            "module": "dist/contour-wc.esm.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "contour-density-toggle",
+          "declaration": {
+            "name": "ContourElement",
             "module": "dist/contour-wc.esm.js"
           }
         },
@@ -25741,7 +26607,7 @@
           "kind": "custom-element-definition",
           "name": "contour-drop-indicator",
           "declaration": {
-            "name": "ContourElement",
+            "name": "ContourDropIndicatorElement",
             "module": "dist/contour-wc.esm.js"
           }
         },
@@ -25829,7 +26695,7 @@
           "kind": "custom-element-definition",
           "name": "contour-field",
           "declaration": {
-            "name": "ContourElement",
+            "name": "ContourFieldElement",
             "module": "dist/contour-wc.esm.js"
           }
         },
@@ -25838,6 +26704,14 @@
           "name": "contour-field-group",
           "declaration": {
             "name": "ContourElement",
+            "module": "dist/contour-wc.esm.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "contour-fieldset",
+          "declaration": {
+            "name": "ContourFieldsetElement",
             "module": "dist/contour-wc.esm.js"
           }
         },
@@ -25950,6 +26824,14 @@
           "name": "contour-hover-card",
           "declaration": {
             "name": "ContourHoverCardElement",
+            "module": "dist/contour-wc.esm.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "contour-icon",
+          "declaration": {
+            "name": "ContourElement",
             "module": "dist/contour-wc.esm.js"
           }
         },
@@ -26331,6 +27213,14 @@
         },
         {
           "kind": "custom-element-definition",
+          "name": "contour-query-builder",
+          "declaration": {
+            "name": "ContourQueryBuilderElement",
+            "module": "dist/contour-wc.esm.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
           "name": "contour-radio",
           "declaration": {
             "name": "ContourRadioElement",
@@ -26476,6 +27366,14 @@
         {
           "kind": "custom-element-definition",
           "name": "contour-scroll-area",
+          "declaration": {
+            "name": "ContourElement",
+            "module": "dist/contour-wc.esm.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "contour-search-field",
           "declaration": {
             "name": "ContourElement",
             "module": "dist/contour-wc.esm.js"
@@ -27971,6 +28869,14 @@
         },
         {
           "kind": "custom-element-definition",
+          "name": "contour-skip-link",
+          "declaration": {
+            "name": "ContourElement",
+            "module": "dist/contour-wc.esm.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
           "name": "contour-sortable-list",
           "declaration": {
             "name": "ContourElement",
@@ -28336,7 +29242,10 @@
     {
       "name": "contour:activate",
       "keys": [
-        "row"
+        "files",
+        "label",
+        "row",
+        "value"
       ]
     },
     {
@@ -28448,10 +29357,13 @@
         "low",
         "month",
         "name",
+        "paused",
+        "query",
         "speed",
         "start",
         "unit",
         "value",
+        "values",
         "year"
       ]
     },
@@ -28479,8 +29391,12 @@
     {
       "name": "contour:close",
       "keys": [
+        "count",
         "index",
-        "label"
+        "label",
+        "message",
+        "open",
+        "value"
       ]
     },
     {
@@ -28506,6 +29422,12 @@
       "keys": [
         "kind",
         "text"
+      ]
+    },
+    {
+      "name": "contour:dismiss",
+      "keys": [
+        "label"
       ]
     },
     {
@@ -28646,8 +29568,9 @@
     {
       "name": "contour:zoom",
       "keys": [
-        "row",
-        "index"
+        "data",
+        "index",
+        "row"
       ]
     },
     {
@@ -28686,6 +29609,7 @@
     {
       "name": "contour:legend-toggle",
       "keys": [
+        "index",
         "key",
         "label",
         "pressed"
@@ -28764,10 +29688,17 @@
       ]
     },
     {
+      "name": "contour:read",
+      "keys": [
+        "label"
+      ]
+    },
+    {
       "name": "contour:remove",
       "keys": [
         "key",
         "label",
+        "name",
         "value"
       ]
     },
@@ -28787,7 +29718,9 @@
     {
       "name": "contour:resize",
       "keys": [
+        "delta",
         "height",
+        "value",
         "width"
       ]
     },
@@ -28823,11 +29756,14 @@
       "keys": [
         "area",
         "col",
+        "expanded",
+        "href",
         "index",
         "key",
         "label",
         "labels",
         "path",
+        "result",
         "row",
         "rows",
         "series",
@@ -28941,6 +29877,7 @@
     {
       "name": "contour:toggle",
       "keys": [
+        "collapsed",
         "expanded",
         "label",
         "open",

@@ -143,6 +143,10 @@
           "description": "Attribute for c-activity-feed."
         },
         {
+          "name": "labels",
+          "description": "Attribute for c-activity-feed."
+        },
+        {
           "name": "loading",
           "description": "Attribute for c-activity-feed."
         },
@@ -162,7 +166,7 @@
       "name": "contour-advanced",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-advanced` (complete-widget). Parts: advanced. Slots: (default)."
+        "value": "Contour component `c-advanced` (complete-widget). Elements: c-advanced__title. Parts: advanced. Slots: (default)."
       },
       "attributes": [
         {
@@ -307,6 +311,25 @@
       ]
     },
     {
+      "name": "contour-analysis-stack",
+      "description": {
+        "kind": "markdown",
+        "value": "Contour component `c-analysis-stack` (complete-widget). Elements: c-analysis-stack__header, c-analysis-stack__title."
+      },
+      "attributes": [
+        {
+          "name": "title",
+          "description": "Attribute for c-analysis-stack."
+        }
+      ],
+      "references": [
+        {
+          "name": "Contour docs",
+          "url": "dist/docs/"
+        }
+      ]
+    },
+    {
       "name": "contour-anchor",
       "description": {
         "kind": "markdown",
@@ -333,7 +356,7 @@
       "name": "contour-animation-controls",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-animation-controls` (complete-widget). Elements: c-animation-controls__scrubber."
+        "value": "Contour component `c-animation-controls` (complete-widget). Elements: c-animation-controls__caption, c-animation-controls__scrubber, c-animation-controls__scrubber--thumb."
       },
       "attributes": [
         {
@@ -457,7 +480,7 @@
       "name": "contour-avatar",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-avatar` (complete-widget). Variants: c-avatar--accent, c-avatar--lg. Parts: avatar. Slots: (default)."
+        "value": "Contour component `c-avatar` (complete-widget). Variants: c-avatar--accent, c-avatar--lg. Elements: c-avatar__img, c-avatar__status. Parts: avatar. Slots: (default)."
       },
       "attributes": [
         {
@@ -492,7 +515,7 @@
       "name": "contour-avatar-group",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-avatar-group` (complete-widget)."
+        "value": "Contour component `c-avatar-group` (complete-widget). Elements: c-avatar-group__overflow."
       },
       "attributes": [
         {
@@ -598,7 +621,7 @@
       "name": "contour-badge",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-badge` (complete-widget). Variants: c-badge--accent, c-badge--danger, c-badge--data, c-badge--outline, c-badge--primary, c-badge--success, c-badge--warning. Parts: badge. Slots: (default)."
+        "value": "Contour component `c-badge` (complete-widget). Variants: c-badge--accent, c-badge--danger, c-badge--data, c-badge--dot, c-badge--outline, c-badge--primary, c-badge--success, c-badge--warning. Elements: c-badge__remove. Parts: badge. Slots: (default)."
       },
       "attributes": [
         {
@@ -629,7 +652,7 @@
       "name": "contour-badge-overflow",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-badge-overflow` (complete-widget)."
+        "value": "Contour component `c-badge-overflow` (complete-widget). Elements: c-badge-overflow__more."
       },
       "attributes": [
         {
@@ -652,7 +675,7 @@
       "name": "contour-banner",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-banner` (complete-widget). Variants: c-banner--info."
+        "value": "Contour component `c-banner` (complete-widget). Variants: c-banner--info. Elements: c-banner__message."
       },
       "attributes": [
         {
@@ -966,7 +989,15 @@
       },
       "attributes": [
         {
+          "name": "month",
+          "description": "Attribute for c-calendar."
+        },
+        {
           "name": "value",
+          "description": "Attribute for c-calendar."
+        },
+        {
+          "name": "year",
           "description": "Attribute for c-calendar."
         }
       ],
@@ -1039,7 +1070,7 @@
       "name": "contour-carousel",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-carousel` (complete-widget). Elements: c-carousel__next, c-carousel__prev, c-carousel__slide, c-carousel__status, c-carousel__track."
+        "value": "Contour component `c-carousel` (complete-widget). Elements: c-carousel__dot, c-carousel__dots, c-carousel__next, c-carousel__prev, c-carousel__slide, c-carousel__status, c-carousel__track."
       },
       "attributes": [
         {
@@ -1227,7 +1258,7 @@
       "name": "contour-chart",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-chart` (complete-widget). Variants: c-chart--donut, c-chart--histogram. Elements: c-chart__axis, c-chart__axis--centered, c-chart__band, c-chart__band--div-mid, c-chart__band--div-neg, c-chart__band--div-pos, c-chart__band--seq-1, c-chart__band--seq-2, c-chart__band--seq-3, c-chart__band--seq-4, c-chart__band--seq-5, c-chart__band--seq-6, c-chart__band--seq-7, c-chart__bar, c-chart__control, c-chart__line, c-chart__missing, c-chart__note, c-chart__plot, c-chart__point, c-chart__tooltip, c-chart__zero. Parts: chart, plot. Slots: (default)."
+        "value": "Contour component `c-chart` (complete-widget). Variants: c-chart--donut, c-chart--histogram. Elements: c-chart__axis, c-chart__axis--centered, c-chart__band, c-chart__band--div-mid, c-chart__band--div-neg, c-chart__band--div-pos, c-chart__band--seq-1, c-chart__band--seq-2, c-chart__band--seq-3, c-chart__band--seq-4, c-chart__band--seq-5, c-chart__band--seq-6, c-chart__band--seq-7, c-chart__bar, c-chart__control, c-chart__data-table, c-chart__empty, c-chart__error, c-chart__legend, c-chart__legend-item, c-chart__legend-swatch, c-chart__line, c-chart__loading, c-chart__missing, c-chart__note, c-chart__plot, c-chart__point, c-chart__tick, c-chart__tooltip, c-chart__zero. Parts: chart, plot. Slots: (default)."
       },
       "attributes": [
         {
@@ -1314,7 +1345,7 @@
       "name": "contour-chart-grid",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-chart-grid` (complete-widget). Elements: c-chart-grid__empty. Parts: chart-grid. Slots: (default)."
+        "value": "Contour component `c-chart-grid` (complete-widget). Elements: c-chart-grid__empty, c-chart-grid__title. Parts: chart-grid. Slots: (default)."
       },
       "attributes": [
         {
@@ -1373,7 +1404,7 @@
       "name": "contour-check",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-check` (complete-widget). Elements: c-check__box, c-check__input. Parts: check. Slots: (default)."
+        "value": "Contour component `c-check` (complete-widget). Elements: c-check__input, c-check__message, c-check__message--error. Parts: check. Slots: (default)."
       },
       "attributes": [
         {
@@ -1411,6 +1442,37 @@
         {
           "name": "value",
           "description": "Attribute for c-check."
+        }
+      ],
+      "references": [
+        {
+          "name": "Contour docs",
+          "url": "dist/docs/"
+        }
+      ]
+    },
+    {
+      "name": "contour-checkbox-group",
+      "description": {
+        "kind": "markdown",
+        "value": "Contour component `c-checkbox-group` (complete-widget). Elements: c-checkbox-group__fieldset, c-checkbox-group__legend."
+      },
+      "attributes": [
+        {
+          "name": "legend",
+          "description": "Attribute for c-checkbox-group."
+        },
+        {
+          "name": "name",
+          "description": "Attribute for c-checkbox-group."
+        },
+        {
+          "name": "options",
+          "description": "Attribute for c-checkbox-group."
+        },
+        {
+          "name": "value",
+          "description": "Attribute for c-checkbox-group."
         }
       ],
       "references": [
@@ -1550,7 +1612,7 @@
       "name": "contour-color-picker",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-color-picker` (complete-widget). Elements: c-color-picker__alpha, c-color-picker__eyedropper, c-color-picker__input, c-color-picker__label, c-color-picker__preset, c-color-picker__presets."
+        "value": "Contour component `c-color-picker` (complete-widget). Elements: c-color-picker__alpha, c-color-picker__eyedropper, c-color-picker__input, c-color-picker__label, c-color-picker__message, c-color-picker__message--error, c-color-picker__preset, c-color-picker__presets."
       },
       "attributes": [
         {
@@ -1593,9 +1655,13 @@
       "name": "contour-combobox",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-combobox` (complete-widget). Elements: c-combobox__input, c-combobox__list, c-combobox__option. Parts: combobox, input, list. Slots: (default)."
+        "value": "Contour component `c-combobox` (complete-widget). Elements: c-combobox__clear, c-combobox__empty, c-combobox__input, c-combobox__list, c-combobox__list--virtual, c-combobox__match, c-combobox__option, c-combobox__option--active, c-combobox__option--selected. Parts: combobox, input, list. Slots: (default)."
       },
       "attributes": [
+        {
+          "name": "disabled",
+          "description": "Boolean attribute for c-combobox."
+        },
         {
           "name": "empty",
           "description": "Attribute for c-combobox."
@@ -1621,6 +1687,10 @@
           "description": "Boolean attribute for c-combobox."
         },
         {
+          "name": "name",
+          "description": "Attribute for c-combobox."
+        },
+        {
           "name": "options",
           "description": "Attribute for c-combobox."
         },
@@ -1631,6 +1701,10 @@
         {
           "name": "refresh",
           "description": "Attribute for c-combobox."
+        },
+        {
+          "name": "required",
+          "description": "Boolean attribute for c-combobox."
         },
         {
           "name": "retry",
@@ -1668,7 +1742,7 @@
       "name": "contour-command",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-command` (complete-widget). Elements: c-command__empty, c-command__field, c-command__foot, c-command__group, c-command__group-title, c-command__input, c-command__item, c-command__item--active, c-command__item-body, c-command__item-hint, c-command__item-icon, c-command__item-title, c-command__list, c-command__mark, c-command__status. Parts: command. Slots: (default)."
+        "value": "Contour component `c-command` (complete-widget). Elements: c-command__empty, c-command__field, c-command__foot, c-command__group, c-command__group-title, c-command__input, c-command__item, c-command__item--active, c-command__item-body, c-command__item-hint, c-command__item-icon, c-command__item-shortcut, c-command__item-title, c-command__list, c-command__mark, c-command__status. Parts: command. Slots: (default)."
       },
       "attributes": [
         {
@@ -1922,6 +1996,37 @@
         {
           "name": "items",
           "description": "Attribute for c-context-menu."
+        },
+        {
+          "name": "trigger",
+          "description": "Attribute for c-context-menu."
+        }
+      ],
+      "references": [
+        {
+          "name": "Contour docs",
+          "url": "dist/docs/"
+        }
+      ]
+    },
+    {
+      "name": "contour-contour-plot",
+      "description": {
+        "kind": "markdown",
+        "value": "Contour component `c-contour-plot` (complete-widget). Elements: c-contour-plot__contour, c-contour-plot__contour--level-2, c-contour-plot__contour--level-3, c-contour-plot__contour--level-4, c-contour-plot__contour--level-5, c-contour-plot__empty, c-contour-plot__fill. Parts: plot. Slots: (default)."
+      },
+      "attributes": [
+        {
+          "name": "label",
+          "description": "Attribute for c-contour-plot."
+        },
+        {
+          "name": "levels",
+          "description": "Attribute for c-contour-plot."
+        },
+        {
+          "name": "values",
+          "description": "Attribute for c-contour-plot."
         }
       ],
       "references": [
@@ -2122,6 +2227,29 @@
       ]
     },
     {
+      "name": "contour-dashboard-grid",
+      "description": {
+        "kind": "markdown",
+        "value": "Contour component `c-dashboard-grid` (complete-widget)."
+      },
+      "attributes": [
+        {
+          "name": "cols",
+          "description": "Attribute for c-dashboard-grid."
+        },
+        {
+          "name": "gap",
+          "description": "Attribute for c-dashboard-grid."
+        }
+      ],
+      "references": [
+        {
+          "name": "Contour docs",
+          "url": "dist/docs/"
+        }
+      ]
+    },
+    {
       "name": "contour-data-export",
       "description": {
         "kind": "markdown",
@@ -2164,7 +2292,19 @@
           "description": "Attribute for c-data-grid."
         },
         {
+          "name": "empty",
+          "description": "Attribute for c-data-grid."
+        },
+        {
+          "name": "error",
+          "description": "Attribute for c-data-grid."
+        },
+        {
           "name": "filter",
+          "description": "Attribute for c-data-grid."
+        },
+        {
+          "name": "loading",
           "description": "Attribute for c-data-grid."
         },
         {
@@ -2253,7 +2393,7 @@
       "name": "contour-date-picker",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-date-picker` (complete-widget). Elements: c-date-picker__calendar, c-date-picker__calendar-day, c-date-picker__calendar-day--empty, c-date-picker__calendar-grid, c-date-picker__calendar-header, c-date-picker__calendar-title, c-date-picker__calendar-weekday, c-date-picker__label."
+        "value": "Contour component `c-date-picker` (complete-widget). Elements: c-date-picker__calendar, c-date-picker__calendar-day, c-date-picker__calendar-day--empty, c-date-picker__calendar-grid, c-date-picker__calendar-header, c-date-picker__calendar-title, c-date-picker__calendar-weekday, c-date-picker__end, c-date-picker__label, c-date-picker__message, c-date-picker__message--error."
       },
       "attributes": [
         {
@@ -2415,6 +2555,29 @@
       ]
     },
     {
+      "name": "contour-density-toggle",
+      "description": {
+        "kind": "markdown",
+        "value": "Contour component `c-density-toggle` (complete-widget)."
+      },
+      "attributes": [
+        {
+          "name": "label",
+          "description": "Attribute for c-density-toggle."
+        },
+        {
+          "name": "value",
+          "description": "Attribute for c-density-toggle."
+        }
+      ],
+      "references": [
+        {
+          "name": "Contour docs",
+          "url": "dist/docs/"
+        }
+      ]
+    },
+    {
       "name": "contour-destructive-hint",
       "description": {
         "kind": "markdown",
@@ -2510,7 +2673,7 @@
       "name": "contour-divider",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-divider` (primitive)."
+        "value": "Contour component `c-divider` (primitive). Elements: c-divider__label."
       },
       "attributes": [
         {
@@ -2556,7 +2719,7 @@
       "name": "contour-docs-nav",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-docs-nav` (composition). Elements: c-docs-nav__badge, c-docs-nav__chevron, c-docs-nav__empty, c-docs-nav__error, c-docs-nav__group, c-docs-nav__group-title, c-docs-nav__link, c-docs-nav__list, c-docs-nav__list--nested, c-docs-nav__loading. Parts: docs-nav. Slots: (default)."
+        "value": "Contour component `c-docs-nav` (composition). Elements: c-docs-nav__badge, c-docs-nav__chevron, c-docs-nav__empty, c-docs-nav__error, c-docs-nav__group, c-docs-nav__group-title, c-docs-nav__link, c-docs-nav__link--nested, c-docs-nav__list, c-docs-nav__list--nested, c-docs-nav__loading. Parts: docs-nav. Slots: (default)."
       },
       "attributes": [
         {
@@ -2754,6 +2917,10 @@
         {
           "name": "label",
           "description": "Attribute for c-drag-handle."
+        },
+        {
+          "name": "open",
+          "description": "Boolean attribute for c-drag-handle."
         }
       ],
       "references": [
@@ -2773,6 +2940,10 @@
         {
           "name": "label",
           "description": "Attribute for c-draggable."
+        },
+        {
+          "name": "open",
+          "description": "Boolean attribute for c-draggable."
         }
       ],
       "references": [
@@ -2819,6 +2990,10 @@
         {
           "name": "label",
           "description": "Attribute for c-drop-indicator."
+        },
+        {
+          "name": "open",
+          "description": "Boolean attribute for c-drop-indicator."
         }
       ],
       "references": [
@@ -2948,7 +3123,7 @@
       "name": "contour-error-boundary",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-error-boundary` (scaffold). Elements: c-error-boundary__message."
+        "value": "Contour component `c-error-boundary` (scaffold). Elements: c-error-boundary__fallback, c-error-boundary__message."
       },
       "attributes": [
         {
@@ -3134,6 +3309,10 @@
       },
       "attributes": [
         {
+          "name": "disabled",
+          "description": "Boolean attribute for c-field."
+        },
+        {
           "name": "error",
           "description": "Attribute for c-field."
         },
@@ -3146,6 +3325,10 @@
           "description": "Attribute for c-field."
         },
         {
+          "name": "name",
+          "description": "Attribute for c-field."
+        },
+        {
           "name": "placeholder",
           "description": "Attribute for c-field."
         },
@@ -3155,6 +3338,10 @@
         },
         {
           "name": "type",
+          "description": "Attribute for c-field."
+        },
+        {
+          "name": "value",
           "description": "Attribute for c-field."
         }
       ],
@@ -3187,6 +3374,29 @@
         {
           "name": "required",
           "description": "Boolean attribute for c-field-group."
+        }
+      ],
+      "references": [
+        {
+          "name": "Contour docs",
+          "url": "dist/docs/"
+        }
+      ]
+    },
+    {
+      "name": "contour-fieldset",
+      "description": {
+        "kind": "markdown",
+        "value": "Contour component `c-fieldset` (complete-widget). Elements: c-fieldset__legend."
+      },
+      "attributes": [
+        {
+          "name": "disabled",
+          "description": "Boolean attribute for c-fieldset."
+        },
+        {
+          "name": "legend",
+          "description": "Attribute for c-fieldset."
         }
       ],
       "references": [
@@ -3235,6 +3445,10 @@
           "description": "Boolean attribute for c-file-upload."
         },
         {
+          "name": "name",
+          "description": "Attribute for c-file-upload."
+        },
+        {
           "name": "progress",
           "description": "Attribute for c-file-upload."
         }
@@ -3250,7 +3464,7 @@
       "name": "contour-filter-bar",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-filter-bar` (complete-widget). Elements: c-filter-bar__divider, c-filter-bar__empty, c-filter-bar__label, c-filter-bar__mode, c-filter-bar__modes. Parts: filter-bar. Slots: (default)."
+        "value": "Contour component `c-filter-bar` (complete-widget). Elements: c-filter-bar__clear-all, c-filter-bar__divider, c-filter-bar__empty, c-filter-bar__input, c-filter-bar__label, c-filter-bar__mode, c-filter-bar__modes, c-filter-bar__scope, c-filter-bar__scope-btn. Parts: filter-bar. Slots: (default)."
       },
       "attributes": [
         {
@@ -3485,11 +3699,15 @@
       "name": "contour-form",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-form` (complete-widget). Elements: c-form__actions, c-form__submit, c-form__summary."
+        "value": "Contour component `c-form` (complete-widget). Elements: c-form__actions, c-form__submit, c-form__summary, c-form__title."
       },
       "attributes": [
         {
           "name": "error",
+          "description": "Attribute for c-form."
+        },
+        {
+          "name": "submit-label",
           "description": "Attribute for c-form."
         },
         {
@@ -3498,6 +3716,10 @@
         },
         {
           "name": "summary",
+          "description": "Attribute for c-form."
+        },
+        {
+          "name": "title",
           "description": "Attribute for c-form."
         }
       ],
@@ -3512,7 +3734,7 @@
       "name": "contour-gauge",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-gauge` (complete-widget). Elements: c-gauge__band, c-gauge__dial, c-gauge__empty, c-gauge__error, c-gauge__hub, c-gauge__loading, c-gauge__needle, c-gauge__title, c-gauge__track, c-gauge__value, c-gauge__zone. Parts: gauge, dial, track, needle, hub, value, band. Slots: value, band."
+        "value": "Contour component `c-gauge` (complete-widget). Elements: c-gauge__band, c-gauge__desc, c-gauge__dial, c-gauge__empty, c-gauge__error, c-gauge__hub, c-gauge__loading, c-gauge__needle, c-gauge__title, c-gauge__track, c-gauge__value, c-gauge__zone, c-gauge__zones. Parts: gauge, dial, track, needle, hub, value, band. Slots: value, band."
       },
       "attributes": [
         {
@@ -3851,6 +4073,33 @@
       ]
     },
     {
+      "name": "contour-icon",
+      "description": {
+        "kind": "markdown",
+        "value": "Contour component `c-icon` (complete-widget)."
+      },
+      "attributes": [
+        {
+          "name": "label",
+          "description": "Attribute for c-icon."
+        },
+        {
+          "name": "name",
+          "description": "Attribute for c-icon."
+        },
+        {
+          "name": "size",
+          "description": "Attribute for c-icon."
+        }
+      ],
+      "references": [
+        {
+          "name": "Contour docs",
+          "url": "dist/docs/"
+        }
+      ]
+    },
+    {
       "name": "contour-icon-badge",
       "description": {
         "kind": "markdown",
@@ -3873,7 +4122,7 @@
       "name": "contour-input",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-input` (complete-widget). Parts: input."
+        "value": "Contour component `c-input` (complete-widget). Elements: c-input__message, c-input__message--error. Parts: input."
       },
       "attributes": [
         {
@@ -3920,7 +4169,7 @@
       "name": "contour-input-group",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-input-group` (complete-widget). Parts: input-group. Slots: (default)."
+        "value": "Contour component `c-input-group` (complete-widget). Elements: c-input-group__clear, c-input-group__submit. Parts: input-group. Slots: (default)."
       },
       "attributes": [
         {
@@ -4434,7 +4683,7 @@
       "name": "contour-legend",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-legend` (complete-widget). Variants: c-legend--graduated, c-legend--inline, c-legend--interactive. Elements: c-legend__audit, c-legend__break-label, c-legend__caption, c-legend__classification, c-legend__empty, c-legend__error, c-legend__item, c-legend__items, c-legend__loading, c-legend__method, c-legend__norm, c-legend__ramp, c-legend__ramp-break, c-legend__ramp-label, c-legend__ramp-segment, c-legend__scale, c-legend__size, c-legend__swatch, c-legend__swatch--graduated, c-legend__swatch--line, c-legend__table, c-legend__table-wrap, c-legend__title. Parts: legend. Slots: (default)."
+        "value": "Contour component `c-legend` (complete-widget). Variants: c-legend--graduated, c-legend--inline, c-legend--interactive. Elements: c-legend__audit, c-legend__break-input, c-legend__break-label, c-legend__caption, c-legend__classification, c-legend__empty, c-legend__error, c-legend__glyph, c-legend__item, c-legend__items, c-legend__loading, c-legend__method, c-legend__no-data, c-legend__norm, c-legend__ramp, c-legend__ramp-break, c-legend__ramp-label, c-legend__ramp-label--end, c-legend__ramp-label--start, c-legend__ramp-segment, c-legend__scale, c-legend__size, c-legend__swatch, c-legend__swatch--graduated, c-legend__swatch--line, c-legend__table, c-legend__table-wrap, c-legend__title. Parts: legend. Slots: (default)."
       },
       "attributes": [
         {
@@ -4632,19 +4881,7 @@
       },
       "attributes": [
         {
-          "name": "dismissible",
-          "description": "Boolean attribute for c-loading."
-        },
-        {
-          "name": "href",
-          "description": "Attribute for c-loading."
-        },
-        {
-          "name": "link",
-          "description": "Attribute for c-loading."
-        },
-        {
-          "name": "message",
+          "name": "label",
           "description": "Attribute for c-loading."
         }
       ],
@@ -4703,7 +4940,7 @@
       "name": "contour-map-footer",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-map-footer` (complete-widget). Parts: map-footer. Slots: (default)."
+        "value": "Contour component `c-map-footer` (complete-widget). Elements: c-map-footer__brand. Parts: map-footer. Slots: (default)."
       },
       "attributes": [
         {
@@ -4741,7 +4978,7 @@
       "name": "contour-map-popup",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-map-popup` (complete-widget). Variants: c-map-popup--flip-both, c-map-popup--flip-x, c-map-popup--flip-y. Elements: c-map-popup__body, c-map-popup__title."
+        "value": "Contour component `c-map-popup` (complete-widget). Variants: c-map-popup--flip-both, c-map-popup--flip-x, c-map-popup--flip-y. Elements: c-map-popup__body, c-map-popup__cluster, c-map-popup__cluster-item, c-map-popup__cluster-list, c-map-popup__title."
       },
       "attributes": [
         {
@@ -4819,19 +5056,7 @@
       },
       "attributes": [
         {
-          "name": "dismissible",
-          "description": "Boolean attribute for c-mark."
-        },
-        {
-          "name": "href",
-          "description": "Attribute for c-mark."
-        },
-        {
-          "name": "link",
-          "description": "Attribute for c-mark."
-        },
-        {
-          "name": "message",
+          "name": "label",
           "description": "Attribute for c-mark."
         }
       ],
@@ -4846,7 +5071,7 @@
       "name": "contour-measure",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-measure` (complete-widget). Elements: c-measure__empty, c-measure__error, c-measure__label, c-measure__line, c-measure__loading, c-measure__point, c-measure__readout. Parts: measure. Slots: (default)."
+        "value": "Contour component `c-measure` (complete-widget). Elements: c-measure__empty, c-measure__error, c-measure__label, c-measure__line, c-measure__loading, c-measure__point, c-measure__readout, c-measure__unit-select. Parts: measure. Slots: (default)."
       },
       "attributes": [
         {
@@ -4913,7 +5138,7 @@
       "name": "contour-menu",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-menu` (complete-widget). Elements: c-menu__empty, c-menu__error, c-menu__item, c-menu__item--danger, c-menu__label, c-menu__loading, c-menu__separator, c-menu__shortcut. Parts: menu. Slots: (default)."
+        "value": "Contour component `c-menu` (complete-widget). Elements: c-menu__empty, c-menu__error, c-menu__group, c-menu__group-label, c-menu__item, c-menu__item--danger, c-menu__label, c-menu__loading, c-menu__separator, c-menu__shortcut. Parts: menu. Slots: (default)."
       },
       "attributes": [
         {
@@ -5165,7 +5390,7 @@
       "name": "contour-notification-center",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-notification-center` (complete-widget). Elements: c-notification-center__badge, c-notification-center__bullet, c-notification-center__item, c-notification-center__panel, c-notification-center__trigger."
+        "value": "Contour component `c-notification-center` (complete-widget). Elements: c-notification-center__badge, c-notification-center__bullet, c-notification-center__dismiss, c-notification-center__empty, c-notification-center__item, c-notification-center__item-label, c-notification-center__panel, c-notification-center__trigger."
       },
       "attributes": [
         {
@@ -5192,7 +5417,7 @@
       "name": "contour-number-field",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-number-field` (complete-widget). Elements: c-number-field__label."
+        "value": "Contour component `c-number-field` (complete-widget). Elements: c-number-field__label, c-number-field__message, c-number-field__message--error."
       },
       "attributes": [
         {
@@ -5262,7 +5487,7 @@
       "name": "contour-pagination",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-pagination` (complete-widget). Elements: c-pagination__empty, c-pagination__error, c-pagination__link, c-pagination__loading, c-pagination__prev. Parts: pagination. Slots: (default)."
+        "value": "Contour component `c-pagination` (complete-widget). Elements: c-pagination__empty, c-pagination__error, c-pagination__link, c-pagination__loading, c-pagination__next, c-pagination__prev. Parts: pagination. Slots: (default)."
       },
       "attributes": [
         {
@@ -5344,7 +5569,7 @@
       "name": "contour-panel",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-panel` (complete-widget). Variants: c-panel--collapsed. Elements: c-panel__actions, c-panel__body, c-panel__body--flush, c-panel__foot, c-panel__head, c-panel__status, c-panel__status--error, c-panel__status--live, c-panel__subtitle, c-panel__title. Parts: panel. Slots: (default)."
+        "value": "Contour component `c-panel` (complete-widget). Variants: c-panel--collapsed. Elements: c-panel__actions, c-panel__body, c-panel__body--flush, c-panel__collapse, c-panel__foot, c-panel__head, c-panel__status, c-panel__status--error, c-panel__status--live, c-panel__subtitle, c-panel__title. Parts: panel. Slots: (default)."
       },
       "attributes": [
         {
@@ -5572,7 +5797,7 @@
       "name": "contour-progress",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-progress` (complete-widget). Variants: c-progress--accent. Elements: c-progress__bar. Parts: progress. Slots: (default)."
+        "value": "Contour component `c-progress` (complete-widget). Variants: c-progress--accent, c-progress--paused. Elements: c-progress__bar, c-progress__pause. Parts: progress. Slots: (default)."
       },
       "attributes": [
         {
@@ -5712,10 +5937,33 @@
       ]
     },
     {
+      "name": "contour-query-builder",
+      "description": {
+        "kind": "markdown",
+        "value": "Contour component `c-query-builder` (complete-widget). Elements: c-query-builder__field, c-query-builder__list, c-query-builder__op, c-query-builder__row, c-query-builder__value."
+      },
+      "attributes": [
+        {
+          "name": "fields",
+          "description": "Attribute for c-query-builder."
+        },
+        {
+          "name": "query",
+          "description": "Attribute for c-query-builder."
+        }
+      ],
+      "references": [
+        {
+          "name": "Contour docs",
+          "url": "dist/docs/"
+        }
+      ]
+    },
+    {
       "name": "contour-radio",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-radio` (complete-widget). Elements: c-radio__input. Parts: radio. Slots: (default)."
+        "value": "Contour component `c-radio` (complete-widget). Elements: c-radio__input, c-radio__message, c-radio__message--error. Parts: radio. Slots: (default)."
       },
       "attributes": [
         {
@@ -5821,7 +6069,7 @@
       "name": "contour-range",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-range` (complete-widget). Parts: range. Slots: (default)."
+        "value": "Contour component `c-range` (complete-widget). Elements: c-range__sparkline. Parts: range. Slots: (default)."
       },
       "attributes": [
         {
@@ -5857,11 +6105,19 @@
           "description": "Attribute for c-range."
         },
         {
+          "name": "name",
+          "description": "Attribute for c-range."
+        },
+        {
           "name": "range",
           "description": "Attribute for c-range."
         },
         {
           "name": "sparkline",
+          "description": "Attribute for c-range."
+        },
+        {
+          "name": "step",
           "description": "Attribute for c-range."
         },
         {
@@ -5880,7 +6136,7 @@
       "name": "contour-range-scale",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-range-scale` (complete-widget). Parts: range-scale. Slots: (default)."
+        "value": "Contour component `c-range-scale` (complete-widget). Elements: c-range-scale__label, c-range-scale__tick. Parts: range-scale. Slots: (default)."
       },
       "attributes": [
         {
@@ -6028,7 +6284,7 @@
       "name": "contour-reserved",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-reserved` (scaffold). Parts: reserved. Slots: (default)."
+        "value": "Contour component `c-reserved` (scaffold). Elements: c-reserved__title. Parts: reserved. Slots: (default)."
       },
       "attributes": [
         {
@@ -6070,7 +6326,7 @@
       "name": "contour-resize-handle",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-resize-handle` (complete-widget). Parts: resize-handle. Slots: (default)."
+        "value": "Contour component `c-resize-handle` (complete-widget). Variants: c-resize-handle--dragging. Parts: resize-handle. Slots: (default)."
       },
       "attributes": [
         {
@@ -6317,6 +6573,37 @@
       ]
     },
     {
+      "name": "contour-search-field",
+      "description": {
+        "kind": "markdown",
+        "value": "Contour component `c-search-field` (complete-widget). Elements: c-search-field__input."
+      },
+      "attributes": [
+        {
+          "name": "label",
+          "description": "Attribute for c-search-field."
+        },
+        {
+          "name": "name",
+          "description": "Attribute for c-search-field."
+        },
+        {
+          "name": "placeholder",
+          "description": "Attribute for c-search-field."
+        },
+        {
+          "name": "value",
+          "description": "Attribute for c-search-field."
+        }
+      ],
+      "references": [
+        {
+          "name": "Contour docs",
+          "url": "dist/docs/"
+        }
+      ]
+    },
+    {
       "name": "contour-search-trigger",
       "description": {
         "kind": "markdown",
@@ -6401,9 +6688,13 @@
       "name": "contour-select",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-select` (complete-widget). Parts: select. Slots: (default)."
+        "value": "Contour component `c-select` (complete-widget). Elements: c-select__label, c-select__message, c-select__message--error. Parts: select. Slots: (default)."
       },
       "attributes": [
+        {
+          "name": "autocomplete",
+          "description": "Attribute for c-select."
+        },
         {
           "name": "disabled",
           "description": "Boolean attribute for c-select."
@@ -6421,6 +6712,14 @@
           "description": "Attribute for c-select."
         },
         {
+          "name": "multiple",
+          "description": "Boolean attribute for c-select."
+        },
+        {
+          "name": "name",
+          "description": "Attribute for c-select."
+        },
+        {
           "name": "options",
           "description": "Attribute for c-select."
         },
@@ -6431,6 +6730,10 @@
         {
           "name": "required",
           "description": "Boolean attribute for c-select."
+        },
+        {
+          "name": "value",
+          "description": "Attribute for c-select."
         }
       ],
       "references": [
@@ -7668,7 +7971,7 @@
       "name": "contour-shortcut",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-shortcut` (complete-widget). Elements: c-shortcut__key."
+        "value": "Contour component `c-shortcut` (complete-widget). Elements: c-shortcut__key, c-shortcut__label."
       },
       "attributes": [
         {
@@ -7691,7 +7994,7 @@
       "name": "contour-shortcut-list",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-shortcut-list` (complete-widget). Parts: shortcut-list. Slots: (default)."
+        "value": "Contour component `c-shortcut-list` (complete-widget). Elements: c-shortcut-list__title. Parts: shortcut-list. Slots: (default)."
       },
       "attributes": [
         {
@@ -7775,7 +8078,7 @@
       "name": "contour-showcase",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-showcase` (complete-widget). Variants: c-showcase--reverse. Elements: c-showcase__empty, c-showcase__error, c-showcase__list, c-showcase__loading, c-showcase__media, c-showcase__text, c-showcase__title. Parts: showcase. Slots: (default)."
+        "value": "Contour component `c-showcase` (complete-widget). Variants: c-showcase--reverse. Elements: c-showcase__caption, c-showcase__empty, c-showcase__error, c-showcase__list, c-showcase__loading, c-showcase__media, c-showcase__text, c-showcase__title. Parts: showcase. Slots: (default)."
       },
       "attributes": [
         {
@@ -7877,7 +8180,7 @@
       "name": "contour-sidebar",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-sidebar` (composition). Elements: c-sidebar__title. Parts: sidebar. Slots: (default)."
+        "value": "Contour component `c-sidebar` (composition). Variants: c-sidebar--collapsed. Elements: c-sidebar__link, c-sidebar__nav, c-sidebar__title. Parts: sidebar. Slots: (default)."
       },
       "attributes": [
         {
@@ -7943,10 +8246,33 @@
       ]
     },
     {
+      "name": "contour-skip-link",
+      "description": {
+        "kind": "markdown",
+        "value": "Contour component `c-skip-link` (complete-widget)."
+      },
+      "attributes": [
+        {
+          "name": "href",
+          "description": "Attribute for c-skip-link."
+        },
+        {
+          "name": "label",
+          "description": "Attribute for c-skip-link."
+        }
+      ],
+      "references": [
+        {
+          "name": "Contour docs",
+          "url": "dist/docs/"
+        }
+      ]
+    },
+    {
       "name": "contour-sortable-list",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-sortable-list` (complete-widget). Elements: c-sortable-list__handle, c-sortable-list__item, c-sortable-list__list."
+        "value": "Contour component `c-sortable-list` (complete-widget). Elements: c-sortable-list__handle, c-sortable-list__item, c-sortable-list__label, c-sortable-list__list, c-sortable-list__live."
       },
       "attributes": [
         {
@@ -8020,7 +8346,7 @@
       "name": "contour-spatial-filter",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-spatial-filter` (complete-widget). Variants: c-spatial-filter--active. Elements: c-spatial-filter__clear-all, c-spatial-filter__modes, c-spatial-filter__operator, c-spatial-filter__readout."
+        "value": "Contour component `c-spatial-filter` (complete-widget). Variants: c-spatial-filter--active. Elements: c-spatial-filter__clear-all, c-spatial-filter__modes, c-spatial-filter__operator, c-spatial-filter__operator-select, c-spatial-filter__readout."
       },
       "attributes": [
         {
@@ -8156,7 +8482,7 @@
       "name": "contour-split-view",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-split-view` (complete-widget). Variants: c-split-view--vertical. Elements: c-split-view__divider, c-split-view__divider--dragging, c-split-view__pane, c-split-view__pane--left, c-split-view__pane--right."
+        "value": "Contour component `c-split-view` (complete-widget). Variants: c-split-view--horizontal, c-split-view--vertical. Elements: c-split-view__divider, c-split-view__divider--dragging, c-split-view__pane, c-split-view__pane--left, c-split-view__pane--right."
       },
       "attributes": [
         {
@@ -8342,7 +8668,7 @@
       "name": "contour-status-light",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-status-light` (complete-widget). Variants: c-status-light--success."
+        "value": "Contour component `c-status-light` (complete-widget). Variants: c-status-light--success. Elements: c-status-light__label."
       },
       "attributes": [
         {
@@ -8388,7 +8714,7 @@
       "name": "contour-steps",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-steps` (complete-widget). Elements: c-steps__body, c-steps__empty, c-steps__error, c-steps__item, c-steps__loading, c-steps__title. Parts: steps. Slots: (default)."
+        "value": "Contour component `c-steps` (complete-widget). Elements: c-steps__body, c-steps__empty, c-steps__error, c-steps__item, c-steps__list, c-steps__loading, c-steps__title. Parts: steps. Slots: (default)."
       },
       "attributes": [
         {
@@ -8686,7 +9012,7 @@
       "name": "contour-switch",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-switch` (complete-widget). Elements: c-switch__input, c-switch__track. Parts: switch. Slots: (default)."
+        "value": "Contour component `c-switch` (complete-widget). Elements: c-switch__input, c-switch__message, c-switch__message--error. Parts: switch. Slots: (default)."
       },
       "attributes": [
         {
@@ -8725,7 +9051,7 @@
       "name": "contour-table",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-table` (complete-widget). Variants: c-table--compact, c-table--dense, c-table--virtual. Elements: c-table__actions, c-table__pagination, c-table__pinned, c-table__select, c-table__sort. Parts: wrap, table. Slots: head, (default)."
+        "value": "Contour component `c-table` (complete-widget). Variants: c-table--compact, c-table--dense, c-table--virtual. Elements: c-table__actions, c-table__filter-input, c-table__pagination, c-table__pinned, c-table__row-select, c-table__select, c-table__select-all, c-table__sort. Parts: wrap, table. Slots: head, (default)."
       },
       "attributes": [
         {
@@ -8907,7 +9233,7 @@
       "name": "contour-tags-input",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-tags-input` (complete-widget). Elements: c-tags-input__input, c-tags-input__remove, c-tags-input__tag."
+        "value": "Contour component `c-tags-input` (complete-widget). Elements: c-tags-input__input, c-tags-input__live, c-tags-input__message, c-tags-input__message--error, c-tags-input__remove, c-tags-input__tag."
       },
       "attributes": [
         {
@@ -8969,7 +9295,7 @@
       "name": "contour-textarea",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-textarea` (complete-widget). Parts: textarea."
+        "value": "Contour component `c-textarea` (complete-widget). Elements: c-textarea__message, c-textarea__message--error. Parts: textarea."
       },
       "attributes": [
         {
@@ -9004,7 +9330,7 @@
       "name": "contour-theme-scope",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-theme-scope` (composition). Parts: theme-scope. Slots: (default)."
+        "value": "Contour component `c-theme-scope` (composition). Elements: c-theme-scope__title. Parts: theme-scope. Slots: (default)."
       },
       "attributes": [
         {
@@ -9090,7 +9416,7 @@
       "name": "contour-time-picker",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-time-picker` (complete-widget). Elements: c-time-picker__label."
+        "value": "Contour component `c-time-picker` (complete-widget). Elements: c-time-picker__label, c-time-picker__message, c-time-picker__message--error."
       },
       "attributes": [
         {
@@ -9125,7 +9451,7 @@
       "name": "contour-time-range",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-time-range` (complete-widget). Parts: time-range. Slots: (default)."
+        "value": "Contour component `c-time-range` (complete-widget). Elements: c-time-range__label, c-time-range__tick. Parts: time-range. Slots: (default)."
       },
       "attributes": [
         {
@@ -9152,7 +9478,7 @@
       "name": "contour-time-series",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-time-series` (complete-widget). Elements: c-time-series__bar, c-time-series__note, c-time-series__plot, c-time-series__point."
+        "value": "Contour component `c-time-series` (complete-widget). Elements: c-time-series__bar, c-time-series__line, c-time-series__note, c-time-series__plot, c-time-series__point."
       },
       "attributes": [
         {
@@ -9298,7 +9624,7 @@
       "name": "contour-timeline",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-timeline` (complete-widget). Elements: c-timeline__item, c-timeline__text, c-timeline__time, c-timeline__title. Parts: timeline. Slots: (default)."
+        "value": "Contour component `c-timeline` (complete-widget). Elements: c-timeline__item, c-timeline__list, c-timeline__text, c-timeline__time, c-timeline__title. Parts: timeline. Slots: (default)."
       },
       "attributes": [
         {
@@ -9353,7 +9679,7 @@
       "name": "contour-toast",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-toast` (complete-widget). Parts: toast. Slots: (default)."
+        "value": "Contour component `c-toast` (complete-widget). Elements: c-toast__action, c-toast__text. Parts: toast. Slots: (default)."
       },
       "attributes": [
         {
@@ -9448,7 +9774,7 @@
       "name": "contour-toolbar",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-toolbar` (complete-widget). Elements: c-toolbar__btn. Parts: toolbar. Slots: (default)."
+        "value": "Contour component `c-toolbar` (complete-widget). Elements: c-toolbar__btn, c-toolbar__overflow, c-toolbar__overflow-btn, c-toolbar__overflow-menu. Parts: toolbar. Slots: (default)."
       },
       "attributes": [
         {
@@ -9475,7 +9801,7 @@
       "name": "contour-tooltip",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-tooltip` (complete-widget). Parts: tooltip. Slots: (default)."
+        "value": "Contour component `c-tooltip` (complete-widget). Variants: c-tooltip--flip-x, c-tooltip--flip-y. Parts: tooltip. Slots: (default)."
       },
       "attributes": [
         {
@@ -9506,7 +9832,7 @@
       "name": "contour-tour",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-tour` (complete-widget). Elements: c-tour__nav, c-tour__step, c-tour__tip."
+        "value": "Contour component `c-tour` (complete-widget). Elements: c-tour__nav, c-tour__step, c-tour__target, c-tour__tip."
       },
       "attributes": [
         {
@@ -9529,7 +9855,7 @@
       "name": "contour-tree",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-tree` (complete-widget). Elements: c-tree__children, c-tree__leaf, c-tree__node, c-tree__row, c-tree__select, c-tree__toggle. Parts: tree. Slots: (default)."
+        "value": "Contour component `c-tree` (complete-widget). Elements: c-tree__children, c-tree__empty, c-tree__indent, c-tree__leaf, c-tree__node, c-tree__row, c-tree__select, c-tree__spacer, c-tree__spacer--bottom, c-tree__spacer--top, c-tree__toggle. Parts: tree. Slots: (default)."
       },
       "attributes": [
         {
@@ -9600,15 +9926,27 @@
       "name": "contour-tree-grid",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-tree-grid` (complete-widget). Elements: c-tree-grid__table."
+        "value": "Contour component `c-tree-grid` (complete-widget). Elements: c-tree-grid__label, c-tree-grid__table, c-tree-grid__toggle, c-tree-grid__wrap."
       },
       "attributes": [
+        {
+          "name": "empty",
+          "description": "Attribute for c-tree-grid."
+        },
+        {
+          "name": "error",
+          "description": "Attribute for c-tree-grid."
+        },
         {
           "name": "expanded",
           "description": "Attribute for c-tree-grid."
         },
         {
           "name": "items",
+          "description": "Attribute for c-tree-grid."
+        },
+        {
+          "name": "loading",
           "description": "Attribute for c-tree-grid."
         }
       ],
@@ -9642,7 +9980,7 @@
       "name": "contour-version-banner",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-version-banner` (complete-widget). Parts: banner. Slots: (default)."
+        "value": "Contour component `c-version-banner` (complete-widget). Elements: c-version-banner__dismiss, c-version-banner__link. Parts: banner. Slots: (default)."
       },
       "attributes": [
         {

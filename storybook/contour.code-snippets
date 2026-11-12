@@ -76,6 +76,17 @@
     "description": "Contour c-alert (complete-widget)",
     "scope": "html,vue,jsx,tsx"
   },
+  "Contour: contour-analysis-stack": {
+    "prefix": [
+      "contour-analysis-stack",
+      "c-analysis-stack"
+    ],
+    "body": [
+      "<contour-analysis-stack title=\"${1:title}\">$0</contour-analysis-stack>"
+    ],
+    "description": "Contour c-analysis-stack (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
   "Contour: contour-anchor": {
     "prefix": [
       "contour-anchor",
@@ -406,6 +417,17 @@
     "description": "Contour c-check (complete-widget)",
     "scope": "html,vue,jsx,tsx"
   },
+  "Contour: contour-checkbox-group": {
+    "prefix": [
+      "contour-checkbox-group",
+      "c-checkbox-group"
+    ],
+    "body": [
+      "<contour-checkbox-group name=\"${1:name}\" options=\"${2:options}\" value=\"${3:value}\">$0</contour-checkbox-group>"
+    ],
+    "description": "Contour c-checkbox-group (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
   "Contour: contour-chip": {
     "prefix": [
       "contour-chip",
@@ -549,6 +571,17 @@
     "description": "Contour c-context-menu (complete-widget)",
     "scope": "html,vue,jsx,tsx"
   },
+  "Contour: contour-contour-plot": {
+    "prefix": [
+      "contour-contour-plot",
+      "c-contour-plot"
+    ],
+    "body": [
+      "<contour-contour-plot label=\"${1:label}\">$0</contour-contour-plot>"
+    ],
+    "description": "Contour c-contour-plot (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
   "Contour: contour-coordinate": {
     "prefix": [
       "contour-coordinate",
@@ -613,6 +646,17 @@
       "<contour-dash-toolbar title=\"${1:title}\">$0</contour-dash-toolbar>"
     ],
     "description": "Contour c-dash-toolbar (composition)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-dashboard-grid": {
+    "prefix": [
+      "contour-dashboard-grid",
+      "c-dashboard-grid"
+    ],
+    "body": [
+      "<contour-dashboard-grid>$0</contour-dashboard-grid>"
+    ],
+    "description": "Contour c-dashboard-grid (complete-widget)",
     "scope": "html,vue,jsx,tsx"
   },
   "Contour: contour-data-export": {
@@ -690,6 +734,17 @@
       "<contour-delta value=\"${1:value}\" src=\"${2:src}\">$0</contour-delta>"
     ],
     "description": "Contour c-delta (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-density-toggle": {
+    "prefix": [
+      "contour-density-toggle",
+      "c-density-toggle"
+    ],
+    "body": [
+      "<contour-density-toggle value=\"${1:value}\" label=\"${2:label}\">$0</contour-density-toggle>"
+    ],
+    "description": "Contour c-density-toggle (complete-widget)",
     "scope": "html,vue,jsx,tsx"
   },
   "Contour: contour-destructive-hint": {
@@ -962,7 +1017,7 @@
       "c-field"
     ],
     "body": [
-      "<contour-field label=\"${1:label}\" placeholder=\"${2:placeholder}\">$0</contour-field>"
+      "<contour-field label=\"${1:label}\" placeholder=\"${2:placeholder}\" name=\"${3:name}\">$0</contour-field>"
     ],
     "description": "Contour c-field (complete-widget)",
     "scope": "html,vue,jsx,tsx"
@@ -976,6 +1031,17 @@
       "<contour-field-group label=\"${1:label}\">$0</contour-field-group>"
     ],
     "description": "Contour c-field-group (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-fieldset": {
+    "prefix": [
+      "contour-fieldset",
+      "c-fieldset"
+    ],
+    "body": [
+      "<contour-fieldset>$0</contour-fieldset>"
+    ],
+    "description": "Contour c-fieldset (complete-widget)",
     "scope": "html,vue,jsx,tsx"
   },
   "Contour: contour-file-tree": {
@@ -995,7 +1061,7 @@
       "c-file-upload"
     ],
     "body": [
-      "<contour-file-upload label=\"${1:label}\">$0</contour-file-upload>"
+      "<contour-file-upload label=\"${1:label}\" name=\"${2:name}\">$0</contour-file-upload>"
     ],
     "description": "Contour c-file-upload (complete-widget)",
     "scope": "html,vue,jsx,tsx"
@@ -1061,7 +1127,7 @@
       "c-form"
     ],
     "body": [
-      "<contour-form>$0</contour-form>"
+      "<contour-form title=\"${1:title}\">$0</contour-form>"
     ],
     "description": "Contour c-form (complete-widget)",
     "scope": "html,vue,jsx,tsx"
@@ -1130,6 +1196,17 @@
       "<contour-hover-card title=\"${1:title}\">$0</contour-hover-card>"
     ],
     "description": "Contour c-hover-card (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-icon": {
+    "prefix": [
+      "contour-icon",
+      "c-icon"
+    ],
+    "body": [
+      "<contour-icon name=\"${1:name}\" label=\"${2:label}\">$0</contour-icon>"
+    ],
+    "description": "Contour c-icon (complete-widget)",
     "scope": "html,vue,jsx,tsx"
   },
   "Contour: contour-icon-badge": {
@@ -1314,7 +1391,7 @@
       "c-loading"
     ],
     "body": [
-      "<contour-loading>$0</contour-loading>"
+      "<contour-loading label=\"${1:label}\">$0</contour-loading>"
     ],
     "description": "Contour c-loading (scaffold)",
     "scope": "html,vue,jsx,tsx"
@@ -1391,7 +1468,7 @@
       "c-mark"
     ],
     "body": [
-      "<contour-mark>$0</contour-mark>"
+      "<contour-mark label=\"${1:label}\">$0</contour-mark>"
     ],
     "description": "Contour c-mark (complete-widget)",
     "scope": "html,vue,jsx,tsx"
@@ -1649,6 +1726,17 @@
     "description": "Contour c-pullquote (complete-widget)",
     "scope": "html,vue,jsx,tsx"
   },
+  "Contour: contour-query-builder": {
+    "prefix": [
+      "contour-query-builder",
+      "c-query-builder"
+    ],
+    "body": [
+      "<contour-query-builder>$0</contour-query-builder>"
+    ],
+    "description": "Contour c-query-builder (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
   "Contour: contour-radio": {
     "prefix": [
       "contour-radio",
@@ -1677,7 +1765,7 @@
       "c-range"
     ],
     "body": [
-      "<contour-range value=\"${1:value}\" label=\"${2:label}\">$0</contour-range>"
+      "<contour-range value=\"${1:value}\" label=\"${2:label}\" name=\"${3:name}\">$0</contour-range>"
     ],
     "description": "Contour c-range (complete-widget)",
     "scope": "html,vue,jsx,tsx"
@@ -1856,6 +1944,17 @@
       "<contour-scroll-area title=\"${1:title}\">$0</contour-scroll-area>"
     ],
     "description": "Contour c-scroll-area (complete-widget)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-search-field": {
+    "prefix": [
+      "contour-search-field",
+      "c-search-field"
+    ],
+    "body": [
+      "<contour-search-field value=\"${1:value}\" placeholder=\"${2:placeholder}\" label=\"${3:label}\">$0</contour-search-field>"
+    ],
+    "description": "Contour c-search-field (complete-widget)",
     "scope": "html,vue,jsx,tsx"
   },
   "Contour: contour-search-trigger": {
@@ -3902,6 +4001,17 @@
       "<contour-skeleton-group>$0</contour-skeleton-group>"
     ],
     "description": "Contour c-skeleton-group (scaffold)",
+    "scope": "html,vue,jsx,tsx"
+  },
+  "Contour: contour-skip-link": {
+    "prefix": [
+      "contour-skip-link",
+      "c-skip-link"
+    ],
+    "body": [
+      "<contour-skip-link label=\"${1:label}\">$0</contour-skip-link>"
+    ],
+    "description": "Contour c-skip-link (complete-widget)",
     "scope": "html,vue,jsx,tsx"
   },
   "Contour: contour-sortable-list": {

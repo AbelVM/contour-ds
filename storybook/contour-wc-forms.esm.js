@@ -102,7 +102,7 @@
   // {index, label} and {value} across its sites, so all three are listed.
   /** Frozen event vocabulary with the public detail keys for each event. */
   export const CONTOUR_EVENTS = Object.freeze({
-    "contour:activate": { payload: ["row"], composed: true },
+    "contour:activate": { payload: ["files", "label", "row", "value"], composed: true },
     "contour:add": { payload: ["value"], composed: true },
     "contour:activity-clear": { payload: [], composed: true },
     "contour:activity-filter": { payload: ["unread"], composed: true },
@@ -117,16 +117,17 @@
     "contour:brush-start": { payload: ["end", "start", "value"], composed: true },
     "contour:brush-end": { payload: ["end", "start", "value"], composed: true },
     "contour:brush": { payload: ["end", "start", "value"], composed: true },
-    "contour:change": { payload: ["checked", "color", "direction", "end", "files", "high", "index", "low", "month", "name", "speed", "start", "unit", "value", "year"], composed: true },
+    "contour:change": { payload: ["checked", "color", "direction", "end", "files", "high", "index", "low", "month", "name", "paused", "query", "speed", "start", "unit", "value", "values", "year"], composed: true },
     "contour:collapse": { payload: ["collapsed"], composed: true },
       "contour:cluster-toggle": { payload: ["count", "expanded"], composed: true },
     "contour:clear": { payload: [], composed: true },
     "contour:clear-all": { payload: [], composed: true },
-    "contour:close": { payload: ["index", "label"], composed: true },
+    "contour:close": { payload: ["count", "index", "label", "message", "open", "value"], composed: true },
     "contour:copy": { payload: ["text"], composed: true },
     "contour:apply": { payload: ["name"], composed: true },
     "contour:dash-action": { payload: ["label"], composed: true },
     "contour:diff-activate": { payload: ["kind", "text"], composed: true },
+    "contour:dismiss": { payload: ["label"], composed: true },
     "contour:draw-start": { payload: ["mode"], composed: true },
     "contour:drag": { payload: ["delta", "key", "value"], composed: true },
     "contour:do-dont-activate": { payload: ["kind", "text"], composed: true },
@@ -148,13 +149,13 @@
     "contour:layer-rename": { payload: ["name", "newName"], composed: true },
     "contour:layer-duplicate": { payload: ["name"], composed: true },
     "contour:layer-zoom": { payload: ["name"], composed: true },
-    "contour:zoom": { payload: ["row", "index"], composed: true },
+    "contour:zoom": { payload: ["data", "index", "row"], composed: true },
     "contour:layer-projection": { payload: ["name", "projection"], composed: true },
     "contour:layer-remove": { payload: ["name"], composed: true },
     "contour:layer-reorder": { payload: ["layerIds"], composed: true },
     "contour:layer-toggle": { payload: ["name", "visible"], composed: true },
     "contour:layer-visibility": { payload: ["name", "visible"], composed: true },
-    "contour:legend-toggle": { payload: ["key", "label", "pressed"], composed: true },
+    "contour:legend-toggle": { payload: ["index", "key", "label", "pressed"], composed: true },
     "contour:leave": { payload: [], composed: true },
     "contour:load": { payload: ["src", "count"], composed: true },
     "contour:map-control": { payload: ["control"], composed: true },
@@ -167,16 +168,17 @@
     "contour:open": { payload: [], composed: true },
     "contour:page": { payload: ["page"], composed: true },
     "contour:ready": { payload: ["version", "count"], composed: true },
-    "contour:remove": { payload: ["key", "label", "value"], composed: true },
+    "contour:read": { payload: ["label"], composed: true },
+    "contour:remove": { payload: ["key", "label", "name", "value"], composed: true },
     "contour:reorder": { payload: ["from", "to"], composed: true },
     "contour:range-change": { payload: ["value"], composed: true },
-    "contour:resize": { payload: ["height", "width"], composed: true },
+    "contour:resize": { payload: ["delta", "height", "value", "width"], composed: true },
     "contour:retry": { payload: ["src"], composed: true },
     "contour:loop-change": { payload: ["loop"], composed: true },
     "contour:pause": { payload: [], composed: true },
     "contour:play": { payload: [], composed: true },
     "contour:seek": { payload: ["progress", "value"], composed: true },
-    "contour:select": { payload: ["area", "col", "index", "key", "label", "labels", "path", "row", "rows", "series", "value"], composed: true },
+    "contour:select": { payload: ["area", "col", "expanded", "href", "index", "key", "label", "labels", "path", "result", "row", "rows", "series", "value"], composed: true },
     "contour:search": { payload: ["query"], composed: true },
     "contour:spatial-filter": { payload: ["action", "mode", "operator"], composed: true },
     "contour:split-change": { payload: ["value", "width", "height"], composed: true },
@@ -193,7 +195,7 @@
     "contour:tick": { payload: ["frame"], composed: true },
     "contour:time-change": { payload: ["progress", "value"], composed: true },
     "contour:time-range-change": { payload: ["value"], composed: true },
-    "contour:toggle": { payload: ["expanded", "label", "open", "path", "playing"], composed: true },
+    "contour:toggle": { payload: ["collapsed", "expanded", "label", "open", "path", "playing"], composed: true },
     "contour:view-enter": { payload: [], composed: true },
     "contour:view-leave": { payload: [], composed: true },
   });
@@ -234,6 +236,84 @@
     walk(doc.body);
     return doc.body.innerHTML;
   }
+  /**
+   * Validate a CSS colour for use in an inline style.
+   *
+   * Returns the trimmed value when it is a plain colour (named, hex, or a
+   * known colour function) and an empty string otherwise. Anything that could
+   * break out of the declaration, load a resource, or run script is rejected,
+   * so a consumer-supplied `color` attribute cannot become an injection sink.
+   *
+   * @param {unknown} value candidate colour
+   * @returns {string} the safe colour, or "" when rejected
+   */
+  export function safeColor(value) {
+    const raw = String(value == null ? "" : value).trim();
+    if (!raw) return "";
+    if (/[;{}<>"'`\\]/.test(raw)) return "";
+    if (/url\s*\(/i.test(raw) || /expression\s*\(/i.test(raw)) return "";
+    if (/^#[0-9a-f]{3,8}$/i.test(raw)) return raw;
+    if (/^(rgb|rgba|hsl|hsla|hwb|lab|lch|oklab|oklch|color)\(/i.test(raw)) return raw;
+    if (/^[a-z]+$/i.test(raw)) return raw;
+    return "";
+  }
+  /**
+   * Resolve an href candidate to a value that is safe to assign to a sink.
+   *
+   * Fragments, relative paths and the schemes we can vouch for pass through
+   * unchanged; `javascript:`, `data:` and any other scheme collapse to "#".
+   * This closes the attribute-to-property path that `sanitizeHtml` does not
+   * cover, because assigning `a.href = "javascript:…"` executes on click.
+   *
+   * @param {unknown} value candidate href
+   * @returns {string} the safe href, or "#"
+   */
+  export function safeHref(value) {
+    const raw = String(value == null ? "" : value).trim();
+    if (!raw) return "#";
+    if (raw.startsWith("#") || raw.startsWith("/") || raw.startsWith("./") || raw.startsWith("../") || raw.startsWith("?")) return raw;
+    if (typeof document === "undefined" || !document.baseURI) return "#";
+    try {
+      const url = new URL(raw, document.baseURI);
+      return ["http:", "https:", "mailto:", "tel:"].includes(url.protocol) ? raw : "#";
+    } catch (e) {
+      return "#";
+    }
+  }
+  /**
+   * Read a length token from the document root, in pixels.
+   *
+   * Virtualized components used to hard-code 36/32/28 px row heights, which
+   * disagreed with the rendered row and ignored density. The height is now a
+   * token (`--data-grid-row-height`, …) and this reads its computed value.
+   *
+   * @param {string} name custom-property name
+   * @param {number} fallback pixels to use when the token is absent or invalid
+   * @returns {number} the resolved length in pixels
+   */
+  export function cssLength(name, fallback) {
+    if (typeof getComputedStyle === "undefined" || typeof document === "undefined") return fallback;
+    const v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name));
+    return Number.isFinite(v) && v > 0 ? v : fallback;
+  }
+  /**
+   * Surface a malformed JSON attribute instead of swallowing it.
+   *
+   * A bare `catch (e) { /* keep existing *\/ }` turns a typo in a component
+   * attribute into a silent no-op: the render keeps whatever was there before
+   * and the defect is invisible. This warns once, with the component name and
+   * the parser message, so the author can find it.
+   *
+   * @param {Element|null} host the component that owns the attribute
+   * @param {string} label the attribute (or a short description)
+   * @param {unknown} error the thrown parse error
+   */
+  export function warnBadJson(host, label, error) {
+    if (typeof console === "undefined" || !console.warn) return;
+    const name = host && host.tagName ? host.tagName.toLowerCase() : "component";
+    const msg = (error && error.message) || String(error);
+    console.warn(`[contour] ${name}: malformed ${label || "attribute"} — ${msg}`);
+  }
   // contract: an attribute that is not here cannot ask an element to re-render,
   // and an attribute a component WRITES to itself must never be here, because
   // that write would fire the callback that performs the render.
@@ -246,7 +326,7 @@
     "accept", "action", "actions", "active", "after", "allow-duplicate", "allow-remove", "allow-rename", "allow-zoom", "alpha", "anchor", "answer", "area", "article", "attribution", "attribution-mark", "audit", "autoplay", "axis", "axis-x", "axis-y", "brownout", "brownout-level", "before", "body", "brand", "bounds", "breakpoint", "breaks", "brush", "brush-end", "brush-max", "brush-min", "brush-start", "cache-key", "canvas", "center", "clearable", "cols", "columns", "color", "command",
     "cells", "checked", "chrome", "confidence", "coverage", "debounce", "closable", "collapsed", "collapsible", "classification", "colors", "continuous", "content", "controls", "copyable", "count", "data", "data-table", "date", "delta",     "description", "glyphs", "graduated", "demo", "density", "desc", "dir", "direction", "disabled", "distance", "dismissible", "divider", "do", "dont", "dot", "ends", "high", "input", "layer", "low", "mode", "modes", "n", "opacity", "palette", "polarity", "precision", "range", "single",
     "empty", "exclusive", "fallback", "filename", "format", "heading", "help", "hint", "href", "icon", "illustration", "instrument", "interval", "items", "key", "layers", "level", "range-end", "range-start",
-    "label", "lazy", "lede", "legend", "left-label", "right-label", "line", "limit", "link", "links", "live", "loading", "locale", "loop", "max", "media", "message", "method", "methodology", "menu", "min", "multiple", "name", "needle", "next", "no", "no-cache", "no-data-message", "nodes", "note", "norm", "normalize",
+    "label", "labels", "lazy", "lede", "legend", "left-label", "right-label", "line", "limit", "link", "links", "live", "loading", "locale", "loop", "max", "media", "message", "method", "methodology", "menu", "min", "multiple", "name", "needle", "next", "no", "no-cache", "no-data-message", "nodes", "note", "norm", "normalize",
     "options", "orientation", "page-size", "pages", "pause", "paused", "pausable", "persist", "placeholder", "playing", "point", "points", "prev", "presets", "progress", "prompt", "question", "recent", "required",
     "quote", "ramp", "refresh", "removable", "resolution", "reverse", "rings", "retry", "results", "rows", "scale", "selectable", "segments", "show-header", "sparkline", "threshold", "thresholds", "selected", "separator", "series", "shortcut", "side", "size", "skeleton", "sort", "sort-dir", "speed", "status", "step", "submit", "submitting", "timeout", "trigger", "virtual", "sticky", "cluster-count", "cluster-expanded", "time", "resizable",
     "state", "steps", "style", "subtitle", "summary", "src", "source", "table", "tabs", "tag", "text", "ticks",     "title", "type", "unread-only", "unit", "updated", "cluster-items", "row-height",
@@ -255,12 +335,31 @@
     "search",
     "numbered",
     "bucket-count", "limit-values",
+    "autocomplete", "levels", "submit-label",
   ];
 
   /** Resolve an authored heading level while keeping the fallback valid. */
   export function headingTag(host, fallback = "h3") {
     const v = host && host.getAttribute ? host.getAttribute("heading") : null;
     return /^h[1-6]$/.test(v || "") ? v : fallback;
+  }
+
+  /**
+   * Resolve a localised label for a host (R18-63). A consumer supplies a
+   * `labels` JSON attribute (e.g. `labels='{"clear":"Effacer"}'`); it is merged
+   * over the English `fallback`, so a partial object localises only the keys it
+   * names. A malformed attribute is ignored rather than thrown — a bad label
+   * must not take the widget down. Returns `fallback` when no override exists.
+   */
+  export function label(host, key, fallback) {
+    const def = fallback !== undefined ? fallback : key;
+    const raw = host && host.getAttribute ? host.getAttribute("labels") : null;
+    if (!raw) return def;
+    try {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === "object" && typeof parsed[key] === "string" && parsed[key]) return parsed[key];
+    } catch (e) { /* a malformed labels attribute is ignored, not fatal */ }
+    return def;
   }
 
   /**
@@ -359,8 +458,10 @@
       if (ctor._propsInstalled) return;
       ctor._propsInstalled = true;
       const props = ctor.properties || {};
+      const declared = new Set();
       for (const [name, spec] of Object.entries(props)) {
         const attr = (spec && spec.attribute) || name;
+        declared.add(attr);
         const type = (spec && spec.type) || String;
         Object.defineProperty(ctor.prototype, name, {
           get() {
@@ -373,6 +474,33 @@
           set(v) {
             if (v === null || v === undefined || v === false) this.removeAttribute(attr);
             else if (type === Boolean) { if (v) this.setAttribute(attr, ""); else this.removeAttribute(attr); }
+            else this.setAttribute(attr, String(v));
+          },
+          configurable: true,
+        });
+      }
+      // Default reflection (R18-54): every observed attribute a component reads
+      // but does not declare in properties() still gets an accessor, so
+      // `el.allowDuplicate = true` writes `allow-duplicate=""` instead of being
+      // a silent no-op. The property name is the camelCase form of the
+      // attribute (kebab -> camel); a kebab attribute with no valid identifier
+      // form is skipped rather than guessed. Declared properties win.
+      const observed = ctor.observed || OBSERVED;
+      for (const attr of observed) {
+        if (declared.has(attr)) continue;
+        const prop = attr.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+        if (!/^[a-zA-Z_$][\w$]*$/.test(prop)) continue;
+        if (prop in ctor.prototype) continue; // an inherited accessor already exists
+        const isBool = attr === "disabled" || attr === "checked" || attr === "required" || attr === "readonly" || attr === "multiple" || attr === "selected" || attr === "open" || attr === "hidden";
+        Object.defineProperty(ctor.prototype, prop, {
+          get() {
+            const raw = this.getAttribute(attr);
+            if (isBool) return raw !== null;
+            return raw;
+          },
+          set(v) {
+            if (v === null || v === undefined || v === false) this.removeAttribute(attr);
+            else if (isBool) { if (v) this.setAttribute(attr, ""); else this.removeAttribute(attr); }
             else this.setAttribute(attr, String(v));
           },
           configurable: true,
@@ -1368,6 +1496,110 @@ export function assignMarkers(items) {
   return (items || []).map((it, i) => ({ ...it, marker: MARKER_SHAPES[i % MARKER_SHAPES.length] }));
 }
 
+/* ---------------------------------------------------------------------------
+ * Contour lines — marching squares over a 2D field.
+ *
+ * The same algorithm as tools/contour-gen.py, ported to the browser. Iso-lines
+ * of different levels of one continuous field cannot cross; the asymptotic
+ * saddle decider below is what guarantees that, so a hand-drawn path is never
+ * a substitute. Shared by the `contour-contour-plot` element and the guide's
+ * `data-contour-plot` renderer so the two cannot drift.
+ * ------------------------------------------------------------------------- */
+
+/**
+ * Extract the iso-line segments of a scalar field at one level.
+ *
+ * @param {number[][]} grid row-major field values
+ * @param {number} level iso-level to extract
+ * @returns {Array<[{x:number,y:number},{x:number,y:number}]>} segments in grid space
+ */
+export function marchingSquares(grid, level) {
+  const rows = grid.length;
+  const cols = rows ? grid[0].length : 0;
+  const segments = [];
+  if (!rows || !cols) return segments;
+
+  const lerp = (a, b, va, vb) => (vb === va ? 0.5 : (level - va) / (vb - va));
+
+  for (let y = 0; y < rows - 1; y++) {
+    for (let x = 0; x < cols - 1; x++) {
+      const tl = grid[y][x];
+      const tr = grid[y][x + 1];
+      const bl = grid[y + 1][x];
+      const br = grid[y + 1][x + 1];
+      const code =
+        (tl >= level ? 8 : 0) |
+        (tr >= level ? 4 : 0) |
+        (br >= level ? 2 : 0) |
+        (bl >= level ? 1 : 0);
+      if (code === 0 || code === 15) continue;
+
+      const top = { x: x + lerp(tl, tr, tl, tr), y };
+      const right = { x: x + 1, y: y + lerp(tr, br, tr, br) };
+      const bottom = { x: x + lerp(bl, br, bl, br), y: y + 1 };
+      const left = { x, y: y + lerp(tl, bl, tl, bl) };
+
+      let connect;
+      if (code === 5) {
+        const center = (tl + tr + bl + br) / 4;
+        connect = center >= level ? "top-bottom" : "left-right";
+      } else if (code === 10) {
+        const center = (tl + tr + bl + br) / 4;
+        connect = center >= level ? "left-right" : "top-bottom";
+      }
+
+      switch (code) {
+        case 1: case 14: segments.push([left, bottom]); break;
+        case 2: case 13: segments.push([bottom, right]); break;
+        case 3: case 12: segments.push([left, right]); break;
+        case 4: case 11: segments.push([top, right]); break;
+        case 6: case 9: segments.push([top, bottom]); break;
+        case 7: case 8: segments.push([left, top]); break;
+        case 5:
+          if (connect === "top-bottom") {
+            segments.push([top, bottom], [left, right]);
+          } else {
+            segments.push([top, right], [left, bottom]);
+          }
+          break;
+        case 10:
+          if (connect === "left-right") {
+            segments.push([left, right], [top, bottom]);
+          } else {
+            segments.push([top, right], [left, bottom]);
+          }
+          break;
+      }
+    }
+  }
+  return segments;
+}
+
+/**
+ * Build the SVG `d` path for every level of a field.
+ *
+ * @param {number[][]} grid row-major field values
+ * @param {number[]} levels iso-levels, one path per level
+ * @param {number} width viewBox width in px
+ * @param {number} height viewBox height in px
+ * @returns {Array<{level:number, d:string}>} one entry per level
+ */
+export function contourPaths(grid, levels, width, height) {
+  const rows = grid.length;
+  const cols = rows ? grid[0].length : 0;
+  if (rows < 2 || cols < 2) return [];
+  const sx = width / (cols - 1);
+  const sy = height / (rows - 1);
+  return (levels || []).map((level) => {
+    const segs = marchingSquares(grid, level);
+    let d = "";
+    for (const [a, b] of segs) {
+      d += `M ${(a.x * sx).toFixed(2)} ${(a.y * sy).toFixed(2)} L ${(b.x * sx).toFixed(2)} ${(b.y * sy).toFixed(2)} `;
+    }
+    return { level, d: d.trim() };
+  });
+}
+
 /* ============================================================================
    CONTOUR — shared behaviour
    ----------------------------------------------------------------------------
@@ -1508,6 +1740,7 @@ export function wireTabs(host) {
     const tabsOf = () => wcGroup(host, list, "[role='tab']");
     const activate = (tab, focus) => {
       const tabs = tabsOf();
+      if (!tab.id) tab.id = contourId("c-tab");
       tabs.forEach((t) => {
         const selected = t === tab;
         t.setAttribute("aria-selected", String(selected));
@@ -1515,7 +1748,12 @@ export function wireTabs(host) {
         const ctrl = t.getAttribute("aria-controls");
         if (!ctrl) return;
         const panel = wcOne(host, "#" + CSS.escape(ctrl)) || document.getElementById(ctrl);
-        if (panel) panel.hidden = !selected;
+        if (panel) {
+          panel.hidden = !selected;
+          // A tabpanel is named by its tab: without this a screen reader
+          // announces the panel with no name.
+          if (selected) panel.setAttribute("aria-labelledby", t.id);
+        }
       });
       const panels = wcAll(host, panelSel);
       if (panels.length) {
@@ -1527,12 +1765,14 @@ export function wireTabs(host) {
       const name = tab.getAttribute("aria-controls") || tab.textContent || "";
       host.dispatchEvent(new CustomEvent("contour:tab-change", { bubbles: true, composed: true, detail: { index: tabs.indexOf(tab), label: name } }));
     };
-    // Same-document View Transitions (BY-24). A consumer who names elements via
-    // `data-view-transition` / `--view-transition-name` gets a cross-fade on a
-    // tab swap; the morph must run inside startViewTransition so the browser
-    // has an old and a new state to interpolate. The initial mount activation
-    // below stays direct — a transition on load is a page fade nobody asked
-    // for — and the plain swap is the entire fallback, because the CSS harness
+    // Same-document View Transitions (BY-24). A tab swap runs inside
+    // document.startViewTransition, so the browser cross-fades the whole
+    // document between the old and new panel. This is a document cross-fade,
+    // not a named-element morph: the component does not set
+    // --view-transition-name, and a consumer who names elements gets the
+    // browser's own morph on top of this. The initial mount activation below
+    // stays direct — a transition on load is a page fade nobody asked for —
+    // and the plain swap is the entire fallback, because the CSS harness
     // (components.css) is enhancement-only too.
     const runActivation = (tab, focus) => {
       // Keyboard activation must update aria-selected synchronously so assistive
@@ -1550,7 +1790,13 @@ export function wireTabs(host) {
     };
     wcListen(host, "click", (e) => {
       const tab = wcClosest(host, e.target, "[role='tab']");
-      if (tab && tabsOf().includes(tab)) runActivation(tab, false);
+      if (tab && tabsOf().includes(tab)) {
+        // A button nested inside a tab (a close control, say) is its own
+        // target: activating the tab underneath it would be a surprise.
+        const inner = e.target && e.target.closest ? e.target.closest("button") : null;
+        if (inner && inner !== tab && tab.contains(inner)) return;
+        runActivation(tab, false);
+      }
     });
     wcListen(host, "keydown", (e) => {
       let tab = wcClosest(host, e.target, "[role='tab']");
@@ -1806,7 +2052,7 @@ export function wireCombobox(host) {
       const selected = (host.getAttribute("value") || "").split(",").map((v) => v.trim()).filter(Boolean);
       const value = host._comboboxVirtual && host._comboboxFiltered
         ? host._comboboxFiltered.find((item) => item.index === Number(opt.dataset.optionIndex))?.value
-        : opt.textContent.trim();
+        : (opt.dataset.optionValue != null ? opt.dataset.optionValue : opt.textContent.trim());
       const position = selected.indexOf(String(value));
       if (now && position >= 0) selected.splice(position, 1);
       if (!now && position < 0) selected.push(String(value));
@@ -1816,8 +2062,13 @@ export function wireCombobox(host) {
       field.focus();
       return;
     }
+    // Commit the option's value, not its label: the field shows the label, the
+    // form submits the value, and `contour:select` carries the value.
+    const value = opt.dataset.optionValue != null ? opt.dataset.optionValue : opt.textContent.trim();
     field.value = opt.textContent;
-    wcEmit(host, "contour:select", { value: field.value });
+    host.setAttribute("value", value);
+    if (typeof host._syncFormValue === "function") host._syncFormValue();
+    wcEmit(host, "contour:select", { value });
     close();
     field.focus();
   };
@@ -2542,6 +2793,24 @@ export const STATE_FALLBACK = {
   error: "Could not load.",
 };
 
+/**
+ * Resolve a state label for a host (R18-63). A consumer supplies a `labels`
+ * JSON attribute (e.g. `labels='{"loading":"Chargement…"}'`); it is merged over
+ * the English default, so a partial object localises only the keys it names.
+ * A malformed attribute is ignored rather than thrown — a bad label must not
+ * take the widget down. Returns the default when no override is present.
+ */
+export function stateLabel(host, key) {
+  const fallback = STATE_FALLBACK[key] || key;
+  const raw = host && host.getAttribute ? host.getAttribute("labels") : null;
+  if (!raw) return fallback;
+  try {
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === "object" && typeof parsed[key] === "string" && parsed[key]) return parsed[key];
+  } catch (e) { /* a malformed labels attribute is ignored, not fatal */ }
+  return fallback;
+}
+
 // One in-flight request per URL, shared by every host that asked for it.
 const remoteInflight = new Map();
 // The last result per URL, so a re-mounted host paints instead of re-asking. A
@@ -2982,12 +3251,12 @@ export function renderStates(host, block, opts) {
   const options = opts || {};
   const loading = host.getAttribute("loading");
   if (loading !== null || host._remoteStatus === "loading") {
-    host.appendChild(stateNode(block, "loading", loading || STATE_FALLBACK.loading));
+    host.appendChild(stateNode(block, "loading", loading || stateLabel(host, "loading")));
     return true;
   }
   const error = host.getAttribute("error");
   if (error !== null || host._remoteStatus === "error") {
-    const message = (error !== null && error !== "") ? error : (host._remoteError || STATE_FALLBACK.error);
+    const message = (error !== null && error !== "") ? error : (host._remoteError || stateLabel(host, "error"));
     const node = stateNode(block, "error", message);
     // `retry` is the actionable half of an error. It reuses the button the system
     // already ships and the `contour:retry` event three components already emit,
@@ -3015,7 +3284,7 @@ export function renderStates(host, block, opts) {
 /** Paint the empty state — for a host with no data and no authored content. */
 /** Render the empty state for a block. */
 export function renderEmpty(host, block) {
-  host.appendChild(stateNode(block, "empty", host.getAttribute("empty") || STATE_FALLBACK.empty));
+  host.appendChild(stateNode(block, "empty", host.getAttribute("empty") || stateLabel(host, "empty")));
 }
 
 // Delegated on the host (AGENTS.md rule 12): the retry button is regenerated on
@@ -3420,7 +3689,7 @@ shadow("contour-shadow-filter-pill", `<span class="c-filter-pill" part="filter-p
 
   // The dialog is the one wrapper with behaviour, because a close button that
   // does not close is a control the reader cannot use.
-  const DIALOG_MARKUP = "<dialog class=\"c-dialog\" part=\"dialog\"> <div class=\"c-dialog__head\" part=\"head\"> <slot name=\"title\"></slot> <button class=\"c-btn c-btn--icon c-btn--ghost\" part=\"close\" type=\"button\" aria-label=\"Close\"> <svg aria-hidden=\"true\"><use href=\"#i-close\" /></svg> </button> </div> <div class=\"c-dialog__body\" part=\"body\"><slot></slot></div> <div class=\"c-dialog__foot\" part=\"foot\"><slot name=\"foot\"></slot></div> </dialog>";
+  const DIALOG_MARKUP = "<dialog class=\"c-dialog\" part=\"dialog\"> <div class=\"c-dialog__head\" part=\"head\"> <slot name=\"title\"></slot> <button class=\"c-btn c-btn--icon c-btn--ghost\" part=\"close\" type=\"button\" aria-label=\"Close\"> <svg aria-hidden=\"true\"><use href=\"#i-x\" /></svg> </button> </div> <div class=\"c-dialog__body\" part=\"body\"><slot></slot></div> <div class=\"c-dialog__foot\" part=\"foot\"><slot name=\"foot\"></slot></div> </dialog>";
   SHADOW_MARKUP["contour-shadow-dialog"] = DIALOG_MARKUP;
   recordParts("contour-shadow-dialog", DIALOG_MARKUP);
   class ContourShadowDialog extends ContourShadow {
@@ -3543,9 +3812,9 @@ shadow("contour-shadow-filter-pill", `<span class="c-filter-pill" part="filter-p
  * filter. ArrowUp/Down/Home/End rove the cursor; Enter commits; Escape closes.
  */
 class ContourCombobox extends ContourBase {
-  static get observed() { return ["options", "placeholder", "label", "value", "multiple", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "empty", "skeleton", "virtual"]; }
+  static get observed() { return ["options", "placeholder", "label", "value", "multiple", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "empty", "skeleton", "virtual", "disabled", "required", "name"]; }
     static get formAssociated() { return true; }
-    static get properties() { return { options: { attribute: "options" }, placeholder: { attribute: "placeholder" }, label: { attribute: "label" }, value: { attribute: "value" }, multiple: { attribute: "multiple", type: Boolean }, virtual: { attribute: "virtual", type: Boolean }, src: { attribute: "src" } }; }
+    static get properties() { return { options: { attribute: "options" }, placeholder: { attribute: "placeholder" }, label: { attribute: "label" }, value: { attribute: "value" }, multiple: { attribute: "multiple", type: Boolean }, virtual: { attribute: "virtual", type: Boolean }, src: { attribute: "src" }, disabled: { attribute: "disabled", type: Boolean }, required: { attribute: "required", type: Boolean }, name: { attribute: "name" } }; }
     render() {
       this.classList.add("c-combobox");
       wireStates(this);
@@ -3557,16 +3826,28 @@ class ContourCombobox extends ContourBase {
       if ((options) && !authored.length) {
         try {
           const parsed = options ? JSON.parse(options) : [];
+          this._comboboxOptions = parsed;
           const input = this.ensure(".c-combobox__input", () => { const el = document.createElement("input"); el.className = "c-combobox__input"; el.type = "text"; return el; });
           input.type = "text";
           input.placeholder = this.getAttribute("placeholder") || "Search…";
           input.setAttribute("aria-label", this.getAttribute("label") || "Search");
+          // Reflect the native constraint state so the platform validates the
+          // field and FormData sees the name.
+          if (this.hasAttribute("disabled")) { input.setAttribute("disabled", ""); this.classList.add("is-disabled"); }
+          else { input.removeAttribute("disabled"); this.classList.remove("is-disabled"); }
+          if (this.hasAttribute("required")) { input.setAttribute("required", ""); input.setAttribute("aria-required", "true"); }
+          else { input.removeAttribute("required"); input.removeAttribute("aria-required"); }
+          if (this.hasAttribute("name")) input.setAttribute("name", this.getAttribute("name"));
           const val = this.getAttribute("value");
-          if (val !== null) input.value = val;
+          if (val !== null) {
+            // The attribute holds the submitted value; the field shows the
+            // matching option's label so the two can differ (value "us" -> "United States").
+            const match = parsed.find((o) => String(typeof o === "string" ? o : o.value) === String(val));
+            input.value = match ? String(typeof match === "string" ? match : match.label) : val;
+          }
           const list = this.ensure(".c-combobox__list", () => { const el = document.createElement("ul"); el.className = "c-combobox__list"; el.setAttribute("hidden", ""); return el; });
           list.innerHTML = "";
           list.setAttribute("hidden", "");
-          this._comboboxOptions = parsed;
           this._comboboxVirtual = this.hasAttribute("virtual") && parsed.length > 100;
           if (this._comboboxVirtual) {
             list.classList.add("c-combobox__list--virtual");
@@ -3579,7 +3860,7 @@ class ContourCombobox extends ContourBase {
             list.style.overflow = "";
             this._renderComboboxWindow("", true);
           }
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else if (!authored.length && !options) {
         renderEmpty(this, "combobox");
       }
@@ -3610,7 +3891,7 @@ class ContourCombobox extends ContourBase {
         value: typeof opt === "string" ? opt : opt.value,
       })).filter((item) => !q || String(item.label).toLowerCase().includes(q));
       this._comboboxFiltered = filtered;
-      const rowHeight = 32;
+      const rowHeight = cssLength("--combobox-row-height", 32);
       const windowSize = 20;
       const overscan = 6;
       const oldScrollTop = list.scrollTop;
@@ -3641,6 +3922,7 @@ class ContourCombobox extends ContourBase {
         const li = document.createElement("li");
         li.className = "c-combobox__option";
         li.dataset.optionIndex = String(item.index);
+        li.dataset.optionValue = String(item.value != null ? item.value : item.label);
         li.setAttribute("role", "option");
         const label = String(item.label);
         const q = String(query || "").toLowerCase();
@@ -3667,6 +3949,15 @@ class ContourCombobox extends ContourBase {
       if (this._comboboxVirtual) addSpacer(Math.max(0, filtered.length - end) * rowHeight);
       if (this._comboboxVirtual && !reset) list.scrollTop = oldScrollTop;
     }
+     _syncFormValue() {
+       if (!this._internals) return;
+       // The committed value lives on the host attribute, not in the text field
+       // (which shows the option label), so the form submits the value.
+       const raw = this.getAttribute("value");
+       const value = raw != null && raw !== "" ? raw : null;
+       this._internals.setFormValue(value);
+       this._syncValidity(this.hasAttribute("required") && !value);
+     }
      enhance() {
        wireCombobox(this);
        // Form sync (D-02): commit writes the input value; mirror it into the
@@ -3704,9 +3995,9 @@ define("contour-combobox", ContourCombobox);
  * sync via `_internals.setFormValue`. Emits `contour:input` / `contour:change`.
  */
 class ContourField extends ContourBase {
-    static get observed() { return ["label", "hint", "error", "placeholder", "type", "required"]; }
+    static get observed() { return ["label", "hint", "error", "placeholder", "type", "required", "name", "value", "disabled"]; }
     static get formAssociated() { return true; }
-    static get properties() { return { label: { attribute: "label" }, hint: { attribute: "hint" }, error: { attribute: "error" }, placeholder: { attribute: "placeholder" }, type: { attribute: "type" }, required: { attribute: "required", type: Boolean } }; }
+    static get properties() { return { label: { attribute: "label" }, hint: { attribute: "hint" }, error: { attribute: "error" }, placeholder: { attribute: "placeholder" }, type: { attribute: "type" }, required: { attribute: "required", type: Boolean }, name: { attribute: "name" }, value: { attribute: "value" }, disabled: { attribute: "disabled", type: Boolean } }; }
     render() {
       this.classList.add("c-field");
       const label = this.getAttribute("label");
@@ -3755,7 +4046,15 @@ class ContourField extends ContourBase {
       if (hintEl) { if (!hintEl.id) hintEl.id = contourId("hint"); describedBy.push(hintEl.id); }
       if (errEl) { if (!errEl.id) errEl.id = contourId("err"); describedBy.push(errEl.id); }
       if (describedBy.length) input.setAttribute("aria-describedby", describedBy.join(" "));
-      if (this.hasAttribute("required")) input.setAttribute("aria-required", "true");
+      // Reflect the native constraint state, not only ARIA: `checkValidity()`
+      // and the form's own validation must see `required`, and FormData must
+      // see `name`/`value`. ARIA alone never blocks submit.
+      if (this.hasAttribute("required")) { input.setAttribute("aria-required", "true"); input.setAttribute("required", ""); }
+      else { input.removeAttribute("aria-required"); input.removeAttribute("required"); }
+      if (this.hasAttribute("name")) input.setAttribute("name", this.getAttribute("name"));
+      if (this.hasAttribute("value")) input.value = this.getAttribute("value");
+      if (this.hasAttribute("disabled")) { input.setAttribute("disabled", ""); this.classList.add("is-disabled"); }
+      else { input.removeAttribute("disabled"); this.classList.remove("is-disabled"); }
     }
   }
   ContourField.prototype.enhance = function() {
@@ -3781,7 +4080,9 @@ class ContourField extends ContourBase {
     // Inline validation (BY2-U6): on blur, reflect validity on the input via
     // aria-invalid and toggle the error/success state. The CSS already paints
     // the invalid ring (components.css aria-invalid rules); this just drives it.
-    this.addEventListener("blur", (e) => {
+    // `focusout` bubbles; `blur` does not, so a listener on the host would
+    // never see the input lose focus.
+    this.addEventListener("focusout", (e) => {
       const input = this.querySelector("input, textarea, select");
       if (!input || e.target !== input) return;
       const valid = input.checkValidity();
@@ -3789,6 +4090,16 @@ class ContourField extends ContourBase {
         input.setAttribute("aria-invalid", "false");
         this.classList.remove("is-invalid");
         this.removeAttribute("data-invalid");
+        // Clear a transient validation error the blur handler surfaced, but
+        // never an error the author set explicitly.
+        if (!this.getAttribute("error")) {
+          const stale = this.querySelector(".c-field__error");
+          if (stale) {
+            const id = stale.id;
+            stale.remove();
+            if (id) input.setAttribute("aria-describedby", (input.getAttribute("aria-describedby") || "").split(" ").filter((x) => x && x !== id).join(" "));
+          }
+        }
       } else {
         input.setAttribute("aria-invalid", "true");
         this.classList.add("is-invalid");
@@ -3866,11 +4177,19 @@ class ContourFieldGroup extends ContourBase {
  * listing the invalid fields. Emits `contour:submit` on valid submit.
  */
 class ContourForm extends ContourBase {
-    static get observed() { return ["submitting", "error", "summary"]; }
-    static get properties() { return { submitting: { attribute: "submitting", type: Boolean }, error: { attribute: "error" }, summary: { attribute: "summary" } }; }
+    static get observed() { return ["submitting", "error", "summary", "title", "submit-label"]; }
+    static get properties() { return { submitting: { attribute: "submitting", type: Boolean }, error: { attribute: "error" }, summary: { attribute: "summary" }, title: { attribute: "title" }, submitLabel: { attribute: "submit-label" } }; }
     render() {
       this.classList.add("c-form");
       if (this.hasAttribute("submitting")) this.classList.add("is-submitting"); else this.classList.remove("is-submitting");
+      const title = this.getAttribute("title");
+      let titleEl = this.querySelector(".c-form__title");
+      if (title) {
+        if (!titleEl) { titleEl = document.createElement("h2"); titleEl.className = "c-form__title"; this.prepend(titleEl); }
+        titleEl.textContent = title;
+      } else if (titleEl) {
+        titleEl.remove();
+      }
       const summaryText = this.getAttribute("summary") || this.getAttribute("error");
       let summary = this.querySelector(".c-form__summary");
       if (summaryText) {
@@ -3880,34 +4199,57 @@ class ContourForm extends ContourBase {
       } else if (summary) {
         summary.setAttribute("hidden", "");
       }
-      const submit = this.querySelector("[type='submit'], .c-form__submit");
-      if (submit) {
-        if (this.hasAttribute("submitting")) submit.setAttribute("disabled", "");
-        else submit.removeAttribute("disabled");
+      // The component owns submission: it renders its own submit control when
+      // the author gives a `submit-label`, so an empty <contour-form> still
+      // shows a title and a button instead of rendering nothing.
+      const submitLabel = this.getAttribute("submit-label");
+      let submit = this.querySelector(".c-form__submit");
+      if (!submit) {
+        submit = document.createElement("button");
+        submit.type = "submit";
+        submit.className = "c-btn c-btn--primary c-form__submit";
+        this.appendChild(submit);
       }
+      if (submitLabel) submit.textContent = submitLabel;
+      else if (!submit.textContent) submit.textContent = "Submit";
+      if (this.hasAttribute("submitting")) submit.setAttribute("disabled", "");
+      else submit.removeAttribute("disabled");
     }
     enhance() {
       if (this._wiredForm) return;
       this._wiredForm = true;
+      // A click on the component's own submit control is the submission path
+      // when there is no nested real <form>; prevent the default (there is no
+      // form to submit) and run the same validate-then-emit flow.
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest(".c-form__submit") : null;
+        if (!btn || !this.contains(btn)) return;
+        if (e.target.closest("form")) return; // a nested real form handles it
+        e.preventDefault();
+        this._submit();
+      });
       this.addEventListener("submit", (e) => {
         const form = e.target;
+        // The component claims ownership of submission: never let a nested
+        // real <form> navigate away.
+        e.preventDefault();
         if (form && typeof form.checkValidity === "function" && !form.checkValidity()) {
-          e.preventDefault();
           const invalid = Array.from(form.querySelectorAll(":invalid"));
           const names = invalid.map((el) => el.getAttribute("aria-label") || el.name || el.id || "field").join(", ");
-          // Update DOM directly (avoid setAttribute on observed attr -> re-entrancy).
           let summary = this.querySelector(".c-form__summary");
           if (!summary) { summary = document.createElement("div"); summary.className = "c-form__summary"; summary.setAttribute("role", "alert"); this.prepend(summary); }
           summary.textContent = "Please fix: " + (names || "invalid fields");
           summary.removeAttribute("hidden");
           return;
         }
-        // submitting state via class + button, not attribute.
-        this.classList.add("is-submitting");
-        const submit = this.querySelector("[type='submit'], .c-form__submit");
-        if (submit) submit.setAttribute("disabled", "");
-        this.dispatchEvent(new CustomEvent("contour:submit", { bubbles: true, composed: true, detail: { submitting: true } }));
+        this._submit();
       });
+    }
+    _submit() {
+      this.classList.add("is-submitting");
+      const submit = this.querySelector("[type='submit'], .c-form__submit");
+      if (submit) submit.setAttribute("disabled", "");
+      this.dispatchEvent(new CustomEvent("contour:submit", { bubbles: true, composed: true, detail: { submitting: true } }));
     }
   }
   define("contour-form", ContourForm);
@@ -3920,9 +4262,9 @@ class ContourForm extends ContourBase {
  * filled track.
  */
 class ContourRange extends ContourBase {
-    static get observed() { return ["min", "max", "value", "low", "high", "range", "sparkline", "label", "disabled", "error", "help"]; }
+    static get observed() { return ["min", "max", "value", "low", "high", "range", "sparkline", "label", "disabled", "error", "help", "name", "step"]; }
     static get formAssociated() { return true; }
-    static get properties() { return { min: { attribute: "min" }, max: { attribute: "max" }, value: { attribute: "value" }, label: { attribute: "label" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" } }; }
+    static get properties() { return { min: { attribute: "min" }, max: { attribute: "max" }, value: { attribute: "value" }, label: { attribute: "label" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" }, name: { attribute: "name" }, step: { attribute: "step" } }; }
      render() {
        this.classList.add("c-range");
        const min = this.getAttribute("min") || "0";
@@ -3942,11 +4284,14 @@ class ContourRange extends ContourBase {
          const single = this.querySelector("input.c-range:not(.c-range__low):not(.c-range__high)");
          // keep generic input? We'll use two named inputs
          let lowInput = this.querySelector("input.c-range__low");
-         if (!lowInput) { lowInput = document.createElement("input"); lowInput.type = "range"; lowInput.className = "c-range c-range__low"; this.appendChild(lowInput); }
+         if (!lowInput) { lowInput = document.createElement("input"); lowInput.type = "range"; lowInput.className = "c-range c-range__low"; lowInput.setAttribute("part", "input"); this.appendChild(lowInput); }
          let highInput = this.querySelector("input.c-range__high");
-         if (!highInput) { highInput = document.createElement("input"); highInput.type = "range"; highInput.className = "c-range c-range__high"; this.appendChild(highInput); }
+         if (!highInput) { highInput = document.createElement("input"); highInput.type = "range"; highInput.className = "c-range c-range__high"; highInput.setAttribute("part", "input"); this.appendChild(highInput); }
          lowInput.min = min; lowInput.max = max;
          highInput.min = min; highInput.max = max;
+         const step = this.getAttribute("step");
+         if (step) { lowInput.step = step; highInput.step = step; } else { lowInput.removeAttribute("step"); highInput.removeAttribute("step"); }
+         if (this.hasAttribute("disabled")) { lowInput.setAttribute("disabled", ""); highInput.setAttribute("disabled", ""); } else { lowInput.removeAttribute("disabled"); highInput.removeAttribute("disabled"); }
          const lowVal = this.getAttribute("low") || min;
          const highVal = this.getAttribute("high") || max;
          if (this._rangeUserLow !== null && this._rangeAttrLowAtDirty === (this.getAttribute("low") || min)) lowInput.value = this._rangeUserLow;
@@ -3955,15 +4300,31 @@ class ContourRange extends ContourBase {
          else { highInput.value = highVal; this._rangeUserHigh = null; this._rangeAttrHighAtDirty = null; }
          const label = this.getAttribute("label");
          if (label) { lowInput.setAttribute("aria-label", label + " low"); highInput.setAttribute("aria-label", label + " high"); }
+         // A dual range submits two entries, not one comma-joined value: a
+         // form-associated custom element can only set one value, so the two
+         // handles are mirrored into hidden native inputs that the ancestor
+         // form submits as separate entries under the host's name.
+         const hostName = this.getAttribute("name");
+         if (hostName) {
+           const lo = this.ensure('input[type="hidden"][data-range="low"]', () => { const el = document.createElement("input"); el.type = "hidden"; el.setAttribute("data-range", "low"); return el; });
+           const hi = this.ensure('input[type="hidden"][data-range="high"]', () => { const el = document.createElement("input"); el.type = "hidden"; el.setAttribute("data-range", "high"); return el; });
+           lo.name = hostName; hi.name = hostName;
+           lo.value = lowInput.value; hi.value = highInput.value;
+         } else {
+           Array.from(this.querySelectorAll('input[type="hidden"][data-range]')).forEach((n) => n.remove());
+         }
        } else {
          // remove dual inputs
          Array.from(this.querySelectorAll("input.c-range__low, input.c-range__high")).forEach((n) => n.remove());
-         const input = this.ensure("input.c-range", () => { const el = document.createElement("input"); el.type = "range"; return el; });
+         const input = this.ensure("input.c-range", () => { const el = document.createElement("input"); el.type = "range"; el.setAttribute("part", "input"); return el; });
          // ensure class
          input.className = "c-range";
          input.type = "range";
          input.min = min;
          input.max = max;
+         const step = this.getAttribute("step");
+         if (step) input.step = step; else input.removeAttribute("step");
+         if (this.hasAttribute("disabled")) input.setAttribute("disabled", ""); else input.removeAttribute("disabled");
          const attrVal = this.getAttribute("value") || "50";
          if (this._rangeUserValue !== null && this._rangeAttrAtDirty === (this.getAttribute("value") || "50")) {
            input.value = this._rangeUserValue;
@@ -4005,9 +4366,16 @@ class ContourRange extends ContourBase {
        const low = this.querySelector("input.c-range__low");
        const high = this.querySelector("input.c-range__high");
        const single = this.querySelector("input.c-range:not(.c-range__low):not(.c-range__high)");
-       if (this._internals) {
-         if (low && high) this._internals.setFormValue(low.value + "," + high.value);
-         else if (single) this._internals.setFormValue(single.value);
+       if (low && high) {
+         // Mirror the handles into the hidden inputs so the ancestor form
+         // submits two entries; the host itself sets no single value.
+         const lo = this.querySelector('input[type="hidden"][data-range="low"]');
+         const hi = this.querySelector('input[type="hidden"][data-range="high"]');
+         if (lo) lo.value = low.value;
+         if (hi) hi.value = high.value;
+         if (this._internals) this._internals.setFormValue(null);
+       } else if (single && this._internals) {
+         this._internals.setFormValue(single.value);
        }
      };
      this.addEventListener("input", (e) => {
@@ -4048,8 +4416,7 @@ class ContourRange extends ContourBase {
 /**
  * Switch: a `role="switch"` checkbox control with label, required, disabled,
  * error and help states. Form associated; emits `contour:change` on toggle.
- * Renders a `c-switch__track` element after the input for the sheet's track
- * styling.
+ * The input's ::after draws the track; there is no separate track element.
  */
 class ContourSwitch extends ContourBase {
     static get observed() { return ["label", "required", "checked", "disabled", "error", "help"]; }
@@ -4076,17 +4443,11 @@ class ContourSwitch extends ContourBase {
         msg.classList.toggle("c-switch__message--error", !!err);
       } else if (msg) { msg.remove(); }
       if (err) this.classList.add("is-error"); else this.classList.remove("is-error");
-      // Ensure track element follows the input (CSS: input + track).
-      if (!input.nextElementSibling || !input.nextElementSibling.classList.contains("c-switch__track")) {
-        const track = document.createElement("span");
-        track.className = "c-switch__track";
-        track.setAttribute("aria-hidden", "true");
-        if (input.nextSibling) this.insertBefore(track, input.nextSibling);
-        else this.appendChild(track);
-      }
+      // The input's ::after draws the track; a separate .c-switch__track span
+      // would be a second, unstyled element the CSS never reaches (R18-41).
       if (label) {
         input.setAttribute("aria-label", label);
-        const txt = this.querySelector(":scope > span:not([class]):not(.c-switch__track)") || (() => { const el = document.createElement("span"); this.appendChild(el); return el; })();
+        const txt = this.querySelector(":scope > span:not([class])") || (() => { const el = document.createElement("span"); this.appendChild(el); return el; })();
         txt.textContent = label;
       }
       if (!input.hasAttribute("aria-label")) input.setAttribute("aria-label", "Switch");
@@ -4101,11 +4462,22 @@ class ContourSwitch extends ContourBase {
       }
       if (this._wiredSwitch) return;
       this._wiredSwitch = true;
+      // Label activation: the host is not a native <label>, so a click on the
+      // text or track must toggle the input. The input's own click is left to
+      // the platform (early return) so it toggles exactly once.
+      this.addEventListener("click", (e) => {
+        if (e.target && e.target.closest && e.target.closest("input")) return;
+        const inp = this.querySelector("input");
+        if (!inp || inp.disabled) return;
+        e.preventDefault();
+        inp.click();
+      });
       this.addEventListener("change", (e) => {
         const inp = this.querySelector("input");
         if (!inp || e.target !== inp || !this._internals) return;
         inp.setAttribute("aria-checked", String(inp.checked));
         this._setCustomState("data-checked", inp.checked);
+        this.toggleAttribute("checked", inp.checked);
         this._internals.setFormValue(inp.checked ? (inp.value || "on") : null);
         this._emitForm("contour:change");
         this._syncValidity(this.hasAttribute("required") && !inp.checked);
@@ -4115,9 +4487,9 @@ class ContourSwitch extends ContourBase {
   define("contour-switch", ContourSwitch);
 /**
  * Check: a checkbox (or `type="radio"` when `type` is set) with label, name,
- * value, required, checked, disabled, error and help states. Renders a
- * `c-check__box` element after the input. Form associated; emits
- * `contour:change` on toggle.
+ * value, required, checked, disabled, error and help states. The input's
+ * ::after draws the box; there is no separate box element. Form associated;
+ * emits `contour:change` on toggle.
  */
 class ContourCheck extends ContourBase {
     static get observed() { return ["label", "name", "value", "required", "type", "checked", "disabled", "error", "help"]; }
@@ -4128,17 +4500,11 @@ class ContourCheck extends ContourBase {
       const label = this.getAttribute("label");
        const input = this.ensure("input.c-check__input", () => { const el = document.createElement("input"); el.className = "c-check__input"; el.type = this.getAttribute("type") === "radio" ? "radio" : "checkbox"; return el; });
        input.checked = this.hasAttribute("checked");
-      // Ensure box element follows the input (CSS: input + box).
-      if (!input.nextElementSibling || !input.nextElementSibling.classList.contains("c-check__box")) {
-        const box = document.createElement("span");
-        box.className = "c-check__box";
-        box.setAttribute("aria-hidden", "true");
-        if (input.nextSibling) this.insertBefore(box, input.nextSibling);
-        else this.appendChild(box);
-      }
+      // The input's ::after draws the box; a separate .c-check__box span would
+      // be a second, unstyled element the CSS never reaches (R18-41).
       if (label) {
         input.setAttribute("aria-label", label);
-        const txt = this.querySelector(":scope > span:not([class]):not(.c-check__box)") || (() => { const el = document.createElement("span"); this.appendChild(el); return el; })();
+        const txt = this.querySelector(":scope > span:not([class])") || (() => { const el = document.createElement("span"); this.appendChild(el); return el; })();
         txt.textContent = label;
       }
       if (!input.hasAttribute("aria-label")) input.setAttribute("aria-label", "Checkbox");
@@ -4165,10 +4531,21 @@ class ContourCheck extends ContourBase {
       }
       if (this._wiredCheck) return;
       this._wiredCheck = true;
+      // Label activation: the host is not a native <label>, so a click on the
+      // text or box must toggle the input. The input's own click is left to
+      // the platform (early return) so it toggles exactly once.
+      this.addEventListener("click", (e) => {
+        if (e.target && e.target.closest && e.target.closest("input")) return;
+        const inp = this.querySelector("input");
+        if (!inp || inp.disabled) return;
+        e.preventDefault();
+        inp.click();
+      });
       this.addEventListener("change", (e) => {
         const inp = this.querySelector("input");
         if (!inp || e.target !== inp || !this._internals) return;
         this._setCustomState("data-checked", inp.checked);
+        this.toggleAttribute("checked", inp.checked);
         this._internals.setFormValue(inp.checked ? (inp.value || "on") : null);
         this._emitForm("contour:change");
         this._syncValidity(this.hasAttribute("required") && !inp.checked);
@@ -4219,6 +4596,16 @@ class ContourRadio extends ContourBase {
       }
       if (this._wiredRadio) return;
       this._wiredRadio = true;
+      // Label activation: the host is not a native <label>, so a click on the
+      // text must select the radio. The input's own click is left to the
+      // platform (early return) so it toggles exactly once.
+      this.addEventListener("click", (e) => {
+        if (e.target && e.target.closest && e.target.closest("input")) return;
+        const inp = this.querySelector("input");
+        if (!inp || inp.disabled) return;
+        e.preventDefault();
+        inp.click();
+      });
       this.addEventListener("change", (e) => {
         const inp = this.querySelector("input");
         if (!inp || e.target !== inp || !this._internals) return;
@@ -4238,8 +4625,8 @@ class ContourRadio extends ContourBase {
  * required, disabled, error and help. Form associated; emits `contour:change`.
  */
 class ContourSelect extends ContourBase {
-    static get observed() { return ["options", "required", "label", "placeholder", "disabled", "error", "help"]; }
-    static get properties() { return { options: { attribute: "options" }, required: { attribute: "required", type: Boolean }, label: { attribute: "label" }, placeholder: { attribute: "placeholder" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" } }; }
+    static get observed() { return ["options", "required", "label", "placeholder", "disabled", "error", "help", "value", "name", "multiple", "autocomplete"]; }
+    static get properties() { return { options: { attribute: "options" }, required: { attribute: "required", type: Boolean }, label: { attribute: "label" }, placeholder: { attribute: "placeholder" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" }, value: { attribute: "value" }, name: { attribute: "name" }, multiple: { attribute: "multiple", type: Boolean }, autocomplete: { attribute: "autocomplete" } }; }
     static get formAssociated() { return true; }
     render() {
       this.classList.add("c-select");
@@ -4285,7 +4672,7 @@ class ContourSelect extends ContourBase {
           if (select.parentNode !== this) this.appendChild(select);
           this.classList.remove("c-select");
           select.classList.add("c-select");
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       }
       // Ensure authored select gets c-select styling.
       const authoredSel = this.querySelector("select");
@@ -4298,6 +4685,22 @@ class ContourSelect extends ContourBase {
       if (sel) {
         if (this.hasAttribute("disabled")) { sel.setAttribute("disabled", ""); this.classList.add("is-disabled"); }
         else { sel.removeAttribute("disabled"); this.classList.remove("is-disabled"); }
+        // Reflect the native attributes the platform reads: FormData needs
+        // `name`, a multi-select needs `multiple`, and the value must be the
+        // committed selection rather than whatever the first option happens to be.
+        if (this.hasAttribute("name")) sel.setAttribute("name", this.getAttribute("name"));
+        if (this.hasAttribute("multiple")) sel.setAttribute("multiple", ""); else sel.removeAttribute("multiple");
+        if (this.hasAttribute("autocomplete")) sel.setAttribute("autocomplete", this.getAttribute("autocomplete"));
+        if (this.hasAttribute("required")) sel.setAttribute("required", ""); else sel.removeAttribute("required");
+        const val = this.getAttribute("value");
+        if (val !== null) {
+          if (sel.multiple) {
+            const wanted = new Set(String(val).split(",").map((v) => v.trim()).filter(Boolean));
+            Array.from(sel.options).forEach((o) => { o.selected = wanted.has(o.value); });
+          } else {
+            sel.value = val;
+          }
+        }
       }
       // Label (applies to both JSON and authored options).
       const label = this.getAttribute("label");
@@ -4305,7 +4708,11 @@ class ContourSelect extends ContourBase {
         let lbl = this.querySelector("label.c-select__label");
         if (!lbl) { lbl = document.createElement("label"); lbl.className = "c-select__label"; this.insertBefore(lbl, sel || this.firstChild); }
         lbl.textContent = label;
-        if (sel) sel.setAttribute("aria-label", label);
+        if (sel) {
+          if (!sel.id) sel.id = contourId("contour-select");
+          lbl.setAttribute("for", sel.id);
+          sel.setAttribute("aria-label", label);
+        }
       }
       if (!this.querySelector("select")?.hasAttribute("aria-label")) {
         const sel = this.querySelector("select");
@@ -4329,10 +4736,18 @@ class ContourSelect extends ContourBase {
       }
       if (this._wiredSelect) return;
       this._wiredSelect = true;
+      this.addEventListener("input", (e) => {
+        const sel = this.querySelector("select");
+        if (!sel || e.target !== sel) return;
+        this._emitForm("contour:input");
+      });
       this.addEventListener("change", (e) => {
         const sel = this.querySelector("select");
         if (!sel || e.target !== sel || !this._internals) return;
         this._internals.setFormValue(sel.value);
+        // Reflect the committed selection back to the host attribute so a
+        // consumer reading `value` sees what the user picked.
+        this.setAttribute("value", sel.value);
         this._emitForm("contour:change");
         this._syncValidity(this.hasAttribute("required") && !sel.value);
       });
@@ -4367,7 +4782,7 @@ class ContourVersion extends ContourBase {
           if (select.parentNode !== this) this.appendChild(select);
           this.classList.remove("c-version");
           select.classList.add("c-version");
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       }
     }
     enhance() {
@@ -4599,7 +5014,7 @@ class ContourRadioList extends ContourBase {
           const radios = Array.from(this.querySelectorAll("input.c-radio__input"));
           const checked = radios.find((r) => r.checked) || radios[0];
           if (checked) checked.tabIndex = 0;
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else {
         renderEmpty(this, "radio-list");
       }
@@ -4655,4 +5070,140 @@ class ContourRadioList extends ContourBase {
     }
   }
 define("contour-radio-list", ContourRadioList);
+
+// Fieldset: a <fieldset> with a <legend>, for grouping related controls. The
+// platform already draws the group boundary; the component wraps it so a
+// consumer can drop <contour-fieldset legend="…"> and get the semantics.
+class ContourFieldset extends ContourBase {
+  static get observed() { return ["legend", "disabled"]; }
+  static get properties() { return { legend: { attribute: "legend" }, disabled: { attribute: "disabled", type: Boolean } }; }
+  render() {
+    const fs = this.ensure("fieldset", () => { const el = document.createElement("fieldset"); el.className = "c-fieldset"; return el; });
+    if (this.hasAttribute("disabled")) fs.setAttribute("disabled", ""); else fs.removeAttribute("disabled");
+    const legend = this.getAttribute("legend");
+    let lg = fs.querySelector("legend");
+    if (legend) {
+      if (!lg) { lg = document.createElement("legend"); lg.className = "c-fieldset__legend"; fs.prepend(lg); }
+      lg.textContent = legend;
+    } else if (lg) lg.remove();
+    // Move authored children into the fieldset (light DOM).
+    const authored = Array.from(this.children).filter((c) => c !== fs);
+    if (authored.length) { authored.forEach((c) => fs.appendChild(c)); }
+  }
+}
+define("contour-fieldset", ContourFieldset);
+
+// Checkbox group: a fieldset of checkboxes with a shared name. The platform
+// groups checkboxes by name; the component adds the group semantics and a
+// legend, and emits contour:change with the group value.
+class ContourCheckboxGroup extends ContourBase {
+  static get observed() { return ["legend", "name", "options", "value"]; }
+  static get properties() { return { legend: { attribute: "legend" }, name: { attribute: "name" }, options: { attribute: "options" }, value: { attribute: "value" } }; }
+  render() {
+    this.classList.add("c-checkbox-group");
+    const fs = this.ensure("fieldset", () => { const el = document.createElement("fieldset"); el.className = "c-checkbox-group__fieldset"; return el; });
+    const legend = this.getAttribute("legend");
+    let lg = fs.querySelector("legend");
+    if (legend) {
+      if (!lg) { lg = document.createElement("legend"); lg.className = "c-checkbox-group__legend"; fs.prepend(lg); }
+      lg.textContent = legend;
+    } else if (lg) lg.remove();
+    const name = this.getAttribute("name") || "group";
+    const options = this.getAttribute("options");
+    const selected = (this.getAttribute("value") || "").split(",").map((s) => s.trim()).filter(Boolean);
+    if (options) {
+      try {
+        const parsed = JSON.parse(options);
+        Array.from(fs.querySelectorAll(".c-check")).forEach((n) => n.remove());
+        parsed.forEach((opt) => {
+          const label = typeof opt === "string" ? opt : (opt.label || opt.value || "");
+          const value = typeof opt === "string" ? opt : (opt.value || opt.label || "");
+          const wrap = document.createElement("label");
+          wrap.className = "c-check";
+          const input = document.createElement("input");
+          input.type = "checkbox";
+          input.className = "c-check__input";
+          input.name = name;
+          input.value = value;
+          if (selected.includes(value)) input.checked = true;
+          const span = document.createElement("span");
+          span.textContent = label;
+          wrap.appendChild(input);
+          wrap.appendChild(span);
+          fs.appendChild(wrap);
+        });
+      } catch (e) { warnBadJson(this, "attribute", e); }
+    }
+  }
+  enhance() {
+    if (this._wiredCheckboxGroup) return;
+    this._wiredCheckboxGroup = true;
+    this.addEventListener("change", (e) => {
+      const t = e.target;
+      if (t && t.matches && t.matches("input[type=checkbox]")) {
+        const values = Array.from(this.querySelectorAll("input[type=checkbox]:checked")).map((i) => i.value);
+        this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: values.join(","), values } }));
+      }
+    });
+  }
+}
+define("contour-checkbox-group", ContourCheckboxGroup);
+
+// Search field: a text input with a search icon and a clear button. The
+// platform's type=search gives the clear affordance; the component adds the
+// icon and the accessible name.
+class ContourSearchField extends ContourBase {
+  static get observed() { return ["value", "placeholder", "label", "name"]; }
+  static get properties() { return { value: { attribute: "value" }, placeholder: { attribute: "placeholder" }, label: { attribute: "label" }, name: { attribute: "name" } }; }
+  render() {
+    this.classList.add("c-search-field");
+    const input = this.ensure("input", () => { const el = document.createElement("input"); el.type = "search"; el.className = "c-search-field__input"; return el; });
+    input.placeholder = this.getAttribute("placeholder") || "Search";
+    if (this.getAttribute("value") !== null) input.value = this.getAttribute("value");
+    if (this.hasAttribute("name")) input.name = this.getAttribute("name");
+    const label = this.getAttribute("label");
+    if (label) input.setAttribute("aria-label", label);
+    else if (!input.hasAttribute("aria-label")) input.setAttribute("aria-label", "Search");
+  }
+  enhance() {
+    if (this._wiredSearchField) return;
+    this._wiredSearchField = true;
+    this.addEventListener("input", (e) => {
+      const t = e.target;
+      if (t && t.matches && t.matches("input")) {
+        this.dispatchEvent(new CustomEvent("contour:input", { bubbles: true, composed: true, detail: { value: t.value } }));
+      }
+    });
+  }
+}
+define("contour-search-field", ContourSearchField);
+
+// Density toggle: a two-state control (comfortable / compact) that sets a
+// data-density attribute on the host. The consumer's CSS reads it.
+class ContourDensityToggle extends ContourBase {
+  static get observed() { return ["value", "label"]; }
+  static get properties() { return { value: { attribute: "value" }, label: { attribute: "label" } }; }
+  render() {
+    this.classList.add("c-density-toggle");
+    const value = this.getAttribute("value") || "comfortable";
+    this.setAttribute("data-density", value);
+    const btn = this.ensure("button", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-density-toggle__btn"; el.type = "button"; return el; });
+    const label = this.getAttribute("label") || (value === "compact" ? "Compact" : "Comfortable");
+    btn.textContent = label;
+    btn.setAttribute("aria-pressed", value === "compact" ? "true" : "false");
+  }
+  enhance() {
+    if (this._wiredDensityToggle) return;
+    this._wiredDensityToggle = true;
+    this.addEventListener("click", () => {
+      const next = this.getAttribute("data-density") === "compact" ? "comfortable" : "compact";
+      this.setAttribute("value", next);
+      this.setAttribute("data-density", next);
+      const btn = this.querySelector(".c-density-toggle__btn");
+      if (btn) { btn.textContent = next === "compact" ? "Compact" : "Comfortable"; btn.setAttribute("aria-pressed", next === "compact" ? "true" : "false"); }
+      this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: next } }));
+    });
+  }
+}
+define("contour-density-toggle", ContourDensityToggle);
 

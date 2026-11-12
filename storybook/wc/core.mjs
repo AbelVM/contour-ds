@@ -102,7 +102,7 @@
   // {index, label} and {value} across its sites, so all three are listed.
   /** Frozen event vocabulary with the public detail keys for each event. */
   export const CONTOUR_EVENTS = Object.freeze({
-    "contour:activate": { payload: ["row"], composed: true },
+    "contour:activate": { payload: ["files", "label", "row", "value"], composed: true },
     "contour:add": { payload: ["value"], composed: true },
     "contour:activity-clear": { payload: [], composed: true },
     "contour:activity-filter": { payload: ["unread"], composed: true },
@@ -117,16 +117,17 @@
     "contour:brush-start": { payload: ["end", "start", "value"], composed: true },
     "contour:brush-end": { payload: ["end", "start", "value"], composed: true },
     "contour:brush": { payload: ["end", "start", "value"], composed: true },
-    "contour:change": { payload: ["checked", "color", "direction", "end", "files", "high", "index", "low", "month", "name", "speed", "start", "unit", "value", "year"], composed: true },
+    "contour:change": { payload: ["checked", "color", "direction", "end", "files", "high", "index", "low", "month", "name", "paused", "query", "speed", "start", "unit", "value", "values", "year"], composed: true },
     "contour:collapse": { payload: ["collapsed"], composed: true },
       "contour:cluster-toggle": { payload: ["count", "expanded"], composed: true },
     "contour:clear": { payload: [], composed: true },
     "contour:clear-all": { payload: [], composed: true },
-    "contour:close": { payload: ["index", "label"], composed: true },
+    "contour:close": { payload: ["count", "index", "label", "message", "open", "value"], composed: true },
     "contour:copy": { payload: ["text"], composed: true },
     "contour:apply": { payload: ["name"], composed: true },
     "contour:dash-action": { payload: ["label"], composed: true },
     "contour:diff-activate": { payload: ["kind", "text"], composed: true },
+    "contour:dismiss": { payload: ["label"], composed: true },
     "contour:draw-start": { payload: ["mode"], composed: true },
     "contour:drag": { payload: ["delta", "key", "value"], composed: true },
     "contour:do-dont-activate": { payload: ["kind", "text"], composed: true },
@@ -148,13 +149,13 @@
     "contour:layer-rename": { payload: ["name", "newName"], composed: true },
     "contour:layer-duplicate": { payload: ["name"], composed: true },
     "contour:layer-zoom": { payload: ["name"], composed: true },
-    "contour:zoom": { payload: ["row", "index"], composed: true },
+    "contour:zoom": { payload: ["data", "index", "row"], composed: true },
     "contour:layer-projection": { payload: ["name", "projection"], composed: true },
     "contour:layer-remove": { payload: ["name"], composed: true },
     "contour:layer-reorder": { payload: ["layerIds"], composed: true },
     "contour:layer-toggle": { payload: ["name", "visible"], composed: true },
     "contour:layer-visibility": { payload: ["name", "visible"], composed: true },
-    "contour:legend-toggle": { payload: ["key", "label", "pressed"], composed: true },
+    "contour:legend-toggle": { payload: ["index", "key", "label", "pressed"], composed: true },
     "contour:leave": { payload: [], composed: true },
     "contour:load": { payload: ["src", "count"], composed: true },
     "contour:map-control": { payload: ["control"], composed: true },
@@ -167,16 +168,17 @@
     "contour:open": { payload: [], composed: true },
     "contour:page": { payload: ["page"], composed: true },
     "contour:ready": { payload: ["version", "count"], composed: true },
-    "contour:remove": { payload: ["key", "label", "value"], composed: true },
+    "contour:read": { payload: ["label"], composed: true },
+    "contour:remove": { payload: ["key", "label", "name", "value"], composed: true },
     "contour:reorder": { payload: ["from", "to"], composed: true },
     "contour:range-change": { payload: ["value"], composed: true },
-    "contour:resize": { payload: ["height", "width"], composed: true },
+    "contour:resize": { payload: ["delta", "height", "value", "width"], composed: true },
     "contour:retry": { payload: ["src"], composed: true },
     "contour:loop-change": { payload: ["loop"], composed: true },
     "contour:pause": { payload: [], composed: true },
     "contour:play": { payload: [], composed: true },
     "contour:seek": { payload: ["progress", "value"], composed: true },
-    "contour:select": { payload: ["area", "col", "index", "key", "label", "labels", "path", "row", "rows", "series", "value"], composed: true },
+    "contour:select": { payload: ["area", "col", "expanded", "href", "index", "key", "label", "labels", "path", "result", "row", "rows", "series", "value"], composed: true },
     "contour:search": { payload: ["query"], composed: true },
     "contour:spatial-filter": { payload: ["action", "mode", "operator"], composed: true },
     "contour:split-change": { payload: ["value", "width", "height"], composed: true },
@@ -193,7 +195,7 @@
     "contour:tick": { payload: ["frame"], composed: true },
     "contour:time-change": { payload: ["progress", "value"], composed: true },
     "contour:time-range-change": { payload: ["value"], composed: true },
-    "contour:toggle": { payload: ["expanded", "label", "open", "path", "playing"], composed: true },
+    "contour:toggle": { payload: ["collapsed", "expanded", "label", "open", "path", "playing"], composed: true },
     "contour:view-enter": { payload: [], composed: true },
     "contour:view-leave": { payload: [], composed: true },
   });
@@ -234,6 +236,84 @@
     walk(doc.body);
     return doc.body.innerHTML;
   }
+  /**
+   * Validate a CSS colour for use in an inline style.
+   *
+   * Returns the trimmed value when it is a plain colour (named, hex, or a
+   * known colour function) and an empty string otherwise. Anything that could
+   * break out of the declaration, load a resource, or run script is rejected,
+   * so a consumer-supplied `color` attribute cannot become an injection sink.
+   *
+   * @param {unknown} value candidate colour
+   * @returns {string} the safe colour, or "" when rejected
+   */
+  export function safeColor(value) {
+    const raw = String(value == null ? "" : value).trim();
+    if (!raw) return "";
+    if (/[;{}<>"'`\\]/.test(raw)) return "";
+    if (/url\s*\(/i.test(raw) || /expression\s*\(/i.test(raw)) return "";
+    if (/^#[0-9a-f]{3,8}$/i.test(raw)) return raw;
+    if (/^(rgb|rgba|hsl|hsla|hwb|lab|lch|oklab|oklch|color)\(/i.test(raw)) return raw;
+    if (/^[a-z]+$/i.test(raw)) return raw;
+    return "";
+  }
+  /**
+   * Resolve an href candidate to a value that is safe to assign to a sink.
+   *
+   * Fragments, relative paths and the schemes we can vouch for pass through
+   * unchanged; `javascript:`, `data:` and any other scheme collapse to "#".
+   * This closes the attribute-to-property path that `sanitizeHtml` does not
+   * cover, because assigning `a.href = "javascript:…"` executes on click.
+   *
+   * @param {unknown} value candidate href
+   * @returns {string} the safe href, or "#"
+   */
+  export function safeHref(value) {
+    const raw = String(value == null ? "" : value).trim();
+    if (!raw) return "#";
+    if (raw.startsWith("#") || raw.startsWith("/") || raw.startsWith("./") || raw.startsWith("../") || raw.startsWith("?")) return raw;
+    if (typeof document === "undefined" || !document.baseURI) return "#";
+    try {
+      const url = new URL(raw, document.baseURI);
+      return ["http:", "https:", "mailto:", "tel:"].includes(url.protocol) ? raw : "#";
+    } catch (e) {
+      return "#";
+    }
+  }
+  /**
+   * Read a length token from the document root, in pixels.
+   *
+   * Virtualized components used to hard-code 36/32/28 px row heights, which
+   * disagreed with the rendered row and ignored density. The height is now a
+   * token (`--data-grid-row-height`, …) and this reads its computed value.
+   *
+   * @param {string} name custom-property name
+   * @param {number} fallback pixels to use when the token is absent or invalid
+   * @returns {number} the resolved length in pixels
+   */
+  export function cssLength(name, fallback) {
+    if (typeof getComputedStyle === "undefined" || typeof document === "undefined") return fallback;
+    const v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name));
+    return Number.isFinite(v) && v > 0 ? v : fallback;
+  }
+  /**
+   * Surface a malformed JSON attribute instead of swallowing it.
+   *
+   * A bare `catch (e) { /* keep existing *\/ }` turns a typo in a component
+   * attribute into a silent no-op: the render keeps whatever was there before
+   * and the defect is invisible. This warns once, with the component name and
+   * the parser message, so the author can find it.
+   *
+   * @param {Element|null} host the component that owns the attribute
+   * @param {string} label the attribute (or a short description)
+   * @param {unknown} error the thrown parse error
+   */
+  export function warnBadJson(host, label, error) {
+    if (typeof console === "undefined" || !console.warn) return;
+    const name = host && host.tagName ? host.tagName.toLowerCase() : "component";
+    const msg = (error && error.message) || String(error);
+    console.warn(`[contour] ${name}: malformed ${label || "attribute"} — ${msg}`);
+  }
   // contract: an attribute that is not here cannot ask an element to re-render,
   // and an attribute a component WRITES to itself must never be here, because
   // that write would fire the callback that performs the render.
@@ -246,7 +326,7 @@
     "accept", "action", "actions", "active", "after", "allow-duplicate", "allow-remove", "allow-rename", "allow-zoom", "alpha", "anchor", "answer", "area", "article", "attribution", "attribution-mark", "audit", "autoplay", "axis", "axis-x", "axis-y", "brownout", "brownout-level", "before", "body", "brand", "bounds", "breakpoint", "breaks", "brush", "brush-end", "brush-max", "brush-min", "brush-start", "cache-key", "canvas", "center", "clearable", "cols", "columns", "color", "command",
     "cells", "checked", "chrome", "confidence", "coverage", "debounce", "closable", "collapsed", "collapsible", "classification", "colors", "continuous", "content", "controls", "copyable", "count", "data", "data-table", "date", "delta",     "description", "glyphs", "graduated", "demo", "density", "desc", "dir", "direction", "disabled", "distance", "dismissible", "divider", "do", "dont", "dot", "ends", "high", "input", "layer", "low", "mode", "modes", "n", "opacity", "palette", "polarity", "precision", "range", "single",
     "empty", "exclusive", "fallback", "filename", "format", "heading", "help", "hint", "href", "icon", "illustration", "instrument", "interval", "items", "key", "layers", "level", "range-end", "range-start",
-    "label", "lazy", "lede", "legend", "left-label", "right-label", "line", "limit", "link", "links", "live", "loading", "locale", "loop", "max", "media", "message", "method", "methodology", "menu", "min", "multiple", "name", "needle", "next", "no", "no-cache", "no-data-message", "nodes", "note", "norm", "normalize",
+    "label", "labels", "lazy", "lede", "legend", "left-label", "right-label", "line", "limit", "link", "links", "live", "loading", "locale", "loop", "max", "media", "message", "method", "methodology", "menu", "min", "multiple", "name", "needle", "next", "no", "no-cache", "no-data-message", "nodes", "note", "norm", "normalize",
     "options", "orientation", "page-size", "pages", "pause", "paused", "pausable", "persist", "placeholder", "playing", "point", "points", "prev", "presets", "progress", "prompt", "question", "recent", "required",
     "quote", "ramp", "refresh", "removable", "resolution", "reverse", "rings", "retry", "results", "rows", "scale", "selectable", "segments", "show-header", "sparkline", "threshold", "thresholds", "selected", "separator", "series", "shortcut", "side", "size", "skeleton", "sort", "sort-dir", "speed", "status", "step", "submit", "submitting", "timeout", "trigger", "virtual", "sticky", "cluster-count", "cluster-expanded", "time", "resizable",
     "state", "steps", "style", "subtitle", "summary", "src", "source", "table", "tabs", "tag", "text", "ticks",     "title", "type", "unread-only", "unit", "updated", "cluster-items", "row-height",
@@ -255,12 +335,31 @@
     "search",
     "numbered",
     "bucket-count", "limit-values",
+    "autocomplete", "levels", "submit-label",
   ];
 
   /** Resolve an authored heading level while keeping the fallback valid. */
   export function headingTag(host, fallback = "h3") {
     const v = host && host.getAttribute ? host.getAttribute("heading") : null;
     return /^h[1-6]$/.test(v || "") ? v : fallback;
+  }
+
+  /**
+   * Resolve a localised label for a host (R18-63). A consumer supplies a
+   * `labels` JSON attribute (e.g. `labels='{"clear":"Effacer"}'`); it is merged
+   * over the English `fallback`, so a partial object localises only the keys it
+   * names. A malformed attribute is ignored rather than thrown — a bad label
+   * must not take the widget down. Returns `fallback` when no override exists.
+   */
+  export function label(host, key, fallback) {
+    const def = fallback !== undefined ? fallback : key;
+    const raw = host && host.getAttribute ? host.getAttribute("labels") : null;
+    if (!raw) return def;
+    try {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === "object" && typeof parsed[key] === "string" && parsed[key]) return parsed[key];
+    } catch (e) { /* a malformed labels attribute is ignored, not fatal */ }
+    return def;
   }
 
   /**
@@ -359,8 +458,10 @@
       if (ctor._propsInstalled) return;
       ctor._propsInstalled = true;
       const props = ctor.properties || {};
+      const declared = new Set();
       for (const [name, spec] of Object.entries(props)) {
         const attr = (spec && spec.attribute) || name;
+        declared.add(attr);
         const type = (spec && spec.type) || String;
         Object.defineProperty(ctor.prototype, name, {
           get() {
@@ -373,6 +474,33 @@
           set(v) {
             if (v === null || v === undefined || v === false) this.removeAttribute(attr);
             else if (type === Boolean) { if (v) this.setAttribute(attr, ""); else this.removeAttribute(attr); }
+            else this.setAttribute(attr, String(v));
+          },
+          configurable: true,
+        });
+      }
+      // Default reflection (R18-54): every observed attribute a component reads
+      // but does not declare in properties() still gets an accessor, so
+      // `el.allowDuplicate = true` writes `allow-duplicate=""` instead of being
+      // a silent no-op. The property name is the camelCase form of the
+      // attribute (kebab -> camel); a kebab attribute with no valid identifier
+      // form is skipped rather than guessed. Declared properties win.
+      const observed = ctor.observed || OBSERVED;
+      for (const attr of observed) {
+        if (declared.has(attr)) continue;
+        const prop = attr.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+        if (!/^[a-zA-Z_$][\w$]*$/.test(prop)) continue;
+        if (prop in ctor.prototype) continue; // an inherited accessor already exists
+        const isBool = attr === "disabled" || attr === "checked" || attr === "required" || attr === "readonly" || attr === "multiple" || attr === "selected" || attr === "open" || attr === "hidden";
+        Object.defineProperty(ctor.prototype, prop, {
+          get() {
+            const raw = this.getAttribute(attr);
+            if (isBool) return raw !== null;
+            return raw;
+          },
+          set(v) {
+            if (v === null || v === undefined || v === false) this.removeAttribute(attr);
+            else if (isBool) { if (v) this.setAttribute(attr, ""); else this.removeAttribute(attr); }
             else this.setAttribute(attr, String(v));
           },
           configurable: true,

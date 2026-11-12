@@ -2095,6 +2095,7 @@
   .c-query-builder__row { display: flex; gap: 0.5rem; align-items: center; }
   .c-query-builder__field, .c-query-builder__op { flex: 1 1 auto; }
   .c-query-builder__value { flex: 2 1 auto; }
+  .c-query-builder__add { flex: 0 0 auto; align-self: flex-end; }
 
   /* Skip link (R18-34): visually hidden until focused, then slides in. */
   .c-skip-link {

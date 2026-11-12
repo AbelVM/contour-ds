@@ -13,9 +13,8 @@ export const ChartWithLegend = {
     wrap.style.display = "grid";
     wrap.style.gap = "1rem";
     const chart = document.createElement("contour-chart");
-    chart.setAttribute("type", "bar");
     chart.setAttribute("axis", "Weekly volume");
-    chart.setAttribute("data", JSON.stringify({ labels: ["Mon","Tue","Wed"], values: [10,20,15] }));
+    chart.setAttribute("series", JSON.stringify([{ label: "Volume", type: "bar", values: [10, 20, 15] }]));
     const legend = document.createElement("contour-legend");
     legend.setAttribute("items", JSON.stringify([{ label: "Volume", color: "var(--chart-1)" }, { label: "Target", color: "var(--chart-2)" }]));
     wrap.append(chart, legend);
@@ -26,6 +25,11 @@ export const ChartWithLegend = {
     const legend = canvasElement.querySelector("contour-legend");
     await expect(chart).toBeTruthy();
     await expect(legend).toBeTruthy();
+    // The chart must paint its series, not fall through to the empty branch:
+    // `data=` is not an attribute ContourChart reads, so a chart fed that way
+    // renders "No data" and the composition certifies nothing.
+    await expect(chart.querySelector(".c-chart__empty")).toBeNull();
+    await expect(chart.querySelectorAll(".c-chart__bar").length).toBe(3);
     await expect(legend.textContent).toContain("Volume");
     await expect(legend.textContent).toContain("Target");
   },
@@ -35,19 +39,27 @@ export const LegendToggleEmitsIntent = {
   render: () => {
     const wrap = document.createElement("div");
     const legend = document.createElement("contour-legend");
-    legend.setAttribute("items", JSON.stringify([{ label: "A", color: "var(--chart-1)" }, { label: "B", color: "var(--chart-2)" }]));
+    legend.setAttribute("selectable", "");
+    legend.setAttribute("items", JSON.stringify([{ label: "A", key: "a", color: "var(--chart-1)" }, { label: "B", key: "b", color: "var(--chart-2)" }]));
     const status = document.createElement("p");
     status.id = "comp-legend-status";
     status.textContent = "none";
-    wrap.addEventListener("contour:toggle", () => { status.textContent = "toggled"; });
+    // ContourLegend emits `contour:legend-toggle` (and `contour:select`), not
+    // `contour:toggle`. A listener on the wrong name passes a presence check
+    // while certifying an event no component dispatches.
+    wrap.addEventListener("contour:legend-toggle", (e) => {
+      status.textContent = `${e.detail.key}:${e.detail.pressed}`;
+    });
     wrap.append(legend, status);
     return wrap;
   },
   play: async ({ canvasElement }) => {
     const legend = canvasElement.querySelector("contour-legend");
-    const btn = legend.querySelector("button, .c-legend__item");
-    if (btn) btn.click();
-    // Event emission is host-facing intent; presence of interactive legend items is the contract here.
-    await expect(legend.querySelectorAll(".c-legend__item, button, [role]").length).toBeGreaterThan(0);
+    const status = canvasElement.querySelector("#comp-legend-status");
+    const item = legend.querySelector(".c-legend__item");
+    await expect(item).toBeTruthy();
+    item.click();
+    await expect(status.textContent).toBe("a:false");
+    await expect(item).toHaveAttribute("aria-pressed", "false");
   },
 };

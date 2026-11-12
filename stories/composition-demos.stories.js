@@ -31,7 +31,7 @@ export const SpatialDashboardDemo = {
           <contour-kpi label="Alerts" value="3"></contour-kpi>
           <contour-kpi label="Coverage" value="96%"></contour-kpi>
         </div>
-        <contour-chart type="bar" axis="Weekly volume" data='{"labels":["Mon","Tue","Wed","Thu","Fri"],"values":[12,18,15,23,28]}'></contour-chart>
+        <contour-chart axis="Weekly volume" series='[{"label":"Volume","type":"bar","values":[12,18,15,23,28]}]'></contour-chart>
         <div class="c-table-wrap"><contour-table columns='["Region","Volume","Status"]' rows='[["North","842","Open"],["South","617","Review"]]'></contour-table></div>
       </main>`;
     return root;
@@ -40,6 +40,10 @@ export const SpatialDashboardDemo = {
     await expect(canvasElement.querySelector("contour-layer-panel")).toBeTruthy();
     await expect(canvasElement.querySelectorAll("contour-kpi").length).toBe(3);
     await expect(canvasElement.querySelector("contour-chart")).toBeTruthy();
+    // `data=` is not an attribute ContourChart reads: a chart fed that way
+    // renders the empty branch, so assert the marks exist.
+    await expect(canvasElement.querySelector("contour-chart .c-chart__empty")).toBeNull();
+    await expect(canvasElement.querySelectorAll("contour-chart .c-chart__bar").length).toBe(5);
     await expect(canvasElement.querySelector("contour-table")).toBeTruthy();
   },
 };
@@ -205,7 +209,7 @@ export const ComparisonWorkspaceDemo = {
             <contour-kpi label="Revenue" value="$2.4M" delta="+12%"></contour-kpi>
             <contour-kpi label="Users" value="45.2K" delta="+8%"></contour-kpi>
           </div>
-          <contour-chart type="bar" axis="Quarter" data='{"labels":["Q1","Q2","Q3","Q4"],"values":[520,580,620,680]}'></contour-chart>
+          <contour-chart axis="Quarter" series='[{"label":"Optimistic","type":"bar","values":[520,580,620,680]}]'></contour-chart>
         </section>
         <section>
           <h3>Scenario B — Conservative</h3>
@@ -213,7 +217,7 @@ export const ComparisonWorkspaceDemo = {
             <contour-kpi label="Revenue" value="$1.9M" delta="-5%"></contour-kpi>
             <contour-kpi label="Users" value="38.1K" delta="-3%"></contour-kpi>
           </div>
-          <contour-chart type="bar" axis="Quarter" data='{"labels":["Q1","Q2","Q3","Q4"],"values":[480,460,470,490]}'></contour-chart>
+          <contour-chart axis="Quarter" series='[{"label":"Conservative","type":"bar","values":[480,460,470,490]}]'></contour-chart>
         </section>
       </main>`;
     return root;
@@ -222,5 +226,7 @@ export const ComparisonWorkspaceDemo = {
     await expect(canvasElement.querySelectorAll("contour-saved-view").length).toBe(3);
     await expect(canvasElement.querySelectorAll("contour-kpi").length).toBe(4);
     await expect(canvasElement.querySelectorAll("contour-chart").length).toBe(2);
+    await expect(canvasElement.querySelectorAll("contour-chart .c-chart__empty").length).toBe(0);
+    await expect(canvasElement.querySelectorAll("contour-chart .c-chart__bar").length).toBe(8);
   },
 };

@@ -488,4 +488,5 @@
 
   /* Density toggle (R18-34): a two-state control. */
   .c-density-toggle { display: inline-flex; }
+  .c-density-toggle__btn { flex: 0 0 auto; }
 }

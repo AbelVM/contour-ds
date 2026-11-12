@@ -230,3 +230,107 @@ export function markerStyles(shape) {
 export function assignMarkers(items) {
   return (items || []).map((it, i) => ({ ...it, marker: MARKER_SHAPES[i % MARKER_SHAPES.length] }));
 }
+
+/* ---------------------------------------------------------------------------
+ * Contour lines — marching squares over a 2D field.
+ *
+ * The same algorithm as tools/contour-gen.py, ported to the browser. Iso-lines
+ * of different levels of one continuous field cannot cross; the asymptotic
+ * saddle decider below is what guarantees that, so a hand-drawn path is never
+ * a substitute. Shared by the `contour-contour-plot` element and the guide's
+ * `data-contour-plot` renderer so the two cannot drift.
+ * ------------------------------------------------------------------------- */
+
+/**
+ * Extract the iso-line segments of a scalar field at one level.
+ *
+ * @param {number[][]} grid row-major field values
+ * @param {number} level iso-level to extract
+ * @returns {Array<[{x:number,y:number},{x:number,y:number}]>} segments in grid space
+ */
+export function marchingSquares(grid, level) {
+  const rows = grid.length;
+  const cols = rows ? grid[0].length : 0;
+  const segments = [];
+  if (!rows || !cols) return segments;
+
+  const lerp = (a, b, va, vb) => (vb === va ? 0.5 : (level - va) / (vb - va));
+
+  for (let y = 0; y < rows - 1; y++) {
+    for (let x = 0; x < cols - 1; x++) {
+      const tl = grid[y][x];
+      const tr = grid[y][x + 1];
+      const bl = grid[y + 1][x];
+      const br = grid[y + 1][x + 1];
+      const code =
+        (tl >= level ? 8 : 0) |
+        (tr >= level ? 4 : 0) |
+        (br >= level ? 2 : 0) |
+        (bl >= level ? 1 : 0);
+      if (code === 0 || code === 15) continue;
+
+      const top = { x: x + lerp(tl, tr, tl, tr), y };
+      const right = { x: x + 1, y: y + lerp(tr, br, tr, br) };
+      const bottom = { x: x + lerp(bl, br, bl, br), y: y + 1 };
+      const left = { x, y: y + lerp(tl, bl, tl, bl) };
+
+      let connect;
+      if (code === 5) {
+        const center = (tl + tr + bl + br) / 4;
+        connect = center >= level ? "top-bottom" : "left-right";
+      } else if (code === 10) {
+        const center = (tl + tr + bl + br) / 4;
+        connect = center >= level ? "left-right" : "top-bottom";
+      }
+
+      switch (code) {
+        case 1: case 14: segments.push([left, bottom]); break;
+        case 2: case 13: segments.push([bottom, right]); break;
+        case 3: case 12: segments.push([left, right]); break;
+        case 4: case 11: segments.push([top, right]); break;
+        case 6: case 9: segments.push([top, bottom]); break;
+        case 7: case 8: segments.push([left, top]); break;
+        case 5:
+          if (connect === "top-bottom") {
+            segments.push([top, bottom], [left, right]);
+          } else {
+            segments.push([top, right], [left, bottom]);
+          }
+          break;
+        case 10:
+          if (connect === "left-right") {
+            segments.push([left, right], [top, bottom]);
+          } else {
+            segments.push([top, right], [left, bottom]);
+          }
+          break;
+      }
+    }
+  }
+  return segments;
+}
+
+/**
+ * Build the SVG `d` path for every level of a field.
+ *
+ * @param {number[][]} grid row-major field values
+ * @param {number[]} levels iso-levels, one path per level
+ * @param {number} width viewBox width in px
+ * @param {number} height viewBox height in px
+ * @returns {Array<{level:number, d:string}>} one entry per level
+ */
+export function contourPaths(grid, levels, width, height) {
+  const rows = grid.length;
+  const cols = rows ? grid[0].length : 0;
+  if (rows < 2 || cols < 2) return [];
+  const sx = width / (cols - 1);
+  const sy = height / (rows - 1);
+  return (levels || []).map((level) => {
+    const segs = marchingSquares(grid, level);
+    let d = "";
+    for (const [a, b] of segs) {
+      d += `M ${(a.x * sx).toFixed(2)} ${(a.y * sy).toFixed(2)} L ${(b.x * sx).toFixed(2)} ${(b.y * sy).toFixed(2)} `;
+    }
+    return { level, d: d.trim() };
+  });
+}

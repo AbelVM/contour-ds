@@ -99,6 +99,17 @@ const STATE_STORIES = [
   "contour-data-table--loading",
   "contour-data-table--error-retry",
   "contour-feedback-toast--default",
+  // R18-34 components: the new interactive shells must hold up in forced
+  // colors and reduced motion, not only in the default axis.
+  "contour-elements--skip-link",
+  "contour-elements--icon",
+  "contour-elements--fieldset",
+  "contour-elements--checkbox-group",
+  "contour-elements--search-field",
+  "contour-elements--density-toggle",
+  "contour-elements--dashboard-grid",
+  "contour-elements--analysis-stack",
+  "contour-elements--query-builder",
 ];
 
 // Axes beyond theme × width. Forced Colors Mode replaces the page's palette

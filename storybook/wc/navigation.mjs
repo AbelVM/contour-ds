@@ -1,4 +1,4 @@
-import { ContourBase, define, onDispose, supportsUntilFound, contourId, headingTag, navKey } from './core.mjs';
+import { ContourBase, define, onDispose, supportsUntilFound, contourId, headingTag, navKey, safeHref, cssLength , warnBadJson, label } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { wireMenu, wirePagination, wireTabs, wireTree, wireRemovable } from './behaviours.mjs';
 class ContourMenu extends ContourBase {
@@ -97,7 +97,10 @@ class ContourMenu extends ContourBase {
              } else {
                const li = document.createElement("li");
                li.className = "c-menu__item" + (item.danger ? " c-menu__item--danger" : "") + (item.disabled ? " c-menu__item--disabled" : "");
-               li.setAttribute("role", "menuitem");
+               // A checkbox/radio item carries its state, not just a label.
+               const role = item.type === "checkbox" ? "menuitemcheckbox" : item.type === "radio" ? "menuitemradio" : "menuitem";
+               li.setAttribute("role", role);
+               if (item.type === "checkbox" || item.type === "radio") li.setAttribute("aria-checked", String(!!item.checked));
                if (item.disabled) li.setAttribute("aria-disabled", "true");
                if (item.items && Array.isArray(item.items)) {
                  li.setAttribute("aria-haspopup", "menu");
@@ -115,13 +118,34 @@ class ContourMenu extends ContourBase {
                  sc.textContent = item.shortcut;
                  li.appendChild(sc);
                }
+               // Build the nested submenu the haspopup promised: without it the
+               // item advertises a menu that opens onto nothing.
+               if (item.items && Array.isArray(item.items)) {
+                 const sub = document.createElement("ul");
+                 sub.className = "c-menu";
+                 sub.setAttribute("role", "menu");
+                 item.items.forEach((subItem) => {
+                   const sli = document.createElement("li");
+                   sli.className = "c-menu__item" + (subItem.danger ? " c-menu__item--danger" : "") + (subItem.disabled ? " c-menu__item--disabled" : "");
+                   sli.setAttribute("role", "menuitem");
+                   if (subItem.disabled) sli.setAttribute("aria-disabled", "true");
+                   if (subItem.label || subItem.title) {
+                     const sl = document.createElement("span");
+                     sl.className = "c-menu__label";
+                     sl.textContent = subItem.label || subItem.title || "";
+                     sli.appendChild(sl);
+                   }
+                   sub.appendChild(sli);
+                 });
+                 li.appendChild(sub);
+               }
                ul.appendChild(li);
              }
            });
            if (ul.parentNode !== this) this.appendChild(ul);
            this.classList.remove("c-menu");
            ul.classList.add("c-menu");
-         } catch (e) { /* keep existing */ }
+         } catch (e) { warnBadJson(this, "attribute", e); }
        } else {
          renderEmpty(this, "menu");
        }
@@ -252,7 +276,7 @@ class ContourTabs extends ContourBase {
               this.appendChild(panel);
             });
             if (list.parentNode !== this) this.prepend(list);
-         } catch (e) { /* keep existing */ }
+         } catch (e) { warnBadJson(this, "attribute", e); }
         } else if (!tabs && !authoredTabs.length) {
           const list = this.querySelector(".c-tabs__list");
           if (list) list.remove();
@@ -348,7 +372,7 @@ class ContourHeader extends ContourBase {
           nav.innerHTML = "";
           parsed.forEach((l) => {
             const a = document.createElement("a");
-            a.href = l.href || "#";
+            a.href = safeHref(l.href || "#");
             a.textContent = l.label || l;
             nav.appendChild(a);
           });
@@ -429,7 +453,8 @@ class ContourTree extends ContourBase {
     static get properties() { return { items: { attribute: "items" }, src: { attribute: "src" }, "item-height": { attribute: "item-height" } }; }
     _itemHeight() {
       const h = Number(this.getAttribute("item-height"));
-      return Number.isFinite(h) && h > 0 ? h : 28;
+      if (Number.isFinite(h) && h > 0) return h;
+      return cssLength("--virtual-list-item-height", 28);
     }
     _labelToPaths(nodes, pathPrefix, map) {
       (nodes || []).forEach((node, i) => {
@@ -664,7 +689,7 @@ render() {
            this.classList.remove("c-tree");
            rootUl.classList.add("c-tree");
            if (rootUl.parentNode !== this) this.appendChild(rootUl);
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else if (!items && !authored.length) {
         renderEmpty(this, "tree");
       }
@@ -807,7 +832,7 @@ class ContourCodeTabs extends ContourBase {
              this.appendChild(panel);
            });
            if (l.parentNode !== this) this.prepend(l);
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else if (!tabs && list) {
         list.remove();
         renderEmpty(this, "code-tabs");
@@ -838,9 +863,11 @@ class ContourBreadcrumb extends ContourBase {
       if (items && !authored.length) {
         try {
           const parsed = JSON.parse(items);
-          const n = this.ensure("nav", () => { const el = document.createElement("nav"); el.setAttribute("aria-label", "Breadcrumb"); el.id = "contour-breadcrumb-list"; return el; });
+          const n = this.ensure("nav", () => { const el = document.createElement("nav"); el.setAttribute("aria-label", "Breadcrumb"); return el; });
           n.setAttribute("aria-label", "Breadcrumb");
-          n.id = "contour-breadcrumb-list";
+          // A unique id per instance: two breadcrumbs on a page must not share
+          // one, and the overflow button points at this one through aria-controls.
+          if (!n.id) n.id = contourId("contour-breadcrumb-list");
           n.innerHTML = "";
           const sep = this.getAttribute("separator") || "/";
           const max = this._overflowExpanded ? null : this.max;
@@ -853,7 +880,7 @@ class ContourBreadcrumb extends ContourBase {
             btn.className = "c-breadcrumb__overflow";
             btn.setAttribute("aria-label", `Show ${parsed.length - shown.length + 1} more items`);
             btn.setAttribute("aria-expanded", "false");
-            btn.setAttribute("aria-controls", "contour-breadcrumb-list");
+            btn.setAttribute("aria-controls", n.id);
             btn.textContent = "…";
             btn.addEventListener("click", () => {
               // A handler-owned property, not an attribute: flipping a
@@ -868,7 +895,7 @@ class ContourBreadcrumb extends ContourBase {
           shown.forEach((item, i) => {
             if (i < shown.length - 1) {
               const a = document.createElement("a");
-              a.href = item.href || "#";
+              a.href = safeHref(item.href || "#");
               a.textContent = item.label || item;
               n.appendChild(a);
               const s = document.createElement("span");
@@ -883,7 +910,7 @@ class ContourBreadcrumb extends ContourBase {
               n.appendChild(span);
             }
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
        } else if (!items && nav) {
          nav.remove();
        } else if (!items && !nav) {
@@ -897,6 +924,10 @@ class ContourPagination extends ContourBase {
     static get properties() { return { pages: { attribute: "pages" }, current: { attribute: "current" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-pagination");
+      // A pagination control is a navigation landmark: the APG names it, and a
+      // screen reader's landmark list is where a reader looks for "page N of M".
+      if (!this.hasAttribute("role")) this.setAttribute("role", "navigation");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Pagination");
       wireStates(this);
       loadRemote(this, "pages");
       if (renderStates(this, "pagination")) return;
@@ -921,7 +952,7 @@ class ContourPagination extends ContourBase {
         prev.className = "c-pagination__link c-pagination__prev";
         prev.setAttribute("data-action", "prev");
         prev.textContent = "‹";
-        prev.setAttribute("aria-label", "Previous page");
+        prev.setAttribute("aria-label", label(this, "prev", "Previous page"));
         this.appendChild(prev);
         for (let i = 1; i <= count; i++) {
           const btn = document.createElement("button");
@@ -939,7 +970,7 @@ class ContourPagination extends ContourBase {
         next.className = "c-pagination__link c-pagination__next";
         next.setAttribute("data-action", "next");
         next.textContent = "›";
-        next.setAttribute("aria-label", "Next page");
+        next.setAttribute("aria-label", label(this, "next", "Next page"));
         this.appendChild(next);
       } else {
         renderEmpty(this, "pagination");
@@ -962,7 +993,7 @@ class ContourPagerFull extends ContourBase {
       if (prev) {
         const a = document.createElement("a");
         a.className = "c-pager__link";
-        a.href = prev.split("|")[1] || "#";
+        a.href = safeHref(prev.split("|")[1] || "#");
         const dir = document.createElement("span");
         dir.className = "c-pager__dir";
         dir.textContent = "← Previous";
@@ -976,7 +1007,7 @@ class ContourPagerFull extends ContourBase {
       if (next) {
         const a = document.createElement("a");
         a.className = "c-pager__link c-pager__link--next";
-        a.href = next.split("|")[1] || "#";
+        a.href = safeHref(next.split("|")[1] || "#");
         const dir = document.createElement("span");
         dir.className = "c-pager__dir";
         dir.textContent = "Next →";
@@ -1015,13 +1046,13 @@ class ContourTocFull extends ContourBase {
           parsed.forEach((item, i) => {
             const a = document.createElement("a");
             a.className = "c-toc__link" + (item.sub ? " c-toc__link--sub" : "");
-            a.href = item.href || "#";
+            a.href = safeHref(item.href || "#");
             a.textContent = item.label || item;
             a.tabIndex = i === 0 ? 0 : -1;
             if (item.current) a.setAttribute("aria-current", "true");
             l.appendChild(a);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else if (!items && list) {
         list.remove();
         renderEmpty(this, "toc");
@@ -1421,7 +1452,7 @@ class ContourFilterBar extends ContourBase {
               l.appendChild(item);
             }
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else if (!items && list) {
         list.remove();
       }
@@ -1524,6 +1555,9 @@ class ContourFooter extends ContourBase {
     static get properties() { return { brand: { attribute: "brand" }, note: { attribute: "note" }, links: { attribute: "links" }, cols: { attribute: "cols" } }; }
     render() {
       this.classList.add("c-footer");
+      // A footer is a contentinfo landmark: the APG names it, and a reader who
+      // jumps to the landmark list expects the page's footer there.
+      if (!this.hasAttribute("role")) this.setAttribute("role", "contentinfo");
       const brand = this.getAttribute("brand");
       if (brand) {
         const b = this.ensure(".c-footer__brand", () => { const el = document.createElement("div"); el.className = "c-footer__brand"; return el; });
@@ -1548,11 +1582,11 @@ class ContourFooter extends ContourBase {
           wrap.innerHTML = "";
           parsed.forEach((l) => {
             const a = document.createElement("a");
-            a.href = typeof l === "string" ? "#" : (l.href || "#");
+            a.href = safeHref(typeof l === "string" ? "#" : (l.href || "#"));
             a.textContent = typeof l === "string" ? l : (l.label || l);
             wrap.appendChild(a);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else {
         const w = this.querySelector(".c-footer__links");
         if (w) w.remove();
@@ -1573,13 +1607,13 @@ class ContourFooter extends ContourBase {
             }
             (col.links || []).forEach((l) => {
               const a = document.createElement("a");
-              a.href = typeof l === "string" ? "#" : (l.href || "#");
+              a.href = safeHref(typeof l === "string" ? "#" : (l.href || "#"));
               a.textContent = typeof l === "string" ? l : (l.label || l);
               c.appendChild(a);
             });
             this.appendChild(c);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else {
         this.querySelectorAll(".c-footer__col").forEach((c) => c.remove());
       }
@@ -1641,12 +1675,12 @@ class ContourSidebar extends ContourBase {
           parsed.forEach((it, i) => {
             const a = document.createElement("a");
             a.className = "c-sidebar__link";
-            a.href = (it && it.href) || "#";
+            a.href = safeHref((it && it.href) || "#");
             a.textContent = (it && (it.label || it)) || "";
             a.tabIndex = i === 0 ? 0 : -1;
             nav.appendChild(a);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       }
     }
     enhance() {
@@ -1717,7 +1751,7 @@ class ContourToolbar extends ContourBase {
             wrap.appendChild(menu);
             this.appendChild(wrap);
           }
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       }
     }
     enhance() {

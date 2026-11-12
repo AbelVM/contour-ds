@@ -1,5 +1,5 @@
-import { ContourBase, define, onDispose } from './core.mjs';
-import { wireSegmented } from './behaviours.mjs';
+import { ContourBase, define, onDispose , warnBadJson } from './core.mjs';
+import { wireSegmented, modalContain } from './behaviours.mjs';
 class ContourPressableFull extends ContourBase {
     static get observed() { return ["disabled"]; }
     static get properties() { return { disabled: { attribute: "disabled", type: Boolean } }; }
@@ -146,8 +146,8 @@ class ContourShortcutPanelFull extends ContourBase {
       if (this.hasAttribute("open")) this.removeAttribute("hidden");
       else if (!this.hasAttribute("hidden")) this.setAttribute("hidden", "");
     }
-    show() { this.setAttribute("open", ""); this.removeAttribute("hidden"); this.dispatchEvent(new CustomEvent("contour:open", { bubbles: true, composed: true })); }
-    hide() { this.removeAttribute("open"); this.setAttribute("hidden", ""); this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true })); }
+    show() { this.setAttribute("open", ""); this.removeAttribute("hidden"); modalContain(this, true); this.dispatchEvent(new CustomEvent("contour:open", { bubbles: true, composed: true })); }
+    hide() { this.removeAttribute("open"); this.setAttribute("hidden", ""); modalContain(this, false); this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true })); }
     toggle() { if (this.hasAttribute("open")) this.hide(); else this.show(); }
     enhance() {
       if (this._wiredShortcutOverlay) return;
@@ -308,11 +308,14 @@ class ContourDragHandle extends ContourBase {
   }
   define("contour-drag-handle", ContourDragHandle);
 class ContourDropIndicator extends ContourBase {
-    static get observed() { return ["label"]; }
-    static get properties() { return { label: { attribute: "label" } }; }
+    static get observed() { return ["label", "open"]; }
+    static get properties() { return { label: { attribute: "label" }, open: { attribute: "open", type: Boolean } }; }
     render() {
       this.classList.add("c-drop-indicator");
-      this.classList.add("c-drop-indicator--visible");
+      // Visibility is a state, not a constant: the indicator is shown while a
+      // drag is over a drop target, so it is only visible when `open` is set.
+      // The old code stamped --visible on every render, so it was always on.
+      this.classList.toggle("c-drop-indicator--visible", this.hasAttribute("open"));
       if (!this.hasAttribute("role")) this.setAttribute("role", "presentation");
       // A presentation role is purely decorative: strip any accessible name
       // so axe does not flag aria-label/aria-labelledby as prohibited.
@@ -385,9 +388,10 @@ class ContourResizable extends ContourBase {
       const vertical = this.getAttribute("direction") === "vertical";
       this.classList.add(vertical ? "c-resizable--vertical" : "c-resizable--horizontal");
       if (!this.querySelector(".c-resizable__pane")) {
+        // Structural panes only: the author fills them. The old code wrote
+        // "Pane A"/"Pane B" into a shipped component.
         const p1 = document.createElement("div");
         p1.className = "c-resizable__pane";
-        p1.textContent = "Pane A";
         const handle = document.createElement("div");
         handle.className = "c-resize-handle";
         handle.setAttribute("tabindex", "0");
@@ -395,7 +399,6 @@ class ContourResizable extends ContourBase {
         handle.setAttribute("aria-valuenow", "0");
         const p2 = document.createElement("div");
         p2.className = "c-resizable__pane";
-        p2.textContent = "Pane B";
         this.appendChild(p1);
         this.appendChild(handle);
         this.appendChild(p2);
@@ -482,7 +485,7 @@ class ContourSplitView extends ContourBase {
       if (!this.querySelector(".c-split-view__pane")) {
         const p1 = document.createElement("div");
         p1.className = "c-split-view__pane c-split-view__pane--left";
-        p1.setAttribute("aria-label", this.getAttribute("left-label") || "Left pane");
+        if (this.getAttribute("left-label")) p1.setAttribute("aria-label", this.getAttribute("left-label"));
         const divider = document.createElement("div");
         divider.className = "c-split-view__divider";
         divider.setAttribute("tabindex", "0");
@@ -491,7 +494,7 @@ class ContourSplitView extends ContourBase {
         divider.setAttribute("aria-label", "Split divider");
         const p2 = document.createElement("div");
         p2.className = "c-split-view__pane c-split-view__pane--right";
-        p2.setAttribute("aria-label", this.getAttribute("right-label") || "Right pane");
+        if (this.getAttribute("right-label")) p2.setAttribute("aria-label", this.getAttribute("right-label"));
         this.appendChild(p1);
         this.appendChild(divider);
         this.appendChild(p2);
@@ -574,21 +577,8 @@ class ContourTableWrap extends ContourBase {
     render() {
       this.classList.add("c-table-wrap");
       Array.from(this.childNodes).forEach((n) => { if (n.nodeType === Node.TEXT_NODE) n.remove(); else if (n.nodeType === Node.ELEMENT_NODE && n.tagName === "SPAN") n.remove(); });
-      if (!this.querySelector("table")) {
-        const t = document.createElement("table");
-        t.className = "c-table";
-        const thead = document.createElement("thead");
-        const tr = document.createElement("tr");
-        for (const h of ["A", "B"]) { const th = document.createElement("th"); th.textContent = h; tr.appendChild(th); }
-        thead.appendChild(tr);
-        t.appendChild(thead);
-        const tbody = document.createElement("tbody");
-        const tr2 = document.createElement("tr");
-        for (const v of ["1", "2"]) { const td = document.createElement("td"); td.textContent = v; tr2.appendChild(td); }
-        tbody.appendChild(tr2);
-        t.appendChild(tbody);
-        this.appendChild(t);
-      }
+      // A shipped component must not invent a table: the author supplies the
+      // <table>. The old code rendered an A/B/1/2 grid when empty.
     }
   }
   define("contour-table-wrap", ContourTableWrap);

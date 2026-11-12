@@ -102,7 +102,7 @@
   // {index, label} and {value} across its sites, so all three are listed.
   /** Frozen event vocabulary with the public detail keys for each event. */
   export const CONTOUR_EVENTS = Object.freeze({
-    "contour:activate": { payload: ["row"], composed: true },
+    "contour:activate": { payload: ["files", "label", "row", "value"], composed: true },
     "contour:add": { payload: ["value"], composed: true },
     "contour:activity-clear": { payload: [], composed: true },
     "contour:activity-filter": { payload: ["unread"], composed: true },
@@ -117,16 +117,17 @@
     "contour:brush-start": { payload: ["end", "start", "value"], composed: true },
     "contour:brush-end": { payload: ["end", "start", "value"], composed: true },
     "contour:brush": { payload: ["end", "start", "value"], composed: true },
-    "contour:change": { payload: ["checked", "color", "direction", "end", "files", "high", "index", "low", "month", "name", "speed", "start", "unit", "value", "year"], composed: true },
+    "contour:change": { payload: ["checked", "color", "direction", "end", "files", "high", "index", "low", "month", "name", "paused", "query", "speed", "start", "unit", "value", "values", "year"], composed: true },
     "contour:collapse": { payload: ["collapsed"], composed: true },
       "contour:cluster-toggle": { payload: ["count", "expanded"], composed: true },
     "contour:clear": { payload: [], composed: true },
     "contour:clear-all": { payload: [], composed: true },
-    "contour:close": { payload: ["index", "label"], composed: true },
+    "contour:close": { payload: ["count", "index", "label", "message", "open", "value"], composed: true },
     "contour:copy": { payload: ["text"], composed: true },
     "contour:apply": { payload: ["name"], composed: true },
     "contour:dash-action": { payload: ["label"], composed: true },
     "contour:diff-activate": { payload: ["kind", "text"], composed: true },
+    "contour:dismiss": { payload: ["label"], composed: true },
     "contour:draw-start": { payload: ["mode"], composed: true },
     "contour:drag": { payload: ["delta", "key", "value"], composed: true },
     "contour:do-dont-activate": { payload: ["kind", "text"], composed: true },
@@ -148,13 +149,13 @@
     "contour:layer-rename": { payload: ["name", "newName"], composed: true },
     "contour:layer-duplicate": { payload: ["name"], composed: true },
     "contour:layer-zoom": { payload: ["name"], composed: true },
-    "contour:zoom": { payload: ["row", "index"], composed: true },
+    "contour:zoom": { payload: ["data", "index", "row"], composed: true },
     "contour:layer-projection": { payload: ["name", "projection"], composed: true },
     "contour:layer-remove": { payload: ["name"], composed: true },
     "contour:layer-reorder": { payload: ["layerIds"], composed: true },
     "contour:layer-toggle": { payload: ["name", "visible"], composed: true },
     "contour:layer-visibility": { payload: ["name", "visible"], composed: true },
-    "contour:legend-toggle": { payload: ["key", "label", "pressed"], composed: true },
+    "contour:legend-toggle": { payload: ["index", "key", "label", "pressed"], composed: true },
     "contour:leave": { payload: [], composed: true },
     "contour:load": { payload: ["src", "count"], composed: true },
     "contour:map-control": { payload: ["control"], composed: true },
@@ -167,16 +168,17 @@
     "contour:open": { payload: [], composed: true },
     "contour:page": { payload: ["page"], composed: true },
     "contour:ready": { payload: ["version", "count"], composed: true },
-    "contour:remove": { payload: ["key", "label", "value"], composed: true },
+    "contour:read": { payload: ["label"], composed: true },
+    "contour:remove": { payload: ["key", "label", "name", "value"], composed: true },
     "contour:reorder": { payload: ["from", "to"], composed: true },
     "contour:range-change": { payload: ["value"], composed: true },
-    "contour:resize": { payload: ["height", "width"], composed: true },
+    "contour:resize": { payload: ["delta", "height", "value", "width"], composed: true },
     "contour:retry": { payload: ["src"], composed: true },
     "contour:loop-change": { payload: ["loop"], composed: true },
     "contour:pause": { payload: [], composed: true },
     "contour:play": { payload: [], composed: true },
     "contour:seek": { payload: ["progress", "value"], composed: true },
-    "contour:select": { payload: ["area", "col", "index", "key", "label", "labels", "path", "row", "rows", "series", "value"], composed: true },
+    "contour:select": { payload: ["area", "col", "expanded", "href", "index", "key", "label", "labels", "path", "result", "row", "rows", "series", "value"], composed: true },
     "contour:search": { payload: ["query"], composed: true },
     "contour:spatial-filter": { payload: ["action", "mode", "operator"], composed: true },
     "contour:split-change": { payload: ["value", "width", "height"], composed: true },
@@ -193,7 +195,7 @@
     "contour:tick": { payload: ["frame"], composed: true },
     "contour:time-change": { payload: ["progress", "value"], composed: true },
     "contour:time-range-change": { payload: ["value"], composed: true },
-    "contour:toggle": { payload: ["expanded", "label", "open", "path", "playing"], composed: true },
+    "contour:toggle": { payload: ["collapsed", "expanded", "label", "open", "path", "playing"], composed: true },
     "contour:view-enter": { payload: [], composed: true },
     "contour:view-leave": { payload: [], composed: true },
   });
@@ -234,6 +236,84 @@
     walk(doc.body);
     return doc.body.innerHTML;
   }
+  /**
+   * Validate a CSS colour for use in an inline style.
+   *
+   * Returns the trimmed value when it is a plain colour (named, hex, or a
+   * known colour function) and an empty string otherwise. Anything that could
+   * break out of the declaration, load a resource, or run script is rejected,
+   * so a consumer-supplied `color` attribute cannot become an injection sink.
+   *
+   * @param {unknown} value candidate colour
+   * @returns {string} the safe colour, or "" when rejected
+   */
+  export function safeColor(value) {
+    const raw = String(value == null ? "" : value).trim();
+    if (!raw) return "";
+    if (/[;{}<>"'`\\]/.test(raw)) return "";
+    if (/url\s*\(/i.test(raw) || /expression\s*\(/i.test(raw)) return "";
+    if (/^#[0-9a-f]{3,8}$/i.test(raw)) return raw;
+    if (/^(rgb|rgba|hsl|hsla|hwb|lab|lch|oklab|oklch|color)\(/i.test(raw)) return raw;
+    if (/^[a-z]+$/i.test(raw)) return raw;
+    return "";
+  }
+  /**
+   * Resolve an href candidate to a value that is safe to assign to a sink.
+   *
+   * Fragments, relative paths and the schemes we can vouch for pass through
+   * unchanged; `javascript:`, `data:` and any other scheme collapse to "#".
+   * This closes the attribute-to-property path that `sanitizeHtml` does not
+   * cover, because assigning `a.href = "javascript:…"` executes on click.
+   *
+   * @param {unknown} value candidate href
+   * @returns {string} the safe href, or "#"
+   */
+  export function safeHref(value) {
+    const raw = String(value == null ? "" : value).trim();
+    if (!raw) return "#";
+    if (raw.startsWith("#") || raw.startsWith("/") || raw.startsWith("./") || raw.startsWith("../") || raw.startsWith("?")) return raw;
+    if (typeof document === "undefined" || !document.baseURI) return "#";
+    try {
+      const url = new URL(raw, document.baseURI);
+      return ["http:", "https:", "mailto:", "tel:"].includes(url.protocol) ? raw : "#";
+    } catch (e) {
+      return "#";
+    }
+  }
+  /**
+   * Read a length token from the document root, in pixels.
+   *
+   * Virtualized components used to hard-code 36/32/28 px row heights, which
+   * disagreed with the rendered row and ignored density. The height is now a
+   * token (`--data-grid-row-height`, …) and this reads its computed value.
+   *
+   * @param {string} name custom-property name
+   * @param {number} fallback pixels to use when the token is absent or invalid
+   * @returns {number} the resolved length in pixels
+   */
+  export function cssLength(name, fallback) {
+    if (typeof getComputedStyle === "undefined" || typeof document === "undefined") return fallback;
+    const v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name));
+    return Number.isFinite(v) && v > 0 ? v : fallback;
+  }
+  /**
+   * Surface a malformed JSON attribute instead of swallowing it.
+   *
+   * A bare `catch (e) { /* keep existing *\/ }` turns a typo in a component
+   * attribute into a silent no-op: the render keeps whatever was there before
+   * and the defect is invisible. This warns once, with the component name and
+   * the parser message, so the author can find it.
+   *
+   * @param {Element|null} host the component that owns the attribute
+   * @param {string} label the attribute (or a short description)
+   * @param {unknown} error the thrown parse error
+   */
+  export function warnBadJson(host, label, error) {
+    if (typeof console === "undefined" || !console.warn) return;
+    const name = host && host.tagName ? host.tagName.toLowerCase() : "component";
+    const msg = (error && error.message) || String(error);
+    console.warn(`[contour] ${name}: malformed ${label || "attribute"} — ${msg}`);
+  }
   // contract: an attribute that is not here cannot ask an element to re-render,
   // and an attribute a component WRITES to itself must never be here, because
   // that write would fire the callback that performs the render.
@@ -246,7 +326,7 @@
     "accept", "action", "actions", "active", "after", "allow-duplicate", "allow-remove", "allow-rename", "allow-zoom", "alpha", "anchor", "answer", "area", "article", "attribution", "attribution-mark", "audit", "autoplay", "axis", "axis-x", "axis-y", "brownout", "brownout-level", "before", "body", "brand", "bounds", "breakpoint", "breaks", "brush", "brush-end", "brush-max", "brush-min", "brush-start", "cache-key", "canvas", "center", "clearable", "cols", "columns", "color", "command",
     "cells", "checked", "chrome", "confidence", "coverage", "debounce", "closable", "collapsed", "collapsible", "classification", "colors", "continuous", "content", "controls", "copyable", "count", "data", "data-table", "date", "delta",     "description", "glyphs", "graduated", "demo", "density", "desc", "dir", "direction", "disabled", "distance", "dismissible", "divider", "do", "dont", "dot", "ends", "high", "input", "layer", "low", "mode", "modes", "n", "opacity", "palette", "polarity", "precision", "range", "single",
     "empty", "exclusive", "fallback", "filename", "format", "heading", "help", "hint", "href", "icon", "illustration", "instrument", "interval", "items", "key", "layers", "level", "range-end", "range-start",
-    "label", "lazy", "lede", "legend", "left-label", "right-label", "line", "limit", "link", "links", "live", "loading", "locale", "loop", "max", "media", "message", "method", "methodology", "menu", "min", "multiple", "name", "needle", "next", "no", "no-cache", "no-data-message", "nodes", "note", "norm", "normalize",
+    "label", "labels", "lazy", "lede", "legend", "left-label", "right-label", "line", "limit", "link", "links", "live", "loading", "locale", "loop", "max", "media", "message", "method", "methodology", "menu", "min", "multiple", "name", "needle", "next", "no", "no-cache", "no-data-message", "nodes", "note", "norm", "normalize",
     "options", "orientation", "page-size", "pages", "pause", "paused", "pausable", "persist", "placeholder", "playing", "point", "points", "prev", "presets", "progress", "prompt", "question", "recent", "required",
     "quote", "ramp", "refresh", "removable", "resolution", "reverse", "rings", "retry", "results", "rows", "scale", "selectable", "segments", "show-header", "sparkline", "threshold", "thresholds", "selected", "separator", "series", "shortcut", "side", "size", "skeleton", "sort", "sort-dir", "speed", "status", "step", "submit", "submitting", "timeout", "trigger", "virtual", "sticky", "cluster-count", "cluster-expanded", "time", "resizable",
     "state", "steps", "style", "subtitle", "summary", "src", "source", "table", "tabs", "tag", "text", "ticks",     "title", "type", "unread-only", "unit", "updated", "cluster-items", "row-height",
@@ -255,12 +335,31 @@
     "search",
     "numbered",
     "bucket-count", "limit-values",
+    "autocomplete", "levels", "submit-label",
   ];
 
   /** Resolve an authored heading level while keeping the fallback valid. */
   export function headingTag(host, fallback = "h3") {
     const v = host && host.getAttribute ? host.getAttribute("heading") : null;
     return /^h[1-6]$/.test(v || "") ? v : fallback;
+  }
+
+  /**
+   * Resolve a localised label for a host (R18-63). A consumer supplies a
+   * `labels` JSON attribute (e.g. `labels='{"clear":"Effacer"}'`); it is merged
+   * over the English `fallback`, so a partial object localises only the keys it
+   * names. A malformed attribute is ignored rather than thrown — a bad label
+   * must not take the widget down. Returns `fallback` when no override exists.
+   */
+  export function label(host, key, fallback) {
+    const def = fallback !== undefined ? fallback : key;
+    const raw = host && host.getAttribute ? host.getAttribute("labels") : null;
+    if (!raw) return def;
+    try {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === "object" && typeof parsed[key] === "string" && parsed[key]) return parsed[key];
+    } catch (e) { /* a malformed labels attribute is ignored, not fatal */ }
+    return def;
   }
 
   /**
@@ -359,8 +458,10 @@
       if (ctor._propsInstalled) return;
       ctor._propsInstalled = true;
       const props = ctor.properties || {};
+      const declared = new Set();
       for (const [name, spec] of Object.entries(props)) {
         const attr = (spec && spec.attribute) || name;
+        declared.add(attr);
         const type = (spec && spec.type) || String;
         Object.defineProperty(ctor.prototype, name, {
           get() {
@@ -373,6 +474,33 @@
           set(v) {
             if (v === null || v === undefined || v === false) this.removeAttribute(attr);
             else if (type === Boolean) { if (v) this.setAttribute(attr, ""); else this.removeAttribute(attr); }
+            else this.setAttribute(attr, String(v));
+          },
+          configurable: true,
+        });
+      }
+      // Default reflection (R18-54): every observed attribute a component reads
+      // but does not declare in properties() still gets an accessor, so
+      // `el.allowDuplicate = true` writes `allow-duplicate=""` instead of being
+      // a silent no-op. The property name is the camelCase form of the
+      // attribute (kebab -> camel); a kebab attribute with no valid identifier
+      // form is skipped rather than guessed. Declared properties win.
+      const observed = ctor.observed || OBSERVED;
+      for (const attr of observed) {
+        if (declared.has(attr)) continue;
+        const prop = attr.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+        if (!/^[a-zA-Z_$][\w$]*$/.test(prop)) continue;
+        if (prop in ctor.prototype) continue; // an inherited accessor already exists
+        const isBool = attr === "disabled" || attr === "checked" || attr === "required" || attr === "readonly" || attr === "multiple" || attr === "selected" || attr === "open" || attr === "hidden";
+        Object.defineProperty(ctor.prototype, prop, {
+          get() {
+            const raw = this.getAttribute(attr);
+            if (isBool) return raw !== null;
+            return raw;
+          },
+          set(v) {
+            if (v === null || v === undefined || v === false) this.removeAttribute(attr);
+            else if (isBool) { if (v) this.setAttribute(attr, ""); else this.removeAttribute(attr); }
             else this.setAttribute(attr, String(v));
           },
           configurable: true,
@@ -1368,6 +1496,110 @@ export function assignMarkers(items) {
   return (items || []).map((it, i) => ({ ...it, marker: MARKER_SHAPES[i % MARKER_SHAPES.length] }));
 }
 
+/* ---------------------------------------------------------------------------
+ * Contour lines — marching squares over a 2D field.
+ *
+ * The same algorithm as tools/contour-gen.py, ported to the browser. Iso-lines
+ * of different levels of one continuous field cannot cross; the asymptotic
+ * saddle decider below is what guarantees that, so a hand-drawn path is never
+ * a substitute. Shared by the `contour-contour-plot` element and the guide's
+ * `data-contour-plot` renderer so the two cannot drift.
+ * ------------------------------------------------------------------------- */
+
+/**
+ * Extract the iso-line segments of a scalar field at one level.
+ *
+ * @param {number[][]} grid row-major field values
+ * @param {number} level iso-level to extract
+ * @returns {Array<[{x:number,y:number},{x:number,y:number}]>} segments in grid space
+ */
+export function marchingSquares(grid, level) {
+  const rows = grid.length;
+  const cols = rows ? grid[0].length : 0;
+  const segments = [];
+  if (!rows || !cols) return segments;
+
+  const lerp = (a, b, va, vb) => (vb === va ? 0.5 : (level - va) / (vb - va));
+
+  for (let y = 0; y < rows - 1; y++) {
+    for (let x = 0; x < cols - 1; x++) {
+      const tl = grid[y][x];
+      const tr = grid[y][x + 1];
+      const bl = grid[y + 1][x];
+      const br = grid[y + 1][x + 1];
+      const code =
+        (tl >= level ? 8 : 0) |
+        (tr >= level ? 4 : 0) |
+        (br >= level ? 2 : 0) |
+        (bl >= level ? 1 : 0);
+      if (code === 0 || code === 15) continue;
+
+      const top = { x: x + lerp(tl, tr, tl, tr), y };
+      const right = { x: x + 1, y: y + lerp(tr, br, tr, br) };
+      const bottom = { x: x + lerp(bl, br, bl, br), y: y + 1 };
+      const left = { x, y: y + lerp(tl, bl, tl, bl) };
+
+      let connect;
+      if (code === 5) {
+        const center = (tl + tr + bl + br) / 4;
+        connect = center >= level ? "top-bottom" : "left-right";
+      } else if (code === 10) {
+        const center = (tl + tr + bl + br) / 4;
+        connect = center >= level ? "left-right" : "top-bottom";
+      }
+
+      switch (code) {
+        case 1: case 14: segments.push([left, bottom]); break;
+        case 2: case 13: segments.push([bottom, right]); break;
+        case 3: case 12: segments.push([left, right]); break;
+        case 4: case 11: segments.push([top, right]); break;
+        case 6: case 9: segments.push([top, bottom]); break;
+        case 7: case 8: segments.push([left, top]); break;
+        case 5:
+          if (connect === "top-bottom") {
+            segments.push([top, bottom], [left, right]);
+          } else {
+            segments.push([top, right], [left, bottom]);
+          }
+          break;
+        case 10:
+          if (connect === "left-right") {
+            segments.push([left, right], [top, bottom]);
+          } else {
+            segments.push([top, right], [left, bottom]);
+          }
+          break;
+      }
+    }
+  }
+  return segments;
+}
+
+/**
+ * Build the SVG `d` path for every level of a field.
+ *
+ * @param {number[][]} grid row-major field values
+ * @param {number[]} levels iso-levels, one path per level
+ * @param {number} width viewBox width in px
+ * @param {number} height viewBox height in px
+ * @returns {Array<{level:number, d:string}>} one entry per level
+ */
+export function contourPaths(grid, levels, width, height) {
+  const rows = grid.length;
+  const cols = rows ? grid[0].length : 0;
+  if (rows < 2 || cols < 2) return [];
+  const sx = width / (cols - 1);
+  const sy = height / (rows - 1);
+  return (levels || []).map((level) => {
+    const segs = marchingSquares(grid, level);
+    let d = "";
+    for (const [a, b] of segs) {
+      d += `M ${(a.x * sx).toFixed(2)} ${(a.y * sy).toFixed(2)} L ${(b.x * sx).toFixed(2)} ${(b.y * sy).toFixed(2)} `;
+    }
+    return { level, d: d.trim() };
+  });
+}
+
 /* ============================================================================
    CONTOUR — shared behaviour
    ----------------------------------------------------------------------------
@@ -1508,6 +1740,7 @@ export function wireTabs(host) {
     const tabsOf = () => wcGroup(host, list, "[role='tab']");
     const activate = (tab, focus) => {
       const tabs = tabsOf();
+      if (!tab.id) tab.id = contourId("c-tab");
       tabs.forEach((t) => {
         const selected = t === tab;
         t.setAttribute("aria-selected", String(selected));
@@ -1515,7 +1748,12 @@ export function wireTabs(host) {
         const ctrl = t.getAttribute("aria-controls");
         if (!ctrl) return;
         const panel = wcOne(host, "#" + CSS.escape(ctrl)) || document.getElementById(ctrl);
-        if (panel) panel.hidden = !selected;
+        if (panel) {
+          panel.hidden = !selected;
+          // A tabpanel is named by its tab: without this a screen reader
+          // announces the panel with no name.
+          if (selected) panel.setAttribute("aria-labelledby", t.id);
+        }
       });
       const panels = wcAll(host, panelSel);
       if (panels.length) {
@@ -1527,12 +1765,14 @@ export function wireTabs(host) {
       const name = tab.getAttribute("aria-controls") || tab.textContent || "";
       host.dispatchEvent(new CustomEvent("contour:tab-change", { bubbles: true, composed: true, detail: { index: tabs.indexOf(tab), label: name } }));
     };
-    // Same-document View Transitions (BY-24). A consumer who names elements via
-    // `data-view-transition` / `--view-transition-name` gets a cross-fade on a
-    // tab swap; the morph must run inside startViewTransition so the browser
-    // has an old and a new state to interpolate. The initial mount activation
-    // below stays direct — a transition on load is a page fade nobody asked
-    // for — and the plain swap is the entire fallback, because the CSS harness
+    // Same-document View Transitions (BY-24). A tab swap runs inside
+    // document.startViewTransition, so the browser cross-fades the whole
+    // document between the old and new panel. This is a document cross-fade,
+    // not a named-element morph: the component does not set
+    // --view-transition-name, and a consumer who names elements gets the
+    // browser's own morph on top of this. The initial mount activation below
+    // stays direct — a transition on load is a page fade nobody asked for —
+    // and the plain swap is the entire fallback, because the CSS harness
     // (components.css) is enhancement-only too.
     const runActivation = (tab, focus) => {
       // Keyboard activation must update aria-selected synchronously so assistive
@@ -1550,7 +1790,13 @@ export function wireTabs(host) {
     };
     wcListen(host, "click", (e) => {
       const tab = wcClosest(host, e.target, "[role='tab']");
-      if (tab && tabsOf().includes(tab)) runActivation(tab, false);
+      if (tab && tabsOf().includes(tab)) {
+        // A button nested inside a tab (a close control, say) is its own
+        // target: activating the tab underneath it would be a surprise.
+        const inner = e.target && e.target.closest ? e.target.closest("button") : null;
+        if (inner && inner !== tab && tab.contains(inner)) return;
+        runActivation(tab, false);
+      }
     });
     wcListen(host, "keydown", (e) => {
       let tab = wcClosest(host, e.target, "[role='tab']");
@@ -1806,7 +2052,7 @@ export function wireCombobox(host) {
       const selected = (host.getAttribute("value") || "").split(",").map((v) => v.trim()).filter(Boolean);
       const value = host._comboboxVirtual && host._comboboxFiltered
         ? host._comboboxFiltered.find((item) => item.index === Number(opt.dataset.optionIndex))?.value
-        : opt.textContent.trim();
+        : (opt.dataset.optionValue != null ? opt.dataset.optionValue : opt.textContent.trim());
       const position = selected.indexOf(String(value));
       if (now && position >= 0) selected.splice(position, 1);
       if (!now && position < 0) selected.push(String(value));
@@ -1816,8 +2062,13 @@ export function wireCombobox(host) {
       field.focus();
       return;
     }
+    // Commit the option's value, not its label: the field shows the label, the
+    // form submits the value, and `contour:select` carries the value.
+    const value = opt.dataset.optionValue != null ? opt.dataset.optionValue : opt.textContent.trim();
     field.value = opt.textContent;
-    wcEmit(host, "contour:select", { value: field.value });
+    host.setAttribute("value", value);
+    if (typeof host._syncFormValue === "function") host._syncFormValue();
+    wcEmit(host, "contour:select", { value });
     close();
     field.focus();
   };
@@ -2542,6 +2793,24 @@ export const STATE_FALLBACK = {
   error: "Could not load.",
 };
 
+/**
+ * Resolve a state label for a host (R18-63). A consumer supplies a `labels`
+ * JSON attribute (e.g. `labels='{"loading":"Chargement…"}'`); it is merged over
+ * the English default, so a partial object localises only the keys it names.
+ * A malformed attribute is ignored rather than thrown — a bad label must not
+ * take the widget down. Returns the default when no override is present.
+ */
+export function stateLabel(host, key) {
+  const fallback = STATE_FALLBACK[key] || key;
+  const raw = host && host.getAttribute ? host.getAttribute("labels") : null;
+  if (!raw) return fallback;
+  try {
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === "object" && typeof parsed[key] === "string" && parsed[key]) return parsed[key];
+  } catch (e) { /* a malformed labels attribute is ignored, not fatal */ }
+  return fallback;
+}
+
 // One in-flight request per URL, shared by every host that asked for it.
 const remoteInflight = new Map();
 // The last result per URL, so a re-mounted host paints instead of re-asking. A
@@ -2982,12 +3251,12 @@ export function renderStates(host, block, opts) {
   const options = opts || {};
   const loading = host.getAttribute("loading");
   if (loading !== null || host._remoteStatus === "loading") {
-    host.appendChild(stateNode(block, "loading", loading || STATE_FALLBACK.loading));
+    host.appendChild(stateNode(block, "loading", loading || stateLabel(host, "loading")));
     return true;
   }
   const error = host.getAttribute("error");
   if (error !== null || host._remoteStatus === "error") {
-    const message = (error !== null && error !== "") ? error : (host._remoteError || STATE_FALLBACK.error);
+    const message = (error !== null && error !== "") ? error : (host._remoteError || stateLabel(host, "error"));
     const node = stateNode(block, "error", message);
     // `retry` is the actionable half of an error. It reuses the button the system
     // already ships and the `contour:retry` event three components already emit,
@@ -3015,7 +3284,7 @@ export function renderStates(host, block, opts) {
 /** Paint the empty state — for a host with no data and no authored content. */
 /** Render the empty state for a block. */
 export function renderEmpty(host, block) {
-  host.appendChild(stateNode(block, "empty", host.getAttribute("empty") || STATE_FALLBACK.empty));
+  host.appendChild(stateNode(block, "empty", host.getAttribute("empty") || stateLabel(host, "empty")));
 }
 
 // Delegated on the host (AGENTS.md rule 12): the retry button is regenerated on
@@ -3420,7 +3689,7 @@ shadow("contour-shadow-filter-pill", `<span class="c-filter-pill" part="filter-p
 
   // The dialog is the one wrapper with behaviour, because a close button that
   // does not close is a control the reader cannot use.
-  const DIALOG_MARKUP = "<dialog class=\"c-dialog\" part=\"dialog\"> <div class=\"c-dialog__head\" part=\"head\"> <slot name=\"title\"></slot> <button class=\"c-btn c-btn--icon c-btn--ghost\" part=\"close\" type=\"button\" aria-label=\"Close\"> <svg aria-hidden=\"true\"><use href=\"#i-close\" /></svg> </button> </div> <div class=\"c-dialog__body\" part=\"body\"><slot></slot></div> <div class=\"c-dialog__foot\" part=\"foot\"><slot name=\"foot\"></slot></div> </dialog>";
+  const DIALOG_MARKUP = "<dialog class=\"c-dialog\" part=\"dialog\"> <div class=\"c-dialog__head\" part=\"head\"> <slot name=\"title\"></slot> <button class=\"c-btn c-btn--icon c-btn--ghost\" part=\"close\" type=\"button\" aria-label=\"Close\"> <svg aria-hidden=\"true\"><use href=\"#i-x\" /></svg> </button> </div> <div class=\"c-dialog__body\" part=\"body\"><slot></slot></div> <div class=\"c-dialog__foot\" part=\"foot\"><slot name=\"foot\"></slot></div> </dialog>";
   SHADOW_MARKUP["contour-shadow-dialog"] = DIALOG_MARKUP;
   recordParts("contour-shadow-dialog", DIALOG_MARKUP);
   class ContourShadowDialog extends ContourShadow {
@@ -3667,8 +3936,8 @@ class ContourShortcutPanelFull extends ContourBase {
       if (this.hasAttribute("open")) this.removeAttribute("hidden");
       else if (!this.hasAttribute("hidden")) this.setAttribute("hidden", "");
     }
-    show() { this.setAttribute("open", ""); this.removeAttribute("hidden"); this.dispatchEvent(new CustomEvent("contour:open", { bubbles: true, composed: true })); }
-    hide() { this.removeAttribute("open"); this.setAttribute("hidden", ""); this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true })); }
+    show() { this.setAttribute("open", ""); this.removeAttribute("hidden"); modalContain(this, true); this.dispatchEvent(new CustomEvent("contour:open", { bubbles: true, composed: true })); }
+    hide() { this.removeAttribute("open"); this.setAttribute("hidden", ""); modalContain(this, false); this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true })); }
     toggle() { if (this.hasAttribute("open")) this.hide(); else this.show(); }
     enhance() {
       if (this._wiredShortcutOverlay) return;
@@ -3829,11 +4098,14 @@ class ContourDragHandle extends ContourBase {
   }
   define("contour-drag-handle", ContourDragHandle);
 class ContourDropIndicator extends ContourBase {
-    static get observed() { return ["label"]; }
-    static get properties() { return { label: { attribute: "label" } }; }
+    static get observed() { return ["label", "open"]; }
+    static get properties() { return { label: { attribute: "label" }, open: { attribute: "open", type: Boolean } }; }
     render() {
       this.classList.add("c-drop-indicator");
-      this.classList.add("c-drop-indicator--visible");
+      // Visibility is a state, not a constant: the indicator is shown while a
+      // drag is over a drop target, so it is only visible when `open` is set.
+      // The old code stamped --visible on every render, so it was always on.
+      this.classList.toggle("c-drop-indicator--visible", this.hasAttribute("open"));
       if (!this.hasAttribute("role")) this.setAttribute("role", "presentation");
       // A presentation role is purely decorative: strip any accessible name
       // so axe does not flag aria-label/aria-labelledby as prohibited.
@@ -3906,9 +4178,10 @@ class ContourResizable extends ContourBase {
       const vertical = this.getAttribute("direction") === "vertical";
       this.classList.add(vertical ? "c-resizable--vertical" : "c-resizable--horizontal");
       if (!this.querySelector(".c-resizable__pane")) {
+        // Structural panes only: the author fills them. The old code wrote
+        // "Pane A"/"Pane B" into a shipped component.
         const p1 = document.createElement("div");
         p1.className = "c-resizable__pane";
-        p1.textContent = "Pane A";
         const handle = document.createElement("div");
         handle.className = "c-resize-handle";
         handle.setAttribute("tabindex", "0");
@@ -3916,7 +4189,6 @@ class ContourResizable extends ContourBase {
         handle.setAttribute("aria-valuenow", "0");
         const p2 = document.createElement("div");
         p2.className = "c-resizable__pane";
-        p2.textContent = "Pane B";
         this.appendChild(p1);
         this.appendChild(handle);
         this.appendChild(p2);
@@ -4003,7 +4275,7 @@ class ContourSplitView extends ContourBase {
       if (!this.querySelector(".c-split-view__pane")) {
         const p1 = document.createElement("div");
         p1.className = "c-split-view__pane c-split-view__pane--left";
-        p1.setAttribute("aria-label", this.getAttribute("left-label") || "Left pane");
+        if (this.getAttribute("left-label")) p1.setAttribute("aria-label", this.getAttribute("left-label"));
         const divider = document.createElement("div");
         divider.className = "c-split-view__divider";
         divider.setAttribute("tabindex", "0");
@@ -4012,7 +4284,7 @@ class ContourSplitView extends ContourBase {
         divider.setAttribute("aria-label", "Split divider");
         const p2 = document.createElement("div");
         p2.className = "c-split-view__pane c-split-view__pane--right";
-        p2.setAttribute("aria-label", this.getAttribute("right-label") || "Right pane");
+        if (this.getAttribute("right-label")) p2.setAttribute("aria-label", this.getAttribute("right-label"));
         this.appendChild(p1);
         this.appendChild(divider);
         this.appendChild(p2);
@@ -4095,21 +4367,8 @@ class ContourTableWrap extends ContourBase {
     render() {
       this.classList.add("c-table-wrap");
       Array.from(this.childNodes).forEach((n) => { if (n.nodeType === Node.TEXT_NODE) n.remove(); else if (n.nodeType === Node.ELEMENT_NODE && n.tagName === "SPAN") n.remove(); });
-      if (!this.querySelector("table")) {
-        const t = document.createElement("table");
-        t.className = "c-table";
-        const thead = document.createElement("thead");
-        const tr = document.createElement("tr");
-        for (const h of ["A", "B"]) { const th = document.createElement("th"); th.textContent = h; tr.appendChild(th); }
-        thead.appendChild(tr);
-        t.appendChild(thead);
-        const tbody = document.createElement("tbody");
-        const tr2 = document.createElement("tr");
-        for (const v of ["1", "2"]) { const td = document.createElement("td"); td.textContent = v; tr2.appendChild(td); }
-        tbody.appendChild(tr2);
-        t.appendChild(tbody);
-        this.appendChild(t);
-      }
+      // A shipped component must not invent a table: the author supplies the
+      // <table>. The old code rendered an A/B/1/2 grid when empty.
     }
   }
   define("contour-table-wrap", ContourTableWrap);

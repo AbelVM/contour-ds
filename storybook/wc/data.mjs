@@ -1,6 +1,6 @@
-import { ContourBase, define, onDispose, formatValue, contourId, navKey, isRtl } from './core.mjs';
+import { ContourBase, define, onDispose, formatValue, contourId, navKey, isRtl, cssLength , warnBadJson } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates, remoteInvalidate, watchViewport } from './states.mjs';
-import { donutSlices, barRects, smoothPath, polylinePoints } from './svg.mjs';
+import { donutSlices, barRects, smoothPath, polylinePoints, contourPaths } from './svg.mjs';
 /**
  * Readout: web component wrapper.
  * Attributes: `rows`, `empty`, `loading`, `error`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`, `format`, `locale`.
@@ -40,7 +40,7 @@ class ContourReadout extends ContourBase {
             }
             this.appendChild(row);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else if (!rows && !authored.length) {
         renderEmpty(this, "readout");
       }
@@ -253,6 +253,10 @@ class ContourTable extends ContourBase {
           this._page = page;
           this._totalPages = totalPages;
           this._pageSize = pageSize;
+          // Keep the row objects in memory instead of serializing each one into
+          // a data-row attribute: the JSON duplicated the data the component
+          // already holds and bloated every row.
+          this._rowData = pageData;
 
           const wrap = this.ensure(".c-table-wrap", () => { const el = document.createElement("div"); el.className = "c-table-wrap"; return el; });
           // Reuse the existing table when columns are unchanged, rebuilding
@@ -277,6 +281,9 @@ class ContourTable extends ContourBase {
                     inp.type = "search";
                     inp.className = "c-table__filter-input";
                     inp.placeholder = colLabel;
+                    // A placeholder is not a label: a reader who tabs into the
+                    // filter hears "edit text" with no column name. Name it.
+                    inp.setAttribute("aria-label", "Filter " + colLabel);
                     inp.dataset.filterIndex = String(i);
                     if (this._filters && this._filters[i]) inp.value = this._filters[i];
                     th.appendChild(inp);
@@ -328,7 +335,7 @@ class ContourTable extends ContourBase {
           const tbody = table.querySelector("tbody");
           tbody.innerHTML = "";
           const useVirtual = this.hasAttribute("virtual") && !usePaging && pageData.length > 100;
-          const rowHeight = 36;
+          const rowHeight = this._measuredRowHeight || cssLength("--data-grid-row-height", 36);
           const windowSize = 30;
           const overscan = 10;
           let windowStart = 0;
@@ -365,8 +372,10 @@ class ContourTable extends ContourBase {
             visibleData.forEach((row, ri) => {
               const tr = document.createElement("tr");
               tr.dataset.rowIndex = String(windowStart + ri);
-              tr.setAttribute("tabindex", "0");
-              tr.setAttribute("data-row", JSON.stringify(row));
+              // One tab stop per grid, not one per row: every row is -1 and the
+              // arrow keys move a roving tabindex. A 1,000-row table was 1,000
+              // tab stops before this.
+              tr.setAttribute("tabindex", "-1");
               cols.forEach((c, ci) => {
                 const isSelect = (typeof c === "object" && c !== null && c.select);
                 const td = document.createElement("td");
@@ -386,6 +395,26 @@ class ContourTable extends ContourBase {
             });
           }
           if (useVirtual) addSpacer(Math.max(0, pageData.length - windowStart - visibleData.length) * rowHeight);
+          // Keep exactly one row in the tab order: the first rendered row when
+          // none is active yet, so the grid is a single tab stop.
+          if (!tbody.querySelector('tr[tabindex="0"]')) {
+            const first = tbody.querySelector("tr[data-row-index]");
+            if (first) first.setAttribute("tabindex", "0");
+          }
+          // Measure a real row so the virtual window uses the rendered height,
+          // not a guess: the old fixed 36px disagreed with the measured 64.1px,
+          // so the spacers and the scroll math were both wrong.
+          if (!this._measuredRowHeight && !this._measuringRow) {
+            const firstRow = tbody.querySelector("tr[data-row-index]");
+            const h = firstRow ? firstRow.getBoundingClientRect().height : 0;
+            if (h > 0) {
+              this._measuredRowHeight = h;
+              if (Math.abs(h - rowHeight) > 1) {
+                this._measuringRow = true;
+                requestAnimationFrame(() => { this._measuringRow = false; this.render(); });
+              }
+            }
+          }
           if (table.parentNode !== wrap) {
             wrap.innerHTML = "";
             wrap.appendChild(table);
@@ -426,7 +455,7 @@ class ContourTable extends ContourBase {
             const footer = this.querySelector(".c-table__pagination");
             if (footer) footer.remove();
           }
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else if (!rows && !authored.length) {
         renderEmpty(this, "table");
       }
@@ -556,16 +585,33 @@ class ContourTable extends ContourBase {
         if (!tr || !this.contains(tr)) return;
         const idx = Number(tr.dataset.rowIndex);
         if (!Number.isFinite(idx)) return;
-        const rowData = tr.getAttribute("data-row") || "";
+        const rowData = (this._rowData && this._rowData[idx]) || null;
         this.dispatchEvent(new CustomEvent("contour:zoom", { bubbles: true, composed: true, detail: { row: idx, index: idx, data: rowData } }));
       });
       this.addEventListener("keydown", (e) => {
-        if (e.key !== "Enter" && e.key !== " ") return;
         const tr = e.target && e.target.closest ? e.target.closest("tbody tr") : null;
         if (!tr || !this.contains(tr)) return;
-        e.preventDefault();
         const idx = Number(tr.dataset.rowIndex);
         if (!Number.isFinite(idx)) return;
+        // Roving tabindex: arrows move the single tab stop, Home/End jump.
+        if (e.key === "ArrowDown" || e.key === "ArrowUp" || e.key === "Home" || e.key === "End") {
+          const rows = Array.from(this.querySelectorAll("tbody tr[data-row-index]"));
+          const at = rows.indexOf(tr);
+          let next = at;
+          if (e.key === "ArrowDown") next = Math.min(rows.length - 1, at + 1);
+          else if (e.key === "ArrowUp") next = Math.max(0, at - 1);
+          else if (e.key === "Home") next = 0;
+          else if (e.key === "End") next = rows.length - 1;
+          if (next !== at && rows[next]) {
+            e.preventDefault();
+            rows.forEach((r) => r.setAttribute("tabindex", "-1"));
+            rows[next].setAttribute("tabindex", "0");
+            try { rows[next].focus(); } catch (err) {}
+          }
+          return;
+        }
+        if (e.key !== "Enter" && e.key !== " ") return;
+        e.preventDefault();
         this.dispatchEvent(new CustomEvent("contour:activate", { bubbles: true, composed: true, detail: { row: idx } }));
       });
       // Cross-filter contract (R16-16): clear-all resets table sort/page/filter state.
@@ -599,10 +645,87 @@ class ContourChart extends ContourBase {
     static get updateMode() { return "keyed"; }
   static get observed() { return ["series", "axis", "color", "empty", "loading", "error", "retry", "skeleton", "zoomable", "data-table", "brush", "brush-min", "brush-max", "brush-start", "brush-end", "note", "bucket-count", "limit-values"]; }
   static get properties() { return { series: { attribute: "series" }, axis: { attribute: "axis" }, color: { attribute: "color" }, zoomable: { attribute: "zoomable", type: Boolean }, brush: { attribute: "brush", type: Boolean }, note: { attribute: "note" }, "bucket-count": { attribute: "bucket-count" }, "limit-values": { attribute: "limit-values" } }; }
+    _axisLabel() {
+      const raw = this.getAttribute("axis");
+      if (!raw) return "";
+      try {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === "object") return parsed.label || parsed.title || parsed.name || "";
+        return String(parsed);
+      } catch (e) { return raw; }
+    }
+    _axisConfig() {
+      const raw = this.getAttribute("axis");
+      if (!raw) return null;
+      try {
+        const parsed = JSON.parse(raw);
+        return (parsed && typeof parsed === "object") ? parsed : null;
+      } catch (e) { return null; }
+    }
+    _valueDomain() {
+      const series = this.getAttribute("series");
+      if (!series) return null;
+      try {
+        const parsed = JSON.parse(series);
+        let min = Infinity, max = -Infinity;
+        (Array.isArray(parsed) ? parsed : []).forEach((s) => {
+          if (s && Array.isArray(s.values)) s.values.forEach((v) => {
+            const n = Number(v);
+            if (Number.isFinite(n)) { if (n < min) min = n; if (n > max) max = n; }
+          });
+        });
+        return Number.isFinite(min) && Number.isFinite(max) ? [min, max] : null;
+      } catch (e) { return null; }
+    }
+    _renderValueAxis() {
+      const ax = this.querySelector(".c-chart__axis");
+      if (!ax) return;
+      const cfg = this._axisConfig();
+      const y = cfg && cfg.y;
+      const domain = (y && y.domain) || this._valueDomain();
+      if (!domain) { ax.textContent = this._axisLabel(); return; }
+      const chart = (typeof window !== "undefined" && window.Contour && window.Contour.chart) || null;
+      const ticks = (y && y.ticks) || (chart && chart.ticks ? chart.ticks(domain[0], domain[1], 5) : [domain[0], domain[1]]);
+      const format = (y && y.format) || ((v) => String(v));
+      ax.textContent = "";
+      ticks.forEach((t) => {
+        const span = document.createElement("span");
+        span.className = "c-chart__tick";
+        span.textContent = typeof format === "function" ? format(t) : String(t);
+        ax.appendChild(span);
+      });
+      this.style.setProperty("--chart-ticks", String(ticks.length));
+    }
+    _renderLegend() {
+      const series = this.getAttribute("series");
+      if (!series) return;
+      try {
+        const parsed = JSON.parse(series);
+        const labelled = (Array.isArray(parsed) ? parsed : []).filter((s) => s && s.label);
+        let legend = this.querySelector(".c-chart__legend");
+        if (!labelled.length) { if (legend) legend.remove(); return; }
+        if (!legend) { legend = document.createElement("div"); legend.className = "c-chart__legend"; this.appendChild(legend); }
+        legend.textContent = "";
+        labelled.forEach((s, i) => {
+          const item = document.createElement("span");
+          item.className = "c-chart__legend-item";
+          const swatch = document.createElement("span");
+          swatch.className = "c-chart__legend-swatch";
+          swatch.style.setProperty("--c", this.getAttribute("color") || `var(--chart-${i + 1})`);
+          item.appendChild(swatch);
+          item.appendChild(document.createTextNode(s.label));
+          legend.appendChild(item);
+        });
+      } catch (e) { /* ignore */ }
+    }
     render() {
       this.classList.add("c-chart");
-      if (!this.hasAttribute("role")) this.setAttribute("role", "img");
-      if (this.getAttribute("axis") && !this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("axis"));
+      // A chart with brush handles has focusable descendants, which role="img"
+      // forbids (an img is a leaf). A named group exposes the marks and keeps
+      // the controls reachable; the data table remains the alternative.
+      if (!this.hasAttribute("role")) this.setAttribute("role", "group");
+      if (!this.hasAttribute("aria-roledescription")) this.setAttribute("aria-roledescription", "chart");
+      if (this.getAttribute("axis") && !this.hasAttribute("aria-label")) this.setAttribute("aria-label", this._axisLabel());
       if (this.hasAttribute("loading")) {
         const plot = this.ensure(".c-chart__plot", () => { const el = document.createElement("div"); el.className = "c-chart__plot"; return el; });
         plot.innerHTML = "";
@@ -617,7 +740,7 @@ class ContourChart extends ContourBase {
         const axis = this.getAttribute("axis");
         if (axis) {
           const ax = this.ensure(".c-chart__axis", () => { const el = document.createElement("div"); el.className = "c-chart__axis"; return el; });
-          ax.textContent = axis;
+          ax.textContent = this._axisLabel();
         }
         return;
       }
@@ -644,7 +767,7 @@ class ContourChart extends ContourBase {
         const axis = this.getAttribute("axis");
         if (axis) {
           const ax = this.ensure(".c-chart__axis", () => { const el = document.createElement("div"); el.className = "c-chart__axis"; return el; });
-          ax.textContent = axis;
+          ax.textContent = this._axisLabel();
         }
         return;
       }
@@ -664,18 +787,24 @@ class ContourChart extends ContourBase {
         const axis = this.getAttribute("axis");
         if (axis) {
           const ax = this.ensure(".c-chart__axis", () => { const el = document.createElement("div"); el.className = "c-chart__axis"; return el; });
-          ax.textContent = axis;
+          ax.textContent = this._axisLabel();
         }
         return;
       }
       const axis = this.getAttribute("axis");
       if (axis) {
         const ax = this.ensure(".c-chart__axis", () => { const el = document.createElement("div"); el.className = "c-chart__axis"; return el; });
-        ax.textContent = axis;
+        ax.textContent = this._axisLabel();
       } else {
         const ax = this.querySelector(".c-chart__axis");
         if (ax) ax.remove();
       }
+      // Value axis: when `axis` is {y:{domain,ticks,format}} (or the series
+      // carries values), print the ticks and publish --chart-ticks.
+      this._renderValueAxis();
+      // Legend from series[].label, so a chart with named series is readable
+      // without the consumer hand-building a legend.
+      this._renderLegend();
 const series = this.getAttribute("series");
        if (series) {
          let parsed = null;
@@ -835,7 +964,7 @@ const series = this.getAttribute("series");
              });
              plot.appendChild(svg);
            }
-          } catch (e) { /* keep existing */ }
+          } catch (e) { warnBadJson(this, "attribute", e); }
           // Styled tooltip element (positioned via --chart-tip-*).
           const tip = this.ensure(".c-chart__tooltip", () => { const el = document.createElement("div"); el.className = "c-chart__tooltip"; el.setAttribute("role", "tooltip"); el.setAttribute("hidden", ""); return el; });
           tip.setAttribute("hidden", "");
@@ -851,14 +980,22 @@ const series = this.getAttribute("series");
               this.appendChild(table);
             }
             table.innerHTML = "";
+            // A caption names the table: a reader who lands on it hears what it
+            // holds before the first cell, not "table, 5 rows, 3 columns".
+            const title = this.getAttribute("title") || this.getAttribute("aria-label") || "Chart data";
+            const cap = document.createElement("caption");
+            cap.textContent = title;
+            table.appendChild(cap);
             const thead = document.createElement("thead");
             const hr = document.createElement("tr");
             const h = document.createElement("th");
+            h.setAttribute("scope", "col");
             h.textContent = "Series";
             hr.appendChild(h);
             const maxLen = parsed.reduce((m, s) => Math.max(m, Array.isArray(s.values) ? s.values.length : (Array.isArray(s) ? s.length : 0)), 0);
             for (let i = 0; i < maxLen; i++) {
               const th = document.createElement("th");
+              th.setAttribute("scope", "col");
               th.textContent = "Value " + (i + 1);
               hr.appendChild(th);
             }
@@ -868,7 +1005,8 @@ const series = this.getAttribute("series");
             parsed.forEach((s, si) => {
               const vals = Array.isArray(s.values) ? s.values : (Array.isArray(s) ? s : []);
               const tr = document.createElement("tr");
-              const td0 = document.createElement("td");
+              const td0 = document.createElement("th");
+              td0.setAttribute("scope", "row");
               td0.textContent = s.label || ("Series " + (si + 1));
               tr.appendChild(td0);
               for (let i = 0; i < maxLen; i++) {
@@ -889,7 +1027,8 @@ const series = this.getAttribute("series");
               brush.setAttribute("max", this.getAttribute("brush-max") || "100");
               brush.setAttribute("start", this.getAttribute("brush-start") || this.getAttribute("brush-min") || "0");
               brush.setAttribute("end", this.getAttribute("brush-end") || this.getAttribute("brush-max") || "100");
-              if (brush.previousElementSibling !== plot) this.appendChild(brush);
+              const plotEl = this.querySelector(".c-chart__plot");
+              if (brush.previousElementSibling !== plotEl) this.insertBefore(brush, plotEl ? plotEl.nextSibling : null);
             } else {
               const brush = this.querySelector("contour-brush");
               if (brush) brush.remove();
@@ -927,19 +1066,26 @@ const series = this.getAttribute("series");
       if (this._wiredChart) return;
       this._wiredChart = true;
       // Series toggle responding to legend (F-10): hide/show series when a
-      // legend item is toggled.
-      this.addEventListener("contour:legend-toggle", (e) => {
-        const key = e && e.detail && (e.detail.key || e.detail.label);
+      // legend item is toggled. The legend may be a sibling of the chart, so
+      // listen on the shared parent (which catches both a child and a sibling
+      // legend) and match by key, data-key, or the item's index.
+      const legendHost = this.parentElement || document;
+      const onLegendToggle = (e) => {
+        const key = e && e.detail && (e.detail.key != null ? e.detail.key : e.detail.label);
+        const index = e && e.detail && e.detail.index;
         const pressed = e && e.detail && e.detail.pressed;
-        if (key == null) return;
+        if (key == null && index == null) return;
         const nodes = this.querySelectorAll("[data-series]");
         nodes.forEach((n) => {
           const s = n.getAttribute("data-series");
-          if (String(s) === String(key) || n.getAttribute("data-key") === String(key)) {
-            n.style.display = pressed === false ? "none" : "";
-          }
+          const match = String(s) === String(key)
+            || n.getAttribute("data-key") === String(key)
+            || (index != null && String(s) === String(index + 1));
+          if (match) n.style.display = pressed === false ? "none" : "";
         });
-      });
+      };
+      legendHost.addEventListener("contour:legend-toggle", onLegendToggle);
+      onDispose(this, () => legendHost.removeEventListener("contour:legend-toggle", onLegendToggle));
       this.addEventListener("contour:brush-end", (e) => {
         if (!this.hasAttribute("brush") || !e.target || !e.target.matches("contour-brush")) return;
         this.dispatchEvent(new CustomEvent("contour:select", {
@@ -2000,13 +2146,13 @@ class ContourDonut extends ContourBase {
       const values = items.map((it) => (typeof it === "object" ? (it.value || 0) : Number(it) || 0));
       const total = values.reduce((a, b) => a + b, 0) || 1;
       const brownoutLevel = this.brownoutLevel();
+      const layerColor = this.getAttribute("color");
       const shedRing = this.shed("ring", 3);
       if (!shedRing) {
         const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         svg.setAttribute("class", "c-donut__ring");
         svg.setAttribute("viewBox", "0 0 32 32");
         let offset = 0;
-        const layerColor = this.getAttribute("color");
         items.forEach((it, i) => {
           const v = values[i];
           const pct = v / total;
@@ -2464,7 +2610,7 @@ class ContourInstrument extends ContourBase {
             item.appendChild(val);
             this.appendChild(item);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else {
         renderEmpty(this, "instrument");
       }
@@ -2943,7 +3089,7 @@ class ContourLegend extends ContourBase {
              }
             list.appendChild(item);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else {
         const list = this.querySelector(".c-legend__items");
         if (list) list.remove();
@@ -3123,8 +3269,10 @@ class ContourLegend extends ContourBase {
         if (!btn || !this.contains(btn)) return;
         const pressed = btn.getAttribute("aria-pressed") !== "true";
         btn.setAttribute("aria-pressed", String(pressed));
+        const items = Array.from(this.querySelectorAll(".c-legend__item"));
+        const index = items.indexOf(btn);
         this.dispatchEvent(new CustomEvent("contour:legend-toggle", {
-          detail: { label: btn.textContent.trim(), key: btn.dataset.key || btn.textContent.trim(), pressed },
+          detail: { label: btn.textContent.trim(), key: btn.dataset.key || btn.textContent.trim(), pressed, index },
           bubbles: true,
           composed: true,
         }));
@@ -3293,25 +3441,27 @@ class ContourTimeline extends ContourBase {
     static get properties() { return { items: { attribute: "items" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-timeline");
-      this.setAttribute("role", "list");
-      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Timeline");
+      // Native list semantics: an <ol> with <li> items, not a role="list" on a
+      // <div> recreating the platform's list numbering and association.
+      let list = this.querySelector(".c-timeline__list");
+      if (!list) { list = document.createElement("ol"); list.className = "c-timeline__list"; list.setAttribute("aria-label", this.getAttribute("aria-label") || "Timeline"); this.appendChild(list); }
       wireStates(this);
       loadRemote(this, "items");
       if (renderStates(this, "timeline")) return;
       const authored = Array.from(this.children).filter((n) => n.classList && n.classList.contains("c-timeline__item"));
       const items = remoteData(this, "items");
       if (items && !authored.length) {
-        Array.from(this.querySelectorAll(".c-timeline__item")).forEach((n) => n.remove());
+        Array.from(list.querySelectorAll(".c-timeline__item")).forEach((n) => n.remove());
         try {
           const parsed = JSON.parse(items);
           parsed.forEach((it) => {
-            const item = document.createElement("div");
+            const item = document.createElement("li");
             item.className = "c-timeline__item";
-            item.setAttribute("role", "listitem");
             item.setAttribute("tabindex", "-1");
             if (it.time) {
               const t = document.createElement("time");
               t.className = "c-timeline__time";
+              t.setAttribute("datetime", String(it.time));
               t.textContent = it.time;
               item.appendChild(t);
             }
@@ -3327,9 +3477,9 @@ class ContourTimeline extends ContourBase {
               tx.textContent = it.text;
               item.appendChild(tx);
             }
-            this.appendChild(item);
+            list.appendChild(item);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else if (!authored.length) {
         renderEmpty(this, "timeline");
       }
@@ -3689,50 +3839,63 @@ class ContourChartGrid extends ContourBase {
   define("contour-chart-grid", ContourChartGrid);
 /**
  * Contour Plot: web component wrapper.
- * Attributes: `axis`, `label`.
+ * Attributes: `values` (row-major 2D field), `levels`, `label`.
  */
 class ContourContourPlot extends ContourBase {
-    static get observed() { return ["axis", "label"]; }
-    static get properties() { return { axis: { attribute: "axis" }, label: { attribute: "label" } }; }
+    static get observed() { return ["values", "levels", "label"]; }
+    static get properties() { return { values: { attribute: "values" }, levels: { attribute: "levels" }, label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-contour-plot");
       this.setAttribute("role", "img");
-      this.setAttribute("aria-label", "Contour plot");
-      const axis = this.getAttribute("axis");
-      if (axis) {
-        let svg = this.querySelector("svg");
-        if (!svg) {
-          svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-          svg.setAttribute("viewBox", "0 0 100 100");
-          svg.setAttribute("aria-hidden", "true");
-          this.appendChild(svg);
-        }
-        let ax = svg.querySelector(".c-contour-plot__axis");
-        if (!ax) {
-          ax = document.createElementNS("http://www.w3.org/2000/svg", "line");
-          ax.setAttribute("class", "c-contour-plot__axis");
-          svg.appendChild(ax);
-        }
-      }
       const label = this.getAttribute("label");
-      if (label) {
-        let svg = this.querySelector("svg");
-        if (!svg) {
-          svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-          svg.setAttribute("viewBox", "0 0 100 100");
-          svg.setAttribute("aria-hidden", "true");
-          this.appendChild(svg);
+      this.setAttribute("aria-label", label || "Contour plot");
+      const valuesAttr = this.getAttribute("values");
+      const levelsAttr = this.getAttribute("levels");
+      let grid = null;
+      if (valuesAttr) { try { grid = JSON.parse(valuesAttr); } catch (e) { grid = null; } }
+      let levels = [0.3, 0.5, 0.7];
+      if (levelsAttr) { try { const l = JSON.parse(levelsAttr); if (Array.isArray(l) && l.length) levels = l; } catch (e) { /* keep defaults */ } }
+
+      let svg = this.querySelector("svg");
+      if (!svg) {
+        svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("class", "c-contour-plot__svg");
+        svg.setAttribute("aria-hidden", "true");
+        this.appendChild(svg);
+      }
+      // Clear previous contours so a re-render cannot stack a second set.
+      Array.from(svg.querySelectorAll(".c-contour-plot__contour")).forEach((n) => n.remove());
+
+      if (Array.isArray(grid) && grid.length > 1 && Array.isArray(grid[0]) && grid[0].length > 1) {
+        const draw = () => {
+          const w = this.clientWidth || 300;
+          const h = this.clientHeight || 300;
+          svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+          svg.querySelectorAll(".c-contour-plot__contour").forEach((n) => n.remove());
+          contourPaths(grid, levels, w, h).forEach((line, li) => {
+            if (!line.d) return;
+            const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            path.setAttribute("d", line.d);
+            path.setAttribute("class", "c-contour-plot__contour" + (li > 0 ? " c-contour-plot__contour--level-" + (li + 1) : ""));
+            svg.appendChild(path);
+          });
+        };
+        draw();
+        // Re-render on resize so pixel-space paths track the container.
+        if (typeof ResizeObserver !== "undefined" && !this._contourResize) {
+          this._contourResize = new ResizeObserver(() => draw());
+          this._contourResize.observe(this);
+          onDispose(this, () => { this._contourResize.disconnect(); this._contourResize = null; });
         }
-        let lbl = svg.querySelector(".c-contour-plot__label");
-        if (!lbl) {
-          lbl = document.createElementNS("http://www.w3.org/2000/svg", "text");
-          lbl.setAttribute("class", "c-contour-plot__label");
-          svg.appendChild(lbl);
-        }
-        lbl.textContent = label;
+      } else if (!Array.isArray(grid)) {
+        const empty = document.createElement("div");
+        empty.className = "c-contour-plot__empty";
+        empty.textContent = this.getAttribute("empty") || "No field";
+        this.appendChild(empty);
       }
     }
   }
+define("contour-contour-plot", ContourContourPlot);
 /**
  * Error Boundary: web component wrapper.
  * Attributes: `fallback`, `error`.
@@ -3829,3 +3992,72 @@ class ContourDataExport extends ContourBase {
     }
   }
   define("contour-data-export", ContourDataExport);
+
+// Query builder: a list of field/operator/value rows with an Add rule button.
+// The component renders the rows from a `query` JSON attribute and emits
+// contour:change with the serialised query.
+class ContourQueryBuilder extends ContourBase {
+  static get observed() { return ["query", "fields"]; }
+  static get properties() { return { query: { attribute: "query" }, fields: { attribute: "fields" } }; }
+  render() {
+    this.classList.add("c-query-builder");
+    const fields = this.getAttribute("fields");
+    let fieldList = [];
+    if (fields) { try { fieldList = JSON.parse(fields); } catch (e) { fieldList = []; } }
+    const query = this.getAttribute("query");
+    let rules = [];
+    if (query) { try { rules = JSON.parse(query); } catch (e) { rules = []; } }
+    const list = this.ensure(".c-query-builder__list", () => { const el = document.createElement("div"); el.className = "c-query-builder__list"; return el; });
+    Array.from(list.querySelectorAll(".c-query-builder__row")).forEach((n) => n.remove());
+    rules.forEach((rule, i) => {
+      const row = document.createElement("div");
+      row.className = "c-query-builder__row";
+      const field = document.createElement("select");
+      field.className = "c-query-builder__field";
+      field.setAttribute("aria-label", "Field " + (i + 1));
+      fieldList.forEach((f) => {
+        const opt = document.createElement("option");
+        opt.value = typeof f === "string" ? f : (f.value || f.label || "");
+        opt.textContent = typeof f === "string" ? f : (f.label || f.value || "");
+        if (opt.value === rule.field) opt.selected = true;
+        field.appendChild(opt);
+      });
+      const op = document.createElement("select");
+      op.className = "c-query-builder__op";
+      op.setAttribute("aria-label", "Operator " + (i + 1));
+      ["=", "!=", ">", "<", "contains"].forEach((o) => {
+        const opt = document.createElement("option");
+        opt.value = o; opt.textContent = o;
+        if (o === rule.op) opt.selected = true;
+        op.appendChild(opt);
+      });
+      const val = document.createElement("input");
+      val.className = "c-query-builder__value";
+      val.type = "text";
+      val.value = rule.value || "";
+      val.setAttribute("aria-label", "Value " + (i + 1));
+      row.appendChild(field); row.appendChild(op); row.appendChild(val);
+      list.appendChild(row);
+    });
+    const add = this.ensure(".c-query-builder__add", () => { const b = document.createElement("button"); b.type = "button"; b.className = "c-btn c-btn--sm c-query-builder__add"; b.textContent = "Add rule"; return b; });
+    if (add.parentNode !== this) this.appendChild(add);
+  }
+  enhance() {
+    if (this._wiredQueryBuilder) return;
+    this._wiredQueryBuilder = true;
+    this.addEventListener("click", (e) => {
+      const t = e.target;
+      if (t && t.closest && t.closest(".c-query-builder__add")) {
+        const rows = Array.from(this.querySelectorAll(".c-query-builder__row")).map((r) => ({
+          field: r.querySelector(".c-query-builder__field")?.value || "",
+          op: r.querySelector(".c-query-builder__op")?.value || "=",
+          value: r.querySelector(".c-query-builder__value")?.value || "",
+        }));
+        rows.push({ field: "", op: "=", value: "" });
+        this.setAttribute("query", JSON.stringify(rows));
+        this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { query: rows } }));
+      }
+    });
+  }
+}
+define("contour-query-builder", ContourQueryBuilder);

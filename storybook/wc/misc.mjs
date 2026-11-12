@@ -25,7 +25,7 @@ class ContourResizeObserver extends ContourBase {
     }
   }
   define("contour-resize-observer", ContourResizeObserver);
-import { ContourBase, define, onDispose, navKey } from './core.mjs';
+import { ContourBase, define, onDispose, navKey , warnBadJson, label } from './core.mjs';
 import { loadRemote, remoteData, remoteRefresh, renderStates, renderEmpty, wireStates } from './states.mjs';
 class ContourReservedFull extends ContourBase {
     static get observed() { return ["title"]; }
@@ -72,7 +72,6 @@ class ContourActivity extends ContourBase {
             item.className = "c-activity__item";
             item.setAttribute("role", "button");
             item.setAttribute("tabindex", "-1");
-            if (!item.hasAttribute("aria-label")) item.setAttribute("aria-label", text.textContent);
             const dot = document.createElement("span");
             dot.className = "c-activity__dot c-activity__dot--" + (it.variant || "primary");
             dot.setAttribute("aria-hidden", "true");
@@ -80,6 +79,7 @@ class ContourActivity extends ContourBase {
             const text = document.createElement("span");
             text.className = "c-activity__text";
             text.textContent = typeof it === "string" ? it : (it.text || it.label || "");
+            if (!item.hasAttribute("aria-label")) item.setAttribute("aria-label", text.textContent);
             item.appendChild(text);
             if (it.time) {
               const time = document.createElement("span");
@@ -89,7 +89,7 @@ class ContourActivity extends ContourBase {
             }
             this.appendChild(item);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else {
         renderEmpty(this, "activity");
       }
@@ -115,7 +115,7 @@ class ContourActivity extends ContourBase {
   }
   define("contour-activity", ContourActivity);
 class ContourActivityFeed extends ContourBase {
-    static get observed() { return ["items", "filter", "unread-only", "empty", "loading", "error"]; }
+    static get observed() { return ["items", "filter", "unread-only", "empty", "loading", "error", "labels"]; }
     static get properties() { return { items: { attribute: "items" }, filter: { attribute: "filter" }, "unread-only": { attribute: "unread-only", type: Boolean } }; }
     render() {
       this.classList.add("c-activity-feed");
@@ -131,14 +131,14 @@ class ContourActivityFeed extends ContourBase {
       if (!header) { header = document.createElement("div"); header.className = "c-activity-feed__header"; this.insertBefore(header, this.firstChild); }
       let title = header.querySelector(".c-activity-feed__title");
       if (!title) { title = document.createElement("div"); title.className = "c-activity-feed__title"; header.appendChild(title); }
-      title.textContent = "Activity feed";
+      title.textContent = label(this, "title", "Activity feed");
       let toolbar = this.querySelector(".c-activity-feed__toolbar");
       if (!toolbar) { toolbar = document.createElement("div"); toolbar.className = "c-activity-feed__toolbar"; this.appendChild(toolbar); }
-      const clear = toolbar.querySelector(".c-activity-feed__clear") || (() => { const b = document.createElement("button"); b.type = "button"; b.className = "c-btn c-btn--ghost c-btn--sm"; b.textContent = "Clear all"; toolbar.appendChild(b); return b; })();
-      const unreadBtn = toolbar.querySelector(".c-activity-feed__unread") || (() => { const b = document.createElement("button"); b.type = "button"; b.className = "c-btn c-btn--ghost c-btn--sm"; b.textContent = "Unread only"; toolbar.appendChild(b); return b; })();
+      const clear = toolbar.querySelector(".c-activity-feed__clear") || (() => { const b = document.createElement("button"); b.type = "button"; b.className = "c-btn c-btn--ghost c-btn--sm"; b.textContent = label(this, "clear", "Clear all"); toolbar.appendChild(b); return b; })();
+      const unreadBtn = toolbar.querySelector(".c-activity-feed__unread") || (() => { const b = document.createElement("button"); b.type = "button"; b.className = "c-btn c-btn--ghost c-btn--sm"; b.textContent = label(this, "unread", "Unread only"); toolbar.appendChild(b); return b; })();
       if (unreadOnly) unreadBtn.setAttribute("aria-pressed", "true");
       let list = this.querySelector(".c-activity-feed__list");
-      if (!list) { list = document.createElement("div"); list.className = "c-activity-feed__list"; this.appendChild(list); }
+      if (!list) { list = document.createElement("ol"); list.className = "c-activity-feed__list"; this.appendChild(list); }
       if (items) {
         try {
           const parsed = JSON.parse(items);
@@ -148,12 +148,12 @@ class ContourActivityFeed extends ContourBase {
           Array.from(list.querySelectorAll(".c-activity-feed__item")).forEach((n) => n.remove());
           if (filtered.length === 0) {
             let empty = list.querySelector(".c-activity-feed__empty");
-            if (!empty) { empty = document.createElement("div"); empty.className = "c-activity-feed__empty"; empty.textContent = "No activity"; list.appendChild(empty); }
+            if (!empty) { empty = document.createElement("div"); empty.className = "c-activity-feed__empty"; empty.textContent = label(this, "empty", "No activity"); list.appendChild(empty); }
           } else {
             const empty = list.querySelector(".c-activity-feed__empty");
             if (empty) empty.remove();
             filtered.forEach((it) => {
-              const item = document.createElement("div");
+              const item = document.createElement("li");
               item.className = "c-activity-feed__item" + (it.read ? "" : " c-activity-feed__item--unread");
               item.setAttribute("role", "button");
               item.setAttribute("tabindex", "-1");
@@ -165,8 +165,9 @@ class ContourActivityFeed extends ContourBase {
               text.className = "c-activity-feed__text";
               text.textContent = typeof it === "string" ? it : (it.text || it.label || "");
               item.appendChild(text);
-              const time = document.createElement("span");
+              const time = document.createElement("time");
               time.className = "c-activity-feed__time";
+              if (it.time) time.setAttribute("datetime", String(it.time));
               time.textContent = it.time || "";
               item.appendChild(time);
               const sev = document.createElement("span");
@@ -176,7 +177,7 @@ class ContourActivityFeed extends ContourBase {
               list.appendChild(item);
             });
           }
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       }
     }
     enhance() {

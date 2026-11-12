@@ -838,6 +838,36 @@ const series = this.getAttribute("series");
                     svg.appendChild(path);
                   });
                  plot.appendChild(svg);
+                } else if (s.type === "bar") {
+                  // A bar series is the histogram's geometry without the
+                  // bucketing: one rect per value, in value order. The
+                  // histogram branch bins its input into equal-width buckets
+                  // and plots the counts, which is a different question, so
+                  // `bar` cannot be folded into it. `barRects()` already
+                  // normalises the values against the plot box, so the only
+                  // difference here is that `plotVals` is the series itself.
+                  const vals = Array.isArray(s.values) ? s.values : [];
+                  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                  svg.setAttribute("viewBox", "0 0 300 120");
+                  svg.setAttribute("preserveAspectRatio", "none");
+                  svg.style.cssText = "position: absolute; inset: 0; width: 100%; height: 100%";
+                  barRects(vals).forEach((r, ri) => {
+                    const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    rect.setAttribute("class", "c-chart__bar");
+                    rect.setAttribute("data-series", String(i + 1));
+                    rect.style.setProperty("--c", color);
+                    rect.setAttribute("x", r.x);
+                    rect.setAttribute("y", r.y);
+                    rect.setAttribute("width", r.width);
+                    rect.setAttribute("height", r.height);
+                    rect.setAttribute("title", String(vals[ri]));
+                    rect.setAttribute("aria-label", "Series " + (i + 1) + ": " + String(vals[ri]));
+                    rect.setAttribute("tabindex", "0");
+                    rect.setAttribute("role", "button");
+                    rect.dataset.index = String(ri);
+                    svg.appendChild(rect);
+                  });
+                  plot.appendChild(svg);
                 } else if (s.type === "histogram") {
                   // R16-23: bucket-count / limit-values controls.
                   // `limit-values` truncates the input array; `bucket-count`
