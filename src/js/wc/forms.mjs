@@ -11,7 +11,7 @@
  * @module contour-wc/forms
  */
 
-import { ContourBase, define, contourId, cssLength } from './core.mjs';
+import { ContourBase, define, contourId, cssLength , warnBadJson } from './core.mjs';
 import { wireCombobox } from './behaviours.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 /**
@@ -71,7 +71,7 @@ class ContourCombobox extends ContourBase {
             list.style.overflow = "";
             this._renderComboboxWindow("", true);
           }
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else if (!authored.length && !options) {
         renderEmpty(this, "combobox");
       }
@@ -886,7 +886,7 @@ class ContourSelect extends ContourBase {
           if (select.parentNode !== this) this.appendChild(select);
           this.classList.remove("c-select");
           select.classList.add("c-select");
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       }
       // Ensure authored select gets c-select styling.
       const authoredSel = this.querySelector("select");
@@ -996,7 +996,7 @@ class ContourVersion extends ContourBase {
           if (select.parentNode !== this) this.appendChild(select);
           this.classList.remove("c-version");
           select.classList.add("c-version");
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       }
     }
     enhance() {
@@ -1228,7 +1228,7 @@ class ContourRadioList extends ContourBase {
           const radios = Array.from(this.querySelectorAll("input.c-radio__input"));
           const checked = radios.find((r) => r.checked) || radios[0];
           if (checked) checked.tabIndex = 0;
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else {
         renderEmpty(this, "radio-list");
       }

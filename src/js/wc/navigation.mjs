@@ -1,4 +1,4 @@
-import { ContourBase, define, onDispose, supportsUntilFound, contourId, headingTag, navKey, safeHref, cssLength } from './core.mjs';
+import { ContourBase, define, onDispose, supportsUntilFound, contourId, headingTag, navKey, safeHref, cssLength , warnBadJson } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { wireMenu, wirePagination, wireTabs, wireTree, wireRemovable } from './behaviours.mjs';
 class ContourMenu extends ContourBase {
@@ -145,7 +145,7 @@ class ContourMenu extends ContourBase {
            if (ul.parentNode !== this) this.appendChild(ul);
            this.classList.remove("c-menu");
            ul.classList.add("c-menu");
-         } catch (e) { /* keep existing */ }
+         } catch (e) { warnBadJson(this, "attribute", e); }
        } else {
          renderEmpty(this, "menu");
        }
@@ -276,7 +276,7 @@ class ContourTabs extends ContourBase {
               this.appendChild(panel);
             });
             if (list.parentNode !== this) this.prepend(list);
-         } catch (e) { /* keep existing */ }
+         } catch (e) { warnBadJson(this, "attribute", e); }
         } else if (!tabs && !authoredTabs.length) {
           const list = this.querySelector(".c-tabs__list");
           if (list) list.remove();
@@ -689,7 +689,7 @@ render() {
            this.classList.remove("c-tree");
            rootUl.classList.add("c-tree");
            if (rootUl.parentNode !== this) this.appendChild(rootUl);
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else if (!items && !authored.length) {
         renderEmpty(this, "tree");
       }
@@ -832,7 +832,7 @@ class ContourCodeTabs extends ContourBase {
              this.appendChild(panel);
            });
            if (l.parentNode !== this) this.prepend(l);
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else if (!tabs && list) {
         list.remove();
         renderEmpty(this, "code-tabs");
@@ -908,7 +908,7 @@ class ContourBreadcrumb extends ContourBase {
               n.appendChild(span);
             }
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
        } else if (!items && nav) {
          nav.remove();
        } else if (!items && !nav) {
@@ -1046,7 +1046,7 @@ class ContourTocFull extends ContourBase {
             if (item.current) a.setAttribute("aria-current", "true");
             l.appendChild(a);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else if (!items && list) {
         list.remove();
         renderEmpty(this, "toc");
@@ -1446,7 +1446,7 @@ class ContourFilterBar extends ContourBase {
               l.appendChild(item);
             }
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else if (!items && list) {
         list.remove();
       }
@@ -1577,7 +1577,7 @@ class ContourFooter extends ContourBase {
             a.textContent = typeof l === "string" ? l : (l.label || l);
             wrap.appendChild(a);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else {
         const w = this.querySelector(".c-footer__links");
         if (w) w.remove();
@@ -1604,7 +1604,7 @@ class ContourFooter extends ContourBase {
             });
             this.appendChild(c);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else {
         this.querySelectorAll(".c-footer__col").forEach((c) => c.remove());
       }
@@ -1671,7 +1671,7 @@ class ContourSidebar extends ContourBase {
             a.tabIndex = i === 0 ? 0 : -1;
             nav.appendChild(a);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       }
     }
     enhance() {
@@ -1742,7 +1742,7 @@ class ContourToolbar extends ContourBase {
             wrap.appendChild(menu);
             this.appendChild(wrap);
           }
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       }
     }
     enhance() {

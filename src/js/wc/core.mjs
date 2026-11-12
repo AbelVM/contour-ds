@@ -294,6 +294,24 @@
     const v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name));
     return Number.isFinite(v) && v > 0 ? v : fallback;
   }
+  /**
+   * Surface a malformed JSON attribute instead of swallowing it.
+   *
+   * A bare `catch (e) { /* keep existing *\/ }` turns a typo in a component
+   * attribute into a silent no-op: the render keeps whatever was there before
+   * and the defect is invisible. This warns once, with the component name and
+   * the parser message, so the author can find it.
+   *
+   * @param {Element|null} host the component that owns the attribute
+   * @param {string} label the attribute (or a short description)
+   * @param {unknown} error the thrown parse error
+   */
+  export function warnBadJson(host, label, error) {
+    if (typeof console === "undefined" || !console.warn) return;
+    const name = host && host.tagName ? host.tagName.toLowerCase() : "component";
+    const msg = (error && error.message) || String(error);
+    console.warn(`[contour] ${name}: malformed ${label || "attribute"} — ${msg}`);
+  }
   // contract: an attribute that is not here cannot ask an element to re-render,
   // and an attribute a component WRITES to itself must never be here, because
   // that write would fire the callback that performs the render.

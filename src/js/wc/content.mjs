@@ -1,4 +1,4 @@
-import { ContourBase, define, sanitizeHtml, headingTag, formatValue, navKey, isRtl, safeHref } from './core.mjs';
+import { ContourBase, define, sanitizeHtml, headingTag, formatValue, navKey, isRtl, safeHref , warnBadJson } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { wireCopy } from './behaviours.mjs';
 
@@ -156,7 +156,7 @@ class ContourSteps extends ContourBase {
             }
             list.appendChild(item);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else if (!steps && !authored.length) {
         renderEmpty(this, "steps");
       }
@@ -535,7 +535,7 @@ class ContourShowcaseFull extends ContourBase {
             li.textContent = typeof it === "string" ? it : it.label;
             l.appendChild(li);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else if (!items && !authored.length && !title && !text && !media) {
         renderEmpty(this, "showcase");
       } else if (!items && ul) {
@@ -659,7 +659,7 @@ class ContourLandingFeaturesFull extends ContourBase {
             }
             this.appendChild(item);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else if (!items && !authored.length) {
         this.querySelectorAll(".c-landing-features__item").forEach((el) => el.remove());
         renderEmpty(this, "landing-features");
@@ -836,7 +836,7 @@ class ContourCta extends ContourBase {
             wrap.appendChild(btn);
           });
           this.appendChild(wrap);
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       }
     }
   }

@@ -1,4 +1,4 @@
-import { ContourBase, define, onDispose, formatValue, navKey, isRtl } from './core.mjs';
+import { ContourBase, define, onDispose, formatValue, navKey, isRtl , warnBadJson } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { compassNeedle, scaleBarTicks } from './svg.mjs';
 
@@ -235,7 +235,7 @@ class ContourLayerPanel extends ContourBase {
         try {
           parsed = JSON.parse(items);
           Array.from(this.querySelectorAll(".c-layer-panel__item")).forEach((el) => el.remove());
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       }
       if (parsed) { parsed.forEach((it) => {
            const name = typeof it === "string" ? it : (it.name || it.label || "");
@@ -609,7 +609,7 @@ class ContourHexbin extends ContourBase {
            });
            const tip = this.ensure(".c-hexbin__tooltip", () => { const el = document.createElement("div"); el.className = "c-hexbin__tooltip"; el.setAttribute("role", "tooltip"); el.setAttribute("hidden", ""); return el; });
            tip.setAttribute("hidden", "");
-       } catch (e) { /* keep existing */ }
+       } catch (e) { warnBadJson(this, "attribute", e); }
       } else if (!parsed) {
         Array.from(this.querySelectorAll(".c-hexbin__cell")).forEach((n) => n.remove());
         renderEmpty(this, "hexbin");
@@ -665,7 +665,7 @@ class ContourFlowMap extends ContourBase {
           });
           const tip = this.ensure(".c-flow-map__tooltip", () => { const el = document.createElement("div"); el.className = "c-flow-map__tooltip"; el.setAttribute("role", "tooltip"); el.setAttribute("hidden", ""); return el; });
           tip.setAttribute("hidden", "");
-       } catch (e) { /* keep existing */ }
+       } catch (e) { warnBadJson(this, "attribute", e); }
       } else if (!parsed) {
         Array.from(this.querySelectorAll(".c-flow-map__node")).forEach((n) => n.remove());
         renderEmpty(this, "flow-map");
@@ -728,7 +728,7 @@ class ContourIsochrone extends ContourBase {
            });
            const tip = this.ensure(".c-isochrone__tooltip", () => { const el = document.createElement("div"); el.className = "c-isochrone__tooltip"; el.setAttribute("role", "tooltip"); el.setAttribute("hidden", ""); return el; });
            tip.setAttribute("hidden", "");
-         } catch (e) { /* keep existing */ }
+         } catch (e) { warnBadJson(this, "attribute", e); }
        } else if (!parsed) {
          Array.from(this.querySelectorAll(".c-isochrone__ring")).forEach((n) => n.remove());
          renderEmpty(this, "isochrone");
@@ -953,7 +953,7 @@ class ContourLayerSwitch extends ContourBase {
             item.appendChild(toggle);
             this.appendChild(item);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else if (!items && !authored.length) {
         Array.from(this.querySelectorAll(".c-layer-switch__item")).forEach((n) => n.remove());
         renderEmpty(this, "layer-switch");
@@ -1055,7 +1055,7 @@ class ContourMapArea extends ContourBase {
             btn.textContent = typeof c === "string" ? c : (c.label || c);
             wrap.appendChild(btn);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else {
         const w = this.querySelector(".c-map-slot__controls");
         if (w) w.remove();

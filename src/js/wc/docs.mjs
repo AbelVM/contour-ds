@@ -1,4 +1,4 @@
-import { ContourBase, define, onDispose, sanitizeHtml, headingTag, navKey, safeHref } from './core.mjs';
+import { ContourBase, define, onDispose, sanitizeHtml, headingTag, navKey, safeHref , warnBadJson } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 
 /* Route matching (CDS-075). The URL is the state for a documentation surface, so
@@ -110,7 +110,7 @@ class ContourDocsNav extends ContourBase {
             group.appendChild(ul);
             list.appendChild(group);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else if (!items && list) {
         list.remove();
         renderEmpty(this, "docs-nav");
@@ -230,7 +230,7 @@ class ContourFileTree extends ContourBase {
           // clear generated
           Array.from(this.querySelectorAll(".c-file-tree__row")).forEach((n) => n.remove());
           parsed.forEach((n) => renderNode(n, 0));
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       }
     }
   }

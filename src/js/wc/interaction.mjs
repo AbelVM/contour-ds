@@ -1,4 +1,4 @@
-import { ContourBase, define, onDispose } from './core.mjs';
+import { ContourBase, define, onDispose , warnBadJson } from './core.mjs';
 import { wireSegmented, modalContain } from './behaviours.mjs';
 class ContourPressableFull extends ContourBase {
     static get observed() { return ["disabled"]; }

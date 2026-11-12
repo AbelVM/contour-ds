@@ -25,7 +25,7 @@ class ContourResizeObserver extends ContourBase {
     }
   }
   define("contour-resize-observer", ContourResizeObserver);
-import { ContourBase, define, onDispose, navKey } from './core.mjs';
+import { ContourBase, define, onDispose, navKey , warnBadJson } from './core.mjs';
 import { loadRemote, remoteData, remoteRefresh, renderStates, renderEmpty, wireStates } from './states.mjs';
 class ContourReservedFull extends ContourBase {
     static get observed() { return ["title"]; }
@@ -89,7 +89,7 @@ class ContourActivity extends ContourBase {
             }
             this.appendChild(item);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else {
         renderEmpty(this, "activity");
       }
@@ -177,7 +177,7 @@ class ContourActivityFeed extends ContourBase {
               list.appendChild(item);
             });
           }
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       }
     }
     enhance() {

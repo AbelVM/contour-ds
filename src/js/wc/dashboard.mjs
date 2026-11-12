@@ -1,4 +1,4 @@
-import { ContourBase, define, formatValue, navKey } from './core.mjs';
+import { ContourBase, define, formatValue, navKey , warnBadJson } from './core.mjs';
 
 /**
  * Dashboard state machine (R13-06).
@@ -87,7 +87,7 @@ class ContourDashToolbar extends ContourBase {
             btn.textContent = typeof a === "string" ? a : (a.label || a);
             wrap.appendChild(btn);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else {
         const w = this.querySelector(".c-dash-toolbar__actions");
         if (w) w.remove();
@@ -336,7 +336,7 @@ class ContourFeatureInspector extends ContourBase {
             field.appendChild(value);
             body.appendChild(field);
           }
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       }
       const actions = this.ensure(".c-feature-inspector__actions", () => { const el = document.createElement("div"); el.className = "c-feature-inspector__actions"; return el; });
     }

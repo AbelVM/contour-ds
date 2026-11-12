@@ -1,4 +1,4 @@
-import { ContourBase, define, contourId, onDispose, navKey, safeColor, safeHref, cssLength } from './core.mjs';
+import { ContourBase, define, contourId, onDispose, navKey, safeColor, safeHref, cssLength , warnBadJson } from './core.mjs';
 import { wireRemovable, modalContain } from './behaviours.mjs';
 /**
  * Avatar: a circular avatar with initials (from `name`) or an image (`src`),
@@ -1022,7 +1022,7 @@ class ContourDropdown extends ContourBase {
             li.textContent = typeof it === "string" ? it : (it.label || it.title || "");
             menu.appendChild(li);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       }
       if (menu.parentNode !== this) this.appendChild(menu);
       if (btn.parentNode !== this) this.insertBefore(btn, menu);
@@ -1129,7 +1129,7 @@ class ContourStyleSwitcher extends ContourBase {
             btn.dataset.value = name;
             this.appendChild(btn);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       }
     }
     enhance() {
@@ -1388,7 +1388,7 @@ class ContourAvatarGroup extends ContourBase {
             overflow.textContent = "+" + (parsed.length - max);
             this.appendChild(overflow);
           }
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       }
     }
   }
@@ -1459,7 +1459,7 @@ class ContourSplitButton extends ContourBase {
             li.textContent = typeof it === "string" ? it : (it.label || it.title || "");
             menu.appendChild(li);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       }
       if (main.parentNode !== this) this.appendChild(main);
       if (toggle.parentNode !== this) this.appendChild(toggle);
@@ -1530,7 +1530,7 @@ class ContourPaletteEditor extends ContourBase {
             sw.setAttribute("aria-label", typeof c === "string" ? c : (c.name || c.label || "color"));
             this.appendChild(sw);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       }
     }
     enhance() {
@@ -2219,7 +2219,7 @@ class ContourContextMenu extends ContourBase {
             btn.textContent = typeof it === "string" ? it : (it.label || it.title || "");
             this.appendChild(btn);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       }
     }
     enhance() {

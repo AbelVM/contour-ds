@@ -1,4 +1,4 @@
-import { ContourBase, define, onDispose, formatValue, contourId, navKey, isRtl, cssLength } from './core.mjs';
+import { ContourBase, define, onDispose, formatValue, contourId, navKey, isRtl, cssLength , warnBadJson } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates, remoteInvalidate, watchViewport } from './states.mjs';
 import { donutSlices, barRects, smoothPath, polylinePoints, contourPaths } from './svg.mjs';
 /**
@@ -40,7 +40,7 @@ class ContourReadout extends ContourBase {
             }
             this.appendChild(row);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else if (!rows && !authored.length) {
         renderEmpty(this, "readout");
       }
@@ -452,7 +452,7 @@ class ContourTable extends ContourBase {
             const footer = this.querySelector(".c-table__pagination");
             if (footer) footer.remove();
           }
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else if (!rows && !authored.length) {
         renderEmpty(this, "table");
       }
@@ -891,7 +891,7 @@ const series = this.getAttribute("series");
              });
              plot.appendChild(svg);
            }
-          } catch (e) { /* keep existing */ }
+          } catch (e) { warnBadJson(this, "attribute", e); }
           // Styled tooltip element (positioned via --chart-tip-*).
           const tip = this.ensure(".c-chart__tooltip", () => { const el = document.createElement("div"); el.className = "c-chart__tooltip"; el.setAttribute("role", "tooltip"); el.setAttribute("hidden", ""); return el; });
           tip.setAttribute("hidden", "");
@@ -2528,7 +2528,7 @@ class ContourInstrument extends ContourBase {
             item.appendChild(val);
             this.appendChild(item);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else {
         renderEmpty(this, "instrument");
       }
@@ -3007,7 +3007,7 @@ class ContourLegend extends ContourBase {
              }
             list.appendChild(item);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else {
         const list = this.querySelector(".c-legend__items");
         if (list) list.remove();
@@ -3397,7 +3397,7 @@ class ContourTimeline extends ContourBase {
             }
             list.appendChild(item);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
       } else if (!authored.length) {
         renderEmpty(this, "timeline");
       }

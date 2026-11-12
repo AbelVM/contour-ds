@@ -1,4 +1,4 @@
-import { ContourBase, define, navKey, isRtl } from './core.mjs';
+import { ContourBase, define, navKey, isRtl , warnBadJson } from './core.mjs';
   class ContourApp extends ContourBase {
     static get observed() { return ["title"]; }
     static get properties() { return { title: { attribute: "title" } }; }

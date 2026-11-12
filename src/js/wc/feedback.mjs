@@ -1,4 +1,4 @@
-import { ContourBase, define, onDispose, sanitizeHtml, headingTag } from './core.mjs';
+import { ContourBase, define, onDispose, sanitizeHtml, headingTag , warnBadJson } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { wireRemovable, modalContain } from './behaviours.mjs';
 class ContourDialog extends ContourBase {
@@ -442,7 +442,7 @@ class ContourFaq extends ContourBase {
             item.appendChild(a);
             this.appendChild(item);
           });
-        } catch (e) { /* keep existing */ }
+        } catch (e) { warnBadJson(this, "attribute", e); }
        } else if (!items) {
          if (!question && !answer) {
            renderEmpty(this, "faq");
@@ -492,7 +492,7 @@ class ContourAccordion extends ContourBase {
             details.appendChild(body);
             this.appendChild(details);
           });
-         } catch (e) { /* keep existing */ }
+         } catch (e) { warnBadJson(this, "attribute", e); }
        } else if (!items && !authored.length) {
          renderEmpty(this, "accordion");
        }
