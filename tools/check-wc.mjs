@@ -117,6 +117,118 @@ if (existsSync(indexHtmlPath) && eventsBlock) {
     fail(`§23 event table is missing manifest entries: ${missingInTable.slice(0, 10).join(", ")} — add the rows or remove them from CONTOUR_EVENTS`);
   if (extraInTable.length)
     fail(`§23 event table names events not in the manifest: ${extraInTable.slice(0, 10).join(", ")} — add them to CONTOUR_EVENTS or remove the rows`);
+  // The payload column is documentation too: a handler typed from the guide
+  // must see the same keys the manifest declares. Compare the `<code>key</code>`
+  // list in each row's second cell against the manifest payload for that event.
+  const manifestPayload = {};
+  for (const m of eventsBlock[1].matchAll(/"(contour:[a-z-]+)"\s*:\s*\{\s*payload:\s*\[([^\]]*)\]/g)) {
+    const keys = m[2].trim();
+    manifestPayload[m[1]] = keys ? keys.split(",").map((k) => k.trim().replace(/^"|"$/g, "")).filter(Boolean) : [];
+  }
+  const rowRe = /<tr><td><code>(contour:[a-z-]+)<\/code><\/td><td>([\s\S]*?)<\/td>/g;
+  const payloadDrift = [];
+  for (const m of html.matchAll(rowRe)) {
+    const name = m[1];
+    const cell = m[2];
+    const cellKeys = [...cell.matchAll(/<code>([a-zA-Z-]+)<\/code>/g)].map((k) => k[1]);
+    const decl = manifestPayload[name] || [];
+    const missing = decl.filter((k) => !cellKeys.includes(k));
+    const extra = cellKeys.filter((k) => !decl.includes(k));
+    if (missing.length || extra.length)
+      payloadDrift.push(`${name}: table [${cellKeys.join(", ")}] vs manifest [${decl.join(", ")}]${missing.length ? ` missing=${missing.join(",")}` : ""}${extra.length ? ` extra=${extra.join(",")}` : ""}`);
+  }
+  if (payloadDrift.length)
+    fail(`§23 event table payload column disagrees with CONTOUR_EVENTS (${payloadDrift.length}):\n    ${payloadDrift.slice(0, 12).join("\n    ")}${payloadDrift.length > 12 ? `\n    … ${payloadDrift.length - 12} more` : ""}`);
+}
+
+// 9b. payload-shape gate (R18-54): the manifest declares the detail keys each
+// event carries, but nothing checked that an emission site actually passes only
+// those keys. A handler typed from CONTOUR_EVENTS could read `detail.checked`
+// on a `contour:change` that only ever emits `value`, and the type would lie.
+// Parse every `detail: { k: v, … }` literal that sits inside a CustomEvent for a
+// manifest event, and fail when a key is not declared for that event. Keys are
+// read from the source, not invented: a dynamic `detail` (a variable) is skipped
+// rather than guessed, because a wrong guess is worse than no check.
+if (eventsBlock) {
+  const manifest = {};
+  for (const m of eventsBlock[1].matchAll(/"(contour:[a-z-]+)"\s*:\s*\{\s*payload:\s*\[([^\]]*)\]/g)) {
+    const keys = m[2].trim();
+    manifest[m[1]] = keys ? keys.split(",").map((k) => k.trim().replace(/^"|"$/g, "")).filter(Boolean) : [];
+  }
+  // Walk the source for `new CustomEvent("contour:x", { … detail: { … } … })`.
+  // A regex that stops at the first `}` mis-reads a nested payload (e.g.
+  // `filter: { sortDir }` leaks `sortDir` as a top-level key), so the detail
+  // literal is extracted with a brace-balanced scan and only its top-level keys
+  // are compared. A dynamic `detail` (a variable, not a literal) is skipped.
+  const undeclared = [];
+  let checked = 0;
+  const ceRe = /new CustomEvent\(\s*"(contour:[a-z-]+)"/g;
+  let ce;
+  while ((ce = ceRe.exec(src))) {
+    const name = ce[1];
+    const declared = manifest[name];
+    if (!declared) continue; // name gate already failed; don't double-report
+    // Bound the search to this CustomEvent call: find its closing `)` first
+    // (tracking paren depth from the `(` after the event name), then only
+    // accept a `detail:` that appears before it. Without this bound, a call
+    // with no detail (e.g. `new CustomEvent("contour:clear", {…})`) picks up
+    // the next call's `detail:` and reports keys it never emits.
+    const parenOpen = src.indexOf("(", ce.index);
+    if (parenOpen < 0) continue;
+    let pdepth = 0, callEnd = -1;
+    for (let i = parenOpen; i < src.length; i++) {
+      const ch = src[i];
+      if (ch === "(") pdepth++;
+      else if (ch === ")") { pdepth--; if (pdepth === 0) { callEnd = i; break; } }
+    }
+    if (callEnd < 0) continue;
+    const after = src.indexOf("detail:", ceRe.lastIndex);
+    if (after < 0 || after > callEnd) continue; // no detail literal in this call
+    const open = src.indexOf("{", after);
+    if (open < 0 || open > callEnd) continue;
+    // Extract the balanced `{ … }` body of the detail literal.
+    let depth = 0, closeIdx = -1;
+    for (let i = open; i <= callEnd; i++) {
+      const ch = src[i];
+      if (ch === "{") depth++;
+      else if (ch === "}") { depth--; if (depth === 0) { closeIdx = i; break; } }
+    }
+    if (closeIdx < 0) continue;
+    const body = src.slice(open + 1, closeIdx);
+    // Top-level keys: split on commas at depth 0, take the `identifier:` head.
+    const keys = [];
+    let d = 0, seg = "";
+    for (let i = 0; i < body.length; i++) {
+      const ch = body[i];
+      if (ch === "{" || ch === "(" || ch === "[") d++;
+      else if (ch === "}" || ch === ")" || ch === "]") d--;
+      if (ch === "," && d === 0) { keys.push(seg); seg = ""; continue; }
+      seg += ch;
+    }
+    if (seg.trim()) keys.push(seg);
+    // A key is either `identifier: value` or a shorthand `identifier` (the
+    // shorthand `{ delta }` is a real payload key with no colon). A segment
+    // that is a bare identifier is a shorthand; anything else (a spread, a
+    // computed key) is skipped rather than guessed.
+    const topKeys = keys
+      .map((s) => {
+        const named = /^\s*([a-zA-Z_$][\w$]*)\s*:/.exec(s);
+        if (named) return named[1];
+        const short = /^\s*([a-zA-Z_$][\w$]*)\s*$/.exec(s);
+        return short ? short[1] : null;
+      })
+      .filter(Boolean);
+    if (!topKeys.length) continue; // `detail: {}` or a spread — nothing to check
+    checked++;
+    for (const k of topKeys) {
+      if (!declared.includes(k)) undeclared.push(`${name}: detail.${k} not in manifest payload [${declared.join(", ")}]`);
+    }
+    ceRe.lastIndex = closeIdx;
+  }
+  if (undeclared.length)
+    fail(`payload shapes disagree with CONTOUR_EVENTS (${undeclared.length}):\n    ${undeclared.slice(0, 12).join("\n    ")}${undeclared.length > 12 ? `\n    … ${undeclared.length - 12} more` : ""}`);
+  else
+    console.log(`check-wc: payload shapes compared ${checked} emission site(s) against the manifest`);
 }
 
 // 10. every contour-* tag the guide shows is registered (R18-49)
