@@ -1296,6 +1296,7 @@ class ContourStylePanel extends ContourBase {
             breaks.type = "text";
             breaks.className = "c-style-panel__breaks";
             breaks.placeholder = "breaks";
+            breaks.setAttribute("aria-label", "Class breaks");
             if (typeof l === "object" && l.breaks) breaks.value = (Array.isArray(l.breaks) ? l.breaks.join(",") : l.breaks);
             row.appendChild(breaks);
             // opacity control

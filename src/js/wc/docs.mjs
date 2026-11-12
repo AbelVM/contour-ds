@@ -177,7 +177,7 @@ class ContourDocsShell extends ContourBase {
       this.setAttribute("role", "region");
       const title = this.getAttribute("title");
       if (title) {
-        const h = this.ensure(".c-docs-shell__title", () => { const el = document.createElement(headingTag(this, "h1")); el.className = "c-docs-shell__title"; return el; });
+        const h = this.ensure(".c-docs-shell__title", () => { const el = document.createElement(headingTag(this, "h2")); el.className = "c-docs-shell__title"; return el; });
         h.textContent = title;
         this.setAttribute("aria-label", title);
       } else {
@@ -346,10 +346,13 @@ class ContourChangelog extends ContourBase {
       const line = raw.trimEnd();
       if (/^###\s+/.test(line)) {
         if (inList) { out.push("</ul>"); inList = false; }
-        out.push("<h4>" + escapeHtml(line.replace(/^###\s+/, "")) + "</h4>");
+        out.push("<h3>" + escapeHtml(line.replace(/^###\s+/, "")) + "</h3>");
       } else if (/^##\s+/.test(line)) {
         if (inList) { out.push("</ul>"); inList = false; }
-        out.push("<h3>" + escapeHtml(line.replace(/^##\s+/, "")) + "</h3>");
+        out.push("<h2>" + escapeHtml(line.replace(/^##\s+/, "")) + "</h2>");
+      } else if (/^#\s+/.test(line)) {
+        if (inList) { out.push("</ul>"); inList = false; }
+        out.push("<h2>" + escapeHtml(line.replace(/^#\s+/, "")) + "</h2>");
       } else if (/^[-*]\s+/.test(line)) {
         if (!inList) { out.push("<ul>"); inList = true; }
         out.push("<li>" + escapeHtml(line.replace(/^[-*]\s+/, "")) + "</li>");

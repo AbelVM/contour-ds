@@ -1,4 +1,4 @@
-import { ContourBase, define, onDispose, sanitizeHtml, headingTag , warnBadJson } from './core.mjs';
+import { ContourBase, define, onDispose, sanitizeHtml, headingTag , warnBadJson, contourId } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { wireRemovable, modalContain } from './behaviours.mjs';
 class ContourDialog extends ContourBase {
@@ -27,7 +27,7 @@ class ContourDialog extends ContourBase {
           head.appendChild(closeBtn);
         }
         const h = head.querySelector(".c-dialog__title");
-        if (h) { h.textContent = title; if (!h.id) h.id = "contour-dialog-title-" + (this._dialogTitleId = (this._dialogTitleId || 0) + 1); this.setAttribute("aria-labelledby", h.id); }
+        if (h) { h.textContent = title; if (!h.id) h.id = contourId("contour-dialog-title"); this.setAttribute("aria-labelledby", h.id); }
       }
       if (head && head.parentNode !== this) this.prepend(head);
       // Wrap authored content in a body so it picks up the dialog's padding.

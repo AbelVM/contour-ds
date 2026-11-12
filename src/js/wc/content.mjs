@@ -674,7 +674,7 @@ class ContourLandingHeroFull extends ContourBase {
       this.classList.add("c-landing-hero");
       const title = this.getAttribute("title");
       if (title) {
-        const t = this.ensure(".c-landing-hero__title", () => { const el = document.createElement(headingTag(this, "h1")); el.className = "c-landing-hero__title"; return el; });
+        const t = this.ensure(".c-landing-hero__title", () => { const el = document.createElement(headingTag(this, "h2")); el.className = "c-landing-hero__title"; return el; });
         t.textContent = title;
       }
       const text = this.getAttribute("text");

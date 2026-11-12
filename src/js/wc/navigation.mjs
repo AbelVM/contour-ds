@@ -863,9 +863,11 @@ class ContourBreadcrumb extends ContourBase {
       if (items && !authored.length) {
         try {
           const parsed = JSON.parse(items);
-          const n = this.ensure("nav", () => { const el = document.createElement("nav"); el.setAttribute("aria-label", "Breadcrumb"); el.id = "contour-breadcrumb-list"; return el; });
+          const n = this.ensure("nav", () => { const el = document.createElement("nav"); el.setAttribute("aria-label", "Breadcrumb"); return el; });
           n.setAttribute("aria-label", "Breadcrumb");
-          n.id = "contour-breadcrumb-list";
+          // A unique id per instance: two breadcrumbs on a page must not share
+          // one, and the overflow button points at this one through aria-controls.
+          if (!n.id) n.id = contourId("contour-breadcrumb-list");
           n.innerHTML = "";
           const sep = this.getAttribute("separator") || "/";
           const max = this._overflowExpanded ? null : this.max;
@@ -878,7 +880,7 @@ class ContourBreadcrumb extends ContourBase {
             btn.className = "c-breadcrumb__overflow";
             btn.setAttribute("aria-label", `Show ${parsed.length - shown.length + 1} more items`);
             btn.setAttribute("aria-expanded", "false");
-            btn.setAttribute("aria-controls", "contour-breadcrumb-list");
+            btn.setAttribute("aria-controls", n.id);
             btn.textContent = "…";
             btn.addEventListener("click", () => {
               // A handler-owned property, not an attribute: flipping a
