@@ -25,7 +25,7 @@ export interface ContourCalendarElement extends ContourElement{month?:S;year?:S;
 export interface ContourCatchmentElement extends ContourDataElement{label?:S;area?:S;center?:S;}
 export interface ContourCategoryElement extends ContourDataElement{items?:S;search?:S;note?:S;limit?:S;sort?:S;}
 export interface ContourChangelogElement extends ContourElement{src?:S;}
-export interface ContourChartElement extends ContourDataElement{axis?:S;color?:S;zoomable?:boolean;brush?:boolean;note?:S;"bucket-count"?:S;"limit-values"?:S;}
+export interface ContourChartElement extends ContourDataElement{axis?:S;color?:S;zoomable?:boolean;brush?:boolean;note?:S;"bucket-count"?:S;"limit-values"?:S;bins?:Array<{ x0: number; x1: number; count: number; normalized?: number }>;backgroundData?:Array<{ x0: number; x1: number; count: number; normalized?: number }>;range?:[number, number] | null;}
 export interface ContourChartGridElement extends ContourElement{src?:S;}
 export interface ContourCheckElement extends ContourFormElement{label?:S;type?:S;error?:S;help?:S;}
 export interface ContourCodeElement extends ContourElement{numbered?:boolean;}
@@ -553,4 +553,7 @@ declare global { interface HTMLElementTagNameMap {
   "contour-shadow-version-banner":ContourElement;
   "contour-shadow-widget-state":ContourElement;
   }
-interface Window { Contour: ContourAPI; } }
+export type ContourShadowMarkup = Record<string, string>;
+export declare function renderShadowDSD(tag: string, attrs?: string, light?: string): string | null;
+export declare const SHADOW_MARKUP: ContourShadowMarkup;
+interface Window { Contour: ContourAPI; ContourShadowTemplates: ContourShadowMarkup; ContourShadowParts: Record<string, string[]>; ContourEvents: Record<string, { payload: string[]; composed: boolean }>; } }

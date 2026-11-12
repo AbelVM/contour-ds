@@ -40,6 +40,7 @@ const gates = [
   ["check-wc", "node", ["tools/check-wc.mjs"]],
   ["family-gate", "node", ["tools/audit/family-gate.mjs"]],
   ["wc-contract", "node", ["tools/audit/wc-contract.mjs"]],
+  ["check-absent-components", "node", ["tools/check-absent-components.mjs"]],
   ["component-inventory", "node", ["tools/audit/component-inventory.mjs"]],
   ["check-rtl", "node", ["tools/audit/check-rtl.mjs"]],
   ["check-large-data", "node", ["tools/check-large-data.mjs"]],

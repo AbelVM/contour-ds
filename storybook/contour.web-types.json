@@ -2432,7 +2432,7 @@
         },
         {
           "name": "contour-density-toggle",
-          "description": "Contour component `c-density-toggle` (complete-widget).",
+          "description": "Contour component `c-density-toggle` (complete-widget). Elements: c-density-toggle__btn.",
           "attributes": [
             {
               "name": "label",
@@ -5638,7 +5638,7 @@
         },
         {
           "name": "contour-query-builder",
-          "description": "Contour component `c-query-builder` (complete-widget). Elements: c-query-builder__field, c-query-builder__list, c-query-builder__op, c-query-builder__row, c-query-builder__value.",
+          "description": "Contour component `c-query-builder` (complete-widget). Elements: c-query-builder__add, c-query-builder__field, c-query-builder__list, c-query-builder__op, c-query-builder__row, c-query-builder__value.",
           "attributes": [
             {
               "name": "fields",

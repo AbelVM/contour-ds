@@ -115,6 +115,12 @@ jobs:
       - name: Check the web-component fragments and registrations
         run: node tools/check-wc.mjs
 
+      # Four chart primitives were declined (INVENTORY.md, "Deliberately not
+      # shipped"). This keeps the decision true: no tag, type, story or page may
+      # claim one, and the record of why cannot be quietly deleted.
+      - name: Check deliberately absent components stay absent
+        run: node tools/check-absent-components.mjs
+
       - name: Run the node gate sweep
         run: node tools/doctor.mjs
 
@@ -230,6 +236,11 @@ jobs:
       # blind reader nothing, so this reads the accessibility tree instead.
       - name: Chart accessible names and data alternatives
         run: node tools/audit/chart-names.mjs
+      # A histogram consumer writes bins/backgroundData and reads range, so this
+      # gate pushes them into the shipped bundle and requires the render and the
+      # brush event to follow — a stored value that draws nothing fails.
+      - name: Chart bindability contract (bins / backgroundData / range)
+        run: node tools/audit/chart-bindable.mjs
       # Every other gate counts declarations. This one asks a browser what a
       # freshly mounted control actually paints after a theme set is selected,
       # and sweeps --brand-hue across both themes.

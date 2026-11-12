@@ -38,3 +38,28 @@ not indexed as tokens.
 - A single machine-readable file combining CSS tokens/vars/inputs + parts +
   slots per component does not yet exist; `contour.components.json` covers
   CSS only. Shadow parts/slots are documented here but not in the artifact.
+
+## Deliberately not shipped
+
+These were proposed and declined, rather than forgotten. `contour-chart` renders
+line, bar, scatter, donut and histogram series; the four below would each be a
+new block with its own geometry, states, story and budget, and no consumer in
+this repository or in libreship asked for one. A component nobody uses is still
+a component the system must maintain, so the absence is a decision:
+
+- `contour-box-plot` — libreship's box plots come from its ECharts adapter
+  (`packages/adapter-echarts/src/index.ts`, `boxplotSelection`), which owns the
+  ranged-selection rule. A Contour block would duplicate that adapter.
+- `contour-bullet` — no consumer. A bullet chart is a bar with a target marker;
+  `contour-chart` with a `bar` series plus `contour-threshold` covers the same
+  reading today.
+- `contour-waterfall` — no consumer. Contribution bridges are a bar series with
+  signed values, which the chart does not yet do; adding it would be a series
+  change, not a block.
+- `contour-sankey` — no consumer. A flow diagram needs a layout engine, which is
+  the same out-of-scope boundary as a map engine (R18-44).
+
+`tools/check-absent-components.mjs` keeps this true: it fails if any of the four
+is defined, declared in `contour.d.ts`, rendered in a shipped page or given a
+story, or if a name disappears from this list without the decision being
+revisited.

@@ -10,6 +10,8 @@ Badges carry a category. Chips carry a value. Pills carry a state. The waypoint 
 
 Equivalent contour-* elements are catalogued in §23.
 
+A list of field / operator / value rows. The rows are the whole component: there is no hidden state, and the serialised query is what the consumer reads back.
+
 ## Subsections
 
 - Web component counterpart
@@ -17,24 +19,34 @@ Equivalent contour-* elements are catalogued in §23.
 - Skeleton
 - Loading
 - Web component counterparts
+- Fieldset and checkbox group
+- Search field and density toggle
+- Query builder
 
 ## Blocks documented here
 
-16 block(s). Their facts live in `../contour.components.json`;
+23 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
 - `.c-avatar`
 - `.c-badge`
 - `.c-btn`
+- `.c-check`
+- `.c-checkbox-group`
 - `.c-chip`
+- `.c-density-toggle`
 - `.c-dot`
 - `.c-empty`
+- `.c-fieldset`
 - `.c-icon-badge`
+- `.c-input`
 - `.c-kbd`
 - `.c-live-badge`
 - `.c-loading`
 - `.c-pill`
+- `.c-query-builder`
+- `.c-search-field`
 - `.c-section-head`
 - `.c-skeleton`
 - `.c-skeleton-group`
@@ -43,4 +55,4 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `5e71aea0fac4b1ac` · last committed 2026-11-12T17:19:00+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `fe85a3673b7c33a5` · last committed 2026-11-12T21:08:41+01:00 · no URL: the project is private until v1.0.

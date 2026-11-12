@@ -5,9 +5,9 @@
   "statement": "Generated, never hand-edited. Every block, element, variant, state and token below is read from src/css by the same inventory that publishes every count in this repository, and tools/check-components.mjs fails if the shipped bytes are not that derivation. `tokens` lists the custom properties a block's rules read; a rule naming two blocks (`.c-alert, .c-callout`) is credited to both, because that is what a retune does.",
   "counts": {
     "blocks": 246,
-    "elements": 891,
+    "elements": 893,
     "variants": 114,
-    "states": 324,
+    "states": 325,
     "tokens": 2673,
     "vars": 16,
     "inputs": 19,
@@ -451,7 +451,7 @@
       "vars": [],
       "inputs": [],
       "renderedIn": {
-        "guide": false,
+        "guide": true,
         "templates": []
       }
     },
@@ -1866,7 +1866,7 @@
         "components-misc.css",
         "utilities.css"
       ],
-      "rules": 58,
+      "rules": 59,
       "elements": [
         "c-chart__axis",
         "c-chart__axis--centered",
@@ -1905,6 +1905,7 @@
       ],
       "states": [
         ":hover",
+        "[data-context]",
         "[data-cvd=\"achromatopsia\"]",
         "[data-cvd=\"deuteranopia\"]",
         "[data-cvd=\"protanopia\"]",
@@ -2165,7 +2166,7 @@
       "vars": [],
       "inputs": [],
       "renderedIn": {
-        "guide": false,
+        "guide": true,
         "templates": []
       }
     },
@@ -3375,7 +3376,7 @@
         "--dashboard-grid-gap"
       ],
       "renderedIn": {
-        "guide": false,
+        "guide": true,
         "templates": []
       }
     },
@@ -3744,8 +3745,10 @@
       "sheets": [
         "components-forms.css"
       ],
-      "rules": 1,
-      "elements": [],
+      "rules": 2,
+      "elements": [
+        "c-density-toggle__btn"
+      ],
       "variants": [],
       "states": [],
       "attributes": [
@@ -3759,7 +3762,7 @@
       "vars": [],
       "inputs": [],
       "renderedIn": {
-        "guide": false,
+        "guide": true,
         "templates": []
       }
     },
@@ -5153,7 +5156,7 @@
       "vars": [],
       "inputs": [],
       "renderedIn": {
-        "guide": false,
+        "guide": true,
         "templates": []
       }
     },
@@ -8691,8 +8694,9 @@
       "sheets": [
         "components-misc.css"
       ],
-      "rules": 6,
+      "rules": 7,
       "elements": [
+        "c-query-builder__add",
         "c-query-builder__field",
         "c-query-builder__list",
         "c-query-builder__op",
@@ -8712,7 +8716,7 @@
       "vars": [],
       "inputs": [],
       "renderedIn": {
-        "guide": false,
+        "guide": true,
         "templates": []
       }
     },
@@ -9631,7 +9635,7 @@
       "vars": [],
       "inputs": [],
       "renderedIn": {
-        "guide": false,
+        "guide": true,
         "templates": []
       }
     },
@@ -10412,7 +10416,7 @@
       "vars": [],
       "inputs": [],
       "renderedIn": {
-        "guide": false,
+        "guide": true,
         "templates": []
       }
     },

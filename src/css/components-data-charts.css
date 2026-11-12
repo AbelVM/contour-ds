@@ -256,6 +256,15 @@
     background: var(--c, var(--chart-1));
   }
 
+  /* The unfiltered distribution behind a histogram selection. Keyed on the
+     attribute, not a variant class: a `--context` class would make
+     `_applyParts` publish `part="bar--context"`, inventing a part surface for
+     a decoration. */
+  .c-chart__bar[data-context] {
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
   .c-chart__line {
     fill: none;
     stroke: var(--c, var(--chart-1));

@@ -29324,6 +29324,7 @@
       "name": "contour:brush-start",
       "keys": [
         "end",
+        "range",
         "start",
         "value"
       ]
@@ -29332,6 +29333,7 @@
       "name": "contour:brush-end",
       "keys": [
         "end",
+        "range",
         "start",
         "value"
       ]
@@ -29340,6 +29342,7 @@
       "name": "contour:brush",
       "keys": [
         "end",
+        "range",
         "start",
         "value"
       ]
@@ -29763,6 +29766,7 @@
         "label",
         "labels",
         "path",
+        "range",
         "result",
         "row",
         "rows",

@@ -118,6 +118,10 @@ Sidebar
 
 Main content area
 
+Two composition primitives for a dashboard shell. The grid lays its authored children out in a responsive set of columns; the stack is a vertical rhythm with a shared header. Both take their geometry from custom properties, so the consumer sets the column count and the gap rather than overriding the rule.
+
+The first focusable element on the page. It is visually hidden until it takes focus, then slides into view at the top-left corner, so a keyboard user can jump past the navigation without a mouse. It is positioned against its containing block rather than the viewport, which is what keeps it inside a scrolling container.
+
 A landing page is a persuasive argument. Its grammar prioritises storytelling, typography, large-scale composition, editorial rhythm, rich media, persuasive CTA and generous whitespace.
 
 The landing shell composes these blocks in a narrative sequence:
@@ -129,6 +133,8 @@ Landing pages use the fluid display scale for headlines and the fixed UI scale f
 ## Subsections
 
 - Layout primitives
+- Dashboard grid and analysis stack
+- Skip link
 - Tour
 - Resize observer
 - Style panel
@@ -143,12 +149,13 @@ Landing pages use the fluid display scale for headlines and the fixed UI scale f
 
 ## Blocks documented here
 
-41 block(s). Their facts live in `../contour.components.json`;
+44 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
 - `.c-affordance`
 - `.c-affordances`
+- `.c-analysis-stack`
 - `.c-app`
 - `.c-app-body`
 - `.c-badge`
@@ -156,6 +163,7 @@ starts disagreeing with itself.
 - `.c-btn`
 - `.c-cluster`
 - `.c-container`
+- `.c-dashboard-grid`
 - `.c-destructive-hint`
 - `.c-disclosure`
 - `.c-drag-handle`
@@ -181,6 +189,7 @@ starts disagreeing with itself.
 - `.c-section-head`
 - `.c-select`
 - `.c-sidebar`
+- `.c-skip-link`
 - `.c-stack`
 - `.c-style-panel`
 - `.c-style-switcher`
@@ -191,4 +200,4 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `5e71aea0fac4b1ac` · last committed 2026-11-12T17:19:00+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `fe85a3673b7c33a5` · last committed 2026-11-12T21:08:41+01:00 · no URL: the project is private until v1.0.

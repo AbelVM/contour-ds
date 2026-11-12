@@ -637,6 +637,27 @@ class ContourDataTable extends ContourTable {
     }
   }
   define("contour-data-table", ContourDataTable);
+
+/**
+ * Coerce a histogram bin into the published shape.
+ *
+ * A bin may arrive from the author (`series[].bins`) or be pushed by a binder
+ * (`chart.bins = …`). Both go through here so `bins` reads back the same way
+ * whichever door it came through, and a malformed entry is dropped rather than
+ * rendered as NaN geometry.
+ */
+const normalizeChartBin = (bin) => {
+  if (!bin || typeof bin !== "object") return null;
+  const x0 = Number(bin.x0);
+  const x1 = Number(bin.x1);
+  const count = Number(bin.count);
+  if (!Number.isFinite(x0) || !Number.isFinite(x1) || !Number.isFinite(count)) return null;
+  const out = { x0, x1, count };
+  const normalized = Number(bin.normalized);
+  if (Number.isFinite(normalized)) out.normalized = normalized;
+  return out;
+};
+
 /**
  * Chart: web component wrapper.
  * Attributes: `series`, `axis`, `empty`, `loading`, `error`, `retry`, `skeleton`, `zoomable`, `data-table`, `brush`, `brush-min`, `brush-max`, `brush-start`, `brush-end`.
@@ -645,6 +666,57 @@ class ContourChart extends ContourBase {
     static get updateMode() { return "keyed"; }
   static get observed() { return ["series", "axis", "color", "empty", "loading", "error", "retry", "skeleton", "zoomable", "data-table", "brush", "brush-min", "brush-max", "brush-start", "brush-end", "note", "bucket-count", "limit-values"]; }
   static get properties() { return { series: { attribute: "series" }, axis: { attribute: "axis" }, color: { attribute: "color" }, zoomable: { attribute: "zoomable", type: Boolean }, brush: { attribute: "brush", type: Boolean }, note: { attribute: "note" }, "bucket-count": { attribute: "bucket-count" }, "limit-values": { attribute: "limit-values" } }; }
+  // Bindable histogram contract (R18-68). A histogram consumer drives a widget
+  // by assigning `bins` / `backgroundData` and reading `range`; libreship's
+  // `bindHistogram` is the one this was written against, and it writes those
+  // three as JS properties, not attributes. These accessors are the widget's
+  // side of that contract: a push re-renders, and a read returns the bins
+  // actually drawn rather than the last thing someone assigned.
+  get bins() {
+    const pushed = this._pushedBins;
+    return (pushed && pushed.length ? pushed : this._renderedBins || []).map((b) => ({ ...b }));
+  }
+  set bins(value) {
+    this._pushedBins = Array.isArray(value) ? value.map(normalizeChartBin).filter(Boolean) : [];
+    this.requestRender();
+  }
+  get backgroundData() {
+    const pushed = this._pushedBackground;
+    return (pushed && pushed.length ? pushed : this._renderedBackground || []).map((b) => ({ ...b }));
+  }
+  set backgroundData(value) {
+    this._pushedBackground = Array.isArray(value) ? value.map(normalizeChartBin).filter(Boolean) : [];
+    this.requestRender();
+  }
+  // `range` is a JS property, not an attribute write: the chart observes
+  // brush/brush-start/brush-end, so a setter that called `setAttribute` on
+  // itself would fire the callback that renders it (wc-contract's re-entrancy
+  // rule). The override is consumed by render() and never reflected back into
+  // attributes, which stay the author's.
+  _showsBrush() {
+    return this.hasAttribute("brush") || this._rangeOverride !== undefined;
+  }
+  get range() {
+    const override = this._rangeOverride;
+    if (override !== undefined) return override ? override.slice() : null;
+    if (!this.hasAttribute("brush")) return null;
+    const start = parseFloat(this.getAttribute("brush-start"));
+    const end = parseFloat(this.getAttribute("brush-end"));
+    return Number.isFinite(start) && Number.isFinite(end) ? [start, end] : null;
+  }
+  set range(value) {
+    if (value == null) {
+      this._rangeOverride = null;
+      this.requestRender();
+      return;
+    }
+    const pair = Array.isArray(value) ? value : [value, value];
+    const start = Number(pair[0]);
+    const end = Number(pair[1]);
+    if (!Number.isFinite(start) || !Number.isFinite(end)) return;
+    this._rangeOverride = [start, end];
+    this.requestRender();
+  }
     _axisLabel() {
       const raw = this.getAttribute("axis");
       if (!raw) return "";
@@ -805,7 +877,13 @@ class ContourChart extends ContourBase {
       // Legend from series[].label, so a chart with named series is readable
       // without the consumer hand-building a legend.
       this._renderLegend();
-const series = this.getAttribute("series");
+// A bindable histogram may be driven by `bins` alone: a binder pushes the
+// engine's distribution rather than serialising a `series` attribute, so with
+// no series declared the pushed bins become the series this render reads.
+let series = this.getAttribute("series");
+if (!series && this._pushedBins && this._pushedBins.length) {
+  series = JSON.stringify([{ type: "histogram", bins: this._pushedBins }]);
+}
        if (series) {
          let parsed = null;
          try {
@@ -814,10 +892,16 @@ const series = this.getAttribute("series");
            plot.innerHTML = "";
            // Structured series: an item may carry `values` plus a `type`
            // ("donut" | "histogram" | "line") instead of a pre-computed `d`
-           // path. The helpers in svg.mjs turn those into geometry so a
-           // consumer does not have to hand-compute arc or bar math.
-           const hasStructured = parsed.some((s) => s && Array.isArray(s.values));
+           // path, or carry pre-binned `bins` instead of raw `values`. The
+           // helpers in svg.mjs turn those into geometry so a consumer does
+           // not have to hand-compute arc or bar math.
+           const hasStructured = parsed.some((s) => s && (Array.isArray(s.values) || Array.isArray(s.bins)));
            if (hasStructured) {
+             // Each structured render rebuilds the published bins from the
+             // series it draws; without this a chart switched from a histogram
+             // to a line keeps reporting the old distribution.
+             this._renderedBins = [];
+             this._renderedBackground = [];
               parsed.forEach((s, i) => {
                 const layerColor = this.getAttribute("color");
                 const color = layerColor || `var(--chart-${i + 1})`;
@@ -838,17 +922,53 @@ const series = this.getAttribute("series");
                     svg.appendChild(path);
                   });
                  plot.appendChild(svg);
+                } else if (s.type === "bar") {
+                  // A bar series is the histogram's geometry without the
+                  // bucketing: one rect per value, in value order. The
+                  // histogram branch bins its input into equal-width buckets
+                  // and plots the counts, which is a different question, so
+                  // `bar` cannot be folded into it. `barRects()` already
+                  // normalises the values against the plot box, so the only
+                  // difference here is that `plotVals` is the series itself.
+                  const vals = Array.isArray(s.values) ? s.values : [];
+                  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                  svg.setAttribute("viewBox", "0 0 300 120");
+                  svg.setAttribute("preserveAspectRatio", "none");
+                  svg.style.cssText = "position: absolute; inset: 0; width: 100%; height: 100%";
+                  barRects(vals).forEach((r, ri) => {
+                    const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    rect.setAttribute("class", "c-chart__bar");
+                    rect.setAttribute("data-series", String(i + 1));
+                    rect.style.setProperty("--c", color);
+                    rect.setAttribute("x", r.x);
+                    rect.setAttribute("y", r.y);
+                    rect.setAttribute("width", r.width);
+                    rect.setAttribute("height", r.height);
+                    rect.setAttribute("title", String(vals[ri]));
+                    rect.setAttribute("aria-label", "Series " + (i + 1) + ": " + String(vals[ri]));
+                    rect.setAttribute("tabindex", "0");
+                    rect.setAttribute("role", "button");
+                    rect.dataset.index = String(ri);
+                    svg.appendChild(rect);
+                  });
+                  plot.appendChild(svg);
                 } else if (s.type === "histogram") {
                   // R16-23: bucket-count / limit-values controls.
                   // `limit-values` truncates the input array; `bucket-count`
                   // bins values into equal-width buckets and renders the
-                  // per-bucket counts as bars.
+                  // per-bucket counts as bars. R18-68 adds the other door: a
+                  // series may arrive pre-binned (`bins`) or be pushed whole by
+                  // a binder, and either way the boundaries are published as
+                  // `chart.bins` so a consumer can read them back.
                   let vals = Array.isArray(s.values) ? s.values.slice() : [];
                   const limitValues = parseInt(this.getAttribute("limit-values") || "0", 10);
                   if (limitValues > 0) vals = vals.slice(0, limitValues);
                   const bucketCount = parseInt(this.getAttribute("bucket-count") || "0", 10);
+                  const pushedBins = this._pushedBins && this._pushedBins.length ? this._pushedBins : null;
+                  const declaredBins = Array.isArray(s.bins) ? s.bins.map(normalizeChartBin).filter(Boolean) : null;
+                  let bins = pushedBins || (declaredBins && declaredBins.length ? declaredBins : null);
                   let plotVals = vals;
-                  if (bucketCount > 0 && vals.length) {
+                  if (!bins && bucketCount > 0 && vals.length) {
                     const nums = vals.map((v) => Number(v) || 0);
                     const min = Math.min.apply(null, nums);
                     const max = Math.max.apply(null, nums);
@@ -860,12 +980,46 @@ const series = this.getAttribute("series");
                       buckets[bi] += 1;
                     });
                     plotVals = buckets;
+                    bins = buckets.map((count, bi) => ({ x0: min + bi * width, x1: min + (bi + 1) * width, count }));
+                  }
+                  if (bins) plotVals = bins.map((b) => b.count);
+                  // Raw values with no bucket count have no boundaries to
+                  // publish: those bars are counts at index positions, not a
+                  // distribution over a domain, so `bins` stays empty and the
+                  // consumer is told there is nothing to map a range onto.
+                  this._renderedBins = bins ? bins.slice() : [];
+                  const pushedBackground = this._pushedBackground && this._pushedBackground.length ? this._pushedBackground : null;
+                  const declaredBackground = Array.isArray(s.background) ? s.background.map(normalizeChartBin).filter(Boolean) : null;
+                  const background = pushedBackground || (declaredBackground && declaredBackground.length ? declaredBackground : []);
+                  this._renderedBackground = background.slice();
+                  const backgroundVals = background.map((b) => Number(b.count) || 0);
+                  let sharedMax = 1;
+                  if (backgroundVals.length) {
+                    plotVals.concat(backgroundVals).forEach((v) => { const n = Number(v) || 0; if (n > sharedMax) sharedMax = n; });
                   }
                   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
                   svg.setAttribute("viewBox", "0 0 300 120");
                   svg.setAttribute("preserveAspectRatio", "none");
                   svg.style.cssText = "position: absolute; inset: 0; width: 100%; height: 100%";
-                   barRects(plotVals).forEach((r, ri) => {
+                  if (backgroundVals.length) {
+                    // Context bars: the unfiltered distribution behind the
+                    // selection. Deliberately not focusable and not announced —
+                    // they are the backdrop the marks are read against, and a
+                    // second set of stops would double the tab sequence.
+                    barRects(backgroundVals, { max: sharedMax }).forEach((r) => {
+                      const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                      rect.setAttribute("class", "c-chart__bar");
+                      rect.setAttribute("data-context", "");
+                      rect.setAttribute("aria-hidden", "true");
+                      rect.style.setProperty("--c", color);
+                      rect.setAttribute("x", r.x);
+                      rect.setAttribute("y", r.y);
+                      rect.setAttribute("width", r.width);
+                      rect.setAttribute("height", r.height);
+                      svg.appendChild(rect);
+                    });
+                  }
+                  barRects(plotVals, backgroundVals.length ? { max: sharedMax } : undefined).forEach((r, ri) => {
                     const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
                     rect.setAttribute("class", "c-chart__bar");
                     rect.setAttribute("data-series", String(i + 1));
@@ -873,15 +1027,16 @@ const series = this.getAttribute("series");
                     rect.setAttribute("x", r.x);
                     rect.setAttribute("y", r.y);
                     rect.setAttribute("width", r.width);
-                     rect.setAttribute("height", r.height);
-                      rect.setAttribute("title", String(s.values[ri]));
-                      rect.setAttribute("aria-label", "Series " + (i + 1) + ": " + String(s.values[ri]));
-                      rect.setAttribute("tabindex", "0");
-                     rect.setAttribute("role", "button");
-                     rect.dataset.index = String(ri);
-                     svg.appendChild(rect);
+                    rect.setAttribute("height", r.height);
+                    const markValue = bins ? bins[ri].count : (Array.isArray(s.values) ? s.values[ri] : ri);
+                    rect.setAttribute("title", String(markValue));
+                    rect.setAttribute("aria-label", "Series " + (i + 1) + ": " + String(markValue));
+                    rect.setAttribute("tabindex", "0");
+                    rect.setAttribute("role", "button");
+                    rect.dataset.index = String(ri);
+                    svg.appendChild(rect);
                   });
-                 plot.appendChild(svg);
+                  plot.appendChild(svg);
                } else if (s.type === "scatter") {
                  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
                  svg.setAttribute("viewBox", "0 0 300 120");
@@ -1021,12 +1176,23 @@ const series = this.getAttribute("series");
             const old = this.querySelector(".c-chart__data-table");
             if (old) old.remove();
           }
-            if (this.hasAttribute("brush")) {
+            if (this._showsBrush()) {
               const brush = this.ensure("contour-brush", () => document.createElement("contour-brush"));
-              brush.setAttribute("min", this.getAttribute("brush-min") || "0");
-              brush.setAttribute("max", this.getAttribute("brush-max") || "100");
-              brush.setAttribute("start", this.getAttribute("brush-start") || this.getAttribute("brush-min") || "0");
-              brush.setAttribute("end", this.getAttribute("brush-end") || this.getAttribute("brush-max") || "100");
+              // A binned histogram's brush is in data units, so the track
+              // defaults to the bins' own extent; a consumer that supplies
+              // brush-min/brush-max still wins. Without this a binder's
+              // `range` would be positioned against a 0–100 track it never set.
+              const drawnBins = this._renderedBins || [];
+              const trackMin = this.getAttribute("brush-min") || (drawnBins.length ? String(drawnBins[0].x0) : "0");
+              const trackMax = this.getAttribute("brush-max") || (drawnBins.length ? String(drawnBins[drawnBins.length - 1].x1) : "100");
+              const override = Array.isArray(this._rangeOverride) ? this._rangeOverride : null;
+              // `range = null` means "no constraint": the brush keeps its
+              // affordance and shows the full track, rather than vanishing.
+              const cleared = this._rangeOverride === null;
+              brush.setAttribute("min", trackMin);
+              brush.setAttribute("max", trackMax);
+              brush.setAttribute("start", override ? String(override[0]) : cleared ? trackMin : (this.getAttribute("brush-start") || trackMin));
+              brush.setAttribute("end", override ? String(override[1]) : cleared ? trackMax : (this.getAttribute("brush-end") || trackMax));
               const plotEl = this.querySelector(".c-chart__plot");
               if (brush.previousElementSibling !== plotEl) this.insertBefore(brush, plotEl ? plotEl.nextSibling : null);
             } else {
@@ -1042,6 +1208,10 @@ const series = this.getAttribute("series");
               noteEl.remove();
             }
          } else {
+         // No series: nothing is drawn, so nothing is published either. A
+         // consumer reading `bins` must see the empty state, not the last one.
+         this._renderedBins = [];
+         this._renderedBackground = [];
          const plot = this.ensure(".c-chart__plot", () => { const el = document.createElement("div"); el.className = "c-chart__plot"; return el; });
          plot.innerHTML = "";
          const empty = document.createElement("div");
@@ -1087,7 +1257,14 @@ const series = this.getAttribute("series");
       legendHost.addEventListener("contour:legend-toggle", onLegendToggle);
       onDispose(this, () => legendHost.removeEventListener("contour:legend-toggle", onLegendToggle));
       this.addEventListener("contour:brush-end", (e) => {
-        if (!this.hasAttribute("brush") || !e.target || !e.target.matches("contour-brush")) return;
+        if (!this._showsBrush() || !e.target || !e.target.matches("contour-brush")) return;
+        // The brush moves its own attributes, so a chart already driven through the
+        // `range` property records the new pair here; an author-driven chart stays
+        // attribute-only and reads the brush itself. `undefined` is the switch:
+        // once the property has been written, drags keep it current.
+        if (this._rangeOverride !== undefined && e.detail && Array.isArray(e.detail.range)) {
+          this._rangeOverride = e.detail.range.slice();
+        }
         this.dispatchEvent(new CustomEvent("contour:select", {
           bubbles: true,
           composed: true,
@@ -1816,6 +1993,14 @@ define("contour-axis", ContourAxis);
 class ContourBrush extends ContourBase {
     static get observed() { return ["start", "end", "min", "max", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { start: { attribute: "start" }, end: { attribute: "end" }, min: { attribute: "min" }, max: { attribute: "max" }, src: { attribute: "src" } }; }
+    // The selection as a numeric pair in the track's own units. `start`/`end`
+    // stay the attribute strings they have always been; `range` is the shape a
+    // cross-filter consumer wants, and libreship's histogram binder reads it.
+    _rangeValue() {
+      const start = parseFloat(this.getAttribute("start"));
+      const end = parseFloat(this.getAttribute("end"));
+      return Number.isFinite(start) && Number.isFinite(end) ? [start, end] : null;
+    }
     render() {
       this.classList.add("c-brush");
       this.setAttribute("role", "group");
@@ -1857,7 +2042,7 @@ class ContourBrush extends ContourBase {
         const handle = e.target && e.target.classList && e.target.classList.contains("c-brush__handle") ? e.target : null;
         dragging = handle ? (handle.classList.contains("c-brush__handle--start") ? "start" : "end") : "move";
         try { this.setPointerCapture(e.pointerId); } catch (err) {}
-        this.dispatchEvent(new CustomEvent("contour:brush-start", { bubbles: true, composed: true, detail: { value: this.getAttribute("start"), start: this.getAttribute("start"), end: this.getAttribute("end") } }));
+        this.dispatchEvent(new CustomEvent("contour:brush-start", { bubbles: true, composed: true, detail: { value: this.getAttribute("start"), start: this.getAttribute("start"), end: this.getAttribute("end"), range: this._rangeValue() } }));
       });
       this.addEventListener("pointermove", (e) => {
         if (!dragging) return;
@@ -1890,7 +2075,7 @@ class ContourBrush extends ContourBase {
         if (eh) eh.style.insetInlineStart = (((ne - mn) / range) * 100) + "%";
         // stash pending values
         this._brushPending = { start: ns, end: ne };
-        this.dispatchEvent(new CustomEvent("contour:brush", { bubbles: true, composed: true, detail: { start: ns, end: ne, value: ns } }));
+        this.dispatchEvent(new CustomEvent("contour:brush", { bubbles: true, composed: true, detail: { start: ns, end: ne, value: ns, range: [ns, ne] } }));
       });
       this.addEventListener("pointerup", (e) => {
         if (!dragging) return;
@@ -1901,15 +2086,15 @@ class ContourBrush extends ContourBase {
           this.setAttribute("end", String(p.end));
           this._brushPending = null;
         }
-        this.dispatchEvent(new CustomEvent("contour:brush-end", { bubbles: true, composed: true, detail: { value: this.getAttribute("end"), start: this.getAttribute("start"), end: this.getAttribute("end") } }));
-        this.dispatchEvent(new CustomEvent("contour:brush", { bubbles: true, composed: true, detail: { start: this.getAttribute("start"), end: this.getAttribute("end"), value: this.getAttribute("end") } }));
+        this.dispatchEvent(new CustomEvent("contour:brush-end", { bubbles: true, composed: true, detail: { value: this.getAttribute("end"), start: this.getAttribute("start"), end: this.getAttribute("end"), range: this._rangeValue() } }));
+        this.dispatchEvent(new CustomEvent("contour:brush", { bubbles: true, composed: true, detail: { start: this.getAttribute("start"), end: this.getAttribute("end"), value: this.getAttribute("end"), range: this._rangeValue() } }));
       });
       // Keyboard: Enter/Space emits brush-start/brush-end (WC-P1-08).
       if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
       this.addEventListener("keydown", (e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          this.dispatchEvent(new CustomEvent("contour:brush-start", { bubbles: true, composed: true, detail: { value: this.getAttribute("start"), start: this.getAttribute("start"), end: this.getAttribute("end") } }));
+          this.dispatchEvent(new CustomEvent("contour:brush-start", { bubbles: true, composed: true, detail: { value: this.getAttribute("start"), start: this.getAttribute("start"), end: this.getAttribute("end"), range: this._rangeValue() } }));
         }
       });
       // Cross-filter contract (R16-16): clear-all resets brush range.

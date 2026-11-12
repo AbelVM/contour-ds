@@ -553,4 +553,7 @@ declare global { interface HTMLElementTagNameMap {
   "contour-shadow-version-banner":ContourElement;
   "contour-shadow-widget-state":ContourElement;
   }
-interface Window { Contour: ContourAPI; } }
+export type ContourShadowMarkup = Record<string, string>;
+export declare function renderShadowDSD(tag: string, attrs?: string, light?: string): string | null;
+export declare const SHADOW_MARKUP: ContourShadowMarkup;
+interface Window { Contour: ContourAPI; ContourShadowTemplates: ContourShadowMarkup; ContourShadowParts: Record<string, string[]>; ContourEvents: Record<string, { payload: string[]; composed: boolean }>; } }

@@ -3243,6 +3243,7 @@
 
   /* Density toggle (R18-34): a two-state control. */
   .c-density-toggle { display: inline-flex; }
+  .c-density-toggle__btn { flex: 0 0 auto; }
 }
 
 /* ============================================================================
@@ -6338,6 +6339,7 @@
   .c-query-builder__row { display: flex; gap: 0.5rem; align-items: center; }
   .c-query-builder__field, .c-query-builder__op { flex: 1 1 auto; }
   .c-query-builder__value { flex: 2 1 auto; }
+  .c-query-builder__add { flex: 0 0 auto; align-self: flex-end; }
 
   /* Skip link (R18-34): visually hidden until focused, then slides in. */
   .c-skip-link {
@@ -7744,6 +7746,15 @@
     block-size: var(--h, 50%);
     border-radius: var(--radius-xs) var(--radius-xs) 0 0;
     background: var(--c, var(--chart-1));
+  }
+
+  /* The unfiltered distribution behind a histogram selection. Keyed on the
+     attribute, not a variant class: a `--context` class would make
+     `_applyParts` publish `part="bar--context"`, inventing a part surface for
+     a decoration. */
+  .c-chart__bar[data-context] {
+    opacity: 0.3;
+    pointer-events: none;
   }
 
   .c-chart__line {

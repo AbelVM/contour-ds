@@ -3032,7 +3032,10 @@ class ContourTour extends ContourBase {
     render() {
       this.classList.add("c-tour");
       this.setAttribute("role", "dialog");
-      this.setAttribute("aria-modal", "true");
+      // No aria-modal: a tour is a coach mark, not a modal. It points at a
+      // target in the page (step.target), so the page behind it stays
+      // scrollable, clickable and focusable, and assistive tech must not be
+      // told the rest of the document is inert.
       this.setAttribute("aria-label", "Tour");
       const steps = this.getAttribute("steps");
       const current = Number(this.getAttribute("current") || 0);
@@ -3062,10 +3065,13 @@ class ContourTour extends ContourBase {
     enhance() {
       if (this._wiredTour) return;
       this._wiredTour = true;
-      const nextBtn = this.querySelector(".c-tour__next");
-      if (nextBtn) try { nextBtn.focus(); } catch (err) {}
-      if (!this.hasAttribute("hidden")) modalContain(this, true);
-      onDispose(this, () => { if (!this.hasAttribute("hidden")) modalContain(this, false); });
+      // A tour is a coach mark, not a modal, so it must not take the page with
+      // it. Two things used to happen here on upgrade and both took the guide
+      // offline: modalContain() locked the document scroll and inerted every
+      // sibling of the host out to the body, and focusing the Next button
+      // scrolled the viewport to the tour and stole focus from the reader.
+      // Neither has an open transition to undo it — the overlay family
+      // modalises in show() and releases in close(); the tour has neither.
       this.addEventListener("click", (e) => {
         const next = e.target && e.target.closest ? e.target.closest(".c-tour__next") : null;
         const back = e.target && e.target.closest ? e.target.closest(".c-tour__back") : null;

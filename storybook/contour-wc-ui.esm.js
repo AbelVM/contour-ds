@@ -114,9 +114,9 @@
     "contour:aggregate": { payload: ["aggregate"], composed: true },
     "contour:bearing": { payload: ["direction", "degrees"], composed: true },
     "contour:btn-group-change": { payload: ["index", "label"], composed: true },
-    "contour:brush-start": { payload: ["end", "start", "value"], composed: true },
-    "contour:brush-end": { payload: ["end", "start", "value"], composed: true },
-    "contour:brush": { payload: ["end", "start", "value"], composed: true },
+    "contour:brush-start": { payload: ["end", "range", "start", "value"], composed: true },
+    "contour:brush-end": { payload: ["end", "range", "start", "value"], composed: true },
+    "contour:brush": { payload: ["end", "range", "start", "value"], composed: true },
     "contour:change": { payload: ["checked", "color", "direction", "end", "files", "high", "index", "low", "month", "name", "paused", "query", "speed", "start", "unit", "value", "values", "year"], composed: true },
     "contour:collapse": { payload: ["collapsed"], composed: true },
       "contour:cluster-toggle": { payload: ["count", "expanded"], composed: true },
@@ -178,7 +178,7 @@
     "contour:pause": { payload: [], composed: true },
     "contour:play": { payload: [], composed: true },
     "contour:seek": { payload: ["progress", "value"], composed: true },
-    "contour:select": { payload: ["area", "col", "expanded", "href", "index", "key", "label", "labels", "path", "result", "row", "rows", "series", "value"], composed: true },
+    "contour:select": { payload: ["area", "col", "expanded", "href", "index", "key", "label", "labels", "path", "range", "result", "row", "rows", "series", "value"], composed: true },
     "contour:search": { payload: ["query"], composed: true },
     "contour:spatial-filter": { payload: ["action", "mode", "operator"], composed: true },
     "contour:split-change": { payload: ["value", "width", "height"], composed: true },
@@ -336,6 +336,7 @@
     "numbered",
     "bucket-count", "limit-values",
     "autocomplete", "levels", "submit-label",
+    "fields", "gap",
   ];
 
   /** Resolve an authored heading level while keeping the fallback valid. */
@@ -3618,12 +3619,16 @@ connectedCallback() {
     "contour-plot": "plot",
   };
 
-  if (typeof document !== "undefined") {
-    for (const [tag, blocks] of Object.entries(SHADOW_SLOTS)) {
-      for (const block of blocks) {
-        const part = SHADOW_PARTS[block] || block;
-        shadow("contour-shadow-" + block, slotWrapper(tag, block, part));
-      }
+  // The slot wrappers are recorded wherever this module runs. `shadow()` already
+  // returns before touching `document` when there is none, so the markup is
+  // available to Node/SSR either way — which is the whole point of recording it.
+  // This loop used to sit inside the browser guard, so `renderShadowDSD` could
+  // only resolve the 50 hand-written wrappers in Node and returned null for the
+  // 121 slot wrappers, i.e. it failed in the one environment it exists for.
+  for (const [tag, blocks] of Object.entries(SHADOW_SLOTS)) {
+    for (const block of blocks) {
+      const part = SHADOW_PARTS[block] || block;
+      shadow("contour-shadow-" + block, slotWrapper(tag, block, part));
     }
   }
 
@@ -6822,7 +6827,10 @@ class ContourTour extends ContourBase {
     render() {
       this.classList.add("c-tour");
       this.setAttribute("role", "dialog");
-      this.setAttribute("aria-modal", "true");
+      // No aria-modal: a tour is a coach mark, not a modal. It points at a
+      // target in the page (step.target), so the page behind it stays
+      // scrollable, clickable and focusable, and assistive tech must not be
+      // told the rest of the document is inert.
       this.setAttribute("aria-label", "Tour");
       const steps = this.getAttribute("steps");
       const current = Number(this.getAttribute("current") || 0);
@@ -6852,10 +6860,13 @@ class ContourTour extends ContourBase {
     enhance() {
       if (this._wiredTour) return;
       this._wiredTour = true;
-      const nextBtn = this.querySelector(".c-tour__next");
-      if (nextBtn) try { nextBtn.focus(); } catch (err) {}
-      if (!this.hasAttribute("hidden")) modalContain(this, true);
-      onDispose(this, () => { if (!this.hasAttribute("hidden")) modalContain(this, false); });
+      // A tour is a coach mark, not a modal, so it must not take the page with
+      // it. Two things used to happen here on upgrade and both took the guide
+      // offline: modalContain() locked the document scroll and inerted every
+      // sibling of the host out to the body, and focusing the Next button
+      // scrolled the viewport to the tour and stole focus from the reader.
+      // Neither has an open transition to undo it — the overlay family
+      // modalises in show() and releases in close(); the tour has neither.
       this.addEventListener("click", (e) => {
         const next = e.target && e.target.closest ? e.target.closest(".c-tour__next") : null;
         const back = e.target && e.target.closest ? e.target.closest(".c-tour__back") : null;
