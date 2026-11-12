@@ -627,8 +627,7 @@ class ContourRange extends ContourBase {
 /**
  * Switch: a `role="switch"` checkbox control with label, required, disabled,
  * error and help states. Form associated; emits `contour:change` on toggle.
- * Renders a `c-switch__track` element after the input for the sheet's track
- * styling.
+ * The input's ::after draws the track; there is no separate track element.
  */
 class ContourSwitch extends ContourBase {
     static get observed() { return ["label", "required", "checked", "disabled", "error", "help"]; }
@@ -655,17 +654,11 @@ class ContourSwitch extends ContourBase {
         msg.classList.toggle("c-switch__message--error", !!err);
       } else if (msg) { msg.remove(); }
       if (err) this.classList.add("is-error"); else this.classList.remove("is-error");
-      // Ensure track element follows the input (CSS: input + track).
-      if (!input.nextElementSibling || !input.nextElementSibling.classList.contains("c-switch__track")) {
-        const track = document.createElement("span");
-        track.className = "c-switch__track";
-        track.setAttribute("aria-hidden", "true");
-        if (input.nextSibling) this.insertBefore(track, input.nextSibling);
-        else this.appendChild(track);
-      }
+      // The input's ::after draws the track; a separate .c-switch__track span
+      // would be a second, unstyled element the CSS never reaches (R18-41).
       if (label) {
         input.setAttribute("aria-label", label);
-        const txt = this.querySelector(":scope > span:not([class]):not(.c-switch__track)") || (() => { const el = document.createElement("span"); this.appendChild(el); return el; })();
+        const txt = this.querySelector(":scope > span:not([class])") || (() => { const el = document.createElement("span"); this.appendChild(el); return el; })();
         txt.textContent = label;
       }
       if (!input.hasAttribute("aria-label")) input.setAttribute("aria-label", "Switch");
@@ -705,9 +698,9 @@ class ContourSwitch extends ContourBase {
   define("contour-switch", ContourSwitch);
 /**
  * Check: a checkbox (or `type="radio"` when `type` is set) with label, name,
- * value, required, checked, disabled, error and help states. Renders a
- * `c-check__box` element after the input. Form associated; emits
- * `contour:change` on toggle.
+ * value, required, checked, disabled, error and help states. The input's
+ * ::after draws the box; there is no separate box element. Form associated;
+ * emits `contour:change` on toggle.
  */
 class ContourCheck extends ContourBase {
     static get observed() { return ["label", "name", "value", "required", "type", "checked", "disabled", "error", "help"]; }
@@ -718,17 +711,11 @@ class ContourCheck extends ContourBase {
       const label = this.getAttribute("label");
        const input = this.ensure("input.c-check__input", () => { const el = document.createElement("input"); el.className = "c-check__input"; el.type = this.getAttribute("type") === "radio" ? "radio" : "checkbox"; return el; });
        input.checked = this.hasAttribute("checked");
-      // Ensure box element follows the input (CSS: input + box).
-      if (!input.nextElementSibling || !input.nextElementSibling.classList.contains("c-check__box")) {
-        const box = document.createElement("span");
-        box.className = "c-check__box";
-        box.setAttribute("aria-hidden", "true");
-        if (input.nextSibling) this.insertBefore(box, input.nextSibling);
-        else this.appendChild(box);
-      }
+      // The input's ::after draws the box; a separate .c-check__box span would
+      // be a second, unstyled element the CSS never reaches (R18-41).
       if (label) {
         input.setAttribute("aria-label", label);
-        const txt = this.querySelector(":scope > span:not([class]):not(.c-check__box)") || (() => { const el = document.createElement("span"); this.appendChild(el); return el; })();
+        const txt = this.querySelector(":scope > span:not([class])") || (() => { const el = document.createElement("span"); this.appendChild(el); return el; })();
         txt.textContent = label;
       }
       if (!input.hasAttribute("aria-label")) input.setAttribute("aria-label", "Checkbox");
