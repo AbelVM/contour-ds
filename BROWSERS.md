@@ -18,11 +18,17 @@ and degrade gracefully (no custom elements upgrade, native controls remain).
 | `hidden="until-found"` | yes | no | no | boolean hidden (content hidden) |
 | `content-visibility: auto` | yes | yes | yes (18+) | ignored; full render |
 | `:has()` | yes | yes | yes | ignored |
+| `@scope` | yes (118+) | yes (128+) | yes (17.4+) | **no flat fallback** — the four scoped blocks (`.c-card`, `.c-toc`, `.c-callout`, `.c-file-tree`) lose their element rules; the block still renders, unstyled |
+| Container queries (`@container`) | yes (105+) | yes (110+) | yes (16+) | ignored; the component renders at its default (wide) layout |
+| Same-document View Transitions | yes (111+) | no | yes (18+) | plain swap; the tab panel changes without a cross-fade |
+| `:state()` (custom states) | yes | yes (126+) | yes (17.4+) | the custom state does not match; the styled state is absent |
 
 ## Test coverage
 
 - `tools/audit/wc-contract.mjs` runs on Chromium in CI.
-- Firefox and WebKit runs are tracked as R12-28 and are not yet in CI.
+- `tools/audit/contrast-and-aria-cross-browser.mjs` runs the contrast and
+  document-hygiene contract on Chromium, Firefox and WebKit, and is wired into
+  `tools/doctor.mjs` (`contrast-cross-browser`).
 - Manual smoke: guide in both themes at 1440 px and 390 px on each engine.
 
 ## Known gaps
