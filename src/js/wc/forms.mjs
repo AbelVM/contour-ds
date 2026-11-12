@@ -471,9 +471,9 @@ class ContourForm extends ContourBase {
  * filled track.
  */
 class ContourRange extends ContourBase {
-    static get observed() { return ["min", "max", "value", "low", "high", "range", "sparkline", "label", "disabled", "error", "help", "name"]; }
+    static get observed() { return ["min", "max", "value", "low", "high", "range", "sparkline", "label", "disabled", "error", "help", "name", "step"]; }
     static get formAssociated() { return true; }
-    static get properties() { return { min: { attribute: "min" }, max: { attribute: "max" }, value: { attribute: "value" }, label: { attribute: "label" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" }, name: { attribute: "name" } }; }
+    static get properties() { return { min: { attribute: "min" }, max: { attribute: "max" }, value: { attribute: "value" }, label: { attribute: "label" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" }, name: { attribute: "name" }, step: { attribute: "step" } }; }
      render() {
        this.classList.add("c-range");
        const min = this.getAttribute("min") || "0";
@@ -498,6 +498,9 @@ class ContourRange extends ContourBase {
          if (!highInput) { highInput = document.createElement("input"); highInput.type = "range"; highInput.className = "c-range c-range__high"; highInput.setAttribute("part", "input"); this.appendChild(highInput); }
          lowInput.min = min; lowInput.max = max;
          highInput.min = min; highInput.max = max;
+         const step = this.getAttribute("step");
+         if (step) { lowInput.step = step; highInput.step = step; } else { lowInput.removeAttribute("step"); highInput.removeAttribute("step"); }
+         if (this.hasAttribute("disabled")) { lowInput.setAttribute("disabled", ""); highInput.setAttribute("disabled", ""); } else { lowInput.removeAttribute("disabled"); highInput.removeAttribute("disabled"); }
          const lowVal = this.getAttribute("low") || min;
          const highVal = this.getAttribute("high") || max;
          if (this._rangeUserLow !== null && this._rangeAttrLowAtDirty === (this.getAttribute("low") || min)) lowInput.value = this._rangeUserLow;
@@ -528,6 +531,9 @@ class ContourRange extends ContourBase {
          input.type = "range";
          input.min = min;
          input.max = max;
+         const step = this.getAttribute("step");
+         if (step) input.step = step; else input.removeAttribute("step");
+         if (this.hasAttribute("disabled")) input.setAttribute("disabled", ""); else input.removeAttribute("disabled");
          const attrVal = this.getAttribute("value") || "50";
          if (this._rangeUserValue !== null && this._rangeAttrAtDirty === (this.getAttribute("value") || "50")) {
            input.value = this._rangeUserValue;
@@ -687,6 +693,7 @@ class ContourSwitch extends ContourBase {
         if (!inp || e.target !== inp || !this._internals) return;
         inp.setAttribute("aria-checked", String(inp.checked));
         this._setCustomState("data-checked", inp.checked);
+        this.toggleAttribute("checked", inp.checked);
         this._internals.setFormValue(inp.checked ? (inp.value || "on") : null);
         this._emitForm("contour:change");
         this._syncValidity(this.hasAttribute("required") && !inp.checked);
@@ -760,6 +767,7 @@ class ContourCheck extends ContourBase {
         const inp = this.querySelector("input");
         if (!inp || e.target !== inp || !this._internals) return;
         this._setCustomState("data-checked", inp.checked);
+        this.toggleAttribute("checked", inp.checked);
         this._internals.setFormValue(inp.checked ? (inp.value || "on") : null);
         this._emitForm("contour:change");
         this._syncValidity(this.hasAttribute("required") && !inp.checked);

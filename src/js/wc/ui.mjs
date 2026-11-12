@@ -1727,7 +1727,12 @@ class ContourDatePicker extends ContourBase {
       const type = this.hasAttribute("time") ? "datetime-local" : "date";
       const configure = (control, value, name) => {
         control.type = type;
-        control.value = value || "";
+        // Don't clobber a value the user is typing: only write when the control
+        // is not focused and the incoming value differs. The old code set
+        // control.value on every render, so a typed date reverted on any
+        // attribute change.
+        const next = value || "";
+        if (document.activeElement !== control && control.value !== next) control.value = next;
         control.setAttribute("aria-label", name);
         if (this.hasAttribute("min")) control.min = this.getAttribute("min"); else control.removeAttribute("min");
         if (this.hasAttribute("max")) control.max = this.getAttribute("max"); else control.removeAttribute("max");
