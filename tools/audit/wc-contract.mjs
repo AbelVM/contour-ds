@@ -762,6 +762,20 @@ try {
               renderAllBad.push(`${n}: input has no part="input" (got ${JSON.stringify(input.getAttribute("part"))})`);
             }
           }
+          // Default property reflection (R18-54): a component that observes an
+          // attribute but declares no properties() entry must still expose a
+          // camelCase accessor that writes the attribute. contour-table declares
+          // pageSize as a Number, so the getter returns a number; a default
+          // (undeclared) reflection returns a string. Both must round-trip.
+          if (n === "contour-table") {
+            host.pageSize = 25;
+            const reflected = host.getAttribute("page-size") === "25";
+            const readBack = Number(host.pageSize) === 25;
+            const dbg = `attr=${host.getAttribute("page-size")} read=${host.pageSize} ctor=${host.constructor.name} desc=${!!Object.getOwnPropertyDescriptor(host.constructor.prototype, "pageSize")} installed=${host.constructor._propsInstalled}`;
+            host.removeAttribute("page-size");
+            if (!reflected || !readBack)
+              renderAllBad.push(`${n}: default reflection broken (${dbg})`);
+          }
           host.remove();
         }
         console.error = origError;
