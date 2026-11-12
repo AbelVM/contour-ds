@@ -122,8 +122,9 @@ for (const f of files) {
   const filePlayCount = hasPlay ? storyNames.length : 0;
   playCount += filePlayCount;
 
-  // invented tags check
-  const tagsInFile = [...src.matchAll(/contour-[a-z][a-z0-9-]*/g)].map((m) => m[0]);
+  // invented tags check. The tag must start at a word boundary: `c-contour-plot`
+  // contains the substring `contour-plot`, but that is a class name, not a tag.
+  const tagsInFile = [...src.matchAll(/(?<![\w-])contour-[a-z][a-z0-9-]*/g)].map((m) => m[0]);
   for (const t of tagsInFile) {
     // contour-ds is a package name, not a custom element — ignore in code snippets
     if (t === "contour-ds") continue;
@@ -164,7 +165,7 @@ for (const f of files) {
         i++;
       }
       if (keys.length) {
-        const tagsInFile = [...new Set([...src.matchAll(/contour-[a-z][a-z0-9-]*/g)].map((m) => m[0]))];
+        const tagsInFile = [...new Set([...src.matchAll(/(?<![\w-])contour-[a-z][a-z0-9-]*/g)].map((m) => m[0]))];
         const allowed = new Set();
         for (const t of tagsInFile) for (const a of (observedByTag[t] || [])) allowed.add(a);
         for (const k of keys) {
