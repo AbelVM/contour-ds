@@ -206,6 +206,24 @@ export function RouteButton() {
 }
 ```
 
+**React 19 vs React 18 and custom elements.** React 19 sets a *property* on a
+custom element when one exists (so `<contour-switch value="x">` writes
+`el.value = "x"`), while React 18 only sets *attributes* (so the same JSX writes
+`value="x"` and a component that reads a property, not an attribute, sees
+nothing). Contour components read attributes and reflect properties, so both
+work — but on React 18 a component that only exposes a property (no attribute)
+needs a `ref`:
+
+```jsx
+// React 18: set a property the attribute path cannot reach
+const ref = useRef(null);
+useEffect(() => { if (ref.current) ref.current.value = "x"; }, []);
+return <contour-switch ref={ref} />;
+```
+
+The typed `contour.react.d.ts` augmentation (`import "contour-ds/react"`) types
+every `<contour-*>` tag, so JSX checks the attributes and properties you pass.
+
 ### Vue / Nuxt
 
 ```js
