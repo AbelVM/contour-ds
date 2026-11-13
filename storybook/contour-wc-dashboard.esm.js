@@ -337,6 +337,7 @@
     "bucket-count", "limit-values",
     "autocomplete", "levels", "submit-label",
     "fields", "gap",
+    "controls",
   ];
 
   /** Resolve an authored heading level while keeping the fallback valid. */
@@ -3483,10 +3484,21 @@ export function wireStates(host) {
           }
         }
       });
-      // ARIA: alert elements get live region roles
+      // ARIA: alert elements are live regions, and the variant sets the volume.
+      // A warning/danger interrupts; info/success/accent speaks politely. An
+      // information alert that asserts itself on load talks over the reader.
       root.querySelectorAll(".c-alert").forEach((el) => {
-        if (!el.hasAttribute("role")) el.setAttribute("role", "alert");
-        if (!el.hasAttribute("aria-live")) el.setAttribute("aria-live", "assertive");
+        const urgent = el.classList.contains("c-alert--warning") || el.classList.contains("c-alert--danger");
+        const role = urgent ? "alert" : "status";
+        const live = urgent ? "assertive" : "polite";
+        if (!el.hasAttribute("role") || el.dataset.contourAutoRole) {
+          el.setAttribute("role", role);
+          el.dataset.contourAutoRole = role;
+        }
+        if (!el.hasAttribute("aria-live") || el.dataset.contourAutoLive) {
+          el.setAttribute("aria-live", live);
+          el.dataset.contourAutoLive = live;
+        }
       });
       // ARIA: required form fields
       root.querySelectorAll("input[required], textarea[required], select[required]").forEach((el) => {
@@ -3541,6 +3553,22 @@ connectedCallback() {
         }
       }
       el.className = (this._shadowBase + " " + mods.join(" ")).trim();
+      // An alert's live region follows its variant, and rewriting the class above
+      // is the only signal a variant change produces. `dataset.contourAutoRole`
+      // marks a role this code set, so an authored one is never overwritten.
+      if (el.classList.contains("c-alert")) {
+        const urgent = el.classList.contains("c-alert--warning") || el.classList.contains("c-alert--danger");
+        const role = urgent ? "alert" : "status";
+        const live = urgent ? "assertive" : "polite";
+        if (!el.hasAttribute("role") || el.dataset.contourAutoRole) {
+          el.setAttribute("role", role);
+          el.dataset.contourAutoRole = role;
+        }
+        if (!el.hasAttribute("aria-live") || el.dataset.contourAutoLive) {
+          el.setAttribute("aria-live", live);
+          el.dataset.contourAutoLive = live;
+        }
+      }
     }
   }
 
@@ -3947,11 +3975,11 @@ class ContourKpi extends ContourBase {
 define("contour-kpi", ContourKpi);
 /**
  * Table: web component wrapper.
- * Attributes: `columns`, `rows`, `page`, `page-size`, `sort`, `sort-dir`, `virtual`, `empty`, `loading`, `error`, `retry`, `skeleton`, `persist`.
+ * Attributes: `columns`, `rows`, `page`, `page-size`, `sort`, `sort-dir`, `virtual`, `title`, `empty`, `loading`, `error`, `retry`, `skeleton`, `persist`.
  */
 class ContourTable extends ContourBase {
     static get updateMode() { return "keyed"; }
-    static get observed() { return ["columns", "rows", "page", "page-size", "sort", "sort-dir", "virtual", "empty", "loading", "error", "retry", "skeleton", "persist"]; }
+    static get observed() { return ["columns", "rows", "page", "page-size", "sort", "sort-dir", "virtual", "title", "empty", "loading", "error", "retry", "skeleton", "persist"]; }
     static get properties() { return { columns: { attribute: "columns" }, rows: { attribute: "rows" }, page: { attribute: "page", type: Number }, pageSize: { attribute: "page-size", type: Number } }; }
     _cellValue(cell) {
       if (cell === null || cell === undefined) return "";
@@ -3967,8 +3995,9 @@ class ContourTable extends ContourBase {
       return String(av).localeCompare(String(bv), undefined, { numeric: true });
     }
     render() {
-      this.setAttribute("role", "region");
-      this.setAttribute("aria-label", "Table");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "region");
+      // An authored label names the table; "Table" is the fallback.
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("title") || "Table");
       wireStates(this);
       loadRemote(this, "rows");
       if (renderStates(this, "table")) return;
@@ -4062,6 +4091,14 @@ class ContourTable extends ContourBase {
             : (() => {
                 const t = document.createElement("table");
                 t.className = "c-table";
+                // A table needs a caption: the host's region label is outside the
+                // table, so a reader who enters it hears column headers with no
+                // statement of what the table is. Visually hidden keeps the block
+                // layout unchanged.
+                const captionEl = document.createElement("caption");
+                captionEl.className = "visually-hidden";
+                captionEl.textContent = this.getAttribute("title") || this.getAttribute("aria-label") || "Table";
+                t.appendChild(captionEl);
                 const thead = document.createElement("thead");
                 const tr = document.createElement("tr");
                 cols.forEach((c, i) => {
@@ -5324,8 +5361,8 @@ class ContourStreamingChart extends ContourBase {
     static get properties() { return { line: { attribute: "line" }, dot: { attribute: "dot" }, interval: { attribute: "interval", type: Number }, pause: { attribute: "pause", type: Boolean }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-streaming-chart");
-      this.setAttribute("role", "img");
-      this.setAttribute("aria-label", "Streaming chart");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "img");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Streaming chart");
       if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
       wireStates(this);
       loadRemote(this, "line");
@@ -5739,8 +5776,8 @@ class ContourAxis extends ContourBase {
     static get properties() { return { orientation: { attribute: "orientation" }, values: { attribute: "values" }, ticks: { attribute: "ticks" }, format: { attribute: "format" }, locale: { attribute: "locale" }, padding: { attribute: "padding" }, min: { attribute: "min" }, max: { attribute: "max" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-axis");
-      this.setAttribute("role", "img");
-      this.setAttribute("aria-label", "Axis");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "img");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Axis");
       const orientation = this.getAttribute("orientation") || "horizontal";
       this.classList.toggle("c-axis--horizontal", orientation === "horizontal");
       this.classList.toggle("c-axis--vertical", orientation === "vertical");
@@ -5913,8 +5950,10 @@ class ContourStackedBar extends ContourBase {
     static get properties() { return { segments: { attribute: "segments" }, values: { attribute: "values" }, colors: { attribute: "colors" }, src: { attribute: "src" }, normalize: { attribute: "normalize" } }; }
     render() {
       this.classList.add("c-stacked-bar");
-      this.setAttribute("role", "img");
-      this.setAttribute("aria-label", "Stacked bar");
+      // The bar carries a listbox of selectable segments; role=img would make
+      // every one of them presentational. A named group exposes them.
+      if (!this.hasAttribute("role")) this.setAttribute("role", "group");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Stacked bar");
       wireStates(this);
       loadRemote(this, ["segments", "values"]);
       if (renderStates(this, "stacked-bar")) return;
@@ -6098,8 +6137,10 @@ class ContourDonut extends ContourBase {
     static get properties() { return { value: { attribute: "value" }, values: { attribute: "values" }, items: { attribute: "items" }, label: { attribute: "label" }, color: { attribute: "color" }, src: { attribute: "src" }, note: { attribute: "note" } }; }
     render() {
       this.classList.add("c-donut");
-      this.setAttribute("role", "img");
-      this.setAttribute("aria-label", "Donut chart");
+      // The donut renders a list of segments beside the ring; an image role
+      // would flatten that list out of the accessibility tree.
+      if (!this.hasAttribute("role")) this.setAttribute("role", "group");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Donut chart");
       wireStates(this);
       loadRemote(this, ["items", "values"]);
       if (renderStates(this, "donut")) return;
@@ -6196,12 +6237,14 @@ define("contour-donut", ContourDonut);
  * Attributes: `values`, `points`, `empty`, `loading`, `error`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`, `annotations`.
  */
 class ContourTimeSeries extends ContourBase {
-    static get observed() { return ["values", "points", "series", "style", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "annotations", "note"]; }
+    static get observed() { return ["values", "points", "series", "style", "title", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "annotations", "note"]; }
     static get properties() { return { values: { attribute: "values" }, points: { attribute: "points" }, series: { attribute: "series" }, style: { attribute: "style" }, src: { attribute: "src" }, annotations: { attribute: "annotations" }, note: { attribute: "note" } }; }
     render() {
       this.classList.add("c-time-series");
-      this.setAttribute("role", "img");
-      this.setAttribute("aria-label", "Time series");
+      // Points and bars are focusable marks (roving tabindex below); role=img
+      // hides them. A named group keeps the name and exposes the marks.
+      if (!this.hasAttribute("role")) this.setAttribute("role", "group");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("title") || "Time series");
       wireStates(this);
       loadRemote(this, ["values", "points", "series"]);
       if (renderStates(this, "time-series")) return;
@@ -6281,7 +6324,9 @@ class ContourTimeSeries extends ContourBase {
             bar.style.blockSize = ((v / max) * 100) + "%";
             bar.style.background = color;
             bar.setAttribute("title", String(v));
-            bar.setAttribute("role", "img");
+            // A clickable, focusable mark is a button, not an image; the point
+            // marks above already carry this role.
+            bar.setAttribute("role", "button");
             bar.setAttribute("aria-label", label + ": " + String(v));
             bar.setAttribute("tabindex", i === 0 && si === 0 ? "0" : "-1");
             plot.appendChild(bar);
@@ -7826,9 +7871,9 @@ class ContourContourPlot extends ContourBase {
     static get properties() { return { values: { attribute: "values" }, levels: { attribute: "levels" }, label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-contour-plot");
-      this.setAttribute("role", "img");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "img");
       const label = this.getAttribute("label");
-      this.setAttribute("aria-label", label || "Contour plot");
+      if (label || !this.hasAttribute("aria-label")) this.setAttribute("aria-label", label || "Contour plot");
       const valuesAttr = this.getAttribute("values");
       const levelsAttr = this.getAttribute("levels");
       let grid = null;
@@ -8161,35 +8206,39 @@ class ContourDashToolbar extends ContourBase {
   }
   define("contour-dash-toolbar", ContourDashToolbar);
 class ContourDashKpiRow extends ContourBase {
-    static get observed() { return ["items"]; }
+    static get observed() { return ["items", "title"]; }
     static get properties() { return { items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-dash-kpi-row");
-      this.setAttribute("role", "group");
-      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "KPI row");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "group");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("title") || "KPI row");
       // Drop previously generated kpis so re-render doesn't stack.
       Array.from(this.querySelectorAll("contour-kpi")).forEach((n) => n.remove());
       const items = this.getAttribute("items");
       let parsed = null;
       if (items) { try { parsed = JSON.parse(items); } catch (e) { parsed = null; } }
       if (Array.isArray(parsed) && parsed.length) {
-        parsed.forEach((it) => {
+        // The row is a projection of the KPI API, not a two-attribute subset: a
+        // dashboard cannot read delta/direction/note/unit through the row if the
+        // row drops them here.
+        const passthrough = ["value", "label", "delta", "direction", "note", "unit", "format", "variant", "thresholds", "threshold", "sparkline", "polarity", "locale"];
+        parsed.forEach((it, i) => {
           const k = document.createElement("contour-kpi");
           if (typeof it === "object" && it !== null) {
-            if (it.value !== undefined) k.setAttribute("value", String(it.value));
-            if (it.label !== undefined) k.setAttribute("label", String(it.label));
+            for (const key of passthrough) {
+              if (it[key] !== undefined && it[key] !== null) k.setAttribute(key, String(it[key]));
+            }
           } else {
             k.setAttribute("value", String(it));
           }
+          // One tab stop for the row; arrow keys rove. The keydown handler below
+          // needs a tabbable item or document.activeElement is never in the list.
+          k.setAttribute("tabindex", i === 0 ? "0" : "-1");
           this.appendChild(k);
         });
-      } else if (!this.querySelector("contour-kpi")) {
-        // Fallback: keep a single placeholder kpi only when no items provided.
-        const k = document.createElement("contour-kpi");
-        k.setAttribute("value", "0");
-        k.setAttribute("label", "KPI");
-        this.appendChild(k);
       }
+      // No placeholder: an empty row renders the author's own children or
+      // nothing. A generated "KPI 0" is invented data.
     }
     enhance() {
       if (this._wiredDashKpiRow) return;
@@ -8205,7 +8254,17 @@ class ContourDashKpiRow extends ContourBase {
       this.addEventListener("keydown", (e) => {
         const kpis = Array.from(this.querySelectorAll("contour-kpi"));
         if (!kpis.length) return;
-        navKey(e, kpis, { wrap: true, homeEnd: true, onNavigate: (i) => this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index: i } })), onKey: () => {} });
+        navKey(e, kpis, {
+          wrap: true,
+          homeEnd: true,
+          onNavigate: (i) => {
+            kpis.forEach((k, j) => k.setAttribute("tabindex", j === i ? "0" : "-1"));
+            this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index: i } }));
+          },
+          onKey: (key, i) => {
+            if (key === "Enter" || key === " ") this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index: i } }));
+          },
+        });
       });
     }
   }
@@ -8348,11 +8407,11 @@ class ContourProvenance extends ContourBase {
   }
   define("contour-provenance", ContourProvenance);
 class ContourFeatureInspector extends ContourBase {
-    static get observed() { return ["title", "open"]; }
-    static get properties() { return { title: { attribute: "title" }, open: { attribute: "open", type: Boolean } }; }
+    static get observed() { return ["title", "open", "data", "actions"]; }
+    static get properties() { return { title: { attribute: "title" }, open: { attribute: "open", type: Boolean }, data: { attribute: "data" } }; }
     render() {
       this.classList.add("c-feature-inspector");
-      this.setAttribute("role", "region");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "region");
       if (this.getAttribute("title")) this.setAttribute("aria-label", this.getAttribute("title"));
       if (this.hasAttribute("open")) this.setAttribute("open", "");
       else this.removeAttribute("open");
@@ -8382,6 +8441,28 @@ class ContourFeatureInspector extends ContourBase {
         } catch (e) { warnBadJson(this, "attribute", e); }
       }
       const actions = this.ensure(".c-feature-inspector__actions", () => { const el = document.createElement("div"); el.className = "c-feature-inspector__actions"; return el; });
+      // The actions container used to be created and left empty, so the
+      // `contour:inspect-action` event it forwards could never fire from the
+      // component's own UI. `actions` (a JSON array of labels or {label,value})
+      // fills it; authored buttons still work.
+      Array.from(actions.querySelectorAll("[data-inspect-action]")).forEach((n) => n.remove());
+      const actionsAttr = this.getAttribute("actions");
+      if (actionsAttr) {
+        try {
+          const list = JSON.parse(actionsAttr);
+          if (Array.isArray(list)) {
+            list.forEach((it) => {
+              const btn = document.createElement("button");
+              btn.type = "button";
+              btn.className = "c-btn c-btn--sm c-feature-inspector__action";
+              btn.setAttribute("data-inspect-action", "");
+              btn.textContent = typeof it === "string" ? it : (it && (it.label || it.action)) || "";
+              if (it && typeof it === "object" && it.value !== undefined) btn.setAttribute("data-action", String(it.value));
+              actions.appendChild(btn);
+            });
+          }
+        } catch (e) { warnBadJson(this, "attribute", e); }
+      }
     }
     enhance() {
       if (this._wiredFeatureInspector) return;

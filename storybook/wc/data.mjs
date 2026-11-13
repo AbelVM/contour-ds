@@ -152,11 +152,11 @@ class ContourKpi extends ContourBase {
 define("contour-kpi", ContourKpi);
 /**
  * Table: web component wrapper.
- * Attributes: `columns`, `rows`, `page`, `page-size`, `sort`, `sort-dir`, `virtual`, `empty`, `loading`, `error`, `retry`, `skeleton`, `persist`.
+ * Attributes: `columns`, `rows`, `page`, `page-size`, `sort`, `sort-dir`, `virtual`, `title`, `empty`, `loading`, `error`, `retry`, `skeleton`, `persist`.
  */
 class ContourTable extends ContourBase {
     static get updateMode() { return "keyed"; }
-    static get observed() { return ["columns", "rows", "page", "page-size", "sort", "sort-dir", "virtual", "empty", "loading", "error", "retry", "skeleton", "persist"]; }
+    static get observed() { return ["columns", "rows", "page", "page-size", "sort", "sort-dir", "virtual", "title", "empty", "loading", "error", "retry", "skeleton", "persist"]; }
     static get properties() { return { columns: { attribute: "columns" }, rows: { attribute: "rows" }, page: { attribute: "page", type: Number }, pageSize: { attribute: "page-size", type: Number } }; }
     _cellValue(cell) {
       if (cell === null || cell === undefined) return "";
@@ -172,8 +172,9 @@ class ContourTable extends ContourBase {
       return String(av).localeCompare(String(bv), undefined, { numeric: true });
     }
     render() {
-      this.setAttribute("role", "region");
-      this.setAttribute("aria-label", "Table");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "region");
+      // An authored label names the table; "Table" is the fallback.
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("title") || "Table");
       wireStates(this);
       loadRemote(this, "rows");
       if (renderStates(this, "table")) return;
@@ -267,6 +268,14 @@ class ContourTable extends ContourBase {
             : (() => {
                 const t = document.createElement("table");
                 t.className = "c-table";
+                // A table needs a caption: the host's region label is outside the
+                // table, so a reader who enters it hears column headers with no
+                // statement of what the table is. Visually hidden keeps the block
+                // layout unchanged.
+                const captionEl = document.createElement("caption");
+                captionEl.className = "visually-hidden";
+                captionEl.textContent = this.getAttribute("title") || this.getAttribute("aria-label") || "Table";
+                t.appendChild(captionEl);
                 const thead = document.createElement("thead");
                 const tr = document.createElement("tr");
                 cols.forEach((c, i) => {
@@ -1529,8 +1538,8 @@ class ContourStreamingChart extends ContourBase {
     static get properties() { return { line: { attribute: "line" }, dot: { attribute: "dot" }, interval: { attribute: "interval", type: Number }, pause: { attribute: "pause", type: Boolean }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-streaming-chart");
-      this.setAttribute("role", "img");
-      this.setAttribute("aria-label", "Streaming chart");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "img");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Streaming chart");
       if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
       wireStates(this);
       loadRemote(this, "line");
@@ -1944,8 +1953,8 @@ class ContourAxis extends ContourBase {
     static get properties() { return { orientation: { attribute: "orientation" }, values: { attribute: "values" }, ticks: { attribute: "ticks" }, format: { attribute: "format" }, locale: { attribute: "locale" }, padding: { attribute: "padding" }, min: { attribute: "min" }, max: { attribute: "max" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-axis");
-      this.setAttribute("role", "img");
-      this.setAttribute("aria-label", "Axis");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "img");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Axis");
       const orientation = this.getAttribute("orientation") || "horizontal";
       this.classList.toggle("c-axis--horizontal", orientation === "horizontal");
       this.classList.toggle("c-axis--vertical", orientation === "vertical");
@@ -2118,8 +2127,10 @@ class ContourStackedBar extends ContourBase {
     static get properties() { return { segments: { attribute: "segments" }, values: { attribute: "values" }, colors: { attribute: "colors" }, src: { attribute: "src" }, normalize: { attribute: "normalize" } }; }
     render() {
       this.classList.add("c-stacked-bar");
-      this.setAttribute("role", "img");
-      this.setAttribute("aria-label", "Stacked bar");
+      // The bar carries a listbox of selectable segments; role=img would make
+      // every one of them presentational. A named group exposes them.
+      if (!this.hasAttribute("role")) this.setAttribute("role", "group");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Stacked bar");
       wireStates(this);
       loadRemote(this, ["segments", "values"]);
       if (renderStates(this, "stacked-bar")) return;
@@ -2303,8 +2314,10 @@ class ContourDonut extends ContourBase {
     static get properties() { return { value: { attribute: "value" }, values: { attribute: "values" }, items: { attribute: "items" }, label: { attribute: "label" }, color: { attribute: "color" }, src: { attribute: "src" }, note: { attribute: "note" } }; }
     render() {
       this.classList.add("c-donut");
-      this.setAttribute("role", "img");
-      this.setAttribute("aria-label", "Donut chart");
+      // The donut renders a list of segments beside the ring; an image role
+      // would flatten that list out of the accessibility tree.
+      if (!this.hasAttribute("role")) this.setAttribute("role", "group");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Donut chart");
       wireStates(this);
       loadRemote(this, ["items", "values"]);
       if (renderStates(this, "donut")) return;
@@ -2401,12 +2414,14 @@ define("contour-donut", ContourDonut);
  * Attributes: `values`, `points`, `empty`, `loading`, `error`, `retry`, `src`, `lazy`, `refresh`, `timeout`, `skeleton`, `annotations`.
  */
 class ContourTimeSeries extends ContourBase {
-    static get observed() { return ["values", "points", "series", "style", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "annotations", "note"]; }
+    static get observed() { return ["values", "points", "series", "style", "title", "empty", "loading", "error", "retry", "src", "lazy", "refresh", "timeout", "skeleton", "annotations", "note"]; }
     static get properties() { return { values: { attribute: "values" }, points: { attribute: "points" }, series: { attribute: "series" }, style: { attribute: "style" }, src: { attribute: "src" }, annotations: { attribute: "annotations" }, note: { attribute: "note" } }; }
     render() {
       this.classList.add("c-time-series");
-      this.setAttribute("role", "img");
-      this.setAttribute("aria-label", "Time series");
+      // Points and bars are focusable marks (roving tabindex below); role=img
+      // hides them. A named group keeps the name and exposes the marks.
+      if (!this.hasAttribute("role")) this.setAttribute("role", "group");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("title") || "Time series");
       wireStates(this);
       loadRemote(this, ["values", "points", "series"]);
       if (renderStates(this, "time-series")) return;
@@ -2486,7 +2501,9 @@ class ContourTimeSeries extends ContourBase {
             bar.style.blockSize = ((v / max) * 100) + "%";
             bar.style.background = color;
             bar.setAttribute("title", String(v));
-            bar.setAttribute("role", "img");
+            // A clickable, focusable mark is a button, not an image; the point
+            // marks above already carry this role.
+            bar.setAttribute("role", "button");
             bar.setAttribute("aria-label", label + ": " + String(v));
             bar.setAttribute("tabindex", i === 0 && si === 0 ? "0" : "-1");
             plot.appendChild(bar);
@@ -4031,9 +4048,9 @@ class ContourContourPlot extends ContourBase {
     static get properties() { return { values: { attribute: "values" }, levels: { attribute: "levels" }, label: { attribute: "label" } }; }
     render() {
       this.classList.add("c-contour-plot");
-      this.setAttribute("role", "img");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "img");
       const label = this.getAttribute("label");
-      this.setAttribute("aria-label", label || "Contour plot");
+      if (label || !this.hasAttribute("aria-label")) this.setAttribute("aria-label", label || "Contour plot");
       const valuesAttr = this.getAttribute("values");
       const levelsAttr = this.getAttribute("levels");
       let grid = null;

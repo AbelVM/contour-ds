@@ -61,8 +61,8 @@ class ContourMinimap extends ContourBase {
     static get properties() { return { label: { attribute: "label" }, viewport: { attribute: "viewport" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-minimap");
-      this.setAttribute("role", "img");
-      this.setAttribute("aria-label", "Minimap");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "img");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("label") || "Minimap");
       wireStates(this);
       loadRemote(this, ["label", "viewport"]);
       if (renderStates(this, "minimap")) return;
@@ -568,8 +568,9 @@ class ContourHexbin extends ContourBase {
     static get properties() { return { label: { attribute: "label" }, cells: { attribute: "cells" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-hexbin");
-      this.setAttribute("role", "img");
-      this.setAttribute("aria-label", "Hexbin");
+      // Cells are focusable marks; role=img makes them presentational.
+      if (!this.hasAttribute("role")) this.setAttribute("role", "group");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("label") || "Hexbin");
       const label = this.getAttribute("label") || (this._remoteData && this._remoteData.label);
       if (label) {
         const l = this.ensure(".c-hexbin__label", () => { const el = document.createElement("span"); el.className = "c-hexbin__label"; return el; });
@@ -627,8 +628,9 @@ class ContourFlowMap extends ContourBase {
     static get properties() { return { label: { attribute: "label" }, nodes: { attribute: "nodes" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-flow-map");
-      this.setAttribute("role", "img");
-      this.setAttribute("aria-label", "Flow map");
+      // Nodes are focusable marks; role=img makes them presentational.
+      if (!this.hasAttribute("role")) this.setAttribute("role", "group");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("label") || "Flow map");
       const label = this.getAttribute("label") || (this._remoteData && this._remoteData.label);
       if (label) {
         const l = this.ensure(".c-flow-map__label", () => { const el = document.createElement("span"); el.className = "c-flow-map__label"; return el; });
@@ -683,8 +685,9 @@ class ContourIsochrone extends ContourBase {
     static get properties() { return { label: { attribute: "label" }, center: { attribute: "center" }, rings: { attribute: "rings" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-isochrone");
-      this.setAttribute("role", "img");
-      this.setAttribute("aria-label", "Isochrone");
+      // Rings are focusable marks; role=img makes them presentational.
+      if (!this.hasAttribute("role")) this.setAttribute("role", "group");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("label") || "Isochrone");
       const label = this.getAttribute("label") || (this._remoteData && this._remoteData.label);
       if (label) {
         const l = this.ensure(".c-isochrone__label", () => { const el = document.createElement("span"); el.className = "c-isochrone__label"; return el; });
@@ -721,9 +724,16 @@ class ContourIsochrone extends ContourBase {
            Array.from(this.querySelectorAll(".c-isochrone__ring")).forEach((n) => n.remove());
            parsed.forEach((r, i) => {
              const ring = document.createElement("span");
-             ring.className = "c-isochrone__ring c-isochrone__ring--" + (r.label || r);
+             // A ring may be a string or an object. Concatenating the object put
+             // "[object Object]" in the class list and produced two bogus classes
+             // for a label containing a space; the modifier is one slug now.
+             const raw = typeof r === "string" ? r : (r && (r.label || r.name || r.value || r.min));
+             const ringLabel = raw === undefined || raw === null ? "" : String(raw);
+             const slug = ringLabel.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+             ring.className = "c-isochrone__ring" + (slug ? " c-isochrone__ring--" + slug : "");
              ring.setAttribute("tabindex", i === 0 ? "0" : "-1");
-             if (r.label) ring.setAttribute("title", r.label || r);
+             ring.setAttribute("aria-label", ringLabel || "Isochrone ring " + (i + 1));
+             if (ringLabel) ring.setAttribute("title", ringLabel);
              this.appendChild(ring);
            });
            const tip = this.ensure(".c-isochrone__tooltip", () => { const el = document.createElement("div"); el.className = "c-isochrone__tooltip"; el.setAttribute("role", "tooltip"); el.setAttribute("hidden", ""); return el; });
@@ -746,8 +756,8 @@ class ContourCatchment extends ContourBase {
     static get properties() { return { label: { attribute: "label" }, area: { attribute: "area" }, center: { attribute: "center" }, src: { attribute: "src" } }; }
     render() {
       this.classList.add("c-catchment");
-      this.setAttribute("role", "img");
-      this.setAttribute("aria-label", "Catchment");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "img");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("label") || "Catchment");
       const label = this.getAttribute("label") || (this._remoteData && this._remoteData.label);
       if (label) {
         const l = this.ensure(".c-catchment__label", () => { const el = document.createElement("span"); el.className = "c-catchment__label"; return el; });

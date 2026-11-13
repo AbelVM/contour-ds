@@ -5,7 +5,7 @@
   "statement": "Generated, never hand-edited. Every block, element, variant, state and token below is read from src/css by the same inventory that publishes every count in this repository, and tools/check-components.mjs fails if the shipped bytes are not that derivation. `tokens` lists the custom properties a block's rules read; a rule naming two blocks (`.c-alert, .c-callout`) is credited to both, because that is what a retune does.",
   "counts": {
     "blocks": 246,
-    "elements": 893,
+    "elements": 894,
     "variants": 114,
     "states": 325,
     "tokens": 2673,
@@ -159,7 +159,12 @@
         "empty",
         "loading",
         "error",
-        "labels"
+        "labels",
+        "src",
+        "lazy",
+        "refresh",
+        "timeout",
+        "skeleton"
       ],
       "booleanAttributes": [
         "unread-only"
@@ -2194,9 +2199,12 @@
       "attributes": [
         "variant",
         "key",
-        "value"
+        "value",
+        "live"
       ],
-      "booleanAttributes": [],
+      "booleanAttributes": [
+        "live"
+      ],
       "slots": [
         ""
       ],
@@ -3249,7 +3257,8 @@
       "variants": [],
       "states": [],
       "attributes": [
-        "items"
+        "items",
+        "title"
       ],
       "booleanAttributes": [],
       "slots": [
@@ -3574,13 +3583,14 @@
         "components-misc.css",
         "utilities.css"
       ],
-      "rules": 19,
+      "rules": 20,
       "elements": [
         "c-date-picker__calendar",
         "c-date-picker__calendar-day",
         "c-date-picker__calendar-day--empty",
         "c-date-picker__calendar-grid",
         "c-date-picker__calendar-header",
+        "c-date-picker__calendar-row",
         "c-date-picker__calendar-title",
         "c-date-picker__calendar-weekday",
         "c-date-picker__end",
@@ -4981,7 +4991,9 @@
       "states": [],
       "attributes": [
         "title",
-        "open"
+        "open",
+        "data",
+        "actions"
       ],
       "booleanAttributes": [
         "open"
@@ -11423,6 +11435,7 @@
         "sort",
         "sort-dir",
         "virtual",
+        "title",
         "empty",
         "loading",
         "error",
@@ -11656,9 +11669,11 @@
       "attributes": [
         "label",
         "removable",
-        "variant"
+        "variant",
+        "live"
       ],
       "booleanAttributes": [
+        "live",
         "removable"
       ],
       "slots": [
@@ -12088,6 +12103,7 @@
         "points",
         "series",
         "style",
+        "title",
         "empty",
         "loading",
         "error",

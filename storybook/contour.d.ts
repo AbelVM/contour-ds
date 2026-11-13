@@ -25,7 +25,7 @@ export interface ContourCalendarElement extends ContourElement{month?:S;year?:S;
 export interface ContourCatchmentElement extends ContourDataElement{label?:S;area?:S;center?:S;}
 export interface ContourCategoryElement extends ContourDataElement{items?:S;search?:S;note?:S;limit?:S;sort?:S;}
 export interface ContourChangelogElement extends ContourElement{src?:S;}
-export interface ContourChartElement extends ContourDataElement{axis?:S;color?:S;zoomable?:boolean;brush?:boolean;note?:S;"bucket-count"?:S;"limit-values"?:S;bins?:Array<{ x0: number; x1: number; count: number; normalized?: number }>;backgroundData?:Array<{ x0: number; x1: number; count: number; normalized?: number }>;range?:[number, number] | null;}
+export interface ContourChartElement extends ContourDataElement{axis?:S;color?:S;zoomable?:boolean;brush?:boolean;note?:S;"bucket-count"?:S;"limit-values"?:S;}
 export interface ContourChartGridElement extends ContourElement{src?:S;}
 export interface ContourCheckElement extends ContourFormElement{label?:S;type?:S;error?:S;help?:S;}
 export interface ContourCodeElement extends ContourElement{numbered?:boolean;}
@@ -53,7 +53,7 @@ export interface ContourDropIndicatorElement extends ContourElement{open?:boolea
 export interface ContourEmptyElement extends ContourElement{illustration?:S;}
 export interface ContourErrorBoundaryElement extends ContourElement{fallback?:S;}
 export interface ContourFaqElement extends ContourElement{src?:S;}
-export interface ContourFeatureInspectorElement extends ContourElement{open?:boolean;}
+export interface ContourFeatureInspectorElement extends ContourElement{open?:boolean;data?:S;}
 export interface ContourFieldElement extends ContourElement{disabled?:boolean;}
 export interface ContourFieldsetElement extends ContourElement{disabled?:boolean;}
 export interface ContourFileUploadElement extends ContourFormElement{label?:S;accept?:S;multiple?:boolean;progress?:S;}

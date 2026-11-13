@@ -337,6 +337,7 @@
     "bucket-count", "limit-values",
     "autocomplete", "levels", "submit-label",
     "fields", "gap",
+    "controls",
   ];
 
   /** Resolve an authored heading level while keeping the fallback valid. */
@@ -3483,10 +3484,21 @@ export function wireStates(host) {
           }
         }
       });
-      // ARIA: alert elements get live region roles
+      // ARIA: alert elements are live regions, and the variant sets the volume.
+      // A warning/danger interrupts; info/success/accent speaks politely. An
+      // information alert that asserts itself on load talks over the reader.
       root.querySelectorAll(".c-alert").forEach((el) => {
-        if (!el.hasAttribute("role")) el.setAttribute("role", "alert");
-        if (!el.hasAttribute("aria-live")) el.setAttribute("aria-live", "assertive");
+        const urgent = el.classList.contains("c-alert--warning") || el.classList.contains("c-alert--danger");
+        const role = urgent ? "alert" : "status";
+        const live = urgent ? "assertive" : "polite";
+        if (!el.hasAttribute("role") || el.dataset.contourAutoRole) {
+          el.setAttribute("role", role);
+          el.dataset.contourAutoRole = role;
+        }
+        if (!el.hasAttribute("aria-live") || el.dataset.contourAutoLive) {
+          el.setAttribute("aria-live", live);
+          el.dataset.contourAutoLive = live;
+        }
       });
       // ARIA: required form fields
       root.querySelectorAll("input[required], textarea[required], select[required]").forEach((el) => {
@@ -3541,6 +3553,22 @@ connectedCallback() {
         }
       }
       el.className = (this._shadowBase + " " + mods.join(" ")).trim();
+      // An alert's live region follows its variant, and rewriting the class above
+      // is the only signal a variant change produces. `dataset.contourAutoRole`
+      // marks a role this code set, so an authored one is never overwritten.
+      if (el.classList.contains("c-alert")) {
+        const urgent = el.classList.contains("c-alert--warning") || el.classList.contains("c-alert--danger");
+        const role = urgent ? "alert" : "status";
+        const live = urgent ? "assertive" : "polite";
+        if (!el.hasAttribute("role") || el.dataset.contourAutoRole) {
+          el.setAttribute("role", role);
+          el.dataset.contourAutoRole = role;
+        }
+        if (!el.hasAttribute("aria-live") || el.dataset.contourAutoLive) {
+          el.setAttribute("aria-live", live);
+          el.dataset.contourAutoLive = live;
+        }
+      }
     }
   }
 
@@ -4031,13 +4059,22 @@ class ContourTabs extends ContourBase {
              parsed.forEach((t, i) => {
                const label = typeof t === "string" ? t : (t.label || t.title || "");
                const panelId = contourId("c-tabs-panel");
-               const btn = document.createElement("button");
+               // A tab is not a <button> when it is closable: HTML forbids
+               // interactive content inside a button, so the close control would
+               // be invalid markup and unreachable as its own target. The tab is
+               // a focusable element with role=tab, and the close is a sibling
+               // control inside it.
+               const btn = document.createElement(this.hasAttribute("closable") ? "div" : "button");
                btn.className = "c-tabs__tab";
+               if (btn.tagName === "BUTTON") btn.type = "button";
                btn.setAttribute("role", "tab");
                btn.setAttribute("aria-selected", String(i === _keepIdx));
                btn.setAttribute("aria-controls", panelId);
                btn.tabIndex = i === _keepIdx ? 0 : -1;
-              btn.textContent = label;
+              const tabLabel = document.createElement("span");
+              tabLabel.textContent = label;
+              btn.textContent = "";
+              btn.appendChild(tabLabel);
               if (this.hasAttribute("closable")) {
                 const closeBtn = document.createElement("button");
                 closeBtn.type = "button";
@@ -4193,7 +4230,9 @@ class ContourHeader extends ContourBase {
       // the closest existing menu-like glyph is used with the real label.
       const navEl = inner.querySelector(".c-header__nav");
       if (navEl) {
-        if (!navEl.id) navEl.id = "contour-header-nav";
+        // A page may carry two headers; a fixed id makes both toggles point at the
+        // first nav in document order. Each generated nav gets its own id.
+        if (!navEl.id) navEl.id = contourId("header-nav");
         const actions = inner.querySelector(".c-header__actions");
         if (actions && !actions.querySelector(".c-header__toggle")) {
           const toggle = document.createElement("button");

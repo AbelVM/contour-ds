@@ -423,7 +423,42 @@
               "description": "Attribute for c-activity-feed."
             },
             {
+              "name": "lazy",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-activity-feed."
+            },
+            {
               "name": "loading",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-activity-feed."
+            },
+            {
+              "name": "refresh",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-activity-feed."
+            },
+            {
+              "name": "skeleton",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-activity-feed."
+            },
+            {
+              "name": "src",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-activity-feed."
+            },
+            {
+              "name": "timeout",
               "type": {
                 "text": "string"
               },
@@ -480,11 +515,51 @@
             },
             {
               "kind": "field",
+              "name": "lazy",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "lazy"
+            },
+            {
+              "kind": "field",
               "name": "loading",
               "type": {
                 "text": "string | null"
               },
               "attribute": "loading"
+            },
+            {
+              "kind": "field",
+              "name": "refresh",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "refresh"
+            },
+            {
+              "kind": "field",
+              "name": "skeleton",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "skeleton"
+            },
+            {
+              "kind": "field",
+              "name": "src",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "src"
+            },
+            {
+              "kind": "field",
+              "name": "timeout",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "timeout"
             },
             {
               "kind": "field",
@@ -4184,6 +4259,13 @@
               "description": "Attribute for c-chip."
             },
             {
+              "name": "live",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Boolean attribute for c-chip."
+            },
+            {
               "name": "value",
               "type": {
                 "text": "string"
@@ -4206,6 +4288,14 @@
                 "text": "string | null"
               },
               "attribute": "key"
+            },
+            {
+              "kind": "field",
+              "name": "live",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "live"
             },
             {
               "kind": "field",
@@ -6152,6 +6242,13 @@
                 "text": "string"
               },
               "description": "Attribute for c-dash-kpi-row."
+            },
+            {
+              "name": "title",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-dash-kpi-row."
             }
           ],
           "members": [
@@ -6162,6 +6259,14 @@
                 "text": "string | null"
               },
               "attribute": "items"
+            },
+            {
+              "kind": "field",
+              "name": "title",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "title"
             }
           ],
           "slots": [
@@ -9071,6 +9176,20 @@
           "description": "Contour component c-feature-inspector (complete-widget).",
           "attributes": [
             {
+              "name": "actions",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-feature-inspector."
+            },
+            {
+              "name": "data",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-feature-inspector."
+            },
+            {
               "name": "open",
               "type": {
                 "text": "boolean"
@@ -9086,6 +9205,22 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "actions",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "actions"
+            },
+            {
+              "kind": "field",
+              "name": "data",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "data"
+            },
             {
               "kind": "field",
               "name": "open",
@@ -23052,6 +23187,13 @@
               "description": "Attribute for c-table."
             },
             {
+              "name": "title",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-table."
+            },
+            {
               "name": "virtual",
               "type": {
                 "text": "string"
@@ -23155,6 +23297,14 @@
                 "text": "string | null"
               },
               "attribute": "sort-dir"
+            },
+            {
+              "kind": "field",
+              "name": "title",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "title"
             },
             {
               "kind": "field",
@@ -23469,6 +23619,13 @@
               "description": "Attribute for c-tag."
             },
             {
+              "name": "live",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Boolean attribute for c-tag."
+            },
+            {
               "name": "removable",
               "type": {
                 "text": "boolean"
@@ -23491,6 +23648,14 @@
                 "text": "string | null"
               },
               "attribute": "label"
+            },
+            {
+              "kind": "field",
+              "name": "live",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "live"
             },
             {
               "kind": "field",
@@ -24298,6 +24463,13 @@
               "description": "Attribute for c-time-series."
             },
             {
+              "name": "title",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-time-series."
+            },
+            {
               "name": "values",
               "type": {
                 "text": "string"
@@ -24417,6 +24589,14 @@
                 "text": "string | null"
               },
               "attribute": "timeout"
+            },
+            {
+              "kind": "field",
+              "name": "title",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "title"
             },
             {
               "kind": "field",

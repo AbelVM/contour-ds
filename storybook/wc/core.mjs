@@ -337,6 +337,7 @@
     "bucket-count", "limit-values",
     "autocomplete", "levels", "submit-label",
     "fields", "gap",
+    "controls",
   ];
 
   /** Resolve an authored heading level while keeping the fallback valid. */

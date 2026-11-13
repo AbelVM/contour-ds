@@ -337,6 +337,7 @@
     "bucket-count", "limit-values",
     "autocomplete", "levels", "submit-label",
     "fields", "gap",
+    "controls",
   ];
 
   /** Resolve an authored heading level while keeping the fallback valid. */
@@ -3483,10 +3484,21 @@ export function wireStates(host) {
           }
         }
       });
-      // ARIA: alert elements get live region roles
+      // ARIA: alert elements are live regions, and the variant sets the volume.
+      // A warning/danger interrupts; info/success/accent speaks politely. An
+      // information alert that asserts itself on load talks over the reader.
       root.querySelectorAll(".c-alert").forEach((el) => {
-        if (!el.hasAttribute("role")) el.setAttribute("role", "alert");
-        if (!el.hasAttribute("aria-live")) el.setAttribute("aria-live", "assertive");
+        const urgent = el.classList.contains("c-alert--warning") || el.classList.contains("c-alert--danger");
+        const role = urgent ? "alert" : "status";
+        const live = urgent ? "assertive" : "polite";
+        if (!el.hasAttribute("role") || el.dataset.contourAutoRole) {
+          el.setAttribute("role", role);
+          el.dataset.contourAutoRole = role;
+        }
+        if (!el.hasAttribute("aria-live") || el.dataset.contourAutoLive) {
+          el.setAttribute("aria-live", live);
+          el.dataset.contourAutoLive = live;
+        }
       });
       // ARIA: required form fields
       root.querySelectorAll("input[required], textarea[required], select[required]").forEach((el) => {
@@ -3541,6 +3553,22 @@ connectedCallback() {
         }
       }
       el.className = (this._shadowBase + " " + mods.join(" ")).trim();
+      // An alert's live region follows its variant, and rewriting the class above
+      // is the only signal a variant change produces. `dataset.contourAutoRole`
+      // marks a role this code set, so an authored one is never overwritten.
+      if (el.classList.contains("c-alert")) {
+        const urgent = el.classList.contains("c-alert--warning") || el.classList.contains("c-alert--danger");
+        const role = urgent ? "alert" : "status";
+        const live = urgent ? "assertive" : "polite";
+        if (!el.hasAttribute("role") || el.dataset.contourAutoRole) {
+          el.setAttribute("role", role);
+          el.dataset.contourAutoRole = role;
+        }
+        if (!el.hasAttribute("aria-live") || el.dataset.contourAutoLive) {
+          el.setAttribute("aria-live", live);
+          el.dataset.contourAutoLive = live;
+        }
+      }
     }
   }
 
@@ -3902,11 +3930,25 @@ class ContourAlert extends ContourBase {
     }
     render() {
       this.classList.add("c-alert");
-      // ARIA: an alert is a live region (parity with the shadow layer, which sets
-      // the same pair on every .c-alert). Written on the host, so the authored
-      // attributes win and the loader's state nodes announce inside the region.
-      if (!this.hasAttribute("role")) this.setAttribute("role", "alert");
-      if (!this.hasAttribute("aria-live")) this.setAttribute("aria-live", "assertive");
+      // ARIA: the variant decides how loudly the message speaks. Warning and
+      // danger interrupt (role=alert / assertive); info, success and accent are
+      // announced politely (role=status / polite), because a static information
+      // alert that asserts itself on load talks over whatever the reader was
+      // already doing. The shadow layer carries the same rule.
+      const urgent = /^(warning|danger)$/.test(this.getAttribute("variant") || "");
+      const role = urgent ? "alert" : "status";
+      const live = urgent ? "assertive" : "polite";
+      // Written on the host so the loader's state nodes announce inside the
+      // region. Remember what this component wrote: an authored role/aria-live
+      // wins, and a variant change updates only a value the component itself set.
+      if (!this.hasAttribute("role") || this.getAttribute("role") === this._autoRole) {
+        this.setAttribute("role", role);
+        this._autoRole = role;
+      }
+      if (!this.hasAttribute("aria-live") || this.getAttribute("aria-live") === this._autoLive) {
+        this.setAttribute("aria-live", live);
+        this._autoLive = live;
+      }
       wireStates(this);
       loadRemote(this, "title");
       if (renderStates(this, "alert")) return;

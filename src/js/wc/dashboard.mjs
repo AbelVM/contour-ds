@@ -1,4 +1,4 @@
-import { ContourBase, define, formatValue, navKey , warnBadJson } from './core.mjs';
+import { ContourBase, define, formatValue, navKey , warnBadJson, labelText, applyLabel } from './core.mjs';
 
 /**
  * Dashboard state machine (R13-06).
@@ -118,35 +118,39 @@ class ContourDashToolbar extends ContourBase {
   }
   define("contour-dash-toolbar", ContourDashToolbar);
 class ContourDashKpiRow extends ContourBase {
-    static get observed() { return ["items"]; }
+    static get observed() { return ["items", "title"]; }
     static get properties() { return { items: { attribute: "items" } }; }
     render() {
       this.classList.add("c-dash-kpi-row");
-      this.setAttribute("role", "group");
-      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "KPI row");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "group");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("title") || "KPI row");
       // Drop previously generated kpis so re-render doesn't stack.
       Array.from(this.querySelectorAll("contour-kpi")).forEach((n) => n.remove());
       const items = this.getAttribute("items");
       let parsed = null;
       if (items) { try { parsed = JSON.parse(items); } catch (e) { parsed = null; } }
       if (Array.isArray(parsed) && parsed.length) {
-        parsed.forEach((it) => {
+        // The row is a projection of the KPI API, not a two-attribute subset: a
+        // dashboard cannot read delta/direction/note/unit through the row if the
+        // row drops them here.
+        const passthrough = ["value", "label", "delta", "direction", "note", "unit", "format", "variant", "thresholds", "threshold", "sparkline", "polarity", "locale"];
+        parsed.forEach((it, i) => {
           const k = document.createElement("contour-kpi");
           if (typeof it === "object" && it !== null) {
-            if (it.value !== undefined) k.setAttribute("value", String(it.value));
-            if (it.label !== undefined) k.setAttribute("label", String(it.label));
+            for (const key of passthrough) {
+              if (it[key] !== undefined && it[key] !== null) k.setAttribute(key, String(it[key]));
+            }
           } else {
             k.setAttribute("value", String(it));
           }
+          // One tab stop for the row; arrow keys rove. The keydown handler below
+          // needs a tabbable item or document.activeElement is never in the list.
+          k.setAttribute("tabindex", i === 0 ? "0" : "-1");
           this.appendChild(k);
         });
-      } else if (!this.querySelector("contour-kpi")) {
-        // Fallback: keep a single placeholder kpi only when no items provided.
-        const k = document.createElement("contour-kpi");
-        k.setAttribute("value", "0");
-        k.setAttribute("label", "KPI");
-        this.appendChild(k);
       }
+      // No placeholder: an empty row renders the author's own children or
+      // nothing. A generated "KPI 0" is invented data.
     }
     enhance() {
       if (this._wiredDashKpiRow) return;
@@ -162,7 +166,17 @@ class ContourDashKpiRow extends ContourBase {
       this.addEventListener("keydown", (e) => {
         const kpis = Array.from(this.querySelectorAll("contour-kpi"));
         if (!kpis.length) return;
-        navKey(e, kpis, { wrap: true, homeEnd: true, onNavigate: (i) => this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index: i } })), onKey: () => {} });
+        navKey(e, kpis, {
+          wrap: true,
+          homeEnd: true,
+          onNavigate: (i) => {
+            kpis.forEach((k, j) => k.setAttribute("tabindex", j === i ? "0" : "-1"));
+            this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index: i } }));
+          },
+          onKey: (key, i) => {
+            if (key === "Enter" || key === " ") this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index: i } }));
+          },
+        });
       });
     }
   }
@@ -220,13 +234,18 @@ class ContourSavedView extends ContourBase {
       if (source) {
         if (meta.childNodes.length) meta.appendChild(document.createTextNode(" · "));
         const wrap = document.createElement("span");
-        wrap.textContent = `Source: ${source}`;
+        wrap.textContent = `${labelText(this, "source", "Source")}: ${source}`;
         meta.appendChild(wrap);
       }
       let actions = this.querySelector(".c-saved-view__actions");
       if (!actions) { actions = document.createElement("div"); actions.className = "c-saved-view__actions"; this.appendChild(actions); }
-      const apply = actions.querySelector(".c-saved-view__apply") || (() => { const b = document.createElement("button"); b.type = "button"; b.className = "c-btn c-btn--ghost c-btn--sm"; b.textContent = "Apply"; actions.appendChild(b); return b; })();
-      const remove = actions.querySelector(".c-saved-view__remove") || (() => { const b = document.createElement("button"); b.type = "button"; b.className = "c-btn c-btn--ghost c-btn--sm"; b.textContent = "Remove"; actions.appendChild(b); return b; })();
+      // The controls are matched by `data-*` in enhance(), not by their words:
+      // a localised `labels` value changes the text, and an equality test on
+      // "Apply" then left the button inert (the activity-feed defect, R18-80).
+      const apply = actions.querySelector(".c-saved-view__apply") || (() => { const b = document.createElement("button"); b.type = "button"; b.className = "c-btn c-btn--ghost c-btn--sm"; b.setAttribute("data-saved-view-apply", ""); actions.appendChild(b); return b; })();
+      applyLabel(apply, this, "apply", "Apply");
+      const remove = actions.querySelector(".c-saved-view__remove") || (() => { const b = document.createElement("button"); b.type = "button"; b.className = "c-btn c-btn--ghost c-btn--sm"; b.setAttribute("data-saved-view-remove", ""); actions.appendChild(b); return b; })();
+      applyLabel(remove, this, "remove", "Remove");
     }
     enhance() {
       if (this._wiredSavedView) return;
@@ -234,9 +253,9 @@ class ContourSavedView extends ContourBase {
       this.addEventListener("click", (e) => {
         const btn = e.target && e.target.closest ? e.target.closest("button") : null;
         if (!btn || !this.contains(btn)) return;
-        if (btn.textContent === "Apply") {
+        if (btn.hasAttribute("data-saved-view-apply")) {
           this.dispatchEvent(new CustomEvent("contour:apply", { bubbles: true, composed: true, detail: { name: this.getAttribute("name") } }));
-        } else if (btn.textContent === "Remove") {
+        } else if (btn.hasAttribute("data-saved-view-remove")) {
           this.dispatchEvent(new CustomEvent("contour:remove", { bubbles: true, composed: true, detail: { name: this.getAttribute("name") } }));
         }
       });
@@ -249,12 +268,12 @@ class ContourProvenance extends ContourBase {
     render() {
       this.classList.add("c-provenance");
       this.setAttribute("role", "group");
-      this.setAttribute("aria-label", "Data provenance");
+      this.setAttribute("aria-label", labelText(this, "provenance", "Data provenance"));
       const source = this.getAttribute("source");
       if (source) {
         const s = this.ensure(".c-provenance__source", () => { const el = document.createElement("span"); el.className = "c-provenance__source"; return el; });
         const b = document.createElement("b");
-        b.textContent = "Source:";
+        b.textContent = labelText(this, "source", "Source") + ":";
         s.replaceChildren(b, document.createTextNode(" " + source));
       } else {
         const s = this.querySelector(".c-provenance__source");
@@ -305,11 +324,11 @@ class ContourProvenance extends ContourBase {
   }
   define("contour-provenance", ContourProvenance);
 class ContourFeatureInspector extends ContourBase {
-    static get observed() { return ["title", "open"]; }
-    static get properties() { return { title: { attribute: "title" }, open: { attribute: "open", type: Boolean } }; }
+    static get observed() { return ["title", "open", "data", "actions"]; }
+    static get properties() { return { title: { attribute: "title" }, open: { attribute: "open", type: Boolean }, data: { attribute: "data" } }; }
     render() {
       this.classList.add("c-feature-inspector");
-      this.setAttribute("role", "region");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "region");
       if (this.getAttribute("title")) this.setAttribute("aria-label", this.getAttribute("title"));
       if (this.hasAttribute("open")) this.setAttribute("open", "");
       else this.removeAttribute("open");
@@ -339,6 +358,28 @@ class ContourFeatureInspector extends ContourBase {
         } catch (e) { warnBadJson(this, "attribute", e); }
       }
       const actions = this.ensure(".c-feature-inspector__actions", () => { const el = document.createElement("div"); el.className = "c-feature-inspector__actions"; return el; });
+      // The actions container used to be created and left empty, so the
+      // `contour:inspect-action` event it forwards could never fire from the
+      // component's own UI. `actions` (a JSON array of labels or {label,value})
+      // fills it; authored buttons still work.
+      Array.from(actions.querySelectorAll("[data-inspect-action]")).forEach((n) => n.remove());
+      const actionsAttr = this.getAttribute("actions");
+      if (actionsAttr) {
+        try {
+          const list = JSON.parse(actionsAttr);
+          if (Array.isArray(list)) {
+            list.forEach((it) => {
+              const btn = document.createElement("button");
+              btn.type = "button";
+              btn.className = "c-btn c-btn--sm c-feature-inspector__action";
+              btn.setAttribute("data-inspect-action", "");
+              btn.textContent = typeof it === "string" ? it : (it && (it.label || it.action)) || "";
+              if (it && typeof it === "object" && it.value !== undefined) btn.setAttribute("data-action", String(it.value));
+              actions.appendChild(btn);
+            });
+          }
+        } catch (e) { warnBadJson(this, "attribute", e); }
+      }
     }
     enhance() {
       if (this._wiredFeatureInspector) return;

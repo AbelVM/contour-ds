@@ -1,4 +1,4 @@
-import { ContourBase, define, onDispose, supportsUntilFound, contourId, headingTag, navKey, safeHref, cssLength , warnBadJson, label } from './core.mjs';
+import { ContourBase, define, onDispose, supportsUntilFound, contourId, headingTag, navKey, safeHref, cssLength , warnBadJson, labelText, applyLabel } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { wireMenu, wirePagination, wireTabs, wireTree, wireRemovable } from './behaviours.mjs';
 class ContourMenu extends ContourBase {
@@ -236,13 +236,22 @@ class ContourTabs extends ContourBase {
              parsed.forEach((t, i) => {
                const label = typeof t === "string" ? t : (t.label || t.title || "");
                const panelId = contourId("c-tabs-panel");
-               const btn = document.createElement("button");
+               // A tab is not a <button> when it is closable: HTML forbids
+               // interactive content inside a button, so the close control would
+               // be invalid markup and unreachable as its own target. The tab is
+               // a focusable element with role=tab, and the close is a sibling
+               // control inside it.
+               const btn = document.createElement(this.hasAttribute("closable") ? "div" : "button");
                btn.className = "c-tabs__tab";
+               if (btn.tagName === "BUTTON") btn.type = "button";
                btn.setAttribute("role", "tab");
                btn.setAttribute("aria-selected", String(i === _keepIdx));
                btn.setAttribute("aria-controls", panelId);
                btn.tabIndex = i === _keepIdx ? 0 : -1;
-              btn.textContent = label;
+              const tabLabel = document.createElement("span");
+              tabLabel.textContent = label;
+              btn.textContent = "";
+              btn.appendChild(tabLabel);
               if (this.hasAttribute("closable")) {
                 const closeBtn = document.createElement("button");
                 closeBtn.type = "button";
@@ -398,7 +407,9 @@ class ContourHeader extends ContourBase {
       // the closest existing menu-like glyph is used with the real label.
       const navEl = inner.querySelector(".c-header__nav");
       if (navEl) {
-        if (!navEl.id) navEl.id = "contour-header-nav";
+        // A page may carry two headers; a fixed id makes both toggles point at the
+        // first nav in document order. Each generated nav gets its own id.
+        if (!navEl.id) navEl.id = contourId("header-nav");
         const actions = inner.querySelector(".c-header__actions");
         if (actions && !actions.querySelector(".c-header__toggle")) {
           const toggle = document.createElement("button");
@@ -952,7 +963,7 @@ class ContourPagination extends ContourBase {
         prev.className = "c-pagination__link c-pagination__prev";
         prev.setAttribute("data-action", "prev");
         prev.textContent = "‹";
-        prev.setAttribute("aria-label", label(this, "prev", "Previous page"));
+        prev.setAttribute("aria-label", labelText(this, "prev", "Previous page"));
         this.appendChild(prev);
         for (let i = 1; i <= count; i++) {
           const btn = document.createElement("button");
@@ -970,7 +981,7 @@ class ContourPagination extends ContourBase {
         next.className = "c-pagination__link c-pagination__next";
         next.setAttribute("data-action", "next");
         next.textContent = "›";
-        next.setAttribute("aria-label", label(this, "next", "Next page"));
+        next.setAttribute("aria-label", labelText(this, "next", "Next page"));
         this.appendChild(next);
       } else {
         renderEmpty(this, "pagination");
@@ -1010,7 +1021,7 @@ class ContourPagerFull extends ContourBase {
         a.href = safeHref(next.split("|")[1] || "#");
         const dir = document.createElement("span");
         dir.className = "c-pager__dir";
-        dir.textContent = "Next →";
+        dir.textContent = labelText(this, "next", "Next") + " →";
         a.appendChild(dir);
         const title = document.createElement("span");
         title.className = "c-pager__title";
@@ -1360,7 +1371,7 @@ class ContourFilterBar extends ContourBase {
               group.className = "c-command__group";
               const gt = document.createElement("div");
               gt.className = "c-command__group-title";
-              gt.textContent = "Recent";
+              gt.textContent = labelText(this, "recent", "Recent");
               group.appendChild(gt);
               recentParsed.forEach((it) => {
                 const item = document.createElement("div");
@@ -1826,7 +1837,7 @@ class ContourSpatialFilter extends ContourBase {
       const currentOp = this.getAttribute("operator") || "intersects";
       operator.innerHTML = "";
       const opLabel = document.createElement("span");
-      opLabel.textContent = "Operator:";
+      opLabel.textContent = labelText(this, "operator", "Operator") + ":";
       operator.appendChild(opLabel);
       const opSelect = document.createElement("select");
       opSelect.className = "c-spatial-filter__operator-select";
@@ -1846,7 +1857,7 @@ class ContourSpatialFilter extends ContourBase {
       // Clear all
       let clearAll = this.querySelector(".c-spatial-filter__clear-all");
       if (!clearAll) { clearAll = document.createElement("button"); clearAll.type = "button"; clearAll.className = "c-spatial-filter__clear-all"; this.appendChild(clearAll); }
-      clearAll.textContent = "Clear all";
+      applyLabel(clearAll, this, "clear-all", "Clear all");
       if (this.hasAttribute("active")) {
         this.classList.add("c-spatial-filter--active");
       } else {

@@ -153,10 +153,21 @@ import { define, MODS, REGISTERED, CONTOUR_EVENTS, contourId } from './core.mjs'
           }
         }
       });
-      // ARIA: alert elements get live region roles
+      // ARIA: alert elements are live regions, and the variant sets the volume.
+      // A warning/danger interrupts; info/success/accent speaks politely. An
+      // information alert that asserts itself on load talks over the reader.
       root.querySelectorAll(".c-alert").forEach((el) => {
-        if (!el.hasAttribute("role")) el.setAttribute("role", "alert");
-        if (!el.hasAttribute("aria-live")) el.setAttribute("aria-live", "assertive");
+        const urgent = el.classList.contains("c-alert--warning") || el.classList.contains("c-alert--danger");
+        const role = urgent ? "alert" : "status";
+        const live = urgent ? "assertive" : "polite";
+        if (!el.hasAttribute("role") || el.dataset.contourAutoRole) {
+          el.setAttribute("role", role);
+          el.dataset.contourAutoRole = role;
+        }
+        if (!el.hasAttribute("aria-live") || el.dataset.contourAutoLive) {
+          el.setAttribute("aria-live", live);
+          el.dataset.contourAutoLive = live;
+        }
       });
       // ARIA: required form fields
       root.querySelectorAll("input[required], textarea[required], select[required]").forEach((el) => {
@@ -211,6 +222,22 @@ connectedCallback() {
         }
       }
       el.className = (this._shadowBase + " " + mods.join(" ")).trim();
+      // An alert's live region follows its variant, and rewriting the class above
+      // is the only signal a variant change produces. `dataset.contourAutoRole`
+      // marks a role this code set, so an authored one is never overwritten.
+      if (el.classList.contains("c-alert")) {
+        const urgent = el.classList.contains("c-alert--warning") || el.classList.contains("c-alert--danger");
+        const role = urgent ? "alert" : "status";
+        const live = urgent ? "assertive" : "polite";
+        if (!el.hasAttribute("role") || el.dataset.contourAutoRole) {
+          el.setAttribute("role", role);
+          el.dataset.contourAutoRole = role;
+        }
+        if (!el.hasAttribute("aria-live") || el.dataset.contourAutoLive) {
+          el.setAttribute("aria-live", live);
+          el.dataset.contourAutoLive = live;
+        }
+      }
     }
   }
 

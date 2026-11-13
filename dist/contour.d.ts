@@ -53,7 +53,7 @@ export interface ContourDropIndicatorElement extends ContourElement{open?:boolea
 export interface ContourEmptyElement extends ContourElement{illustration?:S;}
 export interface ContourErrorBoundaryElement extends ContourElement{fallback?:S;}
 export interface ContourFaqElement extends ContourElement{src?:S;}
-export interface ContourFeatureInspectorElement extends ContourElement{open?:boolean;}
+export interface ContourFeatureInspectorElement extends ContourElement{open?:boolean;data?:S;}
 export interface ContourFieldElement extends ContourElement{disabled?:boolean;}
 export interface ContourFieldsetElement extends ContourElement{disabled?:boolean;}
 export interface ContourFileUploadElement extends ContourFormElement{label?:S;accept?:S;multiple?:boolean;progress?:S;}

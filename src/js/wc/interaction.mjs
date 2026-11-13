@@ -286,23 +286,38 @@ class ContourDragHandle extends ContourBase {
     render() {
       this.classList.add("c-drag-handle");
       if (!this.hasAttribute("role")) this.setAttribute("role", "separator");
-      if (!this.hasAttribute("aria-valuenow")) this.setAttribute("aria-valuenow", "0");
+      // A focusable separator is a range widget: a value without a range is an
+      // incomplete one, and some AT expose it as an unlabelled slider.
+      const min = this.getAttribute("min") || "0";
+      const max = this.getAttribute("max") || "100";
+      if (!this.hasAttribute("aria-valuenow")) this.setAttribute("aria-valuenow", min);
+      if (!this.hasAttribute("aria-valuemin")) this.setAttribute("aria-valuemin", min);
+      if (!this.hasAttribute("aria-valuemax")) this.setAttribute("aria-valuemax", max);
       if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
       if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("label") || "Drag handle");
       if (!this.hasAttribute("aria-orientation")) this.setAttribute("aria-orientation", "horizontal");
+      // Name the pane the handle resizes, when the author says which.
+      const controls = this.getAttribute("controls");
+      if (controls && !this.hasAttribute("aria-controls")) this.setAttribute("aria-controls", controls);
     }
     enhance() {
       if (this._wiredDragHandle) return;
       this._wiredDragHandle = true;
       this.addEventListener("keydown", (e) => {
+        const now = Number(this.getAttribute("aria-valuenow") || 0);
+        const min = Number(this.getAttribute("aria-valuemin") || 0);
+        const max = Number(this.getAttribute("aria-valuemax") || 100);
         let delta = 0;
         if (e.key === "ArrowLeft" || e.key === "ArrowDown") delta = -1;
         else if (e.key === "ArrowRight" || e.key === "ArrowUp") delta = 1;
-        else if (e.key === "Home") delta = -Infinity;
-        else if (e.key === "End") delta = Infinity;
+        // Home/End are absolute moves. A delta of ±Infinity serialises to null
+        // the moment it crosses an event boundary, so send the finite distance
+        // from the current value to the end it names.
+        else if (e.key === "Home") delta = min - now;
+        else if (e.key === "End") delta = max - now;
         else return;
         e.preventDefault();
-        this.dispatchEvent(new CustomEvent("contour:drag", { bubbles: true, composed: true, detail: { key: e.key, delta } }));
+        this.dispatchEvent(new CustomEvent("contour:drag", { bubbles: true, composed: true, detail: { key: e.key, delta, value: now } }));
       });
     }
   }

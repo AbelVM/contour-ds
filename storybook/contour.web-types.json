@@ -146,7 +146,27 @@
               "description": "Attribute for c-activity-feed."
             },
             {
+              "name": "lazy",
+              "description": "Attribute for c-activity-feed."
+            },
+            {
               "name": "loading",
+              "description": "Attribute for c-activity-feed."
+            },
+            {
+              "name": "refresh",
+              "description": "Attribute for c-activity-feed."
+            },
+            {
+              "name": "skeleton",
+              "description": "Attribute for c-activity-feed."
+            },
+            {
+              "name": "src",
+              "description": "Attribute for c-activity-feed."
+            },
+            {
+              "name": "timeout",
               "description": "Attribute for c-activity-feed."
             },
             {
@@ -1421,6 +1441,10 @@
               "description": "Attribute for c-chip."
             },
             {
+              "name": "live",
+              "description": "Boolean attribute for c-chip."
+            },
+            {
               "name": "value",
               "description": "Attribute for c-chip."
             },
@@ -2070,6 +2094,10 @@
             {
               "name": "items",
               "description": "Attribute for c-dash-kpi-row."
+            },
+            {
+              "name": "title",
+              "description": "Attribute for c-dash-kpi-row."
             }
           ],
           "js": {
@@ -2273,7 +2301,7 @@
         },
         {
           "name": "contour-date-picker",
-          "description": "Contour component `c-date-picker` (complete-widget). Elements: c-date-picker__calendar, c-date-picker__calendar-day, c-date-picker__calendar-day--empty, c-date-picker__calendar-grid, c-date-picker__calendar-header, c-date-picker__calendar-title, c-date-picker__calendar-weekday, c-date-picker__end, c-date-picker__label, c-date-picker__message, c-date-picker__message--error.",
+          "description": "Contour component `c-date-picker` (complete-widget). Elements: c-date-picker__calendar, c-date-picker__calendar-day, c-date-picker__calendar-day--empty, c-date-picker__calendar-grid, c-date-picker__calendar-header, c-date-picker__calendar-row, c-date-picker__calendar-title, c-date-picker__calendar-weekday, c-date-picker__end, c-date-picker__label, c-date-picker__message, c-date-picker__message--error.",
           "attributes": [
             {
               "name": "disabled",
@@ -3110,6 +3138,14 @@
           "name": "contour-feature-inspector",
           "description": "Contour component `c-feature-inspector` (complete-widget). Elements: c-feature-inspector__actions, c-feature-inspector__body, c-feature-inspector__field, c-feature-inspector__head, c-feature-inspector__label, c-feature-inspector__title, c-feature-inspector__value.",
           "attributes": [
+            {
+              "name": "actions",
+              "description": "Attribute for c-feature-inspector."
+            },
+            {
+              "name": "data",
+              "description": "Attribute for c-feature-inspector."
+            },
             {
               "name": "open",
               "description": "Boolean attribute for c-feature-inspector."
@@ -9546,6 +9582,10 @@
               "description": "Attribute for c-table."
             },
             {
+              "name": "title",
+              "description": "Attribute for c-table."
+            },
+            {
               "name": "virtual",
               "description": "Attribute for c-table."
             }
@@ -9650,6 +9690,10 @@
             {
               "name": "label",
               "description": "Attribute for c-tag."
+            },
+            {
+              "name": "live",
+              "description": "Boolean attribute for c-tag."
             },
             {
               "name": "removable",
@@ -9957,6 +10001,10 @@
             },
             {
               "name": "timeout",
+              "description": "Attribute for c-time-series."
+            },
+            {
+              "name": "title",
               "description": "Attribute for c-time-series."
             },
             {

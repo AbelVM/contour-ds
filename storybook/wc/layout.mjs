@@ -14,6 +14,14 @@ import { ContourBase, define, navKey, isRtl , warnBadJson } from './core.mjs';
       const main = this.ensure(".c-app__main", () => { const el = document.createElement("main"); el.className = "c-app__main"; return el; });
       if (main.parentNode !== this) this.appendChild(main);
       if (header.parentNode !== this) this.insertBefore(header, main);
+      // The shell has one content region. Authored children left as siblings of
+      // the generated <main> took a share of the flex column and sat outside the
+      // document's only main landmark, which is neither the layout nor the
+      // outline the block describes.
+      Array.from(this.children).forEach((child) => {
+        if (child === header || child === main) return;
+        main.appendChild(child);
+      });
     }
   }
   define("contour-app", ContourApp);
@@ -22,7 +30,18 @@ import { ContourBase, define, navKey, isRtl , warnBadJson } from './core.mjs';
     static get properties() { return { title: { attribute: "title" } }; }
     render() {
       this.classList.add("c-app-body");
-      const main = this.ensure(".c-app-body__main", () => { const el = document.createElement("main"); el.className = "c-app-body__main"; return el; });
+      // A document may have one visible <main>. Nested inside `contour-app` the
+      // shell already owns it, so the body's content region is a plain div; on
+      // its own it is the page's landmark.
+      const nested = !!(this.parentElement && this.parentElement.closest && this.parentElement.closest("contour-app"));
+      const tag = nested ? "div" : "main";
+      let main = this.querySelector(":scope > .c-app-body__main");
+      if (main && main.tagName.toLowerCase() !== tag) { main.remove(); main = null; }
+      if (!main) {
+        main = document.createElement(tag);
+        main.className = "c-app-body__main";
+        this.appendChild(main);
+      }
       const title = this.getAttribute("title");
       if (title) {
         const t = this.ensure(".c-app-body__title", () => { const el = document.createElement("div"); el.className = "c-app-body__title"; return el; });

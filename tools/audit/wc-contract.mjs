@@ -794,6 +794,29 @@ try {
               renderAllBad.push(`${n}: labels override not applied (empty=${empty ? JSON.stringify(empty.textContent) : "none"})`);
             host.removeAttribute("labels");
           }
+          // Localised labels on a SECOND component (R18-63). The activity-feed
+          // case above cannot catch the defect this row actually had: that host
+          // listed `labels` in its own `observed`, so it re-rendered while every
+          // host with a per-class list did not. contour-table is the case that
+          // proves the shared fix — it reads three keys through the shared
+          // helper and does not list `labels` itself, so before the base class
+          // appended it, a `labels` change reached nothing and the pagination
+          // kept saying "Previous"/"Next". The authored `title` is checked too:
+          // a default must not overwrite copy the consumer wrote.
+          if (n === "contour-table") {
+            host.setAttribute("rows", JSON.stringify([["a", 1], ["b", 2], ["c", 3], ["d", 4]]));
+            host.setAttribute("page-size", "2");
+            host.setAttribute("labels", JSON.stringify({ prev: "Précédent", next: "Suivant", page: "Page", of: "sur" }));
+            await new Promise((r) => requestAnimationFrame(r));
+            const prev = host.querySelector(".c-table__pagination [data-action='prev']");
+            const next = host.querySelector(".c-table__pagination [data-action='next']");
+            const info = prev && prev.nextElementSibling;
+            const txt = (el) => (el ? el.textContent.trim() : "");
+            if (txt(prev) !== "Précédent" || txt(next) !== "Suivant" || txt(info) !== "Page 1 sur 2")
+              renderAllBad.push(`${n}: labels override not applied to pagination (prev=${txt(prev)} next=${txt(next)} info=${txt(info)})`);
+            host.removeAttribute("labels");
+            host.removeAttribute("page-size");
+          }
           host.remove();
         }
         console.error = origError;
@@ -1941,14 +1964,24 @@ try {
       const { loadRemote, remoteData, remoteInvalidate } = await import("/wc-esm.js");
       const wait = (ms) => new Promise((r) => setTimeout(r, ms));
       const results = {};
-      // BY-25 alert: light layer carries the alert live-region pair.
-      const alert = document.createElement("contour-alert");
-      alert.setAttribute("title", "Heads up");
-      alert.setAttribute("body", "Message");
-      document.body.appendChild(alert);
+      // BY-25 alert: the variant decides the live-region pair. An information
+      // alert speaks politely; warning/danger interrupts. Both are measured,
+      // because asserting only one half lets "every alert is assertive" return.
+      const infoAlert = document.createElement("contour-alert");
+      infoAlert.setAttribute("variant", "info");
+      infoAlert.setAttribute("title", "Heads up");
+      infoAlert.setAttribute("body", "Message");
+      document.body.appendChild(infoAlert);
+      const urgentAlert = document.createElement("contour-alert");
+      urgentAlert.setAttribute("variant", "danger");
+      urgentAlert.setAttribute("title", "Failed");
+      urgentAlert.setAttribute("body", "Message");
+      document.body.appendChild(urgentAlert);
       await wait(30);
-      results.alertRole = alert.getAttribute("role");
-      results.alertLive = alert.getAttribute("aria-live");
+      results.alertInfoRole = infoAlert.getAttribute("role");
+      results.alertInfoLive = infoAlert.getAttribute("aria-live");
+      results.alertUrgentRole = urgentAlert.getAttribute("role");
+      results.alertUrgentLive = urgentAlert.getAttribute("aria-live");
       // BY-25 field: input linked to both messages; required reflected.
       const field = document.createElement("contour-field");
       field.setAttribute("label", "Name");
@@ -2030,8 +2063,10 @@ try {
       return results;
     });
     const bad = [];
-    if (out.alertRole !== "alert") bad.push(`alert role=${String(out.alertRole)} (want alert)`);
-    if (out.alertLive !== "assertive") bad.push(`alert aria-live=${String(out.alertLive)} (want assertive)`);
+    if (out.alertInfoRole !== "status") bad.push(`info alert role=${String(out.alertInfoRole)} (want status)`);
+    if (out.alertInfoLive !== "polite") bad.push(`info alert aria-live=${String(out.alertInfoLive)} (want polite)`);
+    if (out.alertUrgentRole !== "alert") bad.push(`danger alert role=${String(out.alertUrgentRole)} (want alert)`);
+    if (out.alertUrgentLive !== "assertive") bad.push(`danger alert aria-live=${String(out.alertUrgentLive)} (want assertive)`);
     if (!out.hintErrLinked) bad.push(`field aria-describedby=${String(out.describedBy)} (want hint+error ids)`);
     if (out.ariaRequired !== "true") bad.push(`field aria-required=${String(out.ariaRequired)} (want true)`);
     if (out.faqDetails !== "DETAILS") bad.push(`faq item tag=${String(out.faqDetails)} (want DETAILS)`);
@@ -2320,6 +2355,193 @@ try {
       fail(`custom states broke (BY-32): ${bad.join(" | ")}`);
     else
       console.log("wc-contract: :state(data-invalid/checked/loading) all resolve on the shipped bundle");
+  }
+
+  // ---- 23. a11y semantics the review found with no row (R18-69…R18-80) ----
+  //
+  // Each assertion here stands for a finding the plan did not carry: an image
+  // role that hid focusable marks, live regions on static labels, a radiogroup
+  // with five tab stops, a grid of loose buttons, duplicate nav ids, a
+  // separator with no range, a table with no caption, and a click path that
+  // fired from any descendant. All of it is measured on the shipped bundle.
+  {
+    const p = await browser.newPage();
+    const errs = [];
+    p.on("pageerror", (e) => errs.push(String(e.message || e)));
+    await p.goto(`${origin}/unmin.html`, { waitUntil: "load" });
+    await p.waitForFunction(() => !!window.ContourElements, null, { timeout: 20000 });
+    const out = await p.evaluate(async () => {
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+      const results = {};
+      const mount = async (tag, attrs = {}) => {
+        const el = document.createElement(tag);
+        for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+        document.body.appendChild(el);
+        await wait(40);
+        return el;
+      };
+
+      // (1) Interactive chart/map hosts must not be role=img, and an authored
+      // accessible name must survive. Both were measured as broken.
+      results.imgRole = [];
+      const fixtures = {
+        "contour-time-series": { values: "[1,2,3]" },
+        "contour-stacked-bar": { segments: '[{"label":"a","value":1}]', values: "[1,2]" },
+        "contour-hexbin": { cells: '[{"label":"a"}]' },
+        "contour-flow-map": { nodes: '[{"label":"a"}]' },
+        "contour-isochrone": { rings: '[{"label":"a"}]' },
+        "contour-donut": { items: '[{"label":"a","value":1}]' },
+      };
+      for (const [tag, attrs] of Object.entries(fixtures)) {
+        const el = await mount(tag, { ...attrs, "aria-label": "Author name" });
+        results.imgRole.push({ tag, role: el.getAttribute("role"), label: el.getAttribute("aria-label") });
+        el.remove();
+      }
+
+      // (2) Static labels are not live regions; `live` is the opt-in.
+      results.liveRegions = {};
+      for (const tag of ["contour-chip", "contour-tag", "contour-pill"]) {
+        const plain = await mount(tag, { label: "Static" });
+        const live = await mount(tag, { label: "Live", live: "" });
+        results.liveRegions[tag] = { plain: plain.getAttribute("role"), live: live.getAttribute("role") };
+        plain.remove(); live.remove();
+      }
+
+      // (3) A radiogroup is one tab stop, and arrows move the checked state.
+      const rt = await mount("contour-rating", { value: "2", max: "5" });
+      const stars = Array.from(rt.querySelectorAll(".c-rating__star"));
+      results.ratingTabStops = stars.filter((s) => s.getAttribute("tabindex") !== "-1").length;
+      stars[1].focus();
+      stars[1].dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true, cancelable: true }));
+      await wait(20);
+      results.ratingChecked = stars.map((s) => s.getAttribute("aria-checked")).join(",");
+      results.ratingLabel = rt.getAttribute("aria-label");
+      rt.remove();
+
+      // (4) The calendar is a grid of rows and cells with one tab stop.
+      const dp = await mount("contour-date-picker", { value: "2026-11-12" });
+      dp.querySelector(".c-date-picker__calendar-toggle").click();
+      await wait(60);
+      const cal = dp.querySelector(".c-date-picker__calendar");
+      results.calendar = {
+        rows: cal.querySelectorAll('[role="row"]').length,
+        cells: cal.querySelectorAll('[role="gridcell"]').length,
+        headers: cal.querySelectorAll('[role="columnheader"]').length,
+        tabStops: Array.from(cal.querySelectorAll("button.c-date-picker__calendar-day")).filter((b) => b.getAttribute("tabindex") !== "-1").length,
+      };
+      dp.remove();
+
+      // (5) Two headers own two ids; each toggle names its own nav.
+      const h1 = await mount("contour-header", { brand: "A", links: '[{"label":"x","href":"#x"}]' });
+      const h2 = await mount("contour-header", { brand: "B", links: '[{"label":"y","href":"#y"}]' });
+      results.headers = [h1, h2].map((h) => {
+        const nav = h.querySelector(".c-header__nav");
+        const tgl = h.querySelector(".c-header__toggle");
+        return { id: nav && nav.id, controls: tgl && tgl.getAttribute("aria-controls") };
+      });
+      h1.remove(); h2.remove();
+
+      // (6) The separator publishes a finite range and a finite Home/End delta.
+      const dh = await mount("contour-drag-handle", { label: "Split", "aria-valuenow": "30", max: "100" });
+      let drag = null;
+      dh.addEventListener("contour:drag", (e) => { drag = e.detail; });
+      dh.dispatchEvent(new KeyboardEvent("keydown", { key: "End", bubbles: true, cancelable: true }));
+      await wait(20);
+      results.dragHandle = { min: dh.getAttribute("aria-valuemin"), max: dh.getAttribute("aria-valuemax"), delta: drag && drag.delta, value: drag && drag.value };
+      dh.remove();
+
+      // (7) A generated table carries a caption naming it.
+      const tbl = await mount("contour-table", { title: "Routes by day", columns: '["Day","Count"]', rows: '[["Mon",3]]' });
+      const cap = tbl.querySelector("table.c-table > caption");
+      results.tableCaption = cap ? cap.textContent : null;
+      tbl.remove();
+
+      // (8) Only the title row toggles the advanced section.
+      const adv = await mount("contour-advanced", { title: "More" });
+      let toggles = 0;
+      adv.addEventListener("contour:advanced-toggle", () => { toggles++; });
+      const inner = document.createElement("button");
+      adv.appendChild(inner);
+      inner.click();
+      await wait(20);
+      results.advancedChild = toggles;
+      adv.querySelector(".c-advanced__title").click();
+      await wait(20);
+      results.advancedTitle = toggles;
+      adv.remove();
+
+      // (9) The KPI row is a projection of the KPI API, not two attributes.
+      const row = await mount("contour-dash-kpi-row", { items: '[{"value":"42","label":"Routes","delta":"+4","unit":"km"}]' });
+      const kpi = row.querySelector("contour-kpi");
+      results.kpi = { delta: kpi && kpi.getAttribute("delta"), unit: kpi && kpi.getAttribute("unit"), tabindex: kpi && kpi.getAttribute("tabindex") };
+      row.remove();
+
+      // (10) The inspector re-renders when `data` changes and renders actions.
+      const fi = await mount("contour-feature-inspector", { title: "Parcel", data: '{"a":1}', actions: '["Zoom","Select"]' });
+      const first = fi.querySelectorAll(".c-feature-inspector__field").length;
+      fi.setAttribute("data", '{"a":1,"b":2}');
+      await wait(40);
+      results.inspector = { first, after: fi.querySelectorAll(".c-feature-inspector__field").length, actions: fi.querySelectorAll(".c-feature-inspector__action").length };
+      fi.remove();
+
+      // (11) One main landmark, and authored children live inside it.
+      const app = document.createElement("contour-app");
+      app.setAttribute("title", "App");
+      const cell = document.createElement("span");
+      cell.id = "cell";
+      app.appendChild(cell);
+      const body = document.createElement("contour-app-body");
+      app.appendChild(body);
+      document.body.appendChild(app);
+      await wait(80);
+      results.app = { mains: app.querySelectorAll("main").length, cellInMain: app.querySelector("main").contains(cell), bodyTag: body.querySelector(".c-app-body__main").tagName };
+      app.remove();
+
+      // (12) A closable tab does not nest a button inside a button.
+      const tabs = await mount("contour-tabs", { tabs: '["One","Two"]', closable: "" });
+      const tabEls = Array.from(tabs.querySelectorAll("[role='tab']"));
+      results.tabs = {
+        count: tabEls.length,
+        tag: tabEls[0] ? tabEls[0].tagName : null,
+        nestedButton: tabEls.some((t) => t.tagName === "BUTTON" && t.querySelector("button")),
+        closeButtons: tabs.querySelectorAll(".c-tabs__close").length,
+      };
+      tabs.remove();
+
+      return results;
+    });
+    const bad = [];
+    for (const row of out.imgRole) {
+      if (row.role === "img") bad.push(`${row.tag} is role=img with interactive content (focusable marks are hidden)`);
+      if (row.label !== "Author name") bad.push(`${row.tag} overwrote an authored aria-label with "${row.label}"`);
+    }
+    for (const [tag, v] of Object.entries(out.liveRegions)) {
+      if (v.plain !== null) bad.push(`${tag} is a live region without \`live\` (role=${v.plain})`);
+      if (v.live !== "status") bad.push(`${tag}[live] role=${v.live} (want status)`);
+    }
+    if (out.ratingTabStops !== 1) bad.push(`rating exposes ${out.ratingTabStops} tab stops (want 1)`);
+    if (out.ratingChecked !== "false,false,true,false,false") bad.push(`ArrowRight left aria-checked=${out.ratingChecked} (want the third star checked)`);
+    if (out.ratingLabel !== "Rating") bad.push(`rating label=${out.ratingLabel} (want the fallback when none is authored)`);
+    if (out.calendar.rows < 5 || out.calendar.cells < 28 || out.calendar.headers !== 7) bad.push(`calendar grid=${JSON.stringify(out.calendar)} (want rows, one gridcell per day, 7 columnheaders)`);
+    if (out.calendar.tabStops !== 1) bad.push(`calendar exposes ${out.calendar.tabStops} day tab stops (want 1)`);
+    if (out.headers[0].id === out.headers[1].id) bad.push(`two headers share the nav id ${out.headers[0].id}`);
+    if (out.headers.some((h) => h.controls !== h.id)) bad.push(`header toggle does not control its own nav: ${JSON.stringify(out.headers)}`);
+    if (out.dragHandle.min === null || out.dragHandle.max === null) bad.push(`separator range=${JSON.stringify(out.dragHandle)} (want aria-valuemin/max)`);
+    if (!Number.isFinite(out.dragHandle.delta)) bad.push(`End delta=${out.dragHandle.delta} (want a finite distance)`);
+    if (out.dragHandle.value !== 30) bad.push(`drag detail value=${out.dragHandle.value} (want the current aria-valuenow)`);
+    if (out.tableCaption !== "Routes by day") bad.push(`table caption=${JSON.stringify(out.tableCaption)} (want the authored title)`);
+    if (out.advancedChild !== 0 || out.advancedTitle !== 1) bad.push(`advanced toggled child=${out.advancedChild} title=${out.advancedTitle} (want 0/1)`);
+    if (out.kpi.delta !== "+4" || out.kpi.unit !== "km") bad.push(`KPI row dropped attributes: ${JSON.stringify(out.kpi)}`);
+    if (out.kpi.tabindex !== "0") bad.push(`first KPI tabindex=${out.kpi.tabindex} (want a tab stop so the arrow handler can run)`);
+    if (out.inspector.after !== 2 || out.inspector.actions !== 2) bad.push(`inspector data/actions=${JSON.stringify(out.inspector)} (want 2 fields after the change, 2 action buttons)`);
+    if (out.app.mains !== 1 || !out.app.cellInMain || out.app.bodyTag !== "DIV") bad.push(`app shell=${JSON.stringify(out.app)} (want one main, authored children inside it, and a div body)`);
+    if (out.tabs.nestedButton || out.tabs.count !== 2 || out.tabs.closeButtons !== 2 || out.tabs.tag !== "DIV") bad.push(`closable tabs=${JSON.stringify(out.tabs)} (want two div tabs, two close buttons, no button inside a button)`);
+    if (errs.length) bad.push(`page errors: ${errs.slice(0, 2).join(" | ")}`);
+    compared += 8 + 3 + 3 + 4 + 2 + 3 + 1 + 2 + 2 + 2 + 3 + 1;
+    if (bad.length)
+      fail(`a11y semantics broke (R18-69…R18-84): ${bad.join(" | ")}`);
+    else
+      console.log("wc-contract: a11y semantics measured — no role=img over interactive content, live regions opt-in, one radiogroup/calendar tab stop, unique nav ids, finite separator range, table caption, scoped toggle, KPI passthrough, inspector actions, one main landmark, no button inside a button");
   }
 } finally {
   await browser.close();

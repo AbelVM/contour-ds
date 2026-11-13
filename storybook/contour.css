@@ -2392,6 +2392,10 @@
   .c-tabs__tab {
     position: relative;
     scroll-snap-align: start;
+    /* A closable tab is a div (a button may not contain the close control);
+       inline-flex gives it the same one-line layout the button had. */
+    display: inline-flex;
+    align-items: center;
     min-block-size: var(--target-control);
     padding: calc(0.85rem * var(--density, 1)) calc(0.9rem * var(--density, 1));
     background: none;
@@ -5207,6 +5211,12 @@
     display: grid;
     grid-template-columns: repeat(7, minmax(calc(2.75rem * var(--density, 1)), 1fr));
     gap: 2px;
+  }
+  /* The grid's ARIA rows must not become layout boxes: the seven-column flow is
+     drawn by the grid above, so a row is `display: contents` and its cells keep
+     their place. */
+  .c-date-picker__calendar-row {
+    display: contents;
   }
   .c-date-picker__calendar-weekday {
     font-size: var(--type-xs);

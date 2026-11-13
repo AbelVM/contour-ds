@@ -71,7 +71,9 @@ class ContourActivity extends ContourBase {
             const item = document.createElement("div");
             item.className = "c-activity__item";
             item.setAttribute("role", "button");
-            item.setAttribute("tabindex", "-1");
+            // The first item is the list's tab stop; otherwise the roving
+            // keydown handler never receives focus from the keyboard.
+            item.setAttribute("tabindex", i === 0 ? "0" : "-1");
             const dot = document.createElement("span");
             dot.className = "c-activity__dot c-activity__dot--" + (it.variant || "primary");
             dot.setAttribute("aria-hidden", "true");
@@ -115,12 +117,12 @@ class ContourActivity extends ContourBase {
   }
   define("contour-activity", ContourActivity);
 class ContourActivityFeed extends ContourBase {
-    static get observed() { return ["items", "filter", "unread-only", "empty", "loading", "error", "labels"]; }
+    static get observed() { return ["items", "filter", "unread-only", "empty", "loading", "error", "labels", "src", "lazy", "refresh", "timeout", "skeleton"]; }
     static get properties() { return { items: { attribute: "items" }, filter: { attribute: "filter" }, "unread-only": { attribute: "unread-only", type: Boolean } }; }
     render() {
       this.classList.add("c-activity-feed");
-      this.setAttribute("role", "region");
-      this.setAttribute("aria-label", "Activity feed");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "region");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", label(this, "title", "Activity feed"));
       wireStates(this);
       loadRemote(this, "items");
       if (renderStates(this, "activity-feed")) return;
@@ -134,8 +136,8 @@ class ContourActivityFeed extends ContourBase {
       title.textContent = label(this, "title", "Activity feed");
       let toolbar = this.querySelector(".c-activity-feed__toolbar");
       if (!toolbar) { toolbar = document.createElement("div"); toolbar.className = "c-activity-feed__toolbar"; this.appendChild(toolbar); }
-      const clear = toolbar.querySelector(".c-activity-feed__clear") || (() => { const b = document.createElement("button"); b.type = "button"; b.className = "c-btn c-btn--ghost c-btn--sm"; b.textContent = label(this, "clear", "Clear all"); toolbar.appendChild(b); return b; })();
-      const unreadBtn = toolbar.querySelector(".c-activity-feed__unread") || (() => { const b = document.createElement("button"); b.type = "button"; b.className = "c-btn c-btn--ghost c-btn--sm"; b.textContent = label(this, "unread", "Unread only"); toolbar.appendChild(b); return b; })();
+      const clear = toolbar.querySelector("[data-activity-clear]") || (() => { const b = document.createElement("button"); b.type = "button"; b.className = "c-btn c-btn--ghost c-btn--sm"; b.setAttribute("data-activity-clear", ""); b.textContent = label(this, "clear", "Clear all"); toolbar.appendChild(b); return b; })();
+      const unreadBtn = toolbar.querySelector("[data-activity-unread]") || (() => { const b = document.createElement("button"); b.type = "button"; b.className = "c-btn c-btn--ghost c-btn--sm"; b.setAttribute("data-activity-unread", ""); b.textContent = label(this, "unread", "Unread only"); toolbar.appendChild(b); return b; })();
       if (unreadOnly) unreadBtn.setAttribute("aria-pressed", "true");
       let list = this.querySelector(".c-activity-feed__list");
       if (!list) { list = document.createElement("ol"); list.className = "c-activity-feed__list"; this.appendChild(list); }
@@ -152,11 +154,14 @@ class ContourActivityFeed extends ContourBase {
           } else {
             const empty = list.querySelector(".c-activity-feed__empty");
             if (empty) empty.remove();
-            filtered.forEach((it) => {
+            filtered.forEach((it, idx) => {
               const item = document.createElement("li");
               item.className = "c-activity-feed__item" + (it.read ? "" : " c-activity-feed__item--unread");
               item.setAttribute("role", "button");
-              item.setAttribute("tabindex", "-1");
+              // The first item is the list's tab stop. With every item at -1 the
+              // keydown handler never saw focus inside the list, so arrows and
+              // Enter did nothing for a keyboard user.
+              item.setAttribute("tabindex", idx === 0 ? "0" : "-1");
               const dot = document.createElement("span");
               dot.className = "c-activity-feed__dot c-activity-feed__dot--" + (it.severity || "info");
               dot.setAttribute("aria-hidden", "true");
@@ -186,9 +191,11 @@ class ContourActivityFeed extends ContourBase {
       this.addEventListener("click", (e) => {
         const btn = e.target && e.target.closest ? e.target.closest("button") : null;
         if (!btn || !this.contains(btn)) return;
-        if (btn.textContent === "Clear all") {
+        // Match the control, not its text: a localised `labels` value changes
+        // the words, and an equality test on "Clear all" then matched nothing.
+        if (btn.hasAttribute("data-activity-clear")) {
           this.dispatchEvent(new CustomEvent("contour:activity-clear", { bubbles: true, composed: true, detail: {} }));
-        } else if (btn.textContent === "Unread only") {
+        } else if (btn.hasAttribute("data-activity-unread")) {
           this.toggleAttribute("unread-only");
           this.dispatchEvent(new CustomEvent("contour:activity-filter", { bubbles: true, composed: true, detail: { unread: this.hasAttribute("unread-only") } }));
         } else {
@@ -227,10 +234,16 @@ class ContourAdvanced extends ContourBase {
       if (this._wiredAdvanced) return;
       this._wiredAdvanced = true;
       this.addEventListener("click", (e) => {
+        // Only the title row toggles. A click anywhere used to fire the event,
+        // including on a nested button or input, so using the section toggled it.
+        const t = e.target && e.target.closest ? e.target.closest(".c-advanced__title") : null;
+        if (!t || !this.contains(t)) return;
         const title = this.getAttribute("title") || "";
         this.dispatchEvent(new CustomEvent("contour:advanced-toggle", { bubbles: true, composed: true, detail: { title } }));
       });
       this.addEventListener("keydown", (e) => {
+        // A key pressed inside an authored control belongs to that control.
+        if (e.target !== this) return;
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
           const title = this.getAttribute("title") || "";

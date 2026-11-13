@@ -964,6 +964,12 @@
     grid-template-columns: repeat(7, minmax(calc(2.75rem * var(--density, 1)), 1fr));
     gap: 2px;
   }
+  /* The grid's ARIA rows must not become layout boxes: the seven-column flow is
+     drawn by the grid above, so a row is `display: contents` and its cells keep
+     their place. */
+  .c-date-picker__calendar-row {
+    display: contents;
+  }
   .c-date-picker__calendar-weekday {
     font-size: var(--type-xs);
     color: var(--color-text-muted);

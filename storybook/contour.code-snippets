@@ -27,7 +27,7 @@
       "c-activity-feed"
     ],
     "body": [
-      "<contour-activity-feed items=\"${1:items}\">$0</contour-activity-feed>"
+      "<contour-activity-feed items=\"${1:items}\" src=\"${2:src}\">$0</contour-activity-feed>"
     ],
     "description": "Contour c-activity-feed (complete-widget)",
     "scope": "html,vue,jsx,tsx"
@@ -621,7 +621,7 @@
       "c-dash-kpi-row"
     ],
     "body": [
-      "<contour-dash-kpi-row items=\"${1:items}\">$0</contour-dash-kpi-row>"
+      "<contour-dash-kpi-row items=\"${1:items}\" title=\"${2:title}\">$0</contour-dash-kpi-row>"
     ],
     "description": "Contour c-dash-kpi-row (composition)",
     "scope": "html,vue,jsx,tsx"
@@ -1006,7 +1006,7 @@
       "c-feature-inspector"
     ],
     "body": [
-      "<contour-feature-inspector title=\"${1:title}\">$0</contour-feature-inspector>"
+      "<contour-feature-inspector title=\"${1:title}\" data=\"${2:data}\">$0</contour-feature-inspector>"
     ],
     "description": "Contour c-feature-inspector (complete-widget)",
     "scope": "html,vue,jsx,tsx"
@@ -4229,7 +4229,7 @@
       "c-table"
     ],
     "body": [
-      "<contour-table columns=\"${1:columns}\" rows=\"${2:rows}\">$0</contour-table>"
+      "<contour-table columns=\"${1:columns}\" rows=\"${2:rows}\" title=\"${3:title}\">$0</contour-table>"
     ],
     "description": "Contour c-table (complete-widget)",
     "scope": "html,vue,jsx,tsx"
@@ -4350,7 +4350,7 @@
       "c-time-series"
     ],
     "body": [
-      "<contour-time-series series=\"${1:series}\" src=\"${2:src}\">$0</contour-time-series>"
+      "<contour-time-series series=\"${1:series}\" title=\"${2:title}\" src=\"${3:src}\">$0</contour-time-series>"
     ],
     "description": "Contour c-time-series (complete-widget)",
     "scope": "html,vue,jsx,tsx"

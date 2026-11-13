@@ -1,4 +1,4 @@
-import { ContourBase, define, contourId, onDispose, navKey, safeColor, safeHref, cssLength , warnBadJson, label } from './core.mjs';
+import { ContourBase, define, contourId, onDispose, navKey, safeColor, safeHref, cssLength , warnBadJson, labelText } from './core.mjs';
 import { wireRemovable, modalContain } from './behaviours.mjs';
 /**
  * Avatar: a circular avatar with initials (from `name`) or an image (`src`),
@@ -95,11 +95,16 @@ class ContourBadgeFull extends ContourBase {
  * Attributes: `variant`, `key`, `value`.
  */
 class ContourChipFull extends ContourBase {
-    static get observed() { return ["variant", "key", "value"]; }
-    static get properties() { return { variant: { attribute: "variant" }, key: { attribute: "key" }, value: { attribute: "value" } }; }
+    static get observed() { return ["variant", "key", "value", "live"]; }
+    static get properties() { return { variant: { attribute: "variant" }, key: { attribute: "key" }, value: { attribute: "value" }, live: { attribute: "live", type: Boolean } }; }
     render() {
       this.classList.add("c-chip");
-      if (!this.hasAttribute("role")) this.setAttribute("role", "status");
+      // A static filter chip is a label, not a live region. Only a chip the
+      // author marks `live` announces; otherwise a page with 50 chips creates
+      // 50 politeness regions that may speak on load.
+      if (this.hasAttribute("live") && !this.hasAttribute("role")) this.setAttribute("role", "status");
+      else if (!this.hasAttribute("live") && this.getAttribute("role") === "status" && this._autoChipRole) this.removeAttribute("role");
+      this._autoChipRole = this.hasAttribute("live");
       Array.from(this.classList).forEach((c) => { if (c.startsWith("c-chip--")) this.classList.remove(c); });
       const variant = this.getAttribute("variant");
       if (variant) this.classList.add("c-chip--" + variant);
@@ -127,11 +132,15 @@ class ContourChipFull extends ContourBase {
  * `removable`, `variant`.
  */
 class ContourTag extends ContourBase {
-    static get observed() { return ["label", "removable", "variant"]; }
-    static get properties() { return { label: { attribute: "label" }, removable: { attribute: "removable", type: Boolean }, variant: { attribute: "variant" } }; }
+    static get observed() { return ["label", "removable", "variant", "live"]; }
+    static get properties() { return { label: { attribute: "label" }, removable: { attribute: "removable", type: Boolean }, variant: { attribute: "variant" }, live: { attribute: "live", type: Boolean } }; }
     render() {
       this.classList.add("c-tag");
-      if (!this.hasAttribute("role")) this.setAttribute("role", "status");
+      // A tag is normally a static label. `live` opts it into a polite region,
+      // so a wall of tags does not create a wall of announcements.
+      if (this.hasAttribute("live") && !this.hasAttribute("role")) this.setAttribute("role", "status");
+      else if (!this.hasAttribute("live") && this.getAttribute("role") === "status" && this._autoTagRole) this.removeAttribute("role");
+      this._autoTagRole = this.hasAttribute("live");
       Array.from(this.classList).forEach((c) => { if (c.startsWith("c-tag--")) this.classList.remove(c); });
       const variant = this.getAttribute("variant");
       if (variant) this.classList.add("c-tag--" + variant);
@@ -194,7 +203,11 @@ class ContourPill extends ContourBase {
     static get properties() { return { label: { attribute: "label" }, live: { attribute: "live", type: Boolean }, variant: { attribute: "variant" } }; }
     render() {
       this.classList.add("c-pill");
-      if (!this.hasAttribute("role")) this.setAttribute("role", "status");
+      // `live` is the pill's opt-in to a polite region. A static pill is a label:
+      // role=status on every instance makes a page of pills announce itself.
+      if (this.hasAttribute("live") && !this.hasAttribute("role")) this.setAttribute("role", "status");
+      else if (!this.hasAttribute("live") && this.getAttribute("role") === "status" && this._autoPillRole) this.removeAttribute("role");
+      this._autoPillRole = this.hasAttribute("live");
       Array.from(this.classList).forEach((c) => { if (c.startsWith("c-pill--")) this.classList.remove(c); });
       const variant = this.getAttribute("variant");
       if (variant) this.classList.add("c-pill--" + variant);
@@ -737,6 +750,9 @@ class ContourSkeletonGroup extends ContourBase {
       for (let i = 0; i < count; i++) {
         const sk = document.createElement("div");
         sk.className = "c-skeleton";
+        // Same rule as `contour-skeleton`: a placeholder is decorative. An
+        // exposed empty div adds noise and says nothing.
+        sk.setAttribute("aria-hidden", "true");
         this.appendChild(sk);
       }
     }
@@ -1185,28 +1201,28 @@ class ContourStylePanel extends ContourBase {
          const paletteId = uid + "-palette";
          const nId = uid + "-n";
          // property field
-         const propLabel = document.createElement("label"); propLabel.textContent = "Colour field"; propLabel.setAttribute("for", propId); body.appendChild(propLabel);
-         const propIn = document.createElement("input"); propIn.type = "text"; propIn.id = propId; propIn.className = "c-style-panel__property c-input"; propIn.setAttribute("aria-label", "Colour field");
+         const propLabel = document.createElement("label"); propLabel.textContent = labelText(this, "colour-field", "Colour field"); propLabel.setAttribute("for", propId); body.appendChild(propLabel);
+         const propIn = document.createElement("input"); propIn.type = "text"; propIn.id = propId; propIn.className = "c-style-panel__property c-input"; propIn.setAttribute("aria-label", labelText(this, "colour-field", "Colour field"));
          const pv = this.getAttribute("property"); if (pv) propIn.value = pv;
          body.appendChild(propIn);
          // classification method selector (policy)
-         const clsLabel = document.createElement("label"); clsLabel.textContent = "Classification"; clsLabel.setAttribute("for", policyId); body.appendChild(clsLabel);
-         const clsSel = document.createElement("select"); clsSel.id = policyId; clsSel.className = "c-style-panel__classification c-input"; clsSel.setAttribute("aria-label", "Classification method");
+         const clsLabel = document.createElement("label"); clsLabel.textContent = labelText(this, "classification", "Classification"); clsLabel.setAttribute("for", policyId); body.appendChild(clsLabel);
+         const clsSel = document.createElement("select"); clsSel.id = policyId; clsSel.className = "c-style-panel__classification c-input"; clsSel.setAttribute("aria-label", labelText(this, "classification-method", "Classification method"));
          ["equal","quantile","jenks","manual"].forEach((m) => { const o = document.createElement("option"); o.value = m; o.textContent = m; clsSel.appendChild(o); });
          const cls = this.getAttribute("classification"); if (cls) clsSel.value = cls;
          body.appendChild(clsSel);
          // palette picker
-         const palLabel = document.createElement("label"); palLabel.textContent = "Palette"; palLabel.setAttribute("for", paletteId); body.appendChild(palLabel);
-         const pal = document.createElement("input"); pal.type = "text"; pal.id = paletteId; pal.className = "c-style-panel__palette c-input"; pal.placeholder = "palette"; pal.setAttribute("aria-label", "Palette");
+         const palLabel = document.createElement("label"); palLabel.textContent = labelText(this, "palette", "Palette"); palLabel.setAttribute("for", paletteId); body.appendChild(palLabel);
+         const pal = document.createElement("input"); pal.type = "text"; pal.id = paletteId; pal.className = "c-style-panel__palette c-input"; pal.placeholder = labelText(this, "palette", "Palette"); pal.setAttribute("aria-label", labelText(this, "palette", "Palette"));
          const palv = this.getAttribute("palette"); if (palv) pal.value = palv;
          body.appendChild(pal);
          // n (class count)
-         const nLabel = document.createElement("label"); nLabel.textContent = "Classes"; nLabel.setAttribute("for", nId); body.appendChild(nLabel);
-         const nIn = document.createElement("input"); nIn.type = "number"; nIn.id = nId; nIn.className = "c-style-panel__n c-input"; nIn.min = "2"; nIn.max = "12"; nIn.setAttribute("aria-label", "Class count");
+         const nLabel = document.createElement("label"); nLabel.textContent = labelText(this, "classes", "Classes"); nLabel.setAttribute("for", nId); body.appendChild(nLabel);
+         const nIn = document.createElement("input"); nIn.type = "number"; nIn.id = nId; nIn.className = "c-style-panel__n c-input"; nIn.min = "2"; nIn.max = "12"; nIn.setAttribute("aria-label", labelText(this, "class-count", "Class count"));
          const nv = this.getAttribute("n"); if (nv) nIn.value = nv; else nIn.value = "5";
          body.appendChild(nIn);
          // opacity slider
-         const op = document.createElement("input"); op.type = "range"; op.className = "c-style-panel__opacity"; op.setAttribute("aria-label", "Opacity"); op.min = "0"; op.max = "100";
+         const op = document.createElement("input"); op.type = "range"; op.className = "c-style-panel__opacity"; op.setAttribute("aria-label", labelText(this, "opacity", "Opacity")); op.min = "0"; op.max = "100";
          const ov = this.getAttribute("opacity"); op.value = ov != null ? ov : "100";
          body.appendChild(op);
          // breaks as .break elements per class
@@ -1218,7 +1234,7 @@ class ContourStylePanel extends ContourBase {
            breaksArr.forEach((b, i) => {
              const br = document.createElement("div"); br.className = "break";
              const span = document.createElement("span"); span.textContent = String(b); br.appendChild(span);
-             const inp = document.createElement("input"); inp.type = "number"; inp.className = "c-style-panel__breaks c-input"; inp.setAttribute("aria-label", "Class lower bound"); inp.value = String(b);
+             const inp = document.createElement("input"); inp.type = "number"; inp.className = "c-style-panel__breaks c-input"; inp.setAttribute("aria-label", labelText(this, "class-lower-bound", "Class lower bound")); inp.value = String(b);
              br.appendChild(inp);
              breaksWrap.appendChild(br);
            });
@@ -1231,7 +1247,7 @@ class ContourStylePanel extends ContourBase {
          if (Array.isArray(colors)) {
            const list = document.createElement("div"); list.className = "c-style-panel__colors";
            colors.forEach((c, i) => {
-             const sw = document.createElement("input"); sw.type = "color"; sw.className = "c-style-panel__color c-input"; sw.setAttribute("aria-label", "Colour for class " + (i + 1));
+             const sw = document.createElement("input"); sw.type = "color"; sw.className = "c-style-panel__color c-input"; sw.setAttribute("aria-label", labelText(this, "colour-for-class", "Colour for class") + " " + (i + 1));
              sw.value = c;
              sw.addEventListener("input", () => { sw.setAttribute("data-edited", "true"); });
              list.appendChild(sw);
@@ -1240,8 +1256,8 @@ class ContourStylePanel extends ContourBase {
          }
          // Apply/Revert buttons
          const actions = document.createElement("div"); actions.className = "c-style-panel__actions c-btn-group";
-         const applyBtn = document.createElement("button"); applyBtn.type = "button"; applyBtn.className = "c-btn c-btn--primary"; applyBtn.textContent = "Apply";
-         const revertBtn = document.createElement("button"); revertBtn.type = "button"; revertBtn.className = "c-btn"; revertBtn.textContent = "Revert";
+         const applyBtn = document.createElement("button"); applyBtn.type = "button"; applyBtn.className = "c-btn c-btn--primary"; applyBtn.textContent = labelText(this, "apply", "Apply");
+         const revertBtn = document.createElement("button"); revertBtn.type = "button"; revertBtn.className = "c-btn"; revertBtn.textContent = labelText(this, "revert", "Revert");
          actions.appendChild(applyBtn); actions.appendChild(revertBtn);
          body.appendChild(actions);
          return;
@@ -1285,7 +1301,7 @@ class ContourStylePanel extends ContourBase {
             // classification method selector
             const clsSel = document.createElement("select");
             clsSel.className = "c-style-panel__classification";
-            clsSel.setAttribute("aria-label", "Classification method");
+            clsSel.setAttribute("aria-label", labelText(this, "classification-method", "Classification method"));
             ["equal","quantile","jenks","manual"].forEach((m) => { const o = document.createElement("option"); o.value = m; o.textContent = m; clsSel.appendChild(o); });
             if (typeof l === "object" && l.classification) clsSel.value = l.classification;
             row.appendChild(clsSel);
@@ -1309,7 +1325,7 @@ class ContourStylePanel extends ContourBase {
             const op = document.createElement("input");
             op.type = "range";
             op.className = "c-style-panel__opacity";
-            op.setAttribute("aria-label", "Opacity");
+            op.setAttribute("aria-label", labelText(this, "opacity", "Opacity"));
             op.min = "0"; op.max = "100";
             op.value = (typeof l === "object" && l.opacity != null) ? l.opacity : "100";
             row.appendChild(op);
@@ -1484,6 +1500,12 @@ class ContourSplitButton extends ContourBase {
       main.textContent = this.getAttribute("label") || "Action";
       const toggle = this.ensure(".c-split-button__toggle", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--icon c-split-button__toggle"; el.type = "button"; el.setAttribute("aria-label", "More options"); el.textContent = "▾"; return el; });
       const menu = this.ensure(".c-split-button__menu", () => { const el = document.createElement("div"); el.className = "c-menu c-split-button__menu"; el.setAttribute("role", "menu"); el.hidden = true; return el; });
+      // The toggle opens a menu: it says so, it owns the state, and it names the
+      // node it opens. Without all three a reader hears an unlabelled "▾".
+      if (!menu.id) menu.id = (this.id || contourId("split")) + "-menu";
+      toggle.setAttribute("aria-haspopup", "menu");
+      toggle.setAttribute("aria-controls", menu.id);
+      toggle.setAttribute("aria-expanded", String(!menu.hidden));
       const items = this.getAttribute("menu");
       if (items) {
         try {
@@ -1815,24 +1837,63 @@ class ContourDatePicker extends ContourBase {
       const grid = document.createElement("div");
       grid.className = "c-date-picker__calendar-grid";
       grid.setAttribute("role", "grid");
+      // A grid is rows of cells. The rows use `display: contents`, so the visual
+      // seven-column layout is untouched while the accessibility tree gets a
+      // real row/gridcell structure instead of thirty loose buttons.
+      grid.setAttribute("aria-label", title.textContent);
+      const rowEl = () => {
+        const row = document.createElement("div");
+        row.className = "c-date-picker__calendar-row";
+        row.setAttribute("role", "row");
+        grid.appendChild(row);
+        return row;
+      };
+      let row = rowEl();
+      let cells = 0;
+      const push = (cell) => {
+        if (cells === 7) { row = rowEl(); cells = 0; }
+        row.appendChild(cell);
+        cells++;
+      };
       const weekdays = ["Su","Mo","Tu","We","Th","Fr","Sa"];
-      weekdays.forEach((w) => { const h = document.createElement("div"); h.className = "c-date-picker__calendar-weekday"; h.textContent = w; grid.appendChild(h); });
-      for (let i = 0; i < startDay; i++) { const empty = document.createElement("div"); empty.className = "c-date-picker__calendar-day c-date-picker__calendar-day--empty"; grid.appendChild(empty); }
+      const weekdayNames = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+      weekdays.forEach((w, i) => {
+        const h = document.createElement("div");
+        h.className = "c-date-picker__calendar-weekday";
+        h.setAttribute("role", "columnheader");
+        h.setAttribute("aria-label", weekdayNames[i]);
+        h.textContent = w;
+        push(h);
+      });
+      for (let i = 0; i < startDay; i++) {
+        const empty = document.createElement("div");
+        empty.className = "c-date-picker__calendar-day c-date-picker__calendar-day--empty";
+        empty.setAttribute("role", "gridcell");
+        empty.setAttribute("aria-hidden", "true");
+        push(empty);
+      }
       const selected = input ? input.value : "";
+      const inMonth = selected && selected.slice(0, 7) === `${y}-${String(m + 1).padStart(2, "0")}`;
+      const stopDay = inMonth ? parseInt(selected.slice(8, 10), 10) || 1 : 1;
       for (let d = 1; d <= daysInMonth; d++) {
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "c-date-picker__calendar-day";
         btn.textContent = String(d);
+        btn.setAttribute("role", "gridcell");
+        // One tab stop for the month; arrows move within the grid.
+        btn.setAttribute("tabindex", d === stopDay ? "0" : "-1");
+        // "12" is a number, not a date. The cell's name says the whole date.
+        btn.setAttribute("aria-label", new Date(y, m, d).toLocaleDateString(this.getAttribute("locale") || undefined, { weekday: "long", day: "numeric", month: "long", year: "numeric" }));
         const iso = `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
-        if (selected && selected.startsWith(iso)) btn.classList.add("is-selected");
+        if (selected && selected.startsWith(iso)) { btn.classList.add("is-selected"); btn.setAttribute("aria-selected", "true"); }
         btn.addEventListener("click", () => {
           if (input) { input.value = iso; input.dispatchEvent(new Event("change", { bubbles: true })); }
           cal.setAttribute("hidden", "");
           const tgl = this.querySelector(".c-date-picker__calendar-toggle");
           if (tgl) tgl.setAttribute("aria-expanded", "false");
         });
-        grid.appendChild(btn);
+        push(btn);
       }
       cal.appendChild(grid);
       prev.addEventListener("click", () => { this._calMonth = new Date(y, m - 1, 1); this._renderCalendar(); });
@@ -1876,6 +1937,34 @@ class ContourDatePicker extends ContourBase {
         const btn = e.target && e.target.closest ? e.target.closest(".c-date-picker__calendar-toggle") : null;
         if (btn && this.contains(btn)) { e.preventDefault(); toggle(); }
       });
+      // Grid keyboard: one tab stop enters the month, arrows move between days,
+      // Home/End reach the ends of the month and PageUp/PageDown change month.
+      // Delegated on the host because `_renderCalendar()` rebuilds the cells.
+      this.addEventListener("keydown", (e) => {
+        const cal = this.querySelector(".c-date-picker__calendar");
+        if (!cal || cal.hasAttribute("hidden")) return;
+        const cells = Array.from(cal.querySelectorAll('[role="gridcell"]:not([aria-hidden="true"])'));
+        const i = cells.indexOf(document.activeElement);
+        if (i < 0) return;
+        if (e.key === "PageUp" || e.key === "PageDown") {
+          e.preventDefault();
+          const btn = this.querySelector(e.key === "PageUp" ? ".c-date-picker__calendar-header button:first-child" : ".c-date-picker__calendar-header button:last-child");
+          if (btn) btn.click();
+          return;
+        }
+        let next = -1;
+        if (e.key === "ArrowRight") next = i + 1;
+        else if (e.key === "ArrowLeft") next = i - 1;
+        else if (e.key === "ArrowDown") next = i + 7;
+        else if (e.key === "ArrowUp") next = i - 7;
+        else if (e.key === "Home") next = 0;
+        else if (e.key === "End") next = cells.length - 1;
+        else return;
+        e.preventDefault();
+        if (next < 0 || next >= cells.length) return;
+        cells.forEach((cell, j) => cell.setAttribute("tabindex", j === next ? "0" : "-1"));
+        cells[next].focus();
+      });
     }
   }
   define("contour-date-picker", ContourDatePicker);
@@ -1889,18 +1978,23 @@ class ContourRating extends ContourBase {
     static get properties() { return { value: { attribute: "value", type: Number }, max: { attribute: "max", type: Number }, color: { attribute: "color" } }; }
     render() {
       this.classList.add("c-rating");
-      this.setAttribute("role", "radiogroup");
-      this.setAttribute("aria-label", "Rating");
+      if (!this.hasAttribute("role")) this.setAttribute("role", "radiogroup");
+      // The group's name is the author's choice; "Rating" is only the fallback.
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Rating");
       const max = parseInt(this.getAttribute("max") || "5", 10) || 5;
       const value = parseInt(this.getAttribute("value") || "0", 10) || 0;
       const color = this.getAttribute("color");
       Array.from(this.querySelectorAll(".c-rating__star")).forEach((n) => n.remove());
+      // A radiogroup is one tab stop, arrow keys move within it. The checked
+      // star (or the first when nothing is rated) is the one Tab reaches.
+      const stop = value >= 1 && value <= max ? value : 1;
       for (let i = 1; i <= max; i++) {
         const star = document.createElement("button");
         star.className = "c-rating__star" + (i <= value ? " c-rating__star--filled" : "");
         star.type = "button";
         star.setAttribute("role", "radio");
         star.setAttribute("aria-checked", String(i === value));
+        star.setAttribute("tabindex", String(i === stop ? 0 : -1));
         star.innerHTML = '<span class="c-rating__swatch' + (i <= value ? ' c-rating__swatch--filled' : '') + '" aria-hidden="true"></span>';
         if (color && i <= value) {
           const sw = star.firstChild;
@@ -1918,17 +2012,34 @@ class ContourRating extends ContourBase {
     enhance() {
       if (this._wiredRating) return;
       this._wiredRating = true;
+      const stars = () => Array.from(this.querySelectorAll(".c-rating__star"));
+      // Selection is one state change: aria-checked, the roving tab stop and the
+      // event move together. The old arrow handler moved focus and announced a
+      // value without ever updating aria-checked, so AT kept reading star 2.
+      const select = (v) => {
+        stars().forEach((st) => {
+          const on = parseInt(st.dataset.value, 10) === v;
+          st.setAttribute("aria-checked", String(on));
+          st.setAttribute("tabindex", on ? "0" : "-1");
+          st.classList.toggle("c-rating__star--filled", parseInt(st.dataset.value, 10) <= v);
+          const sw = st.querySelector(".c-rating__swatch");
+          if (sw) sw.classList.toggle("c-rating__swatch--filled", parseInt(st.dataset.value, 10) <= v);
+        });
+        this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: v } }));
+      };
       this.addEventListener("click", (e) => {
         const star = e.target && e.target.closest ? e.target.closest(".c-rating__star") : null;
-        if (star && this.contains(star)) {
-          const v = parseInt(star.dataset.value, 10);
-          Array.from(this.querySelectorAll(".c-rating__star")).forEach((st) => st.setAttribute("aria-checked", String(parseInt(st.dataset.value, 10) === v)));
-          this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: v } }));
-        }
+        if (star && this.contains(star)) select(parseInt(star.dataset.value, 10));
       });
       this.addEventListener("keydown", (e) => {
-        const stars = Array.from(this.querySelectorAll(".c-rating__star"));
-        navKey(e, stars, { wrap: false, onKey: () => { const s = document.activeElement; if (s && s.classList.contains("c-rating__star")) this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: parseInt(s.dataset.value, 10) } })); } });
+        const all = stars();
+        if (!all.length) return;
+        navKey(e, all, {
+          wrap: false,
+          homeEnd: true,
+          onNavigate: (i) => { select(parseInt(all[i].dataset.value, 10)); },
+          onKey: (key, i) => { if (key === "Enter" || key === " ") select(parseInt(all[i].dataset.value, 10)); },
+        });
       });
     }
   }
@@ -2033,14 +2144,14 @@ class ContourColorPicker extends ContourBase {
           btn.className = "c-color-picker__preset";
           btn.style.background = c;
           btn.dataset.color = c;
-          btn.setAttribute("aria-label", "Preset " + c);
+          btn.setAttribute("aria-label", labelText(this, "preset", "Preset") + " " + c);
           wrap.appendChild(btn);
         });
         this.appendChild(wrap);
       }
       // Eyedropper (if supported).
       if (typeof window !== "undefined" && "EyeDropper" in window) {
-        const ed = this.ensure(".c-color-picker__eyedropper", () => { const el = document.createElement("button"); el.className = "c-color-picker__eyedropper"; el.type = "button"; el.textContent = "Pick"; el.setAttribute("aria-label", "Pick color from screen"); return el; });
+        const ed = this.ensure(".c-color-picker__eyedropper", () => { const el = document.createElement("button"); el.className = "c-color-picker__eyedropper"; el.type = "button"; el.textContent = labelText(this, "pick", "Pick"); el.setAttribute("aria-label", labelText(this, "pick-color", "Pick color from screen")); return el; });
         if (this.hasAttribute("disabled")) ed.setAttribute("disabled", "");
         else ed.removeAttribute("disabled");
       } else {
@@ -2506,7 +2617,7 @@ class ContourNotificationCenter extends ContourBase {
             const dismiss = document.createElement("button");
             dismiss.type = "button";
             dismiss.className = "c-notification-center__dismiss";
-            dismiss.setAttribute("aria-label", "Dismiss notification");
+            dismiss.setAttribute("aria-label", labelText(this, "dismiss", "Dismiss notification"));
             dismiss.textContent = "×";
             row.appendChild(dismiss);
             panel.appendChild(row);
@@ -2514,7 +2625,7 @@ class ContourNotificationCenter extends ContourBase {
           if (!parsed.length) {
             const empty = document.createElement("div");
             empty.className = "c-notification-center__empty";
-            empty.textContent = label(this, "empty", "No notifications");
+            empty.textContent = labelText(this, "empty", "No notifications");
             panel.appendChild(empty);
           }
         } catch (e) { /* keep */ }
@@ -2605,8 +2716,12 @@ class ContourStepper extends ContourBase {
         list.appendChild(li);
       });
       const nav = this.ensure(".c-stepper__nav", () => { const el = document.createElement("div"); el.className = "c-stepper__nav c-btn-group"; return el; });
-      const prev = this.ensure(".c-stepper__prev", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-stepper__prev"; el.type = "button"; el.textContent = "Back"; return el; });
-      const next = this.ensure(".c-stepper__next", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-stepper__next"; el.type = "button"; el.textContent = "Next"; return el; });
+      const prev = this.ensure(".c-stepper__prev", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-stepper__prev"; el.type = "button"; return el; });
+      // Copy is set on every render, not only at creation: `ensure()` builds the
+      // node once, so a `labels` change would otherwise reach nothing.
+      prev.textContent = labelText(this, "prev", "Back");
+      const next = this.ensure(".c-stepper__next", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-stepper__next"; el.type = "button"; return el; });
+      next.textContent = labelText(this, "next", "Next");
       if (!nav.contains(prev)) nav.appendChild(prev);
       if (!nav.contains(next)) nav.appendChild(next);
       if (nav.parentNode !== this) this.appendChild(nav);
@@ -3036,7 +3151,7 @@ class ContourTour extends ContourBase {
       // target in the page (step.target), so the page behind it stays
       // scrollable, clickable and focusable, and assistive tech must not be
       // told the rest of the document is inert.
-      this.setAttribute("aria-label", "Tour");
+      this.setAttribute("aria-label", labelText(this, "tour", "Tour"));
       const steps = this.getAttribute("steps");
       const current = Number(this.getAttribute("current") || 0);
       let parsed = [];
@@ -3045,9 +3160,12 @@ class ContourTour extends ContourBase {
       const tip = this.ensure(".c-tour__tip", () => { const el = document.createElement("div"); el.className = "c-tour__tip"; return el; });
       tip.textContent = typeof step === "string" ? step : (step.text || step.title || "");
       const nav = this.ensure(".c-tour__nav", () => { const el = document.createElement("div"); el.className = "c-tour__nav c-btn-group"; return el; });
-      const back = this.ensure(".c-tour__back", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-tour__back"; el.type = "button"; el.textContent = "Back"; return el; }, nav);
-      const next = this.ensure(".c-tour__next", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-tour__next"; el.type = "button"; el.textContent = "Next"; return el; }, nav);
-      const close = this.ensure(".c-tour__close", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-tour__close"; el.type = "button"; el.textContent = "Close"; return el; }, nav);
+      const back = this.ensure(".c-tour__back", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-tour__back"; el.type = "button"; return el; }, nav);
+      back.textContent = labelText(this, "back", "Back");
+      const next = this.ensure(".c-tour__next", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-tour__next"; el.type = "button"; return el; }, nav);
+      next.textContent = labelText(this, "next", "Next");
+      const close = this.ensure(".c-tour__close", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-tour__close"; el.type = "button"; return el; }, nav);
+      close.textContent = labelText(this, "close", "Close");
       // Keep the three controls in order regardless of which were just created.
       if (nav.firstChild !== back) nav.insertBefore(back, nav.firstChild);
       if (next.previousSibling !== back) nav.insertBefore(next, back.nextSibling);
@@ -3212,16 +3330,20 @@ class ContourSortableList extends ContourBase {
         li.className = "c-sortable-list__item";
         li.setAttribute("draggable", "true");
         li.dataset.index = String(i);
+        const itemLabel = typeof it === "string" ? it : (it.label || it.text || "");
         const handle = document.createElement("span");
         handle.className = "c-sortable-list__handle";
         handle.textContent = "⋮⋮";
         handle.setAttribute("role", "button");
+        // "⋮⋮" is the glyph, not a name. A screen reader hears the glyph as
+        // punctuation unless the handle says what it moves.
+        handle.setAttribute("aria-label", labelText(this, "reorder", "Reorder") + " " + (itemLabel || String(i + 1)));
         handle.tabIndex = 0;
         li.appendChild(handle);
-        const label = document.createElement("span");
-        label.className = "c-sortable-list__label";
-        label.textContent = typeof it === "string" ? it : (it.label || it.text || "");
-        li.appendChild(label);
+        const labelEl = document.createElement("span");
+        labelEl.className = "c-sortable-list__label";
+        labelEl.textContent = itemLabel;
+        li.appendChild(labelEl);
         list.appendChild(li);
       });
     }
@@ -3312,6 +3434,9 @@ class ContourSwatch extends ContourBase {
     render() {
       this.classList.add("c-swatch");
       if (!this.hasAttribute("role")) this.setAttribute("role", "button");
+      // role=button on a span is not focusable by itself. Without a tab stop the
+      // swatch is mouse-only; a keyboard user cannot reach the picker at all.
+      if (this.getAttribute("role") === "button" && !this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
       if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("label") || this.getAttribute("color") || "Swatch");
       const color = this.getAttribute("color") || "#000";
       this.style.setProperty("--swatch-color", color);
@@ -3332,6 +3457,12 @@ class ContourSwatch extends ContourBase {
       if (this._wiredSwatch) return;
       this._wiredSwatch = true;
       this.addEventListener("click", () => {
+        this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { value: this.getAttribute("color") } }));
+      });
+      // A role=button must answer Enter and Space as well as the pointer.
+      this.addEventListener("keydown", (e) => {
+        if (e.key !== "Enter" && e.key !== " ") return;
+        e.preventDefault();
         this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { value: this.getAttribute("color") } }));
       });
     }
@@ -3954,11 +4085,11 @@ class ContourPullToRefresh extends ContourBase {
     render() {
       this.classList.add("c-pull-to-refresh");
       if (!this.hasAttribute("role")) this.setAttribute("role", "region");
-      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", label(this, "label", "Pull to refresh"));
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", labelText(this, "label", "Pull to refresh"));
       const ind = this.ensure(".c-pull-to-refresh__indicator", () => {
         const e = document.createElement("div");
         e.className = "c-pull-to-refresh__indicator";
-        e.textContent = label(this, "label", "Pull to refresh");
+        e.textContent = labelText(this, "label", "Pull to refresh");
         return e;
       });
       if (ind.parentNode !== this) this.prepend(ind);

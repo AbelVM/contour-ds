@@ -1,4 +1,4 @@
-import { ContourBase, define, sanitizeHtml, headingTag, formatValue, navKey, isRtl, safeHref , warnBadJson } from './core.mjs';
+import { ContourBase, define, sanitizeHtml, headingTag, formatValue, navKey, isRtl, safeHref , warnBadJson, labelText } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { wireCopy } from './behaviours.mjs';
 
@@ -425,8 +425,8 @@ class ContourInstallFull extends ContourBase {
             const btn = document.createElement("button");
             btn.className = "c-btn c-btn--ghost c-btn--sm c-install__copy";
             btn.type = "button";
-            btn.setAttribute("aria-label", "Copy command");
-            btn.textContent = "Copy";
+            btn.setAttribute("aria-label", labelText(this, "copy-command", "Copy command"));
+            btn.textContent = labelText(this, "copy", "Copy");
             return btn;
           });
         } else {
@@ -863,7 +863,7 @@ class ContourCode extends ContourBase {
           const btn = document.createElement("button");
           btn.className = "c-code__copy";
           btn.type = "button";
-          btn.textContent = "Copy";
+          btn.textContent = labelText(this, "copy", "Copy");
           return btn;
         });
       } else {

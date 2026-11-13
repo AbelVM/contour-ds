@@ -236,13 +236,22 @@ class ContourTabs extends ContourBase {
              parsed.forEach((t, i) => {
                const label = typeof t === "string" ? t : (t.label || t.title || "");
                const panelId = contourId("c-tabs-panel");
-               const btn = document.createElement("button");
+               // A tab is not a <button> when it is closable: HTML forbids
+               // interactive content inside a button, so the close control would
+               // be invalid markup and unreachable as its own target. The tab is
+               // a focusable element with role=tab, and the close is a sibling
+               // control inside it.
+               const btn = document.createElement(this.hasAttribute("closable") ? "div" : "button");
                btn.className = "c-tabs__tab";
+               if (btn.tagName === "BUTTON") btn.type = "button";
                btn.setAttribute("role", "tab");
                btn.setAttribute("aria-selected", String(i === _keepIdx));
                btn.setAttribute("aria-controls", panelId);
                btn.tabIndex = i === _keepIdx ? 0 : -1;
-              btn.textContent = label;
+              const tabLabel = document.createElement("span");
+              tabLabel.textContent = label;
+              btn.textContent = "";
+              btn.appendChild(tabLabel);
               if (this.hasAttribute("closable")) {
                 const closeBtn = document.createElement("button");
                 closeBtn.type = "button";
@@ -398,7 +407,9 @@ class ContourHeader extends ContourBase {
       // the closest existing menu-like glyph is used with the real label.
       const navEl = inner.querySelector(".c-header__nav");
       if (navEl) {
-        if (!navEl.id) navEl.id = "contour-header-nav";
+        // A page may carry two headers; a fixed id makes both toggles point at the
+        // first nav in document order. Each generated nav gets its own id.
+        if (!navEl.id) navEl.id = contourId("header-nav");
         const actions = inner.querySelector(".c-header__actions");
         if (actions && !actions.querySelector(".c-header__toggle")) {
           const toggle = document.createElement("button");

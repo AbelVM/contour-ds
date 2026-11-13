@@ -337,6 +337,7 @@
     "bucket-count", "limit-values",
     "autocomplete", "levels", "submit-label",
     "fields", "gap",
+    "controls",
   ];
 
   /** Resolve an authored heading level while keeping the fallback valid. */
@@ -3483,10 +3484,21 @@ export function wireStates(host) {
           }
         }
       });
-      // ARIA: alert elements get live region roles
+      // ARIA: alert elements are live regions, and the variant sets the volume.
+      // A warning/danger interrupts; info/success/accent speaks politely. An
+      // information alert that asserts itself on load talks over the reader.
       root.querySelectorAll(".c-alert").forEach((el) => {
-        if (!el.hasAttribute("role")) el.setAttribute("role", "alert");
-        if (!el.hasAttribute("aria-live")) el.setAttribute("aria-live", "assertive");
+        const urgent = el.classList.contains("c-alert--warning") || el.classList.contains("c-alert--danger");
+        const role = urgent ? "alert" : "status";
+        const live = urgent ? "assertive" : "polite";
+        if (!el.hasAttribute("role") || el.dataset.contourAutoRole) {
+          el.setAttribute("role", role);
+          el.dataset.contourAutoRole = role;
+        }
+        if (!el.hasAttribute("aria-live") || el.dataset.contourAutoLive) {
+          el.setAttribute("aria-live", live);
+          el.dataset.contourAutoLive = live;
+        }
       });
       // ARIA: required form fields
       root.querySelectorAll("input[required], textarea[required], select[required]").forEach((el) => {
@@ -3541,6 +3553,22 @@ connectedCallback() {
         }
       }
       el.className = (this._shadowBase + " " + mods.join(" ")).trim();
+      // An alert's live region follows its variant, and rewriting the class above
+      // is the only signal a variant change produces. `dataset.contourAutoRole`
+      // marks a role this code set, so an authored one is never overwritten.
+      if (el.classList.contains("c-alert")) {
+        const urgent = el.classList.contains("c-alert--warning") || el.classList.contains("c-alert--danger");
+        const role = urgent ? "alert" : "status";
+        const live = urgent ? "assertive" : "polite";
+        if (!el.hasAttribute("role") || el.dataset.contourAutoRole) {
+          el.setAttribute("role", role);
+          el.dataset.contourAutoRole = role;
+        }
+        if (!el.hasAttribute("aria-live") || el.dataset.contourAutoLive) {
+          el.setAttribute("aria-live", live);
+          el.dataset.contourAutoLive = live;
+        }
+      }
     }
   }
 
@@ -3809,6 +3837,14 @@ shadow("contour-shadow-filter-pill", `<span class="c-filter-pill" part="filter-p
       const main = this.ensure(".c-app__main", () => { const el = document.createElement("main"); el.className = "c-app__main"; return el; });
       if (main.parentNode !== this) this.appendChild(main);
       if (header.parentNode !== this) this.insertBefore(header, main);
+      // The shell has one content region. Authored children left as siblings of
+      // the generated <main> took a share of the flex column and sat outside the
+      // document's only main landmark, which is neither the layout nor the
+      // outline the block describes.
+      Array.from(this.children).forEach((child) => {
+        if (child === header || child === main) return;
+        main.appendChild(child);
+      });
     }
   }
   define("contour-app", ContourApp);
@@ -3817,7 +3853,18 @@ shadow("contour-shadow-filter-pill", `<span class="c-filter-pill" part="filter-p
     static get properties() { return { title: { attribute: "title" } }; }
     render() {
       this.classList.add("c-app-body");
-      const main = this.ensure(".c-app-body__main", () => { const el = document.createElement("main"); el.className = "c-app-body__main"; return el; });
+      // A document may have one visible <main>. Nested inside `contour-app` the
+      // shell already owns it, so the body's content region is a plain div; on
+      // its own it is the page's landmark.
+      const nested = !!(this.parentElement && this.parentElement.closest && this.parentElement.closest("contour-app"));
+      const tag = nested ? "div" : "main";
+      let main = this.querySelector(":scope > .c-app-body__main");
+      if (main && main.tagName.toLowerCase() !== tag) { main.remove(); main = null; }
+      if (!main) {
+        main = document.createElement(tag);
+        main.className = "c-app-body__main";
+        this.appendChild(main);
+      }
       const title = this.getAttribute("title");
       if (title) {
         const t = this.ensure(".c-app-body__title", () => { const el = document.createElement("div"); el.className = "c-app-body__title"; return el; });

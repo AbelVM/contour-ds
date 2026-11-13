@@ -107,11 +107,25 @@ class ContourAlert extends ContourBase {
     }
     render() {
       this.classList.add("c-alert");
-      // ARIA: an alert is a live region (parity with the shadow layer, which sets
-      // the same pair on every .c-alert). Written on the host, so the authored
-      // attributes win and the loader's state nodes announce inside the region.
-      if (!this.hasAttribute("role")) this.setAttribute("role", "alert");
-      if (!this.hasAttribute("aria-live")) this.setAttribute("aria-live", "assertive");
+      // ARIA: the variant decides how loudly the message speaks. Warning and
+      // danger interrupt (role=alert / assertive); info, success and accent are
+      // announced politely (role=status / polite), because a static information
+      // alert that asserts itself on load talks over whatever the reader was
+      // already doing. The shadow layer carries the same rule.
+      const urgent = /^(warning|danger)$/.test(this.getAttribute("variant") || "");
+      const role = urgent ? "alert" : "status";
+      const live = urgent ? "assertive" : "polite";
+      // Written on the host so the loader's state nodes announce inside the
+      // region. Remember what this component wrote: an authored role/aria-live
+      // wins, and a variant change updates only a value the component itself set.
+      if (!this.hasAttribute("role") || this.getAttribute("role") === this._autoRole) {
+        this.setAttribute("role", role);
+        this._autoRole = role;
+      }
+      if (!this.hasAttribute("aria-live") || this.getAttribute("aria-live") === this._autoLive) {
+        this.setAttribute("aria-live", live);
+        this._autoLive = live;
+      }
       wireStates(this);
       loadRemote(this, "title");
       if (renderStates(this, "alert")) return;
