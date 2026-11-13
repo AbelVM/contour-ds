@@ -1,4 +1,4 @@
-import { ContourBase, define, onDispose, supportsUntilFound, contourId, headingTag, navKey, safeHref, cssLength , warnBadJson, label } from './core.mjs';
+import { ContourBase, define, onDispose, supportsUntilFound, contourId, headingTag, navKey, safeHref, cssLength , warnBadJson, labelText, applyLabel } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { wireMenu, wirePagination, wireTabs, wireTree, wireRemovable } from './behaviours.mjs';
 class ContourMenu extends ContourBase {
@@ -963,7 +963,7 @@ class ContourPagination extends ContourBase {
         prev.className = "c-pagination__link c-pagination__prev";
         prev.setAttribute("data-action", "prev");
         prev.textContent = "‹";
-        prev.setAttribute("aria-label", label(this, "prev", "Previous page"));
+        prev.setAttribute("aria-label", labelText(this, "prev", "Previous page"));
         this.appendChild(prev);
         for (let i = 1; i <= count; i++) {
           const btn = document.createElement("button");
@@ -981,7 +981,7 @@ class ContourPagination extends ContourBase {
         next.className = "c-pagination__link c-pagination__next";
         next.setAttribute("data-action", "next");
         next.textContent = "›";
-        next.setAttribute("aria-label", label(this, "next", "Next page"));
+        next.setAttribute("aria-label", labelText(this, "next", "Next page"));
         this.appendChild(next);
       } else {
         renderEmpty(this, "pagination");
@@ -1021,7 +1021,7 @@ class ContourPagerFull extends ContourBase {
         a.href = safeHref(next.split("|")[1] || "#");
         const dir = document.createElement("span");
         dir.className = "c-pager__dir";
-        dir.textContent = "Next →";
+        dir.textContent = labelText(this, "next", "Next") + " →";
         a.appendChild(dir);
         const title = document.createElement("span");
         title.className = "c-pager__title";
@@ -1371,7 +1371,7 @@ class ContourFilterBar extends ContourBase {
               group.className = "c-command__group";
               const gt = document.createElement("div");
               gt.className = "c-command__group-title";
-              gt.textContent = "Recent";
+              gt.textContent = labelText(this, "recent", "Recent");
               group.appendChild(gt);
               recentParsed.forEach((it) => {
                 const item = document.createElement("div");
@@ -1837,7 +1837,7 @@ class ContourSpatialFilter extends ContourBase {
       const currentOp = this.getAttribute("operator") || "intersects";
       operator.innerHTML = "";
       const opLabel = document.createElement("span");
-      opLabel.textContent = "Operator:";
+      opLabel.textContent = labelText(this, "operator", "Operator") + ":";
       operator.appendChild(opLabel);
       const opSelect = document.createElement("select");
       opSelect.className = "c-spatial-filter__operator-select";
@@ -1857,7 +1857,7 @@ class ContourSpatialFilter extends ContourBase {
       // Clear all
       let clearAll = this.querySelector(".c-spatial-filter__clear-all");
       if (!clearAll) { clearAll = document.createElement("button"); clearAll.type = "button"; clearAll.className = "c-spatial-filter__clear-all"; this.appendChild(clearAll); }
-      clearAll.textContent = "Clear all";
+      applyLabel(clearAll, this, "clear-all", "Clear all");
       if (this.hasAttribute("active")) {
         this.classList.add("c-spatial-filter--active");
       } else {

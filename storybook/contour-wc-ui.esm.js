@@ -353,7 +353,7 @@
    * names. A malformed attribute is ignored rather than thrown — a bad label
    * must not take the widget down. Returns `fallback` when no override exists.
    */
-  export function label(host, key, fallback) {
+  export function labelText(host, key, fallback) {
     const def = fallback !== undefined ? fallback : key;
     const raw = host && host.getAttribute ? host.getAttribute("labels") : null;
     if (!raw) return def;
@@ -362,6 +362,30 @@
       if (parsed && typeof parsed === "object" && typeof parsed[key] === "string" && parsed[key]) return parsed[key];
     } catch (e) { /* a malformed labels attribute is ignored, not fatal */ }
     return def;
+  }
+
+  /**
+   * Write localised copy onto a node without stealing an author's words (R18-63).
+   *
+   * `labelText()` resolves the string; this decides whether the node may take it.
+   * A node the component generated on an earlier render carries
+   * `data-contour-label`, so a `labels` change reaches it. A node the AUTHOR
+   * wrote — a `.c-saved-view__apply` button with its own text, a
+   * `.c-spatial-filter__clear-all` — has no such mark and keeps its words,
+   * because a default must never overwrite copy a consumer chose.
+   *
+   * This exists because the rule is not obvious and the failure is silent: an
+   * unconditional `node.textContent = labelText(...)` looks like the fix and is a
+   * regression for every consumer who supplied their own button.
+   */
+  export function applyLabel(node, host, key, fallback) {
+    if (!node) return;
+    if (node.dataset && node.dataset.contourLabel === "true") {
+      node.textContent = labelText(host, key, fallback);
+    } else if (!node.textContent) {
+      node.textContent = labelText(host, key, fallback);
+      if (node.dataset) node.dataset.contourLabel = "true";
+    }
   }
 
   /**
@@ -407,9 +431,20 @@
     static get observed() {
       return OBSERVED;
     }
-    static get observedAttributes() {
-      return this.observed;
-    }
+  /**
+   * The attribute list the platform is told about.
+   *
+   * `labels` is appended here rather than left to each subclass's `observed`,
+   * because the reader is a SHARED helper: `labelText()` below resolves copy for
+   * whichever component asks, so a per-class list has to remember it once per
+   * class or a `labels` change silently does nothing on every host that forgot.
+   * That is exactly how it stood — one component listed it and eleven did not.
+   * A component that writes `labels` to itself would recurse, and none does.
+   */
+  static get observedAttributes() {
+    const list = this.observed;
+    return list.includes("labels") ? list : [...list, "labels"];
+  }
 
     // Subclasses override to declare reflected properties:
     //   static get properties() { return { value: { attribute: "value", type: String } }; }
@@ -487,7 +522,10 @@
       // a silent no-op. The property name is the camelCase form of the
       // attribute (kebab -> camel); a kebab attribute with no valid identifier
       // form is skipped rather than guessed. Declared properties win.
-      const observed = ctor.observed || OBSERVED;
+      //
+      // The list is `observedAttributes`, not `observed`, so the reflection
+      // surface and the platform's stay the same set — `labels` included.
+      const observed = ctor.observedAttributes;
       for (const attr of observed) {
         if (declared.has(attr)) continue;
         const prop = attr.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
@@ -523,7 +561,7 @@
           this._ensureCacheGen = this._contourRenderGen;
           this._countRender();
           try { this.render(); }
-          catch (e) { console.error("Contour render error:", e); this.textContent = "Component failed to render."; }
+          catch (e) { console.error("Contour render error:", e); this.textContent = labelText(this, "render-error", "Component failed to render."); }
          this._contourGenerated = Array.from(this.childNodes).filter((n) => !before.includes(n));
          this._applyParts(this);
          this._applyDensity();
@@ -623,7 +661,7 @@
          this._ensureCacheGen = this._contourRenderGen;
          this._countRender();
          try { this.render(); }
-         catch (e) { console.error("Contour render error:", e); this.textContent = "Component failed to render."; }
+         catch (e) { console.error("Contour render error:", e); this.textContent = labelText(this, "render-error", "Component failed to render."); }
         this._contourGenerated = Array.from(this.childNodes).filter((n) => !before.includes(n));
         this._applyParts(this);
         this._applyDensity();
@@ -5024,28 +5062,28 @@ class ContourStylePanel extends ContourBase {
          const paletteId = uid + "-palette";
          const nId = uid + "-n";
          // property field
-         const propLabel = document.createElement("label"); propLabel.textContent = "Colour field"; propLabel.setAttribute("for", propId); body.appendChild(propLabel);
-         const propIn = document.createElement("input"); propIn.type = "text"; propIn.id = propId; propIn.className = "c-style-panel__property c-input"; propIn.setAttribute("aria-label", "Colour field");
+         const propLabel = document.createElement("label"); propLabel.textContent = labelText(this, "colour-field", "Colour field"); propLabel.setAttribute("for", propId); body.appendChild(propLabel);
+         const propIn = document.createElement("input"); propIn.type = "text"; propIn.id = propId; propIn.className = "c-style-panel__property c-input"; propIn.setAttribute("aria-label", labelText(this, "colour-field", "Colour field"));
          const pv = this.getAttribute("property"); if (pv) propIn.value = pv;
          body.appendChild(propIn);
          // classification method selector (policy)
-         const clsLabel = document.createElement("label"); clsLabel.textContent = "Classification"; clsLabel.setAttribute("for", policyId); body.appendChild(clsLabel);
-         const clsSel = document.createElement("select"); clsSel.id = policyId; clsSel.className = "c-style-panel__classification c-input"; clsSel.setAttribute("aria-label", "Classification method");
+         const clsLabel = document.createElement("label"); clsLabel.textContent = labelText(this, "classification", "Classification"); clsLabel.setAttribute("for", policyId); body.appendChild(clsLabel);
+         const clsSel = document.createElement("select"); clsSel.id = policyId; clsSel.className = "c-style-panel__classification c-input"; clsSel.setAttribute("aria-label", labelText(this, "classification-method", "Classification method"));
          ["equal","quantile","jenks","manual"].forEach((m) => { const o = document.createElement("option"); o.value = m; o.textContent = m; clsSel.appendChild(o); });
          const cls = this.getAttribute("classification"); if (cls) clsSel.value = cls;
          body.appendChild(clsSel);
          // palette picker
-         const palLabel = document.createElement("label"); palLabel.textContent = "Palette"; palLabel.setAttribute("for", paletteId); body.appendChild(palLabel);
-         const pal = document.createElement("input"); pal.type = "text"; pal.id = paletteId; pal.className = "c-style-panel__palette c-input"; pal.placeholder = "palette"; pal.setAttribute("aria-label", "Palette");
+         const palLabel = document.createElement("label"); palLabel.textContent = labelText(this, "palette", "Palette"); palLabel.setAttribute("for", paletteId); body.appendChild(palLabel);
+         const pal = document.createElement("input"); pal.type = "text"; pal.id = paletteId; pal.className = "c-style-panel__palette c-input"; pal.placeholder = labelText(this, "palette", "Palette"); pal.setAttribute("aria-label", labelText(this, "palette", "Palette"));
          const palv = this.getAttribute("palette"); if (palv) pal.value = palv;
          body.appendChild(pal);
          // n (class count)
-         const nLabel = document.createElement("label"); nLabel.textContent = "Classes"; nLabel.setAttribute("for", nId); body.appendChild(nLabel);
-         const nIn = document.createElement("input"); nIn.type = "number"; nIn.id = nId; nIn.className = "c-style-panel__n c-input"; nIn.min = "2"; nIn.max = "12"; nIn.setAttribute("aria-label", "Class count");
+         const nLabel = document.createElement("label"); nLabel.textContent = labelText(this, "classes", "Classes"); nLabel.setAttribute("for", nId); body.appendChild(nLabel);
+         const nIn = document.createElement("input"); nIn.type = "number"; nIn.id = nId; nIn.className = "c-style-panel__n c-input"; nIn.min = "2"; nIn.max = "12"; nIn.setAttribute("aria-label", labelText(this, "class-count", "Class count"));
          const nv = this.getAttribute("n"); if (nv) nIn.value = nv; else nIn.value = "5";
          body.appendChild(nIn);
          // opacity slider
-         const op = document.createElement("input"); op.type = "range"; op.className = "c-style-panel__opacity"; op.setAttribute("aria-label", "Opacity"); op.min = "0"; op.max = "100";
+         const op = document.createElement("input"); op.type = "range"; op.className = "c-style-panel__opacity"; op.setAttribute("aria-label", labelText(this, "opacity", "Opacity")); op.min = "0"; op.max = "100";
          const ov = this.getAttribute("opacity"); op.value = ov != null ? ov : "100";
          body.appendChild(op);
          // breaks as .break elements per class
@@ -5057,7 +5095,7 @@ class ContourStylePanel extends ContourBase {
            breaksArr.forEach((b, i) => {
              const br = document.createElement("div"); br.className = "break";
              const span = document.createElement("span"); span.textContent = String(b); br.appendChild(span);
-             const inp = document.createElement("input"); inp.type = "number"; inp.className = "c-style-panel__breaks c-input"; inp.setAttribute("aria-label", "Class lower bound"); inp.value = String(b);
+             const inp = document.createElement("input"); inp.type = "number"; inp.className = "c-style-panel__breaks c-input"; inp.setAttribute("aria-label", labelText(this, "class-lower-bound", "Class lower bound")); inp.value = String(b);
              br.appendChild(inp);
              breaksWrap.appendChild(br);
            });
@@ -5070,7 +5108,7 @@ class ContourStylePanel extends ContourBase {
          if (Array.isArray(colors)) {
            const list = document.createElement("div"); list.className = "c-style-panel__colors";
            colors.forEach((c, i) => {
-             const sw = document.createElement("input"); sw.type = "color"; sw.className = "c-style-panel__color c-input"; sw.setAttribute("aria-label", "Colour for class " + (i + 1));
+             const sw = document.createElement("input"); sw.type = "color"; sw.className = "c-style-panel__color c-input"; sw.setAttribute("aria-label", labelText(this, "colour-for-class", "Colour for class") + " " + (i + 1));
              sw.value = c;
              sw.addEventListener("input", () => { sw.setAttribute("data-edited", "true"); });
              list.appendChild(sw);
@@ -5079,8 +5117,8 @@ class ContourStylePanel extends ContourBase {
          }
          // Apply/Revert buttons
          const actions = document.createElement("div"); actions.className = "c-style-panel__actions c-btn-group";
-         const applyBtn = document.createElement("button"); applyBtn.type = "button"; applyBtn.className = "c-btn c-btn--primary"; applyBtn.textContent = "Apply";
-         const revertBtn = document.createElement("button"); revertBtn.type = "button"; revertBtn.className = "c-btn"; revertBtn.textContent = "Revert";
+         const applyBtn = document.createElement("button"); applyBtn.type = "button"; applyBtn.className = "c-btn c-btn--primary"; applyBtn.textContent = labelText(this, "apply", "Apply");
+         const revertBtn = document.createElement("button"); revertBtn.type = "button"; revertBtn.className = "c-btn"; revertBtn.textContent = labelText(this, "revert", "Revert");
          actions.appendChild(applyBtn); actions.appendChild(revertBtn);
          body.appendChild(actions);
          return;
@@ -5124,7 +5162,7 @@ class ContourStylePanel extends ContourBase {
             // classification method selector
             const clsSel = document.createElement("select");
             clsSel.className = "c-style-panel__classification";
-            clsSel.setAttribute("aria-label", "Classification method");
+            clsSel.setAttribute("aria-label", labelText(this, "classification-method", "Classification method"));
             ["equal","quantile","jenks","manual"].forEach((m) => { const o = document.createElement("option"); o.value = m; o.textContent = m; clsSel.appendChild(o); });
             if (typeof l === "object" && l.classification) clsSel.value = l.classification;
             row.appendChild(clsSel);
@@ -5148,7 +5186,7 @@ class ContourStylePanel extends ContourBase {
             const op = document.createElement("input");
             op.type = "range";
             op.className = "c-style-panel__opacity";
-            op.setAttribute("aria-label", "Opacity");
+            op.setAttribute("aria-label", labelText(this, "opacity", "Opacity"));
             op.min = "0"; op.max = "100";
             op.value = (typeof l === "object" && l.opacity != null) ? l.opacity : "100";
             row.appendChild(op);
@@ -5967,14 +6005,14 @@ class ContourColorPicker extends ContourBase {
           btn.className = "c-color-picker__preset";
           btn.style.background = c;
           btn.dataset.color = c;
-          btn.setAttribute("aria-label", "Preset " + c);
+          btn.setAttribute("aria-label", labelText(this, "preset", "Preset") + " " + c);
           wrap.appendChild(btn);
         });
         this.appendChild(wrap);
       }
       // Eyedropper (if supported).
       if (typeof window !== "undefined" && "EyeDropper" in window) {
-        const ed = this.ensure(".c-color-picker__eyedropper", () => { const el = document.createElement("button"); el.className = "c-color-picker__eyedropper"; el.type = "button"; el.textContent = "Pick"; el.setAttribute("aria-label", "Pick color from screen"); return el; });
+        const ed = this.ensure(".c-color-picker__eyedropper", () => { const el = document.createElement("button"); el.className = "c-color-picker__eyedropper"; el.type = "button"; el.textContent = labelText(this, "pick", "Pick"); el.setAttribute("aria-label", labelText(this, "pick-color", "Pick color from screen")); return el; });
         if (this.hasAttribute("disabled")) ed.setAttribute("disabled", "");
         else ed.removeAttribute("disabled");
       } else {
@@ -6440,7 +6478,7 @@ class ContourNotificationCenter extends ContourBase {
             const dismiss = document.createElement("button");
             dismiss.type = "button";
             dismiss.className = "c-notification-center__dismiss";
-            dismiss.setAttribute("aria-label", "Dismiss notification");
+            dismiss.setAttribute("aria-label", labelText(this, "dismiss", "Dismiss notification"));
             dismiss.textContent = "×";
             row.appendChild(dismiss);
             panel.appendChild(row);
@@ -6448,7 +6486,7 @@ class ContourNotificationCenter extends ContourBase {
           if (!parsed.length) {
             const empty = document.createElement("div");
             empty.className = "c-notification-center__empty";
-            empty.textContent = label(this, "empty", "No notifications");
+            empty.textContent = labelText(this, "empty", "No notifications");
             panel.appendChild(empty);
           }
         } catch (e) { /* keep */ }
@@ -6539,8 +6577,12 @@ class ContourStepper extends ContourBase {
         list.appendChild(li);
       });
       const nav = this.ensure(".c-stepper__nav", () => { const el = document.createElement("div"); el.className = "c-stepper__nav c-btn-group"; return el; });
-      const prev = this.ensure(".c-stepper__prev", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-stepper__prev"; el.type = "button"; el.textContent = "Back"; return el; });
-      const next = this.ensure(".c-stepper__next", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-stepper__next"; el.type = "button"; el.textContent = "Next"; return el; });
+      const prev = this.ensure(".c-stepper__prev", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-stepper__prev"; el.type = "button"; return el; });
+      // Copy is set on every render, not only at creation: `ensure()` builds the
+      // node once, so a `labels` change would otherwise reach nothing.
+      prev.textContent = labelText(this, "prev", "Back");
+      const next = this.ensure(".c-stepper__next", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-stepper__next"; el.type = "button"; return el; });
+      next.textContent = labelText(this, "next", "Next");
       if (!nav.contains(prev)) nav.appendChild(prev);
       if (!nav.contains(next)) nav.appendChild(next);
       if (nav.parentNode !== this) this.appendChild(nav);
@@ -6970,7 +7012,7 @@ class ContourTour extends ContourBase {
       // target in the page (step.target), so the page behind it stays
       // scrollable, clickable and focusable, and assistive tech must not be
       // told the rest of the document is inert.
-      this.setAttribute("aria-label", "Tour");
+      this.setAttribute("aria-label", labelText(this, "tour", "Tour"));
       const steps = this.getAttribute("steps");
       const current = Number(this.getAttribute("current") || 0);
       let parsed = [];
@@ -6979,9 +7021,12 @@ class ContourTour extends ContourBase {
       const tip = this.ensure(".c-tour__tip", () => { const el = document.createElement("div"); el.className = "c-tour__tip"; return el; });
       tip.textContent = typeof step === "string" ? step : (step.text || step.title || "");
       const nav = this.ensure(".c-tour__nav", () => { const el = document.createElement("div"); el.className = "c-tour__nav c-btn-group"; return el; });
-      const back = this.ensure(".c-tour__back", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-tour__back"; el.type = "button"; el.textContent = "Back"; return el; }, nav);
-      const next = this.ensure(".c-tour__next", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-tour__next"; el.type = "button"; el.textContent = "Next"; return el; }, nav);
-      const close = this.ensure(".c-tour__close", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-tour__close"; el.type = "button"; el.textContent = "Close"; return el; }, nav);
+      const back = this.ensure(".c-tour__back", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-tour__back"; el.type = "button"; return el; }, nav);
+      back.textContent = labelText(this, "back", "Back");
+      const next = this.ensure(".c-tour__next", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-tour__next"; el.type = "button"; return el; }, nav);
+      next.textContent = labelText(this, "next", "Next");
+      const close = this.ensure(".c-tour__close", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-tour__close"; el.type = "button"; return el; }, nav);
+      close.textContent = labelText(this, "close", "Close");
       // Keep the three controls in order regardless of which were just created.
       if (nav.firstChild !== back) nav.insertBefore(back, nav.firstChild);
       if (next.previousSibling !== back) nav.insertBefore(next, back.nextSibling);
@@ -7153,7 +7198,7 @@ class ContourSortableList extends ContourBase {
         handle.setAttribute("role", "button");
         // "⋮⋮" is the glyph, not a name. A screen reader hears the glyph as
         // punctuation unless the handle says what it moves.
-        handle.setAttribute("aria-label", label(this, "reorder", "Reorder") + " " + (itemLabel || String(i + 1)));
+        handle.setAttribute("aria-label", labelText(this, "reorder", "Reorder") + " " + (itemLabel || String(i + 1)));
         handle.tabIndex = 0;
         li.appendChild(handle);
         const labelEl = document.createElement("span");
@@ -7901,11 +7946,11 @@ class ContourPullToRefresh extends ContourBase {
     render() {
       this.classList.add("c-pull-to-refresh");
       if (!this.hasAttribute("role")) this.setAttribute("role", "region");
-      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", label(this, "label", "Pull to refresh"));
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", labelText(this, "label", "Pull to refresh"));
       const ind = this.ensure(".c-pull-to-refresh__indicator", () => {
         const e = document.createElement("div");
         e.className = "c-pull-to-refresh__indicator";
-        e.textContent = label(this, "label", "Pull to refresh");
+        e.textContent = labelText(this, "label", "Pull to refresh");
         return e;
       });
       if (ind.parentNode !== this) this.prepend(ind);

@@ -353,7 +353,7 @@
    * names. A malformed attribute is ignored rather than thrown — a bad label
    * must not take the widget down. Returns `fallback` when no override exists.
    */
-  export function label(host, key, fallback) {
+  export function labelText(host, key, fallback) {
     const def = fallback !== undefined ? fallback : key;
     const raw = host && host.getAttribute ? host.getAttribute("labels") : null;
     if (!raw) return def;
@@ -362,6 +362,30 @@
       if (parsed && typeof parsed === "object" && typeof parsed[key] === "string" && parsed[key]) return parsed[key];
     } catch (e) { /* a malformed labels attribute is ignored, not fatal */ }
     return def;
+  }
+
+  /**
+   * Write localised copy onto a node without stealing an author's words (R18-63).
+   *
+   * `labelText()` resolves the string; this decides whether the node may take it.
+   * A node the component generated on an earlier render carries
+   * `data-contour-label`, so a `labels` change reaches it. A node the AUTHOR
+   * wrote — a `.c-saved-view__apply` button with its own text, a
+   * `.c-spatial-filter__clear-all` — has no such mark and keeps its words,
+   * because a default must never overwrite copy a consumer chose.
+   *
+   * This exists because the rule is not obvious and the failure is silent: an
+   * unconditional `node.textContent = labelText(...)` looks like the fix and is a
+   * regression for every consumer who supplied their own button.
+   */
+  export function applyLabel(node, host, key, fallback) {
+    if (!node) return;
+    if (node.dataset && node.dataset.contourLabel === "true") {
+      node.textContent = labelText(host, key, fallback);
+    } else if (!node.textContent) {
+      node.textContent = labelText(host, key, fallback);
+      if (node.dataset) node.dataset.contourLabel = "true";
+    }
   }
 
   /**
@@ -407,9 +431,20 @@
     static get observed() {
       return OBSERVED;
     }
-    static get observedAttributes() {
-      return this.observed;
-    }
+  /**
+   * The attribute list the platform is told about.
+   *
+   * `labels` is appended here rather than left to each subclass's `observed`,
+   * because the reader is a SHARED helper: `labelText()` below resolves copy for
+   * whichever component asks, so a per-class list has to remember it once per
+   * class or a `labels` change silently does nothing on every host that forgot.
+   * That is exactly how it stood — one component listed it and eleven did not.
+   * A component that writes `labels` to itself would recurse, and none does.
+   */
+  static get observedAttributes() {
+    const list = this.observed;
+    return list.includes("labels") ? list : [...list, "labels"];
+  }
 
     // Subclasses override to declare reflected properties:
     //   static get properties() { return { value: { attribute: "value", type: String } }; }
@@ -487,7 +522,10 @@
       // a silent no-op. The property name is the camelCase form of the
       // attribute (kebab -> camel); a kebab attribute with no valid identifier
       // form is skipped rather than guessed. Declared properties win.
-      const observed = ctor.observed || OBSERVED;
+      //
+      // The list is `observedAttributes`, not `observed`, so the reflection
+      // surface and the platform's stay the same set — `labels` included.
+      const observed = ctor.observedAttributes;
       for (const attr of observed) {
         if (declared.has(attr)) continue;
         const prop = attr.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
@@ -523,7 +561,7 @@
           this._ensureCacheGen = this._contourRenderGen;
           this._countRender();
           try { this.render(); }
-          catch (e) { console.error("Contour render error:", e); this.textContent = "Component failed to render."; }
+          catch (e) { console.error("Contour render error:", e); this.textContent = labelText(this, "render-error", "Component failed to render."); }
          this._contourGenerated = Array.from(this.childNodes).filter((n) => !before.includes(n));
          this._applyParts(this);
          this._applyDensity();
@@ -623,7 +661,7 @@
          this._ensureCacheGen = this._contourRenderGen;
          this._countRender();
          try { this.render(); }
-         catch (e) { console.error("Contour render error:", e); this.textContent = "Component failed to render."; }
+         catch (e) { console.error("Contour render error:", e); this.textContent = labelText(this, "render-error", "Component failed to render."); }
         this._contourGenerated = Array.from(this.childNodes).filter((n) => !before.includes(n));
         this._applyParts(this);
         this._applyDensity();
@@ -3984,7 +4022,7 @@ class ContourCoordinate extends ContourBase {
       span.textContent = text;
       // copy button
       let btn = this.querySelector(".c-coordinate__copy");
-      if (!btn) { btn = document.createElement("button"); btn.type = "button"; btn.className = "c-coordinate__copy"; btn.textContent = "Copy"; btn.setAttribute("aria-label", "Copy coordinate"); this.appendChild(btn); }
+      if (!btn) { btn = document.createElement("button"); btn.type = "button"; btn.className = "c-coordinate__copy"; btn.textContent = labelText(this, "copy", "Copy"); btn.setAttribute("aria-label", labelText(this, "copy-coordinate", "Copy coordinate")); this.appendChild(btn); }
       btn.onclick = () => {
         try {
           if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -4096,7 +4134,7 @@ class ContourLayerPanel extends ContourBase {
              opacity.className = "c-layer-panel__opacity";
              opacity.min = "0";
              opacity.max = "100";
-              opacity.setAttribute("aria-label", "Opacity of " + (name || "layer"));
+              opacity.setAttribute("aria-label", labelText(this, "opacity-of", "Opacity of") + " " + (name || "layer"));
              opacity.value = (typeof it === "object" && it.opacity != null) ? it.opacity : "100";
             item.appendChild(opacity);
             // rename input (hidden by default, toggled via button)
@@ -4104,24 +4142,24 @@ class ContourLayerPanel extends ContourBase {
             const renameBtn = document.createElement("button");
             renameBtn.type = "button";
             renameBtn.className = "c-layer-panel__rename";
-            renameBtn.textContent = "Rename";
-            renameBtn.setAttribute("aria-label", "Rename " + (name || "layer"));
+            renameBtn.textContent = labelText(this, "rename", "Rename");
+            renameBtn.setAttribute("aria-label", labelText(this, "rename", "Rename") + " " + (name || "layer"));
             item.appendChild(renameBtn);
             }
             if (this.getAttribute("allow-duplicate") !== "false") {
             const dupBtn = document.createElement("button");
             dupBtn.type = "button";
             dupBtn.className = "c-layer-panel__duplicate";
-            dupBtn.textContent = "Duplicate";
-            dupBtn.setAttribute("aria-label", "Duplicate " + (name || "layer"));
+            dupBtn.textContent = labelText(this, "duplicate", "Duplicate");
+            dupBtn.setAttribute("aria-label", labelText(this, "duplicate", "Duplicate") + " " + (name || "layer"));
             item.appendChild(dupBtn);
             }
             if (this.getAttribute("allow-zoom") !== "false") {
             const zoomBtn = document.createElement("button");
             zoomBtn.type = "button";
             zoomBtn.className = "c-layer-panel__zoom";
-            zoomBtn.textContent = "Zoom";
-            zoomBtn.setAttribute("aria-label", "Zoom to " + (name || "layer"));
+            zoomBtn.textContent = labelText(this, "zoom", "Zoom");
+            zoomBtn.setAttribute("aria-label", labelText(this, "zoom-to", "Zoom to") + " " + (name || "layer"));
             item.appendChild(zoomBtn);
             }
             if (this.getAttribute("allow-remove") !== "false") {
@@ -4129,7 +4167,7 @@ class ContourLayerPanel extends ContourBase {
             removeBtn.type = "button";
             removeBtn.className = "c-layer-panel__remove";
             removeBtn.innerHTML = '<svg aria-hidden="true"><use href="#i-minus" /></svg>';
-            removeBtn.setAttribute("aria-label", "Remove " + (name || "layer"));
+            removeBtn.setAttribute("aria-label", labelText(this, "remove", "Remove") + " " + (name || "layer"));
             item.appendChild(removeBtn);
             }
             const projSel = document.createElement("select");

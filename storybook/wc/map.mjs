@@ -1,4 +1,4 @@
-import { ContourBase, define, onDispose, formatValue, navKey, isRtl , warnBadJson } from './core.mjs';
+import { ContourBase, define, onDispose, formatValue, navKey, isRtl , warnBadJson, labelText } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { compassNeedle, scaleBarTicks } from './svg.mjs';
 
@@ -162,7 +162,7 @@ class ContourCoordinate extends ContourBase {
       span.textContent = text;
       // copy button
       let btn = this.querySelector(".c-coordinate__copy");
-      if (!btn) { btn = document.createElement("button"); btn.type = "button"; btn.className = "c-coordinate__copy"; btn.textContent = "Copy"; btn.setAttribute("aria-label", "Copy coordinate"); this.appendChild(btn); }
+      if (!btn) { btn = document.createElement("button"); btn.type = "button"; btn.className = "c-coordinate__copy"; btn.textContent = labelText(this, "copy", "Copy"); btn.setAttribute("aria-label", labelText(this, "copy-coordinate", "Copy coordinate")); this.appendChild(btn); }
       btn.onclick = () => {
         try {
           if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -274,7 +274,7 @@ class ContourLayerPanel extends ContourBase {
              opacity.className = "c-layer-panel__opacity";
              opacity.min = "0";
              opacity.max = "100";
-              opacity.setAttribute("aria-label", "Opacity of " + (name || "layer"));
+              opacity.setAttribute("aria-label", labelText(this, "opacity-of", "Opacity of") + " " + (name || "layer"));
              opacity.value = (typeof it === "object" && it.opacity != null) ? it.opacity : "100";
             item.appendChild(opacity);
             // rename input (hidden by default, toggled via button)
@@ -282,24 +282,24 @@ class ContourLayerPanel extends ContourBase {
             const renameBtn = document.createElement("button");
             renameBtn.type = "button";
             renameBtn.className = "c-layer-panel__rename";
-            renameBtn.textContent = "Rename";
-            renameBtn.setAttribute("aria-label", "Rename " + (name || "layer"));
+            renameBtn.textContent = labelText(this, "rename", "Rename");
+            renameBtn.setAttribute("aria-label", labelText(this, "rename", "Rename") + " " + (name || "layer"));
             item.appendChild(renameBtn);
             }
             if (this.getAttribute("allow-duplicate") !== "false") {
             const dupBtn = document.createElement("button");
             dupBtn.type = "button";
             dupBtn.className = "c-layer-panel__duplicate";
-            dupBtn.textContent = "Duplicate";
-            dupBtn.setAttribute("aria-label", "Duplicate " + (name || "layer"));
+            dupBtn.textContent = labelText(this, "duplicate", "Duplicate");
+            dupBtn.setAttribute("aria-label", labelText(this, "duplicate", "Duplicate") + " " + (name || "layer"));
             item.appendChild(dupBtn);
             }
             if (this.getAttribute("allow-zoom") !== "false") {
             const zoomBtn = document.createElement("button");
             zoomBtn.type = "button";
             zoomBtn.className = "c-layer-panel__zoom";
-            zoomBtn.textContent = "Zoom";
-            zoomBtn.setAttribute("aria-label", "Zoom to " + (name || "layer"));
+            zoomBtn.textContent = labelText(this, "zoom", "Zoom");
+            zoomBtn.setAttribute("aria-label", labelText(this, "zoom-to", "Zoom to") + " " + (name || "layer"));
             item.appendChild(zoomBtn);
             }
             if (this.getAttribute("allow-remove") !== "false") {
@@ -307,7 +307,7 @@ class ContourLayerPanel extends ContourBase {
             removeBtn.type = "button";
             removeBtn.className = "c-layer-panel__remove";
             removeBtn.innerHTML = '<svg aria-hidden="true"><use href="#i-minus" /></svg>';
-            removeBtn.setAttribute("aria-label", "Remove " + (name || "layer"));
+            removeBtn.setAttribute("aria-label", labelText(this, "remove", "Remove") + " " + (name || "layer"));
             item.appendChild(removeBtn);
             }
             const projSel = document.createElement("select");

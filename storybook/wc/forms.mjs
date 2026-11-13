@@ -11,7 +11,7 @@
  * @module contour-wc/forms
  */
 
-import { ContourBase, define, contourId, cssLength , warnBadJson } from './core.mjs';
+import { ContourBase, define, contourId, cssLength , warnBadJson, labelText, applyLabel } from './core.mjs';
 import { wireCombobox } from './behaviours.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 /**
@@ -421,8 +421,16 @@ class ContourForm extends ContourBase {
         submit.className = "c-btn c-btn--primary c-form__submit";
         this.appendChild(submit);
       }
-      if (submitLabel) submit.textContent = submitLabel;
-      else if (!submit.textContent) submit.textContent = "Submit";
+      // `submit-label` is the authored override; `labels.submit` is the localised
+      // default. `applyLabel` re-applies the default on every render — so a
+      // `labels` change reaches a button an earlier render created — while an
+      // author's own button text still wins.
+      if (submitLabel) {
+        submit.textContent = submitLabel;
+        if (submit.dataset) delete submit.dataset.contourLabel;
+      } else {
+        applyLabel(submit, this, "submit", "Submit");
+      }
       if (this.hasAttribute("submitting")) submit.setAttribute("disabled", "");
       else submit.removeAttribute("disabled");
     }
@@ -449,7 +457,7 @@ class ContourForm extends ContourBase {
           const names = invalid.map((el) => el.getAttribute("aria-label") || el.name || el.id || "field").join(", ");
           let summary = this.querySelector(".c-form__summary");
           if (!summary) { summary = document.createElement("div"); summary.className = "c-form__summary"; summary.setAttribute("role", "alert"); this.prepend(summary); }
-          summary.textContent = "Please fix: " + (names || "invalid fields");
+          summary.textContent = labelText(this, "validation-summary", "Please fix") + ": " + (names || labelText(this, "invalid-fields", "invalid fields"));
           summary.removeAttribute("hidden");
           return;
         }

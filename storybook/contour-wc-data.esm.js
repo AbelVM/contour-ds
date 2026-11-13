@@ -353,7 +353,7 @@
    * names. A malformed attribute is ignored rather than thrown — a bad label
    * must not take the widget down. Returns `fallback` when no override exists.
    */
-  export function label(host, key, fallback) {
+  export function labelText(host, key, fallback) {
     const def = fallback !== undefined ? fallback : key;
     const raw = host && host.getAttribute ? host.getAttribute("labels") : null;
     if (!raw) return def;
@@ -362,6 +362,30 @@
       if (parsed && typeof parsed === "object" && typeof parsed[key] === "string" && parsed[key]) return parsed[key];
     } catch (e) { /* a malformed labels attribute is ignored, not fatal */ }
     return def;
+  }
+
+  /**
+   * Write localised copy onto a node without stealing an author's words (R18-63).
+   *
+   * `labelText()` resolves the string; this decides whether the node may take it.
+   * A node the component generated on an earlier render carries
+   * `data-contour-label`, so a `labels` change reaches it. A node the AUTHOR
+   * wrote — a `.c-saved-view__apply` button with its own text, a
+   * `.c-spatial-filter__clear-all` — has no such mark and keeps its words,
+   * because a default must never overwrite copy a consumer chose.
+   *
+   * This exists because the rule is not obvious and the failure is silent: an
+   * unconditional `node.textContent = labelText(...)` looks like the fix and is a
+   * regression for every consumer who supplied their own button.
+   */
+  export function applyLabel(node, host, key, fallback) {
+    if (!node) return;
+    if (node.dataset && node.dataset.contourLabel === "true") {
+      node.textContent = labelText(host, key, fallback);
+    } else if (!node.textContent) {
+      node.textContent = labelText(host, key, fallback);
+      if (node.dataset) node.dataset.contourLabel = "true";
+    }
   }
 
   /**
@@ -407,9 +431,20 @@
     static get observed() {
       return OBSERVED;
     }
-    static get observedAttributes() {
-      return this.observed;
-    }
+  /**
+   * The attribute list the platform is told about.
+   *
+   * `labels` is appended here rather than left to each subclass's `observed`,
+   * because the reader is a SHARED helper: `labelText()` below resolves copy for
+   * whichever component asks, so a per-class list has to remember it once per
+   * class or a `labels` change silently does nothing on every host that forgot.
+   * That is exactly how it stood — one component listed it and eleven did not.
+   * A component that writes `labels` to itself would recurse, and none does.
+   */
+  static get observedAttributes() {
+    const list = this.observed;
+    return list.includes("labels") ? list : [...list, "labels"];
+  }
 
     // Subclasses override to declare reflected properties:
     //   static get properties() { return { value: { attribute: "value", type: String } }; }
@@ -487,7 +522,10 @@
       // a silent no-op. The property name is the camelCase form of the
       // attribute (kebab -> camel); a kebab attribute with no valid identifier
       // form is skipped rather than guessed. Declared properties win.
-      const observed = ctor.observed || OBSERVED;
+      //
+      // The list is `observedAttributes`, not `observed`, so the reflection
+      // surface and the platform's stay the same set — `labels` included.
+      const observed = ctor.observedAttributes;
       for (const attr of observed) {
         if (declared.has(attr)) continue;
         const prop = attr.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
@@ -523,7 +561,7 @@
           this._ensureCacheGen = this._contourRenderGen;
           this._countRender();
           try { this.render(); }
-          catch (e) { console.error("Contour render error:", e); this.textContent = "Component failed to render."; }
+          catch (e) { console.error("Contour render error:", e); this.textContent = labelText(this, "render-error", "Component failed to render."); }
          this._contourGenerated = Array.from(this.childNodes).filter((n) => !before.includes(n));
          this._applyParts(this);
          this._applyDensity();
@@ -623,7 +661,7 @@
          this._ensureCacheGen = this._contourRenderGen;
          this._countRender();
          try { this.render(); }
-         catch (e) { console.error("Contour render error:", e); this.textContent = "Component failed to render."; }
+         catch (e) { console.error("Contour render error:", e); this.textContent = labelText(this, "render-error", "Component failed to render."); }
         this._contourGenerated = Array.from(this.childNodes).filter((n) => !before.includes(n));
         this._applyParts(this);
         this._applyDensity();
@@ -4269,15 +4307,15 @@ class ContourTable extends ContourBase {
             const prev = document.createElement("button");
             prev.className = "c-btn c-btn--ghost c-btn--sm";
             prev.type = "button";
-            prev.textContent = "Previous";
+            prev.textContent = labelText(this, "prev", "Previous");
             prev.disabled = page <= 1;
             prev.dataset.action = "prev";
             const info = document.createElement("span");
-            info.textContent = `Page ${page} of ${totalPages}`;
+            info.textContent = `${labelText(this, "page", "Page")} ${page} ${labelText(this, "of", "of")} ${totalPages}`;
             const next = document.createElement("button");
             next.className = "c-btn c-btn--ghost c-btn--sm";
             next.type = "button";
-            next.textContent = "Next";
+            next.textContent = labelText(this, "next", "Next");
             next.disabled = page >= totalPages;
             next.dataset.action = "next";
             footer.appendChild(prev);
@@ -4969,7 +5007,7 @@ if (!series && this._pushedBins && this._pushedBins.length) {
             table.innerHTML = "";
             // A caption names the table: a reader who lands on it hears what it
             // holds before the first cell, not "table, 5 rows, 3 columns".
-            const title = this.getAttribute("title") || this.getAttribute("aria-label") || "Chart data";
+            const title = this.getAttribute("title") || this.getAttribute("aria-label") || labelText(this, "chart-data", "Chart data");
             const cap = document.createElement("caption");
             cap.textContent = title;
             table.appendChild(cap);
@@ -4977,13 +5015,13 @@ if (!series && this._pushedBins && this._pushedBins.length) {
             const hr = document.createElement("tr");
             const h = document.createElement("th");
             h.setAttribute("scope", "col");
-            h.textContent = "Series";
+            h.textContent = labelText(this, "series", "Series");
             hr.appendChild(h);
             const maxLen = parsed.reduce((m, s) => Math.max(m, Array.isArray(s.values) ? s.values.length : (Array.isArray(s) ? s.length : 0)), 0);
             for (let i = 0; i < maxLen; i++) {
               const th = document.createElement("th");
               th.setAttribute("scope", "col");
-              th.textContent = "Value " + (i + 1);
+              th.textContent = labelText(this, "value", "Value") + " " + (i + 1);
               hr.appendChild(th);
             }
             thead.appendChild(hr);
@@ -7211,7 +7249,7 @@ class ContourLegend extends ContourBase {
            let det = this.querySelector(".c-legend__table-wrap");
            if (!det) { det = document.createElement("details"); det.className = "c-legend__table-wrap"; this.appendChild(det); }
            det.innerHTML = "";
-           const sum = document.createElement("summary"); sum.textContent = "Data table"; det.appendChild(sum);
+           const sum = document.createElement("summary"); sum.textContent = labelText(this, "data-table", "Data table"); det.appendChild(sum);
            const tbl = document.createElement("table"); tbl.className = "c-legend__table";
            const tbody = document.createElement("tbody");
            parsed.forEach((row) => {
@@ -7619,7 +7657,7 @@ class ContourHeatmap extends ContourBase {
         if (!cell || !this.contains(cell)) { tip.setAttribute("hidden", ""); return; }
         const title = cell.getAttribute("title");
         if (title) tip.textContent = title;
-        else tip.textContent = "Cell " + (cell.dataset.index || "");
+        else tip.textContent = labelText(this, "cell", "Cell") + " " + (cell.dataset.index || "");
         const rect = this.getBoundingClientRect();
         const cr = cell.getBoundingClientRect();
         this.style.position = this.style.position || "relative";
@@ -8064,7 +8102,8 @@ class ContourQueryBuilder extends ContourBase {
       row.appendChild(field); row.appendChild(op); row.appendChild(val);
       list.appendChild(row);
     });
-    const add = this.ensure(".c-query-builder__add", () => { const b = document.createElement("button"); b.type = "button"; b.className = "c-btn c-btn--sm c-query-builder__add"; b.textContent = "Add rule"; return b; });
+    const add = this.ensure(".c-query-builder__add", () => { const b = document.createElement("button"); b.type = "button"; b.className = "c-btn c-btn--sm c-query-builder__add"; return b; });
+    add.textContent = labelText(this, "add-rule", "Add rule");
     if (add.parentNode !== this) this.appendChild(add);
   }
   enhance() {

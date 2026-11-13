@@ -1,4 +1,4 @@
-import { ContourBase, define, formatValue, navKey , warnBadJson } from './core.mjs';
+import { ContourBase, define, formatValue, navKey , warnBadJson, labelText, applyLabel } from './core.mjs';
 
 /**
  * Dashboard state machine (R13-06).
@@ -234,13 +234,18 @@ class ContourSavedView extends ContourBase {
       if (source) {
         if (meta.childNodes.length) meta.appendChild(document.createTextNode(" · "));
         const wrap = document.createElement("span");
-        wrap.textContent = `Source: ${source}`;
+        wrap.textContent = `${labelText(this, "source", "Source")}: ${source}`;
         meta.appendChild(wrap);
       }
       let actions = this.querySelector(".c-saved-view__actions");
       if (!actions) { actions = document.createElement("div"); actions.className = "c-saved-view__actions"; this.appendChild(actions); }
-      const apply = actions.querySelector(".c-saved-view__apply") || (() => { const b = document.createElement("button"); b.type = "button"; b.className = "c-btn c-btn--ghost c-btn--sm"; b.textContent = "Apply"; actions.appendChild(b); return b; })();
-      const remove = actions.querySelector(".c-saved-view__remove") || (() => { const b = document.createElement("button"); b.type = "button"; b.className = "c-btn c-btn--ghost c-btn--sm"; b.textContent = "Remove"; actions.appendChild(b); return b; })();
+      // The controls are matched by `data-*` in enhance(), not by their words:
+      // a localised `labels` value changes the text, and an equality test on
+      // "Apply" then left the button inert (the activity-feed defect, R18-80).
+      const apply = actions.querySelector(".c-saved-view__apply") || (() => { const b = document.createElement("button"); b.type = "button"; b.className = "c-btn c-btn--ghost c-btn--sm"; b.setAttribute("data-saved-view-apply", ""); actions.appendChild(b); return b; })();
+      applyLabel(apply, this, "apply", "Apply");
+      const remove = actions.querySelector(".c-saved-view__remove") || (() => { const b = document.createElement("button"); b.type = "button"; b.className = "c-btn c-btn--ghost c-btn--sm"; b.setAttribute("data-saved-view-remove", ""); actions.appendChild(b); return b; })();
+      applyLabel(remove, this, "remove", "Remove");
     }
     enhance() {
       if (this._wiredSavedView) return;
@@ -248,9 +253,9 @@ class ContourSavedView extends ContourBase {
       this.addEventListener("click", (e) => {
         const btn = e.target && e.target.closest ? e.target.closest("button") : null;
         if (!btn || !this.contains(btn)) return;
-        if (btn.textContent === "Apply") {
+        if (btn.hasAttribute("data-saved-view-apply")) {
           this.dispatchEvent(new CustomEvent("contour:apply", { bubbles: true, composed: true, detail: { name: this.getAttribute("name") } }));
-        } else if (btn.textContent === "Remove") {
+        } else if (btn.hasAttribute("data-saved-view-remove")) {
           this.dispatchEvent(new CustomEvent("contour:remove", { bubbles: true, composed: true, detail: { name: this.getAttribute("name") } }));
         }
       });
@@ -263,12 +268,12 @@ class ContourProvenance extends ContourBase {
     render() {
       this.classList.add("c-provenance");
       this.setAttribute("role", "group");
-      this.setAttribute("aria-label", "Data provenance");
+      this.setAttribute("aria-label", labelText(this, "provenance", "Data provenance"));
       const source = this.getAttribute("source");
       if (source) {
         const s = this.ensure(".c-provenance__source", () => { const el = document.createElement("span"); el.className = "c-provenance__source"; return el; });
         const b = document.createElement("b");
-        b.textContent = "Source:";
+        b.textContent = labelText(this, "source", "Source") + ":";
         s.replaceChildren(b, document.createTextNode(" " + source));
       } else {
         const s = this.querySelector(".c-provenance__source");

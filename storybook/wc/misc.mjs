@@ -25,7 +25,7 @@ class ContourResizeObserver extends ContourBase {
     }
   }
   define("contour-resize-observer", ContourResizeObserver);
-import { ContourBase, define, onDispose, navKey , warnBadJson, label } from './core.mjs';
+import { ContourBase, define, onDispose, navKey , warnBadJson, labelText } from './core.mjs';
 import { loadRemote, remoteData, remoteRefresh, renderStates, renderEmpty, wireStates } from './states.mjs';
 class ContourReservedFull extends ContourBase {
     static get observed() { return ["title"]; }
@@ -122,7 +122,7 @@ class ContourActivityFeed extends ContourBase {
     render() {
       this.classList.add("c-activity-feed");
       if (!this.hasAttribute("role")) this.setAttribute("role", "region");
-      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", label(this, "title", "Activity feed"));
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", labelText(this, "title", "Activity feed"));
       wireStates(this);
       loadRemote(this, "items");
       if (renderStates(this, "activity-feed")) return;
@@ -133,11 +133,11 @@ class ContourActivityFeed extends ContourBase {
       if (!header) { header = document.createElement("div"); header.className = "c-activity-feed__header"; this.insertBefore(header, this.firstChild); }
       let title = header.querySelector(".c-activity-feed__title");
       if (!title) { title = document.createElement("div"); title.className = "c-activity-feed__title"; header.appendChild(title); }
-      title.textContent = label(this, "title", "Activity feed");
+      title.textContent = labelText(this, "title", "Activity feed");
       let toolbar = this.querySelector(".c-activity-feed__toolbar");
       if (!toolbar) { toolbar = document.createElement("div"); toolbar.className = "c-activity-feed__toolbar"; this.appendChild(toolbar); }
-      const clear = toolbar.querySelector("[data-activity-clear]") || (() => { const b = document.createElement("button"); b.type = "button"; b.className = "c-btn c-btn--ghost c-btn--sm"; b.setAttribute("data-activity-clear", ""); b.textContent = label(this, "clear", "Clear all"); toolbar.appendChild(b); return b; })();
-      const unreadBtn = toolbar.querySelector("[data-activity-unread]") || (() => { const b = document.createElement("button"); b.type = "button"; b.className = "c-btn c-btn--ghost c-btn--sm"; b.setAttribute("data-activity-unread", ""); b.textContent = label(this, "unread", "Unread only"); toolbar.appendChild(b); return b; })();
+      const clear = toolbar.querySelector("[data-activity-clear]") || (() => { const b = document.createElement("button"); b.type = "button"; b.className = "c-btn c-btn--ghost c-btn--sm"; b.setAttribute("data-activity-clear", ""); b.textContent = labelText(this, "clear", "Clear all"); toolbar.appendChild(b); return b; })();
+      const unreadBtn = toolbar.querySelector("[data-activity-unread]") || (() => { const b = document.createElement("button"); b.type = "button"; b.className = "c-btn c-btn--ghost c-btn--sm"; b.setAttribute("data-activity-unread", ""); b.textContent = labelText(this, "unread", "Unread only"); toolbar.appendChild(b); return b; })();
       if (unreadOnly) unreadBtn.setAttribute("aria-pressed", "true");
       let list = this.querySelector(".c-activity-feed__list");
       if (!list) { list = document.createElement("ol"); list.className = "c-activity-feed__list"; this.appendChild(list); }
@@ -150,7 +150,7 @@ class ContourActivityFeed extends ContourBase {
           Array.from(list.querySelectorAll(".c-activity-feed__item")).forEach((n) => n.remove());
           if (filtered.length === 0) {
             let empty = list.querySelector(".c-activity-feed__empty");
-            if (!empty) { empty = document.createElement("div"); empty.className = "c-activity-feed__empty"; empty.textContent = label(this, "empty", "No activity"); list.appendChild(empty); }
+            if (!empty) { empty = document.createElement("div"); empty.className = "c-activity-feed__empty"; empty.textContent = labelText(this, "empty", "No activity"); list.appendChild(empty); }
           } else {
             const empty = list.querySelector(".c-activity-feed__empty");
             if (empty) empty.remove();
@@ -311,14 +311,14 @@ class ContourAffordances extends ContourBase {
       if (!this.querySelector(".c-affordance")) {
         const aff = document.createElement("div");
         aff.className = "c-affordance";
-        const name = this.getAttribute("name") || this.getAttribute("title") || "Affordance";
+        const name = this.getAttribute("name") || this.getAttribute("title") || labelText(this, "affordance", "Affordance");
         const n = document.createElement("div");
         n.className = "c-affordance__name";
         n.textContent = name;
         aff.appendChild(n);
         const demo = document.createElement("div");
         demo.className = "c-affordance__demo";
-        demo.textContent = "Demo";
+        demo.textContent = labelText(this, "demo", "Demo");
         aff.appendChild(demo);
         this.appendChild(aff);
       }
