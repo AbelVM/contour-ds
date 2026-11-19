@@ -1497,7 +1497,7 @@ class ContourComparison extends ContourBase {
       }
       const divider = this.getAttribute("divider");
       if (divider !== null) {
-        const d = this.ensure(".c-comparison__divider", () => { const el = document.createElement("div"); el.className = "c-comparison__divider"; el.setAttribute("role", "separator"); el.setAttribute("aria-orientation", "vertical"); el.setAttribute("tabindex", "0"); return el; });
+        const d = this.ensure(".c-comparison__divider", () => { const el = document.createElement("div"); el.className = "c-comparison__divider"; el.setAttribute("role", "slider"); el.setAttribute("aria-orientation", "vertical"); el.setAttribute("aria-valuemin", "0"); el.setAttribute("aria-valuemax", "100"); el.setAttribute("aria-valuenow", "50"); el.setAttribute("aria-label", "Comparison divider"); el.setAttribute("tabindex", "0"); return el; });
         if (divider) d.textContent = divider;
       } else {
         const d = this.querySelector(".c-comparison__divider");
@@ -1512,6 +1512,8 @@ class ContourComparison extends ContourBase {
         const clamped = Math.max(0, Math.min(100, pct));
         this.style.setProperty("--comparison-pos", clamped + "%");
         this.setAttribute("value", String(Math.round(clamped)));
+        const divider = this.querySelector(".c-comparison__divider");
+        if (divider) divider.setAttribute("aria-valuenow", String(Math.round(clamped)));
         this.dispatchEvent(new CustomEvent("contour:drag", { bubbles: true, composed: true, detail: { value: clamped } }));
       };
       let dragging = false;

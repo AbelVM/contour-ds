@@ -10,6 +10,7 @@ export default {
     message: { control: "text" },
     variant: { control: "text" },
     duration: { control: "text" },
+    action: { control: "text" },
   },
 };
 
@@ -17,6 +18,7 @@ const render = (args = {}) => {
   const t = document.createElement("contour-toast");
   if (args.variant) t.setAttribute("variant", args.variant);
   if (args.duration) t.setAttribute("duration", args.duration);
+  if (args.action) t.setAttribute("action", args.action);
   if (args.message) t.textContent = args.message;
   else t.textContent = "Saved successfully";
   return t;
@@ -81,5 +83,17 @@ export const ToastHostAsyncAction = {
     await expect(status.textContent).toBe("done");
     await expect(host.querySelector(".c-toast")).toBeTruthy();
     await expect(host.textContent).toContain("Saved successfully");
+  },
+};
+
+export const WithAction = {
+  args: { message: "Changes deleted", action: "Undo", duration: "5000" },
+  render,
+  play: async ({ canvasElement }) => {
+    const t = canvasElement.querySelector("contour-toast");
+    await expect(t).toBeTruthy();
+    const action = t.querySelector(".c-toast__action");
+    await expect(action).toBeTruthy();
+    await expect(action.textContent).toBe("Undo");
   },
 };
