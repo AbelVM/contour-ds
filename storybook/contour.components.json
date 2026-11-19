@@ -2159,9 +2159,14 @@
         "legend",
         "name",
         "options",
-        "value"
+        "value",
+        "required",
+        "disabled"
       ],
-      "booleanAttributes": [],
+      "booleanAttributes": [
+        "disabled",
+        "required"
+      ],
       "slots": [],
       "parts": [],
       "tokens": [
@@ -6142,7 +6147,8 @@
         "disabled",
         "error",
         "help",
-        "label"
+        "label",
+        "name"
       ],
       "booleanAttributes": [
         "disabled",
@@ -6200,10 +6206,16 @@
         "label",
         "placeholder",
         "clearable",
-        "submit"
+        "submit",
+        "value",
+        "name",
+        "required",
+        "disabled"
       ],
       "booleanAttributes": [
         "clearable",
+        "disabled",
+        "required",
         "submit"
       ],
       "slots": [
@@ -9638,9 +9650,14 @@
         "value",
         "placeholder",
         "label",
-        "name"
+        "name",
+        "required",
+        "disabled"
       ],
-      "booleanAttributes": [],
+      "booleanAttributes": [
+        "disabled",
+        "required"
+      ],
       "slots": [],
       "parts": [],
       "tokens": [],
@@ -11841,7 +11858,10 @@
         "required",
         "disabled",
         "error",
-        "help"
+        "help",
+        "value",
+        "name",
+        "label"
       ],
       "booleanAttributes": [
         "disabled",
@@ -12681,7 +12701,9 @@
         ":hover"
       ],
       "attributes": [
-        "options"
+        "options",
+        "value",
+        "name"
       ],
       "booleanAttributes": [],
       "slots": [

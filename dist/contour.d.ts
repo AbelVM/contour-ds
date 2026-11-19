@@ -28,6 +28,7 @@ export interface ContourChangelogElement extends ContourElement{src?:S;}
 export interface ContourChartElement extends ContourDataElement{axis?:S;color?:S;zoomable?:boolean;brush?:boolean;note?:S;"bucket-count"?:S;"limit-values"?:S;}
 export interface ContourChartGridElement extends ContourElement{src?:S;}
 export interface ContourCheckElement extends ContourFormElement{label?:S;type?:S;error?:S;help?:S;}
+export interface ContourCheckboxGroupElement extends ContourElement{disabled?:boolean;}
 export interface ContourCodeElement extends ContourElement{numbered?:boolean;}
 export interface ContourCodeTabsElement extends ContourElement{src?:S;}
 export interface ContourColorPickerElement extends ContourFormElement{label?:S;error?:S;help?:S;alpha?:boolean;presets?:S;}
@@ -66,7 +67,7 @@ export interface ContourHeatmapElement extends ContourDataElement{cells?:S;count
 export interface ContourHexbinElement extends ContourDataElement{label?:S;cells?:S;}
 export interface ContourHoverCardElement extends ContourElement{content?:S;}
 export interface ContourInputFullElement extends ContourElement{disabled?:boolean;help?:S;}
-export interface ContourInputGroupElement extends ContourElement{clearable?:boolean;submit?:boolean;}
+export interface ContourInputGroupElement extends ContourElement{clearable?:boolean;submit?:boolean;disabled?:boolean;}
 export interface ContourInstrumentElement extends ContourDataElement{rows?:S;}
 export interface ContourIsochroneElement extends ContourDataElement{label?:S;center?:S;rings?:S;}
 export interface ContourKpiElement extends ContourDataElement{value?:S;label?:S;delta?:S;direction?:S;note?:S;variant?:S;unit?:S;format?:S;locale?:S;thresholds?:S;threshold?:S;sparkline?:S;polarity?:S;}
@@ -102,6 +103,7 @@ export interface ContourResponsiveContentElement extends ContourElement{breakpoi
 export interface ContourRowActionFullElement extends ContourElement{disabled?:boolean;}
 export interface ContourSavedViewElement extends ContourElement{updated?:S;source?:S;active?:boolean;}
 export interface ContourScaleBarElement extends ContourElement{distance?:S;resolution?:S;latitude?:S;src?:S;}
+export interface ContourSearchFieldElement extends ContourElement{disabled?:boolean;}
 export interface ContourSegmentedElement extends ContourFormElement{options?:S;selected?:S;label?:S;}
 export interface ContourSelectElement extends ContourFormElement{options?:S;label?:S;error?:S;help?:S;multiple?:boolean;autocomplete?:S;}
 export interface ContourShowcaseFullElement extends ContourElement{src?:S;}
@@ -125,7 +127,7 @@ export interface ContourTableElement extends ContourDataElement{columns?:S;rows?
 export interface ContourTabsElement extends ContourElement{autoplay?:number;pause?:boolean;src?:S;orientation?:S;}
 export interface ContourTagsInputElement extends ContourFormElement{error?:S;help?:S;}
 export interface ContourTestimonialFullElement extends ContourElement{role?:S;}
-export interface ContourTextareaElement extends ContourFormElement{error?:S;help?:S;}
+export interface ContourTextareaElement extends ContourFormElement{error?:S;help?:S;label?:S;}
 export interface ContourThresholdElement extends ContourDataElement{label?:S;norm?:S;state?:S;value?:S;}
 export interface ContourTimePickerElement extends ContourFormElement{label?:S;error?:S;help?:S;}
 export interface ContourTimeSeriesElement extends ContourDataElement{values?:S;points?:S;style?:S;annotations?:S;note?:S;}
@@ -180,7 +182,7 @@ declare global { interface HTMLElementTagNameMap {
   "contour-chart":ContourChartElement;
   "contour-chart-grid":ContourChartGridElement;
   "contour-check":ContourCheckElement;
-  "contour-checkbox-group":ContourElement;
+  "contour-checkbox-group":ContourCheckboxGroupElement;
   "contour-chip":ContourElement;
   "contour-cluster":ContourElement;
   "contour-code":ContourCodeElement;
@@ -319,7 +321,7 @@ declare global { interface HTMLElementTagNameMap {
   "contour-scheme-toggle":ContourElement;
   "contour-scrim":ContourElement;
   "contour-scroll-area":ContourElement;
-  "contour-search-field":ContourElement;
+  "contour-search-field":ContourSearchFieldElement;
   "contour-search-trigger":ContourElement;
   "contour-section-head":ContourElement;
   "contour-segmented":ContourSegmentedElement;

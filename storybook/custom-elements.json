@@ -4175,11 +4175,18 @@
         },
         {
           "kind": "class",
-          "name": "ContourElement",
+          "name": "ContourCheckboxGroupElement",
           "tagName": "contour-checkbox-group",
           "customElement": true,
           "description": "Contour component c-checkbox-group (complete-widget).",
           "attributes": [
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Boolean attribute for c-checkbox-group."
+            },
             {
               "name": "legend",
               "type": {
@@ -4202,6 +4209,13 @@
               "description": "Attribute for c-checkbox-group."
             },
             {
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Boolean attribute for c-checkbox-group."
+            },
+            {
               "name": "value",
               "type": {
                 "text": "string"
@@ -4210,6 +4224,14 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "disabled"
+            },
             {
               "kind": "field",
               "name": "legend",
@@ -4233,6 +4255,14 @@
                 "text": "string | null"
               },
               "attribute": "options"
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "required"
             },
             {
               "kind": "field",
@@ -11662,6 +11692,13 @@
               "description": "Attribute for c-input."
             },
             {
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-input."
+            },
+            {
               "name": "placeholder",
               "type": {
                 "text": "string"
@@ -11725,6 +11762,14 @@
             },
             {
               "kind": "field",
+              "name": "name",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "name"
+            },
+            {
+              "kind": "field",
               "name": "placeholder",
               "type": {
                 "text": "string | null"
@@ -11777,7 +11822,21 @@
               "description": "Boolean attribute for c-input-group."
             },
             {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Boolean attribute for c-input-group."
+            },
+            {
               "name": "label",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-input-group."
+            },
+            {
+              "name": "name",
               "type": {
                 "text": "string"
               },
@@ -11791,11 +11850,25 @@
               "description": "Attribute for c-input-group."
             },
             {
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Boolean attribute for c-input-group."
+            },
+            {
               "name": "submit",
               "type": {
                 "text": "boolean"
               },
               "description": "Boolean attribute for c-input-group."
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-input-group."
             }
           ],
           "members": [
@@ -11809,11 +11882,27 @@
             },
             {
               "kind": "field",
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "disabled"
+            },
+            {
+              "kind": "field",
               "name": "label",
               "type": {
                 "text": "string | null"
               },
               "attribute": "label"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "name"
             },
             {
               "kind": "field",
@@ -11825,11 +11914,27 @@
             },
             {
               "kind": "field",
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "required"
+            },
+            {
+              "kind": "field",
               "name": "submit",
               "type": {
                 "text": "boolean"
               },
               "attribute": "submit"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "value"
             }
           ],
           "slots": [
@@ -18484,11 +18589,18 @@
         },
         {
           "kind": "class",
-          "name": "ContourElement",
+          "name": "ContourSearchFieldElement",
           "tagName": "contour-search-field",
           "customElement": true,
           "description": "Contour component c-search-field (complete-widget).",
           "attributes": [
+            {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Boolean attribute for c-search-field."
+            },
             {
               "name": "label",
               "type": {
@@ -18511,6 +18623,13 @@
               "description": "Attribute for c-search-field."
             },
             {
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Boolean attribute for c-search-field."
+            },
+            {
               "name": "value",
               "type": {
                 "text": "string"
@@ -18519,6 +18638,14 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "disabled"
+            },
             {
               "kind": "field",
               "name": "label",
@@ -18542,6 +18669,14 @@
                 "text": "string | null"
               },
               "attribute": "placeholder"
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "required"
             },
             {
               "kind": "field",
@@ -23888,6 +24023,20 @@
               "description": "Attribute for c-textarea."
             },
             {
+              "name": "label",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-textarea."
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-textarea."
+            },
+            {
               "name": "placeholder",
               "type": {
                 "text": "string"
@@ -23900,6 +24049,13 @@
                 "text": "boolean"
               },
               "description": "Boolean attribute for c-textarea."
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-textarea."
             }
           ],
           "members": [
@@ -23929,6 +24085,22 @@
             },
             {
               "kind": "field",
+              "name": "label",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "label"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "name"
+            },
+            {
+              "kind": "field",
               "name": "placeholder",
               "type": {
                 "text": "string | null"
@@ -23942,6 +24114,14 @@
                 "text": "boolean"
               },
               "attribute": "required"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "value"
             }
           ],
           "cssParts": [
@@ -25794,7 +25974,21 @@
           "description": "Contour component c-version (complete-widget).",
           "attributes": [
             {
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-version."
+            },
+            {
               "name": "options",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-version."
+            },
+            {
+              "name": "value",
               "type": {
                 "text": "string"
               },
@@ -25804,11 +25998,27 @@
           "members": [
             {
               "kind": "field",
+              "name": "name",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "name"
+            },
+            {
+              "kind": "field",
               "name": "options",
               "type": {
                 "text": "string | null"
               },
               "attribute": "options"
+            },
+            {
+              "kind": "field",
+              "name": "value",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "value"
             }
           ],
           "slots": [
@@ -26443,7 +26653,7 @@
           "kind": "custom-element-definition",
           "name": "contour-checkbox-group",
           "declaration": {
-            "name": "ContourElement",
+            "name": "ContourCheckboxGroupElement",
             "module": "dist/contour-wc.esm.js"
           }
         },
@@ -27555,7 +27765,7 @@
           "kind": "custom-element-definition",
           "name": "contour-search-field",
           "declaration": {
-            "name": "ContourElement",
+            "name": "ContourSearchFieldElement",
             "module": "dist/contour-wc.esm.js"
           }
         },

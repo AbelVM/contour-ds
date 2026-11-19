@@ -568,6 +568,7 @@
          this.enhance();
          this._detachInnerFormControls();
          this._wireFormData();
+         this._wireValueTracking();
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
@@ -612,6 +613,13 @@
            value: el.value,
            checked: el.checked,
            type: el.type,
+           // User-dirty tracking (R20 T-02): a control the user edited keeps
+           // its value until the host's `value` attribute changes. A
+           // multi-select saves its whole selection, not just select.value
+           // (which is only the first selected option).
+           dirty: !!el._contourUserDirty,
+           attrAtDirty: el._contourAttrAtDirty,
+           selected: el.tagName === "SELECT" && el.multiple ? Array.from(el.selectedOptions).map((o) => o.value) : null,
          }));
          // Preserve focus, scroll position and <details> open state across the
          // rebuild, so a host attribute change does not yank focus to <body>
@@ -682,10 +690,8 @@
           const match = keyed.find((sv) => (sv.key === key || sv.preserveKey === key) && !used.has(sv));
           if (!match) continue;
           used.add(match);
-          if (el.value === "" && el.getAttribute("value") === null) {
-            el.value = match.value;
-          }
-           if ((el.type === "checkbox" || el.type === "radio") && typeof match.checked === "boolean" && !this._checkedAttrChanged) {
+          if (!this._contourResetting) this._restoreControlValue(el, match);
+           if ((el.type === "checkbox" || el.type === "radio") && typeof match.checked === "boolean" && !this._checkedAttrChanged && !this._contourResetting) {
              el.checked = match.checked;
            }
         }
@@ -709,10 +715,8 @@
           if (used >= group.length) continue;
           const saved = group[used];
           usedByType.set(type, used + 1);
-          if (el.value === "" && el.getAttribute("value") === null) {
-            el.value = saved.value;
-          }
-           if ((el.type === "checkbox" || el.type === "radio") && typeof saved.checked === "boolean" && !this._checkedAttrChanged) {
+          if (!this._contourResetting) this._restoreControlValue(el, saved);
+           if ((el.type === "checkbox" || el.type === "radio") && typeof saved.checked === "boolean" && !this._checkedAttrChanged && !this._contourResetting) {
             el.checked = saved.checked;
           }
         }
@@ -804,6 +808,7 @@
          this.enhance();
          this._detachInnerFormControls();
          this._checkedAttrChanged = false;
+         this._contourResetting = false;
        } finally {
         this._contourRendering = false;
       }
@@ -914,8 +919,11 @@
       // Reset synchronously: re-rendering would restore the base class's
       // *preserved* typed value, not the authored default. The authored
       // default is the host's own value/checked attributes, so restore the
-      // inner control from them, then re-sync internals.
+      // inner control from them, then re-sync internals. The user-dirty marks
+      // go with the reset: a later re-render must not resurrect the typed
+      // value the form just discarded.
       for (const ctl of this.querySelectorAll("input, textarea, select")) {
+        ctl._contourUserDirty = false;
         if (ctl.type === "checkbox" || ctl.type === "radio") {
           ctl.checked = this.hasAttribute("checked");
         } else if (ctl.tagName === "SELECT") {
@@ -984,6 +992,53 @@
         form.removeEventListener("change", onFormChange);
         form.removeEventListener("formdata", onFormData);
       });
+    }
+
+    // User-dirty value tracking (R20 T-02). The restore path only fills
+    // controls a render left empty, so a host with an authored `value`
+    // attribute overwrote whatever the user typed on every unrelated
+    // attribute change. A control the user actually edited — an `input` or
+    // `change` event, which programmatic `.value` writes do not fire — is
+    // marked dirty together with the host's `value` attribute at that moment;
+    // `_restoreControlValue` keeps the typed value until the author changes
+    // that attribute. Scoped to form-associated hosts: their controls carry
+    // the submission contract, and a non-form widget that clears its own
+    // field on re-render keeps that behaviour. Delegated on the host (rule
+    // 12): the controls are rebuilt on every render.
+    _wireValueTracking() {
+      if (!this._internals || this._wiredValueTracking) return;
+      this._wiredValueTracking = true;
+      const mark = (e) => {
+        const t = e.target;
+        if (!t || !t.matches || !t.matches("input, textarea, select")) return;
+        if (this._ownerBetween(t, this)) return;
+        t._contourUserDirty = true;
+        t._contourAttrAtDirty = this.getAttribute("value");
+      };
+      this.addEventListener("input", mark);
+      this.addEventListener("change", mark);
+    }
+
+    // Restore one control's value from its snapshot (R20 T-02/T-06). A
+    // user-dirty control keeps its typed value — a multi-select its whole
+    // selection, not just the first selected option — until the host's
+    // `value` attribute changes. Otherwise the original rule stands: only a
+    // control the render left empty, with no value attribute of its own,
+    // takes the saved value. The dirty mark is re-applied to the rebuilt
+    // control so the NEXT re-render preserves it too.
+    _restoreControlValue(el, saved) {
+      if (saved.dirty && saved.attrAtDirty === this.getAttribute("value")) {
+        if (saved.selected && el.tagName === "SELECT" && el.multiple) {
+          const wanted = new Set(saved.selected);
+          for (const o of el.options) o.selected = wanted.has(o.value);
+        } else {
+          el.value = saved.value;
+        }
+        el._contourUserDirty = true;
+        el._contourAttrAtDirty = saved.attrAtDirty;
+        return;
+      }
+      if (el.value === "" && el.getAttribute("value") === null) el.value = saved.value;
     }
 
     // The inner native control(s) are scaffolding; the host reports through

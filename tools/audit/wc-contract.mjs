@@ -2543,6 +2543,418 @@ try {
     else
       console.log("wc-contract: a11y semantics measured — no role=img over interactive content, live regions opt-in, one radiogroup/calendar tab stop, unique nav ids, finite separator range, table caption, scoped toggle, KPI passthrough, inspector actions, one main landmark, no button inside a button");
   }
+
+  // ---- 24. form participation contract (R20 T-01…T-08) ---------------------
+  //
+  // Review 20 measured seven form defects the value-event arm (17) cannot see,
+  // because events fire correctly while the entry list is wrong: a textarea
+  // that never rendered its value, an input whose typed text died on any
+  // unrelated attribute change, three hosts with no form association, a
+  // multi-select that submitted only its first selected option, and a version
+  // picker that ignored `value`. Each case below drives the control the way a
+  // form does — FormData collection (which fires `formdata` and re-syncs every
+  // host), reset, validity, and an unrelated attribute change mid-edit — and
+  // asserts the entry list, not the markup. Every form-associated class is
+  // covered except contour-shadow-* wrappers, which share these classes.
+  {
+    const p = await browser.newPage();
+    const errs = [];
+    p.on("pageerror", (e) => errs.push(String(e.message || e)));
+    await p.goto(`${origin}/unmin.html`, { waitUntil: "load" });
+    await p.waitForFunction(() => !!window.ContourElements, null, { timeout: 20000 });
+    const out = await p.evaluate(async () => {
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+      const results = {};
+      // One form per case so entries never collide across cases.
+      const mount = async (tag, attrs = {}) => {
+        const form = document.createElement("form");
+        const el = document.createElement(tag);
+        for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+        form.appendChild(el);
+        document.body.appendChild(form);
+        await wait(30);
+        return { form, el };
+      };
+      const entries = (form, name) => new FormData(form).getAll(name).map(String);
+      const type = (ctl, text) => {
+        ctl.value = text;
+        ctl.dispatchEvent(new Event("input", { bubbles: true }));
+        ctl.dispatchEvent(new Event("change", { bubbles: true }));
+      };
+
+      // input: authored value submits; typed text survives an unrelated
+      // attribute change; an explicit value change wins; reset restores the
+      // authored default; required emptiness is invalid.
+      {
+        const { form, el } = await mount("contour-input", { name: "q", value: "start", required: "" });
+        const r = { authored: entries(form, "q") };
+        type(el.querySelector("input"), "typed");
+        el.setAttribute("placeholder", "x");
+        await wait(20);
+        r.afterUnrelated = { shown: el.querySelector("input").value, submitted: entries(form, "q") };
+        form.reset();
+        await wait(20);
+        r.afterReset = { shown: el.querySelector("input").value, submitted: entries(form, "q") };
+        // An explicit author value change is a new default (native semantics)
+        // and must win over the typed text.
+        el.setAttribute("value", "override");
+        await wait(20);
+        r.afterValueChange = el.querySelector("input").value;
+        type(el.querySelector("input"), "");
+        r.invalidWhenEmpty = el.checkValidity() === false;
+        results.input = r;
+        form.remove();
+      }
+      // textarea: value and name reach the generated control and the form.
+      {
+        const { form, el } = await mount("contour-textarea", { name: "bio", value: "world", required: "" });
+        const ta = el.querySelector("textarea");
+        const r = { rendered: ta.value, named: ta.name, authored: entries(form, "bio") };
+        type(ta, "typed");
+        el.setAttribute("placeholder", "x");
+        await wait(20);
+        r.afterUnrelated = { shown: el.querySelector("textarea").value, submitted: entries(form, "bio") };
+        form.reset();
+        await wait(20);
+        r.afterReset = entries(form, "bio");
+        results.textarea = r;
+        form.remove();
+      }
+      // field: the wrapper preserves typed text and resets to the default.
+      {
+        const { form, el } = await mount("contour-field", { label: "Name", name: "fn", value: "Ada" });
+        const r = { authored: entries(form, "fn") };
+        type(el.querySelector("input"), "Grace");
+        el.setAttribute("hint", "full name");
+        await wait(20);
+        r.afterUnrelated = { shown: el.querySelector("input").value, submitted: entries(form, "fn") };
+        form.reset();
+        await wait(20);
+        r.afterReset = entries(form, "fn");
+        results.field = r;
+        form.remove();
+      }
+      // select (single): the committed selection submits and reflects; reset
+      // restores the authored value, not the first option.
+      {
+        const { form, el } = await mount("contour-select", { name: "pick", label: "Pick", options: '[{"label":"A","value":"a"},{"label":"B","value":"b"}]', value: "b" });
+        const sel = el.querySelector("select");
+        const r = { authored: entries(form, "pick") };
+        sel.value = "a";
+        sel.dispatchEvent(new Event("change", { bubbles: true }));
+        await wait(20);
+        r.afterChange = { submitted: entries(form, "pick"), attr: el.getAttribute("value") };
+        form.reset();
+        await wait(20);
+        r.afterReset = entries(form, "pick");
+        results.selectSingle = r;
+        form.remove();
+      }
+      // select (multiple): every selected option submits as its own entry.
+      {
+        const { form, el } = await mount("contour-select", { name: "multi", multiple: "", options: '[{"label":"A","value":"a"},{"label":"B","value":"b"},{"label":"C","value":"c"}]', value: "a,b" });
+        const sel = el.querySelector("select");
+        const r = { authored: entries(form, "multi"), multiple: sel.multiple };
+        Array.from(sel.options).forEach((o) => { o.selected = o.value !== "a"; });
+        sel.dispatchEvent(new Event("change", { bubbles: true }));
+        await wait(20);
+        r.afterChange = { submitted: entries(form, "multi"), attr: el.getAttribute("value") };
+        form.reset();
+        await wait(20);
+        r.afterReset = entries(form, "multi");
+        results.selectMulti = r;
+        form.remove();
+      }
+      // version: `value` selects the option; the commit reflects; reset restores.
+      {
+        const { form, el } = await mount("contour-version", { name: "ver", value: "2", options: '["1","2"]' });
+        const sel = el.querySelector("select");
+        const r = { authored: entries(form, "ver"), shown: sel.value };
+        sel.value = "1";
+        sel.dispatchEvent(new Event("change", { bubbles: true }));
+        await wait(20);
+        r.afterChange = { submitted: entries(form, "ver"), attr: el.getAttribute("value") };
+        form.reset();
+        await wait(20);
+        r.afterReset = entries(form, "ver");
+        results.version = r;
+        form.remove();
+      }
+      // checkbox-group: the host owns the group value — repeated entries,
+      // reflection, reset to the authored default, required validity.
+      {
+        const { form, el } = await mount("contour-checkbox-group", { name: "tags", legend: "Tags", options: '["a","b","c"]', value: "a", required: "" });
+        const boxes = () => Array.from(el.querySelectorAll("input[type=checkbox]"));
+        const r = { authored: entries(form, "tags") };
+        boxes().find((i) => i.value === "b").click();
+        await wait(20);
+        r.afterCheck = { submitted: entries(form, "tags"), attr: el.getAttribute("value"), checked: boxes().filter((i) => i.checked).map((i) => i.value) };
+        r.validWhenChecked = el.checkValidity() === true;
+        form.reset();
+        await wait(20);
+        r.afterReset = { submitted: entries(form, "tags"), attr: el.getAttribute("value") };
+        boxes().forEach((i) => { if (i.checked) i.click(); });
+        await wait(20);
+        r.invalidWhenEmpty = el.checkValidity() === false;
+        results.checkboxGroup = r;
+        form.remove();
+      }
+      // search-field: host-level participation, preservation, reset.
+      {
+        const { form, el } = await mount("contour-search-field", { name: "s", value: "init", label: "Search" });
+        const inp = el.querySelector("input");
+        const r = { authored: entries(form, "s"), named: inp.name };
+        type(inp, "typed");
+        el.setAttribute("placeholder", "x");
+        await wait(20);
+        r.afterUnrelated = { shown: el.querySelector("input").value, submitted: entries(form, "s") };
+        form.reset();
+        await wait(20);
+        r.afterReset = entries(form, "s");
+        results.searchField = r;
+        form.remove();
+      }
+      // input-group: value/name render, participation, clear, reset.
+      {
+        const { form, el } = await mount("contour-input-group", { name: "ig", value: "igval", label: "Search", clearable: "" });
+        const inp = el.querySelector("input");
+        const r = { authored: entries(form, "ig"), named: inp.name };
+        type(inp, "typed");
+        el.setAttribute("placeholder", "x");
+        await wait(20);
+        r.afterUnrelated = { shown: el.querySelector("input").value, submitted: entries(form, "ig") };
+        el.querySelector(".c-input-group__clear").click();
+        await wait(20);
+        r.afterClear = entries(form, "ig");
+        form.reset();
+        await wait(20);
+        r.afterReset = entries(form, "ig");
+        results.inputGroup = r;
+        form.remove();
+      }
+      // check / switch: the boolean entry appears and disappears; reset
+      // restores the AUTHORED checked state, not the last reflected one.
+      {
+        const { form, el } = await mount("contour-check", { name: "agree", value: "yes", label: "Agree" });
+        const r = { unchecked: entries(form, "agree") };
+        el.querySelector("input").click();
+        r.checked = entries(form, "agree");
+        form.reset();
+        r.afterReset = entries(form, "agree");
+        results.check = r;
+        form.remove();
+      }
+      {
+        const { form, el } = await mount("contour-switch", { name: "sw", label: "WiFi", checked: "" });
+        const r = { authored: entries(form, "sw") };
+        el.querySelector("input").click();
+        r.toggled = entries(form, "sw");
+        form.reset();
+        r.afterReset = entries(form, "sw");
+        results.switch = r;
+        form.remove();
+      }
+      // radio pair: one entry under the shared name; the deselected host
+      // clears its stale value; reset restores the authored checked radio.
+      {
+        const form = document.createElement("form");
+        const a = document.createElement("contour-radio");
+        a.setAttribute("name", "g"); a.setAttribute("value", "a"); a.setAttribute("label", "A");
+        const b = document.createElement("contour-radio");
+        b.setAttribute("name", "g"); b.setAttribute("value", "b"); b.setAttribute("label", "B"); b.setAttribute("checked", "");
+        form.appendChild(a); form.appendChild(b);
+        document.body.appendChild(form);
+        await wait(30);
+        const r = { authored: entries(form, "g") };
+        a.querySelector("input").click();
+        r.afterClick = entries(form, "g");
+        form.reset();
+        r.afterReset = entries(form, "g");
+        results.radioPair = r;
+        form.remove();
+      }
+      // radio-list: the checked item submits; reset re-renders the payload.
+      {
+        const { form, el } = await mount("contour-radio-list", { name: "opt", items: '[{"label":"X","value":"x"},{"label":"Z","value":"z","checked":true}]' });
+        const r = { authored: entries(form, "opt") };
+        Array.from(el.querySelectorAll("input")).find((i) => i.value === "x").click();
+        r.afterClick = entries(form, "opt");
+        form.reset();
+        await wait(30);
+        r.afterReset = entries(form, "opt");
+        results.radioList = r;
+        form.remove();
+      }
+      // range: single submits one entry and resets; dual submits TWO entries
+      // under the one host name (the hidden-mirror path was detached by the
+      // same form="" rule that prevents double submission).
+      {
+        const { form, el } = await mount("contour-range", { name: "vol", value: "30", min: "0", max: "100", label: "Volume" });
+        const r = { single: entries(form, "vol") };
+        form.reset();
+        r.singleReset = entries(form, "vol");
+        results.rangeSingle = r;
+        form.remove();
+      }
+      {
+        const { form, el } = await mount("contour-range", { name: "band", range: "", low: "20", high: "80", min: "0", max: "100", label: "Band" });
+        results.rangeDual = { dual: entries(form, "band") };
+        form.remove();
+      }
+      // combobox: submits the committed VALUE, not the visible label, and
+      // reset restores the authored default's label.
+      {
+        const { form, el } = await mount("contour-combobox", { name: "cb", label: "Country", options: '[{"label":"United States","value":"us"}]', value: "us" });
+        const r = { authored: entries(form, "cb"), shown: el.querySelector("input").value };
+        form.reset();
+        await wait(20);
+        r.afterReset = { submitted: entries(form, "cb"), shown: el.querySelector("input").value };
+        results.combobox = r;
+        form.remove();
+      }
+      // The ui.mjs form controls submit their authored value under the host name.
+      for (const [tag, value, name] of [
+        ["contour-date-picker", "2026-11-19", "d"],
+        ["contour-time-picker", "12:30", "t"],
+        ["contour-color-picker", "#ff0000", "c"],
+        ["contour-number-field", "42", "n"],
+      ]) {
+        const { form, el } = await mount(tag, { value, name, label: "L" });
+        results["picker-" + tag] = entries(form, name);
+        form.remove();
+      }
+      // file-upload: the selected File submits as a File, not a path string.
+      {
+        const { form, el } = await mount("contour-file-upload", { name: "doc", label: "Doc" });
+        const inp = el.querySelector("input[type=file]");
+        const r = { hasFileInput: !!inp };
+        if (inp) {
+          const dt = new DataTransfer();
+          dt.items.add(new File(["hello"], "hello.txt", { type: "text/plain" }));
+          inp.files = dt.files;
+          inp.dispatchEvent(new Event("change", { bubbles: true }));
+          await wait(20);
+          const v = new FormData(form).get("doc");
+          r.submitted = v instanceof File ? v.name : String(v);
+        }
+        results.fileUpload = r;
+        form.remove();
+      }
+      // tags-input: the declared value submits, and an added tag reaches it.
+      {
+        const { form, el } = await mount("contour-tags-input", { name: "tg", value: '["a","b"]' });
+        const r = { matchesAttr: entries(form, "tg")[0] === el.getAttribute("value") };
+        const inp = el.querySelector(".c-tags-input__input");
+        inp.value = "c";
+        inp.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
+        await wait(20);
+        r.afterAdd = (entries(form, "tg")[0] || "").includes("c");
+        results.tagsInput = r;
+        form.remove();
+      }
+      // A control with no authored value keeps typed text across a re-render
+      // (the pre-existing empty-control path must not regress).
+      {
+        const { form, el } = await mount("contour-input", { name: "free" });
+        type(el.querySelector("input"), "kept");
+        el.setAttribute("placeholder", "x");
+        await wait(20);
+        results.noAttrPreserve = { shown: el.querySelector("input").value, submitted: entries(form, "free") };
+        form.remove();
+      }
+      return results;
+    });
+    const bad = [];
+    const eq = (label, got, want) => {
+      const g = JSON.stringify(got), w = JSON.stringify(want);
+      if (g !== w) bad.push(`${label}: ${g} != ${w}`);
+    };
+    eq("input authored", out.input?.authored, ["start"]);
+    eq("input preserved shown", out.input?.afterUnrelated?.shown, "typed");
+    eq("input preserved submitted", out.input?.afterUnrelated?.submitted, ["typed"]);
+    eq("input value change wins", out.input?.afterValueChange, "override");
+    eq("input reset shown", out.input?.afterReset?.shown, "start");
+    eq("input reset submitted", out.input?.afterReset?.submitted, ["start"]);
+    if (out.input?.invalidWhenEmpty !== true) bad.push(`required empty input checkValidity()=${out.input?.invalidWhenEmpty} (want false → invalid)`);
+    eq("textarea rendered value", out.textarea?.rendered, "world");
+    eq("textarea rendered name", out.textarea?.named, "bio");
+    eq("textarea authored", out.textarea?.authored, ["world"]);
+    eq("textarea preserved shown", out.textarea?.afterUnrelated?.shown, "typed");
+    eq("textarea preserved submitted", out.textarea?.afterUnrelated?.submitted, ["typed"]);
+    eq("textarea reset", out.textarea?.afterReset, ["world"]);
+    eq("field authored", out.field?.authored, ["Ada"]);
+    eq("field preserved shown", out.field?.afterUnrelated?.shown, "Grace");
+    eq("field preserved submitted", out.field?.afterUnrelated?.submitted, ["Grace"]);
+    eq("field reset", out.field?.afterReset, ["Ada"]);
+    eq("select single authored", out.selectSingle?.authored, ["b"]);
+    eq("select single change", out.selectSingle?.afterChange?.submitted, ["a"]);
+    eq("select single reflects", out.selectSingle?.afterChange?.attr, "a");
+    eq("select single reset", out.selectSingle?.afterReset, ["b"]);
+    eq("select multi authored", out.selectMulti?.authored, ["a", "b"]);
+    if (out.selectMulti?.multiple !== true) bad.push(`select[multiple] inner select multiple=${out.selectMulti?.multiple}`);
+    eq("select multi change", out.selectMulti?.afterChange?.submitted, ["b", "c"]);
+    eq("select multi reflects", out.selectMulti?.afterChange?.attr, "b,c");
+    eq("select multi reset", out.selectMulti?.afterReset, ["a", "b"]);
+    eq("version authored", out.version?.authored, ["2"]);
+    eq("version shown", out.version?.shown, "2");
+    eq("version change", out.version?.afterChange?.submitted, ["1"]);
+    eq("version reflects", out.version?.afterChange?.attr, "1");
+    eq("version reset", out.version?.afterReset, ["2"]);
+    eq("checkbox-group authored", out.checkboxGroup?.authored, ["a"]);
+    eq("checkbox-group check", out.checkboxGroup?.afterCheck?.submitted, ["a", "b"]);
+    eq("checkbox-group reflects", out.checkboxGroup?.afterCheck?.attr, "a,b");
+    eq("checkbox-group checked", out.checkboxGroup?.afterCheck?.checked, ["a", "b"]);
+    if (out.checkboxGroup?.validWhenChecked !== true) bad.push(`checkbox-group with a checked box is invalid`);
+    eq("checkbox-group reset", out.checkboxGroup?.afterReset?.submitted, ["a"]);
+    eq("checkbox-group reset attr", out.checkboxGroup?.afterReset?.attr, "a");
+    if (out.checkboxGroup?.invalidWhenEmpty !== true) bad.push(`required empty checkbox-group checkValidity() did not report invalid`);
+    eq("search-field authored", out.searchField?.authored, ["init"]);
+    eq("search-field name", out.searchField?.named, "s");
+    eq("search-field preserved shown", out.searchField?.afterUnrelated?.shown, "typed");
+    eq("search-field preserved submitted", out.searchField?.afterUnrelated?.submitted, ["typed"]);
+    eq("search-field reset", out.searchField?.afterReset, ["init"]);
+    eq("input-group authored", out.inputGroup?.authored, ["igval"]);
+    eq("input-group name", out.inputGroup?.named, "ig");
+    eq("input-group preserved shown", out.inputGroup?.afterUnrelated?.shown, "typed");
+    eq("input-group preserved submitted", out.inputGroup?.afterUnrelated?.submitted, ["typed"]);
+    eq("input-group clear", out.inputGroup?.afterClear, [""]);
+    eq("input-group reset", out.inputGroup?.afterReset, ["igval"]);
+    eq("check unchecked", out.check?.unchecked, []);
+    eq("check checked", out.check?.checked, ["yes"]);
+    eq("check reset", out.check?.afterReset, []);
+    eq("switch authored", out.switch?.authored, ["on"]);
+    eq("switch toggled", out.switch?.toggled, []);
+    eq("switch reset", out.switch?.afterReset, ["on"]);
+    eq("radio pair authored", out.radioPair?.authored, ["b"]);
+    eq("radio pair click", out.radioPair?.afterClick, ["a"]);
+    eq("radio pair reset", out.radioPair?.afterReset, ["b"]);
+    eq("radio-list authored", out.radioList?.authored, ["z"]);
+    eq("radio-list click", out.radioList?.afterClick, ["x"]);
+    eq("radio-list reset", out.radioList?.afterReset, ["z"]);
+    eq("range single", out.rangeSingle?.single, ["30"]);
+    eq("range single reset", out.rangeSingle?.singleReset, ["30"]);
+    eq("range dual", out.rangeDual?.dual, ["20", "80"]);
+    eq("combobox authored", out.combobox?.authored, ["us"]);
+    eq("combobox shows label", out.combobox?.shown, "United States");
+    eq("combobox reset submitted", out.combobox?.afterReset?.submitted, ["us"]);
+    eq("combobox reset label", out.combobox?.afterReset?.shown, "United States");
+    eq("date-picker value", out["picker-contour-date-picker"], ["2026-11-19"]);
+    eq("time-picker value", out["picker-contour-time-picker"], ["12:30"]);
+    eq("color-picker value", out["picker-contour-color-picker"], ["#ff0000"]);
+    eq("number-field value", out["picker-contour-number-field"], ["42"]);
+    if (out.fileUpload?.hasFileInput !== true) bad.push("file-upload rendered no file input");
+    eq("file-upload submits File", out.fileUpload?.submitted, "hello.txt");
+    if (out.tagsInput?.matchesAttr !== true) bad.push("tags-input entry does not match its value attribute");
+    if (out.tagsInput?.afterAdd !== true) bad.push("tags-input added tag did not reach the entry list");
+    eq("no-attr preserve shown", out.noAttrPreserve?.shown, "kept");
+    eq("no-attr preserve submitted", out.noAttrPreserve?.submitted, ["kept"]);
+    if (errs.length) bad.push(`page errors: ${errs.slice(0, 2).join(" | ")}`);
+    compared += 79;
+    if (bad.length)
+      fail(`form participation contract broke (R20 T-01…T-08): ${bad.join(" | ")}`);
+    else
+      console.log("wc-contract: form participation measured — every form-associated control submits its value(s), preserves typed text across unrelated re-renders, resets to the authored default, and reports required validity");
+  }
 } finally {
   await browser.close();
   server.close();

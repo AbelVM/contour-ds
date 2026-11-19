@@ -1237,7 +1237,7 @@
       "c-input-group"
     ],
     "body": [
-      "<contour-input-group label=\"${1:label}\" placeholder=\"${2:placeholder}\">$0</contour-input-group>"
+      "<contour-input-group label=\"${1:label}\" placeholder=\"${2:placeholder}\" value=\"${3:value}\">$0</contour-input-group>"
     ],
     "description": "Contour c-input-group (complete-widget)",
     "scope": "html,vue,jsx,tsx"
@@ -4295,7 +4295,7 @@
       "c-textarea"
     ],
     "body": [
-      "<contour-textarea placeholder=\"${1:placeholder}\">$0</contour-textarea>"
+      "<contour-textarea placeholder=\"${1:placeholder}\" value=\"${2:value}\" name=\"${3:name}\">$0</contour-textarea>"
     ],
     "description": "Contour c-textarea (complete-widget)",
     "scope": "html,vue,jsx,tsx"
@@ -4471,7 +4471,7 @@
       "c-version"
     ],
     "body": [
-      "<contour-version options=\"${1:options}\">$0</contour-version>"
+      "<contour-version options=\"${1:options}\" value=\"${2:value}\" name=\"${3:name}\">$0</contour-version>"
     ],
     "description": "Contour c-version (complete-widget)",
     "scope": "html,vue,jsx,tsx"

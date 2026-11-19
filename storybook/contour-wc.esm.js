@@ -568,6 +568,7 @@
          this.enhance();
          this._detachInnerFormControls();
          this._wireFormData();
+         this._wireValueTracking();
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
@@ -612,6 +613,13 @@
            value: el.value,
            checked: el.checked,
            type: el.type,
+           // User-dirty tracking (R20 T-02): a control the user edited keeps
+           // its value until the host's `value` attribute changes. A
+           // multi-select saves its whole selection, not just select.value
+           // (which is only the first selected option).
+           dirty: !!el._contourUserDirty,
+           attrAtDirty: el._contourAttrAtDirty,
+           selected: el.tagName === "SELECT" && el.multiple ? Array.from(el.selectedOptions).map((o) => o.value) : null,
          }));
          // Preserve focus, scroll position and <details> open state across the
          // rebuild, so a host attribute change does not yank focus to <body>
@@ -682,10 +690,8 @@
           const match = keyed.find((sv) => (sv.key === key || sv.preserveKey === key) && !used.has(sv));
           if (!match) continue;
           used.add(match);
-          if (el.value === "" && el.getAttribute("value") === null) {
-            el.value = match.value;
-          }
-           if ((el.type === "checkbox" || el.type === "radio") && typeof match.checked === "boolean" && !this._checkedAttrChanged) {
+          if (!this._contourResetting) this._restoreControlValue(el, match);
+           if ((el.type === "checkbox" || el.type === "radio") && typeof match.checked === "boolean" && !this._checkedAttrChanged && !this._contourResetting) {
              el.checked = match.checked;
            }
         }
@@ -709,10 +715,8 @@
           if (used >= group.length) continue;
           const saved = group[used];
           usedByType.set(type, used + 1);
-          if (el.value === "" && el.getAttribute("value") === null) {
-            el.value = saved.value;
-          }
-           if ((el.type === "checkbox" || el.type === "radio") && typeof saved.checked === "boolean" && !this._checkedAttrChanged) {
+          if (!this._contourResetting) this._restoreControlValue(el, saved);
+           if ((el.type === "checkbox" || el.type === "radio") && typeof saved.checked === "boolean" && !this._checkedAttrChanged && !this._contourResetting) {
             el.checked = saved.checked;
           }
         }
@@ -804,6 +808,7 @@
          this.enhance();
          this._detachInnerFormControls();
          this._checkedAttrChanged = false;
+         this._contourResetting = false;
        } finally {
         this._contourRendering = false;
       }
@@ -914,8 +919,11 @@
       // Reset synchronously: re-rendering would restore the base class's
       // *preserved* typed value, not the authored default. The authored
       // default is the host's own value/checked attributes, so restore the
-      // inner control from them, then re-sync internals.
+      // inner control from them, then re-sync internals. The user-dirty marks
+      // go with the reset: a later re-render must not resurrect the typed
+      // value the form just discarded.
       for (const ctl of this.querySelectorAll("input, textarea, select")) {
+        ctl._contourUserDirty = false;
         if (ctl.type === "checkbox" || ctl.type === "radio") {
           ctl.checked = this.hasAttribute("checked");
         } else if (ctl.tagName === "SELECT") {
@@ -984,6 +992,53 @@
         form.removeEventListener("change", onFormChange);
         form.removeEventListener("formdata", onFormData);
       });
+    }
+
+    // User-dirty value tracking (R20 T-02). The restore path only fills
+    // controls a render left empty, so a host with an authored `value`
+    // attribute overwrote whatever the user typed on every unrelated
+    // attribute change. A control the user actually edited — an `input` or
+    // `change` event, which programmatic `.value` writes do not fire — is
+    // marked dirty together with the host's `value` attribute at that moment;
+    // `_restoreControlValue` keeps the typed value until the author changes
+    // that attribute. Scoped to form-associated hosts: their controls carry
+    // the submission contract, and a non-form widget that clears its own
+    // field on re-render keeps that behaviour. Delegated on the host (rule
+    // 12): the controls are rebuilt on every render.
+    _wireValueTracking() {
+      if (!this._internals || this._wiredValueTracking) return;
+      this._wiredValueTracking = true;
+      const mark = (e) => {
+        const t = e.target;
+        if (!t || !t.matches || !t.matches("input, textarea, select")) return;
+        if (this._ownerBetween(t, this)) return;
+        t._contourUserDirty = true;
+        t._contourAttrAtDirty = this.getAttribute("value");
+      };
+      this.addEventListener("input", mark);
+      this.addEventListener("change", mark);
+    }
+
+    // Restore one control's value from its snapshot (R20 T-02/T-06). A
+    // user-dirty control keeps its typed value — a multi-select its whole
+    // selection, not just the first selected option — until the host's
+    // `value` attribute changes. Otherwise the original rule stands: only a
+    // control the render left empty, with no value attribute of its own,
+    // takes the saved value. The dirty mark is re-applied to the rebuilt
+    // control so the NEXT re-render preserves it too.
+    _restoreControlValue(el, saved) {
+      if (saved.dirty && saved.attrAtDirty === this.getAttribute("value")) {
+        if (saved.selected && el.tagName === "SELECT" && el.multiple) {
+          const wanted = new Set(saved.selected);
+          for (const o of el.options) o.selected = wanted.has(o.value);
+        } else {
+          el.value = saved.value;
+        }
+        el._contourUserDirty = true;
+        el._contourAttrAtDirty = saved.attrAtDirty;
+        return;
+      }
+      if (el.value === "" && el.getAttribute("value") === null) el.value = saved.value;
     }
 
     // The inner native control(s) are scaffolding; the host reports through
@@ -10423,6 +10478,9 @@ class ContourCombobox extends ContourBase {
     static get properties() { return { options: { attribute: "options" }, placeholder: { attribute: "placeholder" }, label: { attribute: "label" }, value: { attribute: "value" }, multiple: { attribute: "multiple", type: Boolean }, virtual: { attribute: "virtual", type: Boolean }, src: { attribute: "src" }, disabled: { attribute: "disabled", type: Boolean }, required: { attribute: "required", type: Boolean }, name: { attribute: "name" } }; }
     render() {
       this.classList.add("c-combobox");
+      // The authored default, captured before any commit reflects into the
+      // attribute: form reset restores THIS, not the last committed value.
+      if (this._comboboxDefault === undefined) this._comboboxDefault = this.getAttribute("value");
       wireStates(this);
       loadRemote(this, "options");
       if (renderStates(this, "combobox")) return;
@@ -10591,6 +10649,20 @@ class ContourCombobox extends ContourBase {
          });
        }
      }
+    formResetCallback() {
+      // Restore the authored default and let render map it back to the
+      // option's LABEL — the generic base reset wrote the raw value into the
+      // text field, which shows labels, not values.
+      this._contourResetting = true;
+      try {
+        const def = this._comboboxDefault ?? null;
+        if (def === null) this.removeAttribute("value");
+        else this.setAttribute("value", def);
+        this._syncFormValue();
+      } finally {
+        this._contourResetting = false;
+      }
+    }
   }
 define("contour-combobox", ContourCombobox);
 /**
@@ -10624,7 +10696,9 @@ class ContourField extends ContourBase {
       });
       input.type = this.getAttribute("type") || "text";
       input.placeholder = placeholder;
-      if (!input.id) input.id = contourId("contour-field");
+      // Stable across renders: a fresh id per render breaks the base class's
+      // keyed value/focus matching for a field with no `name` (R20 T-02).
+      if (!input.id) input.id = this._fieldInputId || (this._fieldInputId = contourId("contour-field"));
       // Associate the label with the input so the control is labelled.
       const lbl = this.querySelector(".c-field__label");
       if (lbl) { if (!input.id) input.id = contourId("contour-field"); lbl.setAttribute("for", input.id); input.setAttribute("aria-label", lbl.textContent); }
@@ -10914,22 +10988,16 @@ class ContourRange extends ContourBase {
          else { highInput.value = highVal; this._rangeUserHigh = null; this._rangeAttrHighAtDirty = null; }
          const label = this.getAttribute("label");
          if (label) { lowInput.setAttribute("aria-label", label + " low"); highInput.setAttribute("aria-label", label + " high"); }
-         // A dual range submits two entries, not one comma-joined value: a
-         // form-associated custom element can only set one value, so the two
-         // handles are mirrored into hidden native inputs that the ancestor
-         // form submits as separate entries under the host's name.
-         const hostName = this.getAttribute("name");
-         if (hostName) {
-           const lo = this.ensure('input[type="hidden"][data-range="low"]', () => { const el = document.createElement("input"); el.type = "hidden"; el.setAttribute("data-range", "low"); return el; });
-           const hi = this.ensure('input[type="hidden"][data-range="high"]', () => { const el = document.createElement("input"); el.type = "hidden"; el.setAttribute("data-range", "high"); return el; });
-           lo.name = hostName; hi.name = hostName;
-           lo.value = lowInput.value; hi.value = highInput.value;
-         } else {
-           Array.from(this.querySelectorAll('input[type="hidden"][data-range]')).forEach((n) => n.remove());
-         }
+         // A dual range submits two entries under the host's name through
+         // the ElementInternals FormData form value (_syncFormValue below).
+         // The old hidden native mirrors submitted NOTHING: the base class's
+         // form="" detachment cannot tell a mirror from a double submission,
+         // so it detached them too — measured as zero entries by the R20
+         // form-participation arm. Remove any a previous render left behind.
+         Array.from(this.querySelectorAll('input[type="hidden"][data-range]')).forEach((n) => n.remove());
        } else {
-         // remove dual inputs
-         Array.from(this.querySelectorAll("input.c-range__low, input.c-range__high")).forEach((n) => n.remove());
+         // remove dual inputs and any leftover mirrors from a dual render
+         Array.from(this.querySelectorAll("input.c-range__low, input.c-range__high, input[type='hidden'][data-range]")).forEach((n) => n.remove());
          const input = this.ensure("input.c-range", () => { const el = document.createElement("input"); el.type = "range"; el.setAttribute("part", "input"); return el; });
          // ensure class
          input.className = "c-range";
@@ -10973,25 +11041,61 @@ class ContourRange extends ContourBase {
      if (name === "high") { this._rangeUserHigh = null; this._rangeAttrHighAtDirty = null; }
      return ContourBase.prototype.attributeChangedCallback.call(this, name, oldValue, newValue);
    };
+   // Form value (R20 T-08): single submits the handle's value; dual submits
+   // TWO entries under the one host name via the FormData form value. The
+   // base generic would submit only the first handle, and the formdata
+   // re-sync calls THIS, so the override is what keeps the entry list right.
+   ContourRange.prototype._syncFormValue = function() {
+     if (!this._internals) return;
+     const low = this.querySelector("input.c-range__low");
+     const high = this.querySelector("input.c-range__high");
+     if (low && high) {
+       const name = this.getAttribute("name");
+       if (name) {
+         const fd = new FormData();
+         fd.append(name, low.value);
+         fd.append(name, high.value);
+         this._internals.setFormValue(fd);
+       } else {
+         this._internals.setFormValue(null);
+       }
+     } else {
+       const single = this.querySelector("input.c-range:not(.c-range__low):not(.c-range__high)");
+       if (single) this._internals.setFormValue(single.value);
+     }
+   };
+   ContourRange.prototype.formResetCallback = function() {
+     // The authored defaults are the value/low/high attributes; clear the
+     // user-drag tracking so the re-render reads them, under the resetting
+     // flag so the base restore cannot resurrect the dragged handles.
+     this._contourResetting = true;
+     try {
+       this._rangeUserValue = null; this._rangeAttrAtDirty = null;
+       this._rangeUserLow = null; this._rangeAttrLowAtDirty = null;
+       this._rangeUserHigh = null; this._rangeAttrHighAtDirty = null;
+       if (this.isConnected && this._contourAuthored) this.attributeChangedCallback("__rerender__", null, "");
+       this._syncFormValue();
+     } finally {
+       this._contourResetting = false;
+     }
+   };
+   ContourRange.prototype.formStateRestoreCallback = function(state) {
+     if (!this._internals || state === null || state === undefined) return;
+     const low = this.querySelector("input.c-range__low");
+     const high = this.querySelector("input.c-range__high");
+     if (low && high && state instanceof FormData) {
+       const vals = state.getAll(this.getAttribute("name"));
+       if (vals.length >= 2) { low.value = String(vals[0]); high.value = String(vals[1]); }
+     } else {
+       const single = this.querySelector("input.c-range:not(.c-range__low):not(.c-range__high)");
+       if (single) single.value = String(state);
+     }
+     this._syncFormValue();
+   };
    ContourRange.prototype.enhance = function() {
      if (this._wiredRange) return;
      this._wiredRange = true;
-     const sync = () => {
-       const low = this.querySelector("input.c-range__low");
-       const high = this.querySelector("input.c-range__high");
-       const single = this.querySelector("input.c-range:not(.c-range__low):not(.c-range__high)");
-       if (low && high) {
-         // Mirror the handles into the hidden inputs so the ancestor form
-         // submits two entries; the host itself sets no single value.
-         const lo = this.querySelector('input[type="hidden"][data-range="low"]');
-         const hi = this.querySelector('input[type="hidden"][data-range="high"]');
-         if (lo) lo.value = low.value;
-         if (hi) hi.value = high.value;
-         if (this._internals) this._internals.setFormValue(null);
-       } else if (single && this._internals) {
-         this._internals.setFormValue(single.value);
-       }
-     };
+     const sync = () => { this._syncFormValue(); };
      this.addEventListener("input", (e) => {
        const low = this.querySelector("input.c-range__low");
        const high = this.querySelector("input.c-range__high");
@@ -11038,6 +11142,8 @@ class ContourSwitch extends ContourBase {
     static get formAssociated() { return true; }
     render() {
       this.classList.add("c-switch");
+      // Authored default captured before any toggle reflects into `checked`.
+      if (this._switchDefaultChecked === undefined) this._switchDefaultChecked = this.hasAttribute("checked");
       const label = this.getAttribute("label");
       // The guide's control is `label.c-switch` wrapping `input.c-switch__input`
       // and a bare span of text; the sheet paints the track on the input itself.
@@ -11097,6 +11203,20 @@ class ContourSwitch extends ContourBase {
         this._syncValidity(this.hasAttribute("required") && !inp.checked);
       });
     }
+    formResetCallback() {
+      // `checked` is reflected on every toggle, so the authored default must
+      // come from the first-render capture — native defaultChecked semantics,
+      // not the last reflected state (R20 T-08).
+      this._contourResetting = true;
+      try {
+        this.toggleAttribute("checked", !!this._switchDefaultChecked);
+        const inp = this.querySelector("input");
+        if (inp) inp.checked = this.hasAttribute("checked");
+        this._syncFormValue();
+      } finally {
+        this._contourResetting = false;
+      }
+    }
   }
   define("contour-switch", ContourSwitch);
 /**
@@ -11111,6 +11231,8 @@ class ContourCheck extends ContourBase {
     static get formAssociated() { return true; }
     render() {
       this.classList.add("c-check");
+      // Authored default captured before any toggle reflects into `checked`.
+      if (this._checkDefaultChecked === undefined) this._checkDefaultChecked = this.hasAttribute("checked");
       const label = this.getAttribute("label");
        const input = this.ensure("input.c-check__input", () => { const el = document.createElement("input"); el.className = "c-check__input"; el.type = this.getAttribute("type") === "radio" ? "radio" : "checkbox"; return el; });
        input.checked = this.hasAttribute("checked");
@@ -11164,6 +11286,18 @@ class ContourCheck extends ContourBase {
         this._emitForm("contour:change");
         this._syncValidity(this.hasAttribute("required") && !inp.checked);
       });
+    }
+    formResetCallback() {
+      // Same default-capture contract as contour-switch (R20 T-08).
+      this._contourResetting = true;
+      try {
+        this.toggleAttribute("checked", !!this._checkDefaultChecked);
+        const inp = this.querySelector("input");
+        if (inp) inp.checked = this.hasAttribute("checked");
+        this._syncFormValue();
+      } finally {
+        this._contourResetting = false;
+      }
     }
   }
   define("contour-check", ContourCheck);
@@ -11244,6 +11378,8 @@ class ContourSelect extends ContourBase {
     static get formAssociated() { return true; }
     render() {
       this.classList.add("c-select");
+      // Authored default captured before any commit reflects into `value`.
+      if (this._selectDefault === undefined) this._selectDefault = this.getAttribute("value");
       const options = this.getAttribute("options");
       // Slot composition: an authored <select> wins over the JSON attribute.
       const generated = new Set(this._contourGenerated || []);
@@ -11343,11 +11479,7 @@ class ContourSelect extends ContourBase {
       if (err) this.classList.add("is-error"); else this.classList.remove("is-error");
     }
     enhance() {
-      const select = this.querySelector("select");
-      if (select && this._internals) {
-        this._internals.setFormValue(select.value);
-        this._syncValidity(this.hasAttribute("required") && !select.value);
-      }
+      if (this._internals) this._syncFormValue();
       if (this._wiredSelect) return;
       this._wiredSelect = true;
       this.addEventListener("input", (e) => {
@@ -11358,13 +11490,73 @@ class ContourSelect extends ContourBase {
       this.addEventListener("change", (e) => {
         const sel = this.querySelector("select");
         if (!sel || e.target !== sel || !this._internals) return;
-        this._internals.setFormValue(sel.value);
-        // Reflect the committed selection back to the host attribute so a
-        // consumer reading `value` sees what the user picked.
-        this.setAttribute("value", sel.value);
+        // Reflect the WHOLE selection: for a multi-select sel.value is only
+        // the first selected option, and the reflected attribute is what a
+        // re-render rebuilds from (R20 T-06).
+        const committed = sel.multiple ? Array.from(sel.selectedOptions).map((o) => o.value).join(",") : sel.value;
+        this.setAttribute("value", committed);
+        this._syncFormValue();
         this._emitForm("contour:change");
-        this._syncValidity(this.hasAttribute("required") && !sel.value);
       });
+    }
+    // Multi-select submits every selected option as its own entry under the
+    // host name — the FormData form value, not select.value (first option
+    // only). The formdata re-sync in _wireFormData calls THIS, so the base
+    // generic must not collapse the selection back to one entry.
+    _syncFormValue() {
+      if (!this._internals) return;
+      const sel = this.querySelector("select");
+      if (!sel) return;
+      if (sel.multiple) {
+        const chosen = Array.from(sel.selectedOptions).map((o) => o.value);
+        const name = this.getAttribute("name");
+        if (name && chosen.length) {
+          const fd = new FormData();
+          for (const v of chosen) fd.append(name, v);
+          this._internals.setFormValue(fd);
+        } else {
+          this._internals.setFormValue(null);
+        }
+        this._syncValidity(this.hasAttribute("required") && !chosen.length);
+      } else {
+        this._internals.setFormValue(sel.value);
+        this._syncValidity(this.hasAttribute("required") && !sel.value);
+      }
+    }
+    formResetCallback() {
+      // Restore the authored default, not the first option and not the last
+      // reflected commit (R20 T-08). The attribute write re-renders the
+      // selection; the resetting flag keeps the base restore out of it.
+      this._contourResetting = true;
+      try {
+        const def = this._selectDefault ?? null;
+        if (def === null) this.removeAttribute("value");
+        else this.setAttribute("value", def);
+        this._syncFormValue();
+      } finally {
+        this._contourResetting = false;
+      }
+    }
+    formStateRestoreCallback(state) {
+      const sel = this.querySelector("select");
+      if (!sel || !this._internals) return;
+      const values = state instanceof FormData
+        ? Array.from(state.getAll(this.getAttribute("name"))).map(String)
+        : (state == null ? [] : String(state).split(",").map((v) => v.trim()).filter(Boolean));
+      this._contourResetting = true;
+      try {
+        if (sel.multiple) {
+          const wanted = new Set(values);
+          for (const o of sel.options) o.selected = wanted.has(o.value);
+          this.setAttribute("value", values.join(","));
+        } else {
+          sel.value = values[0] || "";
+          this.setAttribute("value", sel.value);
+        }
+        this._syncFormValue();
+      } finally {
+        this._contourResetting = false;
+      }
     }
   }
   define("contour-select", ContourSelect);
@@ -11373,11 +11565,13 @@ class ContourSelect extends ContourBase {
  * with `selected` support per option. Form associated; emits `contour:change`.
  */
 class ContourVersion extends ContourBase {
-    static get observed() { return ["options"]; }
+    static get observed() { return ["options", "value", "name"]; }
     static get formAssociated() { return true; }
-    static get properties() { return { options: { attribute: "options" } }; }
+    static get properties() { return { options: { attribute: "options" }, value: { attribute: "value" }, name: { attribute: "name" } }; }
     render() {
       this.classList.add("c-version");
+      // Authored default captured before any commit reflects into `value`.
+      if (this._versionDefault === undefined) this._versionDefault = this.getAttribute("value");
       const options = this.getAttribute("options");
       const generated = new Set(this._contourGenerated || []);
       const authored = Array.from(this.children).filter((n) => !generated.has(n));
@@ -11398,22 +11592,45 @@ class ContourVersion extends ContourBase {
           select.classList.add("c-version");
         } catch (e) { warnBadJson(this, "attribute", e); }
       }
+      // The committed value selects the option (R20 T-07): without this the
+      // host always submitted the first option regardless of `value`.
+      const sel = this.querySelector("select");
+      if (sel) {
+        if (this.hasAttribute("name")) sel.setAttribute("name", this.getAttribute("name"));
+        const val = this.getAttribute("value");
+        if (val !== null) sel.value = val;
+      }
     }
     enhance() {
-      if (this._wiredVersion) return;
-      this._wiredVersion = true;
       const sync = () => {
         const select = this.querySelector("select");
         if (!select || !this._internals) return;
         this._internals.setFormValue(select.value);
       };
+      sync();
+      if (this._wiredVersion) return;
+      this._wiredVersion = true;
       this.addEventListener("change", (e) => {
         const select = this.querySelector("select");
         if (!select || e.target !== select) return;
+        // Reflect the committed selection so a consumer reading `value` sees
+        // what the user picked, and a re-render rebuilds it.
+        this.setAttribute("value", select.value);
         sync();
         this._emitForm("contour:change");
       });
-      sync();
+    }
+    formResetCallback() {
+      // Restore the authored default, not the first option (R20 T-08).
+      this._contourResetting = true;
+      try {
+        const def = this._versionDefault ?? null;
+        if (def === null) this.removeAttribute("value");
+        else this.setAttribute("value", def);
+        this._syncFormValue();
+      } finally {
+        this._contourResetting = false;
+      }
     }
   }
   define("contour-version", ContourVersion);
@@ -11422,12 +11639,18 @@ class ContourVersion extends ContourBase {
  * and help states. Form associated; emits `contour:input` / `contour:change`.
  */
 class ContourTextarea extends ContourBase {
-    static get observed() { return ["placeholder", "required", "disabled", "error", "help"]; }
-    static get properties() { return { placeholder: { attribute: "placeholder" }, required: { attribute: "required", type: Boolean }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" } }; }
+    static get observed() { return ["placeholder", "required", "disabled", "error", "help", "value", "name", "label"]; }
+    static get properties() { return { placeholder: { attribute: "placeholder" }, required: { attribute: "required", type: Boolean }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" }, value: { attribute: "value" }, name: { attribute: "name" }, label: { attribute: "label" } }; }
     static get formAssociated() { return true; }
     render() {
       const ta = this.ensure("textarea", () => { const el = document.createElement("textarea"); el.className = "c-textarea"; return el; });
       ta.className = "c-textarea";
+      // value and name reach the generated control (R20 T-01): without them
+      // the host submitted an empty entry under no name at all. Typed text
+      // survives re-renders through the base class's user-dirty tracking.
+      if (this.hasAttribute("name")) ta.name = this.getAttribute("name");
+      else ta.removeAttribute("name");
+      if (this.hasAttribute("value")) ta.value = this.getAttribute("value");
       if (this.hasAttribute("aria-label") && !ta.hasAttribute("aria-label")) ta.setAttribute("aria-label", this.getAttribute("aria-label"));
       if (this.hasAttribute("label") && !ta.hasAttribute("aria-label")) ta.setAttribute("aria-label", this.getAttribute("label"));
       if (!ta.hasAttribute("aria-label")) ta.setAttribute("aria-label", "Textarea");
@@ -11477,8 +11700,8 @@ class ContourTextarea extends ContourBase {
  * error and help states. Form associated; emits `contour:input` / `contour:change`.
  */
 class ContourInputFull extends ContourBase {
-    static get observed() { return ["type", "placeholder", "required", "value", "disabled", "error", "help", "label"]; }
-    static get properties() { return { type: { attribute: "type" }, placeholder: { attribute: "placeholder" }, required: { attribute: "required", type: Boolean }, value: { attribute: "value" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" }, label: { attribute: "label" } }; }
+    static get observed() { return ["type", "placeholder", "required", "value", "disabled", "error", "help", "label", "name"]; }
+    static get properties() { return { type: { attribute: "type" }, placeholder: { attribute: "placeholder" }, required: { attribute: "required", type: Boolean }, value: { attribute: "value" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" }, label: { attribute: "label" }, name: { attribute: "name" } }; }
     static get formAssociated() { return true; }
     render() {
       this.classList.add("c-input");
@@ -11486,6 +11709,10 @@ class ContourInputFull extends ContourBase {
       input.className = "c-input";
       input.type = this.getAttribute("type") || "text";
        input.placeholder = this.getAttribute("placeholder") || "";
+      // The name keys the base class's value/focus preservation and matches
+      // the native control's own contract (R20 T-02/T-08).
+      if (this.hasAttribute("name")) input.name = this.getAttribute("name");
+      else input.removeAttribute("name");
        let label = this.getAttribute("label");
        if (!label) {
          const field = this.closest("contour-field");
@@ -11537,17 +11764,29 @@ class ContourInputFull extends ContourBase {
 /**
  * InputGroup: a text input with an optional search icon, a clear (×) affordance
  * and a submit (→) affordance. Attributes: `label`, `placeholder`, `clearable`,
- * `submit`. Emits `contour:change` (bubbles, composed) with `{ value: "" }` on
- * clear.
+ * `submit`, `value`, `name`, `required`, `disabled`. Form associated: the host
+ * submits its value through ElementInternals. Emits `contour:input` /
+ * `contour:change`, and `contour:change` (bubbles, composed) with `{ value: "" }`
+ * on clear.
  */
 class ContourInputGroup extends ContourBase {
-    static get observed() { return ["label", "placeholder", "clearable", "submit"]; }
-    static get properties() { return { label: { attribute: "label" }, placeholder: { attribute: "placeholder" }, clearable: { attribute: "clearable", type: Boolean }, submit: { attribute: "submit", type: Boolean } }; }
+    static get observed() { return ["label", "placeholder", "clearable", "submit", "value", "name", "required", "disabled"]; }
+    static get properties() { return { label: { attribute: "label" }, placeholder: { attribute: "placeholder" }, clearable: { attribute: "clearable", type: Boolean }, submit: { attribute: "submit", type: Boolean }, value: { attribute: "value" }, name: { attribute: "name" }, required: { attribute: "required", type: Boolean }, disabled: { attribute: "disabled", type: Boolean } }; }
+    static get formAssociated() { return true; }
     render() {
       this.classList.add("c-input-group");
       const icon = this.ensure("svg", () => { const el = document.createElementNS("http://www.w3.org/2000/svg", "svg"); el.setAttribute("aria-hidden", "true"); const use = document.createElementNS("http://www.w3.org/2000/svg", "use"); use.setAttribute("href", "#i-search"); el.appendChild(use); return el; });
       const input = this.ensure("input.c-input", () => { const el = document.createElement("input"); el.className = "c-input"; el.type = "text"; return el; });
       input.placeholder = this.getAttribute("placeholder") || this.getAttribute("label") || "";
+      // Form participation (R20 T-05): the host submits through internals,
+      // and the inner control carries the name/value the author wrote.
+      if (this.hasAttribute("name")) input.name = this.getAttribute("name");
+      else input.removeAttribute("name");
+      if (this.hasAttribute("value")) input.value = this.getAttribute("value");
+      if (this.hasAttribute("required")) input.setAttribute("required", "");
+      else input.removeAttribute("required");
+      if (this.hasAttribute("disabled")) { input.setAttribute("disabled", ""); this.classList.add("is-disabled"); }
+      else { input.removeAttribute("disabled"); this.classList.remove("is-disabled"); }
       const label = this.getAttribute("label");
       if (!input.hasAttribute("aria-label")) input.setAttribute("aria-label", label || "Search");
       // Clear affordance.
@@ -11574,14 +11813,37 @@ class ContourInputGroup extends ContourBase {
       }
     }
     enhance() {
+      const input = this.querySelector("input.c-input");
+      if (input && this._internals) {
+        this._internals.setFormValue(input.value);
+        this._syncValidity(this.hasAttribute("required") && !input.value.trim());
+      }
       if (this._wiredInputGroup) return;
       this._wiredInputGroup = true;
+      this.addEventListener("input", (e) => {
+        const inp = this.querySelector("input.c-input");
+        if (!inp || e.target !== inp || !this._internals) return;
+        this._internals.setFormValue(inp.value);
+        this._emitForm("contour:input");
+        this._syncValidity(this.hasAttribute("required") && !inp.value.trim());
+      });
+      this.addEventListener("change", (e) => {
+        const inp = this.querySelector("input.c-input");
+        if (!inp || e.target !== inp || !this._internals) return;
+        this._internals.setFormValue(inp.value);
+        this._emitForm("contour:change");
+        this._syncValidity(this.hasAttribute("required") && !inp.value.trim());
+      });
       this.addEventListener("click", (e) => {
         const clear = e.target && e.target.closest ? e.target.closest(".c-input-group__clear") : null;
         if (clear && this.contains(clear)) {
           e.preventDefault();
           const input = this.querySelector("input.c-input");
           if (input) { input.value = ""; input.focus(); }
+          if (this._internals) {
+            this._internals.setFormValue("");
+            this._syncValidity(this.hasAttribute("required"));
+          }
           this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: "" } }));
         }
       });
@@ -11680,7 +11942,16 @@ class ContourRadioList extends ContourBase {
       // The authored default lives in the `items` payload (`it.checked`), not
       // in checked attributes on generated radios, so re-render from the data
       // rather than blanking every selection like the generic base reset.
-      if (this._contourAuthored) this.requestRender();
+      // Synchronous and under the resetting flag: the base class's checked
+      // restore would otherwise resurrect the user's selection over the
+      // payload (measured by the R20 form-participation arm).
+      this._contourResetting = true;
+      try {
+        if (this.isConnected && this._contourAuthored) this.attributeChangedCallback("__rerender__", null, "");
+        this._syncFormValue();
+      } finally {
+        this._contourResetting = false;
+      }
     }
   }
 define("contour-radio-list", ContourRadioList);
@@ -11707,15 +11978,23 @@ class ContourFieldset extends ContourBase {
 }
 define("contour-fieldset", ContourFieldset);
 
-// Checkbox group: a fieldset of checkboxes with a shared name. The platform
-// groups checkboxes by name; the component adds the group semantics and a
-// legend, and emits contour:change with the group value.
+// Checkbox group: a fieldset of checkboxes with a shared name. Form
+// associated (R20 T-03): the host owns the group value — each checked box
+// submits as its own entry under the host name (the FormData form value),
+// `value` reflects the comma-joined selection, reset restores the authored
+// default, and `required` reports group validity. Emits contour:change with
+// { value, values }.
 class ContourCheckboxGroup extends ContourBase {
-  static get observed() { return ["legend", "name", "options", "value"]; }
-  static get properties() { return { legend: { attribute: "legend" }, name: { attribute: "name" }, options: { attribute: "options" }, value: { attribute: "value" } }; }
+  static get observed() { return ["legend", "name", "options", "value", "required", "disabled"]; }
+  static get properties() { return { legend: { attribute: "legend" }, name: { attribute: "name" }, options: { attribute: "options" }, value: { attribute: "value" }, required: { attribute: "required", type: Boolean }, disabled: { attribute: "disabled", type: Boolean } }; }
+  static get formAssociated() { return true; }
   render() {
     this.classList.add("c-checkbox-group");
+    // Authored default captured before any toggle reflects into `value`.
+    if (this._checkboxGroupDefault === undefined) this._checkboxGroupDefault = this.getAttribute("value");
     const fs = this.ensure("fieldset", () => { const el = document.createElement("fieldset"); el.className = "c-checkbox-group__fieldset"; return el; });
+    if (this.hasAttribute("disabled")) fs.setAttribute("disabled", ""); else fs.removeAttribute("disabled");
+    if (this.hasAttribute("required")) fs.setAttribute("aria-required", "true"); else fs.removeAttribute("aria-required");
     const legend = this.getAttribute("legend");
     let lg = fs.querySelector("legend");
     if (legend) {
@@ -11739,6 +12018,10 @@ class ContourCheckboxGroup extends ContourBase {
           input.className = "c-check__input";
           input.name = name;
           input.value = value;
+          // Every box shares the group name, so name-based focus matching
+          // would land on the FIRST box after the reflection re-render; the
+          // per-option preserve key puts focus back on the box clicked.
+          input.setAttribute("data-contour-preserve-key", value);
           if (selected.includes(value)) input.checked = true;
           const span = document.createElement("span");
           span.textContent = label;
@@ -11750,43 +12033,110 @@ class ContourCheckboxGroup extends ContourBase {
     }
   }
   enhance() {
+    if (this._internals) this._syncFormValue();
     if (this._wiredCheckboxGroup) return;
     this._wiredCheckboxGroup = true;
     this.addEventListener("change", (e) => {
       const t = e.target;
       if (t && t.matches && t.matches("input[type=checkbox]")) {
         const values = Array.from(this.querySelectorAll("input[type=checkbox]:checked")).map((i) => i.value);
+        // Reflect the group value so `el.value` reads the live selection and
+        // a re-render rebuilds it; the attribute write re-renders synchronously.
+        this.setAttribute("value", values.join(","));
+        this._syncFormValue();
         this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: values.join(","), values } }));
       }
     });
+  }
+  // Each checked box is its own entry under the host name — the FormData
+  // form value, which keeps the native repeated-entry wire shape while the
+  // host owns reset and validity. The formdata re-sync calls THIS.
+  _syncFormValue() {
+    if (!this._internals) return;
+    const checked = Array.from(this.querySelectorAll("input[type=checkbox]:checked"));
+    const name = this.getAttribute("name");
+    if (name && checked.length) {
+      const fd = new FormData();
+      for (const c of checked) fd.append(name, c.value);
+      this._internals.setFormValue(fd);
+    } else {
+      this._internals.setFormValue(null);
+    }
+    this._syncValidity(this.hasAttribute("required") && !checked.length);
+  }
+  formResetCallback() {
+    // Restore the authored default, not the last reflected selection.
+    this._contourResetting = true;
+    try {
+      const def = this._checkboxGroupDefault ?? null;
+      if (def === null) this.removeAttribute("value");
+      else this.setAttribute("value", def);
+      this._syncFormValue();
+    } finally {
+      this._contourResetting = false;
+    }
+  }
+  formStateRestoreCallback(state) {
+    const values = state instanceof FormData
+      ? Array.from(state.getAll(this.getAttribute("name"))).map(String)
+      : (state == null ? [] : String(state).split(",").map((v) => v.trim()).filter(Boolean));
+    this._contourResetting = true;
+    try {
+      this.setAttribute("value", values.join(","));
+      this._syncFormValue();
+    } finally {
+      this._contourResetting = false;
+    }
   }
 }
 define("contour-checkbox-group", ContourCheckboxGroup);
 
 // Search field: a text input with a search icon and a clear button. The
 // platform's type=search gives the clear affordance; the component adds the
-// icon and the accessible name.
+// icon and the accessible name. Form associated (R20 T-04): the host submits
+// its value through ElementInternals, with reset and required validity.
 class ContourSearchField extends ContourBase {
-  static get observed() { return ["value", "placeholder", "label", "name"]; }
-  static get properties() { return { value: { attribute: "value" }, placeholder: { attribute: "placeholder" }, label: { attribute: "label" }, name: { attribute: "name" } }; }
+  static get observed() { return ["value", "placeholder", "label", "name", "required", "disabled"]; }
+  static get properties() { return { value: { attribute: "value" }, placeholder: { attribute: "placeholder" }, label: { attribute: "label" }, name: { attribute: "name" }, required: { attribute: "required", type: Boolean }, disabled: { attribute: "disabled", type: Boolean } }; }
+  static get formAssociated() { return true; }
   render() {
     this.classList.add("c-search-field");
     const input = this.ensure("input", () => { const el = document.createElement("input"); el.type = "search"; el.className = "c-search-field__input"; return el; });
     input.placeholder = this.getAttribute("placeholder") || "Search";
     if (this.getAttribute("value") !== null) input.value = this.getAttribute("value");
     if (this.hasAttribute("name")) input.name = this.getAttribute("name");
+    if (this.hasAttribute("required")) input.setAttribute("required", "");
+    else input.removeAttribute("required");
+    if (this.hasAttribute("disabled")) { input.setAttribute("disabled", ""); this.classList.add("is-disabled"); }
+    else { input.removeAttribute("disabled"); this.classList.remove("is-disabled"); }
     const label = this.getAttribute("label");
     if (label) input.setAttribute("aria-label", label);
     else if (!input.hasAttribute("aria-label")) input.setAttribute("aria-label", "Search");
   }
   enhance() {
+    const input = this.querySelector("input");
+    if (input && this._internals) {
+      this._internals.setFormValue(input.value);
+      this._syncValidity(this.hasAttribute("required") && !input.value.trim());
+    }
     if (this._wiredSearchField) return;
     this._wiredSearchField = true;
     this.addEventListener("input", (e) => {
       const t = e.target;
       if (t && t.matches && t.matches("input")) {
-        this.dispatchEvent(new CustomEvent("contour:input", { bubbles: true, composed: true, detail: { value: t.value } }));
+        if (this._internals) {
+          this._internals.setFormValue(t.value);
+          this._syncValidity(this.hasAttribute("required") && !t.value.trim());
+        }
+        this._emitForm("contour:input");
       }
+    });
+    this.addEventListener("change", (e) => {
+      const t = e.target;
+      if (!t || !t.matches || !t.matches("input") || !this._internals) return;
+      this._internals.setFormValue(t.value);
+      this._emitForm("contour:change");
+      this._syncValidity(this.hasAttribute("required") && !t.value.trim());
     });
   }
 }

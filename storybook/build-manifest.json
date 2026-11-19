@@ -1,6 +1,6 @@
 {
-  "builtAt": "2026-11-13T09:15:00.188Z",
-  "sourceRevision": "bcc81281ec7f08d16124a49148d74126a9adf58f",
+  "builtAt": "2026-11-19T07:55:34.774Z",
+  "sourceRevision": "0b02b97fa4e753793fc8791246be22616252f0c9",
   "sources": {
     "src/css/base.css": {
       "bytes": 12014,
@@ -193,9 +193,9 @@
       "sha256": "724e1bf428276ee1"
     },
     "src/js/wc/core.mjs": {
-      "bytes": 70729,
-      "mtimeMs": 1794556601621.6562,
-      "sha256": "28aacc5db5391073"
+      "bytes": 73848,
+      "mtimeMs": 1795073479492.9539,
+      "sha256": "14a234a552beed5d"
     },
     "src/js/wc/dashboard.mjs": {
       "bytes": 22015,
@@ -218,9 +218,9 @@
       "sha256": "5368814f1c49fc82"
     },
     "src/js/wc/forms.mjs": {
-      "bytes": 78759,
-      "mtimeMs": 1794556594756.0408,
-      "sha256": "2587a95777ed17fd"
+      "bytes": 93653,
+      "mtimeMs": 1795073950938.7314,
+      "sha256": "3ec03b0773b62b16"
     },
     "src/js/wc/index.mjs": {
       "bytes": 2557,
@@ -295,7 +295,7 @@
     "contour.min.js": 39001,
     "contour.tokens.json": 53344,
     "contour.themes.json": 23019,
-    "contour.components.json": 326513,
+    "contour.components.json": 326897,
     "docs/index.json": 7013,
     "registry/registry.json": 8952,
     "svg/contour-mark.svg": 1727,
@@ -303,17 +303,17 @@
     "surfaces/contour-docs.min.css": 200816,
     "surfaces/contour-data.min.css": 249856,
     "surfaces/contour-landing.min.css": 192153,
-    "contour-wc-navigation.esm.min.js": 164333,
-    "contour-wc-data.esm.min.js": 251846,
-    "contour-wc-map.esm.min.js": 148594,
-    "contour-wc-forms.esm.min.js": 152638,
-    "contour-wc-ui.esm.min.js": 260273,
-    "contour-wc-content.esm.min.js": 135033,
-    "contour-wc-dashboard.esm.min.js": 266103,
-    "contour-wc-docs.esm.min.js": 111115,
-    "contour-wc-feedback.esm.min.js": 133474,
-    "contour-wc-interaction.esm.min.js": 125468,
-    "contour-wc-layout.esm.min.js": 107785,
-    "contour-wc-misc.esm.min.js": 113110
+    "contour-wc-navigation.esm.min.js": 165412,
+    "contour-wc-data.esm.min.js": 252925,
+    "contour-wc-map.esm.min.js": 149673,
+    "contour-wc-forms.esm.min.js": 161832,
+    "contour-wc-ui.esm.min.js": 261352,
+    "contour-wc-content.esm.min.js": 136112,
+    "contour-wc-dashboard.esm.min.js": 267182,
+    "contour-wc-docs.esm.min.js": 112194,
+    "contour-wc-feedback.esm.min.js": 134553,
+    "contour-wc-interaction.esm.min.js": 126547,
+    "contour-wc-layout.esm.min.js": 108864,
+    "contour-wc-misc.esm.min.js": 114189
   }
 }

@@ -1408,6 +1408,10 @@
           "description": "Contour component `c-checkbox-group` (complete-widget). Elements: c-checkbox-group__fieldset, c-checkbox-group__legend.",
           "attributes": [
             {
+              "name": "disabled",
+              "description": "Boolean attribute for c-checkbox-group."
+            },
+            {
               "name": "legend",
               "description": "Attribute for c-checkbox-group."
             },
@@ -1418,6 +1422,10 @@
             {
               "name": "options",
               "description": "Attribute for c-checkbox-group."
+            },
+            {
+              "name": "required",
+              "description": "Boolean attribute for c-checkbox-group."
             },
             {
               "name": "value",
@@ -3963,6 +3971,10 @@
               "description": "Attribute for c-input."
             },
             {
+              "name": "name",
+              "description": "Attribute for c-input."
+            },
+            {
               "name": "placeholder",
               "description": "Attribute for c-input."
             },
@@ -3996,7 +4008,15 @@
               "description": "Boolean attribute for c-input-group."
             },
             {
+              "name": "disabled",
+              "description": "Boolean attribute for c-input-group."
+            },
+            {
               "name": "label",
+              "description": "Attribute for c-input-group."
+            },
+            {
+              "name": "name",
               "description": "Attribute for c-input-group."
             },
             {
@@ -4004,8 +4024,16 @@
               "description": "Attribute for c-input-group."
             },
             {
+              "name": "required",
+              "description": "Boolean attribute for c-input-group."
+            },
+            {
               "name": "submit",
               "description": "Boolean attribute for c-input-group."
+            },
+            {
+              "name": "value",
+              "description": "Attribute for c-input-group."
             }
           ],
           "js": {
@@ -6275,6 +6303,10 @@
           "description": "Contour component `c-search-field` (complete-widget). Elements: c-search-field__input.",
           "attributes": [
             {
+              "name": "disabled",
+              "description": "Boolean attribute for c-search-field."
+            },
+            {
               "name": "label",
               "description": "Attribute for c-search-field."
             },
@@ -6285,6 +6317,10 @@
             {
               "name": "placeholder",
               "description": "Attribute for c-search-field."
+            },
+            {
+              "name": "required",
+              "description": "Boolean attribute for c-search-field."
             },
             {
               "name": "value",
@@ -9787,12 +9823,24 @@
               "description": "Attribute for c-textarea."
             },
             {
+              "name": "label",
+              "description": "Attribute for c-textarea."
+            },
+            {
+              "name": "name",
+              "description": "Attribute for c-textarea."
+            },
+            {
               "name": "placeholder",
               "description": "Attribute for c-textarea."
             },
             {
               "name": "required",
               "description": "Boolean attribute for c-textarea."
+            },
+            {
+              "name": "value",
+              "description": "Attribute for c-textarea."
             }
           ],
           "js": {
@@ -10414,7 +10462,15 @@
           "description": "Contour component `c-version` (complete-widget). Parts: version. Slots: (default).",
           "attributes": [
             {
+              "name": "name",
+              "description": "Attribute for c-version."
+            },
+            {
               "name": "options",
+              "description": "Attribute for c-version."
+            },
+            {
+              "name": "value",
               "description": "Attribute for c-version."
             }
           ],
