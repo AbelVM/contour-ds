@@ -1442,3 +1442,23 @@
 @view-transition {
   navigation: auto;
 }
+
+/* Reading progress bar (R22 WC4-24): scroll-driven animation that fills as
+   the reader scrolls through the guide. Progressive enhancement — browsers
+   that don't support animation-timeline simply show an empty bar. */
+.ds-reading-progress {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline: 0;
+  block-size: 3px;
+  background: var(--color-primary);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  animation: ds-reading-progress-grow linear;
+  animation-timeline: scroll();
+  z-index: 100;
+}
+
+@keyframes ds-reading-progress-grow {
+  to { transform: scaleX(1); }
+}

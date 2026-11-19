@@ -144,6 +144,7 @@
     "contour:hide": { payload: [], composed: true },
     "contour:hover": { payload: ["row"], composed: true },
     "contour:input": { payload: ["name", "value", "checked"], composed: true },
+    "contour:invalid": { payload: ["field", "input", "message"], composed: true, cancelable: true },
     "contour:inspect-action": { payload: ["label"], composed: true },
     "contour:layer-opacity": { payload: ["name", "opacity"], composed: true },
     "contour:layer-rename": { payload: ["name", "newName"], composed: true },
@@ -348,6 +349,7 @@
     "fields", "gap",
     "controls",
     "flush", "head", "preview", "tags", "url",
+    "custom-error",
   ];
 
   /** Resolve an authored heading level while keeping the fallback valid. */

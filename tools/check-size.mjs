@@ -67,7 +67,7 @@ const BUDGETS = {
   // exists to catch a jump nobody intended, not to keep the truth brief. A file
   // absent from this map is not budgeted at all, which is how an artifact can
   // grow without anyone noticing.
-  "contour.components.json": 322 * 1024,  // raised 2026-11-19: +R20 palette-editor/pull-to-refresh/style-panel generated-class CSS; measured 321.4 kB  // raised 2026-11-11: +R18-13 generated-class CSS; measured 311.6 kB raised 2026-11-09: +maturity field on all 225 blocks (R16-47); raised 2026-11-09: +3 new blocks (c-saved-view, c-provenance, c-feature-inspector); measured 289.5 kB
+  "contour.components.json": 324 * 1024,  // raised 2026-11-19: +R22 WC4-26 custom-error attribute on contour-field; measured 322.0 kB  // raised 2026-11-19: +R20 palette-editor/pull-to-refresh/style-panel generated-class CSS; measured 321.4 kB  // raised 2026-11-11: +R18-13 generated-class CSS; measured 311.6 kB raised 2026-11-09: +maturity field on all 225 blocks (R16-47); raised 2026-11-09: +3 new blocks (c-saved-view, c-provenance, c-feature-inspector); measured 289.5 kB
   // The docs package (C-45). Measured 2026-10-23 at 43.6 kB: 23 section files
   // (37.4 kB) plus the index (6.2 kB) — figures this gate recomputes and prints on
   // every run, so the numbers above are a dated record, not the thing enforced.
@@ -116,7 +116,7 @@ const BUDGETS = {
   // Measured 2026-10-24 at 3,664 B.
   "hljs.css": 4 * 1024,
   "agent-rules.json": 12 * 1024,
-  "contour.html-data.json": 273 * 1024,  // raised 2026-11-19: +R20 palette-editor/pull-to-refresh/style-panel attributes; measured 272.1 kB  // raised 2026-11-19: +R20 batch-4a widget attributes (date-range name/required/disabled, time-slider min/max); measured 270.3 kB  // raised 2026-11-12: +R18 pending-a11y attributes (live, controls, title, actions); measured 268.3 kB; previously 268 kB for R18-34
+  "contour.html-data.json": 275 * 1024,  // raised 2026-11-19: +R22 WC4-26 custom-error attribute on contour-field; measured 273.1 kB  // raised 2026-11-19: +R20 palette-editor/pull-to-refresh/style-panel attributes; measured 272.1 kB  // raised 2026-11-19: +R20 batch-4a widget attributes (date-range name/required/disabled, time-slider min/max); measured 270.3 kB  // raised 2026-11-12: +R18 pending-a11y attributes (live, controls, title, actions); measured 268.3 kB; previously 268 kB for R18-34
   "contour.web-types.json": 322 * 1024,  // raised 2026-11-19: +R20 batch-4c widget attributes (side-sheet mode/size, tour open/persist); measured 320.3 kB  // raised 2026-11-19: +R20 T-30 time-slider min/max properties; measured 318.1 kB  // raised 2026-11-12: +R18 pending-a11y attributes; measured 316.2 kB; previously 316 kB for R18-34 (CDS-037)
   "contour.react.d.ts": 36 * 1024,  // React JSX IntrinsicElements augmentation (CDS-037); measured 33.5 kB
   "contour.vue.d.ts": 22 * 1024,  // Vue GlobalComponents augmentation (CDS-037); measured 20.6 kB
