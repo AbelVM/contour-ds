@@ -2170,6 +2170,10 @@
   .c-query-builder__row { display: flex; gap: 0.5rem; align-items: center; }
   .c-query-builder__field, .c-query-builder__op { flex: 1 1 auto; }
   .c-query-builder__value { flex: 2 1 auto; }
+  .c-query-builder__remove { flex: 0 0 auto; }
+  .c-query-builder__connector { flex: 0 0 auto; align-self: center; font-size: var(--type-sm); color: var(--color-text-muted); }
+  .c-query-builder__group { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.5rem; border: 1px solid var(--color-border); border-radius: var(--radius-sm); }
+  .c-query-builder__group-label { font-size: var(--type-sm); font-weight: 600; color: var(--color-text-muted); }
   .c-query-builder__add { flex: 0 0 auto; align-self: flex-end; }
 
   /* Skip link (R18-34): visually hidden until focused, then slides in. */

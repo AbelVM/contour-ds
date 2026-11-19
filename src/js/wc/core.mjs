@@ -347,6 +347,7 @@
     "autocomplete", "levels", "submit-label",
     "fields", "gap",
     "controls",
+    "flush", "head", "preview", "tags", "url",
   ];
 
   /** Resolve an authored heading level while keeping the fallback valid. */

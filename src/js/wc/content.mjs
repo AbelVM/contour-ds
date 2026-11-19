@@ -588,10 +588,40 @@ class ContourPricingFull extends ContourBase {
   }
   define("contour-pricing", ContourPricingFull);
 class ContourRecipeFull extends ContourBase {
-    static get observed() { return ["title", "body", "canvas", "heading"]; }
-    static get properties() { return { title: { attribute: "title" }, body: { attribute: "body" }, canvas: { attribute: "canvas" } }; }
+    static get observed() { return ["title", "body", "canvas", "heading", "url", "tags", "head", "index"]; }
+    static get properties() { return { title: { attribute: "title" }, body: { attribute: "body" }, canvas: { attribute: "canvas" }, url: { attribute: "url" }, tags: { attribute: "tags" }, head: { attribute: "head" }, index: { attribute: "index" } }; }
     render() {
       this.classList.add("c-recipe");
+      // Frame chrome (browser mockup): opt-in via `url` attribute.
+      const url = this.getAttribute("url");
+      let frame = this.querySelector(".c-recipe__frame");
+      if (url) {
+        if (!frame) {
+          frame = document.createElement("div");
+          frame.className = "c-recipe__frame";
+          const bar = document.createElement("div");
+          bar.className = "c-recipe__frame-bar";
+          for (let i = 0; i < 3; i++) { const dot = document.createElement("span"); dot.className = "c-recipe__frame-dot"; bar.appendChild(dot); }
+          const urlEl = document.createElement("span");
+          urlEl.className = "c-recipe__frame-url";
+          bar.appendChild(urlEl);
+          frame.appendChild(bar);
+          this.prepend(frame);
+        }
+        const urlEl = frame.querySelector(".c-recipe__frame-url");
+        if (urlEl) urlEl.textContent = url;
+      } else if (frame) {
+        frame.remove();
+      }
+      // Head (category/eyebrow above title).
+      const head = this.getAttribute("head");
+      if (head) {
+        const h = this.ensure(".c-recipe__head", () => { const el = document.createElement("div"); el.className = "c-recipe__head"; return el; });
+        h.textContent = head;
+      } else {
+        const h = this.querySelector(".c-recipe__head");
+        if (h) h.remove();
+      }
       const title = this.getAttribute("title");
       if (title) {
         const t = this.ensure(".c-recipe__title", () => { const el = document.createElement(headingTag(this, "h3")); el.className = "c-recipe__title"; return el; });
@@ -600,6 +630,15 @@ class ContourRecipeFull extends ContourBase {
         const t = this.querySelector(".c-recipe__title");
         if (t) t.remove();
       }
+      // Index (recipe number, e.g. "01").
+      const index = this.getAttribute("index");
+      if (index) {
+        const idx = this.ensure(".c-recipe__index", () => { const el = document.createElement("span"); el.className = "c-recipe__index"; return el; });
+        idx.textContent = index;
+      } else {
+        const idx = this.querySelector(".c-recipe__index");
+        if (idx) idx.remove();
+      }
       const body = this.getAttribute("body");
       if (body) {
         const b = this.ensure(".c-recipe__desc", () => { const el = document.createElement("p"); el.className = "c-recipe__desc"; return el; });
@@ -607,6 +646,20 @@ class ContourRecipeFull extends ContourBase {
       } else {
         const b = this.querySelector(".c-recipe__desc");
         if (b) b.remove();
+      }
+      // Tags (comma-separated list).
+      const tags = this.getAttribute("tags");
+      if (tags) {
+        const t = this.ensure(".c-recipe__tags", () => { const el = document.createElement("div"); el.className = "c-recipe__tags"; return el; });
+        t.innerHTML = "";
+        tags.split(",").map((s) => s.trim()).filter(Boolean).forEach((tag) => {
+          const span = document.createElement("span");
+          span.textContent = tag;
+          t.appendChild(span);
+        });
+      } else {
+        const t = this.querySelector(".c-recipe__tags");
+        if (t) t.remove();
       }
       const canvas = this.getAttribute("canvas");
       if (canvas) {
@@ -692,10 +745,41 @@ class ContourLandingFeaturesFull extends ContourBase {
   }
 define("contour-landing-features", ContourLandingFeaturesFull);
 class ContourLandingHeroFull extends ContourBase {
-    static get observed() { return ["actions", "title", "text", "heading"]; }
-    static get properties() { return { actions: { attribute: "actions" }, title: { attribute: "title" }, text: { attribute: "text" } }; }
+    static get observed() { return ["actions", "title", "text", "heading", "preview"]; }
+    static get properties() { return { actions: { attribute: "actions" }, title: { attribute: "title" }, text: { attribute: "text" }, preview: { attribute: "preview" } }; }
     render() {
       this.classList.add("c-landing-hero");
+      // Preview mockup (product screenshot): opt-in via `preview` attribute.
+      const preview = this.getAttribute("preview");
+      let pv = this.querySelector(".c-landing-hero__preview");
+      if (preview) {
+        if (!pv) {
+          pv = document.createElement("div");
+          pv.className = "c-landing-hero__preview";
+          const bar = document.createElement("div");
+          bar.className = "c-landing-hero__preview-bar";
+          for (let i = 0; i < 3; i++) { const dot = document.createElement("span"); dot.className = "c-landing-hero__preview-dot"; bar.appendChild(dot); }
+          const body = document.createElement("div");
+          body.className = "c-landing-hero__preview-body";
+          pv.appendChild(bar);
+          pv.appendChild(body);
+          this.appendChild(pv);
+        }
+        const body = pv.querySelector(".c-landing-hero__preview-body");
+        if (body) {
+          if (/^https?:\/\/|^\/|^\.\/|\.(png|jpg|jpeg|svg|webp|gif|avif)$/i.test(preview.trim())) {
+            body.innerHTML = "";
+            const img = document.createElement("img");
+            img.src = preview.trim();
+            img.alt = "";
+            body.appendChild(img);
+          } else {
+            body.innerHTML = sanitizeHtml(preview);
+          }
+        }
+      } else if (pv) {
+        pv.remove();
+      }
       const title = this.getAttribute("title");
       if (title) {
         const t = this.ensure(".c-landing-hero__title", () => { const el = document.createElement(headingTag(this, "h2")); el.className = "c-landing-hero__title"; return el; });
@@ -756,8 +840,8 @@ class ContourProseFull extends ContourBase {
   }
   define("contour-prose", ContourProseFull);
 class ContourPanel extends ContourBase {
-    static get observed() { return ["title", "subtitle", "status", "heading", "collapsible", "collapsed"]; }
-    static get properties() { return { title: { attribute: "title" }, subtitle: { attribute: "subtitle" }, status: { attribute: "status" }, collapsible: { attribute: "collapsible", type: Boolean }, collapsed: { attribute: "collapsed", type: Boolean } }; }
+    static get observed() { return ["title", "subtitle", "status", "heading", "collapsible", "collapsed", "flush"]; }
+    static get properties() { return { title: { attribute: "title" }, subtitle: { attribute: "subtitle" }, status: { attribute: "status" }, collapsible: { attribute: "collapsible", type: Boolean }, collapsed: { attribute: "collapsed", type: Boolean }, flush: { attribute: "flush", type: Boolean } }; }
     render() {
       this.classList.add("c-panel");
       if (!this.hasAttribute("role")) this.setAttribute("role", "region");
@@ -782,6 +866,8 @@ class ContourPanel extends ContourBase {
       }
       if (status) {
         const st = this.ensure(".c-panel__status", () => { const el = document.createElement("span"); el.className = "c-panel__status"; return el; });
+        Array.from(st.classList).forEach((c) => { if (c.startsWith("c-panel__status--")) st.classList.remove(c); });
+        if (status === "error" || status === "live") st.classList.add("c-panel__status--" + status);
         st.textContent = status;
       } else {
         const st = this.querySelector(".c-panel__status");
@@ -814,6 +900,7 @@ class ContourPanel extends ContourBase {
       }
       // Wrap authored content in a body so it picks up the panel's padding.
       const body = this.ensure(".c-panel__body", () => { const el = document.createElement("div"); el.className = "c-panel__body"; return el; });
+      body.classList.toggle("c-panel__body--flush", this.hasAttribute("flush"));
       const head = this.querySelector(".c-panel__head");
       Array.from(this.childNodes).forEach((n) => {
         if (n === body || n === head) return;

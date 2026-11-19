@@ -580,6 +580,7 @@ class ContourBanner extends ContourBase {
     render() {
       this.classList.add("c-banner");
       const variant = this.getAttribute("variant");
+      Array.from(this.classList).forEach((c) => { if (c.startsWith("c-banner--")) this.classList.remove(c); });
       if (variant) this.classList.add("c-banner--" + variant);
       const message = this.getAttribute("message");
       if (message) {

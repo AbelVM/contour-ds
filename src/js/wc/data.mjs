@@ -1482,6 +1482,19 @@ class ContourComparison extends ContourBase {
         const p = this.querySelector(".c-comparison__pane:not(.c-comparison__pane--before)");
         if (p) p.textContent = afterLabel;
       }
+      // Labels (CARTO-inspired): overlay the before/after text on each pane.
+      const beforePane = this.querySelector(".c-comparison__pane--before");
+      if (beforePane) {
+        let lbl = beforePane.querySelector(".c-comparison__label--before");
+        if (!lbl) { lbl = document.createElement("span"); lbl.className = "c-comparison__label c-comparison__label--before"; beforePane.appendChild(lbl); }
+        lbl.textContent = beforeLabel;
+      }
+      const afterPane = this.querySelector(".c-comparison__pane:not(.c-comparison__pane--before)");
+      if (afterPane) {
+        let lbl = afterPane.querySelector(".c-comparison__label--after");
+        if (!lbl) { lbl = document.createElement("span"); lbl.className = "c-comparison__label c-comparison__label--after"; afterPane.appendChild(lbl); }
+        lbl.textContent = afterLabel;
+      }
       const divider = this.getAttribute("divider");
       if (divider !== null) {
         const d = this.ensure(".c-comparison__divider", () => { const el = document.createElement("div"); el.className = "c-comparison__divider"; el.setAttribute("role", "separator"); el.setAttribute("aria-orientation", "vertical"); el.setAttribute("tabindex", "0"); return el; });
@@ -2778,6 +2791,13 @@ class ContourBrownout extends ContourBase {
       const level = this.getAttribute("level") || "0";
       this.dataset.level = level;
       this.setAttribute("data-level", level);
+      // Decorative bar (visual indicator of the brownout level).
+      let deco = this.querySelector(".c-brownout__decorative");
+      if (!deco) { deco = document.createElement("span"); deco.className = "c-brownout__decorative"; deco.setAttribute("aria-hidden", "true"); this.appendChild(deco); }
+      // Label (text description of the level).
+      let lbl = this.querySelector(".c-brownout__label");
+      if (!lbl) { lbl = document.createElement("span"); lbl.className = "c-brownout__label"; this.appendChild(lbl); }
+      lbl.textContent = "Level " + level;
     }
     enhance() {}
   }
@@ -4195,9 +4215,10 @@ class ContourDataExport extends ContourBase {
   }
   define("contour-data-export", ContourDataExport);
 
-// Query builder: a list of field/operator/value rows with an Add rule button.
-// The component renders the rows from a `query` JSON attribute and emits
-// contour:change with the serialised query.
+// Query builder: a list of field/operator/value rows with AND/OR connectors,
+// a remove button per row, and an Add rule button. The component renders the
+// rows from a `query` JSON attribute and emits contour:change with the
+// serialised query.
 class ContourQueryBuilder extends ContourBase {
   static get observed() { return ["query", "fields"]; }
   static get properties() { return { query: { attribute: "query" }, fields: { attribute: "fields" } }; }
@@ -4210,8 +4231,24 @@ class ContourQueryBuilder extends ContourBase {
     let rules = [];
     if (query) { try { rules = JSON.parse(query); } catch (e) { rules = []; } }
     const list = this.ensure(".c-query-builder__list", () => { const el = document.createElement("div"); el.className = "c-query-builder__list"; return el; });
-    Array.from(list.querySelectorAll(".c-query-builder__row")).forEach((n) => n.remove());
+    Array.from(list.querySelectorAll(".c-query-builder__row, .c-query-builder__connector")).forEach((n) => n.remove());
     rules.forEach((rule, i) => {
+      // Connector between rows (AND/OR).
+      if (i > 0) {
+        const conn = document.createElement("div");
+        conn.className = "c-query-builder__connector";
+        const sel = document.createElement("select");
+        sel.className = "c-query-builder__op";
+        sel.setAttribute("aria-label", "Connector " + i);
+        ["AND", "OR"].forEach((c) => {
+          const opt = document.createElement("option");
+          opt.value = c; opt.textContent = c;
+          if (c === (rule.connector || "AND")) opt.selected = true;
+          sel.appendChild(opt);
+        });
+        conn.appendChild(sel);
+        list.appendChild(conn);
+      }
       const row = document.createElement("div");
       row.className = "c-query-builder__row";
       const field = document.createElement("select");
@@ -4238,7 +4275,12 @@ class ContourQueryBuilder extends ContourBase {
       val.type = "text";
       val.value = rule.value || "";
       val.setAttribute("aria-label", "Value " + (i + 1));
-      row.appendChild(field); row.appendChild(op); row.appendChild(val);
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.className = "c-btn c-btn--sm c-btn--ghost c-query-builder__remove";
+      remove.setAttribute("aria-label", "Remove rule " + (i + 1));
+      remove.textContent = "×";
+      row.appendChild(field); row.appendChild(op); row.appendChild(val); row.appendChild(remove);
       list.appendChild(row);
     });
     const add = this.ensure(".c-query-builder__add", () => { const b = document.createElement("button"); b.type = "button"; b.className = "c-btn c-btn--sm c-query-builder__add"; return b; });
@@ -4257,6 +4299,19 @@ class ContourQueryBuilder extends ContourBase {
           value: r.querySelector(".c-query-builder__value")?.value || "",
         }));
         rows.push({ field: "", op: "=", value: "" });
+        this.setAttribute("query", JSON.stringify(rows));
+        this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { query: rows } }));
+      }
+      if (t && t.closest && t.closest(".c-query-builder__remove")) {
+        const row = t.closest(".c-query-builder__row");
+        if (!row) return;
+        const rows = Array.from(this.querySelectorAll(".c-query-builder__row")).map((r) => ({
+          field: r.querySelector(".c-query-builder__field")?.value || "",
+          op: r.querySelector(".c-query-builder__op")?.value || "=",
+          value: r.querySelector(".c-query-builder__value")?.value || "",
+        }));
+        const idx = Array.from(this.querySelectorAll(".c-query-builder__row")).indexOf(row);
+        if (idx >= 0) rows.splice(idx, 1);
         this.setAttribute("query", JSON.stringify(rows));
         this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { query: rows } }));
       }
