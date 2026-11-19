@@ -31,8 +31,11 @@ export { SHADOW_MARKUP, renderShadowDSD };
 
 // Published version + readiness signal. Fires after every fragment has run, so
 // a consumer listening for `contour:ready` can assume the full registry exists.
+// The version is stamped from package.json at build time (tools/build.mjs
+// `stampVersion`); the literal here is the source-time fallback and is never
+// shipped — the build replaces it with the package.json version.
 /** Published component runtime version. */
-export const CONTOUR_VERSION = "1.7.0";
+export const CONTOUR_VERSION = "1.7.2";
 if (typeof window !== "undefined") {
   window.ContourVersion = CONTOUR_VERSION;
   if (!window.Contour) {

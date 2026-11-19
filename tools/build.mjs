@@ -50,6 +50,24 @@ const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
 const dist = join(root, "dist");
 
+// The single source of truth for the version is package.json. The build reads
+// it once and stamps it into every bundle that carries a version string, so a
+// release that bumps package.json cannot ship a bundle that still reports the
+// old version (the R22 review found CONTOUR_VERSION hardcoded at "1.7.0" while
+// package.json was "1.7.2").
+const PKG_VERSION = JSON.parse(readFileSync(join(root, "package.json"), "utf8")).version;
+
+/**
+ * Replace the hardcoded `CONTOUR_VERSION = "x.y.z"` in a source fragment with
+ * the version from package.json. Returns the code unchanged if the fragment
+ * does not carry a version string.
+ * @param {string} code
+ * @returns {string}
+ */
+function stampVersion(code) {
+  return code.replace(/(CONTOUR_VERSION\s*=\s*")[^"]+(")/, `$1${PKG_VERSION}$2`);
+}
+
 const LAYER_ORDER = "@layer tokens, base, components, utilities;";
 
 /**
@@ -324,19 +342,33 @@ function stripWc(code) {
   code = code.replace(/^\s*export\s*\{[^}]*\}\s*;?\s*$/gm, "");
   return code;
 }
-const wcBody = wcFrags.map((f) => stripWc(readFileSync(join(root, "src/js/wc", f), "utf-8"))).join("\n");
+const wcBody = wcFrags.map((f) => stampVersion(stripWc(readFileSync(join(root, "src/js/wc", f), "utf-8")))).join("\n");
 const wc = `(function () {\n  "use strict";\n${wcBody}\n})();\n`;
 writeFileSync(join(dist, "contour-wc.js"), wc, "utf-8");
 writeFileSync(join(dist, "contour-wc.min.js"), `${minifyJs(wc)}\n`, "utf-8");
 
 // -- Web components (ESM modules, preserved for tree-shaking) --------------
 // Copy the source modules verbatim so a bundler can import only what it needs.
+// index.mjs carries the version string, so it is stamped rather than copied
+// verbatim; the fragments are copied as-is (they carry no version).
 const wcOutDir = join(dist, "wc");
 mkdirSync(wcOutDir, { recursive: true });
 for (const f of wcFragNames) {
   copyFileSync(join(root, "src/js/wc", f), join(wcOutDir, f));
 }
-copyFileSync(join(root, "src/js/wc/index.mjs"), join(wcOutDir, "index.mjs"));
+writeFileSync(join(wcOutDir, "index.mjs"), stampVersion(readFileSync(join(root, "src/js/wc/index.mjs"), "utf-8")), "utf-8");
+
+// Version stamping assertion: the shipped index.mjs must report the package.json
+// version, not the source-time fallback. A drift here means the stamp was
+// skipped or the regex missed, and the published `window.ContourVersion` would
+// lie (the R22 review found CONTOUR_VERSION hardcoded at "1.7.0" while
+// package.json was "1.7.2").
+const shippedIndex = readFileSync(join(wcOutDir, "index.mjs"), "utf-8");
+const shippedVersion = shippedIndex.match(/CONTOUR_VERSION\s*=\s*"([^"]+)"/);
+if (!shippedVersion || shippedVersion[1] !== PKG_VERSION) {
+  console.error(`build: CONTOUR_VERSION stamp mismatch — shipped "${shippedVersion?.[1] || '(missing)'}", package.json "${PKG_VERSION}"`);
+  process.exit(1);
+}
 
 // -- Web components (ESM bundle, tree-shakeable) ---------------------------
 // Same fragments, but kept as an ES module: imports are dropped (everything
@@ -346,7 +378,7 @@ function stripWcEsm(code) {
   code = code.replace(/^\s*import\s+[^;]*;?\s*$/gm, "");
   return code;
 }
-const wcEsmBody = wcFrags.map((f) => stripWcEsm(readFileSync(join(root, "src/js/wc", f), "utf-8"))).join("\n");
+const wcEsmBody = wcFrags.map((f) => stampVersion(stripWcEsm(readFileSync(join(root, "src/js/wc", f), "utf-8")))).join("\n");
 const wcEsm = `${wcEsmBody}\n`;
 writeFileSync(join(dist, "contour-wc.esm.js"), wcEsm, "utf-8");
 writeFileSync(join(dist, "contour-wc.esm.min.js"), `${minifyJs(wcEsm)}\n`, "utf-8");
@@ -425,7 +457,7 @@ for (const [family, files] of Object.entries(WC_FAMILIES)) {
 }
 for (const [family, files] of Object.entries(WC_FAMILIES)) {
   const depFiles = (WC_DEPENDENCIES[family] || []).flatMap((d) => WC_FAMILIES[d] || []);
-  const familyBody = [...WC_CORE, ...depFiles, ...files].map((f) => stripWcEsm(readFileSync(join(root, "src/js/wc", f), "utf-8"))).join("\n");
+  const familyBody = [...WC_CORE, ...depFiles, ...files].map((f) => stampVersion(stripWcEsm(readFileSync(join(root, "src/js/wc", f), "utf-8")))).join("\n");
   const familyEsm = `${familyBody}\n`;
   writeFileSync(join(dist, `contour-wc-${family}.esm.js`), familyEsm, "utf-8");
   const familyMin = `${minifyJs(familyEsm)}\n`;
