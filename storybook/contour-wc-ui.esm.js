@@ -322,6 +322,8 @@
   //   role, open, aria-label, aria-valuenow, aria-valuemin, aria-valuemax, tabindex
   //   speed — the time-slider writes its committed speed back (R20 T-30);
   //   both readers (time-slider, animation-controls) observe it per-class.
+  //   x, y — the annotation writes its dragged position back (R20 T-11);
+  //   its only reader observes them per-class.
   // Adding one of those back to this list makes that component recurse.
   /** Shared attribute vocabulary used by components that opt into defaults. */
   export const OBSERVED = [
@@ -332,7 +334,7 @@
     "options", "orientation", "page-size", "pages", "pause", "paused", "pausable", "persist", "placeholder", "playing", "point", "points", "prev", "presets", "progress", "prompt", "question", "recent", "required",
     "quote", "ramp", "refresh", "removable", "resolution", "reverse", "rings", "retry", "results", "rows", "scale", "selectable", "segments", "show-header", "sparkline", "threshold", "thresholds", "selected", "separator", "series", "shortcut", "side", "size", "skeleton", "sort", "sort-dir", "status", "step", "submit", "submitting", "timeout", "trigger", "virtual", "sticky", "cluster-count", "cluster-expanded", "time", "resizable",
     "state", "steps", "style", "subtitle", "summary", "src", "source", "table", "tabs", "tag", "text", "ticks",     "title", "type", "unread-only", "unit", "updated", "cluster-items", "row-height",
-    "variant", "values", "viewport", "warning", "yes", "zoomable", "x", "y",
+    "variant", "values", "viewport", "warning", "yes", "zoomable",
     "caption", "current-time", "is-playing", "loop-label",     "no-data-color", "no-data-label", "property", "show-loop", "show-thumb", "show-thumb-caption", "speeds", "item-height", "pause-label", "play-label", "speed-label", "time-label", "shimmer",
     "search",
     "numbered",
@@ -5028,8 +5030,11 @@ class ContourDropdown extends ContourBase {
   define("contour-dropdown", ContourDropdown);
 
 /**
- * Annotation: a positioned note with label and x/y coordinates. Attributes:
- * `label`, `x`, `y`.
+ * Annotation: a positioned, movable note. Attributes: `label`, `x`, `y`
+ * (percentages of the offset parent, e.g. "40%"). The note is focusable:
+ * dragging it or nudging with the arrow keys (Shift for 10% steps) writes
+ * `x`/`y` back — the attributes ARE the serialization — and emits
+ * `contour:drag` per move and `contour:dragend` on release (R20 T-11).
  */
 class ContourAnnotation extends ContourBase {
     static get observed() { return ["label", "x", "y"]; }
@@ -5037,6 +5042,7 @@ class ContourAnnotation extends ContourBase {
     render() {
       this.classList.add("c-annotation");
       this.setAttribute("role", "note");
+      if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
       const label = this.getAttribute("label");
       if (label) this.setAttribute("aria-label", label);
       if (label) {
@@ -5048,12 +5054,72 @@ class ContourAnnotation extends ContourBase {
       if (x !== null) this.style.setProperty("--annotation-x", x);
       if (y !== null) this.style.setProperty("--annotation-y", y);
     }
+    enhance() {
+      if (this._wiredAnnotation) return;
+      this._wiredAnnotation = true;
+      // Percent of the offset parent, clamped to [0, 100]. The host itself is
+      // the dragged node and survives re-render (only generated children are
+      // rebuilt), so pointer capture on the host holds across writeback.
+      const pct = (v, fallback) => {
+        const n = parseFloat(v);
+        return Number.isFinite(n) ? Math.min(100, Math.max(0, n)) : fallback;
+      };
+      const write = (x, y, key) => {
+        // One render per move, not two: batch coalesces the x and y writes.
+        this.batch(() => {
+          this.setAttribute("x", x + "%");
+          this.setAttribute("y", y + "%");
+        });
+        this.dispatchEvent(new CustomEvent("contour:drag", { bubbles: true, composed: true, detail: { delta: key ? 1 : 0, key: key || "pointer", value: x + "," + y } }));
+      };
+      let drag = null;
+      this.addEventListener("pointerdown", (e) => {
+        if (e.button !== undefined && e.button !== 0) return;
+        const parent = this.offsetParent || this.parentElement;
+        if (!parent) return;
+        const rect = parent.getBoundingClientRect();
+        drag = { px: e.clientX, py: e.clientY, x: pct(this.getAttribute("x"), 50), y: pct(this.getAttribute("y"), 50), w: rect.width || 1, h: rect.height || 1 };
+        try { this.setPointerCapture(e.pointerId); } catch (err) {}
+        try { this.focus(); } catch (err) {}
+        e.preventDefault();
+      });
+      this.addEventListener("pointermove", (e) => {
+        if (!drag) return;
+        const x = Math.round((drag.x + ((e.clientX - drag.px) / drag.w) * 100) * 10) / 10;
+        const y = Math.round((drag.y + ((e.clientY - drag.py) / drag.h) * 100) * 10) / 10;
+        write(Math.min(100, Math.max(0, x)), Math.min(100, Math.max(0, y)));
+      });
+      const endDrag = () => {
+        if (!drag) return;
+        drag = null;
+        this.dispatchEvent(new CustomEvent("contour:dragend", { bubbles: true, composed: true, detail: { value: (this.getAttribute("x") || "") + "," + (this.getAttribute("y") || "") } }));
+      };
+      this.addEventListener("pointerup", endDrag);
+      this.addEventListener("pointercancel", endDrag);
+      this.addEventListener("keydown", (e) => {
+        const step = e.shiftKey ? 10 : 1;
+        let dx = 0, dy = 0;
+        if (e.key === "ArrowLeft") dx = -step;
+        else if (e.key === "ArrowRight") dx = step;
+        else if (e.key === "ArrowUp") dy = -step;
+        else if (e.key === "ArrowDown") dy = step;
+        else return;
+        e.preventDefault();
+        const x = Math.min(100, Math.max(0, pct(this.getAttribute("x"), 50) + dx));
+        const y = Math.min(100, Math.max(0, pct(this.getAttribute("y"), 50) + dy));
+        write(x, y, e.key);
+        this.dispatchEvent(new CustomEvent("contour:dragend", { bubbles: true, composed: true, detail: { value: x + "," + y } }));
+      });
+    }
   }
   define("contour-annotation", ContourAnnotation);
 
 /**
- * Style Switcher: web component wrapper.
- * Attributes: `items`, `value`.
+ * Style Switcher: a toggle-button group over map/styles. Attributes: `items`
+ * (JSON) or authored `.c-style-switcher__option` buttons, and `value`.
+ * Selecting an option writes `value` back — the pressed/active state is the
+ * attribute's projection, not a one-shot render — and emits `contour:change`
+ * (R20 T-12). Arrow keys rove one tab stop; Enter/Space select.
  */
 class ContourStyleSwitcher extends ContourBase {
     static get observed() { return ["items", "value"]; }
@@ -5064,8 +5130,11 @@ class ContourStyleSwitcher extends ContourBase {
       if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Style switcher");
       const items = this.getAttribute("items");
       const value = this.getAttribute("value");
-      Array.from(this.querySelectorAll(".c-style-switcher__option")).forEach((n) => n.remove());
-      if (items) {
+      // Authored options win over the JSON attribute (the dropdown contract);
+      // they used to be destroyed on every render.
+      const authored = Array.from(this.children).filter((n) => n.classList && n.classList.contains("c-style-switcher__option"));
+      if (items && !authored.length) {
+        Array.from(this.querySelectorAll(".c-style-switcher__option")).forEach((n) => n.remove());
         try {
           const parsed = JSON.parse(items);
           parsed.forEach((it) => {
@@ -5074,26 +5143,42 @@ class ContourStyleSwitcher extends ContourBase {
             btn.className = "c-style-switcher__option c-btn c-btn--sm";
             btn.type = "button";
             btn.textContent = name;
-            if (name === value) { btn.classList.add("c-style-switcher__option--active"); btn.setAttribute("aria-pressed", "true"); }
-            else btn.setAttribute("aria-pressed", "false");
             btn.dataset.value = name;
             this.appendChild(btn);
           });
         } catch (e) { warnBadJson(this, "attribute", e); }
       }
+      // Project the value onto every option, authored or generated, and keep
+      // one tab stop: the active option (or the first).
+      const opts = Array.from(this.querySelectorAll(".c-style-switcher__option"));
+      let active = null;
+      opts.forEach((btn) => {
+        const v = btn.dataset.value != null ? btn.dataset.value : btn.textContent.trim();
+        const on = v === value;
+        btn.classList.toggle("c-style-switcher__option--active", on);
+        btn.setAttribute("aria-pressed", String(on));
+        btn.tabIndex = -1;
+        if (on && !active) active = btn;
+      });
+      (active || opts[0])?.setAttribute("tabindex", "0");
     }
     enhance() {
       if (this._wiredStyleSwitcher) return;
       this._wiredStyleSwitcher = true;
+      const select = (btn) => {
+        const v = btn.dataset.value != null ? btn.dataset.value : btn.textContent.trim();
+        // The writeback re-renders the pressed state; the event carries the
+        // same value the attribute now holds.
+        this.setAttribute("value", v);
+        this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: v } }));
+      };
       this.addEventListener("click", (e) => {
         const btn = e.target && e.target.closest ? e.target.closest(".c-style-switcher__option") : null;
-        if (btn && this.contains(btn)) {
-          this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: btn.dataset.value } }));
-        }
+        if (btn && this.contains(btn)) select(btn);
       });
       this.addEventListener("keydown", (e) => {
         const opts = Array.from(this.querySelectorAll(".c-style-switcher__option"));
-        navKey(e, opts, { onKey: (k) => { if (k === "Enter" || k === " ") { const btn = document.activeElement; if (btn && btn.dataset.value != null) this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { value: btn.dataset.value } })); } } });
+        navKey(e, opts, { onKey: (k) => { if (k === "Enter" || k === " ") { const btn = document.activeElement; if (btn && btn.classList.contains("c-style-switcher__option")) select(btn); } } });
       });
     }
   }
@@ -5455,34 +5540,67 @@ class ContourSplitButton extends ContourBase {
       this._wiredSplitButton = true;
       const toggle = () => this.querySelector(".c-split-button__toggle");
       const menu = () => this.querySelector(".c-split-button__menu");
+      const items = () => Array.from(menu()?.querySelectorAll(".c-menu__item") || []);
+      // One open/close path for click, keyboard and outside-click, so the
+      // toggle event and aria-expanded fire exactly once per transition on
+      // every path (the keyboard path used to skip the event).
+      const setOpen = (open, focusFirst) => {
+        const m = menu(); const t = toggle();
+        if (!m) return;
+        const was = !m.hidden;
+        m.hidden = !open;
+        if (t) t.setAttribute("aria-expanded", String(open));
+        if (open && focusFirst) { const first = items()[0]; if (first) try { first.focus(); } catch (e) {} }
+        if (was !== open) this.dispatchEvent(new CustomEvent("contour:toggle", { bubbles: true, composed: true, detail: { open } }));
+      };
       this.addEventListener("click", (e) => {
+        const main = e.target && e.target.closest ? e.target.closest(".c-split-button__main") : null;
+        if (main && this.contains(main)) {
+          // The primary action is half the widget; it used to do nothing.
+          this.dispatchEvent(new CustomEvent("contour:activate", { bubbles: true, composed: true, detail: { label: main.textContent } }));
+          return;
+        }
         const t = toggle();
         if (e.target === t || (t && t.contains(e.target))) {
           const m = menu();
-          if (m) { m.hidden = !m.hidden; t.setAttribute("aria-expanded", String(!m.hidden)); this.dispatchEvent(new CustomEvent("contour:toggle", { bubbles: true, composed: true, detail: { open: !m.hidden } })); }
+          setOpen(m ? m.hidden : false, true);
+          return;
         }
         const item = e.target && e.target.closest ? e.target.closest(".c-menu__item") : null;
         if (item && this.contains(item)) {
-          const m = menu();
-          if (m) { m.hidden = true; const t = toggle(); if (t) t.setAttribute("aria-expanded", "false"); }
-          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { label: item.textContent } }));
+          const index = items().indexOf(item);
+          setOpen(false, false);
+          try { toggle()?.focus(); } catch (err) {}
+          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { label: item.textContent, index } }));
         }
       });
       this.addEventListener("keydown", (e) => {
         const t = toggle();
-        if ((e.target === t || (t && t.contains(e.target))) && (e.key === "Enter" || e.key === " ")) {
+        const m = menu();
+        const list = items();
+        const onToggle = e.target === t || (t && t.contains(e.target));
+        const idx = list.indexOf(e.target);
+        if (onToggle && (e.key === "Enter" || e.key === " " || e.key === "ArrowDown")) {
           e.preventDefault();
-          const m = menu();
-          if (m) { m.hidden = !m.hidden; t.setAttribute("aria-expanded", String(!m.hidden)); }
-        } else if (e.key === "Escape") {
-          const m = menu();
-          if (m && !m.hidden) { m.hidden = true; if (t) t.setAttribute("aria-expanded", "false"); }
+          setOpen(true, true);
+        } else if (onToggle && e.key === "ArrowUp") {
+          e.preventDefault();
+          setOpen(true, false);
+          const last = list[list.length - 1]; if (last) try { last.focus(); } catch (err) {}
+        } else if (idx >= 0) {
+          if (e.key === "ArrowDown") { e.preventDefault(); list[(idx + 1) % list.length]?.focus(); }
+          else if (e.key === "ArrowUp") { e.preventDefault(); list[(idx - 1 + list.length) % list.length]?.focus(); }
+          else if (e.key === "Home") { e.preventDefault(); list[0]?.focus(); }
+          else if (e.key === "End") { e.preventDefault(); list[list.length - 1]?.focus(); }
+          else if (e.key === "Escape") { e.preventDefault(); setOpen(false, false); try { t?.focus(); } catch (err) {} }
+          // Enter/Space on a menuitem is the native button's own click.
+        } else if (e.key === "Escape" && m && !m.hidden) {
+          setOpen(false, false); try { t?.focus(); } catch (err) {}
         }
       });
       const docClick = (e) => {
         const m = menu();
-        const t = toggle();
-        if (m && !m.hidden && !this.contains(e.target)) { m.hidden = true; if (t) t.setAttribute("aria-expanded", "false"); }
+        if (m && !m.hidden && !this.contains(e.target)) setOpen(false, false);
       };
       document.addEventListener("click", docClick);
       onDispose(this, () => document.removeEventListener("click", docClick));
@@ -5536,16 +5654,29 @@ class ContourPaletteEditor extends ContourBase {
   define("contour-palette-editor", ContourPaletteEditor);
 
 /**
- * Date Range: web component wrapper.
- * Attributes: `start`, `end`, `label`, `time`, `min`, `max`, `locale`.
+ * Date Range: two native date (or datetime-local with `time`) inputs with a
+ * shared label. Attributes: `start`, `end`, `label`, `time`, `min`, `max`,
+ * `locale`, `name`, `required`, `disabled`. Form associated (R20 T-16): the
+ * host submits the two dates as repeated entries under its name, reports
+ * required/inverted validity, and resets to the authored defaults. The
+ * inputs are distinctly named for assistive tech and cross-constrained
+ * (end.min = start, start.max = end); a committed change writes start/end
+ * back. The native pickers supply the calendar; timezone is the consumer's
+ * (the values are local ISO strings, date-only unless `time`).
  */
 class ContourDateRange extends ContourBase {
-  static get observed() { return ["start", "end", "label", "time", "min", "max", "locale"]; }
-  static get properties() { return { start: { attribute: "start" }, end: { attribute: "end" }, label: { attribute: "label" }, time: { attribute: "time", type: Boolean }, min: { attribute: "min" }, max: { attribute: "max" }, locale: { attribute: "locale" } }; }
+  static get observed() { return ["start", "end", "label", "time", "min", "max", "locale", "name", "required", "disabled"]; }
+  static get properties() { return { start: { attribute: "start" }, end: { attribute: "end" }, label: { attribute: "label" }, time: { attribute: "time", type: Boolean }, min: { attribute: "min" }, max: { attribute: "max" }, locale: { attribute: "locale" }, name: { attribute: "name" }, required: { attribute: "required", type: Boolean }, disabled: { attribute: "disabled", type: Boolean } }; }
+  static get formAssociated() { return true; }
     render() {
       this.classList.add("c-date-range");
+      // Authored defaults captured before any commit reflects into them.
+      if (this._dateRangeDefaultStart === undefined) {
+        this._dateRangeDefaultStart = this.getAttribute("start");
+        this._dateRangeDefaultEnd = this.getAttribute("end");
+      }
       this.setAttribute("role", "group");
-      this.setAttribute("aria-label", "Date range");
+      this.setAttribute("aria-label", this.getAttribute("label") || "Date range");
       const label = this.getAttribute("label");
       if (label) {
         const l = this.ensure(".c-date-range__label", () => { const el = document.createElement("span"); el.className = "c-date-range__label"; return el; });
@@ -5554,18 +5685,26 @@ class ContourDateRange extends ContourBase {
       const start = this.ensure(".c-date-range__start", () => { const el = document.createElement("input"); el.className = "c-input c-date-range__start"; return el; });
       start.type = this.hasAttribute("time") ? "datetime-local" : "date";
       start.value = this.getAttribute("start") || "";
-      start.setAttribute("aria-label", this.getAttribute("label") || "Start date");
+      // Distinct names: both inputs used to carry the identical aria-label,
+      // so a screen reader could not tell start from end.
+      start.setAttribute("aria-label", label ? label + " — start" : "Start date");
       const end = this.ensure(".c-date-range__end", () => { const el = document.createElement("input"); el.className = "c-input c-date-range__end"; return el; });
       end.type = start.type;
       end.value = this.getAttribute("end") || "";
-      end.setAttribute("aria-label", this.getAttribute("label") || "End date");
+      end.setAttribute("aria-label", label ? label + " — end" : "End date");
       const min = this.getAttribute("min");
       const max = this.getAttribute("max");
       [start, end].forEach((input) => {
         if (min) input.min = min; else input.removeAttribute("min");
         if (max) input.max = max; else input.removeAttribute("max");
         if (this.getAttribute("locale")) input.lang = this.getAttribute("locale");
+        if (this.hasAttribute("disabled")) input.setAttribute("disabled", ""); else input.removeAttribute("disabled");
       });
+      // Cross-constraint: the picker cannot offer an inverted range.
+      if (start.value) end.min = min && min > start.value ? min : start.value;
+      if (end.value) start.max = max && max < end.value ? max : end.value;
+      if (this.hasAttribute("required")) this.setAttribute("aria-required", "true"); else this.removeAttribute("aria-required");
+      if (this._internals) this._syncFormValue();
     }
     enhance() {
       if (this._wiredDateRange) return;
@@ -5573,9 +5712,61 @@ class ContourDateRange extends ContourBase {
       this.addEventListener("change", (e) => {
         const t = e.target;
         if (t && (t.classList.contains("c-date-range__start") || t.classList.contains("c-date-range__end"))) {
-          this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { start: this.querySelector(".c-date-range__start")?.value, end: this.querySelector(".c-date-range__end")?.value } }));
+          const s = this.querySelector(".c-date-range__start");
+          const en = this.querySelector(".c-date-range__end");
+          // Commit writes back; the re-render re-applies the same values and
+          // refreshes the cross-constraint.
+          this.batch(() => {
+            if (s) this.setAttribute("start", s.value);
+            if (en) this.setAttribute("end", en.value);
+          });
+          this._syncFormValue();
+          this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { start: s?.value, end: en?.value } }));
         }
       });
+    }
+    _syncFormValue() {
+      if (!this._internals) return;
+      const start = this.querySelector(".c-date-range__start")?.value || "";
+      const end = this.querySelector(".c-date-range__end")?.value || "";
+      const name = this.getAttribute("name");
+      if (name && (start || end)) {
+        const fd = new FormData();
+        if (start) fd.append(name, start);
+        if (end) fd.append(name, end);
+        this._internals.setFormValue(fd);
+      } else {
+        this._internals.setFormValue(null);
+      }
+      const missing = this.hasAttribute("required") && (!start || !end);
+      const inverted = !!(start && end && start > end);
+      if (missing) this._internals.setValidity({ valueMissing: true }, "Both dates are required.");
+      else if (inverted) this._internals.setValidity({ customError: true }, "Start must be on or before end.");
+      else this._internals.setValidity({});
+      this._setCustomState("data-invalid", missing || inverted);
+      for (const input of this.querySelectorAll("input")) input.setAttribute("aria-invalid", String(missing || inverted));
+    }
+    formResetCallback() {
+      this._contourResetting = true;
+      try {
+        if (this._dateRangeDefaultStart === null) this.removeAttribute("start"); else this.setAttribute("start", this._dateRangeDefaultStart);
+        if (this._dateRangeDefaultEnd === null) this.removeAttribute("end"); else this.setAttribute("end", this._dateRangeDefaultEnd);
+        this._syncFormValue();
+      } finally {
+        this._contourResetting = false;
+      }
+    }
+    formStateRestoreCallback(state) {
+      if (!this._internals || state == null) return;
+      const values = state instanceof FormData ? Array.from(state.getAll(this.getAttribute("name"))).map(String) : String(state).split(",");
+      this._contourResetting = true;
+      try {
+        this.setAttribute("start", values[0] || "");
+        this.setAttribute("end", values[1] || "");
+        this._syncFormValue();
+      } finally {
+        this._contourResetting = false;
+      }
     }
   }
   define("contour-date-range", ContourDateRange);

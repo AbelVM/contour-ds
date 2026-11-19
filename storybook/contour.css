@@ -4971,6 +4971,9 @@
   /* -- Split button ------------------------------------------------------ */
   .c-split-button {
     display: inline-flex;
+    /* The menu is absolute; without a positioned root it anchors to the
+       nearest positioned ancestor instead of the button (R20 T-14). */
+    position: relative;
   }
   .c-split-button__main {
     border-end-end-radius: 0;
@@ -5364,11 +5367,26 @@
   .c-avatar-group .c-avatar:first-child {
     margin-inline-start: 0;
   }
+  /* Responsive content (R20 T-13): the breakpoint attribute selects WHICH
+     container width steps the content down at — sm < 30rem, md < 40rem,
+     lg < 64rem. The host must sit inside a container the consumer declares
+     (`container-type: inline-size`); the query resolves against that
+     ancestor, never against the host itself. */
   .c-responsive-content {
     display: block;
   }
+  @container (inline-size < 30rem) {
+    .c-responsive-content[data-breakpoint="sm"] {
+      font-size: var(--type-sm);
+    }
+  }
   @container (inline-size < 40rem) {
     .c-responsive-content[data-breakpoint="md"] {
+      font-size: var(--type-sm);
+    }
+  }
+  @container (inline-size < 64rem) {
+    .c-responsive-content[data-breakpoint="lg"] {
       font-size: var(--type-sm);
     }
   }

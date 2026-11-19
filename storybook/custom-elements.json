@@ -6995,6 +6995,13 @@
           "description": "Contour component c-date-range (complete-widget).",
           "attributes": [
             {
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Boolean attribute for c-date-range."
+            },
+            {
               "name": "end",
               "type": {
                 "text": "string"
@@ -7030,6 +7037,20 @@
               "description": "Attribute for c-date-range."
             },
             {
+              "name": "name",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-date-range."
+            },
+            {
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Boolean attribute for c-date-range."
+            },
+            {
               "name": "start",
               "type": {
                 "text": "string"
@@ -7045,6 +7066,14 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "disabled",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "disabled"
+            },
             {
               "kind": "field",
               "name": "end",
@@ -7084,6 +7113,22 @@
                 "text": "string | null"
               },
               "attribute": "min"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "name"
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "required"
             },
             {
               "kind": "field",

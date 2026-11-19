@@ -7,7 +7,7 @@
     "blocks": 246,
     "elements": 894,
     "variants": 114,
-    "states": 325,
+    "states": 327,
     "tokens": 2673,
     "vars": 16,
     "inputs": 19,
@@ -3676,9 +3676,14 @@
         "time",
         "min",
         "max",
-        "locale"
+        "locale",
+        "name",
+        "required",
+        "disabled"
       ],
       "booleanAttributes": [
+        "disabled",
+        "required",
         "time"
       ],
       "slots": [],
@@ -9308,11 +9313,13 @@
       "sheets": [
         "components-misc.css"
       ],
-      "rules": 2,
+      "rules": 4,
       "elements": [],
       "variants": [],
       "states": [
-        "[data-breakpoint=\"md\"]"
+        "[data-breakpoint=\"lg\"]",
+        "[data-breakpoint=\"md\"]",
+        "[data-breakpoint=\"sm\"]"
       ],
       "attributes": [
         "breakpoint"

@@ -1618,7 +1618,7 @@ try {
     if (!q.swAfterClose.open || q.swAfterClose.events !== 1 || q.swAfterClose.returnValue !== "picked")
       bad.push(`shadow open=false / returnValue persistence: ${JSON.stringify(q.swAfterClose)}`);
     if (errs.length) bad.push(`page errors: ${errs.slice(0, 2).join(" | ")}`);
-    compared += 58;
+    compared += 37;
     if (bad.length)
       fail(`dialog-family parity broke: ${bad.join(" | ")}`);
     else
@@ -3092,11 +3092,241 @@ try {
     eq("speed event", out.speed?.heard, 2);
     if (out.afterDetach !== true) bad.push("timer survived disconnect — the playhead moved after removal");
     if (errs.length) bad.push(`page errors: ${errs.slice(0, 2).join(" | ")}`);
-    compared += 16;
+    compared += 14;
     if (bad.length)
       fail(`time-slider contract broke (R20 T-30): ${bad.join(" | ")}`);
     else
       console.log("wc-contract: time-slider scrubs aloud, writes its playhead back, plays and pauses from the is-playing attribute, honours min/max and speed, and stops on disconnect");
+  }
+
+  // ---- 26. shell completions (R20 T-11/12/13/14/16) ------------------------
+  //
+  // Five components the review called shells, completed against their API
+  // promise: responsive-content's breakpoint set, style-switcher's value
+  // writeback and authored options, split-button's primary action and menu
+  // keyboard, annotation's drag/nudge serialization, date-range's form
+  // participation and cross-constraint. Each assertion drives the real path.
+  {
+    const p = await browser.newPage();
+    const errs = [];
+    p.on("pageerror", (e) => errs.push(String(e.message || e)));
+    await p.goto(`${origin}/unmin.html`, { waitUntil: "load" });
+    await p.waitForFunction(() => !!window.ContourElements, null, { timeout: 20000 });
+    const out = await p.evaluate(async () => {
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+      // Computed font-size must be the settled value, not a frame mid
+      // theme/size transition.
+      const noTrans = document.createElement("style");
+      noTrans.textContent = "*, *::before, *::after { transition: none !important; }";
+      document.head.appendChild(noTrans);
+      const mk = async (tag, attrs = {}) => {
+        const el = document.createElement(tag);
+        for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+        document.body.appendChild(el);
+        await wait(30);
+        return el;
+      };
+      const results = {};
+
+      // responsive-content: sm < 30rem, md < 40rem, lg < 64rem, measured
+      // against a consumer-declared container at three widths.
+      {
+        const wrap = document.createElement("div");
+        wrap.style.containerType = "inline-size";
+        wrap.style.inlineSize = "35rem";
+        document.body.appendChild(wrap);
+        const hosts = {};
+        for (const bp of ["sm", "md", "lg"]) {
+          const el = document.createElement("contour-responsive-content");
+          el.setAttribute("breakpoint", bp);
+          el.textContent = "content";
+          wrap.appendChild(el);
+          hosts[bp] = el;
+        }
+        await wait(40);
+        const read = () => Object.fromEntries(Object.entries(hosts).map(([bp, el]) => [bp, parseFloat(getComputedStyle(el).fontSize)]));
+        results.rc35 = read();
+        wrap.style.inlineSize = "25rem";
+        await wait(40);
+        results.rc25 = read();
+        wrap.style.inlineSize = "70rem";
+        await wait(40);
+        results.rc70 = read();
+        results.rcAttrs = Object.fromEntries(Object.entries(hosts).map(([bp, el]) => [bp, el.dataset.breakpoint]));
+        wrap.remove();
+      }
+
+      // style-switcher: selection writes value back; authored options survive.
+      {
+        const el = await mk("contour-style-switcher", { items: '["Streets","Satellite"]', value: "Streets" });
+        const opts = () => Array.from(el.querySelectorAll(".c-style-switcher__option"));
+        const r = { initialPressed: opts().map((o) => o.getAttribute("aria-pressed")), tabStops: opts().filter((o) => o.getAttribute("tabindex") === "0").length };
+        let heard = null;
+        el.addEventListener("contour:change", (e) => { heard = e.detail.value; });
+        opts()[1].click();
+        await wait(20);
+        r.afterClick = { attr: el.getAttribute("value"), heard, pressed: opts().map((o) => o.getAttribute("aria-pressed")), active: opts().filter((o) => o.classList.contains("c-style-switcher__option--active")).map((o) => o.dataset.value) };
+        opts()[1].focus();
+        opts()[1].dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowLeft", bubbles: true }));
+        document.activeElement.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+        await wait(20);
+        r.afterKeys = el.getAttribute("value");
+        results.styleSwitcher = r;
+        el.remove();
+        const a = document.createElement("contour-style-switcher");
+        a.setAttribute("value", "b");
+        a.innerHTML = '<button class="c-style-switcher__option" data-value="a">A</button><button class="c-style-switcher__option" data-value="b">B</button>';
+        document.body.appendChild(a);
+        await wait(30);
+        results.authoredSwitcher = { count: a.querySelectorAll(".c-style-switcher__option").length, pressed: Array.from(a.querySelectorAll(".c-style-switcher__option")).map((o) => o.getAttribute("aria-pressed")) };
+        a.remove();
+      }
+
+      // split-button: primary action, menu keyboard, focus return, anchoring.
+      {
+        const el = await mk("contour-split-button", { label: "Save", menu: '["Save as","Duplicate"]' });
+        const r = {};
+        let activated = null, selected = null;
+        const toggles = [];
+        el.addEventListener("contour:activate", (e) => { activated = e.detail.label; });
+        el.addEventListener("contour:toggle", (e) => toggles.push(e.detail.open));
+        el.addEventListener("contour:select", (e) => { selected = e.detail; });
+        el.querySelector(".c-split-button__main").click();
+        r.activated = activated;
+        const toggle = el.querySelector(".c-split-button__toggle");
+        toggle.click();
+        await wait(20);
+        const menu = el.querySelector(".c-split-button__menu");
+        const items = Array.from(menu.querySelectorAll(".c-menu__item"));
+        r.opened = { hidden: menu.hidden, expanded: toggle.getAttribute("aria-expanded"), focusIn: menu.contains(document.activeElement), toggles: toggles.slice() };
+        document.activeElement.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
+        r.roved = document.activeElement === items[1];
+        document.activeElement.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+        await wait(20);
+        r.escaped = { hidden: menu.hidden, focusToggle: document.activeElement === toggle, toggles: toggles.slice() };
+        toggle.focus();
+        toggle.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
+        await wait(20);
+        r.keyOpen = { hidden: menu.hidden, toggles: toggles.slice() };
+        items[1].click();
+        await wait(20);
+        r.selected = { detail: selected, hidden: menu.hidden, focusToggle: document.activeElement === toggle };
+        r.positioned = getComputedStyle(el).position;
+        results.splitButton = r;
+        el.remove();
+      }
+
+      // annotation: arrow nudge and pointer drag write x/y back with events.
+      {
+        const parent = document.createElement("div");
+        parent.style.position = "relative";
+        parent.style.inlineSize = "200px";
+        parent.style.blockSize = "200px";
+        document.body.appendChild(parent);
+        const el = document.createElement("contour-annotation");
+        el.setAttribute("label", "Note"); el.setAttribute("x", "50%"); el.setAttribute("y", "50%");
+        parent.appendChild(el);
+        await wait(30);
+        const r = { tabindex: el.getAttribute("tabindex") };
+        let drags = 0, ends = 0;
+        el.addEventListener("contour:drag", () => drags++);
+        el.addEventListener("contour:dragend", () => ends++);
+        el.focus();
+        el.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
+        await wait(20);
+        r.nudge = { x: el.getAttribute("x"), y: el.getAttribute("y"), drags, ends };
+        el.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowLeft", shiftKey: true, bubbles: true }));
+        await wait(20);
+        r.shiftNudge = el.getAttribute("x");
+        const rect = parent.getBoundingClientRect();
+        const opts = { bubbles: true, clientX: rect.left + 100, clientY: rect.top + 100, pointerId: 9, button: 0 };
+        el.dispatchEvent(new PointerEvent("pointerdown", opts));
+        el.dispatchEvent(new PointerEvent("pointermove", { ...opts, clientX: rect.left + 120 }));
+        el.dispatchEvent(new PointerEvent("pointerup", { ...opts, clientX: rect.left + 120 }));
+        await wait(20);
+        r.drag = { x: el.getAttribute("x"), ends };
+        results.annotation = r;
+        parent.remove();
+      }
+
+      // date-range: distinct names, entries, cross-constraint, inverted
+      // validity, writeback, reset to the authored defaults.
+      {
+        const form = document.createElement("form");
+        const el = document.createElement("contour-date-range");
+        for (const [k, v] of Object.entries({ name: "win", label: "Window", start: "2026-11-01", end: "2026-11-10", required: "" })) el.setAttribute(k, v);
+        form.appendChild(el);
+        document.body.appendChild(form);
+        await wait(30);
+        const s = el.querySelector(".c-date-range__start"), en = el.querySelector(".c-date-range__end");
+        const r = { labels: [s.getAttribute("aria-label"), en.getAttribute("aria-label")], entries: new FormData(form).getAll("win").map(String), valid: el.checkValidity(), cross: { endMin: en.min, startMax: s.max } };
+        s.value = "2026-11-15";
+        s.dispatchEvent(new Event("change", { bubbles: true }));
+        await wait(20);
+        r.inverted = { valid: el.checkValidity(), attr: el.getAttribute("start"), ariaInvalid: el.querySelector(".c-date-range__start").getAttribute("aria-invalid") };
+        el.querySelector(".c-date-range__start").value = "2026-11-05";
+        el.querySelector(".c-date-range__start").dispatchEvent(new Event("change", { bubbles: true }));
+        await wait(20);
+        r.fixed = el.checkValidity();
+        form.reset();
+        await wait(20);
+        r.reset = { start: el.getAttribute("start"), end: el.getAttribute("end"), entries: new FormData(form).getAll("win").map(String) };
+        results.dateRange = r;
+        form.remove();
+      }
+      return results;
+    });
+    const bad = [];
+    const eq = (label, got, want) => {
+      const g = JSON.stringify(got), w = JSON.stringify(want);
+      if (g !== w) bad.push(`${label}: ${g} != ${w}`);
+    };
+    // responsive-content
+    const { rc25, rc35, rc70 } = out;
+    if (!(rc70.sm === rc70.md && rc70.md === rc70.lg)) bad.push(`at 70rem no breakpoint should step down: ${JSON.stringify(rc70)}`);
+    if (!(rc35.md < rc35.sm)) bad.push(`md did not step down at 35rem: ${JSON.stringify(rc35)}`);
+    if (!(rc35.lg === rc35.md)) bad.push(`lg should step with md at 35rem: ${JSON.stringify(rc35)}`);
+    if (!(rc35.sm === rc70.sm)) bad.push(`sm stepped down above 30rem: ${JSON.stringify(rc35)}`);
+    if (!(rc25.sm === rc25.md && rc25.md === rc25.lg)) bad.push(`at 25rem all breakpoints should step down: ${JSON.stringify(rc25)}`);
+    if (!(rc25.sm < rc70.sm)) bad.push(`stepped font is not smaller: ${JSON.stringify({ rc25, rc70 })}`);
+    eq("breakpoint mapping", out.rcAttrs, { sm: "sm", md: "md", lg: "lg" });
+    // style-switcher
+    eq("switcher initial pressed", out.styleSwitcher?.initialPressed, ["true", "false"]);
+    if (out.styleSwitcher?.tabStops !== 1) bad.push(`switcher exposes ${out.styleSwitcher?.tabStops} tab stops (want 1)`);
+    eq("switcher click attr", out.styleSwitcher?.afterClick?.attr, "Satellite");
+    eq("switcher click event", out.styleSwitcher?.afterClick?.heard, "Satellite");
+    eq("switcher click pressed", out.styleSwitcher?.afterClick?.pressed, ["false", "true"]);
+    eq("switcher click active", out.styleSwitcher?.afterClick?.active, ["Satellite"]);
+    eq("switcher keyboard select", out.styleSwitcher?.afterKeys, "Streets");
+    eq("authored options survive", out.authoredSwitcher?.count, 2);
+    eq("authored pressed projection", out.authoredSwitcher?.pressed, ["false", "true"]);
+    // split-button
+    eq("primary action", out.splitButton?.activated, "Save");
+    eq("menu opened", out.splitButton?.opened, { hidden: false, expanded: "true", focusIn: true, toggles: [true] });
+    if (out.splitButton?.roved !== true) bad.push("ArrowDown did not rove to the second menuitem");
+    eq("escape closed", out.splitButton?.escaped, { hidden: true, focusToggle: true, toggles: [true, false] });
+    eq("keyboard open emits", out.splitButton?.keyOpen, { hidden: false, toggles: [true, false, true] });
+    eq("menu select", out.splitButton?.selected, { detail: { label: "Duplicate", index: 1 }, hidden: true, focusToggle: true });
+    eq("split-button positioned", out.splitButton?.positioned, "relative");
+    // annotation
+    eq("annotation focusable", out.annotation?.tabindex, "0");
+    eq("arrow nudge", out.annotation?.nudge, { x: "51%", y: "50%", drags: 1, ends: 1 });
+    eq("shift nudge", out.annotation?.shiftNudge, "41%");
+    eq("pointer drag", out.annotation?.drag, { x: "51%", ends: 3 });
+    // date-range
+    eq("distinct names", out.dateRange?.labels, ["Window — start", "Window — end"]);
+    eq("range entries", out.dateRange?.entries, ["2026-11-01", "2026-11-10"]);
+    if (out.dateRange?.valid !== true) bad.push("authored valid range reports invalid");
+    eq("cross-constraint", out.dateRange?.cross, { endMin: "2026-11-01", startMax: "2026-11-10" });
+    eq("inverted invalid", out.dateRange?.inverted, { valid: false, attr: "2026-11-15", ariaInvalid: "true" });
+    if (out.dateRange?.fixed !== true) bad.push("restored order still invalid");
+    eq("range reset", out.dateRange?.reset, { start: "2026-11-01", end: "2026-11-10", entries: ["2026-11-01", "2026-11-10"] });
+    if (errs.length) bad.push(`page errors: ${errs.slice(0, 2).join(" | ")}`);
+    compared += 34;
+    if (bad.length)
+      fail(`shell completions broke (R20 T-11/12/13/14/16): ${bad.join(" | ")}`);
+    else
+      console.log("wc-contract: responsive-content steps at its three breakpoints, style-switcher writes value back and keeps authored options, split-button's primary action and menu keyboard work, annotation drags and nudges into x/y, date-range submits, cross-constrains and resets");
   }
 } finally {
   await browser.close();

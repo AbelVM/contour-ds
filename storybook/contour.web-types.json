@@ -2373,6 +2373,10 @@
           "description": "Contour component `c-date-range` (complete-widget). Elements: c-date-range__label.",
           "attributes": [
             {
+              "name": "disabled",
+              "description": "Boolean attribute for c-date-range."
+            },
+            {
               "name": "end",
               "description": "Attribute for c-date-range."
             },
@@ -2391,6 +2395,14 @@
             {
               "name": "min",
               "description": "Attribute for c-date-range."
+            },
+            {
+              "name": "name",
+              "description": "Attribute for c-date-range."
+            },
+            {
+              "name": "required",
+              "description": "Boolean attribute for c-date-range."
             },
             {
               "name": "start",

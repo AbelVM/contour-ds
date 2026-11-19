@@ -720,7 +720,7 @@
       "c-date-range"
     ],
     "body": [
-      "<contour-date-range label=\"${1:label}\">$0</contour-date-range>"
+      "<contour-date-range label=\"${1:label}\" name=\"${2:name}\">$0</contour-date-range>"
     ],
     "description": "Contour c-date-range (complete-widget)",
     "scope": "html,vue,jsx,tsx"
