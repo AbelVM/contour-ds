@@ -44,6 +44,22 @@ export const KeyboardNavigation = {
   },
 };
 
+export const LabelClickToggle = {
+  args: { items: ITEMS },
+  render,
+  play: async ({ canvasElement }) => {
+    const tree = canvasElement.querySelector("contour-tree");
+    const toggle = tree.querySelector(".c-tree__toggle");
+    const label = tree.querySelector(".c-tree__row span");
+    // Click the label span — should expand the branch.
+    await userEvent.click(label);
+    await expect(toggle).toHaveAttribute("aria-expanded", "true");
+    // Click the label again — should collapse it.
+    await userEvent.click(label);
+    await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  },
+};
+
 export const VirtualWindowing = {
   args: { virtual: true, "item-height": "28", items: JSON.stringify(Array.from({ length: 1000 }, (_, i) => ({ label: "Node " + i }))), maxHeight: "12rem" },
   render: (args = {}) => {

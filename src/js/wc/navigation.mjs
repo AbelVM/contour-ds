@@ -706,11 +706,20 @@ render() {
       }
     }
     enhance() {
-      // Toggle handling via delegation (works for windowed + static trees).
+      // Toggle handling for virtual trees only. Non-virtual trees are handled
+      // by wireTree in behaviours.mjs, which manages children show/hide and
+      // persistence. Having both handlers fire on the same click caused them
+      // to cancel each other out: ContourTree set aria-expanded to !expanded,
+      // then wireTree read that new value and set it back.
       if (!this._wiredTreeToggle) {
         this._wiredTreeToggle = true;
         this.addEventListener("click", (e) => {
-          const toggle = e.target && e.target.closest ? e.target.closest(".c-tree__toggle") : null;
+          if (!this.hasAttribute("virtual")) return;
+          let toggle = e.target && e.target.closest ? e.target.closest(".c-tree__toggle") : null;
+          if (!toggle) {
+            const row = e.target && e.target.closest ? e.target.closest(".c-tree__row") : null;
+            if (row) toggle = row.querySelector(":scope > .c-tree__toggle");
+          }
           if (!toggle || !this.contains(toggle)) return;
           e.stopPropagation();
           const nodeEl = toggle.closest(".c-tree__node");
