@@ -453,6 +453,14 @@ shadow("contour-shadow-filter-pill", `<span class="c-filter-pill" part="filter-p
     }
     show() { this.shadowRoot?.querySelector("dialog")?.showModal(); }
     close() { this.shadowRoot?.querySelector("dialog")?.close(); }
+    // Native-dialog parity with the light family (R20 T-32): showModal() is
+    // the same modal open path under its native name, open routes through
+    // show()/close(), and returnValue delegates to the platform's own.
+    showModal() { this.show(); }
+    get open() { return !!this.shadowRoot?.querySelector("dialog")?.open; }
+    set open(v) { if (v) this.show(); else this.close(); }
+    get returnValue() { return this.shadowRoot?.querySelector("dialog")?.returnValue ?? ""; }
+    set returnValue(v) { const d = this.shadowRoot?.querySelector("dialog"); if (d) d.returnValue = String(v); }
   }
   define("contour-shadow-dialog", ContourShadowDialog);
 

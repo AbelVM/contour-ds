@@ -1545,6 +1545,45 @@ try {
       const swClosed = swClose();
       results.shadow = { swMethods, swOpened, swClosed };
 
+      // Native-dialog parity (R20 T-32): showModal(), the open property and
+      // returnValue on all three light hosts and the shadow twin. The open
+      // setter must route through show()/close() so the events still fire
+      // exactly once per transition.
+      const parity = {};
+      for (const tag of ["contour-dialog", "contour-drawer", "contour-sheet"]) {
+        const el = document.createElement(tag);
+        el.setAttribute("title", "Parity");
+        document.body.appendChild(el);
+        const opens = count(el, "contour:open");
+        const closes = count(el, "contour:close");
+        const hasShowModal = typeof el.showModal === "function";
+        el.showModal();
+        const afterShowModal = { open: el.open === true, attr: el.hasAttribute("open"), modal: el.getAttribute("aria-modal") === "true", events: opens() };
+        el.returnValue = "chosen";
+        el.open = false;
+        const afterPropClose = { open: el.open === false, events: closes(), returnValue: el.returnValue };
+        el.open = true;
+        const afterPropOpen = { open: el.open === true, events: opens() };
+        el.close();
+        parity[tag] = { hasShowModal, afterShowModal, afterPropClose, afterPropOpen };
+        el.remove();
+      }
+      const sw2 = document.createElement("contour-shadow-dialog");
+      sw2.innerHTML = "<span slot=title>T</span><p>B</p>";
+      document.body.appendChild(sw2);
+      const sw2Open = count(sw2, "contour:open");
+      const sw2Close = count(sw2, "contour:close");
+      const swHasShowModal = typeof sw2.showModal === "function";
+      sw2.showModal();
+      const swAfterShowModal = { open: sw2.open === true, events: sw2Open() };
+      sw2.returnValue = "picked";
+      const swReturn = sw2.returnValue;
+      sw2.open = false;
+      const swAfterClose = { open: sw2.open === false, events: sw2Close(), returnValue: sw2.returnValue };
+      parity.shadow = { swHasShowModal, swAfterShowModal, swReturn, swAfterClose };
+      sw2.remove();
+      results.parity = parity;
+
       return results;
     });
     const bad = [];
@@ -1562,8 +1601,24 @@ try {
     const s = out.shadow;
     if (!s.swMethods.every(Boolean)) bad.push("shadow dialog lacks show/close methods");
     if (s.swOpened !== 1 || s.swClosed !== 1) bad.push(`shadow dialog fired open ${s.swOpened}/close ${s.swClosed} — dead or doubled events`);
+    for (const tag of ["contour-dialog", "contour-drawer", "contour-sheet"]) {
+      const q = out.parity[tag];
+      if (!q.hasShowModal) bad.push(`${tag} lacks showModal()`);
+      if (!q.afterShowModal.open || !q.afterShowModal.attr || !q.afterShowModal.modal || q.afterShowModal.events !== 1)
+        bad.push(`${tag} showModal() did not open modally once: ${JSON.stringify(q.afterShowModal)}`);
+      if (!q.afterPropClose.open || q.afterPropClose.events !== 1 || q.afterPropClose.returnValue !== "chosen")
+        bad.push(`${tag} open=false / returnValue: ${JSON.stringify(q.afterPropClose)}`);
+      if (!q.afterPropOpen.open || q.afterPropOpen.events !== 2)
+        bad.push(`${tag} open=true did not re-open through show(): ${JSON.stringify(q.afterPropOpen)}`);
+    }
+    const q = out.parity.shadow;
+    if (!q.swHasShowModal) bad.push("shadow dialog lacks showModal()");
+    if (!q.swAfterShowModal.open || q.swAfterShowModal.events !== 1) bad.push(`shadow showModal(): ${JSON.stringify(q.swAfterShowModal)}`);
+    if (q.swReturn !== "picked") bad.push(`shadow returnValue read back ${JSON.stringify(q.swReturn)}`);
+    if (!q.swAfterClose.open || q.swAfterClose.events !== 1 || q.swAfterClose.returnValue !== "picked")
+      bad.push(`shadow open=false / returnValue persistence: ${JSON.stringify(q.swAfterClose)}`);
     if (errs.length) bad.push(`page errors: ${errs.slice(0, 2).join(" | ")}`);
-    compared += 21;
+    compared += 58;
     if (bad.length)
       fail(`dialog-family parity broke: ${bad.join(" | ")}`);
     else

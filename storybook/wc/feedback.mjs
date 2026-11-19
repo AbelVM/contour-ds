@@ -4,6 +4,14 @@ import { wireRemovable, modalContain } from './behaviours.mjs';
 class ContourDialog extends ContourBase {
     static get observed() { return ["title", "size", "heading"]; }
     static get properties() { return { title: { attribute: "title" }, size: { attribute: "size" } }; }
+    // Native-dialog parity (R20 T-32): show() is already the modal path (it
+    // locks the document and inerts the background), so showModal() is its
+    // native-named alias, and the open property routes through show()/close()
+    // so events, focus and containment run on every transition. returnValue
+    // persists after close, like the platform's.
+    showModal() { this.show(); }
+    get open() { return this.hasAttribute("open"); }
+    set open(v) { if (v) this.show(); else this.close(); }
     render() {
       this.classList.add("c-dialog");
       Array.from(this.classList).forEach((c) => { if (c.startsWith("c-dialog--")) this.classList.remove(c); });
@@ -47,6 +55,7 @@ class ContourDialog extends ContourBase {
     enhance() {
       if (this._wiredDialog) return;
       this._wiredDialog = true;
+      this.returnValue = "";
       onDispose(this, () => { if (this.hasAttribute("open")) modalContain(this, false); });
       // The open state is carried by the `open` attribute so CSS can target it
       // and a caller can read host.open; it is written here and never observed,
@@ -567,6 +576,10 @@ define("contour-accordion", ContourAccordion);
 class ContourDrawer extends ContourBase {
     static get observed() { return ["title", "body", "size"]; }
     static get properties() { return { title: { attribute: "title" }, body: { attribute: "body" }, size: { attribute: "size" } }; }
+    // Native-dialog parity (R20 T-32), same contract as contour-dialog.
+    showModal() { this.show(); }
+    get open() { return this.hasAttribute("open"); }
+    set open(v) { if (v) this.show(); else this.close(); }
     render() {
       this.classList.add("c-drawer");
       Array.from(this.classList).forEach((c) => { if (c.startsWith("c-drawer--")) this.classList.remove(c); });
@@ -613,6 +626,7 @@ class ContourDrawer extends ContourBase {
     enhance() {
       if (this._wiredDrawer) return;
       this._wiredDrawer = true;
+      this.returnValue = "";
       onDispose(this, () => { if (this.hasAttribute("open")) modalContain(this, false); });
       this._drawerLastFocus = null;
       this.show = () => {
@@ -665,6 +679,10 @@ class ContourDrawer extends ContourBase {
 class ContourSheet extends ContourBase {
     static get observed() { return ["title", "body", "size"]; }
     static get properties() { return { title: { attribute: "title" }, body: { attribute: "body" }, size: { attribute: "size" } }; }
+    // Native-dialog parity (R20 T-32), same contract as contour-dialog.
+    showModal() { this.show(); }
+    get open() { return this.hasAttribute("open"); }
+    set open(v) { if (v) this.show(); else this.close(); }
     render() {
       this.classList.add("c-sheet");
       Array.from(this.classList).forEach((c) => { if (c.startsWith("c-sheet--")) this.classList.remove(c); });
@@ -710,6 +728,7 @@ class ContourSheet extends ContourBase {
     enhance() {
       if (this._wiredSheet) return;
       this._wiredSheet = true;
+      this.returnValue = "";
       onDispose(this, () => { if (this.hasAttribute("open")) modalContain(this, false); });
       this._sheetLastFocus = null;
       this.show = () => {

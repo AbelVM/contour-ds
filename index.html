@@ -14905,6 +14905,20 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  with <code class="c-kbd">{ name, value, checked }</code>.
                </p>
                <p class="c-section-head__desc">
+                 Overlay host API: <code class="c-kbd">contour-dialog</code>,
+                 <code class="c-kbd">contour-drawer</code> and <code class="c-kbd">contour-sheet</code>
+                 open through <code class="c-kbd">show()</code> or its native-named alias
+                 <code class="c-kbd">showModal()</code> — both are the modal path: they lock the
+                 document, inert the background, move focus inside and restore it on
+                 <code class="c-kbd">close()</code>. The <code class="c-kbd">open</code> property
+                 reflects the state and routes writes through the same methods, and
+                 <code class="c-kbd">returnValue</code> persists after close, as on the
+                 platform's own dialog element. Each transition emits
+                 <code class="c-kbd">contour:open</code> / <code class="c-kbd">contour:close</code>
+                 exactly once; <code class="c-kbd">contour-shadow-dialog</code> carries the same
+                 surface over a native dialog element.
+               </p>
+               <p class="c-section-head__desc">
                  Slots and parts: the <code class="c-kbd">contour-shadow-*</code> wrappers adopt the
                  document's sheets and expose <code class="c-kbd">::part()</code> hooks for the
                  named regions in their templates; slotted content is preserved across re-render
@@ -15204,11 +15218,23 @@ area.addEventListener("contour:map-control", (e) =&gt; {
             <div class="c-panel__body">
               <div class="c-stack">
                 <p>
-                  <code class="c-kbd">contour-input</code>, <code class="c-kbd">contour-select</code>,
-                  <code class="c-kbd">contour-check</code> and <code class="c-kbd">contour-switch</code>
-                  participate in a native form via
-                  <code class="c-kbd">ElementInternals</code>: their values are submitted, validated
-                  and reset like native controls. Submit the form below to see the
+                  The form family — <code class="c-kbd">contour-input</code>,
+                  <code class="c-kbd">contour-textarea</code>, <code class="c-kbd">contour-field</code>,
+                  <code class="c-kbd">contour-select</code> (single and <code class="c-kbd">multiple</code>),
+                  <code class="c-kbd">contour-combobox</code>, <code class="c-kbd">contour-check</code>,
+                  <code class="c-kbd">contour-radio</code>, <code class="c-kbd">contour-switch</code>,
+                  <code class="c-kbd">contour-range</code>, <code class="c-kbd">contour-radio-list</code>,
+                  <code class="c-kbd">contour-version</code>, <code class="c-kbd">contour-checkbox-group</code>,
+                  <code class="c-kbd">contour-search-field</code>, <code class="c-kbd">contour-input-group</code>,
+                  <code class="c-kbd">contour-number-field</code>, <code class="c-kbd">contour-date-picker</code>,
+                  <code class="c-kbd">contour-time-picker</code>, <code class="c-kbd">contour-color-picker</code>,
+                  <code class="c-kbd">contour-file-upload</code> and <code class="c-kbd">contour-tags-input</code> —
+                  participates in a native form via <code class="c-kbd">ElementInternals</code>:
+                  values submit under the host's <code class="c-kbd">name</code> (a multi-select and a
+                  checkbox group submit one entry per selected value), <code class="c-kbd">required</code>
+                  reports validity, reset restores the authored default, and typed text survives an
+                  unrelated attribute change. The <code class="c-kbd">wc-contract</code> gate measures
+                  each of these contracts. Submit the form below to see the
                   <code class="c-kbd">FormData</code> it produces.
                 </p>
                 <form data-wc-formdemo-form>

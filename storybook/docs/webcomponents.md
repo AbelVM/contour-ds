@@ -26,6 +26,8 @@ Property reflection: every component declares a properties map (name → { attri
 
 Mutation and events: attributes are the public input; a consumer mutates them directly (el.setAttribute("variant", "danger") or the reflected property) and the component re-renders. Interactive components emit the bubbling contour:* events in the table above with composed: true, so a parent — including one inside a shadow root — handles them without coupling to internals. Form controls use ElementInternals and emit contour:input / contour:change with { name, value, checked }.
 
+Overlay host API: contour-dialog, contour-drawer and contour-sheet open through show() or its native-named alias showModal() — both are the modal path: they lock the document, inert the background, move focus inside and restore it on close(). The open property reflects the state and routes writes through the same methods, and returnValue persists after close, as on the platform's own dialog element. Each transition emits contour:open / contour:close exactly once; contour-shadow-dialog carries the same surface over a native dialog element.
+
 Slots and parts: the contour-shadow-* wrappers adopt the document's sheets and expose ::part() hooks for the named regions in their templates; slotted content is preserved across re-render because the base class snapshots authored nodes. Loading, error, empty and skeleton states are rendered through the shared wireStates / renderStates helpers, so a component that reads one of those attributes without calling wireStates is a bug.
 
 Token-name compatibility: consumers migrating from libreship may keep their --ls-* names by aliasing them onto the corresponding --color-* / --chart-* tokens on :root; the system publishes only the Contour names.
@@ -40,7 +42,7 @@ Concise usage notes for the web-component layer. The generated API cards above c
 
 Toggle attributes live and watch the component re-render. The alert's variant and the kpi's value are driven by the controls below; no page-level state is kept.
 
-contour-input, contour-select, contour-check and contour-switch participate in a native form via ElementInternals: their values are submitted, validated and reset like native controls. Submit the form below to see the FormData it produces.
+The form family — contour-input, contour-textarea, contour-field, contour-select (single and multiple), contour-combobox, contour-check, contour-radio, contour-switch, contour-range, contour-radio-list, contour-version, contour-checkbox-group, contour-search-field, contour-input-group, contour-number-field, contour-date-picker, contour-time-picker, contour-color-picker, contour-file-upload and contour-tags-input — participates in a native form via ElementInternals: values submit under the host's name (a multi-select and a checkbox group submit one entry per selected value), required reports validity, reset restores the authored default, and typed text survives an unrelated attribute change. The wc-contract gate measures each of these contracts. Submit the form below to see the FormData it produces.
 
 Interactive components emit bubbling contour:* CustomEvents on the host, so a parent handles them without coupling to internals. The menu below emits contour:select; the pagination emits contour:page.
 
@@ -106,4 +108,4 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `eb38e4a5345472ef` · last committed 2026-11-13T09:07:47+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `6b941dedb90eb77c` · last committed 2026-11-13T09:07:47+01:00 · no URL: the project is private until v1.0.
