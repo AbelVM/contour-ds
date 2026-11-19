@@ -2682,6 +2682,19 @@
     font-size: var(--type-sm);
     line-height: var(--leading-relaxed);
     max-inline-size: var(--measure-prose);
+    /* R22 WC4-25: allow smooth height transitions to/from auto where
+       supported. Progressive enhancement — browsers that don't support
+       interpolate-size simply snap open/closed. */
+    interpolate-size: allow-keywords;
+    transition: block-size var(--dur-base) var(--ease-out-expo),
+      opacity var(--dur-base) var(--ease-standard);
+  }
+
+  .c-disclosure:not([open]) .c-disclosure__body {
+    block-size: 0;
+    opacity: 0;
+    overflow: hidden;
+    padding-block-end: 0;
   }
 
   /* -- Scheme toggle ------------------------------------------------------- */
@@ -2912,6 +2925,10 @@
     min-block-size: calc(6rem * var(--density, 1));
     overflow-wrap: anywhere;
     resize: vertical;
+    /* R22 WC4-23: auto-size to content where supported. Progressive
+       enhancement — browsers that don't support field-sizing keep the
+       fixed min-block-size and manual resize. */
+    field-sizing: content;
   }
 
   .c-input:hover,
@@ -2931,6 +2948,16 @@
 
   .c-input[aria-invalid="true"],
   .c-textarea[aria-invalid="true"] {
+    border-color: var(--color-danger);
+  }
+
+  /* R22 WC4-22: :user-invalid only matches after the user has interacted
+     with the field (blur), avoiding red borders on page load before the
+     user types. Progressive enhancement — browsers that don't support it
+     simply never match, and the JS-driven aria-invalid path still works. */
+  .c-input:user-invalid,
+  .c-select:user-invalid,
+  .c-textarea:user-invalid {
     border-color: var(--color-danger);
   }
 
@@ -6445,6 +6472,10 @@
   .c-query-builder__row { display: flex; gap: 0.5rem; align-items: center; }
   .c-query-builder__field, .c-query-builder__op { flex: 1 1 auto; }
   .c-query-builder__value { flex: 2 1 auto; }
+  .c-query-builder__remove { flex: 0 0 auto; }
+  .c-query-builder__connector { flex: 0 0 auto; align-self: center; font-size: var(--type-sm); color: var(--color-text-muted); }
+  .c-query-builder__group { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.5rem; border: 1px solid var(--color-border); border-radius: var(--radius-sm); }
+  .c-query-builder__group-label { font-size: var(--type-sm); font-weight: 600; color: var(--color-text-muted); }
   .c-query-builder__add { flex: 0 0 auto; align-self: flex-end; }
 
   /* Skip link (R18-34): visually hidden until focused, then slides in. */

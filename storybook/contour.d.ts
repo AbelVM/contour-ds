@@ -56,7 +56,7 @@ export interface ContourEmptyElement extends ContourElement{illustration?:S;}
 export interface ContourErrorBoundaryElement extends ContourElement{fallback?:S;}
 export interface ContourFaqElement extends ContourElement{src?:S;}
 export interface ContourFeatureInspectorElement extends ContourElement{open?:boolean;data?:S;}
-export interface ContourFieldElement extends ContourElement{disabled?:boolean;}
+export interface ContourFieldElement extends ContourElement{disabled?:boolean;customError?:S;}
 export interface ContourFieldsetElement extends ContourElement{disabled?:boolean;}
 export interface ContourFileUploadElement extends ContourFormElement{label?:S;accept?:S;multiple?:boolean;progress?:S;}
 export interface ContourFilterBarElement extends ContourElement{src?:S;clearable?:S;scope?:S;}
@@ -73,6 +73,7 @@ export interface ContourInstrumentElement extends ContourDataElement{rows?:S;}
 export interface ContourIsochroneElement extends ContourDataElement{label?:S;center?:S;rings?:S;}
 export interface ContourKpiElement extends ContourDataElement{value?:S;label?:S;delta?:S;direction?:S;note?:S;variant?:S;unit?:S;format?:S;locale?:S;thresholds?:S;threshold?:S;sparkline?:S;polarity?:S;}
 export interface ContourLandingFeaturesFullElement extends ContourElement{src?:S;}
+export interface ContourLandingHeroFullElement extends ContourElement{preview?:S;}
 export interface ContourLayerPanelElement extends ContourElement{src?:S;}
 export interface ContourLayerSwitchElement extends ContourElement{src?:S;}
 export interface ContourLegendElement extends ContourDataElement{title?:S;ramp?:S;scale?:S;items?:S;method?:S;norm?:S;selectable?:boolean;graduated?:boolean;}
@@ -85,7 +86,7 @@ export interface ContourMinimapElement extends ContourElement{src?:S;}
 export interface ContourNumberFieldElement extends ContourFormElement{label?:S;error?:S;help?:S;}
 export interface ContourPaginationElement extends ContourElement{src?:S;}
 export interface ContourPaletteEditorElement extends ContourElement{colors?:S;}
-export interface ContourPanelElement extends ContourElement{collapsible?:boolean;collapsed?:boolean;}
+export interface ContourPanelElement extends ContourElement{collapsible?:boolean;collapsed?:boolean;flush?:boolean;}
 export interface ContourPivotElement extends ContourDataElement{rows?:S;columns?:S;values?:S;filter?:S;aggregate?:S;}
 export interface ContourPopoverElement extends ContourElement{content?:S;}
 export interface ContourPressableFullElement extends ContourElement{disabled?:boolean;}
@@ -99,6 +100,7 @@ export interface ContourRadioListElement extends ContourElement{src?:S;}
 export interface ContourRangeElement extends ContourFormElement{label?:S;error?:S;help?:S;}
 export interface ContourRatingElement extends ContourFormElement{color?:S;}
 export interface ContourReadoutElement extends ContourDataElement{rows?:S;format?:S;locale?:S;}
+export interface ContourRecipeFullElement extends ContourElement{url?:S;tags?:S;head?:S;}
 export interface ContourResizeObserverElement extends ContourElement{debounce?:S;}
 export interface ContourResponsiveContentElement extends ContourElement{breakpoint?:S;}
 export interface ContourRowActionFullElement extends ContourElement{disabled?:boolean;}

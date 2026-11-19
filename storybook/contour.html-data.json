@@ -3385,6 +3385,10 @@
       },
       "attributes": [
         {
+          "name": "custom-error",
+          "description": "Attribute for c-field."
+        },
+        {
           "name": "disabled",
           "description": "Boolean attribute for c-field."
         },
@@ -4630,6 +4634,10 @@
           "description": "Attribute for c-landing-hero."
         },
         {
+          "name": "preview",
+          "description": "Attribute for c-landing-hero."
+        },
+        {
           "name": "text",
           "description": "Attribute for c-landing-hero."
         },
@@ -5677,6 +5685,10 @@
           "description": "Boolean attribute for c-panel."
         },
         {
+          "name": "flush",
+          "description": "Boolean attribute for c-panel."
+        },
+        {
           "name": "heading",
           "description": "Attribute for c-panel."
         },
@@ -5942,6 +5954,10 @@
         {
           "name": "collapsible",
           "description": "Boolean attribute for c-prose."
+        },
+        {
+          "name": "flush",
+          "description": "Boolean attribute for c-prose."
         }
       ],
       "references": [
@@ -6036,7 +6052,7 @@
       "name": "contour-query-builder",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-query-builder` (complete-widget). Elements: c-query-builder__add, c-query-builder__field, c-query-builder__list, c-query-builder__op, c-query-builder__row, c-query-builder__value."
+        "value": "Contour component `c-query-builder` (complete-widget). Elements: c-query-builder__add, c-query-builder__connector, c-query-builder__field, c-query-builder__group, c-query-builder__group-label, c-query-builder__list, c-query-builder__op, c-query-builder__remove, c-query-builder__row, c-query-builder__value."
       },
       "attributes": [
         {
@@ -6361,11 +6377,27 @@
           "description": "Attribute for c-recipe."
         },
         {
+          "name": "head",
+          "description": "Attribute for c-recipe."
+        },
+        {
           "name": "heading",
           "description": "Attribute for c-recipe."
         },
         {
+          "name": "index",
+          "description": "Attribute for c-recipe."
+        },
+        {
+          "name": "tags",
+          "description": "Attribute for c-recipe."
+        },
+        {
           "name": "title",
+          "description": "Attribute for c-recipe."
+        },
+        {
+          "name": "url",
           "description": "Attribute for c-recipe."
         }
       ],
@@ -9838,6 +9870,10 @@
         "value": "Contour component `c-toast` (complete-widget). Elements: c-toast__action, c-toast__text. Parts: toast. Slots: (default)."
       },
       "attributes": [
+        {
+          "name": "action",
+          "description": "Attribute for c-toast."
+        },
         {
           "name": "duration",
           "description": "Attribute for c-toast."

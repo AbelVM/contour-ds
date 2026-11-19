@@ -257,7 +257,12 @@ class ContourSectionHead extends ContourBase {
       if (!this.querySelector(".c-icon-badge")) {
         const badge = document.createElement("div");
         badge.className = "c-icon-badge";
-        badge.innerHTML = '<svg aria-hidden="true"><use href="#i-crosshair" /></svg>';
+        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("aria-hidden", "true");
+        const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+        use.setAttribute("href", "#i-crosshair");
+        svg.appendChild(use);
+        badge.replaceChildren(svg);
         this.prepend(badge);
       }
       // content wrapper
@@ -499,7 +504,14 @@ class ContourShowcaseFull extends ContourBase {
         // A figure with a figcaption is the native shape for an illustration
         // with a caption; the old div[role=img] hid the caption from the reader.
         const m = this.ensure(".c-showcase__media", () => { const el = document.createElement("figure"); el.className = "c-showcase__media"; return el; });
-        m.innerHTML = sanitizeHtml(media);
+        if (/^https?:\/\/|^\/|^\.\/|\.(png|jpg|jpeg|svg|webp|gif|avif)$/i.test(media.trim())) {
+          let img = m.querySelector("img");
+          if (!img) { img = document.createElement("img"); m.appendChild(img); }
+          img.src = media.trim();
+          img.alt = title || "";
+        } else {
+          m.innerHTML = sanitizeHtml(media);
+        }
         if (title) {
           let cap = m.querySelector(".c-showcase__caption");
           if (!cap) { cap = document.createElement("figcaption"); cap.className = "c-showcase__caption"; m.appendChild(cap); }
@@ -529,10 +541,10 @@ class ContourShowcaseFull extends ContourBase {
         try {
           const parsed = JSON.parse(items);
           const l = this.ensure(".c-showcase__list", () => { const el = document.createElement("ul"); el.className = "c-showcase__list"; return el; });
-          l.innerHTML = "";
+          l.replaceChildren();
           parsed.forEach((it) => {
             const li = document.createElement("li");
-            li.textContent = typeof it === "string" ? it : it.label;
+            li.textContent = typeof it === "string" ? it : (it.label || it.title || "");
             l.appendChild(li);
           });
         } catch (e) { warnBadJson(this, "attribute", e); }
@@ -576,10 +588,40 @@ class ContourPricingFull extends ContourBase {
   }
   define("contour-pricing", ContourPricingFull);
 class ContourRecipeFull extends ContourBase {
-    static get observed() { return ["title", "body", "canvas", "heading"]; }
-    static get properties() { return { title: { attribute: "title" }, body: { attribute: "body" }, canvas: { attribute: "canvas" } }; }
+    static get observed() { return ["title", "body", "canvas", "heading", "url", "tags", "head", "index"]; }
+    static get properties() { return { title: { attribute: "title" }, body: { attribute: "body" }, canvas: { attribute: "canvas" }, url: { attribute: "url" }, tags: { attribute: "tags" }, head: { attribute: "head" }, index: { attribute: "index" } }; }
     render() {
       this.classList.add("c-recipe");
+      // Frame chrome (browser mockup): opt-in via `url` attribute.
+      const url = this.getAttribute("url");
+      let frame = this.querySelector(".c-recipe__frame");
+      if (url) {
+        if (!frame) {
+          frame = document.createElement("div");
+          frame.className = "c-recipe__frame";
+          const bar = document.createElement("div");
+          bar.className = "c-recipe__frame-bar";
+          for (let i = 0; i < 3; i++) { const dot = document.createElement("span"); dot.className = "c-recipe__frame-dot"; bar.appendChild(dot); }
+          const urlEl = document.createElement("span");
+          urlEl.className = "c-recipe__frame-url";
+          bar.appendChild(urlEl);
+          frame.appendChild(bar);
+          this.prepend(frame);
+        }
+        const urlEl = frame.querySelector(".c-recipe__frame-url");
+        if (urlEl) urlEl.textContent = url;
+      } else if (frame) {
+        frame.remove();
+      }
+      // Head (category/eyebrow above title).
+      const head = this.getAttribute("head");
+      if (head) {
+        const h = this.ensure(".c-recipe__head", () => { const el = document.createElement("div"); el.className = "c-recipe__head"; return el; });
+        h.textContent = head;
+      } else {
+        const h = this.querySelector(".c-recipe__head");
+        if (h) h.remove();
+      }
       const title = this.getAttribute("title");
       if (title) {
         const t = this.ensure(".c-recipe__title", () => { const el = document.createElement(headingTag(this, "h3")); el.className = "c-recipe__title"; return el; });
@@ -587,6 +629,15 @@ class ContourRecipeFull extends ContourBase {
       } else {
         const t = this.querySelector(".c-recipe__title");
         if (t) t.remove();
+      }
+      // Index (recipe number, e.g. "01").
+      const index = this.getAttribute("index");
+      if (index) {
+        const idx = this.ensure(".c-recipe__index", () => { const el = document.createElement("span"); el.className = "c-recipe__index"; return el; });
+        idx.textContent = index;
+      } else {
+        const idx = this.querySelector(".c-recipe__index");
+        if (idx) idx.remove();
       }
       const body = this.getAttribute("body");
       if (body) {
@@ -596,10 +647,31 @@ class ContourRecipeFull extends ContourBase {
         const b = this.querySelector(".c-recipe__desc");
         if (b) b.remove();
       }
+      // Tags (comma-separated list).
+      const tags = this.getAttribute("tags");
+      if (tags) {
+        const t = this.ensure(".c-recipe__tags", () => { const el = document.createElement("div"); el.className = "c-recipe__tags"; return el; });
+        t.innerHTML = "";
+        tags.split(",").map((s) => s.trim()).filter(Boolean).forEach((tag) => {
+          const span = document.createElement("span");
+          span.textContent = tag;
+          t.appendChild(span);
+        });
+      } else {
+        const t = this.querySelector(".c-recipe__tags");
+        if (t) t.remove();
+      }
       const canvas = this.getAttribute("canvas");
       if (canvas) {
         const c = this.ensure(".c-recipe__canvas", () => { const el = document.createElement("div"); el.className = "c-recipe__canvas"; return el; });
-        c.innerHTML = sanitizeHtml(canvas);
+        if (/^https?:\/\/|^\/|^\.\/|\.(png|jpg|jpeg|svg|webp|gif|avif)$/i.test(canvas.trim())) {
+          let img = c.querySelector("img");
+          if (!img) { img = document.createElement("img"); c.appendChild(img); }
+          img.src = canvas.trim();
+          img.alt = "";
+        } else {
+          c.innerHTML = sanitizeHtml(canvas);
+        }
       } else {
         const c = this.querySelector(".c-recipe__canvas");
         if (c) c.remove();
@@ -642,7 +714,12 @@ class ContourLandingFeaturesFull extends ContourBase {
             if (it.icon) {
               const ic = document.createElement("span");
               ic.className = "c-landing-features__icon";
-              ic.innerHTML = '<svg aria-hidden="true"><use href="#' + String(it.icon).replace(/[^a-zA-Z0-9_-]/g, "") + '" /></svg>';
+              const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+              svg.setAttribute("aria-hidden", "true");
+              const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+              use.setAttribute("href", "#" + String(it.icon).replace(/[^a-zA-Z0-9_-]/g, ""));
+              svg.appendChild(use);
+              ic.appendChild(svg);
               item.appendChild(ic);
             }
              if (it.title) {
@@ -668,10 +745,41 @@ class ContourLandingFeaturesFull extends ContourBase {
   }
 define("contour-landing-features", ContourLandingFeaturesFull);
 class ContourLandingHeroFull extends ContourBase {
-    static get observed() { return ["actions", "title", "text", "heading"]; }
-    static get properties() { return { actions: { attribute: "actions" }, title: { attribute: "title" }, text: { attribute: "text" } }; }
+    static get observed() { return ["actions", "title", "text", "heading", "preview"]; }
+    static get properties() { return { actions: { attribute: "actions" }, title: { attribute: "title" }, text: { attribute: "text" }, preview: { attribute: "preview" } }; }
     render() {
       this.classList.add("c-landing-hero");
+      // Preview mockup (product screenshot): opt-in via `preview` attribute.
+      const preview = this.getAttribute("preview");
+      let pv = this.querySelector(".c-landing-hero__preview");
+      if (preview) {
+        if (!pv) {
+          pv = document.createElement("div");
+          pv.className = "c-landing-hero__preview";
+          const bar = document.createElement("div");
+          bar.className = "c-landing-hero__preview-bar";
+          for (let i = 0; i < 3; i++) { const dot = document.createElement("span"); dot.className = "c-landing-hero__preview-dot"; bar.appendChild(dot); }
+          const body = document.createElement("div");
+          body.className = "c-landing-hero__preview-body";
+          pv.appendChild(bar);
+          pv.appendChild(body);
+          this.appendChild(pv);
+        }
+        const body = pv.querySelector(".c-landing-hero__preview-body");
+        if (body) {
+          if (/^https?:\/\/|^\/|^\.\/|\.(png|jpg|jpeg|svg|webp|gif|avif)$/i.test(preview.trim())) {
+            body.innerHTML = "";
+            const img = document.createElement("img");
+            img.src = preview.trim();
+            img.alt = "";
+            body.appendChild(img);
+          } else {
+            body.innerHTML = sanitizeHtml(preview);
+          }
+        }
+      } else if (pv) {
+        pv.remove();
+      }
       const title = this.getAttribute("title");
       if (title) {
         const t = this.ensure(".c-landing-hero__title", () => { const el = document.createElement(headingTag(this, "h2")); el.className = "c-landing-hero__title"; return el; });
@@ -687,7 +795,24 @@ class ContourLandingHeroFull extends ContourBase {
       const authored = a ? Array.from(a.children) : [];
       if (actions && !authored.length) {
         const el = this.ensure(".c-landing-hero__actions", () => { const e = document.createElement("div"); e.className = "c-landing-hero__actions"; return e; });
-        el.innerHTML = sanitizeHtml(actions);
+        try {
+          const parsed = JSON.parse(actions);
+          if (Array.isArray(parsed)) {
+            el.replaceChildren();
+            parsed.forEach((act) => {
+              const btn = document.createElement(act.href ? "a" : "button");
+              btn.className = "c-btn" + (act.primary ? " c-btn--primary" : "");
+              if (act.href) btn.href = safeHref(act.href);
+              else btn.type = "button";
+              btn.textContent = act.label || act.text || "";
+              el.appendChild(btn);
+            });
+          } else {
+            el.innerHTML = sanitizeHtml(actions);
+          }
+        } catch (_) {
+          el.innerHTML = sanitizeHtml(actions);
+        }
       } else if (!actions && a && !authored.length) {
         a.remove();
       }
@@ -715,8 +840,8 @@ class ContourProseFull extends ContourBase {
   }
   define("contour-prose", ContourProseFull);
 class ContourPanel extends ContourBase {
-    static get observed() { return ["title", "subtitle", "status", "heading", "collapsible", "collapsed"]; }
-    static get properties() { return { title: { attribute: "title" }, subtitle: { attribute: "subtitle" }, status: { attribute: "status" }, collapsible: { attribute: "collapsible", type: Boolean }, collapsed: { attribute: "collapsed", type: Boolean } }; }
+    static get observed() { return ["title", "subtitle", "status", "heading", "collapsible", "collapsed", "flush"]; }
+    static get properties() { return { title: { attribute: "title" }, subtitle: { attribute: "subtitle" }, status: { attribute: "status" }, collapsible: { attribute: "collapsible", type: Boolean }, collapsed: { attribute: "collapsed", type: Boolean }, flush: { attribute: "flush", type: Boolean } }; }
     render() {
       this.classList.add("c-panel");
       if (!this.hasAttribute("role")) this.setAttribute("role", "region");
@@ -741,6 +866,8 @@ class ContourPanel extends ContourBase {
       }
       if (status) {
         const st = this.ensure(".c-panel__status", () => { const el = document.createElement("span"); el.className = "c-panel__status"; return el; });
+        Array.from(st.classList).forEach((c) => { if (c.startsWith("c-panel__status--")) st.classList.remove(c); });
+        if (status === "error" || status === "live") st.classList.add("c-panel__status--" + status);
         st.textContent = status;
       } else {
         const st = this.querySelector(".c-panel__status");
@@ -773,6 +900,7 @@ class ContourPanel extends ContourBase {
       }
       // Wrap authored content in a body so it picks up the panel's padding.
       const body = this.ensure(".c-panel__body", () => { const el = document.createElement("div"); el.className = "c-panel__body"; return el; });
+      body.classList.toggle("c-panel__body--flush", this.hasAttribute("flush"));
       const head = this.querySelector(".c-panel__head");
       Array.from(this.childNodes).forEach((n) => {
         if (n === body || n === head) return;

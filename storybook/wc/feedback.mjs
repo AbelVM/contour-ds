@@ -779,8 +779,8 @@ class ContourSheet extends ContourBase {
   }
   define("contour-sheet", ContourSheet);
 class ContourToast extends ContourBase {
-    static get observed() { return ["message", "variant", "duration"]; }
-    static get properties() { return { message: { attribute: "message" }, variant: { attribute: "variant" }, duration: { attribute: "duration", type: Number } }; }
+    static get observed() { return ["message", "variant", "duration", "action"]; }
+    static get properties() { return { message: { attribute: "message" }, variant: { attribute: "variant" }, duration: { attribute: "duration", type: Number }, action: { attribute: "action" } }; }
     render() {
       this.classList.add("c-toast");
       if (!this.hasAttribute("role")) this.setAttribute("role", "status");
@@ -793,6 +793,15 @@ class ContourToast extends ContourBase {
       const variant = this.getAttribute("variant");
       Array.from(this.classList).forEach((c) => { if (c.startsWith("c-toast--")) this.classList.remove(c); });
       if (variant) this.classList.add("c-toast--" + variant);
+      // Action button (e.g. "Undo"): scaffold from `action` attribute.
+      const action = this.getAttribute("action");
+      let btn = this.querySelector(".c-toast__action");
+      if (action) {
+        if (!btn) { btn = document.createElement("button"); btn.className = "c-toast__action"; btn.type = "button"; this.appendChild(btn); }
+        btn.textContent = action;
+      } else if (btn) {
+        btn.remove();
+      }
     }
     enhance() {
       if (this._wiredToast) return;

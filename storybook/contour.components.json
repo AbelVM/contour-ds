@@ -5,10 +5,10 @@
   "statement": "Generated, never hand-edited. Every block, element, variant, state and token below is read from src/css by the same inventory that publishes every count in this repository, and tools/check-components.mjs fails if the shipped bytes are not that derivation. `tokens` lists the custom properties a block's rules read; a rule naming two blocks (`.c-alert, .c-callout`) is credited to both, because that is what a retune does.",
   "counts": {
     "blocks": 246,
-    "elements": 908,
+    "elements": 912,
     "variants": 119,
-    "states": 332,
-    "tokens": 2689,
+    "states": 336,
+    "tokens": 2694,
     "vars": 16,
     "inputs": 20,
     "tokensIndexed": 199
@@ -3959,7 +3959,7 @@
         "components-navigation.css",
         "utilities.css"
       ],
-      "rules": 12,
+      "rules": 14,
       "elements": [
         "c-disclosure__body",
         "c-disclosure__icon",
@@ -3969,6 +3969,7 @@
       "states": [
         "::-webkit-details-marker",
         "::marker",
+        ":not([open])",
         "[open]"
       ],
       "attributes": [
@@ -5083,7 +5084,8 @@
         "required",
         "name",
         "value",
-        "disabled"
+        "disabled",
+        "custom-error"
       ],
       "booleanAttributes": [
         "disabled",
@@ -6155,7 +6157,7 @@
         "components-misc.css",
         "utilities.css"
       ],
-      "rules": 14,
+      "rules": 15,
       "elements": [
         "c-input__message",
         "c-input__message--error"
@@ -6165,6 +6167,7 @@
         ":disabled",
         ":focus-visible",
         ":hover",
+        ":user-invalid",
         "[aria-invalid=\"true\"]"
       ],
       "attributes": [
@@ -6655,7 +6658,8 @@
         "actions",
         "title",
         "text",
-        "heading"
+        "heading",
+        "preview"
       ],
       "booleanAttributes": [],
       "slots": [
@@ -8135,11 +8139,13 @@
         "status",
         "heading",
         "collapsible",
-        "collapsed"
+        "collapsed",
+        "flush"
       ],
       "booleanAttributes": [
         "collapsed",
-        "collapsible"
+        "collapsible",
+        "flush"
       ],
       "slots": [
         ""
@@ -8587,7 +8593,8 @@
       "attributes": [],
       "booleanAttributes": [
         "collapsed",
-        "collapsible"
+        "collapsible",
+        "flush"
       ],
       "slots": [
         ""
@@ -8769,12 +8776,16 @@
       "sheets": [
         "components-misc.css"
       ],
-      "rules": 7,
+      "rules": 11,
       "elements": [
         "c-query-builder__add",
+        "c-query-builder__connector",
         "c-query-builder__field",
+        "c-query-builder__group",
+        "c-query-builder__group-label",
         "c-query-builder__list",
         "c-query-builder__op",
+        "c-query-builder__remove",
         "c-query-builder__row",
         "c-query-builder__value"
       ],
@@ -8787,7 +8798,12 @@
       "booleanAttributes": [],
       "slots": [],
       "parts": [],
-      "tokens": [],
+      "tokens": [
+        "--color-border",
+        "--color-text-muted",
+        "--radius-sm",
+        "--type-sm"
+      ],
       "vars": [],
       "inputs": [],
       "renderedIn": {
@@ -9159,7 +9175,11 @@
         "title",
         "body",
         "canvas",
-        "heading"
+        "heading",
+        "url",
+        "tags",
+        "head",
+        "index"
       ],
       "booleanAttributes": [],
       "slots": [
@@ -9893,7 +9913,7 @@
         "components-misc.css",
         "utilities.css"
       ],
-      "rules": 15,
+      "rules": 16,
       "elements": [
         "c-select__label",
         "c-select__message",
@@ -9905,6 +9925,7 @@
         ":disabled",
         ":focus-visible",
         ":hover",
+        ":user-invalid",
         "[dir=\"rtl\"]"
       ],
       "attributes": [
@@ -9936,6 +9957,7 @@
         "--color-border-strong",
         "--color-border-subtle",
         "--color-control-edge",
+        "--color-danger",
         "--color-danger-text",
         "--color-focus-halo",
         "--color-focus-ring",
@@ -11907,7 +11929,7 @@
         "components-misc.css",
         "utilities.css"
       ],
-      "rules": 14,
+      "rules": 15,
       "elements": [
         "c-textarea__message",
         "c-textarea__message--error"
@@ -11917,6 +11939,7 @@
         ":disabled",
         ":focus-visible",
         ":hover",
+        ":user-invalid",
         "[aria-invalid=\"true\"]"
       ],
       "attributes": [
@@ -12368,7 +12391,8 @@
       "attributes": [
         "message",
         "variant",
-        "duration"
+        "duration",
+        "action"
       ],
       "booleanAttributes": [],
       "slots": [
@@ -13337,6 +13361,7 @@
       "c-plate",
       "c-popover",
       "c-price",
+      "c-query-builder",
       "c-recipe",
       "c-resizable",
       "c-saved-view",
@@ -13475,6 +13500,7 @@
       "c-live-badge",
       "c-pill",
       "c-pull-to-refresh",
+      "c-select",
       "c-textarea",
       "c-threshold"
     ],
@@ -14131,6 +14157,7 @@
       "c-price",
       "c-prose",
       "c-provenance",
+      "c-query-builder",
       "c-radio-list",
       "c-readout",
       "c-recipe",
@@ -15083,6 +15110,7 @@
       "c-minimap",
       "c-pagination",
       "c-palette-editor",
+      "c-query-builder",
       "c-resizable",
       "c-saved-view",
       "c-sidebar",
@@ -15805,6 +15833,7 @@
       "c-pivot",
       "c-popover",
       "c-price",
+      "c-query-builder",
       "c-radio",
       "c-recipe",
       "c-reserved",

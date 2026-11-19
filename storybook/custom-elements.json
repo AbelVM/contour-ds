@@ -9397,6 +9397,13 @@
           "description": "Contour component c-field (complete-widget).",
           "attributes": [
             {
+              "name": "custom-error",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-field."
+            },
+            {
               "name": "disabled",
               "type": {
                 "text": "boolean"
@@ -9461,6 +9468,14 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "customError",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "custom-error"
+            },
             {
               "kind": "field",
               "name": "disabled",
@@ -13121,6 +13136,13 @@
               "description": "Attribute for c-landing-hero."
             },
             {
+              "name": "preview",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-landing-hero."
+            },
+            {
               "name": "text",
               "type": {
                 "text": "string"
@@ -13151,6 +13173,14 @@
                 "text": "string | null"
               },
               "attribute": "heading"
+            },
+            {
+              "kind": "field",
+              "name": "preview",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "preview"
             },
             {
               "kind": "field",
@@ -16168,6 +16198,13 @@
               "description": "Boolean attribute for c-panel."
             },
             {
+              "name": "flush",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Boolean attribute for c-panel."
+            },
+            {
               "name": "heading",
               "type": {
                 "text": "string"
@@ -16212,6 +16249,14 @@
                 "text": "boolean"
               },
               "attribute": "collapsible"
+            },
+            {
+              "kind": "field",
+              "name": "flush",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "flush"
             },
             {
               "kind": "field",
@@ -16844,6 +16889,13 @@
                 "text": "boolean"
               },
               "description": "Boolean attribute for c-prose."
+            },
+            {
+              "name": "flush",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Boolean attribute for c-prose."
             }
           ],
           "members": [
@@ -16862,6 +16914,14 @@
                 "text": "boolean"
               },
               "attribute": "collapsible"
+            },
+            {
+              "kind": "field",
+              "name": "flush",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "flush"
             }
           ],
           "slots": [
@@ -17989,6 +18049,13 @@
               "description": "Attribute for c-recipe."
             },
             {
+              "name": "head",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-recipe."
+            },
+            {
               "name": "heading",
               "type": {
                 "text": "string"
@@ -17996,7 +18063,28 @@
               "description": "Attribute for c-recipe."
             },
             {
+              "name": "index",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-recipe."
+            },
+            {
+              "name": "tags",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-recipe."
+            },
+            {
               "name": "title",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-recipe."
+            },
+            {
+              "name": "url",
               "type": {
                 "text": "string"
               },
@@ -18022,6 +18110,14 @@
             },
             {
               "kind": "field",
+              "name": "head",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "head"
+            },
+            {
+              "kind": "field",
               "name": "heading",
               "type": {
                 "text": "string | null"
@@ -18030,11 +18126,35 @@
             },
             {
               "kind": "field",
+              "name": "index",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "index"
+            },
+            {
+              "kind": "field",
+              "name": "tags",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "tags"
+            },
+            {
+              "kind": "field",
               "name": "title",
               "type": {
                 "text": "string | null"
               },
               "attribute": "title"
+            },
+            {
+              "kind": "field",
+              "name": "url",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "url"
             }
           ],
           "slots": [
@@ -25425,6 +25545,13 @@
           "description": "Contour component c-toast (complete-widget).",
           "attributes": [
             {
+              "name": "action",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-toast."
+            },
+            {
               "name": "duration",
               "type": {
                 "text": "string"
@@ -25447,6 +25574,14 @@
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "action",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "action"
+            },
             {
               "kind": "field",
               "name": "duration",
@@ -30198,6 +30333,14 @@
         "name",
         "value",
         "checked"
+      ]
+    },
+    {
+      "name": "contour:invalid",
+      "keys": [
+        "field",
+        "input",
+        "message"
       ]
     },
     {

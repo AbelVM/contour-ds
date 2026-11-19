@@ -30,6 +30,8 @@ Overlay host API: contour-dialog, contour-drawer and contour-sheet open through 
 
 Slots and parts: the contour-shadow-* wrappers adopt the document's sheets and expose ::part() hooks for the named regions in their templates; slotted content is preserved across re-render because the base class snapshots authored nodes. Loading, error, empty and skeleton states are rendered through the shared wireStates / renderStates helpers, so a component that reads one of those attributes without calling wireStates is a bug.
 
+Component maturity and completeness: the catalog divides components into four levels of implementation depth: Primitive (single-purpose atomic building blocks like box, stack, readout, kbd; they lay out children or render tokens); Scaffold (structural frames like dash-shell and dashboard-grid that provide CSS classes and wire host attributes but leave windowing/docking to the host application); Composition (hosts that compose multiple primitives through slots and event seams, such as header, sidebar, split-view, and map-area); and Complete widget (autonomous interactive controls with full keyboard navigation, roving tabindex, ARIA roles, form association, and event dispatch, such as combobox, table, dialog, time-slider, and sortable-list). A component that merely renders its HTML markup is not a complete control until it fulfills its interaction, keyboard, form-value and ARIA contracts.
+
 Token-name compatibility: consumers migrating from libreship may keep their --ls-* names by aliasing them onto the corresponding --color-* / --chart-* tokens on :root; the system publishes only the Contour names.
 
 The same table contract composes inside a stack, while an error boundary keeps a fallback local to the failed widget.
@@ -73,11 +75,12 @@ Every attribute, boolean attribute, slot and part declared by each block, counte
 
 ## Blocks documented here
 
-28 block(s). Their facts live in `../contour.components.json`;
+29 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
 - `.c-activity-feed`
+- `.c-avatar`
 - `.c-btn`
 - `.c-card`
 - `.c-cluster`
@@ -108,4 +111,4 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `e6de09099c409038` · last committed 2026-11-19T09:45:59+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `338d3c25b201b176` · last committed 2026-11-19T21:00:59+01:00 · no URL: the project is private until v1.0.

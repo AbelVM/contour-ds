@@ -223,9 +223,9 @@ define("contour-combobox", ContourCombobox);
  * sync via `_internals.setFormValue`. Emits `contour:input` / `contour:change`.
  */
 class ContourField extends ContourBase {
-    static get observed() { return ["label", "hint", "error", "placeholder", "type", "required", "name", "value", "disabled"]; }
+    static get observed() { return ["label", "hint", "error", "placeholder", "type", "required", "name", "value", "disabled", "custom-error"]; }
     static get formAssociated() { return true; }
-    static get properties() { return { label: { attribute: "label" }, hint: { attribute: "hint" }, error: { attribute: "error" }, placeholder: { attribute: "placeholder" }, type: { attribute: "type" }, required: { attribute: "required", type: Boolean }, name: { attribute: "name" }, value: { attribute: "value" }, disabled: { attribute: "disabled", type: Boolean } }; }
+    static get properties() { return { label: { attribute: "label" }, hint: { attribute: "hint" }, error: { attribute: "error" }, placeholder: { attribute: "placeholder" }, type: { attribute: "type" }, required: { attribute: "required", type: Boolean }, name: { attribute: "name" }, value: { attribute: "value" }, disabled: { attribute: "disabled", type: Boolean }, customError: { attribute: "custom-error" } }; }
     render() {
       this.classList.add("c-field");
       const label = this.getAttribute("label");
@@ -266,6 +266,24 @@ class ContourField extends ContourBase {
       } else {
         const e = this.querySelector(".c-field__error");
         if (e) e.remove();
+      }
+      // R22 WC4-26: custom-error attribute — declarative setCustomValidity().
+      // When set, the input's validation message is overridden and the field
+      // is marked invalid, matching the platform's customError semantics.
+      const customError = this.getAttribute("custom-error");
+      if (customError !== null) {
+        input.setAttribute("aria-invalid", "true");
+        this.classList.add("is-invalid");
+        this.setAttribute("data-invalid", "");
+        let errEl = this.querySelector(".c-field__error");
+        if (!errEl) {
+          errEl = document.createElement("span");
+          errEl.className = "c-field__error";
+          this.appendChild(errEl);
+        }
+        errEl.textContent = customError;
+        if (!errEl.id) errEl.id = contourId("err");
+        input.setAttribute("aria-describedby", (input.getAttribute("aria-describedby") || "").split(" ").filter((x) => x && x !== errEl.id).concat(errEl.id).join(" "));
       }
       // ARIA: link the input to its hint and its error message (parity with the
       // shadow layer's bootstrap). The ids are generated so a screen reader does
@@ -334,18 +352,30 @@ class ContourField extends ContourBase {
         input.setAttribute("aria-invalid", "true");
         this.classList.add("is-invalid");
         this.setAttribute("data-invalid", "");
-        // Surface the browser's validation message when no explicit error attr.
-        if (!this.getAttribute("error")) {
-          const msg = input.validationMessage || "Invalid value";
-          let errEl = this.querySelector(".c-field__error");
-          if (!errEl) {
-            errEl = document.createElement("span");
-            errEl.className = "c-field__error";
-            this.appendChild(errEl);
+        // R22 WC4-26: emit a cancelable contour:invalid event. A listener
+        // can preventDefault() to suppress the invalid state (e.g. to show
+        // a custom message instead of the browser's).
+        const invalidEvent = new CustomEvent("contour:invalid", {
+          bubbles: true,
+          composed: true,
+          cancelable: true,
+          detail: { field: this, input, message: input.validationMessage || "Invalid value" },
+        });
+        const notCancelled = this.dispatchEvent(invalidEvent);
+        if (notCancelled) {
+          // Surface the browser's validation message when no explicit error attr.
+          if (!this.getAttribute("error") && !this.getAttribute("custom-error")) {
+            const msg = input.validationMessage || "Invalid value";
+            let errEl = this.querySelector(".c-field__error");
+            if (!errEl) {
+              errEl = document.createElement("span");
+              errEl.className = "c-field__error";
+              this.appendChild(errEl);
+            }
+            errEl.textContent = msg;
+            if (!errEl.id) errEl.id = contourId("err");
+            input.setAttribute("aria-describedby", (input.getAttribute("aria-describedby") || "").split(" ").filter((x) => x && x !== errEl.id).concat(errEl.id).join(" "));
           }
-          errEl.textContent = msg;
-          if (!errEl.id) errEl.id = contourId("err");
-          input.setAttribute("aria-describedby", (input.getAttribute("aria-describedby") || "").split(" ").filter((x) => x && x !== errEl.id).concat(errEl.id).join(" "));
         }
       }
       sync();
