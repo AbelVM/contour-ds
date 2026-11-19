@@ -1435,3 +1435,10 @@
   inline-size: 100%;
   max-inline-size: 24rem;
 }
+
+/* View Transitions (R22 WC4-14): smooth cross-document navigation in the
+   docs shell. Progressive enhancement — browsers that don't support it
+   navigate instantly. */
+@view-transition {
+  navigation: auto;
+}

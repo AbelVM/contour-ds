@@ -333,6 +333,19 @@
     font-size: var(--type-sm);
     line-height: var(--leading-relaxed);
     max-inline-size: var(--measure-prose);
+    /* R22 WC4-25: allow smooth height transitions to/from auto where
+       supported. Progressive enhancement — browsers that don't support
+       interpolate-size simply snap open/closed. */
+    interpolate-size: allow-keywords;
+    transition: block-size var(--dur-base) var(--ease-out-expo),
+      opacity var(--dur-base) var(--ease-standard);
+  }
+
+  .c-disclosure:not([open]) .c-disclosure__body {
+    block-size: 0;
+    opacity: 0;
+    overflow: hidden;
+    padding-block-end: 0;
   }
 
   /* -- Scheme toggle ------------------------------------------------------- */

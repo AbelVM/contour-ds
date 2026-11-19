@@ -153,6 +153,10 @@
     min-block-size: calc(6rem * var(--density, 1));
     overflow-wrap: anywhere;
     resize: vertical;
+    /* R22 WC4-23: auto-size to content where supported. Progressive
+       enhancement — browsers that don't support field-sizing keep the
+       fixed min-block-size and manual resize. */
+    field-sizing: content;
   }
 
   .c-input:hover,
@@ -172,6 +176,16 @@
 
   .c-input[aria-invalid="true"],
   .c-textarea[aria-invalid="true"] {
+    border-color: var(--color-danger);
+  }
+
+  /* R22 WC4-22: :user-invalid only matches after the user has interacted
+     with the field (blur), avoiding red borders on page load before the
+     user types. Progressive enhancement — browsers that don't support it
+     simply never match, and the JS-driven aria-invalid path still works. */
+  .c-input:user-invalid,
+  .c-select:user-invalid,
+  .c-textarea:user-invalid {
     border-color: var(--color-danger);
   }
 
