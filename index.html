@@ -11198,7 +11198,9 @@ area.addEventListener("contour:map-control", (e) =&gt; {
               <span class="label">Workflows · 17e</span>
               <h3 class="c-section-head__title">Layer panel + map slot</h3>
               <p class="c-section-head__desc">
-                A layer panel controls map-area slots.
+                A layer panel emits <code class="c-kbd">contour:layer-*</code> events; the consumer's
+                adapter applies them to the engine attached through the map-area seam. The panel
+                never touches the engine itself.
               </p>
             </div>
           </div>
@@ -11206,7 +11208,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
             <div class="c-cluster" style="--cluster-gap: var(--space-sm);">
               <contour-layer-panel></contour-layer-panel>
               <div class="c-map-area" style="inline-size: 60%; block-size: 12rem;">
-                <div class="c-map-slot" data-region="main"></div>
+                <div class="c-map-slot"></div>
               </div>
             </div>
           </div><details class="ds-code" data-generated="code">
@@ -11224,7 +11226,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         <pre class="ds-code__pre"><code id="ds-code-217">&lt;div class="c-cluster" style="--cluster-gap: var(--space-sm);"&gt;
   &lt;contour-layer-panel&gt;&lt;/contour-layer-panel&gt;
   &lt;div class="c-map-area" style="inline-size: 60%; block-size: 12rem;"&gt;
-    &lt;div class="c-map-slot" data-region="main"&gt;&lt;/div&gt;
+    &lt;div class="c-map-slot"&gt;&lt;/div&gt;
   &lt;/div&gt;
 &lt;/div&gt;</code></pre>
                       </div>
@@ -13951,7 +13953,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
               <li><strong>c-map-slot</strong> — the map canvas the consumer owns.</li>
               <li><strong>c-map-panel</strong> — a panel anchored to the map.</li>
               <li><strong>c-segmented</strong> — view mode switcher (map/chart/table).</li>
-              <li><strong>c-layer-switch</strong> — layer visibility tree with reorder.</li>
+              <li><strong>c-layer-switch</strong> — flat layer visibility toggles.</li>
               <li><strong>c-readout</strong> — coordinate/measurement display.</li>
               <li><strong>c-scale-bar</strong> — map scale indicator.</li>
               <li><strong>c-map-footer</strong> — attribution and copyright.</li>
@@ -13986,7 +13988,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
   &lt;/li&gt;
   &lt;li&gt;
     &lt;strong&gt;c-layer-switch&lt;/strong&gt;
-    — layer visibility tree with reorder.
+    — flat layer visibility toggles.
   &lt;/li&gt;
   &lt;li&gt;
     &lt;strong&gt;c-readout&lt;/strong&gt;
@@ -25548,9 +25550,9 @@ area.addEventListener("contour:map-control", (e) =&gt; {
               <p class="muted" style="font-size: var(--type-xs); margin-block-start: var(--space-sm)">
                 <strong>Contract (R16-28):</strong> the layer panel owns layer visibility, order, and
                 styling; the map adapter (Contour's <code>contour-map-area</code>) owns the engine
-                bridge. The panel never touches the engine directly — it sets attributes on
-                <code>contour-map-area</code>, which forwards to the live engine instance via
-                <code>attachMap()</code>.
+                bridge. The panel never touches the engine directly — it emits
+                <code>contour:layer-*</code> events, and the consumer's adapter applies them to the
+                live engine instance attached via <code>attachMap()</code>.
               </p>
             </div>
           </div>

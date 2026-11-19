@@ -9673,6 +9673,14 @@
           "description": "Attribute for c-time-slider."
         },
         {
+          "name": "max",
+          "description": "Attribute for c-time-slider."
+        },
+        {
+          "name": "min",
+          "description": "Attribute for c-time-slider."
+        },
+        {
           "name": "pause-label",
           "description": "Attribute for c-time-slider."
         },

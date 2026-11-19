@@ -2208,9 +2208,11 @@ try {
       results.sliderValueBefore = track ? track.value : null;
       if (play) play.click();
       await wait(1150);
-      results.sliderValueAfter = track ? track.value : null;
+      // Re-query: the playhead writes `value` back each tick, and a re-render
+      // rebuilds generated nodes — the contract is about the LIVE track.
+      results.sliderValueAfter = slider.querySelector(".c-time-slider__track")?.value ?? null;
       results.timeChanges = starts.length;
-      if (play) play.click();
+      slider.querySelector(".c-time-slider__play")?.click();
       // BY-27: resizable honours direction and moves a pane on a drag.
       const res = document.createElement("contour-resizable");
       res.setAttribute("direction", "vertical");
@@ -3009,6 +3011,92 @@ try {
       fail(`form participation contract broke (R20 T-01…T-08): ${bad.join(" | ")}`);
     else
       console.log("wc-contract: form participation measured — every form-associated control submits its value(s), preserves typed text across unrelated re-renders, resets to the authored default, and reports required validity");
+  }
+
+  // ---- 25. time-slider value/playback contract (R20 T-30) ------------------
+  //
+  // The slider played, but the user's hand was silent: scrubbing emitted
+  // nothing, `value` never wrote back, `is-playing` swapped only the icon,
+  // min/max were factory constants, and a mid-play speed change kept the old
+  // cadence. Each arm drives one of those paths and asserts the contract.
+  {
+    const p = await browser.newPage();
+    const errs = [];
+    p.on("pageerror", (e) => errs.push(String(e.message || e)));
+    await p.goto(`${origin}/unmin.html`, { waitUntil: "load" });
+    await p.waitForFunction(() => !!window.ContourElements, null, { timeout: 20000 });
+    const out = await p.evaluate(async () => {
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+      const host = document.createElement("contour-time-slider");
+      for (const [k, v] of Object.entries({ label: "Time", min: "0", max: "100", value: "3", speed: "10" })) host.setAttribute(k, v);
+      document.body.appendChild(host);
+      await wait(40);
+      const track = host.querySelector(".c-time-slider__track");
+      const r = { minMax: { min: track.min, max: track.max, value: track.value } };
+      // Manual scrub emits time-change and writes the playhead back.
+      const heard = [];
+      host.addEventListener("contour:time-change", (e) => heard.push(e.detail.value));
+      track.value = "7";
+      track.dispatchEvent(new Event("input", { bubbles: true }));
+      r.scrub = { attr: host.getAttribute("value"), heard: heard.slice(), readout: host.querySelector(".c-time-slider__time").textContent };
+      // Attribute-driven playback: is-playing starts the timer, removal stops.
+      const plays = [], pauses = [];
+      host.addEventListener("contour:play", () => plays.push(1));
+      host.addEventListener("contour:pause", () => pauses.push(1));
+      host.setAttribute("is-playing", "");
+      await wait(350);
+      const midPlay = { value: Number(host.getAttribute("value")), playing: host.hasAttribute("is-playing") };
+      host.removeAttribute("is-playing");
+      const afterStop = { value: Number(host.getAttribute("value")), pauses: pauses.length };
+      await wait(250);
+      afterStop.frozen = Number(host.getAttribute("value")) === afterStop.value;
+      r.playback = { plays: plays.length, midPlay, afterStop };
+      // The play button toggles the attribute (both directions).
+      host.querySelector(".c-time-slider__play").click();
+      r.clickPlay = host.hasAttribute("is-playing");
+      host.querySelector(".c-time-slider__play").click();
+      r.clickPause = !host.hasAttribute("is-playing");
+      // A speed change writes back and emits.
+      let speedHeard = null;
+      host.addEventListener("contour:speed-change", (e) => { speedHeard = e.detail.speed; });
+      const sel = host.querySelector(".c-time-slider__speed");
+      sel.value = "2";
+      sel.dispatchEvent(new Event("change", { bubbles: true }));
+      r.speed = { attr: host.getAttribute("speed"), heard: speedHeard };
+      // Disconnect stops the timer: the playhead freezes.
+      host.setAttribute("is-playing", "");
+      await wait(150);
+      const before = Number(host.getAttribute("value"));
+      host.remove();
+      await wait(300);
+      r.afterDetach = Number(host.getAttribute("value")) === before;
+      return r;
+    });
+    const bad = [];
+    const eq = (label, got, want) => {
+      const g = JSON.stringify(got), w = JSON.stringify(want);
+      if (g !== w) bad.push(`${label}: ${g} != ${w}`);
+    };
+    eq("min/max/value", out.minMax, { min: "0", max: "100", value: "3" });
+    eq("scrub writeback", out.scrub?.attr, "7");
+    eq("scrub event", out.scrub?.heard, ["7"]);
+    eq("scrub readout", out.scrub?.readout, "7");
+    if (out.playback?.plays !== 1) bad.push(`is-playing did not emit exactly one contour:play (${out.playback?.plays})`);
+    if (!(out.playback?.midPlay?.value > 3)) bad.push(`playback did not advance the value attribute: ${JSON.stringify(out.playback?.midPlay)}`);
+    if (out.playback?.midPlay?.playing !== true) bad.push("is-playing dropped mid-play");
+    if (!(out.playback?.afterStop?.pauses >= 1)) bad.push(`removing is-playing emitted no pause: ${JSON.stringify(out.playback?.afterStop)}`);
+    if (out.playback?.afterStop?.frozen !== true) bad.push("playhead kept moving after is-playing was removed");
+    if (out.clickPlay !== true) bad.push("play click did not set is-playing");
+    if (out.clickPause !== true) bad.push("second play click did not clear is-playing");
+    eq("speed writeback", out.speed?.attr, "2");
+    eq("speed event", out.speed?.heard, 2);
+    if (out.afterDetach !== true) bad.push("timer survived disconnect — the playhead moved after removal");
+    if (errs.length) bad.push(`page errors: ${errs.slice(0, 2).join(" | ")}`);
+    compared += 16;
+    if (bad.length)
+      fail(`time-slider contract broke (R20 T-30): ${bad.join(" | ")}`);
+    else
+      console.log("wc-contract: time-slider scrubs aloud, writes its playhead back, plays and pauses from the is-playing attribute, honours min/max and speed, and stops on disconnect");
   }
 } finally {
   await browser.close();

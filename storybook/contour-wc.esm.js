@@ -320,6 +320,8 @@
   //
   // Excluded because the render bodies below set them on the host:
   //   role, open, aria-label, aria-valuenow, aria-valuemin, aria-valuemax, tabindex
+  //   speed — the time-slider writes its committed speed back (R20 T-30);
+  //   both readers (time-slider, animation-controls) observe it per-class.
   // Adding one of those back to this list makes that component recurse.
   /** Shared attribute vocabulary used by components that opt into defaults. */
   export const OBSERVED = [
@@ -328,7 +330,7 @@
     "empty", "exclusive", "fallback", "filename", "format", "heading", "help", "hint", "href", "icon", "illustration", "instrument", "interval", "items", "key", "layers", "level", "range-end", "range-start",
     "label", "labels", "lazy", "lede", "legend", "left-label", "right-label", "line", "limit", "link", "links", "live", "loading", "locale", "loop", "max", "media", "message", "method", "methodology", "menu", "min", "multiple", "name", "needle", "next", "no", "no-cache", "no-data-message", "nodes", "note", "norm", "normalize",
     "options", "orientation", "page-size", "pages", "pause", "paused", "pausable", "persist", "placeholder", "playing", "point", "points", "prev", "presets", "progress", "prompt", "question", "recent", "required",
-    "quote", "ramp", "refresh", "removable", "resolution", "reverse", "rings", "retry", "results", "rows", "scale", "selectable", "segments", "show-header", "sparkline", "threshold", "thresholds", "selected", "separator", "series", "shortcut", "side", "size", "skeleton", "sort", "sort-dir", "speed", "status", "step", "submit", "submitting", "timeout", "trigger", "virtual", "sticky", "cluster-count", "cluster-expanded", "time", "resizable",
+    "quote", "ramp", "refresh", "removable", "resolution", "reverse", "rings", "retry", "results", "rows", "scale", "selectable", "segments", "show-header", "sparkline", "threshold", "thresholds", "selected", "separator", "series", "shortcut", "side", "size", "skeleton", "sort", "sort-dir", "status", "step", "submit", "submitting", "timeout", "trigger", "virtual", "sticky", "cluster-count", "cluster-expanded", "time", "resizable",
     "state", "steps", "style", "subtitle", "summary", "src", "source", "table", "tabs", "tag", "text", "ticks",     "title", "type", "unread-only", "unit", "updated", "cluster-items", "row-height",
     "variant", "values", "viewport", "warning", "yes", "zoomable", "x", "y",
     "caption", "current-time", "is-playing", "loop-label",     "no-data-color", "no-data-label", "property", "show-loop", "show-thumb", "show-thumb-caption", "speeds", "item-height", "pause-label", "play-label", "speed-label", "time-label", "shimmer",
@@ -13497,8 +13499,8 @@ class ContourLayerPanel extends ContourBase {
   }
 define("contour-layer-panel", ContourLayerPanel);
 class ContourTimeSlider extends ContourBase {
-    static get observed() { return ["label", "value", "loop", "speed", "speeds", "show-loop", "loop-label", "current-time", "time-format", "is-playing", "play-label", "pause-label", "time-label", "speed-label"]; }
-    static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" }, distance: { attribute: "distance" }, resolution: { attribute: "resolution" }, latitude: { attribute: "latitude" }, src: { attribute: "src" }, loop: { attribute: "loop", type: Boolean }, speed: { attribute: "speed" }, speeds: { attribute: "speeds" }, showLoop: { attribute: "show-loop", type: Boolean }, loopLabel: { attribute: "loop-label" }, currentTime: { attribute: "current-time" }, timeFormat: { attribute: "time-format" }, isPlaying: { attribute: "is-playing", type: Boolean }, playLabel: { attribute: "play-label" }, pauseLabel: { attribute: "pause-label" }, timeLabel: { attribute: "time-label" }, speedLabel: { attribute: "speed-label" } }; }
+    static get observed() { return ["label", "value", "min", "max", "loop", "speed", "speeds", "show-loop", "loop-label", "current-time", "time-format", "is-playing", "play-label", "pause-label", "time-label", "speed-label"]; }
+    static get properties() { return { label: { attribute: "label" }, value: { attribute: "value" }, min: { attribute: "min" }, max: { attribute: "max" }, distance: { attribute: "distance" }, resolution: { attribute: "resolution" }, latitude: { attribute: "latitude" }, src: { attribute: "src" }, loop: { attribute: "loop", type: Boolean }, speed: { attribute: "speed" }, speeds: { attribute: "speeds" }, showLoop: { attribute: "show-loop", type: Boolean }, loopLabel: { attribute: "loop-label" }, currentTime: { attribute: "current-time" }, timeFormat: { attribute: "time-format" }, isPlaying: { attribute: "is-playing", type: Boolean }, playLabel: { attribute: "play-label" }, pauseLabel: { attribute: "pause-label" }, timeLabel: { attribute: "time-label" }, speedLabel: { attribute: "speed-label" } }; }
     render() {
       this.classList.add("c-time-slider");
       if (!this.hasAttribute("role")) this.setAttribute("role", "group");
@@ -13518,6 +13520,10 @@ class ContourTimeSlider extends ContourBase {
         return el;
       });
       const track = this.ensure(".c-time-slider__track", () => { const el = document.createElement("input"); el.className = "c-time-slider__track"; el.type = "range"; el.min = "0"; el.max = "100"; el.setAttribute("part", "input"); el.setAttribute("aria-label", this.getAttribute("time-label") || "Time"); return el; });
+      // min/max are attributes, not factory constants (R20 T-30): the guide's
+      // own 17d snippet passes them and they used to be ignored.
+      track.min = this.getAttribute("min") || "0";
+      track.max = this.getAttribute("max") || "100";
       const _attrVal = this.getAttribute("value") || "0";
       if (this._timeSliderAttrLast !== _attrVal) {
         track.value = _attrVal;
@@ -13526,7 +13532,9 @@ class ContourTimeSlider extends ContourBase {
       track.setAttribute("aria-label", this.getAttribute("label") || this.getAttribute("time-label") || "Time");
       const time = this.ensure(".c-time-slider__time", () => { const el = document.createElement("span"); el.className = "c-time-slider__time"; return el; });
       const ct = this.getAttribute("current-time");
-      time.textContent = ct ? ct : (this.getAttribute("label") || "");
+      time.textContent = ct ? ct : String(track.value);
+      if (ct) track.setAttribute("aria-valuetext", ct);
+      else track.removeAttribute("aria-valuetext");
       // speed selector
       let speeds = null;
       const speedsAttr = this.getAttribute("speeds");
@@ -13553,64 +13561,82 @@ class ContourTimeSlider extends ContourBase {
         const lb = this.querySelector(".c-time-slider__loop");
         if (lb) lb.remove();
       }
-      // is-playing reflects on play button
-      if (this.hasAttribute("is-playing")) {
-        play.setAttribute("data-state", "pause");
-        play.setAttribute("aria-label", this.getAttribute("pause-label") || "Pause");
-        const use = play.querySelector("use");
-        if (use) use.setAttribute("href", "#i-pause");
-      }
+      // is-playing reflects on play button, both directions (R20 T-30).
+      const playing = this.hasAttribute("is-playing");
+      play.setAttribute("data-state", playing ? "pause" : "play");
+      play.setAttribute("aria-label", playing ? (this.getAttribute("pause-label") || "Pause") : (this.getAttribute("play-label") || "Play"));
+      const use = play.querySelector("use");
+      if (use) use.setAttribute("href", playing ? "#i-pause" : "#i-play");
     }
     enhance() {
+      // Playback reconciles with the is-playing attribute on EVERY render
+      // (R20 T-30): setting the attribute from outside starts the timer and
+      // removing it stops — it used to swap only the icon, contradicting the
+      // attribute-driven playback prose. The reconciler owns the play/pause
+      // events so every path (click, attribute, end-of-track) emits once.
+      if (this._timeSliderReconcile) this._timeSliderReconcile();
       if (this._wiredTimeSlider) return;
       this._wiredTimeSlider = true;
-      // Play advances the track one step per second and announces each move as
-      // contour:time-change, so a dashboard can animate a chart in lockstep.
+      // Play advances the track one step per cadence and announces each move
+      // as contour:time-change, so a dashboard can animate a chart in lockstep.
       // The loop stops at max, or on a second click, or when the host leaves
       // the page (the disposer is registered once, like the loader's).
       let timer = undefined;
       const stop = () => { if (timer !== undefined) { clearInterval(timer); timer = undefined; } };
+      const syncReadout = () => {
+        const track = this.querySelector(".c-time-slider__track");
+        if (!track) return;
+        const time = this.querySelector(".c-time-slider__time");
+        const ct = this.getAttribute("current-time");
+        if (time) time.textContent = ct ? ct : String(track.value);
+        if (ct) track.setAttribute("aria-valuetext", ct);
+        else track.removeAttribute("aria-valuetext");
+      };
       const step = () => {
         const track = this.querySelector(".c-time-slider__track");
         if (!track) { stop(); return; }
         const max = Number(track.max) || 100;
+        const min = Number(track.min) || 0;
         const loop = this.hasAttribute("loop");
         let next = (Number(track.value) || 0) + 1;
-        if (next > max) {
-          if (loop) next = 0;
-          else next = max;
-        }
+        if (next > max) next = loop ? min : max;
         track.value = String(next);
+        // The playhead writes back so a consumer reading `value` sees it —
+        // but not while the user is mid-gesture: the write re-renders, and a
+        // rebuilt node would break a track drag or close an open speed popup.
+        // The next tick after the gesture ends catches the attribute up.
+        const speedSel = this.querySelector(".c-time-slider__speed");
+        const interacting = this._timeSliderScrubbing || (speedSel && document.activeElement === speedSel);
+        if (!interacting) this.setAttribute("value", String(next));
+        syncReadout();
         this.dispatchEvent(new CustomEvent("contour:time-change", { detail: { value: String(next) }, bubbles: true, composed: true }));
         if (!loop && next >= max) {
           stop();
-          const btn = this.querySelector(".c-time-slider__play");
-          if (btn) {
-            btn.setAttribute("data-state", "play");
-            btn.setAttribute("aria-label", this.getAttribute("play-label") || "Play");
-            const use = btn.querySelector("use");
-            if (use) use.setAttribute("href", "#i-play");
-          }
+          this.removeAttribute("is-playing");
+          this.dispatchEvent(new CustomEvent("contour:pause", { bubbles: true, composed: true }));
+        }
+      };
+      const start = () => {
+        stop();
+        const speed = parseFloat(this.getAttribute("speed") || "1") || 1;
+        timer = setInterval(step, Math.max(100, 1000 / speed));
+      };
+      this._timeSliderReconcile = () => {
+        const want = this.hasAttribute("is-playing");
+        if (want && timer === undefined) {
+          start();
+          this.dispatchEvent(new CustomEvent("contour:play", { bubbles: true, composed: true }));
+        } else if (!want && timer !== undefined) {
+          stop();
+          this.dispatchEvent(new CustomEvent("contour:pause", { bubbles: true, composed: true }));
         }
       };
       this.addEventListener("click", (e) => {
         const btn = e.target && e.target.closest ? e.target.closest(".c-time-slider__play") : null;
         if (btn) {
-          const playing = btn.getAttribute("data-state") === "play";
-          btn.setAttribute("data-state", playing ? "pause" : "play");
-          btn.setAttribute("aria-label", playing ? (this.getAttribute("pause-label") || "Pause") : (this.getAttribute("play-label") || "Play"));
-          const use = btn.querySelector("use");
-          if (use) use.setAttribute("href", playing ? "#i-pause" : "#i-play");
-          if (playing) {
-            stop();
-            const speed = parseFloat(this.getAttribute("speed") || "1") || 1;
-            const delay = Math.max(100, 1000 / speed);
-            timer = setInterval(step, delay);
-            this.dispatchEvent(new CustomEvent("contour:play", { bubbles: true, composed: true }));
-          } else {
-            stop();
-            this.dispatchEvent(new CustomEvent("contour:pause", { bubbles: true, composed: true }));
-          }
+          // The attribute is the source of truth: toggling it re-renders the
+          // icon and the reconciler starts/stops the timer and emits.
+          this.toggleAttribute("is-playing", !this.hasAttribute("is-playing"));
           return;
         }
         const loopBtn = e.target && e.target.closest ? e.target.closest(".c-time-slider__loop") : null;
@@ -13621,18 +13647,49 @@ class ContourTimeSlider extends ContourBase {
           this.dispatchEvent(new CustomEvent("contour:loop-change", { detail: { loop: next }, bubbles: true, composed: true }));
         }
       });
-      // speed select change (delegated)
+      // Manual scrubbing is a first-class input (R20 T-30): it emits the same
+      // contour:time-change playback does and writes the playhead back. The
+      // track used to be silent under the user's hand.
+      // Track the drag so playhead writeback never rebuilds the node under
+      // the user's pointer; the commit (change) writes the value back.
+      this.addEventListener("pointerdown", (e) => {
+        if (e.target && e.target.closest && e.target.closest(".c-time-slider__track")) this._timeSliderScrubbing = true;
+      }, { passive: true });
+      const endScrub = () => { this._timeSliderScrubbing = false; };
+      this.addEventListener("pointerup", endScrub, { passive: true });
+      this.addEventListener("pointercancel", endScrub, { passive: true });
+      this.addEventListener("input", (e) => {
+        const track = e.target && e.target.closest ? e.target.closest(".c-time-slider__track") : null;
+        if (!track) return;
+        if (!this._timeSliderScrubbing) this.setAttribute("value", track.value);
+        syncReadout();
+        this.dispatchEvent(new CustomEvent("contour:time-change", { detail: { value: track.value }, bubbles: true, composed: true }));
+      });
       this.addEventListener("change", (e) => {
         const sel = e.target && e.target.closest ? e.target.closest(".c-time-slider__speed") : null;
-        if (!sel) return;
-        const speed = Number(sel.value);
-        this.dispatchEvent(new CustomEvent("contour:speed-change", { detail: { speed }, bubbles: true, composed: true }));
+        if (sel) {
+          const speed = Number(sel.value);
+          this.setAttribute("speed", String(speed));
+          // A speed change mid-play restarts the interval at the new cadence.
+          if (timer !== undefined) start();
+          this.dispatchEvent(new CustomEvent("contour:speed-change", { detail: { speed }, bubbles: true, composed: true }));
+          return;
+        }
+        const track = e.target && e.target.closest ? e.target.closest(".c-time-slider__track") : null;
+        if (track) {
+          this.setAttribute("value", track.value);
+          syncReadout();
+        }
       });
       onDispose(this, stop);
+      this._timeSliderReconcile();
     }
     disconnectedCallback() {
       super.disconnectedCallback();
       this._wiredTimeSlider = false;
+      // Drop the stale closure too: a reconnect re-wires, and the old
+      // reconciler would start a second timer over the new one.
+      this._timeSliderReconcile = null;
     }
   }
   define("contour-time-slider", ContourTimeSlider);

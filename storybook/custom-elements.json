@@ -24831,6 +24831,20 @@
               "description": "Attribute for c-time-slider."
             },
             {
+              "name": "max",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-time-slider."
+            },
+            {
+              "name": "min",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-time-slider."
+            },
+            {
               "name": "pause-label",
               "type": {
                 "text": "string"
@@ -24934,6 +24948,22 @@
                 "text": "string | null"
               },
               "attribute": "loop-label"
+            },
+            {
+              "kind": "field",
+              "name": "max",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "max"
+            },
+            {
+              "kind": "field",
+              "name": "min",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "min"
             },
             {
               "kind": "field",

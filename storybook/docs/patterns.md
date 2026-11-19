@@ -22,7 +22,7 @@ Selecting a row highlights the corresponding map feature and vice versa.
 
 A time slider drives a chart; stale data is badged.
 
-A layer panel controls map-area slots.
+A layer panel emits contour:layer-* events; the consumer's adapter applies them to the engine attached through the map-area seam. The panel never touches the engine itself.
 
 A docs shell with URL-synced section state.
 
@@ -67,4 +67,4 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `6b941dedb90eb77c` · last committed 2026-11-13T09:07:47+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `300a1da66e1a6667` · last committed 2026-11-19T09:20:07+01:00 · no URL: the project is private until v1.0.

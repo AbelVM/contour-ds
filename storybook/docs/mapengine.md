@@ -20,7 +20,7 @@ Contract (R16-26): a table row carries its identity in data-row (JSON row data) 
 
 Contract (R16-27): time-series components expose playback state (current-time, is-playing, speeds) and emit contour:step-change / contour:step-activate on navigation. libreship drives playback by setting attributes; Contour announces state changes.
 
-Contract (R16-28): the layer panel owns layer visibility, order, and styling; the map adapter (Contour's contour-map-area) owns the engine bridge. The panel never touches the engine directly — it sets attributes on contour-map-area, which forwards to the live engine instance via attachMap().
+Contract (R16-28): the layer panel owns layer visibility, order, and styling; the map adapter (Contour's contour-map-area) owns the engine bridge. The panel never touches the engine directly — it emits contour:layer-* events, and the consumer's adapter applies them to the live engine instance attached via attachMap().
 
 Contract (R16-29): every chart and map component offers an opt-in accessible data table via data-table. The graphic remains the primary presentation (role="img"); the visually-hidden table carries the same data for screen readers and no-JS consumers.
 
@@ -50,4 +50,4 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `6b941dedb90eb77c` · last committed 2026-11-13T09:07:47+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `300a1da66e1a6667` · last committed 2026-11-19T09:20:07+01:00 · no URL: the project is private until v1.0.
