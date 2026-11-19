@@ -9,7 +9,8 @@ import "../dist/wc/misc.mjs";
 export default {
   title: "Contour/Workflows/Dashboard",
   tags: ["autodocs"],
-  parameters: { contour: { maturity: "composition" } },
+  parameters: {
+    a11y: { test: "error" }, contour: { maturity: "composition" } },
 };
 
 export const Default = {

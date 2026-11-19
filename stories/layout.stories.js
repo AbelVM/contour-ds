@@ -4,7 +4,8 @@ import "../dist/wc/layout.mjs";
 export default {
   title: "Contour/Layout/Primitives",
   tags: ["autodocs"],
-  parameters: { contour: { maturity: "primitive" } },
+  parameters: {
+    a11y: { test: "error" }, contour: { maturity: "primitive" } },
 };
 
 const wrap = (tag, label) => {

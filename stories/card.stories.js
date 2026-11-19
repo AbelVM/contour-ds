@@ -4,7 +4,8 @@ import "../dist/wc/content.mjs";
 export default {
   title: "Contour/Content/Card",
   tags: ["autodocs"],
-  parameters: { contour: { maturity: "complete-widget" } },
+  parameters: {
+    a11y: { test: "error" }, contour: { maturity: "complete-widget" } },
   argTypes: {
     title: { control: "text" },
     variant: { control: "text" },

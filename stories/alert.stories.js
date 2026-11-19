@@ -5,7 +5,8 @@ import { booleanControls, variantControl } from "./metadata.js";
 export default {
   title: "Contour/Feedback/Alert",
   tags: ["autodocs"],
-  parameters: { contour: { maturity: "complete-widget" } },
+  parameters: {
+    a11y: { test: "error" }, contour: { maturity: "complete-widget" } },
   argTypes: {
     ...booleanControls("c-alert"),
     title: { control: "text" },

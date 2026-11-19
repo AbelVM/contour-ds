@@ -4,7 +4,8 @@ import "../dist/wc/ui.mjs";
 export default {
   title: "Contour/Forms/DatePicker",
   tags: ["autodocs"],
-  parameters: { contour: { maturity: "complete-widget" } },
+  parameters: {
+    a11y: { test: "error" }, contour: { maturity: "complete-widget" } },
   argTypes: {
     label: { control: "text" },
     value: { control: "text" },

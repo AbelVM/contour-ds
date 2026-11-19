@@ -7,7 +7,8 @@ import "../dist/wc/feedback.mjs";
 export default {
   title: "Contour/Compositions/WorkspaceShell",
   tags: ["autodocs"],
-  parameters: { contour: { maturity: "composition" } },
+  parameters: {
+    a11y: { test: "error" }, contour: { maturity: "composition" } },
 };
 
 export const DockWorkspaceShell = {

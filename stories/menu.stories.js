@@ -6,6 +6,7 @@ export default {
   title: "Contour/Navigation/Menu",
   tags: ["autodocs"],
   parameters: {
+    a11y: { test: "error" },
     contour: { maturity: "complete-widget" },
   },
   argTypes: {

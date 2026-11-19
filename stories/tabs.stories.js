@@ -5,7 +5,8 @@ import { booleanControls } from "./metadata.js";
 export default {
   title: "Contour/Navigation/Tabs",
   tags: ["autodocs"],
-  parameters: { contour: { maturity: "complete-widget" } },
+  parameters: {
+    a11y: { test: "error" }, contour: { maturity: "complete-widget" } },
   argTypes: {
     ...booleanControls("c-tabs"),
     tabs: { control: "text" },

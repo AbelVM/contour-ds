@@ -4,7 +4,8 @@ import "../dist/wc/map.mjs";
 export default {
   title: "Contour/Map/LayerSwitch",
   tags: ["autodocs"],
-  parameters: { contour: { maturity: "complete-widget" } },
+  parameters: {
+    a11y: { test: "error" }, contour: { maturity: "complete-widget" } },
   argTypes: {
     items: { control: "text" },
   },

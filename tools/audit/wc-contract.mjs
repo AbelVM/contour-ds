@@ -3753,6 +3753,195 @@ try {
     else
       console.log("wc-contract: side-sheet honours mode/side/size with focus return, tour advances itself and remembers completion, notification-center activates by keyboard, tracks unread, archives, errors aloud and pages its list");
   }
+
+  // ---- 29. palette/tools quartet (R20 T-12 panel, T-15, T-18, T-25) --------
+  //
+  // command-palette's open attribute/groups/recents/return value, palette-
+  // editor's edit/add/remove serialization and contrast readout, style-panel's
+  // localized actions and real Revert, pull-to-refresh's visible gesture and
+  // consumer-driven completion.
+  {
+    const p = await browser.newPage();
+    const errs = [];
+    p.on("pageerror", (e) => errs.push(String(e.message || e)));
+    await p.goto(`${origin}/unmin.html`, { waitUntil: "load" });
+    await p.waitForFunction(() => !!window.ContourElements, null, { timeout: 20000 });
+    const out = await p.evaluate(async () => {
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+      const mk = async (tag, attrs = {}) => {
+        const el = document.createElement(tag);
+        for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+        document.body.appendChild(el);
+        await wait(30);
+        return el;
+      };
+      const results = {};
+
+      // command-palette
+      {
+        const items = '[{"label":"Zoom in","group":"Map"},{"label":"Zoom out","group":"Map"},{"label":"Export","group":"Data"}]';
+        const el = await mk("contour-command-palette", { id: "cmd29", items });
+        const r = {};
+        let opens = 0, sel = null;
+        el.addEventListener("contour:open", () => opens++);
+        el.addEventListener("contour:select", (e) => { sel = e.detail; });
+        el.setAttribute("open", "");
+        await wait(40);
+        r.openAttr = { open: el.classList.contains("is-open") || el.matches(":popover-open"), events: opens, groups: el.querySelectorAll(".c-command-palette__group").length };
+        const search = el.querySelector(".c-command-palette__search");
+        const vis = () => Array.from(el.querySelectorAll(".c-command-palette__item")).filter((i) => !i.hidden);
+        search.value = "zoom";
+        search.dispatchEvent(new Event("input", { bubbles: true }));
+        r.filter = { visible: vis().length, dataHeaderHidden: Array.from(el.querySelectorAll(".c-command-palette__group")).find((g) => g.textContent === "Data")?.hidden };
+        search.value = "zzz";
+        search.dispatchEvent(new Event("input", { bubbles: true }));
+        r.noResults = !!el.querySelector('.c-command-palette__empty[role="status"]');
+        search.value = "";
+        search.dispatchEvent(new Event("input", { bubbles: true }));
+        search.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true, cancelable: true }));
+        search.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
+        await wait(40);
+        r.select = { ev: sel, value: el.value, closed: !(el.classList.contains("is-open") || el.matches(":popover-open")) };
+        el.show();
+        await wait(40);
+        r.recents = Array.from(el.querySelectorAll('.c-command-palette__item[data-recent="true"]')).map((i) => i.dataset.label);
+        // The typed query survives an items re-render.
+        const s2 = el.querySelector(".c-command-palette__search");
+        s2.value = "zo";
+        s2.dispatchEvent(new Event("input", { bubbles: true }));
+        el.setAttribute("items", '[{"label":"Zoom in","group":"Map"}, {"label":"Zoom out","group":"Map"}, {"label":"Export","group":"Data"}]');
+        await wait(30);
+        r.querySurvives = el.querySelector(".c-command-palette__search").value;
+        el.removeAttribute("open");
+        await wait(40);
+        r.closeAttr = !(el.classList.contains("is-open") || el.matches(":popover-open"));
+        results.cmd = r;
+        el.remove();
+        try { localStorage.removeItem("contour-command-palette:cmd29:recents"); } catch (e) {}
+      }
+
+      // palette-editor
+      {
+        const el = await mk("contour-palette-editor", { colors: '["#ff0000","#00ff00"]' });
+        const r = { parts: { swatches: el.querySelectorAll(".c-palette-editor__swatch").length, edits: el.querySelectorAll(".c-palette-editor__edit").length, removes: el.querySelectorAll(".c-palette-editor__remove").length, add: !!el.querySelector(".c-palette-editor__add") } };
+        let change = null, removed = null, added = null;
+        el.addEventListener("contour:change", (e) => { change = e.detail; });
+        el.addEventListener("contour:remove", (e) => { removed = e.detail; });
+        el.addEventListener("contour:add", (e) => { added = e.detail; });
+        el.querySelectorAll(".c-palette-editor__swatch")[0].click();
+        await wait(30);
+        r.select = { selected: el.querySelector(".c-palette-editor__swatch").classList.contains("is-selected"), contrast: /on white/.test(el.querySelector(".c-palette-editor__contrast")?.textContent || ""), ev: change };
+        const edit = el.querySelectorAll(".c-palette-editor__edit")[0];
+        edit.value = "#0000ff";
+        edit.dispatchEvent(new Event("change", { bubbles: true }));
+        await wait(30);
+        r.edit = { colors: el.getAttribute("colors"), ev: change };
+        el.querySelectorAll(".c-palette-editor__remove")[1].click();
+        await wait(30);
+        r.remove = { count: JSON.parse(el.getAttribute("colors")).length, ev: removed };
+        el.querySelector(".c-palette-editor__add").click();
+        await wait(30);
+        r.add = { count: JSON.parse(el.getAttribute("colors")).length, ev: added };
+        results.palette = r;
+        el.remove();
+      }
+
+      // style-panel: localized Apply still applies; Revert restores defaults.
+      {
+        const el = await mk("contour-style-panel", { single: "", layer: "Roads", property: "speed", classification: "equal", palette: "viridis", n: "4", colors: '["#111111","#222222"]', labels: '{"apply":"Appliquer","revert":"Revenir"}' });
+        const r = {};
+        let resolved = null;
+        el.addEventListener("contour:style-resolved", (e) => { resolved = e.detail; });
+        const applyBtn = Array.from(el.querySelectorAll("button")).find((b) => b.textContent === "Appliquer");
+        r.localized = !!applyBtn;
+        applyBtn?.click();
+        r.apply = resolved;
+        const prop = el.querySelector(".c-style-panel__property");
+        prop.value = "flow";
+        prop.dispatchEvent(new Event("change", { bubbles: true }));
+        const revertBtn = Array.from(el.querySelectorAll("button")).find((b) => b.textContent === "Revenir");
+        revertBtn?.click();
+        await wait(30);
+        r.revert = { attr: el.getAttribute("property"), shown: el.querySelector(".c-style-panel__property")?.value, ev: resolved };
+        results.stylePanel = r;
+        el.remove();
+      }
+
+      // pull-to-refresh: the gesture is visible, completion is consumer-driven.
+      {
+        const el = await mk("contour-pull-to-refresh", { threshold: "50" });
+        const content = document.createElement("div");
+        content.textContent = "content";
+        el.appendChild(content);
+        const r = {};
+        let refreshes = 0, errorEv = null;
+        el.addEventListener("contour:refresh", () => refreshes++);
+        el.addEventListener("contour:error", (e) => { errorEv = e.detail; });
+        const ind = () => el.querySelector(".c-pull-to-refresh__indicator");
+        const opts = { bubbles: true, clientY: 100, pointerId: 11 };
+        el.dispatchEvent(new PointerEvent("pointerdown", opts));
+        el.dispatchEvent(new PointerEvent("pointermove", { ...opts, clientY: 200 }));
+        r.pullOffset = el.style.getPropertyValue("--ptr-offset");
+        r.pullTransform = getComputedStyle(ind()).transform;
+        el.dispatchEvent(new PointerEvent("pointerup", { ...opts, clientY: 200 }));
+        await wait(40);
+        r.pull = { refreshes, refreshing: el.classList.contains("is-refreshing"), busy: el.getAttribute("aria-busy"), text: ind().textContent.includes("Refreshing") };
+        el.complete();
+        await wait(40);
+        r.complete = { refreshing: el.classList.contains("is-refreshing"), busy: el.getAttribute("aria-busy") };
+        el.fail("Boom");
+        await wait(40);
+        r.fail = { hasError: el.classList.contains("has-error"), text: ind().textContent.includes("Boom"), ev: errorEv };
+        el.querySelector(".c-pull-to-refresh__btn").click();
+        await wait(40);
+        r.btn = { refreshes, errorCleared: !el.classList.contains("has-error") };
+        el.complete();
+        await wait(40);
+        r.idleText = ind().textContent.includes("Pull to refresh");
+        results.ptr = r;
+        el.remove();
+      }
+      return results;
+    });
+    const bad = [];
+    const eq = (label, got, want) => {
+      const g = JSON.stringify(got), w = JSON.stringify(want);
+      if (g !== w) bad.push(`${label}: ${g} != ${w}`);
+    };
+    // command-palette
+    eq("palette open attribute", out.cmd?.openAttr, { open: true, events: 1, groups: 2 });
+    eq("palette filter", out.cmd?.filter, { visible: 2, dataHeaderHidden: true });
+    if (out.cmd?.noResults !== true) bad.push("no-results state missing");
+    eq("palette select", out.cmd?.select, { ev: { index: 1, label: "Zoom out" }, value: { index: 1, label: "Zoom out" }, closed: true });
+    eq("palette recents", out.cmd?.recents, ["Zoom out"]);
+    eq("palette query survives", out.cmd?.querySurvives, "zo");
+    if (out.cmd?.closeAttr !== true) bad.push("removing open did not close the palette");
+    // palette-editor
+    eq("editor parts", out.palette?.parts, { swatches: 2, edits: 2, removes: 2, add: true });
+    eq("editor select", out.palette?.select, { selected: true, contrast: true, ev: { color: "#ff0000" } });
+    if (!String(out.palette?.edit?.colors).includes("#0000ff")) bad.push(`edit did not write colors back: ${out.palette?.edit?.colors}`);
+    if (out.palette?.edit?.ev?.color !== "#0000ff" || !Array.isArray(out.palette?.edit?.ev?.values)) bad.push(`edit event: ${JSON.stringify(out.palette?.edit?.ev)}`);
+    eq("editor remove", out.palette?.remove, { count: 1, ev: { value: "#00ff00" } });
+    if (out.palette?.add?.count !== 2 || out.palette?.add?.ev?.value !== "#888888") bad.push(`editor add: ${JSON.stringify(out.palette?.add)}`);
+    // style-panel
+    if (out.stylePanel?.localized !== true) bad.push("localized Apply button not rendered");
+    if (out.stylePanel?.apply?.applied !== true || out.stylePanel?.apply?.property !== "speed" || out.stylePanel?.apply?.n !== 4) bad.push(`localized Apply payload: ${JSON.stringify(out.stylePanel?.apply)}`);
+    eq("panel revert", out.stylePanel?.revert, { attr: "speed", shown: "speed", ev: { applied: false } });
+    // pull-to-refresh
+    eq("ptr offset", out.ptr?.pullOffset, "60px");
+    if (!out.ptr?.pullTransform || out.ptr?.pullTransform === "none") bad.push(`indicator transform ignores --ptr-offset: ${out.ptr?.pullTransform}`);
+    eq("ptr pull", out.ptr?.pull, { refreshes: 1, refreshing: true, busy: "true", text: true });
+    eq("ptr complete", out.ptr?.complete, { refreshing: false, busy: "false" });
+    eq("ptr fail", out.ptr?.fail, { hasError: true, text: true, ev: { message: "Boom" } });
+    eq("ptr button", out.ptr?.btn, { refreshes: 2, errorCleared: true });
+    if (out.ptr?.idleText !== true) bad.push("idle label not restored after complete");
+    if (errs.length) bad.push(`page errors: ${errs.slice(0, 2).join(" | ")}`);
+    compared += 23;
+    if (bad.length)
+      fail(`palette/tools quartet broke (R20 T-12/15/18/25): ${bad.join(" | ")}`);
+    else
+      console.log("wc-contract: command-palette opens from its attribute with groups/recents/return value, palette-editor serializes edits with contrast feedback, style-panel's localized actions apply and revert for real, pull-to-refresh is visible and completes on the consumer's call");
+  }
 } finally {
   await browser.close();
   server.close();

@@ -4,7 +4,8 @@ import "../dist/wc/forms.mjs";
 export default {
   title: "Contour/Forms/Form",
   tags: ["autodocs"],
-  parameters: { contour: { maturity: "complete-widget" } },
+  parameters: {
+    a11y: { test: "error" }, contour: { maturity: "complete-widget" } },
   argTypes: {
     "submit-label": { control: "text" },
     submitting: { control: "boolean" },

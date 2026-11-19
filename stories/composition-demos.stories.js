@@ -9,7 +9,8 @@ import "../dist/wc/layout.mjs";
 export default {
   title: "Contour/Compositions/RealWorldDemos",
   tags: ["autodocs"],
-  parameters: { contour: { maturity: "composition" } },
+  parameters: {
+    a11y: { test: "error" }, contour: { maturity: "composition" } },
 };
 
 export const SpatialDashboardDemo = {

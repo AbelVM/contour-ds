@@ -4027,15 +4027,42 @@
     display: block;
     overflow: hidden;
     contain: layout;
+    position: relative;
   }
+  /* The indicator rides the pull offset (R20 T-25): --ptr-offset had no
+     consumer at all, so the gesture was visually inert. It hides above the
+     content, slides in with the pull, and stays while refreshing or errored.
+     focus-within keeps the keyboard refresh button reachable. */
   .c-pull-to-refresh__indicator {
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0;
     display: inline-flex;
     align-items: center;
     gap: calc(0.3rem * var(--density, 1));
     padding: calc(var(--space-xs) * var(--density, 1));
     font-size: var(--type-xs);
     color: var(--color-text-subtle);
+    transform: translateY(calc(-100% + var(--ptr-offset, 0px)));
     transition: transform var(--dur-fast) var(--ease-standard);
+  }
+  .c-pull-to-refresh__indicator:focus-within,
+  .c-pull-to-refresh.is-refreshing .c-pull-to-refresh__indicator,
+  .c-pull-to-refresh.has-error .c-pull-to-refresh__indicator {
+    transform: translateY(0);
+  }
+  .c-pull-to-refresh.is-refreshing .c-pull-to-refresh__indicator { color: var(--color-text); }
+  .c-pull-to-refresh.has-error .c-pull-to-refresh__indicator { color: var(--color-danger, var(--color-text)); }
+  .c-pull-to-refresh__btn {
+    border: 0;
+    background: none;
+    color: var(--color-link);
+    cursor: pointer;
+    font-size: var(--type-xs);
+    text-decoration: underline;
+  }
+  .c-pull-to-refresh__label {
+    /* inherits the indicator's type and colour */
   }
 
   /* =======================================================================
@@ -5318,6 +5345,31 @@
     border: 1px solid var(--color-border);
     cursor: pointer;
   }
+  /* Editor controls (R20 T-15): the native color input is the edit surface,
+     add/remove are plain controls, and the contrast readout names the ratio. */
+  .c-palette-editor__edit {
+    inline-size: calc(1.5rem * var(--density, 1));
+    block-size: calc(1.5rem * var(--density, 1));
+    padding: 0;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: none;
+    cursor: pointer;
+  }
+  .c-palette-editor__remove,
+  .c-palette-editor__add {
+    border: 0;
+    background: none;
+    color: var(--color-text-subtle);
+    cursor: pointer;
+    line-height: 1;
+    font-size: var(--type-sm);
+  }
+  .c-palette-editor__contrast {
+    inline-size: 100%;
+    font-size: var(--type-xs);
+    color: var(--color-text-muted);
+  }
   .c-status-light {
     display: inline-flex;
     flex-wrap: wrap;
@@ -5637,6 +5689,8 @@
   .c-command-palette__list {     max-block-size: calc(16rem * var(--density, 1)); overflow: auto; }
   .c-command-palette__item { padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1)); cursor: pointer; font-size: var(--type-sm); }
   .c-command-palette__item.is-active { background: var(--color-primary-soft); color: var(--color-primary-text); }
+  .c-command-palette__group { padding: calc(var(--space-2xs) * var(--density, 1)) calc(var(--space-xs) * var(--density, 1)); font-size: var(--type-xs); font-weight: var(--weight-semibold, 600); color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+  .c-command-palette__empty { padding: calc(var(--space-xs) * var(--density, 1)); font-size: var(--type-sm); color: var(--color-text-subtle); }
   /* -- Badge overflow ---------------------------------------------------- */
   .c-badge-overflow { display: inline-flex; }
   /* -- Side sheet -------------------------------------------------------- */

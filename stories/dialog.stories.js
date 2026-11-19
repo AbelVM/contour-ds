@@ -8,7 +8,8 @@ export default {
     title: { control: "text" },
     size: { control: "text" },
   },
-  parameters: { contour: { maturity: "complete-widget" } },
+  parameters: {
+    a11y: { test: "error" }, contour: { maturity: "complete-widget" } },
 };
 
 export const Default = {

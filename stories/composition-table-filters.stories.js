@@ -5,7 +5,8 @@ import "../dist/wc/forms.mjs";
 export default {
   title: "Contour/Compositions/TableFilters",
   tags: ["autodocs"],
-  parameters: { contour: { maturity: "composition" } },
+  parameters: {
+    a11y: { test: "error" }, contour: { maturity: "composition" } },
 };
 
 export const TableWithFilterBar = {

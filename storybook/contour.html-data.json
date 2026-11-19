@@ -5646,7 +5646,7 @@
       "name": "contour-palette-editor",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-palette-editor` (complete-widget). Elements: c-palette-editor__swatch."
+        "value": "Contour component `c-palette-editor` (complete-widget). Elements: c-palette-editor__add, c-palette-editor__contrast, c-palette-editor__edit, c-palette-editor__remove, c-palette-editor__swatch."
       },
       "attributes": [
         {
@@ -5994,7 +5994,7 @@
       "name": "contour-pull-to-refresh",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-pull-to-refresh` (complete-widget). Elements: c-pull-to-refresh__indicator."
+        "value": "Contour component `c-pull-to-refresh` (complete-widget). Elements: c-pull-to-refresh__btn, c-pull-to-refresh__indicator."
       },
       "attributes": [
         {

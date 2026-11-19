@@ -5,7 +5,8 @@ import { variantControl } from "./metadata.js";
 export default {
   title: "Contour/UI/Badge",
   tags: ["autodocs"],
-  parameters: { contour: { maturity: "complete-widget" } },
+  parameters: {
+    a11y: { test: "error" }, contour: { maturity: "complete-widget" } },
   argTypes: {
     variant: variantControl("c-badge"),
     label: { control: "text" },

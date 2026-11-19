@@ -1,6 +1,9 @@
 /**
  * Contour web-component entry point.
  * Importing this module registers every light-DOM and shadow-DOM element.
+ * NOTE: This is the all-in convenience bundle (~740 kB minified).
+ * For production, prefer importing individual family bundles:
+ * `contour-ds/wc/<family>.mjs` (e.g. `contour-ds/wc/forms.mjs`, `contour-ds/wc/data.mjs`).
  * @module contour-wc
  */
 

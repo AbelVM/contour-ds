@@ -257,7 +257,12 @@ class ContourSectionHead extends ContourBase {
       if (!this.querySelector(".c-icon-badge")) {
         const badge = document.createElement("div");
         badge.className = "c-icon-badge";
-        badge.innerHTML = '<svg aria-hidden="true"><use href="#i-crosshair" /></svg>';
+        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("aria-hidden", "true");
+        const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+        use.setAttribute("href", "#i-crosshair");
+        svg.appendChild(use);
+        badge.replaceChildren(svg);
         this.prepend(badge);
       }
       // content wrapper
@@ -499,7 +504,14 @@ class ContourShowcaseFull extends ContourBase {
         // A figure with a figcaption is the native shape for an illustration
         // with a caption; the old div[role=img] hid the caption from the reader.
         const m = this.ensure(".c-showcase__media", () => { const el = document.createElement("figure"); el.className = "c-showcase__media"; return el; });
-        m.innerHTML = sanitizeHtml(media);
+        if (/^https?:\/\/|^\/|^\.\/|\.(png|jpg|jpeg|svg|webp|gif|avif)$/i.test(media.trim())) {
+          let img = m.querySelector("img");
+          if (!img) { img = document.createElement("img"); m.appendChild(img); }
+          img.src = media.trim();
+          img.alt = title || "";
+        } else {
+          m.innerHTML = sanitizeHtml(media);
+        }
         if (title) {
           let cap = m.querySelector(".c-showcase__caption");
           if (!cap) { cap = document.createElement("figcaption"); cap.className = "c-showcase__caption"; m.appendChild(cap); }
@@ -529,10 +541,10 @@ class ContourShowcaseFull extends ContourBase {
         try {
           const parsed = JSON.parse(items);
           const l = this.ensure(".c-showcase__list", () => { const el = document.createElement("ul"); el.className = "c-showcase__list"; return el; });
-          l.innerHTML = "";
+          l.replaceChildren();
           parsed.forEach((it) => {
             const li = document.createElement("li");
-            li.textContent = typeof it === "string" ? it : it.label;
+            li.textContent = typeof it === "string" ? it : (it.label || it.title || "");
             l.appendChild(li);
           });
         } catch (e) { warnBadJson(this, "attribute", e); }
@@ -599,7 +611,14 @@ class ContourRecipeFull extends ContourBase {
       const canvas = this.getAttribute("canvas");
       if (canvas) {
         const c = this.ensure(".c-recipe__canvas", () => { const el = document.createElement("div"); el.className = "c-recipe__canvas"; return el; });
-        c.innerHTML = sanitizeHtml(canvas);
+        if (/^https?:\/\/|^\/|^\.\/|\.(png|jpg|jpeg|svg|webp|gif|avif)$/i.test(canvas.trim())) {
+          let img = c.querySelector("img");
+          if (!img) { img = document.createElement("img"); c.appendChild(img); }
+          img.src = canvas.trim();
+          img.alt = "";
+        } else {
+          c.innerHTML = sanitizeHtml(canvas);
+        }
       } else {
         const c = this.querySelector(".c-recipe__canvas");
         if (c) c.remove();
@@ -642,7 +661,12 @@ class ContourLandingFeaturesFull extends ContourBase {
             if (it.icon) {
               const ic = document.createElement("span");
               ic.className = "c-landing-features__icon";
-              ic.innerHTML = '<svg aria-hidden="true"><use href="#' + String(it.icon).replace(/[^a-zA-Z0-9_-]/g, "") + '" /></svg>';
+              const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+              svg.setAttribute("aria-hidden", "true");
+              const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+              use.setAttribute("href", "#" + String(it.icon).replace(/[^a-zA-Z0-9_-]/g, ""));
+              svg.appendChild(use);
+              ic.appendChild(svg);
               item.appendChild(ic);
             }
              if (it.title) {
@@ -687,7 +711,24 @@ class ContourLandingHeroFull extends ContourBase {
       const authored = a ? Array.from(a.children) : [];
       if (actions && !authored.length) {
         const el = this.ensure(".c-landing-hero__actions", () => { const e = document.createElement("div"); e.className = "c-landing-hero__actions"; return e; });
-        el.innerHTML = sanitizeHtml(actions);
+        try {
+          const parsed = JSON.parse(actions);
+          if (Array.isArray(parsed)) {
+            el.replaceChildren();
+            parsed.forEach((act) => {
+              const btn = document.createElement(act.href ? "a" : "button");
+              btn.className = "c-btn" + (act.primary ? " c-btn--primary" : "");
+              if (act.href) btn.href = safeHref(act.href);
+              else btn.type = "button";
+              btn.textContent = act.label || act.text || "";
+              el.appendChild(btn);
+            });
+          } else {
+            el.innerHTML = sanitizeHtml(actions);
+          }
+        } catch (_) {
+          el.innerHTML = sanitizeHtml(actions);
+        }
       } else if (!actions && a && !authored.length) {
         a.remove();
       }

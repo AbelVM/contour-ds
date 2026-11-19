@@ -4,7 +4,8 @@ import "../dist/wc/map.mjs";
 export default {
   title: "Contour/Compositions/LayerPanelMap",
   tags: ["autodocs"],
-  parameters: { contour: { maturity: "composition" } },
+  parameters: {
+    a11y: { test: "error" }, contour: { maturity: "composition" } },
 };
 
 export const LayerPanelEmitsVisibilityIntent = {

@@ -5,7 +5,8 @@ import { fixtureArgs } from "./fixtures.js";
 export default {
   title: "Contour/Forms/Select",
   tags: ["autodocs"],
-  parameters: { contour: { maturity: "complete-widget" } },
+  parameters: {
+    a11y: { test: "error" }, contour: { maturity: "complete-widget" } },
   argTypes: {
     label: { control: "text" },
     placeholder: { control: "text" },

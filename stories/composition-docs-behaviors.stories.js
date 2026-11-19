@@ -6,7 +6,8 @@ import "../dist/wc/content.mjs";
 export default {
   title: "Contour/Compositions/DocsBehaviors",
   tags: ["autodocs"],
-  parameters: { contour: { maturity: "composition" } },
+  parameters: {
+    a11y: { test: "error" }, contour: { maturity: "composition" } },
 };
 
 const NAV_ITEMS = JSON.stringify([

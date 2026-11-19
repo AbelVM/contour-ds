@@ -85,6 +85,9 @@ const HOOK_LEDGER = new Set([
   // its `cols` / `gap` attributes, so they are inputs the author sets on the
   // element, not tokens the system declares.
   "--dashboard-grid-cols", "--dashboard-grid-gap",
+  // Pull-to-refresh offset (R20 T-25): written dynamically by contour-pull-to-refresh
+  // during gesture and read by .c-pull-to-refresh__indicator.
+  "--ptr-offset",
 ]);
 
 const escapeRe = (s) => s.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");

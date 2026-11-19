@@ -103,7 +103,7 @@ for (const fixture of fixtures) {
 
   // Install from the local tarball
   try {
-    run(`npm install "${TARBALL}" --no-save --no-audit --no-fund`, {
+    run(`npm install "${TARBALL}" --no-save --no-audit --no-fund --prefer-offline`, {
       cwd: dir,
     });
     ok('tarball installed cleanly');

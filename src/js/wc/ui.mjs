@@ -1311,6 +1311,12 @@ class ContourStylePanel extends ContourBase {
     static get properties() { return { title: { attribute: "title" }, layers: { attribute: "layers" }, classification: { attribute: "classification" }, palette: { attribute: "palette" }, breaks: { attribute: "breaks" }, opacity: { attribute: "opacity" } }; }
     render() {
       this.classList.add("c-style-panel");
+      // Authored defaults captured once, before any edit or Revert writes:
+      // Revert restores THESE, not the last rendered state (R20 T-12).
+      if (!this._stylePanelDefault) {
+        this._stylePanelDefault = {};
+        for (const a of ["property", "classification", "palette", "breaks", "opacity", "n", "colors"]) this._stylePanelDefault[a] = this.getAttribute(a);
+      }
       this.setAttribute("role", "group");
       this.setAttribute("aria-label", "Style panel");
       const title = this.getAttribute("title");
@@ -1378,15 +1384,16 @@ class ContourStylePanel extends ContourBase {
            colors.forEach((c, i) => {
              const sw = document.createElement("input"); sw.type = "color"; sw.className = "c-style-panel__color c-input"; sw.setAttribute("aria-label", labelText(this, "colour-for-class", "Colour for class") + " " + (i + 1));
              sw.value = c;
-             sw.addEventListener("input", () => { sw.setAttribute("data-edited", "true"); });
+             // data-edited is marked by the delegated input handler in
+             // enhance() — a per-node listener here died with the render.
              list.appendChild(sw);
            });
            body.appendChild(list);
          }
          // Apply/Revert buttons
          const actions = document.createElement("div"); actions.className = "c-style-panel__actions c-btn-group";
-         const applyBtn = document.createElement("button"); applyBtn.type = "button"; applyBtn.className = "c-btn c-btn--primary"; applyBtn.textContent = labelText(this, "apply", "Apply");
-         const revertBtn = document.createElement("button"); revertBtn.type = "button"; revertBtn.className = "c-btn"; revertBtn.textContent = labelText(this, "revert", "Revert");
+         const applyBtn = document.createElement("button"); applyBtn.type = "button"; applyBtn.className = "c-btn c-btn--primary"; applyBtn.textContent = labelText(this, "apply", "Apply"); applyBtn.dataset.action = "apply";
+         const revertBtn = document.createElement("button"); revertBtn.type = "button"; revertBtn.className = "c-btn"; revertBtn.textContent = labelText(this, "revert", "Revert"); revertBtn.dataset.action = "revert";
          actions.appendChild(applyBtn); actions.appendChild(revertBtn);
          body.appendChild(actions);
          return;
@@ -1485,6 +1492,7 @@ class ContourStylePanel extends ContourBase {
       this.addEventListener("input", (e) => {
         const t = e.target;
         if (!t || !this.contains(t)) return;
+        if (t.classList.contains("c-style-panel__color")) t.setAttribute("data-edited", "true");
         if (t.classList.contains("c-style-panel__palette") || t.classList.contains("c-style-panel__breaks")) {
           const row = t.closest(".c-style-panel__row");
           const name = row ? (row.querySelector(".c-style-panel__name")?.textContent || "") : "";
@@ -1494,7 +1502,9 @@ class ContourStylePanel extends ContourBase {
       this.addEventListener("click", (e) => {
         const t = e.target && e.target.closest ? e.target.closest("button") : null;
         if (!t || !this.contains(t)) return;
-        if (t.textContent.trim() === "Apply") {
+        // Match the action, not the English label: a localized panel used to
+        // go inert because the handler compared textContent to "Apply".
+        if (t.dataset.action === "apply") {
           // Carry the current control values, not just { applied: true }: a
           // consumer listening for the apply needs to know what was applied.
           const body = this.querySelector(".c-style-panel__body");
@@ -1512,7 +1522,27 @@ class ContourStylePanel extends ContourBase {
             if (colors.length) payload.colors = colors;
           }
           this.dispatchEvent(new CustomEvent("contour:style-resolved", { detail: payload, bubbles: true, composed: true }));
-        } else if (t.textContent.trim() === "Revert") {
+        } else if (t.dataset.action === "revert") {
+          // Revert restores the authored defaults captured at first render —
+          // it used to emit { applied: false } and restore nothing. The
+          // controls are the live state, so the rebuild must skip the base
+          // class's value-restore (_contourResetting); otherwise an edited
+          // control is written straight back over the default it was meant
+          // to lose. The explicit __rerender__ fires even when no attribute
+          // actually changed — a user who edited only the live controls
+          // leaves every attribute at its authored value, so batch() alone
+          // would coalesce to nothing and the panel would keep the edit.
+          const def = this._stylePanelDefault || {};
+          this._contourResetting = true;
+          try {
+            for (const a of ["property", "classification", "palette", "breaks", "opacity", "n", "colors"]) {
+              if (def[a] === null || def[a] === undefined) this.removeAttribute(a);
+              else this.setAttribute(a, def[a]);
+            }
+            this.attributeChangedCallback("__rerender__", null, "");
+          } finally {
+            this._contourResetting = false;
+          }
           this.dispatchEvent(new CustomEvent("contour:style-resolved", { detail: { applied: false }, bubbles: true, composed: true }));
         }
       });
@@ -1733,39 +1763,128 @@ class ContourSplitButton extends ContourBase {
 class ContourPaletteEditor extends ContourBase {
     static get observed() { return ["colors"]; }
     static get properties() { return { colors: { attribute: "colors" } }; }
+    _palette() {
+      let parsed = [];
+      try { const c = this.getAttribute("colors"); parsed = c ? JSON.parse(c) : []; } catch (e) { warnBadJson(this, "colors", e); }
+      if (!Array.isArray(parsed)) parsed = [];
+      return parsed.map((c) => typeof c === "string" ? { color: c, name: c } : { color: String(c.color || c.value || "#000000"), name: String(c.name || c.label || c.color || c.value || "color") });
+    }
+    _writePalette(entries) {
+      // The colors attribute IS the serialization (R20 T-15): every edit,
+      // add and remove writes it back, so a re-render keeps the user's work.
+      this.setAttribute("colors", JSON.stringify(entries.map((e) => e.name === e.color ? e.color : { color: e.color, name: e.name })));
+    }
     render() {
       this.classList.add("c-palette-editor");
       if (!this.hasAttribute("role")) this.setAttribute("role", "group");
       if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Palette editor");
-      const colors = this.getAttribute("colors");
-      Array.from(this.querySelectorAll(".c-palette-editor__swatch")).forEach((n) => n.remove());
-      if (colors) {
-        try {
-          const parsed = JSON.parse(colors);
-          parsed.forEach((c) => {
-            const sw = document.createElement("button");
-            sw.className = "c-palette-editor__swatch c-swatch";
-            sw.type = "button";
-            sw.style.background = typeof c === "string" ? c : (c.color || c.value || "");
-            sw.dataset.color = typeof c === "string" ? c : (c.color || c.value || "");
-            sw.setAttribute("aria-label", typeof c === "string" ? c : (c.name || c.label || "color"));
-            this.appendChild(sw);
-          });
-        } catch (e) { warnBadJson(this, "attribute", e); }
+      const entries = this._palette();
+      Array.from(this.querySelectorAll(".c-palette-editor__swatch, .c-palette-editor__edit, .c-palette-editor__remove, .c-palette-editor__add, .c-palette-editor__contrast")).forEach((n) => n.remove());
+      entries.forEach((entry, i) => {
+        const sw = document.createElement("button");
+        sw.className = "c-palette-editor__swatch c-swatch" + (this._paletteSelected === i ? " is-selected" : "");
+        sw.type = "button";
+        sw.style.background = safeColor(entry.color);
+        sw.dataset.color = entry.color;
+        sw.dataset.index = String(i);
+        sw.setAttribute("aria-label", entry.name);
+        sw.setAttribute("aria-pressed", String(this._paletteSelected === i));
+        this.appendChild(sw);
+        // The native color input is the edit surface — the platform's picker,
+        // not a reinvented one.
+        const edit = document.createElement("input");
+        edit.type = "color";
+        edit.className = "c-palette-editor__edit";
+        edit.value = /^#[0-9a-f]{6}$/i.test(entry.color) ? entry.color : "#000000";
+        edit.dataset.index = String(i);
+        edit.setAttribute("aria-label", "Edit " + entry.name);
+        this.appendChild(edit);
+        const rm = document.createElement("button");
+        rm.type = "button";
+        rm.className = "c-palette-editor__remove";
+        rm.dataset.index = String(i);
+        rm.setAttribute("aria-label", "Remove " + entry.name);
+        rm.textContent = "×";
+        this.appendChild(rm);
+      });
+      const add = document.createElement("button");
+      add.type = "button";
+      add.className = "c-palette-editor__add";
+      add.setAttribute("aria-label", labelText(this, "add-color", "Add color"));
+      add.textContent = "+";
+      this.appendChild(add);
+      // Contrast feedback for the selected color: the ratio against white
+      // and black, and whether the better one meets AA for body text.
+      const sel = entries[this._paletteSelected];
+      if (sel) {
+        const lum = (hex) => {
+          const m = /^#([0-9a-f]{6})$/i.exec(hex);
+          if (!m) return null;
+          const n = parseInt(m[1], 16);
+          const ch = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+          return 0.2126 * ch[0] + 0.7152 * ch[1] + 0.0722 * ch[2];
+        };
+        const l = lum(sel.color);
+        const out = document.createElement("span");
+        out.className = "c-palette-editor__contrast";
+        if (l === null) {
+          out.textContent = sel.color;
+        } else {
+          const ratio = (a, b) => (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+          const onWhite = ratio(l, 1), onBlack = ratio(l, 0);
+          const best = Math.max(onWhite, onBlack);
+          out.textContent = sel.name + ": " + onWhite.toFixed(1) + ":1 on white, " + onBlack.toFixed(1) + ":1 on black — " + (best >= 4.5 ? "AA" : "below AA");
+        }
+        this.appendChild(out);
       }
     }
     enhance() {
       if (this._wiredPaletteEditor) return;
       this._wiredPaletteEditor = true;
       this.addEventListener("click", (e) => {
-        const sw = e.target && e.target.closest ? e.target.closest(".c-palette-editor__swatch") : null;
+        const t = e.target && e.target.closest ? e.target : null;
+        if (!t) return;
+        const sw = t.closest(".c-palette-editor__swatch");
         if (sw && this.contains(sw)) {
-          this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { color: (sw.dataset && sw.dataset.color) || sw.style.background } }));
+          this._paletteSelected = Number(sw.dataset.index);
+          this.requestRender();
+          this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { color: sw.dataset.color } }));
+          return;
         }
+        const rm = t.closest(".c-palette-editor__remove");
+        if (rm && this.contains(rm)) {
+          const entries = this._palette();
+          const i = Number(rm.dataset.index);
+          const [gone] = entries.splice(i, 1);
+          if (this._paletteSelected >= entries.length) this._paletteSelected = entries.length - 1;
+          this._writePalette(entries);
+          this.dispatchEvent(new CustomEvent("contour:remove", { bubbles: true, composed: true, detail: { value: gone ? gone.color : "" } }));
+          return;
+        }
+        if (t.closest(".c-palette-editor__add")) {
+          const entries = this._palette();
+          const next = "#888888";
+          entries.push({ color: next, name: next });
+          this._paletteSelected = entries.length - 1;
+          this._writePalette(entries);
+          this.dispatchEvent(new CustomEvent("contour:add", { bubbles: true, composed: true, detail: { value: next } }));
+        }
+      });
+      this.addEventListener("change", (e) => {
+        const edit = e.target && e.target.closest ? e.target.closest(".c-palette-editor__edit") : null;
+        if (!edit || !this.contains(edit)) return;
+        const entries = this._palette();
+        const i = Number(edit.dataset.index);
+        if (!entries[i]) return;
+        entries[i].color = edit.value;
+        if (entries[i].name === entries[i].color || /^#[0-9a-f]{6}$/i.test(entries[i].name)) entries[i].name = edit.value;
+        this._writePalette(entries);
+        this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { color: edit.value, values: entries.map((en) => en.color) } }));
       });
       this.addEventListener("keydown", (e) => {
         const swatches = Array.from(this.querySelectorAll(".c-palette-editor__swatch"));
-        navKey(e, swatches, { wrap: true, enter: true, onKey: () => { if (document.activeElement.classList.contains("c-palette-editor__swatch")) document.activeElement.click(); } });
+        if (!swatches.includes(e.target)) return;
+        navKey(e, swatches, { wrap: true, enter: true, onKey: (k, idx, item) => { if (k === "Enter" || k === " ") item.click(); } });
       });
     }
   }
@@ -4864,43 +4983,89 @@ class ContourPullToRefresh extends ContourBase {
       const ind = this.ensure(".c-pull-to-refresh__indicator", () => {
         const e = document.createElement("div");
         e.className = "c-pull-to-refresh__indicator";
-        e.textContent = labelText(this, "label", "Pull to refresh");
         return e;
       });
+      ind.innerHTML = "";
+      const label = document.createElement("span");
+      label.className = "c-pull-to-refresh__label";
+      label.setAttribute("aria-live", "polite");
+      label.textContent = this._ptrError
+        ? this._ptrError
+        : (this._ptrRefreshing ? labelText(this, "refreshing", "Refreshing…") : labelText(this, "label", "Pull to refresh"));
+      ind.appendChild(label);
+      // A keyboard-reachable refresh alternative: the gesture is pointer-only,
+      // and a control the reader can press must exist anyway (R20 T-25).
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "c-pull-to-refresh__btn";
+      btn.textContent = labelText(this, "refresh", "Refresh");
+      ind.appendChild(btn);
       if (ind.parentNode !== this) this.prepend(ind);
+      this.classList.toggle("is-refreshing", !!this._ptrRefreshing);
+      this.classList.toggle("has-error", !!this._ptrError);
+      this.setAttribute("aria-busy", String(!!this._ptrRefreshing));
+    }
+    // Completion is consumer-driven (R20 T-25): the old fixed 800 ms timeout
+    // faked it. The consumer calls complete() when its fetch settles, or
+    // fail(message) to surface the error; both clear the pull offset.
+    complete() {
+      this._ptrRefreshing = false;
+      this._ptrError = null;
+      this.style.removeProperty("--ptr-offset");
+      this.requestRender();
+    }
+    fail(message) {
+      this._ptrRefreshing = false;
+      this._ptrError = String(message || labelText(this, "error", "Refresh failed"));
+      this.style.removeProperty("--ptr-offset");
+      this.requestRender();
+      this.dispatchEvent(new CustomEvent("contour:error", { bubbles: true, composed: true, detail: { message: this._ptrError } }));
+    }
+    _refresh() {
+      if (this._ptrRefreshing) return;
+      this._ptrRefreshing = true;
+      this._ptrError = null;
+      this.style.removeProperty("--ptr-offset");
+      this.requestRender();
+      this.dispatchEvent(new CustomEvent("contour:refresh", { bubbles: true, composed: true }));
     }
     enhance() {
       if (this._wiredPullToRefresh) return;
       this._wiredPullToRefresh = true;
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest(".c-pull-to-refresh__btn") : null;
+        if (btn && this.contains(btn)) this._refresh();
+      });
+      // Pointer events cover touch AND mouse; the gesture had been touch-only.
       let startY = 0;
       let pulling = false;
-      this.addEventListener("touchstart", (e) => {
-        if (this.scrollTop > 0) return;
-        const t = e.touches && e.touches[0];
-        if (t) { startY = t.clientY; pulling = true; }
-      }, { passive: true });
-      this.addEventListener("touchmove", (e) => {
+      let offset = 0;
+      this.addEventListener("pointerdown", (e) => {
+        if (this._ptrRefreshing || this.scrollTop > 0) return;
+        if (e.target && e.target.closest && e.target.closest(".c-pull-to-refresh__btn")) return;
+        startY = e.clientY;
+        pulling = true;
+        offset = 0;
+        try { this.setPointerCapture(e.pointerId); } catch (err) {}
+      });
+      this.addEventListener("pointermove", (e) => {
         if (!pulling) return;
-        const t = e.touches && e.touches[0];
-        if (!t) return;
-        const dy = t.clientY - startY;
-        if (dy > 0 && dy < 120) {
-          this.style.setProperty("--ptr-offset", dy + "px");
+        const dy = e.clientY - startY;
+        if (dy > 0) {
+          offset = Math.min(120, dy * 0.6);
+          this.style.setProperty("--ptr-offset", offset + "px");
         }
-      }, { passive: true });
-      this.addEventListener("touchend", (e) => {
+      });
+      const end = () => {
         if (!pulling) return;
         pulling = false;
-        const t = e.changedTouches && e.changedTouches[0];
-        const dy = t ? t.clientY - startY : 0;
         const thr = Number(this.getAttribute("threshold")) || 60;
-        if (dy >= thr) {
-          this.classList.add("is-refreshing");
-          this.dispatchEvent(new CustomEvent("contour:refresh", { bubbles: true, composed: true }));
-          setTimeout(() => this.classList.remove("is-refreshing"), 800);
-        }
-        this.style.removeProperty("--ptr-offset");
-      }, { passive: true });
+        if (offset >= thr) this._refresh();
+        else this.style.removeProperty("--ptr-offset");
+        offset = 0;
+      };
+      this.addEventListener("pointerup", end);
+      this.addEventListener("pointercancel", end);
     }
   }
   define("contour-pull-to-refresh", ContourPullToRefresh);

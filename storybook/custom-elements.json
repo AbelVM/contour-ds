@@ -29942,8 +29942,12 @@
       "name": "contour:style-resolved",
       "keys": [
         "applied",
+        "classification",
+        "colors",
         "items",
         "layer",
+        "n",
+        "palette",
         "property",
         "value"
       ]

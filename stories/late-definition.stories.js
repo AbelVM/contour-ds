@@ -3,7 +3,8 @@ import { expect } from "storybook/test";
 export default {
   title: "Contour/Foundations/LateDefinition",
   tags: ["autodocs"],
-  parameters: { contour: { maturity: "primitive" } },
+  parameters: {
+    a11y: { test: "error" }, contour: { maturity: "primitive" } },
 };
 
 export const NativeFallback = {

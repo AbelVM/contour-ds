@@ -10,7 +10,8 @@ export default {
     series: { control: "text" },
     axis: { control: "text" },
   },
-  parameters: { contour: { maturity: "complete-widget" } },
+  parameters: {
+    a11y: { test: "error" }, contour: { maturity: "complete-widget" } },
 };
 
 const DATA = JSON.stringify({ labels: ["A", "B", "C"], values: [3, 7, 5] });

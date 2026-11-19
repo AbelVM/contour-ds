@@ -4,7 +4,8 @@ import "../dist/wc/data.mjs";
 export default {
   title: "Contour/Compositions/ChartLegend",
   tags: ["autodocs"],
-  parameters: { contour: { maturity: "composition" } },
+  parameters: {
+    a11y: { test: "error" }, contour: { maturity: "composition" } },
 };
 
 export const ChartWithLegend = {

@@ -5,6 +5,7 @@ export default {
   title: "Contour/Forms/TagsInput",
   tags: ["autodocs"],
   parameters: {
+    a11y: { test: "error" },
     contour: { maturity: "complete-widget" },
   },
   argTypes: {

@@ -5,7 +5,8 @@ import { variantControl } from "./metadata.js";
 export default {
   title: "Contour/UI/Tag",
   tags: ["autodocs"],
-  parameters: { contour: { maturity: "complete-widget" } },
+  parameters: {
+    a11y: { test: "error" }, contour: { maturity: "complete-widget" } },
   argTypes: {
     variant: variantControl("c-tag"),
     removable: { control: "boolean" },

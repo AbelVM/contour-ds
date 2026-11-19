@@ -4,7 +4,8 @@ import "../dist/wc/data.mjs";
 export default {
   title: "Contour/Data/Table",
   tags: ["autodocs"],
-  parameters: { contour: { maturity: "complete-widget" } },
+  parameters: {
+    a11y: { test: "error" }, contour: { maturity: "complete-widget" } },
   argTypes: {
     columns: { control: "text" },
     rows: { control: "text" },

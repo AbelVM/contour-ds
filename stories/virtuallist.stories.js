@@ -4,7 +4,8 @@ import "../dist/wc/ui.mjs";
 export default {
   title: "Contour/Data/VirtualList",
   tags: ["autodocs"],
-  parameters: { contour: { maturity: "complete-widget" } },
+  parameters: {
+    a11y: { test: "error" }, contour: { maturity: "complete-widget" } },
   argTypes: {
     items: { control: "text" },
     "item-height": { control: "text" },

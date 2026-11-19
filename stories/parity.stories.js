@@ -5,7 +5,8 @@ import "../dist/wc/shadow.mjs";
 export default {
   title: "Contour/Foundations/LightVsShadow",
   tags: ["autodocs"],
-  parameters: { contour: { maturity: "primitive" } },
+  parameters: {
+    a11y: { test: "error" }, contour: { maturity: "primitive" } },
 };
 
 export const Default = {

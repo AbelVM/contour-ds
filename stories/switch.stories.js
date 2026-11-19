@@ -4,7 +4,8 @@ import "../dist/wc/forms.mjs";
 export default {
   title: "Contour/Forms/Switch",
   tags: ["autodocs"],
-  parameters: { contour: { maturity: "complete-widget" } },
+  parameters: {
+    a11y: { test: "error" }, contour: { maturity: "complete-widget" } },
   argTypes: {
     label: { control: "text" },
     checked: { control: "boolean" },

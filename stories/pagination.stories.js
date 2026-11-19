@@ -4,7 +4,8 @@ import "../dist/wc/navigation.mjs";
 export default {
   title: "Contour/Navigation/Pagination",
   tags: ["autodocs"],
-  parameters: { contour: { maturity: "complete-widget" } },
+  parameters: {
+    a11y: { test: "error" }, contour: { maturity: "complete-widget" } },
   argTypes: {
     current: { control: "number" },
     "page-size": { control: "number" },

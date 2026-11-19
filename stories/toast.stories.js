@@ -4,7 +4,8 @@ import "../dist/wc/feedback.mjs";
 export default {
   title: "Contour/Feedback/Toast",
   tags: ["autodocs"],
-  parameters: { contour: { maturity: "complete-widget" } },
+  parameters: {
+    a11y: { test: "error" }, contour: { maturity: "complete-widget" } },
   argTypes: {
     message: { control: "text" },
     variant: { control: "text" },

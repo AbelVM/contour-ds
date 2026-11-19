@@ -47,14 +47,12 @@ than a module, so it loads with a plain tag — `dist/contour-wc.js`, minified i
 For bundler consumers, ESM builds are available so unused exports can be dropped:
 
 ```js
-import "contour-ds/contour-wc.esm.js";          // registers every custom element
-// or, for tree-shaking of individual modules:
+import "contour-ds/contour-wc.esm.js";          // all-in convenience bundle (~740 kB minified)
+// or, for production and tree-shaking, import individual family bundles:
 import "contour-ds/wc/forms.mjs";
 ```
 
-The classic `contour-wc.js` remains the recommended entry for a plain `<script>` tag
-off disk; the ESM build is for bundlers. Both register the same custom elements as a
-side effect on import.
+The all-in bundle (`contour-wc.esm.js` / `contour-wc.js`) registers every element as a convenience. For production applications, prefer importing individual family bundles (`contour-ds/wc/<family>.mjs`, or `contour-ds/wc/<family>`) to keep bundle sizes lean. Both register the same custom elements as a side effect on import.
 
 ### From a checkout — no build step, no dependency
 
@@ -223,6 +221,7 @@ return <contour-switch ref={ref} />;
 
 The typed `contour.react.d.ts` augmentation (`import "contour-ds/react"`) types
 every `<contour-*>` tag, so JSX checks the attributes and properties you pass.
+*(Note: `./react` and `./vue` are TypeScript type definitions, not runtime wrapper libraries. Custom elements need no framework wrappers — state travels as native attributes and events).*
 
 ### Vue / Nuxt
 

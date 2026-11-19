@@ -4,7 +4,8 @@ import "../dist/wc/feedback.mjs";
 export default {
   title: "Contour/Overlays/Drawer",
   tags: ["autodocs"],
-  parameters: { contour: { maturity: "complete-widget" } },
+  parameters: {
+    a11y: { test: "error" }, contour: { maturity: "complete-widget" } },
   argTypes: {
     title: { control: "text" },
     body: { control: "text" },

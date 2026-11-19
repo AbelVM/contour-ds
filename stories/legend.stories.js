@@ -10,7 +10,8 @@ const ITEMS = JSON.stringify([
 export default {
   title: "Contour/Data/Legend",
   tags: ["autodocs"],
-  parameters: { contour: { maturity: "complete-widget" } },
+  parameters: {
+    a11y: { test: "error" }, contour: { maturity: "complete-widget" } },
   argTypes: {
     title: { control: "text" },
     items: { control: "text" },

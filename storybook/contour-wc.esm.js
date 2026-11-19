@@ -108,7 +108,7 @@
     "contour:activity-filter": { payload: ["unread"], composed: true },
     "contour:activity-select": { payload: ["index", "text"], composed: true },
     "contour:break-change": { payload: ["layer", "value"], composed: true },
-    "contour:style-resolved": { payload: ["applied", "items", "layer", "property", "value"], composed: true },
+    "contour:style-resolved": { payload: ["applied", "classification", "colors", "items", "layer", "n", "palette", "property", "value"], composed: true },
     "contour:advanced-toggle": { payload: ["title"], composed: true },
     "contour:affordance-activate": { payload: ["name"], composed: true },
     "contour:aggregate": { payload: ["aggregate"], composed: true },
@@ -326,11 +326,14 @@
   //   its only reader observes them per-class.
   //   progress — animation-controls writes its playhead back (R20 T-10);
   //   both readers (animation-controls, file-upload) observe it per-class.
+  //   colors — palette-editor writes the edited palette back (R20 T-15);
+  //   all readers (palette-editor, style-panel, bivariate, bivariate-legend)
+  //   observe it per-class.
   // Adding one of those back to this list makes that component recurse.
   /** Shared attribute vocabulary used by components that opt into defaults. */
   export const OBSERVED = [
     "accept", "action", "actions", "active", "after", "allow-duplicate", "allow-remove", "allow-rename", "allow-zoom", "alpha", "anchor", "answer", "area", "article", "attribution", "attribution-mark", "audit", "autoplay", "axis", "axis-x", "axis-y", "brownout", "brownout-level", "before", "body", "brand", "bounds", "breakpoint", "breaks", "brush", "brush-end", "brush-max", "brush-min", "brush-start", "cache-key", "canvas", "center", "clearable", "cols", "columns", "color", "command",
-    "cells", "checked", "chrome", "confidence", "coverage", "debounce", "closable", "collapsed", "collapsible", "classification", "colors", "continuous", "content", "controls", "copyable", "count", "data", "data-table", "date", "delta",     "description", "glyphs", "graduated", "demo", "density", "desc", "dir", "direction", "disabled", "distance", "dismissible", "divider", "do", "dont", "dot", "ends", "high", "input", "layer", "low", "mode", "modes", "n", "opacity", "palette", "polarity", "precision", "range", "single",
+    "cells", "checked", "chrome", "confidence", "coverage", "debounce", "closable", "collapsed", "collapsible", "classification", "continuous", "content", "controls", "copyable", "count", "data", "data-table", "date", "delta",     "description", "glyphs", "graduated", "demo", "density", "desc", "dir", "direction", "disabled", "distance", "dismissible", "divider", "do", "dont", "dot", "ends", "high", "input", "layer", "low", "mode", "modes", "n", "opacity", "palette", "polarity", "precision", "range", "single",
     "empty", "exclusive", "fallback", "filename", "format", "heading", "help", "hint", "href", "icon", "illustration", "instrument", "interval", "items", "key", "layers", "level", "markers", "range-end", "range-start",
     "label", "labels", "lazy", "lede", "legend", "left-label", "right-label", "line", "limit", "link", "links", "live", "loading", "locale", "loop", "max", "media", "message", "method", "methodology", "menu", "min", "multiple", "name", "needle", "next", "no", "no-cache", "no-data-message", "nodes", "note", "norm", "normalize",
     "options", "orientation", "page-size", "pages", "pause", "paused", "pausable", "persist", "placeholder", "playing", "point", "points", "prev", "presets", "prompt", "question", "recent", "required",
@@ -17896,6 +17899,12 @@ class ContourStylePanel extends ContourBase {
     static get properties() { return { title: { attribute: "title" }, layers: { attribute: "layers" }, classification: { attribute: "classification" }, palette: { attribute: "palette" }, breaks: { attribute: "breaks" }, opacity: { attribute: "opacity" } }; }
     render() {
       this.classList.add("c-style-panel");
+      // Authored defaults captured once, before any edit or Revert writes:
+      // Revert restores THESE, not the last rendered state (R20 T-12).
+      if (!this._stylePanelDefault) {
+        this._stylePanelDefault = {};
+        for (const a of ["property", "classification", "palette", "breaks", "opacity", "n", "colors"]) this._stylePanelDefault[a] = this.getAttribute(a);
+      }
       this.setAttribute("role", "group");
       this.setAttribute("aria-label", "Style panel");
       const title = this.getAttribute("title");
@@ -17963,15 +17972,16 @@ class ContourStylePanel extends ContourBase {
            colors.forEach((c, i) => {
              const sw = document.createElement("input"); sw.type = "color"; sw.className = "c-style-panel__color c-input"; sw.setAttribute("aria-label", labelText(this, "colour-for-class", "Colour for class") + " " + (i + 1));
              sw.value = c;
-             sw.addEventListener("input", () => { sw.setAttribute("data-edited", "true"); });
+             // data-edited is marked by the delegated input handler in
+             // enhance() — a per-node listener here died with the render.
              list.appendChild(sw);
            });
            body.appendChild(list);
          }
          // Apply/Revert buttons
          const actions = document.createElement("div"); actions.className = "c-style-panel__actions c-btn-group";
-         const applyBtn = document.createElement("button"); applyBtn.type = "button"; applyBtn.className = "c-btn c-btn--primary"; applyBtn.textContent = labelText(this, "apply", "Apply");
-         const revertBtn = document.createElement("button"); revertBtn.type = "button"; revertBtn.className = "c-btn"; revertBtn.textContent = labelText(this, "revert", "Revert");
+         const applyBtn = document.createElement("button"); applyBtn.type = "button"; applyBtn.className = "c-btn c-btn--primary"; applyBtn.textContent = labelText(this, "apply", "Apply"); applyBtn.dataset.action = "apply";
+         const revertBtn = document.createElement("button"); revertBtn.type = "button"; revertBtn.className = "c-btn"; revertBtn.textContent = labelText(this, "revert", "Revert"); revertBtn.dataset.action = "revert";
          actions.appendChild(applyBtn); actions.appendChild(revertBtn);
          body.appendChild(actions);
          return;
@@ -18070,6 +18080,7 @@ class ContourStylePanel extends ContourBase {
       this.addEventListener("input", (e) => {
         const t = e.target;
         if (!t || !this.contains(t)) return;
+        if (t.classList.contains("c-style-panel__color")) t.setAttribute("data-edited", "true");
         if (t.classList.contains("c-style-panel__palette") || t.classList.contains("c-style-panel__breaks")) {
           const row = t.closest(".c-style-panel__row");
           const name = row ? (row.querySelector(".c-style-panel__name")?.textContent || "") : "";
@@ -18079,7 +18090,9 @@ class ContourStylePanel extends ContourBase {
       this.addEventListener("click", (e) => {
         const t = e.target && e.target.closest ? e.target.closest("button") : null;
         if (!t || !this.contains(t)) return;
-        if (t.textContent.trim() === "Apply") {
+        // Match the action, not the English label: a localized panel used to
+        // go inert because the handler compared textContent to "Apply".
+        if (t.dataset.action === "apply") {
           // Carry the current control values, not just { applied: true }: a
           // consumer listening for the apply needs to know what was applied.
           const body = this.querySelector(".c-style-panel__body");
@@ -18097,7 +18110,27 @@ class ContourStylePanel extends ContourBase {
             if (colors.length) payload.colors = colors;
           }
           this.dispatchEvent(new CustomEvent("contour:style-resolved", { detail: payload, bubbles: true, composed: true }));
-        } else if (t.textContent.trim() === "Revert") {
+        } else if (t.dataset.action === "revert") {
+          // Revert restores the authored defaults captured at first render —
+          // it used to emit { applied: false } and restore nothing. The
+          // controls are the live state, so the rebuild must skip the base
+          // class's value-restore (_contourResetting); otherwise an edited
+          // control is written straight back over the default it was meant
+          // to lose. The explicit __rerender__ fires even when no attribute
+          // actually changed — a user who edited only the live controls
+          // leaves every attribute at its authored value, so batch() alone
+          // would coalesce to nothing and the panel would keep the edit.
+          const def = this._stylePanelDefault || {};
+          this._contourResetting = true;
+          try {
+            for (const a of ["property", "classification", "palette", "breaks", "opacity", "n", "colors"]) {
+              if (def[a] === null || def[a] === undefined) this.removeAttribute(a);
+              else this.setAttribute(a, def[a]);
+            }
+            this.attributeChangedCallback("__rerender__", null, "");
+          } finally {
+            this._contourResetting = false;
+          }
           this.dispatchEvent(new CustomEvent("contour:style-resolved", { detail: { applied: false }, bubbles: true, composed: true }));
         }
       });
@@ -18318,39 +18351,128 @@ class ContourSplitButton extends ContourBase {
 class ContourPaletteEditor extends ContourBase {
     static get observed() { return ["colors"]; }
     static get properties() { return { colors: { attribute: "colors" } }; }
+    _palette() {
+      let parsed = [];
+      try { const c = this.getAttribute("colors"); parsed = c ? JSON.parse(c) : []; } catch (e) { warnBadJson(this, "colors", e); }
+      if (!Array.isArray(parsed)) parsed = [];
+      return parsed.map((c) => typeof c === "string" ? { color: c, name: c } : { color: String(c.color || c.value || "#000000"), name: String(c.name || c.label || c.color || c.value || "color") });
+    }
+    _writePalette(entries) {
+      // The colors attribute IS the serialization (R20 T-15): every edit,
+      // add and remove writes it back, so a re-render keeps the user's work.
+      this.setAttribute("colors", JSON.stringify(entries.map((e) => e.name === e.color ? e.color : { color: e.color, name: e.name })));
+    }
     render() {
       this.classList.add("c-palette-editor");
       if (!this.hasAttribute("role")) this.setAttribute("role", "group");
       if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Palette editor");
-      const colors = this.getAttribute("colors");
-      Array.from(this.querySelectorAll(".c-palette-editor__swatch")).forEach((n) => n.remove());
-      if (colors) {
-        try {
-          const parsed = JSON.parse(colors);
-          parsed.forEach((c) => {
-            const sw = document.createElement("button");
-            sw.className = "c-palette-editor__swatch c-swatch";
-            sw.type = "button";
-            sw.style.background = typeof c === "string" ? c : (c.color || c.value || "");
-            sw.dataset.color = typeof c === "string" ? c : (c.color || c.value || "");
-            sw.setAttribute("aria-label", typeof c === "string" ? c : (c.name || c.label || "color"));
-            this.appendChild(sw);
-          });
-        } catch (e) { warnBadJson(this, "attribute", e); }
+      const entries = this._palette();
+      Array.from(this.querySelectorAll(".c-palette-editor__swatch, .c-palette-editor__edit, .c-palette-editor__remove, .c-palette-editor__add, .c-palette-editor__contrast")).forEach((n) => n.remove());
+      entries.forEach((entry, i) => {
+        const sw = document.createElement("button");
+        sw.className = "c-palette-editor__swatch c-swatch" + (this._paletteSelected === i ? " is-selected" : "");
+        sw.type = "button";
+        sw.style.background = safeColor(entry.color);
+        sw.dataset.color = entry.color;
+        sw.dataset.index = String(i);
+        sw.setAttribute("aria-label", entry.name);
+        sw.setAttribute("aria-pressed", String(this._paletteSelected === i));
+        this.appendChild(sw);
+        // The native color input is the edit surface — the platform's picker,
+        // not a reinvented one.
+        const edit = document.createElement("input");
+        edit.type = "color";
+        edit.className = "c-palette-editor__edit";
+        edit.value = /^#[0-9a-f]{6}$/i.test(entry.color) ? entry.color : "#000000";
+        edit.dataset.index = String(i);
+        edit.setAttribute("aria-label", "Edit " + entry.name);
+        this.appendChild(edit);
+        const rm = document.createElement("button");
+        rm.type = "button";
+        rm.className = "c-palette-editor__remove";
+        rm.dataset.index = String(i);
+        rm.setAttribute("aria-label", "Remove " + entry.name);
+        rm.textContent = "×";
+        this.appendChild(rm);
+      });
+      const add = document.createElement("button");
+      add.type = "button";
+      add.className = "c-palette-editor__add";
+      add.setAttribute("aria-label", labelText(this, "add-color", "Add color"));
+      add.textContent = "+";
+      this.appendChild(add);
+      // Contrast feedback for the selected color: the ratio against white
+      // and black, and whether the better one meets AA for body text.
+      const sel = entries[this._paletteSelected];
+      if (sel) {
+        const lum = (hex) => {
+          const m = /^#([0-9a-f]{6})$/i.exec(hex);
+          if (!m) return null;
+          const n = parseInt(m[1], 16);
+          const ch = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+          return 0.2126 * ch[0] + 0.7152 * ch[1] + 0.0722 * ch[2];
+        };
+        const l = lum(sel.color);
+        const out = document.createElement("span");
+        out.className = "c-palette-editor__contrast";
+        if (l === null) {
+          out.textContent = sel.color;
+        } else {
+          const ratio = (a, b) => (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+          const onWhite = ratio(l, 1), onBlack = ratio(l, 0);
+          const best = Math.max(onWhite, onBlack);
+          out.textContent = sel.name + ": " + onWhite.toFixed(1) + ":1 on white, " + onBlack.toFixed(1) + ":1 on black — " + (best >= 4.5 ? "AA" : "below AA");
+        }
+        this.appendChild(out);
       }
     }
     enhance() {
       if (this._wiredPaletteEditor) return;
       this._wiredPaletteEditor = true;
       this.addEventListener("click", (e) => {
-        const sw = e.target && e.target.closest ? e.target.closest(".c-palette-editor__swatch") : null;
+        const t = e.target && e.target.closest ? e.target : null;
+        if (!t) return;
+        const sw = t.closest(".c-palette-editor__swatch");
         if (sw && this.contains(sw)) {
-          this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { color: (sw.dataset && sw.dataset.color) || sw.style.background } }));
+          this._paletteSelected = Number(sw.dataset.index);
+          this.requestRender();
+          this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { color: sw.dataset.color } }));
+          return;
         }
+        const rm = t.closest(".c-palette-editor__remove");
+        if (rm && this.contains(rm)) {
+          const entries = this._palette();
+          const i = Number(rm.dataset.index);
+          const [gone] = entries.splice(i, 1);
+          if (this._paletteSelected >= entries.length) this._paletteSelected = entries.length - 1;
+          this._writePalette(entries);
+          this.dispatchEvent(new CustomEvent("contour:remove", { bubbles: true, composed: true, detail: { value: gone ? gone.color : "" } }));
+          return;
+        }
+        if (t.closest(".c-palette-editor__add")) {
+          const entries = this._palette();
+          const next = "#888888";
+          entries.push({ color: next, name: next });
+          this._paletteSelected = entries.length - 1;
+          this._writePalette(entries);
+          this.dispatchEvent(new CustomEvent("contour:add", { bubbles: true, composed: true, detail: { value: next } }));
+        }
+      });
+      this.addEventListener("change", (e) => {
+        const edit = e.target && e.target.closest ? e.target.closest(".c-palette-editor__edit") : null;
+        if (!edit || !this.contains(edit)) return;
+        const entries = this._palette();
+        const i = Number(edit.dataset.index);
+        if (!entries[i]) return;
+        entries[i].color = edit.value;
+        if (entries[i].name === entries[i].color || /^#[0-9a-f]{6}$/i.test(entries[i].name)) entries[i].name = edit.value;
+        this._writePalette(entries);
+        this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { color: edit.value, values: entries.map((en) => en.color) } }));
       });
       this.addEventListener("keydown", (e) => {
         const swatches = Array.from(this.querySelectorAll(".c-palette-editor__swatch"));
-        navKey(e, swatches, { wrap: true, enter: true, onKey: () => { if (document.activeElement.classList.contains("c-palette-editor__swatch")) document.activeElement.click(); } });
+        if (!swatches.includes(e.target)) return;
+        navKey(e, swatches, { wrap: true, enter: true, onKey: (k, idx, item) => { if (k === "Enter" || k === " ") item.click(); } });
       });
     }
   }
@@ -19849,35 +19971,111 @@ class ContourVirtualList extends ContourBase {
 class ContourCommandPalette extends ContourBase {
     static get observed() { return ["open", "items"]; }
     static get properties() { return { open: { attribute: "open", type: Boolean }, items: { attribute: "items" } }; }
+    attributeChangedCallback(name, oldValue, newValue) {
+      super.attributeChangedCallback(name, oldValue, newValue);
+      // The open attribute is a first-class input (R20 T-18): setting it opens
+      // the palette, removing it closes. It used to be observed but ignored.
+      if (name === "open" && this.isConnected && oldValue !== newValue) {
+        if (newValue !== null) this.show(); else this.hide();
+      }
+    }
+    _recentsKey() { return "contour-command-palette:" + (this.id || "default") + ":recents"; }
+    _recents() {
+      try { const r = JSON.parse(localStorage.getItem(this._recentsKey()) || "[]"); return Array.isArray(r) ? r : []; } catch (e) { return []; }
+    }
+    _remember(label) {
+      try {
+        const r = this._recents().filter((l) => l !== label);
+        r.unshift(label);
+        localStorage.setItem(this._recentsKey(), JSON.stringify(r.slice(0, 5)));
+      } catch (e) { /* storage is best-effort */ }
+    }
+    _cmdRow(label, index, recent) {
+      const row = document.createElement("div");
+      row.className = "c-command-palette__item";
+      row.setAttribute("role", "option");
+      row.id = this.id + "-opt-" + (recent ? "r" : "") + index;
+      row.textContent = label;
+      row.dataset.index = String(index);
+      row.dataset.label = label;
+      if (recent) row.dataset.recent = "true";
+      return row;
+    }
     render() {
       this.classList.add("c-command-palette");
       if (!this.hasAttribute("role")) this.setAttribute("role", "dialog");
       if (!this.hasAttribute("aria-modal")) this.setAttribute("aria-modal", "true");
       if (!this.hasAttribute("popover")) this.setAttribute("popover", "auto");
-      const search = this.ensure(".c-command-palette__search", () => { const el = document.createElement("input"); el.className = "c-input c-command-palette__search"; el.type = "search"; el.placeholder = "Search…"; el.setAttribute("aria-label", "Search commands"); el.setAttribute("aria-expanded", "false"); el.setAttribute("aria-controls", ""); return el; });
+      if (!this.id) this.id = contourId("cmd-palette");
+      const search = this.ensure(".c-command-palette__search", () => { const el = document.createElement("input"); el.className = "c-input c-command-palette__search"; el.type = "search"; el.placeholder = "Search…"; el.setAttribute("aria-label", "Search commands"); el.setAttribute("role", "combobox"); el.setAttribute("aria-autocomplete", "list"); el.setAttribute("aria-expanded", "false"); return el; });
       const list = this.ensure(".c-command-palette__list", () => { const el = document.createElement("div"); el.className = "c-command-palette__list"; el.setAttribute("role", "listbox"); return el; });
+      if (!list.id) list.id = this.id + "-list";
+      search.setAttribute("aria-controls", list.id);
+      let parsed = [];
       const items = this.getAttribute("items");
-      if (items) {
-        try {
-          const parsed = JSON.parse(items);
-          list.innerHTML = "";
-          parsed.forEach((it, i) => {
-            const row = document.createElement("div");
-            row.className = "c-command-palette__item";
-            row.setAttribute("role", "option");
-            row.id = this.id + "-opt-" + i;
-            row.textContent = typeof it === "string" ? it : (it.label || it.title || "");
-            row.dataset.index = String(i);
-            row.dataset.label = row.textContent;
-            list.appendChild(row);
-          });
-        } catch (e) { /* keep */ }
+      if (items) { try { parsed = JSON.parse(items); } catch (e) { warnBadJson(this, "items", e); } }
+      if (!Array.isArray(parsed)) parsed = [];
+      const labelOf = (it) => typeof it === "string" ? it : (it.label || it.title || "");
+      list.innerHTML = "";
+      // Recents: the last committed labels, shown while the query is empty.
+      const q = (this._cmdQuery || "").toLowerCase().trim();
+      const recents = q ? [] : this._recents().filter((l) => parsed.some((it) => labelOf(it) === l));
+      if (recents.length) {
+        const g = document.createElement("div");
+        g.className = "c-command-palette__group";
+        g.setAttribute("role", "presentation");
+        g.textContent = labelText(this, "recent", "Recent");
+        list.appendChild(g);
+        recents.forEach((label) => list.appendChild(this._cmdRow(label, parsed.findIndex((it) => labelOf(it) === label), true)));
       }
+      // Group headers for items that carry {group}; presentation rows, not
+      // options, so the cursor and the filter skip them.
+      let lastGroup = null;
+      parsed.forEach((it, i) => {
+        const g = typeof it === "object" && it !== null ? (it.group || null) : null;
+        if (g && g !== lastGroup) {
+          const h = document.createElement("div");
+          h.className = "c-command-palette__group";
+          h.setAttribute("role", "presentation");
+          h.textContent = g;
+          list.appendChild(h);
+          lastGroup = g;
+        }
+        list.appendChild(this._cmdRow(labelOf(it), i, false));
+      });
+      // The query survives re-render: the search node is rebuilt, the host
+      // remembers what was typed and re-applies the filter.
+      if (this._cmdQuery) search.value = this._cmdQuery;
+      if (this._cmdFilter) this._cmdFilter(this._cmdQuery || "");
+      else if (this._cmdSetActive) this._cmdSetActive(this._cmdCursor || 0);
     }
-    show() { if (typeof this.showPopover === "function") { try { this.showPopover(); } catch (e) {} } this.classList.add("is-open"); modalContain(this, true); const s = this.querySelector(".c-command-palette__search"); if (s) s.setAttribute("aria-expanded", "true"); }
-    hide() { if (typeof this.hidePopover === "function") { try { this.hidePopover(); } catch (e) {} } this.classList.remove("is-open"); modalContain(this, false); const s = this.querySelector(".c-command-palette__search"); if (s) s.setAttribute("aria-expanded", "false"); }
+    show() {
+      if (this.classList.contains("is-open") || this.matches(":popover-open")) {
+        if (!this.hasAttribute("open")) this.setAttribute("open", "");
+        return;
+      }
+      if (typeof this.showPopover === "function") { try { this.showPopover(); } catch (e) {} }
+      this.classList.add("is-open");
+      modalContain(this, true);
+      const s = this.querySelector(".c-command-palette__search");
+      if (s) { s.setAttribute("aria-expanded", "true"); try { s.focus(); } catch (e) {} }
+      if (!this.hasAttribute("open")) this.setAttribute("open", "");
+    }
+    hide() {
+      const isOpen = this.classList.contains("is-open") || this.matches(":popover-open");
+      if (!isOpen) { if (this.hasAttribute("open")) this.removeAttribute("open"); return; }
+      if (typeof this.hidePopover === "function") { try { this.hidePopover(); } catch (e) {} }
+      this.classList.remove("is-open");
+      modalContain(this, false);
+      const s = this.querySelector(".c-command-palette__search");
+      if (s) s.setAttribute("aria-expanded", "false");
+      if (this.hasAttribute("open")) this.removeAttribute("open");
+    }
     toggle() { if (this.classList.contains("is-open") || this.matches(":popover-open")) this.hide(); else this.show(); }
     enhance() {
+      // Rows are rebuilt on every render: re-apply the cursor before the
+      // one-shot wiring guard.
+      if (this._cmdSetActive) this._cmdSetActive(this._cmdCursor || 0);
       if (this._wiredCmdPalette) return;
       this._wiredCmdPalette = true;
       const search = () => this.querySelector(".c-command-palette__search");
@@ -19885,16 +20083,14 @@ class ContourCommandPalette extends ContourBase {
       const items = () => Array.from(this.querySelectorAll(".c-command-palette__item"));
       const visibleItems = () => items().filter((it) => !it.hidden);
       // A cursor, not the focus position: the items are not focusable (focus
-      // stays in the search field), so asking `navKey` about the active element
-      // always returned -1 and the arrow keys did nothing. The cursor is the
-      // single source of truth for the active option.
-      let cursor = 0;
+      // stays in the search field). The cursor is the single source of truth
+      // for the active option, and it lives on the host across re-renders.
       const setActive = (idx) => {
         const vis = visibleItems();
-        if (!vis.length) { cursor = 0; return; }
-        cursor = Math.max(0, Math.min(idx, vis.length - 1));
-        vis.forEach((it, i) => it.classList.toggle("is-active", i === cursor));
-        const active = vis[cursor];
+        if (!vis.length) { this._cmdCursor = 0; return; }
+        this._cmdCursor = Math.max(0, Math.min(idx, vis.length - 1));
+        vis.forEach((it, i) => it.classList.toggle("is-active", i === this._cmdCursor));
+        const active = vis[this._cmdCursor];
         const s = search();
         if (s && active) s.setAttribute("aria-activedescendant", active.id);
         else if (s) s.removeAttribute("aria-activedescendant");
@@ -19905,33 +20101,59 @@ class ContourCommandPalette extends ContourBase {
           const label = (it.dataset.label || it.textContent || "").toLowerCase();
           it.hidden = needle !== "" && !label.includes(needle);
         });
+        // A group header stays only while it has a visible item before the
+        // next header.
+        Array.from(list().querySelectorAll(".c-command-palette__group")).forEach((g) => {
+          let n = g.nextElementSibling, any = false;
+          while (n && !n.classList.contains("c-command-palette__group")) {
+            if (!n.hidden && n.classList.contains("c-command-palette__item")) any = true;
+            n = n.nextElementSibling;
+          }
+          g.hidden = !any;
+        });
+        // No-results is a state, not an empty box.
+        let empty = list().querySelector(".c-command-palette__empty");
+        const anyVisible = items().some((it) => !it.hidden);
+        if (!anyVisible) {
+          if (!empty) { empty = document.createElement("div"); empty.className = "c-command-palette__empty"; empty.setAttribute("role", "status"); list().appendChild(empty); }
+          empty.textContent = labelText(this, "no-matches", "No matches");
+          empty.hidden = false;
+        } else if (empty) empty.hidden = true;
         setActive(0);
       };
       const select = (it) => {
         if (!it) return;
-        this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { index: Number(it.dataset.index), label: it.dataset.label || it.textContent } }));
+        const detail = { index: Number(it.dataset.index), label: it.dataset.label || it.textContent };
+        // The return value: the last committed command, readable without
+        // listening for the event (R20 T-18).
+        this.value = detail;
+        this._remember(detail.label);
+        this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail }));
         this.hide();
       };
-      const s = search();
-      if (s) {
-        s.setAttribute("role", "combobox");
-        s.setAttribute("aria-autocomplete", "list");
-        s.setAttribute("aria-controls", list() ? list().id || "" : "");
-        if (!list().id) list().id = this.id + "-list";
-        s.setAttribute("aria-controls", list().id);
-        s.addEventListener("input", (e) => filter(e.target.value));
-        s.addEventListener("keydown", (e) => {
-          const vis = visibleItems();
-          if (!vis.length) return;
-          if (e.key === "ArrowDown") { e.preventDefault(); setActive(cursor + 1); }
-          else if (e.key === "ArrowUp") { e.preventDefault(); setActive(cursor - 1); }
-          else if (e.key === "Home") { e.preventDefault(); setActive(0); }
-          else if (e.key === "End") { e.preventDefault(); setActive(vis.length - 1); }
-          else if (e.key === "Enter") { e.preventDefault(); select(vis[cursor]); }
-          else if (e.key === "Escape") { e.preventDefault(); this.hide(); }
-        });
-      }
-      // click selection
+      this._cmdSetActive = setActive;
+      this._cmdFilter = filter;
+      // Delegated on the host (rule 12): the search node is rebuilt on every
+      // re-render, and node-bound listeners died with it — typing and the
+      // arrow keys stopped after any attribute change.
+      this.addEventListener("input", (e) => {
+        const s = search();
+        if (!s || e.target !== s) return;
+        this._cmdQuery = s.value;
+        filter(s.value);
+      });
+      this.addEventListener("keydown", (e) => {
+        const s = search();
+        if (!s || e.target !== s) return;
+        const vis = visibleItems();
+        if (e.key === "Escape") { e.preventDefault(); this.hide(); return; }
+        if (!vis.length) return;
+        if (e.key === "ArrowDown") { e.preventDefault(); setActive(this._cmdCursor + 1); }
+        else if (e.key === "ArrowUp") { e.preventDefault(); setActive(this._cmdCursor - 1); }
+        else if (e.key === "Home") { e.preventDefault(); setActive(0); }
+        else if (e.key === "End") { e.preventDefault(); setActive(vis.length - 1); }
+        else if (e.key === "Enter") { e.preventDefault(); select(vis[this._cmdCursor]); }
+      });
       this.addEventListener("click", (e) => {
         const it = e.target && e.target.closest ? e.target.closest(".c-command-palette__item") : null;
         if (it && this.contains(it) && !it.hidden) select(it);
@@ -19947,7 +20169,6 @@ class ContourCommandPalette extends ContourBase {
           try { lastFocus.focus(); } catch (err) {}
         }
       });
-      // Escape via popover light dismiss is handled by keydown above; also close on outside handled by popover.
       setActive(0);
     }
   }
@@ -21350,43 +21571,89 @@ class ContourPullToRefresh extends ContourBase {
       const ind = this.ensure(".c-pull-to-refresh__indicator", () => {
         const e = document.createElement("div");
         e.className = "c-pull-to-refresh__indicator";
-        e.textContent = labelText(this, "label", "Pull to refresh");
         return e;
       });
+      ind.innerHTML = "";
+      const label = document.createElement("span");
+      label.className = "c-pull-to-refresh__label";
+      label.setAttribute("aria-live", "polite");
+      label.textContent = this._ptrError
+        ? this._ptrError
+        : (this._ptrRefreshing ? labelText(this, "refreshing", "Refreshing…") : labelText(this, "label", "Pull to refresh"));
+      ind.appendChild(label);
+      // A keyboard-reachable refresh alternative: the gesture is pointer-only,
+      // and a control the reader can press must exist anyway (R20 T-25).
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "c-pull-to-refresh__btn";
+      btn.textContent = labelText(this, "refresh", "Refresh");
+      ind.appendChild(btn);
       if (ind.parentNode !== this) this.prepend(ind);
+      this.classList.toggle("is-refreshing", !!this._ptrRefreshing);
+      this.classList.toggle("has-error", !!this._ptrError);
+      this.setAttribute("aria-busy", String(!!this._ptrRefreshing));
+    }
+    // Completion is consumer-driven (R20 T-25): the old fixed 800 ms timeout
+    // faked it. The consumer calls complete() when its fetch settles, or
+    // fail(message) to surface the error; both clear the pull offset.
+    complete() {
+      this._ptrRefreshing = false;
+      this._ptrError = null;
+      this.style.removeProperty("--ptr-offset");
+      this.requestRender();
+    }
+    fail(message) {
+      this._ptrRefreshing = false;
+      this._ptrError = String(message || labelText(this, "error", "Refresh failed"));
+      this.style.removeProperty("--ptr-offset");
+      this.requestRender();
+      this.dispatchEvent(new CustomEvent("contour:error", { bubbles: true, composed: true, detail: { message: this._ptrError } }));
+    }
+    _refresh() {
+      if (this._ptrRefreshing) return;
+      this._ptrRefreshing = true;
+      this._ptrError = null;
+      this.style.removeProperty("--ptr-offset");
+      this.requestRender();
+      this.dispatchEvent(new CustomEvent("contour:refresh", { bubbles: true, composed: true }));
     }
     enhance() {
       if (this._wiredPullToRefresh) return;
       this._wiredPullToRefresh = true;
+      this.addEventListener("click", (e) => {
+        const btn = e.target && e.target.closest ? e.target.closest(".c-pull-to-refresh__btn") : null;
+        if (btn && this.contains(btn)) this._refresh();
+      });
+      // Pointer events cover touch AND mouse; the gesture had been touch-only.
       let startY = 0;
       let pulling = false;
-      this.addEventListener("touchstart", (e) => {
-        if (this.scrollTop > 0) return;
-        const t = e.touches && e.touches[0];
-        if (t) { startY = t.clientY; pulling = true; }
-      }, { passive: true });
-      this.addEventListener("touchmove", (e) => {
+      let offset = 0;
+      this.addEventListener("pointerdown", (e) => {
+        if (this._ptrRefreshing || this.scrollTop > 0) return;
+        if (e.target && e.target.closest && e.target.closest(".c-pull-to-refresh__btn")) return;
+        startY = e.clientY;
+        pulling = true;
+        offset = 0;
+        try { this.setPointerCapture(e.pointerId); } catch (err) {}
+      });
+      this.addEventListener("pointermove", (e) => {
         if (!pulling) return;
-        const t = e.touches && e.touches[0];
-        if (!t) return;
-        const dy = t.clientY - startY;
-        if (dy > 0 && dy < 120) {
-          this.style.setProperty("--ptr-offset", dy + "px");
+        const dy = e.clientY - startY;
+        if (dy > 0) {
+          offset = Math.min(120, dy * 0.6);
+          this.style.setProperty("--ptr-offset", offset + "px");
         }
-      }, { passive: true });
-      this.addEventListener("touchend", (e) => {
+      });
+      const end = () => {
         if (!pulling) return;
         pulling = false;
-        const t = e.changedTouches && e.changedTouches[0];
-        const dy = t ? t.clientY - startY : 0;
         const thr = Number(this.getAttribute("threshold")) || 60;
-        if (dy >= thr) {
-          this.classList.add("is-refreshing");
-          this.dispatchEvent(new CustomEvent("contour:refresh", { bubbles: true, composed: true }));
-          setTimeout(() => this.classList.remove("is-refreshing"), 800);
-        }
-        this.style.removeProperty("--ptr-offset");
-      }, { passive: true });
+        if (offset >= thr) this._refresh();
+        else this.style.removeProperty("--ptr-offset");
+        offset = 0;
+      };
+      this.addEventListener("pointerup", end);
+      this.addEventListener("pointercancel", end);
     }
   }
   define("contour-pull-to-refresh", ContourPullToRefresh);

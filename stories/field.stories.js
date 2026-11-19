@@ -5,6 +5,7 @@ export default {
   title: "Contour/Forms/Field",
   tags: ["autodocs"],
   parameters: {
+    a11y: { test: "error" },
     contour: { maturity: "complete-widget" },
 
   },

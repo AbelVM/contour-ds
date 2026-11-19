@@ -14946,6 +14946,31 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  </tbody>
                </table></div>
                <p class="c-section-head__desc">
+                 Component maturity and completeness: the catalog divides components into four
+                 levels of implementation depth:
+                 <strong>Primitive</strong> (single-purpose atomic building blocks like box, stack,
+                 readout, kbd; they lay out children or render tokens);
+                 <strong>Scaffold</strong> (structural frames like dash-shell and dashboard-grid that
+                 provide CSS classes and wire host attributes but leave windowing/docking to the host application);
+                 <strong>Composition</strong> (hosts that compose multiple primitives through slots and
+                 event seams, such as header, sidebar, split-view, and map-area); and
+                 <strong>Complete widget</strong> (autonomous interactive controls with full keyboard
+                 navigation, roving tabindex, ARIA roles, form association, and event dispatch, such as
+                 combobox, table, dialog, time-slider, and sortable-list). A component that merely
+                 renders its HTML markup is not a complete control until it fulfills its interaction,
+                 keyboard, form-value and ARIA contracts.
+               </p>
+               <div class="c-table-wrap"><table class="c-table">
+                 <caption>Component completeness and maturity levels</caption>
+                 <thead><tr><th>Maturity level</th><th>Contract &amp; behavior</th><th>Examples</th></tr></thead>
+                 <tbody>
+                   <tr><td><strong>Primitive</strong></td><td>Atomic styling or layout box; single DOM node or slot container; zero internal state machine.</td><td>contour-box, contour-stack, contour-cluster, contour-readout, contour-kbd</td></tr>
+                   <tr><td><strong>Scaffold</strong></td><td>Page or workspace structural frame; provides layout CSS and slots; docking/windowing owned by host.</td><td>contour-dash-shell, contour-dashboard-grid, contour-app-body</td></tr>
+                   <tr><td><strong>Composition</strong></td><td>Coordinates multiple primitives across an event seam; forwards bubbling events; host-driven state.</td><td>contour-map-area, contour-split-view, contour-header, contour-sidebar</td></tr>
+                   <tr><td><strong>Complete widget</strong></td><td>Autonomous state machine; roving tabindex/keyboard navigation; form association; live ARIA updates.</td><td>contour-table, contour-combobox, contour-dialog, contour-time-slider, contour-sortable-list</td></tr>
+                 </tbody>
+               </table></div>
+               <p class="c-section-head__desc">
                  Token-name compatibility: consumers migrating from libreship may keep their
                  <code class="c-kbd">--ls-*</code> names by aliasing them onto the corresponding
                  <code class="c-kbd">--color-*</code> / <code class="c-kbd">--chart-*</code> tokens on
@@ -15104,7 +15129,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                       <tr><td><code>contour:step-activate</code></td><td><code>index</code>, <code>title</code></td><td>true</td></tr>
                       <tr><td><code>contour:step-change</code></td><td><code>direction</code>, <code>index</code>, <code>title</code></td><td>true</td></tr>
                       <tr><td><code>contour:stream-state</code></td><td><code>running</code></td><td>true</td></tr>
-                      <tr><td><code>contour:style-resolved</code></td><td><code>applied</code>, <code>items</code>, <code>layer</code>, <code>property</code>, <code>value</code></td><td>true</td></tr>
+                      <tr><td><code>contour:style-resolved</code></td><td><code>applied</code>, <code>classification</code>, <code>colors</code>, <code>items</code>, <code>layer</code>, <code>n</code>, <code>palette</code>, <code>property</code>, <code>value</code></td><td>true</td></tr>
                       <tr><td><code>contour:submit</code></td><td><code>submitting</code></td><td>true</td></tr>
                       <tr><td><code>contour:tab-change</code></td><td><code>index</code>, <code>label</code></td><td>true</td></tr>
                       <tr><td><code>contour:theme-change</code></td><td><code>theme</code></td><td>true</td></tr>
