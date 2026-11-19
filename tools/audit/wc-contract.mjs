@@ -3328,6 +3328,272 @@ try {
     else
       console.log("wc-contract: responsive-content steps at its three breakpoints, style-switcher writes value back and keeps authored options, split-button's primary action and menu keyboard work, annotation drags and nudges into x/y, date-range submits, cross-constrains and resets");
   }
+
+  // ---- 27. stateful widget completions (R20 T-10/21/22/23/24) --------------
+  //
+  // tags-input's paste/comma/limit/disabled paths, sortable-list's order
+  // persistence, calendar's January reachability and grid keyboard,
+  // carousel's pausable autoplay, animation-controls' dead markers and
+  // one-way controls. Autoplay is measured under both motion preferences.
+  {
+    const p = await browser.newPage();
+    const errs = [];
+    p.on("pageerror", (e) => errs.push(String(e.message || e)));
+    await p.goto(`${origin}/unmin.html`, { waitUntil: "load" });
+    await p.waitForFunction(() => !!window.ContourElements, null, { timeout: 20000 });
+    const out = await p.evaluate(async () => {
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+      const mk = async (tag, attrs = {}) => {
+        const el = document.createElement(tag);
+        for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+        document.body.appendChild(el);
+        await wait(30);
+        return el;
+      };
+      const results = {};
+
+      // tags-input: Enter, duplicate feedback, comma commit, paste + max,
+      // disabled remove guard, required-empty validity.
+      {
+        const el = await mk("contour-tags-input", { name: "tg", value: '["a"]', required: "", max: "4" });
+        // Re-query per step: every commit re-renders and rebuilds the input.
+        const input = () => el.querySelector(".c-tags-input__input");
+        const live = () => el.querySelector(".c-tags-input__live")?.textContent || "";
+        const r = {};
+        input().value = "b";
+        input().dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
+        await wait(20);
+        r.enterAdd = el.getAttribute("value");
+        input().value = "b";
+        input().dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
+        await wait(20);
+        r.dup = { value: el.getAttribute("value"), announced: live().includes("already added") };
+        input().value = "c,";
+        input().dispatchEvent(new Event("input", { bubbles: true }));
+        await wait(20);
+        r.comma = { value: el.getAttribute("value"), rest: input().value };
+        const dt = new DataTransfer();
+        dt.setData("text/plain", "d,e");
+        el.querySelector(".c-tags-input__input").dispatchEvent(new ClipboardEvent("paste", { bubbles: true, cancelable: true, clipboardData: dt }));
+        await wait(20);
+        r.paste = { value: el.getAttribute("value"), limitAnnounced: live().includes("limit") };
+        el.setAttribute("disabled", "");
+        await wait(20);
+        const before = el.getAttribute("value");
+        el.querySelector(".c-tags-input__remove")?.click();
+        await wait(20);
+        r.disabledRemove = el.getAttribute("value") === before;
+        el.removeAttribute("disabled");
+        el.setAttribute("value", "[]");
+        await wait(20);
+        r.requiredEmpty = el.checkValidity() === false;
+        results.tagsInput = r;
+        el.remove();
+      }
+
+      // sortable-list: keyboard move writes order back; a data re-render
+      // keeps the user's permutation; Home jumps to the top.
+      {
+        const el = await mk("contour-sortable-list", { items: '["A","B","C"]' });
+        const labels = () => Array.from(el.querySelectorAll(".c-sortable-list__label")).map((n) => n.textContent);
+        const handles = () => Array.from(el.querySelectorAll(".c-sortable-list__handle"));
+        const r = {};
+        let move = null;
+        el.addEventListener("contour:move", (e) => { move = e.detail; });
+        handles()[1].focus();
+        handles()[1].dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowUp", bubbles: true, cancelable: true }));
+        await wait(20);
+        r.arrowUp = { labels: labels(), order: el.getAttribute("order"), move };
+        // A different items string with the same data forces a re-render.
+        el.setAttribute("items", '["A", "B", "C"]');
+        await wait(20);
+        r.persisted = labels();
+        const hs = handles();
+        hs[2].focus();
+        hs[2].dispatchEvent(new KeyboardEvent("keydown", { key: "Home", bubbles: true, cancelable: true }));
+        await wait(20);
+        r.home = { labels: labels(), order: el.getAttribute("order") };
+        results.sortableList = r;
+        el.remove();
+      }
+
+      // calendar: January is reachable (month=0), weekday headers, one tab
+      // stop, cross-month arrows, PageUp/Down (+Shift year), year nav, range.
+      {
+        const el = await mk("contour-calendar", { month: "0", year: "2026", value: "2026-01-15" });
+        const days = () => Array.from(el.querySelectorAll(".c-calendar__day:not(.c-calendar__day--empty)"));
+        const r = { january: { count: days().length, first: days()[0]?.dataset.value }, weekdays: el.querySelectorAll('[role="columnheader"]').length, tabStops: days().filter((d) => d.getAttribute("tabindex") === "0").length };
+        const focused = () => document.activeElement?.dataset?.value || null;
+        days()[14].focus();
+        days()[14].dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true, cancelable: true }));
+        r.arrow = focused();
+        days()[30].focus();
+        days()[30].dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true, cancelable: true }));
+        await wait(20);
+        r.crossMonth = { month: el.getAttribute("month"), focused: focused() };
+        document.activeElement.dispatchEvent(new KeyboardEvent("keydown", { key: "PageDown", bubbles: true, cancelable: true }));
+        await wait(20);
+        r.pageDown = { month: el.getAttribute("month"), focused: focused() };
+        document.activeElement.dispatchEvent(new KeyboardEvent("keydown", { key: "PageUp", shiftKey: true, bubbles: true, cancelable: true }));
+        await wait(20);
+        r.shiftPageUp = { year: el.getAttribute("year"), focused: focused() };
+        el.querySelector(".c-calendar__next-year").click();
+        await wait(20);
+        r.yearNav = el.getAttribute("year");
+        el.remove();
+        const rng = await mk("contour-calendar", { range: "", month: "0", year: "2026" });
+        let sel = null;
+        rng.addEventListener("contour:select", (e) => { sel = e.detail; });
+        rng.querySelector('[data-value="2026-01-10"]').click();
+        await wait(20);
+        const firstClick = { start: rng.getAttribute("start"), end: rng.getAttribute("end") };
+        rng.querySelector('[data-value="2026-01-05"]').click();
+        await wait(20);
+        r.range = { firstClick, ordered: { start: rng.getAttribute("start"), end: rng.getAttribute("end") }, event: sel, inRange: rng.querySelectorAll(".c-calendar__day.is-in-range").length };
+        results.calendar = r;
+        rng.remove();
+      }
+
+      // carousel: autoplay advances, the pause control freezes it, play
+      // resumes, Home/End stay in the lifecycle.
+      {
+        const el = await mk("contour-carousel", { items: '["one","two","three"]', autoplay: "500" });
+        const r = { pauseBtn: !!el.querySelector(".c-carousel__pause") };
+        let pauses = 0, plays = 0;
+        el.addEventListener("contour:pause", () => pauses++);
+        el.addEventListener("contour:play", () => plays++);
+        await wait(1200);
+        r.advanced = Number(el.getAttribute("index") || "0") > 0;
+        el.querySelector(".c-carousel__pause").click();
+        await wait(20);
+        const frozenAt = el.getAttribute("index");
+        await wait(700);
+        r.pause = { attr: el.hasAttribute("paused"), events: pauses, frozen: el.getAttribute("index") === frozenAt };
+        el.querySelector(".c-carousel__pause").click();
+        await wait(700);
+        r.resume = { attr: el.hasAttribute("paused"), events: plays, advanced: el.getAttribute("index") !== frozenAt };
+        el.dispatchEvent(new KeyboardEvent("keydown", { key: "End", bubbles: true, cancelable: true }));
+        await wait(20);
+        r.end = { index: el.getAttribute("index"), active: el.querySelector(".c-carousel__slide.is-active")?.dataset.index };
+        el.dispatchEvent(new KeyboardEvent("keydown", { key: "Home", bubbles: true, cancelable: true }));
+        await wait(20);
+        r.home = { index: el.getAttribute("index"), active: el.querySelector(".c-carousel__slide.is-active")?.dataset.index };
+        results.carousel = r;
+        el.remove();
+      }
+
+      // animation-controls: markers render as datalist ticks, loop and speed
+      // are controls with events, play owns the attribute, progress writes
+      // back, the toolbar roves one tab stop.
+      {
+        const el = await mk("contour-animation-controls", { min: "0", max: "10", progress: "2", speed: "1x", markers: '[{"value":5,"label":"Mid"}]' });
+        const r = { markers: { options: el.querySelectorAll("datalist.c-animation-controls__markers option").length, listed: el.querySelector(".c-animation-controls__scrubber").hasAttribute("list") } };
+        let loopEv = null, speedEv = null, toggleEv = null, seekEv = null;
+        el.addEventListener("contour:loop-change", (e) => { loopEv = e.detail; });
+        el.addEventListener("contour:speed-change", (e) => { speedEv = e.detail; });
+        el.addEventListener("contour:toggle", (e) => { toggleEv = e.detail; });
+        el.addEventListener("contour:seek", (e) => { seekEv = e.detail; });
+        el.querySelector(".c-animation-controls__loop").click();
+        await wait(20);
+        r.loop = { attr: el.hasAttribute("loop"), ev: loopEv, pressed: el.querySelector(".c-animation-controls__loop").getAttribute("aria-pressed") };
+        el.querySelector(".c-animation-controls__speed").click();
+        await wait(20);
+        r.speed = { attr: el.getAttribute("speed"), ev: speedEv };
+        el.querySelector(".c-animation-controls__play").click();
+        await wait(350);
+        r.play = { attr: el.hasAttribute("playing"), ev: toggleEv, progress: Number(el.getAttribute("progress")) };
+        el.querySelector(".c-animation-controls__play").click();
+        await wait(20);
+        r.paused = !el.hasAttribute("playing");
+        const scrubber = el.querySelector(".c-animation-controls__scrubber");
+        scrubber.value = "7";
+        scrubber.dispatchEvent(new Event("input", { bubbles: true }));
+        await wait(20);
+        r.seek = { attr: el.getAttribute("progress"), ev: seekEv };
+        const playBtn = el.querySelector(".c-animation-controls__play");
+        r.roving = { playTab: playBtn.getAttribute("tabindex"), speedTab: el.querySelector(".c-animation-controls__speed").getAttribute("tabindex") };
+        playBtn.focus();
+        playBtn.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true, cancelable: true }));
+        r.rovedTo = document.activeElement?.className || "";
+        results.animControls = r;
+        el.remove();
+      }
+      return results;
+    });
+
+    // Reduced motion: a second pass with the preference emulated — autoplay
+    // must not start, and the pause control must reflect the paused state.
+    await p.emulateMedia({ reducedMotion: "reduce" });
+    const reduced = await p.evaluate(async () => {
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+      const el = document.createElement("contour-carousel");
+      el.setAttribute("items", '["one","two","three"]');
+      el.setAttribute("autoplay", "500");
+      document.body.appendChild(el);
+      await wait(40);
+      const pressed = el.querySelector(".c-carousel__pause")?.getAttribute("aria-pressed");
+      await wait(700);
+      const index = el.getAttribute("index");
+      el.remove();
+      return { pressed, index };
+    });
+    await p.emulateMedia({ reducedMotion: "no-preference" });
+
+    const bad = [];
+    const eq = (label, got, want) => {
+      const g = JSON.stringify(got), w = JSON.stringify(want);
+      if (g !== w) bad.push(`${label}: ${g} != ${w}`);
+    };
+    // tags-input
+    eq("tags Enter add", out.tagsInput?.enterAdd, '["a","b"]');
+    eq("tags duplicate", out.tagsInput?.dup, { value: '["a","b"]', announced: true });
+    eq("tags comma commit", out.tagsInput?.comma, { value: '["a","b","c"]', rest: "" });
+    eq("tags paste + max", out.tagsInput?.paste, { value: '["a","b","c","d"]', limitAnnounced: true });
+    if (out.tagsInput?.disabledRemove !== true) bad.push("remove button worked while disabled");
+    if (out.tagsInput?.requiredEmpty !== true) bad.push("required tags-input with [] reports valid");
+    // sortable-list
+    eq("sortable arrowUp", out.sortableList?.arrowUp, { labels: ["B", "A", "C"], order: "[1,0,2]", move: { direction: "up", from: 1, to: 0 } });
+    eq("sortable persisted", out.sortableList?.persisted, ["B", "A", "C"]);
+    eq("sortable home", out.sortableList?.home, { labels: ["C", "B", "A"], order: "[2,1,0]" });
+    // calendar
+    eq("January reachable", out.calendar?.january, { count: 31, first: "2026-01-01" });
+    if (out.calendar?.weekdays !== 7) bad.push(`calendar has ${out.calendar?.weekdays} columnheaders (want 7)`);
+    if (out.calendar?.tabStops !== 1) bad.push(`calendar exposes ${out.calendar?.tabStops} day tab stops (want 1)`);
+    eq("calendar arrow", out.calendar?.arrow, "2026-01-16");
+    eq("calendar cross-month", out.calendar?.crossMonth, { month: "1", focused: "2026-02-01" });
+    eq("calendar PageDown", out.calendar?.pageDown, { month: "2", focused: "2026-03-01" });
+    eq("calendar Shift+PageUp", out.calendar?.shiftPageUp, { year: "2025", focused: "2025-03-01" });
+    eq("calendar year nav", out.calendar?.yearNav, "2026");
+    eq("range first click", out.calendar?.range?.firstClick, { start: "2026-01-10", end: null });
+    eq("range ordered", out.calendar?.range?.ordered, { start: "2026-01-05", end: "2026-01-10" });
+    eq("range event", out.calendar?.range?.event, { value: "2026-01-05", range: ["2026-01-05", "2026-01-10"] });
+    if (out.calendar?.range?.inRange !== 4) bad.push(`range highlights ${out.calendar?.range?.inRange} interior days (want 4)`);
+    // carousel
+    if (out.carousel?.pauseBtn !== true) bad.push("autoplay carousel rendered no pause control");
+    if (out.carousel?.advanced !== true) bad.push("autoplay did not advance");
+    eq("carousel pause", out.carousel?.pause, { attr: true, events: 1, frozen: true });
+    eq("carousel resume", out.carousel?.resume, { attr: false, events: 1, advanced: true });
+    eq("carousel End", out.carousel?.end, { index: "2", active: "2" });
+    eq("carousel Home", out.carousel?.home, { index: "0", active: "0" });
+    eq("reduced motion static", reduced, { pressed: "true", index: null });
+    // animation-controls
+    eq("markers datalist", out.animControls?.markers, { options: 1, listed: true });
+    eq("loop control", out.animControls?.loop, { attr: true, ev: { loop: true }, pressed: "true" });
+    eq("speed cycle", out.animControls?.speed, { attr: "2x", ev: { speed: 2 } });
+    if (out.animControls?.play?.attr !== true) bad.push("play click did not set playing");
+    eq("play event", out.animControls?.play?.ev, { playing: true });
+    if (!(out.animControls?.play?.progress > 2)) bad.push(`playhead did not advance the progress attribute: ${out.animControls?.play?.progress}`);
+    if (out.animControls?.paused !== true) bad.push("second play click did not clear playing");
+    eq("seek writeback", out.animControls?.seek, { attr: "7", ev: { progress: 7, value: 7 } });
+    eq("toolbar tab stops", out.animControls?.roving, { playTab: "0", speedTab: "-1" });
+    if (!String(out.animControls?.rovedTo).includes("c-animation-controls__speed")) bad.push(`ArrowRight did not rove to speed: ${out.animControls?.rovedTo}`);
+    if (errs.length) bad.push(`page errors: ${errs.slice(0, 2).join(" | ")}`);
+    compared += 38;
+    if (bad.length)
+      fail(`stateful widget completions broke (R20 T-10/21/22/23/24): ${bad.join(" | ")}`);
+    else
+      console.log("wc-contract: tags-input pastes/commits/limits and guards disabled, sortable-list persists order, calendar reaches January and roves across months, carousel autoplay is pausable and reduced-motion-safe, animation-controls' markers/loop/speed/progress all answer");
+  }
 } finally {
   await browser.close();
   server.close();

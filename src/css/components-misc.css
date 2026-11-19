@@ -707,7 +707,8 @@
     overflow-wrap: anywhere;
   }
   .c-animation-controls__play,
-  .c-animation-controls__speed {
+  .c-animation-controls__speed,
+  .c-animation-controls__loop {
     /* inherits c-btn */
   }
   /* -- Style switcher ---------------------------------------------------- */
@@ -1437,9 +1438,15 @@
   .c-swatch__btn { inline-size: 100%; block-size: 100%; border: none; background: transparent; cursor: pointer; }
   /* -- Calendar ---------------------------------------------------------- */
   .c-calendar { display: block; }
-  .c-calendar__grid { display: grid;     grid-template-columns: repeat(7, minmax(calc(2.75rem * var(--density, 1)), 1fr)); }
+  .c-calendar__grid { display: grid;     grid-template-columns: repeat(7, minmax(calc(2.75rem * var(--density, 1)), 1fr)); gap: 2px; }
+  /* The ARIA rows must not become layout boxes: the seven-column flow is drawn
+     by the grid, so a row is display:contents (the date-picker's own pattern).
+     Without this each row was one grid item and the days stacked in columns. */
+  .c-calendar__row { display: contents; }
+  .c-calendar__weekday { font-size: var(--type-xs); color: var(--color-text-muted); text-align: center; }
   .c-calendar__day { aspect-ratio: 1; min-inline-size: var(--target-option); min-block-size: var(--target-option); border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-1); color: var(--color-text); cursor: pointer; font-size: var(--type-xs); }
   .c-calendar__day.is-selected { background: var(--color-primary); color: var(--color-on-primary); }
+  .c-calendar__day.is-in-range { background: var(--color-primary-soft); color: var(--color-primary-text); }
   .c-calendar__day--empty { border: none; background: transparent; }
   .c-calendar__header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: calc(var(--space-xs) * var(--density, 1)); margin-block-end: calc(var(--space-xs) * var(--density, 1)); }
   .c-calendar__header > * {
@@ -1447,7 +1454,7 @@
     overflow-wrap: anywhere;
   }
   .c-calendar__title { font-weight: 600; font-size: var(--type-sm); }
-  .c-calendar__prev, .c-calendar__next {     min-inline-size: calc(2rem * var(--density, 1)); }
+  .c-calendar__prev, .c-calendar__next, .c-calendar__prev-year, .c-calendar__next-year {     min-inline-size: calc(2rem * var(--density, 1)); }
   /* -- Carousel ---------------------------------------------------------- */
   .c-carousel { display: block; position: relative; }
   .c-carousel__track { display: flex; overflow: hidden; gap: calc(var(--space-sm) * var(--density, 1)); }

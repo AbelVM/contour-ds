@@ -5,10 +5,10 @@
   "statement": "Generated, never hand-edited. Every block, element, variant, state and token below is read from src/css by the same inventory that publishes every count in this repository, and tools/check-components.mjs fails if the shipped bytes are not that derivation. `tokens` lists the custom properties a block's rules read; a rule naming two blocks (`.c-alert, .c-callout`) is credited to both, because that is what a retune does.",
   "counts": {
     "blocks": 246,
-    "elements": 894,
+    "elements": 898,
     "variants": 114,
-    "states": 327,
-    "tokens": 2673,
+    "states": 328,
+    "tokens": 2676,
     "vars": 16,
     "inputs": 19,
     "tokensIndexed": 199
@@ -1443,34 +1443,47 @@
         "components-misc.css",
         "utilities.css"
       ],
-      "rules": 11,
+      "rules": 16,
       "elements": [
         "c-calendar__day",
         "c-calendar__day--empty",
         "c-calendar__grid",
         "c-calendar__header",
         "c-calendar__next",
+        "c-calendar__next-year",
         "c-calendar__prev",
-        "c-calendar__title"
+        "c-calendar__prev-year",
+        "c-calendar__row",
+        "c-calendar__title",
+        "c-calendar__weekday"
       ],
       "variants": [],
       "states": [
+        ".is-in-range",
         ".is-selected"
       ],
       "attributes": [
         "value",
         "month",
-        "year"
+        "year",
+        "range",
+        "start",
+        "end"
       ],
-      "booleanAttributes": [],
+      "booleanAttributes": [
+        "range"
+      ],
       "slots": [],
       "parts": [],
       "tokens": [
         "--color-border",
         "--color-on-primary",
         "--color-primary",
+        "--color-primary-soft",
+        "--color-primary-text",
         "--color-surface-1",
         "--color-text",
+        "--color-text-muted",
         "--density",
         "--radius-sm",
         "--space-xs",
@@ -1662,9 +1675,13 @@
       ],
       "attributes": [
         "items",
-        "index"
+        "index",
+        "autoplay",
+        "paused"
       ],
-      "booleanAttributes": [],
+      "booleanAttributes": [
+        "paused"
+      ],
       "slots": [],
       "parts": [],
       "tokens": [
@@ -10473,7 +10490,8 @@
       "variants": [],
       "states": [],
       "attributes": [
-        "items"
+        "items",
+        "order"
       ],
       "booleanAttributes": [],
       "slots": [],
@@ -11754,10 +11772,13 @@
         "placeholder",
         "disabled",
         "error",
-        "help"
+        "help",
+        "required",
+        "max"
       ],
       "booleanAttributes": [
-        "disabled"
+        "disabled",
+        "required"
       ],
       "slots": [],
       "parts": [],
@@ -13624,6 +13645,7 @@
       "c-activity-feed",
       "c-avatar",
       "c-badge",
+      "c-calendar",
       "c-chip",
       "c-combobox",
       "c-command",
@@ -13657,6 +13679,7 @@
       "c-avatar",
       "c-badge",
       "c-btn",
+      "c-calendar",
       "c-chip",
       "c-combobox",
       "c-command",
@@ -13991,6 +14014,7 @@
       "c-brownout",
       "c-brush",
       "c-btn",
+      "c-calendar",
       "c-callout",
       "c-card",
       "c-carousel",

@@ -2764,7 +2764,28 @@
           "description": "Contour component c-calendar (complete-widget).",
           "attributes": [
             {
+              "name": "end",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-calendar."
+            },
+            {
               "name": "month",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-calendar."
+            },
+            {
+              "name": "range",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Boolean attribute for c-calendar."
+            },
+            {
+              "name": "start",
               "type": {
                 "text": "string"
               },
@@ -2788,11 +2809,35 @@
           "members": [
             {
               "kind": "field",
+              "name": "end",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "end"
+            },
+            {
+              "kind": "field",
               "name": "month",
               "type": {
                 "text": "string | null"
               },
               "attribute": "month"
+            },
+            {
+              "kind": "field",
+              "name": "range",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "range"
+            },
+            {
+              "kind": "field",
+              "name": "start",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "start"
             },
             {
               "kind": "field",
@@ -2990,11 +3035,18 @@
         },
         {
           "kind": "class",
-          "name": "ContourElement",
+          "name": "ContourCarouselElement",
           "tagName": "contour-carousel",
           "customElement": true,
           "description": "Contour component c-carousel (complete-widget).",
           "attributes": [
+            {
+              "name": "autoplay",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-carousel."
+            },
             {
               "name": "index",
               "type": {
@@ -3008,9 +3060,24 @@
                 "text": "string"
               },
               "description": "Attribute for c-carousel."
+            },
+            {
+              "name": "paused",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Boolean attribute for c-carousel."
             }
           ],
           "members": [
+            {
+              "kind": "field",
+              "name": "autoplay",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "autoplay"
+            },
             {
               "kind": "field",
               "name": "index",
@@ -3026,6 +3093,14 @@
                 "text": "string | null"
               },
               "attribute": "items"
+            },
+            {
+              "kind": "field",
+              "name": "paused",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "paused"
             }
           ]
         },
@@ -21105,13 +21180,20 @@
         },
         {
           "kind": "class",
-          "name": "ContourElement",
+          "name": "ContourSortableListElement",
           "tagName": "contour-sortable-list",
           "customElement": true,
           "description": "Contour component c-sortable-list (complete-widget).",
           "attributes": [
             {
               "name": "items",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-sortable-list."
+            },
+            {
+              "name": "order",
               "type": {
                 "text": "string"
               },
@@ -21126,6 +21208,14 @@
                 "text": "string | null"
               },
               "attribute": "items"
+            },
+            {
+              "kind": "field",
+              "name": "order",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "order"
             }
           ]
         },
@@ -23898,11 +23988,25 @@
               "description": "Attribute for c-tags-input."
             },
             {
+              "name": "max",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-tags-input."
+            },
+            {
               "name": "placeholder",
               "type": {
                 "text": "string"
               },
               "description": "Attribute for c-tags-input."
+            },
+            {
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Boolean attribute for c-tags-input."
             },
             {
               "name": "value",
@@ -23939,11 +24043,27 @@
             },
             {
               "kind": "field",
+              "name": "max",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "max"
+            },
+            {
+              "kind": "field",
               "name": "placeholder",
               "type": {
                 "text": "string | null"
               },
               "attribute": "placeholder"
+            },
+            {
+              "kind": "field",
+              "name": "required",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "required"
             },
             {
               "kind": "field",
@@ -26672,7 +26792,7 @@
           "kind": "custom-element-definition",
           "name": "contour-carousel",
           "declaration": {
-            "name": "ContourElement",
+            "name": "ContourCarouselElement",
             "module": "dist/contour-wc.esm.js"
           }
         },
@@ -29344,7 +29464,7 @@
           "kind": "custom-element-definition",
           "name": "contour-sortable-list",
           "declaration": {
-            "name": "ContourElement",
+            "name": "ContourSortableListElement",
             "module": "dist/contour-wc.esm.js"
           }
         },

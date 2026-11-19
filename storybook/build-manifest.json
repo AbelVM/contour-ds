@@ -1,6 +1,6 @@
 {
-  "builtAt": "2026-11-19T09:04:51.510Z",
-  "sourceRevision": "9ca97a9e962957994d9892d254204a6200327c5c",
+  "builtAt": "2026-11-19T09:35:51.717Z",
+  "sourceRevision": "497e32739708f5124a18bc211420f1cad58f3c3c",
   "sources": {
     "src/css/base.css": {
       "bytes": 12014,
@@ -73,9 +73,9 @@
       "sha256": "20855aa46e616670"
     },
     "src/css/components-misc.css": {
-      "bytes": 72830,
-      "mtimeMs": 1795078126525.579,
-      "sha256": "70f87797576192e8"
+      "bytes": 73416,
+      "mtimeMs": 1795080610142.5623,
+      "sha256": "d16dc97ebed6de88"
     },
     "src/css/components-navigation.css": {
       "bytes": 11835,
@@ -193,9 +193,9 @@
       "sha256": "724e1bf428276ee1"
     },
     "src/js/wc/core.mjs": {
-      "bytes": 74106,
-      "mtimeMs": 1795078384301.2153,
-      "sha256": "54631e1aace9c91f"
+      "bytes": 74257,
+      "mtimeMs": 1795080610124.562,
+      "sha256": "db1b0b52a4d5f24e"
     },
     "src/js/wc/dashboard.mjs": {
       "bytes": 22015,
@@ -273,9 +273,9 @@
       "sha256": "8c24c56ec945c60c"
     },
     "src/js/wc/ui.mjs": {
-      "bytes": 235751,
-      "mtimeMs": 1795078328141.1401,
-      "sha256": "d420717666e1058f"
+      "bytes": 251407,
+      "mtimeMs": 1795080499837.7146,
+      "sha256": "2344500559c20526"
     },
     "src/svg/contour-mark.svg": {
       "bytes": 1727,
@@ -289,31 +289,31 @@
     }
   },
   "outputs": {
-    "contour.css": 440980,
-    "contour.min.css": 276557,
+    "contour.css": 441566,
+    "contour.min.css": 276837,
     "contour.js": 64516,
     "contour.min.js": 39001,
     "contour.tokens.json": 53344,
     "contour.themes.json": 23019,
-    "contour.components.json": 327095,
+    "contour.components.json": 327603,
     "docs/index.json": 7013,
     "registry/registry.json": 8952,
     "svg/contour-mark.svg": 1727,
-    "surfaces/contour-core.min.css": 183481,
-    "surfaces/contour-docs.min.css": 201034,
-    "surfaces/contour-data.min.css": 250074,
-    "surfaces/contour-landing.min.css": 192371,
-    "contour-wc-navigation.esm.min.js": 165713,
-    "contour-wc-data.esm.min.js": 253226,
-    "contour-wc-map.esm.min.js": 151609,
-    "contour-wc-forms.esm.min.js": 162133,
-    "contour-wc-ui.esm.min.js": 267588,
-    "contour-wc-content.esm.min.js": 136413,
-    "contour-wc-dashboard.esm.min.js": 267483,
-    "contour-wc-docs.esm.min.js": 112495,
-    "contour-wc-feedback.esm.min.js": 135259,
-    "contour-wc-interaction.esm.min.js": 126848,
-    "contour-wc-layout.esm.min.js": 109165,
-    "contour-wc-misc.esm.min.js": 114490
+    "surfaces/contour-core.min.css": 183761,
+    "surfaces/contour-docs.min.css": 201314,
+    "surfaces/contour-data.min.css": 250354,
+    "surfaces/contour-landing.min.css": 192651,
+    "contour-wc-navigation.esm.min.js": 165712,
+    "contour-wc-data.esm.min.js": 253225,
+    "contour-wc-map.esm.min.js": 151608,
+    "contour-wc-forms.esm.min.js": 162132,
+    "contour-wc-ui.esm.min.js": 275464,
+    "contour-wc-content.esm.min.js": 136412,
+    "contour-wc-dashboard.esm.min.js": 267482,
+    "contour-wc-docs.esm.min.js": 112494,
+    "contour-wc-feedback.esm.min.js": 135258,
+    "contour-wc-interaction.esm.min.js": 126847,
+    "contour-wc-layout.esm.min.js": 109164,
+    "contour-wc-misc.esm.min.js": 114489
   }
 }

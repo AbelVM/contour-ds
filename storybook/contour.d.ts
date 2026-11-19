@@ -21,7 +21,8 @@ export interface ContourBreadcrumbElement extends ContourElement{src?:S;}
 export interface ContourBrownoutElement extends ContourElement{level?:S;}
 export interface ContourBrushElement extends ContourDataElement{start?:S;end?:S;min?:S;max?:S;}
 export interface ContourBtnElement extends ContourElement{disabled?:boolean;}
-export interface ContourCalendarElement extends ContourElement{month?:S;year?:S;}
+export interface ContourCalendarElement extends ContourElement{month?:S;year?:S;range?:boolean;start?:S;end?:S;}
+export interface ContourCarouselElement extends ContourElement{autoplay?:S;paused?:boolean;}
 export interface ContourCatchmentElement extends ContourDataElement{label?:S;area?:S;center?:S;}
 export interface ContourCategoryElement extends ContourDataElement{items?:S;search?:S;note?:S;limit?:S;sort?:S;}
 export interface ContourChangelogElement extends ContourElement{src?:S;}
@@ -110,6 +111,7 @@ export interface ContourShowcaseFullElement extends ContourElement{src?:S;}
 export interface ContourSideSheetElement extends ContourElement{open?:boolean;side?:S;}
 export interface ContourSidebarElement extends ContourElement{collapsed?:boolean;}
 export interface ContourSkeletonElement extends ContourElement{shimmer?:boolean;}
+export interface ContourSortableListElement extends ContourElement{order?:S;}
 export interface ContourSparklineElement extends ContourDataElement{points?:S;}
 export interface ContourSpatialFilterElement extends ContourElement{modes?:S;mode?:S;active?:S;bounds?:S;operator?:S;src?:S;}
 export interface ContourSplitButtonElement extends ContourElement{menu?:S;}
@@ -175,7 +177,7 @@ declare global { interface HTMLElementTagNameMap {
   "contour-calendar":ContourCalendarElement;
   "contour-callout":ContourElement;
   "contour-card":ContourElement;
-  "contour-carousel":ContourElement;
+  "contour-carousel":ContourCarouselElement;
   "contour-catchment":ContourCatchmentElement;
   "contour-category":ContourCategoryElement;
   "contour-changelog":ContourChangelogElement;
@@ -338,7 +340,7 @@ declare global { interface HTMLElementTagNameMap {
   "contour-skeleton":ContourSkeletonElement;
   "contour-skeleton-group":ContourElement;
   "contour-skip-link":ContourElement;
-  "contour-sortable-list":ContourElement;
+  "contour-sortable-list":ContourSortableListElement;
   "contour-sparkline":ContourSparklineElement;
   "contour-spatial-filter":ContourSpatialFilterElement;
   "contour-spinner":ContourElement;

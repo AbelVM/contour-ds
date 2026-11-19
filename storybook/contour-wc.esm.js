@@ -324,14 +324,16 @@
   //   both readers (time-slider, animation-controls) observe it per-class.
   //   x, y — the annotation writes its dragged position back (R20 T-11);
   //   its only reader observes them per-class.
+  //   progress — animation-controls writes its playhead back (R20 T-10);
+  //   both readers (animation-controls, file-upload) observe it per-class.
   // Adding one of those back to this list makes that component recurse.
   /** Shared attribute vocabulary used by components that opt into defaults. */
   export const OBSERVED = [
     "accept", "action", "actions", "active", "after", "allow-duplicate", "allow-remove", "allow-rename", "allow-zoom", "alpha", "anchor", "answer", "area", "article", "attribution", "attribution-mark", "audit", "autoplay", "axis", "axis-x", "axis-y", "brownout", "brownout-level", "before", "body", "brand", "bounds", "breakpoint", "breaks", "brush", "brush-end", "brush-max", "brush-min", "brush-start", "cache-key", "canvas", "center", "clearable", "cols", "columns", "color", "command",
     "cells", "checked", "chrome", "confidence", "coverage", "debounce", "closable", "collapsed", "collapsible", "classification", "colors", "continuous", "content", "controls", "copyable", "count", "data", "data-table", "date", "delta",     "description", "glyphs", "graduated", "demo", "density", "desc", "dir", "direction", "disabled", "distance", "dismissible", "divider", "do", "dont", "dot", "ends", "high", "input", "layer", "low", "mode", "modes", "n", "opacity", "palette", "polarity", "precision", "range", "single",
-    "empty", "exclusive", "fallback", "filename", "format", "heading", "help", "hint", "href", "icon", "illustration", "instrument", "interval", "items", "key", "layers", "level", "range-end", "range-start",
+    "empty", "exclusive", "fallback", "filename", "format", "heading", "help", "hint", "href", "icon", "illustration", "instrument", "interval", "items", "key", "layers", "level", "markers", "range-end", "range-start",
     "label", "labels", "lazy", "lede", "legend", "left-label", "right-label", "line", "limit", "link", "links", "live", "loading", "locale", "loop", "max", "media", "message", "method", "methodology", "menu", "min", "multiple", "name", "needle", "next", "no", "no-cache", "no-data-message", "nodes", "note", "norm", "normalize",
-    "options", "orientation", "page-size", "pages", "pause", "paused", "pausable", "persist", "placeholder", "playing", "point", "points", "prev", "presets", "progress", "prompt", "question", "recent", "required",
+    "options", "orientation", "page-size", "pages", "pause", "paused", "pausable", "persist", "placeholder", "playing", "point", "points", "prev", "presets", "prompt", "question", "recent", "required",
     "quote", "ramp", "refresh", "removable", "resolution", "reverse", "rings", "retry", "results", "rows", "scale", "selectable", "segments", "show-header", "sparkline", "threshold", "thresholds", "selected", "separator", "series", "shortcut", "side", "size", "skeleton", "sort", "sort-dir", "status", "step", "submit", "submitting", "timeout", "trigger", "virtual", "sticky", "cluster-count", "cluster-expanded", "time", "resizable",
     "state", "steps", "style", "subtitle", "summary", "src", "source", "table", "tabs", "tag", "text", "ticks",     "title", "type", "unread-only", "unit", "updated", "cluster-items", "row-height",
     "variant", "values", "viewport", "warning", "yes", "zoomable",
@@ -17476,6 +17478,14 @@ class ContourAnimationControls extends ContourBase {
       const speed = this.getAttribute("speed") || "1x";
       const speedBtn = this.ensure(".c-animation-controls__speed", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-animation-controls__speed"; el.type = "button"; return el; });
       speedBtn.textContent = speed;
+      speedBtn.setAttribute("aria-label", "Playback speed " + speed);
+      // Loop is a control, not just an aria-label suffix (R20 T-10).
+      const loopBtn = this.ensure(".c-animation-controls__loop", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-animation-controls__loop"; el.type = "button"; el.textContent = "Loop"; return el; });
+      loopBtn.setAttribute("aria-pressed", String(this.hasAttribute("loop")));
+      // Toolbar: one tab stop, arrows rove (the scrubber keeps native keys).
+      playBtn.tabIndex = 0;
+      speedBtn.tabIndex = -1;
+      loopBtn.tabIndex = -1;
       // scrubber
       const scrubber = this.ensure(".c-animation-controls__scrubber", () => { const el = document.createElement("input"); el.className = "c-range c-animation-controls__scrubber"; el.type = "range"; return el; });
       if (this.getAttribute("show-thumb") === "false") scrubber.classList.remove("c-animation-controls__scrubber--thumb");
@@ -17496,6 +17506,28 @@ class ContourAnimationControls extends ContourBase {
       const caption = this.getAttribute("caption");
       if (caption) scrubber.setAttribute("aria-label", caption);
       else if (!scrubber.getAttribute("aria-label")) scrubber.setAttribute("aria-label", "Playhead");
+      // Markers (R20 T-10): the attribute was observed but never read. The
+      // native range draws datalist ticks, so the platform renders them.
+      const markersRaw = this.getAttribute("markers");
+      let markers = [];
+      if (markersRaw) { try { const p = JSON.parse(markersRaw); markers = Array.isArray(p) ? p : []; } catch (e) { warnBadJson(this, "markers", e); } }
+      const oldList = this.querySelector("datalist.c-animation-controls__markers");
+      if (markers.length) {
+        const dl = this.ensure("datalist.c-animation-controls__markers", () => { const el = document.createElement("datalist"); el.className = "c-animation-controls__markers"; return el; });
+        if (!dl.id) dl.id = this._animMarkersId || (this._animMarkersId = contourId("anim-markers"));
+        dl.innerHTML = "";
+        markers.forEach((m) => {
+          const opt = document.createElement("option");
+          const val = typeof m === "object" && m !== null ? m.value : m;
+          opt.value = String(val);
+          if (typeof m === "object" && m !== null && m.label) opt.label = String(m.label);
+          dl.appendChild(opt);
+        });
+        scrubber.setAttribute("list", dl.id);
+      } else {
+        if (oldList) oldList.remove();
+        scrubber.removeAttribute("list");
+      }
       // caption display
       const showCaption = this.hasAttribute("show-thumb-caption") || this.hasAttribute("show-thumb");
       if (caption && showCaption) {
@@ -17514,52 +17546,62 @@ class ContourAnimationControls extends ContourBase {
     enhance() {
       if (this._wiredAnimControls) return;
       this._wiredAnimControls = true;
+      const SPEEDS = [0.5, 1, 2, 4];
+      // The playhead writes back to `progress` so a consumer reading the
+      // attribute sees it — but not mid-drag: the write re-renders, and a
+      // rebuilt scrubber would break the gesture (the time-slider's rule).
+      const writeProgress = (v) => { if (!this._animScrubbing) this.setAttribute("progress", String(v)); };
+      this.addEventListener("pointerdown", (e) => {
+        if (e.target && e.target.closest && e.target.closest(".c-animation-controls__scrubber")) this._animScrubbing = true;
+      }, { passive: true });
+      const endScrub = () => { this._animScrubbing = false; };
+      this.addEventListener("pointerup", endScrub, { passive: true });
+      this.addEventListener("pointercancel", endScrub, { passive: true });
       this.addEventListener("click", (e) => {
         const play = e.target && e.target.closest ? e.target.closest(".c-animation-controls__play") : null;
-        const speed = e.target && e.target.closest ? e.target.closest(".c-animation-controls__speed") : null;
         if (play && this.contains(play)) {
-          this.dispatchEvent(new CustomEvent("contour:toggle", { bubbles: true, composed: true, detail: { playing: !this.hasAttribute("playing") } }));
+          // The attribute is the source of truth: the observer below starts
+          // and stops the timer from it, and the re-render flips the label.
+          const next = !this.hasAttribute("playing");
+          this.toggleAttribute("playing", next);
+          this.dispatchEvent(new CustomEvent("contour:toggle", { bubbles: true, composed: true, detail: { playing: next } }));
+          return;
         }
+        const speed = e.target && e.target.closest ? e.target.closest(".c-animation-controls__speed") : null;
         if (speed && this.contains(speed)) {
-          this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { speed: speed.textContent } }));
+          const cur = parseFloat(this.getAttribute("speed") || "1x");
+          const idx = SPEEDS.indexOf(Number.isFinite(cur) ? cur : 1);
+          const next = SPEEDS[(idx + 1) % SPEEDS.length];
+          this.setAttribute("speed", next + "x");
+          this.dispatchEvent(new CustomEvent("contour:speed-change", { bubbles: true, composed: true, detail: { speed: next } }));
+          return;
+        }
+        const loop = e.target && e.target.closest ? e.target.closest(".c-animation-controls__loop") : null;
+        if (loop && this.contains(loop)) {
+          const next = !this.hasAttribute("loop");
+          this.toggleAttribute("loop", next);
+          this.dispatchEvent(new CustomEvent("contour:loop-change", { bubbles: true, composed: true, detail: { loop: next } }));
         }
       });
       this.addEventListener("input", (e) => {
         const scrubber = e.target && e.target.closest ? e.target.closest(".c-animation-controls__scrubber") : null;
         if (scrubber && this.contains(scrubber)) {
           const v = Number(scrubber.value);
+          writeProgress(v);
           this.dispatchEvent(new CustomEvent("contour:seek", { bubbles: true, composed: true, detail: { progress: v, value: v } }));
         }
       });
+      this.addEventListener("change", (e) => {
+        const scrubber = e.target && e.target.closest ? e.target.closest(".c-animation-controls__scrubber") : null;
+        if (scrubber && this.contains(scrubber)) this.setAttribute("progress", scrubber.value);
+      });
+      // Toolbar keyboard: arrows rove the buttons; the scrubber keeps the
+      // native range keys (arrows, Home/End, PageUp/PageDown) when focused.
       this.addEventListener("keydown", (e) => {
-        if (e.key === " " || e.key === "Enter") {
-          const play = this.querySelector(".c-animation-controls__play");
-          if (play && (e.target === play || !e.target || e.target === this)) { e.preventDefault(); play.click(); }
-        } else if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
-          const scrubber = this.querySelector(".c-animation-controls__scrubber");
-          if (scrubber) {
-            e.preventDefault();
-            const step = Number(scrubber.step || 1);
-            const delta = e.key === "ArrowRight" ? step : -step;
-            scrubber.value = String(Math.min(Number(scrubber.max || 100), Math.max(Number(scrubber.min || 0), Number(scrubber.value || 0) + delta)));
-            scrubber.dispatchEvent(new Event("input", { bubbles: true }));
-          }
-        } else if (e.key === "Home") {
-          const scrubber = this.querySelector(".c-animation-controls__scrubber");
-          if (scrubber) { e.preventDefault(); scrubber.value = scrubber.min || "0"; scrubber.dispatchEvent(new Event("input", { bubbles: true })); }
-        } else if (e.key === "End") {
-          const scrubber = this.querySelector(".c-animation-controls__scrubber");
-          if (scrubber) { e.preventDefault(); scrubber.value = scrubber.max || "100"; scrubber.dispatchEvent(new Event("input", { bubbles: true })); }
-        } else if (e.key === "PageUp" || e.key === "PageDown") {
-          const scrubber = this.querySelector(".c-animation-controls__scrubber");
-          if (scrubber) {
-            e.preventDefault();
-            const step = Number(scrubber.step || 1) * 10;
-            const delta = e.key === "PageUp" ? step : -step;
-            scrubber.value = String(Math.min(Number(scrubber.max || 100), Math.max(Number(scrubber.min || 0), Number(scrubber.value || 0) + delta)));
-            scrubber.dispatchEvent(new Event("input", { bubbles: true }));
-          }
-        }
+        if (e.target && e.target.closest && e.target.closest(".c-animation-controls__scrubber")) return;
+        const buttons = Array.from(this.querySelectorAll(".c-animation-controls__play, .c-animation-controls__speed, .c-animation-controls__loop"));
+        if (!buttons.includes(e.target)) return;
+        navKey(e, buttons, { wrap: true, homeEnd: true, onNavigate: (i) => { buttons.forEach((b, j) => { b.tabIndex = j === i ? 0 : -1; }); }, onKey: (k, idx, item) => { if (k === "Enter" || k === " ") item.click(); } });
       });
       // Playback ownership: when `playing` is set, advance the playhead on a
       // timer and emit contour:time-change so a consumer can sync its data.
@@ -17575,12 +17617,18 @@ class ContourAnimationControls extends ContourBase {
         const min = Number(scrubber.min || 0);
         const max = Number(scrubber.max || 100);
         let v = Number(scrubber.value || 0) + speedFactor();
+        let ended = false;
         if (v > max) {
           if (this.hasAttribute("loop")) v = min;
-          else { v = max; stop(); }
+          else { v = max; stop(); ended = true; }
         }
         scrubber.value = String(v);
+        writeProgress(v);
         this.dispatchEvent(new CustomEvent("contour:time-change", { bubbles: true, composed: true, detail: { progress: v, value: v } }));
+        if (ended) {
+          this.removeAttribute("playing");
+          this.dispatchEvent(new CustomEvent("contour:toggle", { bubbles: true, composed: true, detail: { playing: false } }));
+        }
       };
       const start = () => { if (timer) return; timer = setInterval(tick, 100); };
       const stop = () => { if (timer) { clearInterval(timer); timer = null; } };
@@ -19983,8 +20031,8 @@ class ContourTour extends ContourBase {
  */
 class ContourTagsInput extends ContourBase {
     static get formAssociated() { return true; }
-    static get observed() { return ["value", "placeholder", "disabled", "error", "help"]; }
-    static get properties() { return { value: { attribute: "value" }, placeholder: { attribute: "placeholder" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" } }; }
+    static get observed() { return ["value", "placeholder", "disabled", "error", "help", "required", "max"]; }
+    static get properties() { return { value: { attribute: "value" }, placeholder: { attribute: "placeholder" }, disabled: { attribute: "disabled", type: Boolean }, error: { attribute: "error" }, help: { attribute: "help" }, required: { attribute: "required", type: Boolean }, max: { attribute: "max" } }; }
     render() {
       this.classList.add("c-tags-input");
       if (!this.hasAttribute("role")) this.setAttribute("role", "group");
@@ -20026,29 +20074,66 @@ class ContourTagsInput extends ContourBase {
       this._syncFormValue();
       this.addEventListener("contour:add", () => { this._syncFormValue(); });
       this.addEventListener("contour:remove", () => { this._syncFormValue(); });
-      let live = this.querySelector(".c-tags-input__live");
-      if (!live) { live = document.createElement("span"); live.className = "c-tags-input__live visually-hidden"; live.setAttribute("aria-live", "polite"); live.setAttribute("aria-atomic", "true"); this.appendChild(live); }
-      const announce = (msg) => { if (live) live.textContent = msg; };
+      // The live region is a generated node: a re-render drops it, so look
+      // it up (and recreate it) per announcement — rule 12.
+      const announce = (msg) => {
+        let live = this.querySelector(".c-tags-input__live");
+        if (!live) {
+          live = document.createElement("span");
+          live.className = "c-tags-input__live visually-hidden";
+          live.setAttribute("aria-live", "polite");
+          live.setAttribute("aria-atomic", "true");
+          this.appendChild(live);
+        }
+        live.textContent = msg;
+      };
+      const readTags = () => {
+        const raw = this.getAttribute("value") || "";
+        let tags = [];
+        try { tags = JSON.parse(raw); } catch (err) { tags = raw.split(",").map((s) => s.trim()).filter(Boolean); }
+        return Array.isArray(tags) ? tags.map(String) : [];
+      };
+      // One add path for Enter, comma and paste (R20 T-21): dedupe and the
+      // `max` limit are announced, not silent.
+      const addMany = (candidates) => {
+        if (this.hasAttribute("disabled")) return;
+        const tags = readTags();
+        const max = Number(this.getAttribute("max"));
+        const added = [], dups = [];
+        let limitHit = false;
+        for (const raw of candidates) {
+          const v = String(raw).trim();
+          if (!v) continue;
+          if (tags.includes(v)) { dups.push(v); continue; }
+          if (Number.isFinite(max) && max > 0 && tags.length >= max) { limitHit = true; break; }
+          tags.push(v);
+          added.push(v);
+        }
+        if (added.length) {
+          this.setAttribute("value", JSON.stringify(tags));
+          for (const v of added) this.dispatchEvent(new CustomEvent("contour:add", { bubbles: true, composed: true, detail: { value: v } }));
+        }
+        // One composed announcement AFTER the writeback re-render, so the
+        // limit/duplicate feedback is not overwritten by the "Added" line.
+        const parts = [];
+        if (added.length) parts.push("Added " + added.join(", "));
+        if (dups.length) parts.push(dups.join(", ") + " already added");
+        if (limitHit) parts.push("Tag limit reached (" + max + ")");
+        if (parts.length) announce(parts.join(". "));
+      };
       this.addEventListener("keydown", (e) => {
         const input = this.querySelector(".c-tags-input__input");
-        if (!input) return;
+        if (!input || this.hasAttribute("disabled")) return;
         if (e.key === "Enter" && e.target === input) {
           e.preventDefault();
-          const v = input.value.trim();
-          if (v) {
-            let tags = [];
-            try { tags = JSON.parse(this.getAttribute("value") || "[]"); } catch (err) { tags = (this.getAttribute("value") || "").split(",").map((s) => s.trim()).filter(Boolean); }
-            if (!Array.isArray(tags)) tags = [];
-            if (!tags.includes(v)) tags.push(v);
-            this.setAttribute("value", JSON.stringify(tags));
-            input.value = "";
-            announce("Added " + v);
-            this.dispatchEvent(new CustomEvent("contour:add", { bubbles: true, composed: true, detail: { value: v } }));
-          }
+          // Clear BEFORE addMany: its attribute write re-renders, and a
+          // clear afterwards would land on the detached node while the base
+          // restore resurrects the committed text in the new one.
+          const v = input.value;
+          input.value = "";
+          addMany([v]);
         } else if (e.key === "Backspace" && e.target === input && input.value === "") {
-          let tags = [];
-          try { tags = JSON.parse(this.getAttribute("value") || "[]"); } catch (err) { tags = (this.getAttribute("value") || "").split(",").map((s) => s.trim()).filter(Boolean); }
-          if (!Array.isArray(tags)) tags = [];
+          const tags = readTags();
           if (tags.length) {
             const removed = tags.pop();
             this.setAttribute("value", JSON.stringify(tags));
@@ -20057,14 +20142,32 @@ class ContourTagsInput extends ContourBase {
           }
         }
       });
+      // A typed comma commits the segment before it, the way tag fields do.
+      this.addEventListener("input", (e) => {
+        const input = this.querySelector(".c-tags-input__input");
+        if (!input || e.target !== input || this.hasAttribute("disabled")) return;
+        if (input.value.includes(",")) {
+          const parts = input.value.split(",");
+          input.value = parts.pop();
+          addMany(parts);
+        }
+      });
+      // Paste splits on commas, semicolons and newlines into separate tags.
+      this.addEventListener("paste", (e) => {
+        const input = this.querySelector(".c-tags-input__input");
+        if (!input || e.target !== input || this.hasAttribute("disabled")) return;
+        const text = e.clipboardData && e.clipboardData.getData("text/plain");
+        if (text && /[,;\n]/.test(text)) {
+          e.preventDefault();
+          addMany(text.split(/[,;\n]+/));
+        }
+      });
       this.addEventListener("click", (e) => {
         const rm = e.target && e.target.closest ? e.target.closest(".c-tags-input__remove") : null;
-        if (rm && this.contains(rm)) {
+        // The remove buttons used to work while the host was disabled.
+        if (rm && this.contains(rm) && !this.hasAttribute("disabled")) {
           const val = rm.dataset.value;
-          let tags = [];
-          try { tags = JSON.parse(this.getAttribute("value") || "[]"); } catch (err) { tags = (this.getAttribute("value") || "").split(",").map((s) => s.trim()).filter(Boolean); }
-          if (!Array.isArray(tags)) tags = [];
-          const next = tags.filter((t) => t !== val);
+          const next = readTags().filter((t) => t !== val);
           this.setAttribute("value", JSON.stringify(next));
           announce("Removed " + val);
           this.dispatchEvent(new CustomEvent("contour:remove", { bubbles: true, composed: true, detail: { value: val } }));
@@ -20073,29 +20176,52 @@ class ContourTagsInput extends ContourBase {
     }
     // Form-value sync override (R16-06): tags are stored as a JSON array on the
     // host, not in the inner input, so the base class's generic sync would read
-    // the empty add-tag input. Submit the host's value instead.
+    // the empty add-tag input. Submit the host's value instead. Required means
+    // at least one TAG — "[]" is a present attribute but an empty answer.
     _syncFormValue() {
       if (!this._internals) return;
       this._internals.setFormValue(this.getAttribute("value") || "[]");
-      this._syncValidity(this.hasAttribute("required") && !(this.getAttribute("value")));
+      let count = 0;
+      try { const p = JSON.parse(this.getAttribute("value") || "[]"); count = Array.isArray(p) ? p.length : 0; } catch (err) { count = (this.getAttribute("value") || "").split(",").filter((s) => s.trim()).length; }
+      this._syncValidity(this.hasAttribute("required") && count === 0);
     }
   }
   define("contour-tags-input", ContourTagsInput);
 
 /**
- * Sortable List: web component wrapper.
- * Attributes: `items`.
+ * Sortable List: a reorderable list. Attributes: `items` (JSON, the authored
+ * data) and `order` (JSON array of source indices — the user's permutation,
+ * written back on every move so a re-render never reverts it, R20 T-22).
+ * Drag with the pointer, or focus a handle and use ArrowUp/Down/Home/End;
+ * moves announce position and emit contour:move + contour:reorder.
+ * Update mode is scaffold: the list rebuilds on render (the old "keyed"
+ * claim was false — render cleared innerHTML).
  */
 class ContourSortableList extends ContourBase {
-    static get updateMode() { return "keyed"; }
-    static get observed() { return ["items"]; }
-    static get properties() { return { items: { attribute: "items" } }; }
+    static get observed() { return ["items", "order"]; }
+    static get properties() { return { items: { attribute: "items" }, order: { attribute: "order" } }; }
     render() {
       this.classList.add("c-sortable-list");
       const list = this.ensure(".c-sortable-list__list", () => { const el = document.createElement("ul"); el.className = "c-sortable-list__list"; return el; });
       const items = this.getAttribute("items");
       let parsed = [];
       try { parsed = items ? JSON.parse(items) : []; } catch (e) { parsed = []; }
+      if (!Array.isArray(parsed)) parsed = [];
+      // Apply the user's permutation when it still fits the data; a changed
+      // items payload with a stale order falls back to the authored sequence.
+      let sourceOrder = Array.from({ length: parsed.length }, (_, i) => i);
+      const orderRaw = this.getAttribute("order");
+      if (orderRaw) {
+        try {
+          const order = JSON.parse(orderRaw);
+          if (Array.isArray(order) && order.length === parsed.length && order.every((i) => Number.isInteger(i) && i >= 0 && i < parsed.length)) {
+            sourceOrder = order.slice();
+            parsed = order.map((i) => parsed[i]);
+          }
+        } catch (e) { /* a malformed order is ignored, not fatal */ }
+      }
+      this._sortableSourceOrder = sourceOrder;
+      this._sortableItems = parsed;
       list.innerHTML = "";
       parsed.forEach((it, i) => {
         const li = document.createElement("li");
@@ -20110,6 +20236,9 @@ class ContourSortableList extends ContourBase {
         // "⋮⋮" is the glyph, not a name. A screen reader hears the glyph as
         // punctuation unless the handle says what it moves.
         handle.setAttribute("aria-label", labelText(this, "reorder", "Reorder") + " " + (itemLabel || String(i + 1)));
+        // The writeback re-render rebuilds the list; the preserve key puts
+        // focus back on the handle that moved, not the one at its old index.
+        handle.setAttribute("data-contour-preserve-key", itemLabel || String(i));
         handle.tabIndex = 0;
         li.appendChild(handle);
         const labelEl = document.createElement("span");
@@ -20123,11 +20252,32 @@ class ContourSortableList extends ContourBase {
       if (this._wiredSortableList) return;
       this._wiredSortableList = true;
       const list = () => this.querySelector(".c-sortable-list__list");
-      // Live region for position announcements.
-      let live = this.querySelector(".c-sortable-list__live");
-      if (!live) { live = document.createElement("span"); live.className = "c-sortable-list__live visually-hidden"; live.setAttribute("aria-live", "polite"); live.setAttribute("aria-atomic", "true"); this.appendChild(live); }
-      const announce = (msg) => { if (live) live.textContent = msg; };
+      // Live region for position announcements. Generated node: the writeback
+      // re-render drops it, so look it up (and recreate it) per call — rule 12.
+      const announce = (msg) => {
+        let live = this.querySelector(".c-sortable-list__live");
+        if (!live) {
+          live = document.createElement("span");
+          live.className = "c-sortable-list__live visually-hidden";
+          live.setAttribute("aria-live", "polite");
+          live.setAttribute("aria-atomic", "true");
+          this.appendChild(live);
+        }
+        live.textContent = msg;
+      };
       const index = (li) => Array.from(list().children).indexOf(li);
+      // Persist the permutation (R20 T-22): the DOM move alone was reverted
+      // by the next attribute-triggered re-render. `order` maps display
+      // positions back to source indices; `items` stays the authored data.
+      const writeBack = (from, to) => {
+        const n = (this._sortableItems || []).length;
+        const cur = Array.isArray(this._sortableSourceOrder) && this._sortableSourceOrder.length === n
+          ? this._sortableSourceOrder.slice()
+          : Array.from({ length: n }, (_, i) => i);
+        const [src] = cur.splice(from, 1);
+        cur.splice(to, 0, src);
+        this.setAttribute("order", JSON.stringify(cur));
+      };
       // Pointer drag reorder.
       let dragFrom = null;
       this.addEventListener("dragstart", (e) => {
@@ -20155,7 +20305,9 @@ class ContourSortableList extends ContourBase {
           else l.insertBefore(fromLi, l.children[to]);
           const item = fromLi.querySelector(".c-sortable-list__label");
           announce((item ? item.textContent : "Item") + " moved to position " + (to + 1));
-          this.dispatchEvent(new CustomEvent("contour:reorder", { bubbles: true, composed: true, detail: { from: dragFrom, to } }));
+          const from = dragFrom;
+          writeBack(from, to);
+          this.dispatchEvent(new CustomEvent("contour:reorder", { bubbles: true, composed: true, detail: { from, to } }));
         }
         dragFrom = null;
         Array.from(l.children).forEach((n) => n.classList.remove("is-dragging"));
@@ -20173,23 +20325,29 @@ class ContourSortableList extends ContourBase {
         if (!li) return;
         const l = list();
         const from = index(li);
+        const moved = (direction, to) => {
+          const label = li.querySelector(".c-sortable-list__label");
+          announce((label ? label.textContent : "Item") + " moved to position " + (to + 1));
+          writeBack(from, to);
+          this.dispatchEvent(new CustomEvent("contour:move", { bubbles: true, composed: true, detail: { direction, from, to } }));
+          this.dispatchEvent(new CustomEvent("contour:reorder", { bubbles: true, composed: true, detail: { from, to } }));
+        };
         if (e.key === "ArrowUp" && li.previousElementSibling) {
           e.preventDefault();
           l.insertBefore(li, li.previousElementSibling);
-          const to = index(li);
-          const label = li.querySelector(".c-sortable-list__label");
-          announce((label ? label.textContent : "Item") + " moved to position " + (to + 1));
-          this.dispatchEvent(new CustomEvent("contour:move", { bubbles: true, composed: true, detail: { direction: "up", from, to } }));
-          this.dispatchEvent(new CustomEvent("contour:reorder", { bubbles: true, composed: true, detail: { from, to } }));
-        }
-        if (e.key === "ArrowDown" && li.nextElementSibling) {
+          moved("up", index(li));
+        } else if (e.key === "ArrowDown" && li.nextElementSibling) {
           e.preventDefault();
           l.insertBefore(li.nextElementSibling, li);
-          const to = index(li);
-          const label = li.querySelector(".c-sortable-list__label");
-          announce((label ? label.textContent : "Item") + " moved to position " + (to + 1));
-          this.dispatchEvent(new CustomEvent("contour:move", { bubbles: true, composed: true, detail: { direction: "down", from, to } }));
-          this.dispatchEvent(new CustomEvent("contour:reorder", { bubbles: true, composed: true, detail: { from, to } }));
+          moved("down", index(li));
+        } else if (e.key === "Home" && from > 0) {
+          e.preventDefault();
+          l.insertBefore(li, l.firstElementChild);
+          moved("up", 0);
+        } else if (e.key === "End" && from < l.children.length - 1) {
+          e.preventDefault();
+          l.appendChild(li);
+          moved("down", l.children.length - 1);
         }
       });
     }
@@ -20242,37 +20400,72 @@ class ContourSwatch extends ContourBase {
   define("contour-swatch", ContourSwatch);
 
 /**
- * Calendar: web component wrapper.
- * Attributes: `value`.
+ * Calendar: a month grid with keyboard navigation and optional range
+ * selection (R20 T-23). Attributes: `value` (ISO date), `month` (0-11),
+ * `year`, and `range` with `start`/`end`. Dates are local ISO date strings —
+ * deliberately timezone-free; a consumer who needs instants converts at its
+ * own boundary. One tab stop roves the grid: arrows move by day/week and
+ * cross month boundaries, PageUp/PageDown change month (Shift: year),
+ * Home/End jump to the month's first/last day. Weekday columnheaders name
+ * the columns. In range mode the first click sets start, the second sets
+ * end (ordered), and contour:select carries { value, range: [start, end] }.
  */
 class ContourCalendar extends ContourBase {
-    static get observed() { return ["value", "month", "year"]; }
-    static get properties() { return { value: { attribute: "value" }, month: { attribute: "month" }, year: { attribute: "year" } }; }
+    static get observed() { return ["value", "month", "year", "range", "start", "end"]; }
+    static get properties() { return { value: { attribute: "value" }, month: { attribute: "month" }, year: { attribute: "year" }, range: { attribute: "range", type: Boolean }, start: { attribute: "start" }, end: { attribute: "end" } }; }
+    // month="0" is January, not "unset": the old `Number(attr) || fallback`
+    // made January unreachable unless the current month happened to be it.
+    _attrNum(name, fallback) {
+      const raw = this.getAttribute(name);
+      const n = Number(raw);
+      return raw !== null && Number.isFinite(n) ? n : fallback;
+    }
+    _ym() {
+      const now = new Date();
+      return { year: this._attrNum("year", now.getFullYear()), month: this._attrNum("month", now.getMonth()) };
+    }
     render() {
       this.classList.add("c-calendar");
       const now = new Date();
-      const year = Number(this.getAttribute("year")) || now.getFullYear();
-      const month = Number(this.getAttribute("month")) || now.getMonth();
+      const { year, month } = this._ym();
       const header = this.ensure(".c-calendar__header", () => { const el = document.createElement("div"); el.className = "c-calendar__header"; return el; });
       header.innerHTML = "";
-      const prev = document.createElement("button");
-      prev.type = "button"; prev.className = "c-btn c-btn--sm c-calendar__prev"; prev.textContent = "‹"; prev.setAttribute("aria-label", "Previous month");
+      const navBtn = (cls, glyph, label) => {
+        const b = document.createElement("button");
+        b.type = "button"; b.className = "c-btn c-btn--sm " + cls; b.textContent = glyph; b.setAttribute("aria-label", label);
+        return b;
+      };
+      const prevYear = navBtn("c-calendar__prev-year", "«", "Previous year");
+      const prev = navBtn("c-calendar__prev", "‹", "Previous month");
       const title = document.createElement("span");
       title.className = "c-calendar__title";
       title.textContent = new Date(year, month, 1).toLocaleString(undefined, { month: "long", year: "numeric" });
-      const next = document.createElement("button");
-      next.type = "button"; next.className = "c-btn c-btn--sm c-calendar__next"; next.textContent = "›"; next.setAttribute("aria-label", "Next month");
-      header.appendChild(prev); header.appendChild(title); header.appendChild(next);
+      const next = navBtn("c-calendar__next", "›", "Next month");
+      const nextYear = navBtn("c-calendar__next-year", "»", "Next year");
+      header.append(prevYear, prev, title, next, nextYear);
       const grid = this.ensure(".c-calendar__grid", () => { const el = document.createElement("div"); el.className = "c-calendar__grid"; el.setAttribute("role", "grid"); return el; });
       grid.setAttribute("aria-label", title.textContent);
       grid.innerHTML = "";
       const first = new Date(year, month, 1);
       const startDay = first.getDay();
       const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const isRange = this.hasAttribute("range");
       const selected = this.getAttribute("value");
+      const rStart = this.getAttribute("start");
+      const rEnd = this.getAttribute("end");
       let row = null;
       let col = 0;
-      const newRow = () => { row = document.createElement("div"); row.setAttribute("role", "row"); grid.appendChild(row); col = 0; };
+      const newRow = () => { row = document.createElement("div"); row.className = "c-calendar__row"; row.setAttribute("role", "row"); grid.appendChild(row); col = 0; };
+      // Weekday columnheaders: the grid's columns had no names.
+      const wdFmt = new Intl.DateTimeFormat(undefined, { weekday: "short" });
+      newRow();
+      for (let i = 0; i < 7; i++) {
+        const wd = document.createElement("div");
+        wd.className = "c-calendar__weekday";
+        wd.setAttribute("role", "columnheader");
+        wd.textContent = wdFmt.format(new Date(2023, 0, 1 + i)); // 2023-01-01 was a Sunday
+        row.appendChild(wd);
+      }
       newRow();
       for (let i = 0; i < startDay; i++) {
         const empty = document.createElement("div");
@@ -20281,18 +20474,23 @@ class ContourCalendar extends ContourBase {
         col++;
         if (col === 7) newRow();
       }
+      const todayIso = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0") + "-" + String(now.getDate()).padStart(2, "0");
+      // One tab stop: the selected day, else today, else the first of the month.
+      const focusIso = (selected && selected.startsWith(year + "-" + String(month + 1).padStart(2, "0"))) ? selected
+        : (todayIso.startsWith(year + "-" + String(month + 1).padStart(2, "0")) ? todayIso : year + "-" + String(month + 1).padStart(2, "0") + "-01");
       for (let d = 1; d <= daysInMonth; d++) {
         const cell = document.createElement("button");
         cell.className = "c-calendar__day";
         cell.type = "button";
         cell.setAttribute("role", "gridcell");
-        cell.setAttribute("tabindex", "0");
         cell.textContent = String(d);
         const iso = year + "-" + String(month + 1).padStart(2, "0") + "-" + String(d).padStart(2, "0");
-        if (iso === selected) { cell.classList.add("is-selected"); cell.setAttribute("aria-selected", "true"); }
-        else cell.setAttribute("aria-selected", "false");
-        const todayIso = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0") + "-" + String(now.getDate()).padStart(2, "0");
+        const isSelected = isRange ? (iso === rStart || iso === rEnd) : iso === selected;
+        if (isSelected) cell.classList.add("is-selected");
+        if (isRange && rStart && rEnd && iso > rStart && iso < rEnd) cell.classList.add("is-in-range");
+        cell.setAttribute("aria-selected", String(isSelected));
         if (iso === todayIso) cell.setAttribute("aria-current", "date");
+        cell.setAttribute("tabindex", iso === focusIso ? "0" : "-1");
         cell.dataset.value = iso;
         row.appendChild(cell);
         col++;
@@ -20303,59 +20501,94 @@ class ContourCalendar extends ContourBase {
     enhance() {
       if (this._wiredCalendar) return;
       this._wiredCalendar = true;
+      const navigate = (m, y) => {
+        this.batch(() => {
+          this.setAttribute("month", String(m));
+          this.setAttribute("year", String(y));
+        });
+        this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { month: m, year: y } }));
+      };
+      const focusIso = (iso) => {
+        const cell = this.querySelector('.c-calendar__day[data-value="' + iso + '"]');
+        if (cell) { try { cell.focus(); } catch (err) {} }
+      };
+      // Roving tab stop follows focus wherever it lands (click or keyboard).
+      this.addEventListener("focusin", (e) => {
+        const cell = e.target && e.target.closest ? e.target.closest(".c-calendar__day:not(.c-calendar__day--empty)") : null;
+        if (!cell || !this.contains(cell)) return;
+        for (const c of this.querySelectorAll(".c-calendar__day")) c.tabIndex = -1;
+        cell.tabIndex = 0;
+      });
       this.addEventListener("click", (e) => {
-        const prev = e.target && e.target.closest ? e.target.closest(".c-calendar__prev") : null;
-        const next = e.target && e.target.closest ? e.target.closest(".c-calendar__next") : null;
-        if (prev && this.contains(prev)) {
-          let m = Number(this.getAttribute("month")) || new Date().getMonth();
-          let y = Number(this.getAttribute("year")) || new Date().getFullYear();
-          m -= 1;
-          if (m < 0) { m = 11; y -= 1; }
-          this.setAttribute("month", String(m));
-          this.setAttribute("year", String(y));
-          this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { month: m, year: y } }));
-          return;
-        }
-        if (next && this.contains(next)) {
-          let m = Number(this.getAttribute("month")) || new Date().getMonth();
-          let y = Number(this.getAttribute("year")) || new Date().getFullYear();
-          m += 1;
-          if (m > 11) { m = 0; y += 1; }
-          this.setAttribute("month", String(m));
-          this.setAttribute("year", String(y));
-          this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { month: m, year: y } }));
-          return;
-        }
-        const cell = e.target && e.target.closest ? e.target.closest(".c-calendar__day") : null;
+        const t = e.target && e.target.closest ? e.target : null;
+        if (!t) return;
+        const { year, month } = this._ym();
+        if (t.closest(".c-calendar__prev")) { const d = new Date(year, month - 1, 1); navigate(d.getMonth(), d.getFullYear()); return; }
+        if (t.closest(".c-calendar__next")) { const d = new Date(year, month + 1, 1); navigate(d.getMonth(), d.getFullYear()); return; }
+        if (t.closest(".c-calendar__prev-year")) { navigate(month, year - 1); return; }
+        if (t.closest(".c-calendar__next-year")) { navigate(month, year + 1); return; }
+        const cell = t.closest(".c-calendar__day");
         if (cell && this.contains(cell) && cell.dataset.value) {
-          this.setAttribute("value", cell.dataset.value);
-          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { value: cell.dataset.value } }));
+          const iso = cell.dataset.value;
+          if (this.hasAttribute("range")) {
+            const start = this.getAttribute("start");
+            const end = this.getAttribute("end");
+            let s, en;
+            if (!start || (start && end)) { s = iso; en = null; }
+            else { s = iso < start ? iso : start; en = iso < start ? start : iso; }
+            this.batch(() => {
+              this.setAttribute("start", s);
+              if (en === null) this.removeAttribute("end"); else this.setAttribute("end", en);
+            });
+            this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { value: iso, range: en ? [s, en] : [s] } }));
+          } else {
+            this.setAttribute("value", iso);
+            this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { value: iso } }));
+          }
         }
       });
       this.addEventListener("keydown", (e) => {
-        const cell = e.target && e.target.closest ? e.target.closest(".c-calendar__day") : null;
-        if (!cell || !this.contains(cell)) return;
-        const cells = Array.from(this.querySelectorAll(".c-calendar__day:not(.c-calendar__day--empty)"));
-        const idx = cells.indexOf(cell);
-        let next = null;
-        if (e.key === "ArrowRight") next = cells[idx + 1];
-        else if (e.key === "ArrowLeft") next = cells[idx - 1];
-        else if (e.key === "ArrowDown") next = cells[idx + 7];
-        else if (e.key === "ArrowUp") next = cells[idx - 7];
-        else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); cell.click(); return; }
-        if (next) { e.preventDefault(); try { next.focus(); } catch (err) {} }
+        const cell = e.target && e.target.closest ? e.target.closest(".c-calendar__day:not(.c-calendar__day--empty)") : null;
+        if (!cell || !this.contains(cell) || !cell.dataset.value) return;
+        const [y, m, d] = cell.dataset.value.split("-").map(Number);
+        const cur = new Date(y, m - 1, d);
+        const { year, month } = this._ym();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const isoOf = (dt) => dt.getFullYear() + "-" + String(dt.getMonth() + 1).padStart(2, "0") + "-" + String(dt.getDate()).padStart(2, "0");
+        let target = null;
+        if (e.key === "ArrowRight") target = new Date(y, m - 1, d + 1);
+        else if (e.key === "ArrowLeft") target = new Date(y, m - 1, d - 1);
+        else if (e.key === "ArrowDown") target = new Date(y, m - 1, d + 7);
+        else if (e.key === "ArrowUp") target = new Date(y, m - 1, d - 7);
+        else if (e.key === "PageUp") target = e.shiftKey ? new Date(y - 1, m - 1, Math.min(d, new Date(y - 1, m, 0).getDate())) : new Date(y, m - 2, Math.min(d, new Date(y, m - 1, 0).getDate()));
+        else if (e.key === "PageDown") target = e.shiftKey ? new Date(y + 1, m - 1, Math.min(d, new Date(y + 1, m, 0).getDate())) : new Date(y, m, Math.min(d, new Date(y, m + 1, 0).getDate()));
+        else if (e.key === "Home") target = new Date(year, month, 1);
+        else if (e.key === "End") target = new Date(year, month, daysInMonth);
+        else return; // Enter/Space are the native button's own click
+        e.preventDefault();
+        const iso = isoOf(target);
+        if (target.getFullYear() === year && target.getMonth() === month) {
+          focusIso(iso);
+        } else {
+          // Cross the month boundary, then land on the target day.
+          navigate(target.getMonth(), target.getFullYear());
+          focusIso(iso);
+        }
       });
     }
   }
   define("contour-calendar", ContourCalendar);
 
 /**
- * Carousel: web component wrapper.
- * Attributes: `items`, `index`.
+ * Carousel: slides with prev/next, dots, swipe and arrow keys. Attributes:
+ * `items`, `index`, `autoplay` (milliseconds per slide) and `paused`.
+ * Autoplay ships with a pause/play control and never starts under
+ * prefers-reduced-motion (WCAG 2.2.2, R20 T-24); the timer reconciles with
+ * the attributes on every render and dies with the host.
  */
 class ContourCarousel extends ContourBase {
-    static get observed() { return ["items", "index"]; }
-    static get properties() { return { items: { attribute: "items" }, index: { attribute: "index" } }; }
+    static get observed() { return ["items", "index", "autoplay", "paused"]; }
+    static get properties() { return { items: { attribute: "items" }, index: { attribute: "index" }, autoplay: { attribute: "autoplay" }, paused: { attribute: "paused", type: Boolean } }; }
     _items() {
       const items = this.getAttribute("items");
       let parsed = [];
@@ -20405,10 +20638,45 @@ class ContourCarousel extends ContourBase {
         dot.dataset.index = String(i);
         dots.appendChild(dot);
       });
+      // Autoplay ships with its own pause control (WCAG 2.2.2): moving
+      // content that starts automatically must be pausable by a control on
+      // the page, and this one is on the component itself.
+      const autoplay = Number(this.getAttribute("autoplay"));
+      if (Number.isFinite(autoplay) && autoplay > 0) {
+        const paused = this.hasAttribute("paused") || this._reducedMotion();
+        const pp = this.ensure(".c-carousel__pause", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-carousel__pause"; el.type = "button"; return el; });
+        pp.textContent = paused ? "▶" : "⏸";
+        pp.setAttribute("aria-label", paused ? "Play slides automatically" : "Pause automatic slides");
+        pp.setAttribute("aria-pressed", String(paused));
+      } else {
+        const pp = this.querySelector(".c-carousel__pause");
+        if (pp) pp.remove();
+      }
+    }
+    _reducedMotion() {
+      try { return typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) { return false; }
     }
     enhance() {
+      // Autoplay reconciles with the attributes on every render: `paused`,
+      // a removed `autoplay`, or reduced motion stops the timer; the next
+      // render under the right conditions starts it again.
+      const autoplay = Number(this.getAttribute("autoplay"));
+      const want = Number.isFinite(autoplay) && autoplay > 0 && !this.hasAttribute("paused") && !this._reducedMotion() && this._items().length > 1;
+      if (want && !this._carouselTimer) {
+        this._carouselTimer = setInterval(() => {
+          const items = this._items();
+          if (!items.length) return;
+          const idx = (this._index() + 1) % items.length;
+          this.setAttribute("index", String(idx));
+          this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { index: idx, direction: "next" } }));
+        }, Math.max(500, autoplay));
+      } else if (!want && this._carouselTimer) {
+        clearInterval(this._carouselTimer);
+        this._carouselTimer = null;
+      }
       if (this._wiredCarousel) return;
       this._wiredCarousel = true;
+      onDispose(this, () => { if (this._carouselTimer) { clearInterval(this._carouselTimer); this._carouselTimer = null; } });
       const go = (dir) => {
         const items = this._items();
         if (!items.length) return;
@@ -20419,6 +20687,16 @@ class ContourCarousel extends ContourBase {
         this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { index: idx, direction: dir } }));
       };
       this.addEventListener("click", (e) => {
+        const pp = e.target && e.target.closest ? e.target.closest(".c-carousel__pause") : null;
+        if (pp && this.contains(pp)) {
+          // Reduced motion keeps the carousel static; the control cannot
+          // start motion the reader asked not to see.
+          if (this._reducedMotion()) return;
+          const nowPaused = !this.hasAttribute("paused");
+          this.toggleAttribute("paused", nowPaused);
+          this.dispatchEvent(new CustomEvent(nowPaused ? "contour:pause" : "contour:play", { bubbles: true, composed: true }));
+          return;
+        }
         const prev = e.target && e.target.closest ? e.target.closest(".c-carousel__prev") : null;
         const next = e.target && e.target.closest ? e.target.closest(".c-carousel__next") : null;
         if (prev && this.contains(prev)) { go("prev"); return; }
@@ -20445,8 +20723,11 @@ class ContourCarousel extends ContourBase {
       this.addEventListener("keydown", (e) => {
         if (e.key === "ArrowLeft") { e.preventDefault(); go("prev"); }
         else if (e.key === "ArrowRight") { e.preventDefault(); go("next"); }
-        else if (e.key === "Home") { e.preventDefault(); this.setAttribute("index", "0"); this.render(); this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { index: 0, direction: "home" } })); }
-        else if (e.key === "End") { e.preventDefault(); const last = this._items().length - 1; if (last >= 0) { this.setAttribute("index", String(last)); this.render(); this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { index: last, direction: "end" } })); } }
+        // index is observed: the attribute write re-renders through the base
+        // lifecycle (snapshot/restore/focus). The old direct this.render()
+        // bypassed it and dropped focus.
+        else if (e.key === "Home") { e.preventDefault(); this.setAttribute("index", "0"); this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { index: 0, direction: "home" } })); }
+        else if (e.key === "End") { e.preventDefault(); const last = this._items().length - 1; if (last >= 0) { this.setAttribute("index", String(last)); this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { index: last, direction: "end" } })); } }
       });
     }
   }

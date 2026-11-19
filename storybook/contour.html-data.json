@@ -1005,11 +1005,23 @@
       "name": "contour-calendar",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-calendar` (complete-widget). Elements: c-calendar__day, c-calendar__day--empty, c-calendar__grid, c-calendar__header, c-calendar__next, c-calendar__prev, c-calendar__title."
+        "value": "Contour component `c-calendar` (complete-widget). Elements: c-calendar__day, c-calendar__day--empty, c-calendar__grid, c-calendar__header, c-calendar__next, c-calendar__next-year, c-calendar__prev, c-calendar__prev-year, c-calendar__row, c-calendar__title, c-calendar__weekday."
       },
       "attributes": [
         {
+          "name": "end",
+          "description": "Attribute for c-calendar."
+        },
+        {
           "name": "month",
+          "description": "Attribute for c-calendar."
+        },
+        {
+          "name": "range",
+          "description": "Boolean attribute for c-calendar."
+        },
+        {
+          "name": "start",
           "description": "Attribute for c-calendar."
         },
         {
@@ -1094,12 +1106,20 @@
       },
       "attributes": [
         {
+          "name": "autoplay",
+          "description": "Attribute for c-carousel."
+        },
+        {
           "name": "index",
           "description": "Attribute for c-carousel."
         },
         {
           "name": "items",
           "description": "Attribute for c-carousel."
+        },
+        {
+          "name": "paused",
+          "description": "Boolean attribute for c-carousel."
         }
       ],
       "references": [
@@ -8362,6 +8382,10 @@
         {
           "name": "items",
           "description": "Attribute for c-sortable-list."
+        },
+        {
+          "name": "order",
+          "description": "Attribute for c-sortable-list."
         }
       ],
       "references": [
@@ -9341,8 +9365,16 @@
           "description": "Attribute for c-tags-input."
         },
         {
+          "name": "max",
+          "description": "Attribute for c-tags-input."
+        },
+        {
           "name": "placeholder",
           "description": "Attribute for c-tags-input."
+        },
+        {
+          "name": "required",
+          "description": "Boolean attribute for c-tags-input."
         },
         {
           "name": "value",
