@@ -11207,7 +11207,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
           </div>
           <div class="ds-example" data-generated="wrap"><div class="ds-panel" data-snippet>
             <div class="c-cluster" style="--cluster-gap: var(--space-sm);">
-              <contour-layer-panel></contour-layer-panel>
+              <contour-layer-panel title="Layers" items="[{&quot;name&quot;:&quot;North loop&quot;,&quot;visible&quot;:true},{&quot;name&quot;:&quot;Harbor path&quot;,&quot;visible&quot;:false}]"></contour-layer-panel>
               <div class="c-map-area" style="inline-size: 60%; block-size: 12rem;">
                 <div class="c-map-slot"></div>
               </div>
@@ -11225,7 +11225,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                       </summary>
                       <div class="ds-code__body">
                         <pre class="ds-code__pre"><code id="ds-code-217">&lt;div class="c-cluster" style="--cluster-gap: var(--space-sm);"&gt;
-  &lt;contour-layer-panel&gt;&lt;/contour-layer-panel&gt;
+  &lt;contour-layer-panel title="Layers" items="[{&amp;quot;name&amp;quot;:&amp;quot;North loop&amp;quot;,&amp;quot;visible&amp;quot;:true},{&amp;quot;name&amp;quot;:&amp;quot;Harbor path&amp;quot;,&amp;quot;visible&amp;quot;:false}]"&gt;&lt;/contour-layer-panel&gt;
   &lt;div class="c-map-area" style="inline-size: 60%; block-size: 12rem;"&gt;
     &lt;div class="c-map-slot"&gt;&lt;/div&gt;
   &lt;/div&gt;
@@ -19130,7 +19130,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
             </div>
             <div class="ds-example" data-generated="wrap"><div class="ds-example" data-snippet>
               <button class="c-btn" type="button" onclick="this.nextElementSibling.show('Saved', {variant:'success',duration:3000})">Show toast</button>
-              <contour-toast></contour-toast>
+              <contour-toast message="Saved" variant="success"></contour-toast>
             </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -19144,7 +19144,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                       </summary>
                       <div class="ds-code__body">
                         <pre class="ds-code__pre"><code id="ds-code-436">&lt;button class="c-btn" type="button" onclick="this.nextElementSibling.show('Saved', {variant:'success',duration:3000})"&gt;Show toast&lt;/button&gt;
-&lt;contour-toast&gt;&lt;/contour-toast&gt;</code></pre>
+&lt;contour-toast message="Saved" variant="success"&gt;&lt;/contour-toast&gt;</code></pre>
                       </div>
                     </details></div>
           </div>
@@ -26611,7 +26611,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                  <span class="ds-spec__token">.c-brush</span>
                </div>
                <div class="ds-example" data-generated="wrap"><div class="ds-panel">
-                 <contour-brush></contour-brush>
+                 <contour-brush min="0" max="100" value="50"></contour-brush>
                </div><details class="ds-code" data-generated="code">
                       <summary class="ds-code__summary">
                         <span class="ds-code__chevron">
@@ -26624,7 +26624,7 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                         </button>
                       </summary>
                       <div class="ds-code__body">
-                        <pre class="ds-code__pre"><code id="ds-code-584">&lt;contour-brush&gt;&lt;/contour-brush&gt;</code></pre>
+                        <pre class="ds-code__pre"><code id="ds-code-584">&lt;contour-brush min="0" max="100" value="50"&gt;&lt;/contour-brush&gt;</code></pre>
                       </div>
                     </details></div></div>
 
