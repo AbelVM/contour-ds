@@ -5,10 +5,10 @@
   "statement": "Generated, never hand-edited. Every block, element, variant, state and token below is read from src/css by the same inventory that publishes every count in this repository, and tools/check-components.mjs fails if the shipped bytes are not that derivation. `tokens` lists the custom properties a block's rules read; a rule naming two blocks (`.c-alert, .c-callout`) is credited to both, because that is what a retune does.",
   "counts": {
     "blocks": 246,
-    "elements": 898,
-    "variants": 114,
-    "states": 328,
-    "tokens": 2676,
+    "elements": 903,
+    "variants": 119,
+    "states": 329,
+    "tokens": 2682,
     "vars": 16,
     "inputs": 19,
     "tokensIndexed": 199
@@ -2764,8 +2764,10 @@
         "components-misc.css",
         "utilities.css"
       ],
-      "rules": 10,
+      "rules": 12,
       "elements": [
+        "c-command-palette__empty",
+        "c-command-palette__group",
         "c-command-palette__item",
         "c-command-palette__list",
         "c-command-palette__search"
@@ -2791,12 +2793,16 @@
         "--color-primary-soft",
         "--color-primary-text",
         "--color-surface-1",
+        "--color-text-muted",
+        "--color-text-subtle",
         "--density",
         "--radius-md",
         "--shadow-md",
         "--space-2xs",
         "--space-xs",
-        "--type-sm"
+        "--type-sm",
+        "--type-xs",
+        "--weight-semibold"
       ],
       "vars": [],
       "inputs": [],
@@ -7830,14 +7836,17 @@
         "components-misc.css",
         "utilities.css"
       ],
-      "rules": 13,
+      "rules": 16,
       "elements": [
+        "c-notification-center__archive",
         "c-notification-center__badge",
         "c-notification-center__bullet",
         "c-notification-center__dismiss",
         "c-notification-center__empty",
+        "c-notification-center__error",
         "c-notification-center__item",
         "c-notification-center__item-label",
+        "c-notification-center__more",
         "c-notification-center__panel",
         "c-notification-center__trigger"
       ],
@@ -7855,8 +7864,10 @@
       "parts": [],
       "tokens": [
         "--color-border",
+        "--color-danger-text",
         "--color-primary",
         "--color-surface-2",
+        "--color-text",
         "--color-text-subtle",
         "--density",
         "--radius-md",
@@ -10273,19 +10284,28 @@
         "components-misc.css",
         "utilities.css"
       ],
-      "rules": 7,
+      "rules": 17,
       "elements": [
         "c-side-sheet__panel",
         "c-side-sheet__title"
       ],
-      "variants": [],
+      "variants": [
+        "c-side-sheet--end",
+        "c-side-sheet--lg",
+        "c-side-sheet--md",
+        "c-side-sheet--sm",
+        "c-side-sheet--start"
+      ],
       "states": [
-        ".is-open"
+        ".is-open",
+        "[dir=\"rtl\"]"
       ],
       "attributes": [
         "open",
         "side",
-        "title"
+        "title",
+        "mode",
+        "size"
       ],
       "booleanAttributes": [
         "open"
@@ -12584,9 +12604,15 @@
       "states": [],
       "attributes": [
         "steps",
-        "current"
+        "current",
+        "open",
+        "persist",
+        "id"
       ],
-      "booleanAttributes": [],
+      "booleanAttributes": [
+        "open",
+        "persist"
+      ],
       "slots": [],
       "parts": [],
       "tokens": [
@@ -13474,6 +13500,7 @@
       "c-input",
       "c-legend",
       "c-menu",
+      "c-notification-center",
       "c-number-field",
       "c-panel",
       "c-pill",
@@ -13978,6 +14005,7 @@
       "c-map-slot",
       "c-measure",
       "c-menu",
+      "c-notification-center",
       "c-popover",
       "c-prose",
       "c-provenance",
@@ -14024,6 +14052,7 @@
       "c-code-tabs",
       "c-color-picker",
       "c-command",
+      "c-command-palette",
       "c-compare",
       "c-comparison",
       "c-compass",
@@ -14197,6 +14226,7 @@
       "c-color-picker",
       "c-combobox",
       "c-command",
+      "c-command-palette",
       "c-compare",
       "c-compass",
       "c-contour-plot",
@@ -15803,6 +15833,7 @@
       "c-chip",
       "c-color-picker",
       "c-command",
+      "c-command-palette",
       "c-compare",
       "c-comparison",
       "c-coordinate",
@@ -15930,6 +15961,7 @@
       "c-changelog",
       "c-checkbox-group",
       "c-chip",
+      "c-command-palette",
       "c-compare",
       "c-dash-toolbar",
       "c-data-export",

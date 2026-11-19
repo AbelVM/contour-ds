@@ -108,7 +108,7 @@ export interface ContourSearchFieldElement extends ContourElement{disabled?:bool
 export interface ContourSegmentedElement extends ContourFormElement{options?:S;selected?:S;label?:S;}
 export interface ContourSelectElement extends ContourFormElement{options?:S;label?:S;error?:S;help?:S;multiple?:boolean;autocomplete?:S;}
 export interface ContourShowcaseFullElement extends ContourElement{src?:S;}
-export interface ContourSideSheetElement extends ContourElement{open?:boolean;side?:S;}
+export interface ContourSideSheetElement extends ContourElement{open?:boolean;side?:S;mode?:S;}
 export interface ContourSidebarElement extends ContourElement{collapsed?:boolean;}
 export interface ContourSkeletonElement extends ContourElement{shimmer?:boolean;}
 export interface ContourSortableListElement extends ContourElement{order?:S;}
@@ -139,6 +139,7 @@ export interface ContourToastElement extends ContourElement{duration?:number;}
 export interface ContourTocFullElement extends ContourElement{src?:S;}
 export interface ContourToolbarElement extends ContourElement{overflow?:number;}
 export interface ContourTooltipElement extends ContourElement{delay?:number;trigger?:S;}
+export interface ContourTourElement extends ContourElement{open?:boolean;persist?:boolean;}
 export interface ContourTreeElement extends ContourElement{src?:S;"item-height"?:S;}
 export interface ContourTreeGridElement extends ContourElement{expanded?:S;loading?:S;}
 export interface ContourVersionElement extends ContourFormElement{options?:S;}
@@ -378,7 +379,7 @@ declare global { interface HTMLElementTagNameMap {
   "contour-toc":ContourElement;
   "contour-toolbar":ContourToolbarElement;
   "contour-tooltip":ContourTooltipElement;
-  "contour-tour":ContourElement;
+  "contour-tour":ContourTourElement;
   "contour-tree":ContourTreeElement;
   "contour-tree-grid":ContourTreeGridElement;
   "contour-version":ContourVersionElement;

@@ -19406,99 +19406,182 @@ class ContourNotificationCenter extends ContourBase {
       const btn = this.ensure(".c-notification-center__trigger", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-notification-center__trigger"; el.type = "button"; el.innerHTML = '<span class="c-notification-center__bullet" aria-hidden="true"></span>'; el.setAttribute("aria-haspopup", "dialog"); el.setAttribute("aria-expanded", "false"); el.setAttribute("aria-label", "Notifications"); return el; });
       const color = this.getAttribute("color");
       const bullet = btn.querySelector(".c-notification-center__bullet");
-      if (bullet && color) { bullet.style.background = color; bullet.dataset.color = color; }
-      const count = this.getAttribute("count");
-      let badge = btn.querySelector(".c-notification-center__badge");
-      if (count && Number(count) > 0) {
-        if (!badge) { badge = document.createElement("span"); badge.className = "c-notification-center__badge c-badge c-badge--dot"; btn.appendChild(badge); }
-        badge.textContent = count;
-      } else if (badge) { badge.remove(); }
+      if (bullet && color) { bullet.style.background = safeColor(color); bullet.dataset.color = color; }
       const panel = this.ensure(".c-notification-center__panel", () => { const el = document.createElement("div"); el.className = "c-notification-center__panel"; el.hidden = true; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", "Notifications"); return el; });
+      // The panel is a generated node: a re-render (show more, items change)
+      // rebuilds it, so the open state lives on the host, not on the node.
+      panel.hidden = !this._notifOpen;
+      btn.setAttribute("aria-expanded", String(!!this._notifOpen));
       // Slotted content: authored .c-notification-center__item children take
       // precedence over the JSON `items` attribute.
       const authoredItems = Array.from(this.querySelectorAll(":scope > .c-notification-center__item"));
       const items = this.getAttribute("items");
       if (authoredItems.length) {
         panel.innerHTML = "";
-        authoredItems.forEach((it) => { panel.appendChild(it); });
+        const lb = document.createElement("div");
+        lb.setAttribute("role", "listbox");
+        lb.setAttribute("aria-label", "Notifications");
+        authoredItems.forEach((it) => { lb.appendChild(it); });
+        panel.appendChild(lb);
       } else if (items) {
-        try {
-          const parsed = JSON.parse(items);
-          panel.innerHTML = "";
-          parsed.forEach((it) => {
+        let parsed = null;
+        try { parsed = JSON.parse(items); } catch (e) { warnBadJson(this, "items", e); }
+        panel.innerHTML = "";
+        if (!Array.isArray(parsed)) {
+          // A malformed payload is an error state, not a silent empty panel.
+          const err = document.createElement("div");
+          err.className = "c-notification-center__error";
+          err.setAttribute("role", "alert");
+          err.textContent = labelText(this, "error", "Could not load notifications");
+          panel.appendChild(err);
+        } else {
+          const lb = document.createElement("div");
+          lb.setAttribute("role", "listbox");
+          lb.setAttribute("aria-label", "Notifications");
+          // Incremental rendering keeps a long list's DOM bounded: the first
+          // window renders, and a control asks for the next (R20 T-17).
+          const shown = this._notifShown || 50;
+          parsed.slice(0, shown).forEach((it) => {
             const row = document.createElement("div");
             row.className = "c-notification-center__item" + (it && it.read ? " is-read" : "");
-            row.setAttribute("tabindex", "0");
+            row.setAttribute("tabindex", "-1");
             row.setAttribute("role", "option");
+            row.setAttribute("aria-selected", "false");
             row.dataset.read = it && it.read ? "true" : "false";
             const label = document.createElement("span");
             label.className = "c-notification-center__item-label";
             label.textContent = typeof it === "string" ? it : (it.text || it.title || "");
             row.appendChild(label);
-            // Dismiss control: a notification the reader can clear, not just read.
+            // Archive keeps the notification out of the list without the
+            // dismiss semantics; both are reachable by keyboard.
+            const archive = document.createElement("button");
+            archive.type = "button";
+            archive.className = "c-notification-center__archive";
+            archive.setAttribute("aria-label", labelText(this, "archive", "Archive notification"));
+            archive.textContent = "⤓";
+            row.appendChild(archive);
             const dismiss = document.createElement("button");
             dismiss.type = "button";
             dismiss.className = "c-notification-center__dismiss";
             dismiss.setAttribute("aria-label", labelText(this, "dismiss", "Dismiss notification"));
             dismiss.textContent = "×";
             row.appendChild(dismiss);
-            panel.appendChild(row);
+            lb.appendChild(row);
           });
+          // Roving tab stop: the first row is reachable, arrows rove.
+          const firstRow = lb.querySelector(".c-notification-center__item");
+          if (firstRow) firstRow.tabIndex = 0;
+          panel.appendChild(lb);
           if (!parsed.length) {
             const empty = document.createElement("div");
             empty.className = "c-notification-center__empty";
             empty.textContent = labelText(this, "empty", "No notifications");
             panel.appendChild(empty);
+          } else if (parsed.length > shown) {
+            const more = document.createElement("button");
+            more.type = "button";
+            more.className = "c-btn c-btn--sm c-notification-center__more";
+            more.textContent = labelText(this, "more", "Show more") + " (" + (parsed.length - shown) + ")";
+            panel.appendChild(more);
           }
-        } catch (e) { /* keep */ }
+        }
       }
+      this._syncNotifBadge();
+    }
+    // The badge follows the LIVE unread count after read/dismiss/archive;
+    // the authored `count` seeds it until the first interaction (R20 T-17).
+    _syncNotifBadge() {
+      const btn = this.querySelector(".c-notification-center__trigger");
+      if (!btn) return;
+      const rows = Array.from(this.querySelectorAll(".c-notification-center__item"));
+      let unread;
+      if (this._notifInteracted || !this.hasAttribute("count")) unread = rows.filter((r) => r.dataset.read !== "true").length;
+      else unread = Number(this.getAttribute("count")) || 0;
+      let badge = btn.querySelector(".c-notification-center__badge");
+      if (unread > 0) {
+        if (!badge) { badge = document.createElement("span"); badge.className = "c-notification-center__badge c-badge c-badge--dot"; btn.appendChild(badge); }
+        badge.textContent = String(unread);
+      } else if (badge) { badge.remove(); }
     }
     enhance() {
       if (this._wiredNotifCenter) return;
       this._wiredNotifCenter = true;
+      const activate = (item) => {
+        if (item.dataset.read !== "true") {
+          item.dataset.read = "true";
+          item.classList.add("is-read");
+          this._notifInteracted = true;
+          this._syncNotifBadge();
+          this.dispatchEvent(new CustomEvent("contour:read", { bubbles: true, composed: true, detail: { label: item.querySelector(".c-notification-center__item-label")?.textContent || item.textContent } }));
+        }
+        for (const r of this.querySelectorAll(".c-notification-center__item")) r.setAttribute("aria-selected", String(r === item));
+        this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { label: item.querySelector(".c-notification-center__item-label")?.textContent || item.textContent } }));
+      };
+      const removeRow = (item, kind) => {
+        const label = item.querySelector(".c-notification-center__item-label")?.textContent || item.textContent;
+        item.remove();
+        this._notifInteracted = true;
+        this._syncNotifBadge();
+        this.dispatchEvent(new CustomEvent(kind === "archive" ? "contour:remove" : "contour:dismiss", { bubbles: true, composed: true, detail: { label } }));
+      };
       this.addEventListener("click", (e) => {
         const btn = this.querySelector(".c-notification-center__trigger");
         const panel = this.querySelector(".c-notification-center__panel");
         if (btn && (e.target === btn || btn.contains(e.target))) {
-          if (panel) { panel.hidden = !panel.hidden; btn.setAttribute("aria-expanded", String(!panel.hidden)); this.dispatchEvent(new CustomEvent(panel.hidden ? "contour:close" : "contour:open", { bubbles: true, composed: true })); }
+          if (panel) { panel.hidden = !panel.hidden; this._notifOpen = !panel.hidden; btn.setAttribute("aria-expanded", String(!panel.hidden)); this.dispatchEvent(new CustomEvent(panel.hidden ? "contour:close" : "contour:open", { bubbles: true, composed: true })); }
+          return;
         }
-      });
-      this.addEventListener("click", (e) => {
+        const more = e.target && e.target.closest ? e.target.closest(".c-notification-center__more") : null;
+        if (more && this.contains(more)) {
+          this._notifShown = (this._notifShown || 50) + 50;
+          this.requestRender();
+          return;
+        }
+        const archive = e.target && e.target.closest ? e.target.closest(".c-notification-center__archive") : null;
+        if (archive && this.contains(archive)) {
+          const item = archive.closest(".c-notification-center__item");
+          if (item) removeRow(item, "archive");
+          return;
+        }
         const dismiss = e.target && e.target.closest ? e.target.closest(".c-notification-center__dismiss") : null;
         if (dismiss && this.contains(dismiss)) {
           const item = dismiss.closest(".c-notification-center__item");
-          if (item) {
-            item.remove();
-            this.dispatchEvent(new CustomEvent("contour:dismiss", { bubbles: true, composed: true, detail: { label: item.textContent } }));
-          }
+          if (item) removeRow(item, "dismiss");
           return;
         }
         const item = e.target && e.target.closest ? e.target.closest(".c-notification-center__item") : null;
-        if (item && this.contains(item)) {
-          // Mark read on open: the unread dot is the state the reader clears.
-          if (item.dataset.read !== "true") {
-            item.dataset.read = "true";
-            item.classList.add("is-read");
-            this.dispatchEvent(new CustomEvent("contour:read", { bubbles: true, composed: true, detail: { label: item.textContent } }));
-          }
-          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { label: item.textContent } }));
-        }
+        if (item && this.contains(item)) activate(item);
       });
       const docClick = (e) => {
         const panel = this.querySelector(".c-notification-center__panel");
         const btn = this.querySelector(".c-notification-center__trigger");
-        if (panel && !panel.hidden && !this.contains(e.target)) { panel.hidden = true; if (btn) btn.setAttribute("aria-expanded", "false"); }
+        if (panel && !panel.hidden && !this.contains(e.target)) { panel.hidden = true; this._notifOpen = false; if (btn) btn.setAttribute("aria-expanded", "false"); }
       };
       document.addEventListener("click", docClick);
       onDispose(this, () => document.removeEventListener("click", docClick));
       const keyHandler = (e) => {
         const panel = this.querySelector(".c-notification-center__panel");
         const btn = this.querySelector(".c-notification-center__trigger");
-        if (e.key === "Escape" && panel && !panel.hidden) { panel.hidden = true; if (btn) { btn.setAttribute("aria-expanded", "false"); try { btn.focus(); } catch (err) {} } return; }
+        if (e.key === "Escape" && panel && !panel.hidden) { panel.hidden = true; this._notifOpen = false; if (btn) { btn.setAttribute("aria-expanded", "false"); try { btn.focus(); } catch (err) {} } return; }
         if (!panel || panel.hidden) return;
         const items = Array.from(panel.querySelectorAll(".c-notification-center__item"));
         if (!items.length) return;
-        navKey(e, items, { wrap: true });
+        // Enter/Space activate the focused row (a div synthesizes no click);
+        // Delete dismisses it. navKey roves the tab stop with the focus.
+        if ((e.key === "Enter" || e.key === " ") && items.includes(e.target)) {
+          e.preventDefault();
+          activate(e.target);
+          return;
+        }
+        if ((e.key === "Delete" || e.key === "Backspace") && items.includes(e.target)) {
+          e.preventDefault();
+          const idx = items.indexOf(e.target);
+          removeRow(e.target, "dismiss");
+          const next = items[idx + 1] || items[idx - 1];
+          if (next && next.isConnected) { try { next.focus(); } catch (err) {} }
+          return;
+        }
+        navKey(e, items, { wrap: true, onNavigate: (i) => { items.forEach((r, j) => { r.tabIndex = j === i ? 0 : -1; }); } });
       };
       document.addEventListener("keydown", keyHandler);
       onDispose(this, () => document.removeEventListener("keydown", keyHandler));
@@ -19903,15 +19986,36 @@ class ContourBadgeOverflow extends ContourBase {
  * Attributes: `open`, `side`, `title`.
  */
 class ContourSideSheet extends ContourBase {
-    static get observed() { return ["open", "side", "title"]; }
-    static get properties() { return { open: { attribute: "open", type: Boolean }, side: { attribute: "side" }, title: { attribute: "title" } }; }
+    static get observed() { return ["open", "side", "title", "mode", "size"]; }
+    static get properties() { return { open: { attribute: "open", type: Boolean }, side: { attribute: "side" }, title: { attribute: "title" }, mode: { attribute: "mode" }, size: { attribute: "size" } }; }
+    // Dialog-family parity (R20 T-19/T-32): the open attribute is the state;
+    // these methods route through it so the observer below owns the events,
+    // containment and focus on every path.
+    show() { this.setAttribute("open", ""); }
+    // showModal is an action, not a state write (native dialog semantics):
+    // it forces the modal path for this opening without touching `mode`.
+    showModal() { this._sheetForceModal = true; this.show(); }
+    close() { this.removeAttribute("open"); }
+    get open() { return this.hasAttribute("open"); }
+    set open(v) { if (v) this.show(); else this.close(); }
+    _modal() { return this._sheetForceModal || (this.getAttribute("mode") || "modal") !== "non-modal"; }
     render() {
       this.classList.add("c-side-sheet");
       this.setAttribute("role", "dialog");
-      this.setAttribute("aria-modal", "true");
-      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", "Side sheet");
-      const side = this.getAttribute("side") || "end";
+      // Non-modal mode keeps the background live: no aria-modal, no
+      // containment, no focus trap (R20 T-19).
+      if (this._modal()) this.setAttribute("aria-modal", "true");
+      else this.removeAttribute("aria-modal");
+      if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("title") || "Side sheet");
+      // Strip stale modifiers before projecting the current ones: changing
+      // `side` or `size` used to accumulate classes.
+      for (const c of Array.from(this.classList)) {
+        if (/^c-side-sheet--(start|end|sm|md|lg)$/.test(c)) this.classList.remove(c);
+      }
+      const side = this.getAttribute("side") === "start" ? "start" : "end";
       this.classList.add("c-side-sheet--" + side);
+      const size = this.getAttribute("size");
+      if (size === "sm" || size === "md" || size === "lg") this.classList.add("c-side-sheet--" + size);
       if (this.hasAttribute("open")) this.classList.add("is-open"); else this.classList.remove("is-open");
       const title = this.getAttribute("title");
       if (title) {
@@ -19923,10 +20027,10 @@ class ContourSideSheet extends ContourBase {
       if (this._wiredSideSheet) return;
       this._wiredSideSheet = true;
       let lastFocus = null;
-      const close = () => { this.removeAttribute("open"); this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true })); };
       const keyHandler = (e) => {
-        if (e.key === "Escape" && this.hasAttribute("open")) { e.preventDefault(); close(); return; }
-        if (e.key === "Tab" && this.hasAttribute("open")) {
+        if (e.key === "Escape" && this.hasAttribute("open")) { e.preventDefault(); this.close(); return; }
+        // The focus trap is modal-only; a non-modal sheet shares the page.
+        if (e.key === "Tab" && this.hasAttribute("open") && this._modal()) {
           const focusables = Array.from(this.querySelectorAll("button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])")).filter((el) => !el.hasAttribute("disabled"));
           if (!focusables.length) { e.preventDefault(); return; }
           const first = focusables[0], last = focusables[focusables.length - 1];
@@ -19937,35 +20041,77 @@ class ContourSideSheet extends ContourBase {
       document.addEventListener("keydown", keyHandler);
       onDispose(this, () => document.removeEventListener("keydown", keyHandler));
       this.addEventListener("click", (e) => {
-        if (e.target === this) close();
+        if (e.target === this) this.close();
       });
-      // Focus management: capture focus on open, restore on close.
-      const obs = new MutationObserver(() => {
-        if (this.hasAttribute("open")) {
-          this.dispatchEvent(new CustomEvent("contour:open", { bubbles: true, composed: true }));
+      // Focus management: capture focus on open, restore on close. The
+      // transition guard (not lastFocus) decides whether a close happened,
+      // so a sheet mounted open still reports its close.
+      let wasOpen = false;
+      const transition = () => {
+        const isOpen = this.hasAttribute("open");
+        if (isOpen && !wasOpen) {
+          wasOpen = true;
           lastFocus = document.activeElement;
-          modalContain(this, true);
+          if (this._modal()) modalContain(this, true);
           const first = this.querySelector("button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])");
           if (first) try { first.focus(); } catch (err) {}
-        } else if (lastFocus) {
-          modalContain(this, false);
-          try { lastFocus.focus(); } catch (err) {}
+          this.dispatchEvent(new CustomEvent("contour:open", { bubbles: true, composed: true }));
+        } else if (!isOpen && wasOpen) {
+          wasOpen = false;
+          if (this._modal()) modalContain(this, false);
+          this._sheetForceModal = false;
+          if (lastFocus && typeof lastFocus.focus === "function") try { lastFocus.focus(); } catch (err) {}
           lastFocus = null;
+          this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true }));
         }
-      });
+      };
+      const obs = new MutationObserver(transition);
       obs.observe(this, { attributes: true, attributeFilter: ["open"] });
-      onDispose(this, () => { obs.disconnect(); if (this.hasAttribute("open")) modalContain(this, false); });
+      if (this.hasAttribute("open")) transition();
+      onDispose(this, () => { obs.disconnect(); if (this.hasAttribute("open") && this._modal()) modalContain(this, false); });
     }
   }
   define("contour-side-sheet", ContourSideSheet);
 
 /**
- * Tour: web component wrapper.
- * Attributes: `steps`, `current`.
+ * Tour: a coach-mark walkthrough. Attributes: `steps` (JSON of strings or
+ * {text, target}), `current`, `open`, and `persist` (with an `id`) to remember
+ * completion in localStorage. The tour advances `current` itself (R20 T-20) —
+ * clicks used to emit events only, so without a consumer round-trip the tour
+ * never moved. ArrowLeft/Right step, Escape closes (only while open), the tip
+ * positions near its step's target, and a step counter names the place.
+ * Non-modal by design: the page behind stays live.
  */
 class ContourTour extends ContourBase {
-    static get observed() { return ["steps", "current"]; }
-    static get properties() { return { steps: { attribute: "steps" }, current: { attribute: "current" } }; }
+    static get observed() { return ["steps", "current", "open", "persist", "id"]; }
+    static get properties() { return { steps: { attribute: "steps" }, current: { attribute: "current" }, open: { attribute: "open", type: Boolean }, persist: { attribute: "persist", type: Boolean } }; }
+    _steps() {
+      let parsed = [];
+      try { const s = this.getAttribute("steps"); parsed = s ? JSON.parse(s) : []; } catch (e) { parsed = []; }
+      return Array.isArray(parsed) ? parsed : [];
+    }
+    _current(n) {
+      const c = Number(this.getAttribute("current") || 0);
+      return Number.isFinite(c) ? Math.min(Math.max(0, c), Math.max(0, n - 1)) : 0;
+    }
+    _storageKey() { return this.id ? "contour-tour:" + this.id : null; }
+    _completed() {
+      if (!this.hasAttribute("persist")) return false;
+      const key = this._storageKey();
+      try { return key ? localStorage.getItem(key) === "done" : false; } catch (e) { return false; }
+    }
+    _markCompleted() {
+      if (!this.hasAttribute("persist")) return;
+      const key = this._storageKey();
+      try { if (key) localStorage.setItem(key, "done"); } catch (e) { /* storage is best-effort */ }
+    }
+    show() { this.setAttribute("open", ""); }
+    close() {
+      if (!this.hasAttribute("open")) return;
+      this.removeAttribute("open");
+      this._markCompleted();
+      this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true }));
+    }
     render() {
       this.classList.add("c-tour");
       this.setAttribute("role", "dialog");
@@ -19974,55 +20120,117 @@ class ContourTour extends ContourBase {
       // scrollable, clickable and focusable, and assistive tech must not be
       // told the rest of the document is inert.
       this.setAttribute("aria-label", labelText(this, "tour", "Tour"));
-      const steps = this.getAttribute("steps");
-      const current = Number(this.getAttribute("current") || 0);
-      let parsed = [];
-      try { parsed = steps ? JSON.parse(steps) : []; } catch (e) { parsed = []; }
+      const parsed = this._steps();
+      // First render normalizes the open state: a tour with steps starts open
+      // unless persistence says it was completed. After that, `open` is the
+      // single source of truth (close removes it; nothing re-normalizes).
+      if (!this._tourInitialized) {
+        this._tourInitialized = true;
+        if (parsed.length && !this.hasAttribute("open") && !this._completed()) this.setAttribute("open", "");
+      }
+      const isOpen = this.hasAttribute("open") && parsed.length > 0;
+      if (isOpen) this.removeAttribute("hidden"); else this.setAttribute("hidden", "");
+      const current = this._current(parsed.length);
       const step = parsed[current] || {};
+      const counter = this.ensure(".c-tour__step", () => { const el = document.createElement("div"); el.className = "c-tour__step"; return el; });
+      counter.textContent = labelText(this, "step", "Step") + " " + (current + 1) + " / " + parsed.length;
       const tip = this.ensure(".c-tour__tip", () => { const el = document.createElement("div"); el.className = "c-tour__tip"; return el; });
       tip.textContent = typeof step === "string" ? step : (step.text || step.title || "");
+      if (counter.nextSibling !== tip) this.insertBefore(counter, tip);
       const nav = this.ensure(".c-tour__nav", () => { const el = document.createElement("div"); el.className = "c-tour__nav c-btn-group"; return el; });
       const back = this.ensure(".c-tour__back", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-tour__back"; el.type = "button"; return el; }, nav);
       back.textContent = labelText(this, "back", "Back");
+      back.disabled = current === 0;
       const next = this.ensure(".c-tour__next", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-tour__next"; el.type = "button"; return el; }, nav);
-      next.textContent = labelText(this, "next", "Next");
+      next.textContent = current >= parsed.length - 1 ? labelText(this, "done", "Done") : labelText(this, "next", "Next");
       const close = this.ensure(".c-tour__close", () => { const el = document.createElement("button"); el.className = "c-btn c-btn--sm c-tour__close"; el.type = "button"; return el; }, nav);
       close.textContent = labelText(this, "close", "Close");
-      // Keep the three controls in order regardless of which were just created.
+      // Keep the controls in order regardless of which were just created.
       if (nav.firstChild !== back) nav.insertBefore(back, nav.firstChild);
-      if (next.previousSibling !== back) nav.insertBefore(next, back.nextSibling);
-      if (close.previousSibling !== next) nav.insertBefore(close, next.nextSibling);
+      if (back.nextSibling !== next) nav.insertBefore(next, back.nextSibling);
+      if (next.nextSibling !== close) nav.insertBefore(close, next.nextSibling);
       // Target highlight: a step may name the element it points at, so the
       // reader sees what the tip is about instead of a floating box.
       if (this._tourTarget && this._tourTarget.classList) this._tourTarget.classList.remove("c-tour__target");
       this._tourTarget = null;
-      const targetSel = typeof step === "object" && step ? step.target : null;
+      const targetSel = isOpen && typeof step === "object" && step ? step.target : null;
       if (targetSel) {
         const target = document.querySelector(targetSel);
         if (target && target.classList) { target.classList.add("c-tour__target"); this._tourTarget = target; }
+      }
+      if (isOpen) this._positionTour();
+    }
+    _positionTour() {
+      // Near the target when there is one (below, or above when there is no
+      // room), clamped to the viewport; otherwise bottom-center. The host is
+      // position:fixed with no inset in the sheet, so without this it sat at
+      // its static position.
+      const vw = window.innerWidth, vh = window.innerHeight;
+      const w = this.offsetWidth || 280, h = this.offsetHeight || 120;
+      const target = this._tourTarget;
+      if (target && target.getBoundingClientRect) {
+        const r = target.getBoundingClientRect();
+        let top = r.bottom + 8;
+        if (top + h > vh - 8) top = Math.max(8, r.top - h - 8);
+        const left = Math.min(Math.max(8, r.left), Math.max(8, vw - w - 8));
+        this.style.insetBlockStart = top + "px";
+        this.style.insetInlineStart = left + "px";
+        this.style.insetBlockEnd = "auto";
+        this.style.transform = "";
+      } else {
+        this.style.insetBlockStart = "auto";
+        this.style.insetBlockEnd = "1rem";
+        this.style.insetInlineStart = "50%";
+        this.style.transform = "translateX(-50%)";
       }
     }
     enhance() {
       if (this._wiredTour) return;
       this._wiredTour = true;
       // A tour is a coach mark, not a modal, so it must not take the page with
-      // it. Two things used to happen here on upgrade and both took the guide
-      // offline: modalContain() locked the document scroll and inerted every
-      // sibling of the host out to the body, and focusing the Next button
-      // scrolled the viewport to the tour and stole focus from the reader.
-      // Neither has an open transition to undo it — the overlay family
-      // modalises in show() and releases in close(); the tour has neither.
+      // it: no modalContain, no focus steal (the guide went offline when both
+      // happened on upgrade). Stepping writes `current` back — the event is
+      // for consumers, not the mechanism.
+      const step = (dir) => {
+        const parsed = this._steps();
+        if (!parsed.length || !this.hasAttribute("open")) return;
+        const cur = this._current(parsed.length);
+        if (dir === "next") {
+          if (cur >= parsed.length - 1) { this.close(); return; }
+          this.setAttribute("current", String(cur + 1));
+          this.dispatchEvent(new CustomEvent("contour:step-change", { bubbles: true, composed: true, detail: { direction: "next", index: cur + 1 } }));
+        } else {
+          if (cur === 0) return;
+          this.setAttribute("current", String(cur - 1));
+          this.dispatchEvent(new CustomEvent("contour:step-change", { bubbles: true, composed: true, detail: { direction: "prev", index: cur - 1 } }));
+        }
+      };
+      this._tourStep = step;
       this.addEventListener("click", (e) => {
-        const next = e.target && e.target.closest ? e.target.closest(".c-tour__next") : null;
-        const back = e.target && e.target.closest ? e.target.closest(".c-tour__back") : null;
-        const close = e.target && e.target.closest ? e.target.closest(".c-tour__close") : null;
-        if (next && this.contains(next)) { this.dispatchEvent(new CustomEvent("contour:step-change", { bubbles: true, composed: true, detail: { direction: "next" } })); return; }
-        if (back && this.contains(back)) { this.dispatchEvent(new CustomEvent("contour:step-change", { bubbles: true, composed: true, detail: { direction: "prev" } })); return; }
-        if (close && this.contains(close)) { this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true })); }
+        const t = e.target && e.target.closest ? e.target : null;
+        if (!t) return;
+        if (t.closest(".c-tour__next")) { step("next"); return; }
+        if (t.closest(".c-tour__back")) { step("prev"); return; }
+        if (t.closest(".c-tour__close")) this.close();
       });
-      const keyHandler = (e) => { if (e.key === "Escape") this.dispatchEvent(new CustomEvent("contour:close", { bubbles: true, composed: true })); };
+      const keyHandler = (e) => {
+        if (!this.hasAttribute("open")) return;
+        const tag = e.target && e.target.tagName;
+        if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+        if (e.key === "Escape") { e.preventDefault(); this.close(); }
+        else if (e.key === "ArrowRight") { e.preventDefault(); step("next"); }
+        else if (e.key === "ArrowLeft") { e.preventDefault(); step("prev"); }
+      };
       document.addEventListener("keydown", keyHandler);
-      onDispose(this, () => document.removeEventListener("keydown", keyHandler));
+      const reposition = () => { if (this.hasAttribute("open")) this._positionTour(); };
+      window.addEventListener("scroll", reposition, { passive: true, capture: true });
+      window.addEventListener("resize", reposition, { passive: true });
+      onDispose(this, () => {
+        document.removeEventListener("keydown", keyHandler);
+        window.removeEventListener("scroll", reposition, { capture: true });
+        window.removeEventListener("resize", reposition);
+        if (this._tourTarget && this._tourTarget.classList) this._tourTarget.classList.remove("c-tour__target");
+      });
     }
   }
   define("contour-tour", ContourTour);

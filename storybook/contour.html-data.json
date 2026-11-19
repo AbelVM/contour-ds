@@ -1857,7 +1857,7 @@
       "name": "contour-command-palette",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-command-palette` (complete-widget). Elements: c-command-palette__item, c-command-palette__list, c-command-palette__search."
+        "value": "Contour component `c-command-palette` (complete-widget). Elements: c-command-palette__empty, c-command-palette__group, c-command-palette__item, c-command-palette__list, c-command-palette__search."
       },
       "attributes": [
         {
@@ -5486,7 +5486,7 @@
       "name": "contour-notification-center",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-notification-center` (complete-widget). Elements: c-notification-center__badge, c-notification-center__bullet, c-notification-center__dismiss, c-notification-center__empty, c-notification-center__item, c-notification-center__item-label, c-notification-center__panel, c-notification-center__trigger."
+        "value": "Contour component `c-notification-center` (complete-widget). Elements: c-notification-center__archive, c-notification-center__badge, c-notification-center__bullet, c-notification-center__dismiss, c-notification-center__empty, c-notification-center__error, c-notification-center__item, c-notification-center__item-label, c-notification-center__more, c-notification-center__panel, c-notification-center__trigger."
       },
       "attributes": [
         {
@@ -8257,15 +8257,23 @@
       "name": "contour-side-sheet",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-side-sheet` (composition). Elements: c-side-sheet__panel, c-side-sheet__title."
+        "value": "Contour component `c-side-sheet` (composition). Variants: c-side-sheet--end, c-side-sheet--lg, c-side-sheet--md, c-side-sheet--sm, c-side-sheet--start. Elements: c-side-sheet__panel, c-side-sheet__title."
       },
       "attributes": [
+        {
+          "name": "mode",
+          "description": "Attribute for c-side-sheet."
+        },
         {
           "name": "open",
           "description": "Boolean attribute for c-side-sheet."
         },
         {
           "name": "side",
+          "description": "Attribute for c-side-sheet."
+        },
+        {
+          "name": "size",
           "description": "Attribute for c-side-sheet."
         },
         {
@@ -9986,6 +9994,18 @@
         {
           "name": "current",
           "description": "Attribute for c-tour."
+        },
+        {
+          "name": "id",
+          "description": "Attribute for c-tour."
+        },
+        {
+          "name": "open",
+          "description": "Boolean attribute for c-tour."
+        },
+        {
+          "name": "persist",
+          "description": "Boolean attribute for c-tour."
         },
         {
           "name": "steps",

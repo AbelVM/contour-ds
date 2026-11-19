@@ -20944,6 +20944,13 @@
           "description": "Contour component c-side-sheet (composition).",
           "attributes": [
             {
+              "name": "mode",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-side-sheet."
+            },
+            {
               "name": "open",
               "type": {
                 "text": "boolean"
@@ -20952,6 +20959,13 @@
             },
             {
               "name": "side",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-side-sheet."
+            },
+            {
+              "name": "size",
               "type": {
                 "text": "string"
               },
@@ -20968,6 +20982,14 @@
           "members": [
             {
               "kind": "field",
+              "name": "mode",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "mode"
+            },
+            {
+              "kind": "field",
               "name": "open",
               "type": {
                 "text": "boolean"
@@ -20981,6 +21003,14 @@
                 "text": "string | null"
               },
               "attribute": "side"
+            },
+            {
+              "kind": "field",
+              "name": "size",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "size"
             },
             {
               "kind": "field",
@@ -25804,7 +25834,7 @@
         },
         {
           "kind": "class",
-          "name": "ContourElement",
+          "name": "ContourTourElement",
           "tagName": "contour-tour",
           "customElement": true,
           "description": "Contour component c-tour (complete-widget).",
@@ -25815,6 +25845,27 @@
                 "text": "string"
               },
               "description": "Attribute for c-tour."
+            },
+            {
+              "name": "id",
+              "type": {
+                "text": "string"
+              },
+              "description": "Attribute for c-tour."
+            },
+            {
+              "name": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Boolean attribute for c-tour."
+            },
+            {
+              "name": "persist",
+              "type": {
+                "text": "boolean"
+              },
+              "description": "Boolean attribute for c-tour."
             },
             {
               "name": "steps",
@@ -25832,6 +25883,30 @@
                 "text": "string | null"
               },
               "attribute": "current"
+            },
+            {
+              "kind": "field",
+              "name": "id",
+              "type": {
+                "text": "string | null"
+              },
+              "attribute": "id"
+            },
+            {
+              "kind": "field",
+              "name": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "open"
+            },
+            {
+              "kind": "field",
+              "name": "persist",
+              "type": {
+                "text": "boolean"
+              },
+              "attribute": "persist"
             },
             {
               "kind": "field",
@@ -29768,7 +29843,7 @@
           "kind": "custom-element-definition",
           "name": "contour-tour",
           "declaration": {
-            "name": "ContourElement",
+            "name": "ContourTourElement",
             "module": "dist/contour-wc.esm.js"
           }
         },

@@ -5640,8 +5640,22 @@
   /* -- Badge overflow ---------------------------------------------------- */
   .c-badge-overflow { display: inline-flex; }
   /* -- Side sheet -------------------------------------------------------- */
-  .c-side-sheet { position: fixed; inset-block: 0; z-index: var(--z-drawer); background: var(--color-surface-1); box-shadow: var(--shadow-lg); padding: calc(var(--space-md) * var(--density, 1)); transform: translateX(100%); transition: transform var(--dur-base) var(--ease-standard); }
+  .c-side-sheet { position: fixed; inset-block: 0; inline-size: min(24rem, 90vw); z-index: var(--z-drawer); background: var(--color-surface-1); box-shadow: var(--shadow-lg); padding: calc(var(--space-md) * var(--density, 1)); transform: translateX(100%); transition: transform var(--dur-base) var(--ease-standard); overflow-y: auto; }
   .c-side-sheet.is-open { transform: translateX(0); }
+  /* Side and size contract (R20 T-19): the sheet anchors to the edge it names
+     and slides off toward it; without inset-inline it sat at its static
+     position and the --start/--end modifiers had no rules at all. */
+  .c-side-sheet--end { inset-inline-end: 0; }
+  .c-side-sheet--start { inset-inline-start: 0; transform: translateX(-100%); }
+  .c-side-sheet--start.is-open { transform: translateX(0); }
+  .c-side-sheet--sm { inline-size: min(18rem, 90vw); }
+  .c-side-sheet--md { inline-size: min(24rem, 90vw); }
+  .c-side-sheet--lg { inline-size: min(32rem, 90vw); }
+  /* translateX is physical; flip the slide direction under RTL. */
+  [dir="rtl"] .c-side-sheet--end { transform: translateX(-100%); }
+  [dir="rtl"] .c-side-sheet--end.is-open { transform: translateX(0); }
+  [dir="rtl"] .c-side-sheet--start { transform: translateX(100%); }
+  [dir="rtl"] .c-side-sheet--start.is-open { transform: translateX(0); }
   .c-side-sheet__title { font-size: var(--type-h4); font-weight: 600; margin-block-end: var(--space-sm); }
   .c-side-sheet__panel {
     display: flex;
@@ -6191,7 +6205,8 @@
   .c-notification-center__item { display: flex; align-items: center; gap: calc(0.4rem * var(--density, 1)); }
   .c-notification-center__item.is-read { opacity: 0.6; }
   .c-notification-center__item-label { flex: 1; }
-  .c-notification-center__dismiss {
+  .c-notification-center__dismiss,
+  .c-notification-center__archive {
     border: 0;
     background: none;
     color: var(--color-text-subtle);
@@ -6199,6 +6214,8 @@
     line-height: 1;
   }
   .c-notification-center__empty { padding: calc(var(--space-xs) * var(--density, 1)); font-size: var(--type-sm); color: var(--color-text-subtle); }
+  .c-notification-center__error { padding: calc(var(--space-xs) * var(--density, 1)); font-size: var(--type-sm); color: var(--color-danger-text, var(--color-text)); }
+  .c-notification-center__more { margin: calc(var(--space-2xs) * var(--density, 1)); }
   /* Tour target spotlight */
   .c-tour__target { outline: 2px solid var(--color-primary); outline-offset: 2px; }
   /* Stepper step is clickable */

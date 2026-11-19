@@ -470,7 +470,8 @@ const ORPHAN_LEDGER = {
   // values but no dedicated CSS rule exists; styling is carried by the host class.
   "c-delta--neutral": "delta variant modifier on .c-delta; tone colour carried by the host data-tone hook",
   "c-divider--horizontal": "divider orientation modifier on .c-divider; base rule carries the styling",
-  "c-side-sheet--end": "side-sheet side modifier on .c-side-sheet; base rule carries the styling",
+  // (c-side-sheet--end was ledgered here while the side modifiers had no
+  // rules; struck off with the --start/--end/size rules that landed, R20 T-19.)
   "c-status-light--neutral": "status-light variant modifier on .c-status-light; colour carried by the host data-status hook",
 
   // Chart empty-state scaffolding: the host styles these via data-state hooks,
@@ -3593,6 +3594,164 @@ try {
       fail(`stateful widget completions broke (R20 T-10/21/22/23/24): ${bad.join(" | ")}`);
     else
       console.log("wc-contract: tags-input pastes/commits/limits and guards disabled, sortable-list persists order, calendar reaches January and roves across months, carousel autoplay is pausable and reduced-motion-safe, animation-controls' markers/loop/speed/progress all answer");
+  }
+
+  // ---- 28. overlay/widget trio (R20 T-17/19/20) ----------------------------
+  //
+  // side-sheet's mode/side/size contract, tour's self-advance and persistence,
+  // notification-center's keyboard activation, live badge, archive and error
+  // state. Each drives the real path on the shipped bundle.
+  {
+    const p = await browser.newPage();
+    const errs = [];
+    p.on("pageerror", (e) => errs.push(String(e.message || e)));
+    await p.goto(`${origin}/unmin.html`, { waitUntil: "load" });
+    await p.waitForFunction(() => !!window.ContourElements, null, { timeout: 20000 });
+    const out = await p.evaluate(async () => {
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+      const mk = async (tag, attrs = {}) => {
+        const el = document.createElement(tag);
+        for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+        document.body.appendChild(el);
+        await wait(30);
+        return el;
+      };
+      const results = {};
+
+      // side-sheet: non-modal keeps the background live; side/size project
+      // without accumulating; showModal is the modal path.
+      {
+        const sibling = document.createElement("div");
+        sibling.id = "sheet-sibling";
+        document.body.appendChild(sibling);
+        const el = await mk("contour-side-sheet", { title: "Sheet", side: "start", size: "sm", mode: "non-modal" });
+        const r = { classes: { start: el.classList.contains("c-side-sheet--start"), sm: el.classList.contains("c-side-sheet--sm"), end: el.classList.contains("c-side-sheet--end") }, ariaModal: el.getAttribute("aria-modal") };
+        let opens = 0, closes = 0;
+        el.addEventListener("contour:open", () => opens++);
+        el.addEventListener("contour:close", () => closes++);
+        const trigger = document.createElement("button");
+        document.body.appendChild(trigger);
+        trigger.focus();
+        el.show();
+        await wait(40);
+        r.opened = { attr: el.hasAttribute("open"), isOpen: el.classList.contains("is-open"), events: opens, siblingInert: sibling.hasAttribute("inert") };
+        document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+        await wait(40);
+        r.closed = { attr: el.hasAttribute("open"), events: closes, focusBack: document.activeElement === trigger };
+        el.setAttribute("side", "end");
+        await wait(20);
+        r.sideSwitch = { start: el.classList.contains("c-side-sheet--start"), end: el.classList.contains("c-side-sheet--end") };
+        el.showModal();
+        await wait(40);
+        r.modal = { ariaModal: el.getAttribute("aria-modal"), open: el.hasAttribute("open") };
+        el.close();
+        await wait(20);
+        results.sideSheet = r;
+        el.remove(); sibling.remove(); trigger.remove();
+      }
+
+      // tour: opens with steps, advances itself, counts, spotlights, closes
+      // on Done, and persistence skips a completed tour.
+      {
+        const target = document.createElement("div");
+        target.id = "tour-t28";
+        document.body.appendChild(target);
+        const el = await mk("contour-tour", { id: "t28", steps: '[{"text":"One","target":"#tour-t28"},{"text":"Two"}]' });
+        const r = { open: el.hasAttribute("open"), counter: el.querySelector(".c-tour__step")?.textContent, spotlight: target.classList.contains("c-tour__target") };
+        let stepEv = null, closed = 0;
+        el.addEventListener("contour:step-change", (e) => { stepEv = e.detail; });
+        el.addEventListener("contour:close", () => closed++);
+        el.querySelector(".c-tour__next").click();
+        await wait(20);
+        r.next = { current: el.getAttribute("current"), counter: el.querySelector(".c-tour__step")?.textContent, ev: stepEv, spotlightCleared: !target.classList.contains("c-tour__target") };
+        el.querySelector(".c-tour__next").click();
+        await wait(20);
+        r.done = { open: el.hasAttribute("open"), hidden: el.hasAttribute("hidden"), closed };
+        el.remove();
+        try { localStorage.setItem("contour-tour:t28b", "done"); } catch (e) {}
+        const el2 = await mk("contour-tour", { id: "t28b", persist: "", steps: '["Again"]' });
+        r.persisted = { open: el2.hasAttribute("open"), hidden: el2.hasAttribute("hidden") };
+        el2.remove(); target.remove();
+        try { localStorage.removeItem("contour-tour:t28b"); } catch (e) {}
+        results.tour = r;
+      }
+
+      // notification-center: badge seeds from count then follows live unread;
+      // Enter activates; archive/dismiss remove; bad JSON is an error state;
+      // show more keeps the panel open.
+      {
+        const el = await mk("contour-notification-center", { items: '[{"text":"N1"},{"text":"N2","read":true}]', count: "5" });
+        const badge = () => el.querySelector(".c-notification-center__badge")?.textContent ?? null;
+        const rows = () => Array.from(el.querySelectorAll(".c-notification-center__item"));
+        const r = { seedBadge: badge() };
+        el.querySelector(".c-notification-center__trigger").click();
+        await wait(20);
+        let readEv = null, selEv = null, removeEv = null, dismissEv = null;
+        el.addEventListener("contour:read", (e) => { readEv = e.detail; });
+        el.addEventListener("contour:select", (e) => { selEv = e.detail; });
+        el.addEventListener("contour:remove", (e) => { removeEv = e.detail; });
+        el.addEventListener("contour:dismiss", (e) => { dismissEv = e.detail; });
+        rows()[0].focus();
+        rows()[0].dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
+        await wait(20);
+        r.enter = { read: rows()[0].classList.contains("is-read"), readEv, selEv, badge: badge(), selected: rows()[0].getAttribute("aria-selected") };
+        rows()[1].querySelector(".c-notification-center__archive").click();
+        await wait(20);
+        r.archive = { rows: rows().length, ev: removeEv };
+        rows()[0].querySelector(".c-notification-center__dismiss").click();
+        await wait(20);
+        r.dismiss = { rows: rows().length, ev: dismissEv };
+        el.remove();
+        const bad = await mk("contour-notification-center", { items: "{not json" });
+        bad.querySelector(".c-notification-center__trigger").click();
+        await wait(20);
+        r.errorState = !!bad.querySelector('.c-notification-center__error[role="alert"]');
+        bad.remove();
+        const many = Array.from({ length: 60 }, (_, i) => ({ text: "N" + i }));
+        const big = await mk("contour-notification-center", { items: JSON.stringify(many) });
+        big.querySelector(".c-notification-center__trigger").click();
+        await wait(20);
+        const beforeMore = big.querySelectorAll(".c-notification-center__item").length;
+        big.querySelector(".c-notification-center__more").click();
+        await wait(40);
+        r.more = { before: beforeMore, after: big.querySelectorAll(".c-notification-center__item").length, panelOpen: !big.querySelector(".c-notification-center__panel").hidden };
+        big.remove();
+        results.notif = r;
+      }
+      return results;
+    });
+    const bad = [];
+    const eq = (label, got, want) => {
+      const g = JSON.stringify(got), w = JSON.stringify(want);
+      if (g !== w) bad.push(`${label}: ${g} != ${w}`);
+    };
+    // side-sheet
+    eq("sheet classes", out.sideSheet?.classes, { start: true, sm: true, end: false });
+    if (out.sideSheet?.ariaModal !== null) bad.push(`non-modal sheet carries aria-modal=${out.sideSheet?.ariaModal}`);
+    eq("sheet opened", out.sideSheet?.opened, { attr: true, isOpen: true, events: 1, siblingInert: false });
+    eq("sheet closed", out.sideSheet?.closed, { attr: false, events: 1, focusBack: true });
+    eq("sheet side switch", out.sideSheet?.sideSwitch, { start: false, end: true });
+    eq("sheet showModal", out.sideSheet?.modal, { ariaModal: "true", open: true });
+    // tour
+    if (out.tour?.open !== true) bad.push("tour with steps did not open");
+    eq("tour counter", out.tour?.counter, "Step 1 / 2");
+    if (out.tour?.spotlight !== true) bad.push("tour did not spotlight its target");
+    eq("tour next", out.tour?.next, { current: "1", counter: "Step 2 / 2", ev: { direction: "next", index: 1 }, spotlightCleared: true });
+    eq("tour done", out.tour?.done, { open: false, hidden: true, closed: 1 });
+    eq("tour persisted", out.tour?.persisted, { open: false, hidden: true });
+    // notification-center
+    eq("badge seed", out.notif?.seedBadge, "5");
+    eq("Enter activates", out.notif?.enter, { read: true, readEv: { label: "N1" }, selEv: { label: "N1" }, badge: null, selected: "true" });
+    eq("archive", out.notif?.archive, { rows: 1, ev: { label: "N2" } });
+    eq("dismiss", out.notif?.dismiss, { rows: 0, ev: { label: "N1" } });
+    if (out.notif?.errorState !== true) bad.push("malformed items rendered no role=alert error state");
+    eq("show more", out.notif?.more, { before: 50, after: 60, panelOpen: true });
+    if (errs.length) bad.push(`page errors: ${errs.slice(0, 2).join(" | ")}`);
+    compared += 18;
+    if (bad.length)
+      fail(`overlay/widget trio broke (R20 T-17/19/20): ${bad.join(" | ")}`);
+    else
+      console.log("wc-contract: side-sheet honours mode/side/size with focus return, tour advances itself and remembers completion, notification-center activates by keyboard, tracks unread, archives, errors aloud and pages its list");
   }
 } finally {
   await browser.close();
