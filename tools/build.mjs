@@ -167,6 +167,28 @@ function assertNoUnlayeredRules(css) {
 
 // ---------------------------------------------------------------------------
 
+// -- Fragment list, asserted before anything is written ----------------------
+// This runs before the rmSync below on purpose: a build that refuses the tree
+// must leave the last good dist/ standing. It used to sit ~130 lines further
+// down, so a new fragment in src/js/wc/ that nobody had listed wiped dist/ and
+// then exited 1 — and `npm pack`'s prepack, which is how the consumer tarball
+// is produced, took the built package down with it.
+const wcFragNames = [
+  "core.mjs", "svg.mjs", "behaviours.mjs", "states.mjs", "content.mjs", "dashboard.mjs", "data.mjs", "docs.mjs",
+  "feedback.mjs", "forms.mjs", "interaction.mjs", "layout.mjs", "map.mjs",
+  "misc.mjs", "navigation.mjs", "ui.mjs", "registration.mjs", "shadow.mjs",
+];
+// Assert the fragment list matches the directory (BY2-I7): a new fragment
+// landing in src/js/wc/ must not miss every surface bundle silently.
+const _wcDir = readdirSync(join(root, "src/js/wc")).filter((f) => f.endsWith(".mjs") && f !== "index.mjs").sort();
+const _wcListed = [...wcFragNames].sort();
+if (JSON.stringify(_wcDir) !== JSON.stringify(_wcListed)) {
+  console.error("build: wcFragNames out of sync with src/js/wc/:");
+  console.error("  in dir, not listed:", _wcDir.filter((f) => !_wcListed.includes(f)));
+  console.error("  listed, not in dir:", _wcListed.filter((f) => !_wcDir.includes(f)));
+  process.exit(1);
+}
+
 rmSync(dist, { recursive: true, force: true });
 mkdirSync(dist, { recursive: true });
 
@@ -293,21 +315,8 @@ writeFileSync(join(dist, "contour.esm.min.js"), `${minifyJs(jsEsm)}\n`, "utf-8")
 
 // -- Web components (optional progressive enhancement) ---------------------
 // Source lives as ES modules under src/js/wc/; bundle into a classic script.
-const wcFragNames = [
-  "core.mjs", "svg.mjs", "behaviours.mjs", "states.mjs", "content.mjs", "dashboard.mjs", "data.mjs", "docs.mjs",
-  "feedback.mjs", "forms.mjs", "interaction.mjs", "layout.mjs", "map.mjs",
-  "misc.mjs", "navigation.mjs", "ui.mjs", "registration.mjs", "shadow.mjs",
-];
-// Assert the fragment list matches the directory (BY2-I7): a new fragment
-// landing in src/js/wc/ must not miss every surface bundle silently.
-const _wcDir = readdirSync(join(root, "src/js/wc")).filter((f) => f.endsWith(".mjs") && f !== "index.mjs").sort();
-const _wcListed = [...wcFragNames].sort();
-if (JSON.stringify(_wcDir) !== JSON.stringify(_wcListed)) {
-  console.error("build: wcFragNames out of sync with src/js/wc/:");
-  console.error("  in dir, not listed:", _wcDir.filter((f) => !_wcListed.includes(f)));
-  console.error("  listed, not in dir:", _wcListed.filter((f) => !_wcDir.includes(f)));
-  process.exit(1);
-}
+// wcFragNames and its assertion live above the rmSync, so a refused tree keeps
+// the previous dist/.
 const wcFrags = wcFragNames;
 function stripWc(code) {
   code = code.replace(/^\s*import\s+[^;]*;?\s*$/gm, "");

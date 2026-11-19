@@ -5,10 +5,26 @@
  * Runs each gate in the "before you finish" list, captures exit code + stdout/
  * stderr, and prints a JSON report. Exits 0 only when every gate passes.
  *
+ * Gates run concurrently, because the sweep is dominated by a handful of slow
+ * browser gates and the rest are independent readers of `dist/`. Two things keep
+ * that honest:
+ *
+ *   - Output is emitted in declaration order, not completion order. A CI log
+ *     that reorders itself between runs cannot be diffed against the last one.
+ *   - A gate that mutates shared state runs by itself, first. `npm pack` in
+ *     check-consumer-install fires the package's `prepack`, which is
+ *     `tools/build.mjs --single` — a non-atomic rewrite of `dist/` while every
+ *     other gate is reading it. See SERIAL below.
+ *
+ * Concurrency is `DOCTOR_JOBS` (default: min(4, availableParallelism())). Four
+ * is the ceiling because the slow gates are browser gates: each one launches a
+ * Chromium of its own, and the point of the sweep is to finish, not to thrash.
+ *
  * Run: node tools/doctor.mjs [--json]
  */
-import { execFileSync } from "node:child_process";
+import { execFile } from "node:child_process";
 import { existsSync } from "node:fs";
+import { availableParallelism } from "node:os";
 import { join } from "node:path";
 
 const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
@@ -56,6 +72,14 @@ const gates = [
   ["check-api-contracts", "node", ["tools/check-api-contracts.mjs"]],
 ];
 
+// Gates that write to a path another gate reads. They run alone, before the
+// pool, so no reader ever sees a half-written file. Today that is exactly one
+// gate: check-consumer-install shells out to `npm pack`, and npm runs the
+// package's `prepack` (`tools/build.mjs --single`) before packing, which
+// rewrites `dist/` in place with plain writeFileSync calls. Everything else in
+// the list only reads, or writes under its own tmp/ subdirectory.
+const SERIAL = new Set(["check-consumer-install"]);
+
 // A gate that is not in this artifact cannot pass, fail, or mean anything.
 // `files` ships dist/ and src/ only, so the published bin used to report
 // "FAIL check-tokens ... FAIL family-gate" — 17 failures on a healthy tree, because
@@ -68,23 +92,68 @@ if (!present.length) {
   process.exit(1);
 }
 
-const results = [];
-let allOk = true;
-for (const [name, cmd, args] of present) {
-  let exit = 0;
-  let out = "";
-  try {
-    out = execFileSync(cmd, args, { cwd: ROOT, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] });
-  } catch (e) {
-    exit = e.status ?? 1;
-    out = (e.stdout || "") + (e.stderr || "");
-    allOk = false;
-  }
-  const ok = exit === 0;
-  if (!ok) allOk = false;
-  results.push({ name, ok, exit, output: out.trim().split("\n").slice(-3).join(" | ") });
-  if (!json) console.log(`${ok ? "OK  " : "FAIL"} ${name}`);
+const JOBS = Math.max(
+  1,
+  Number(process.env.DOCTOR_JOBS) || Math.min(4, availableParallelism?.() ?? 1),
+);
+
+/** Run one gate and resolve to its result row. Never rejects. */
+function runGate([name, cmd, args]) {
+  return new Promise((resolve) => {
+    execFile(
+      cmd,
+      args,
+      { cwd: ROOT, encoding: "utf8", maxBuffer: 16 * 1024 * 1024 },
+      (err, stdout, stderr) => {
+        const exit = err ? (typeof err.code === "number" ? err.code : 1) : 0;
+        const out = err ? (stdout || "") + (stderr || "") : stdout || "";
+        resolve({
+          name,
+          ok: exit === 0,
+          exit,
+          output: out.trim().split("\n").slice(-3).join(" | "),
+        });
+      },
+    );
+  });
 }
+
+const results = new Array(present.length);
+let next = 0;
+let printed = 0;
+
+// Print in declaration order as soon as the next row is known, so the log reads
+// the same on every run while still streaming while the pool is still working.
+function flush() {
+  while (printed < results.length && results[printed]) {
+    const r = results[printed];
+    if (!json) console.log(`${r.ok ? "OK  " : "FAIL"} ${r.name}`);
+    printed += 1;
+  }
+}
+
+// Phase 1 — the mutators, alone.
+for (let i = 0; i < present.length; i += 1) {
+  if (!SERIAL.has(present[i][0])) continue;
+  results[i] = await runGate(present[i]);
+  flush();
+}
+
+// Phase 2 — every reader, through a bounded pool.
+await Promise.all(
+  Array.from({ length: Math.min(JOBS, present.length) }, async () => {
+    for (;;) {
+      const i = next;
+      next += 1;
+      if (i >= present.length) return;
+      if (results[i]) continue; // already done in the serial phase
+      results[i] = await runGate(present[i]);
+      flush();
+    }
+  }),
+);
+
+const allOk = results.every((r) => r.ok);
 
 if (!json && absent.length) console.log(`SKIP ${absent.length} gate(s) not shipped here: ${absent.join(", ")}`);
 if (json) {
