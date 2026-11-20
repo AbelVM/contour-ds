@@ -81,13 +81,42 @@ const gates = [
 // the list only reads, or writes under its own tmp/ subdirectory.
 const SERIAL = new Set(["check-consumer-install"]);
 
+// Gates that import tools/audit/lib/browser.mjs. That module calls process.exit(1)
+// at import time when it cannot resolve a driver, so in a job with no browser and
+// no node_modules these gates do not fail a measurement — they fail to start. The
+// `validate` job is exactly that job: it installs nothing, because every gate it
+// lists explicitly is dependency-free by design. Running the whole sweep there
+// turned nine browser gates into nine import errors and took the job red for a
+// reason that had nothing to do with the tree (F-CI1).
+//
+// --node-only runs the dependency-free subset and NAMES what it left out. It does
+// not count the omissions as passes: the browser gates are run, and reported, by
+// the `contract` job, which installs a driver on purpose.
+const BROWSER_GATES = new Set([
+  "component-inventory",
+  "check-rtl",
+  "check-visual",
+  "contrast-cross-browser",
+  "docs-behaviours",
+  "glass-budget",
+  "perf-budget",
+  "wc-contract",
+  "workspace-shell",
+]);
+const nodeOnly = process.argv.includes("--node-only");
+const selected = nodeOnly ? gates.filter(([n]) => !BROWSER_GATES.has(n)) : gates;
+const deferred = nodeOnly ? gates.filter(([n]) => BROWSER_GATES.has(n)).map(([n]) => n) : [];
+
+const present = selected.filter(([, , args]) => existsSync(join(ROOT, args[0])));
+const absent = selected
+  .filter(([, , args]) => !existsSync(join(ROOT, args[0])))
+  .map(([n]) => n)
+  .concat(deferred.map((n) => `${n} (browser)`));
 // A gate that is not in this artifact cannot pass, fail, or mean anything.
 // `files` ships dist/ and src/ only, so the published bin used to report
 // "FAIL check-tokens ... FAIL family-gate" — 17 failures on a healthy tree, because
 // every dispatched path was missing. Absent is reported as absent, and an empty run
 // is a failure rather than a pass.
-const present = gates.filter(([, , args]) => existsSync(join(ROOT, args[0])));
-const absent = gates.filter(([, , args]) => !existsSync(join(ROOT, args[0]))).map(([n]) => n);
 if (!present.length) {
   console.error("doctor: no gates present in this artifact — that is a report of nothing, not a pass.");
   process.exit(1);
@@ -156,7 +185,15 @@ await Promise.all(
 
 const allOk = results.every((r) => r.ok);
 
-if (!json && absent.length) console.log(`SKIP ${absent.length} gate(s) not shipped here: ${absent.join(", ")}`);
+if (!json && absent.length) {
+  // Two different reasons end up here and they must not read the same: a gate
+  // this artifact does not ship, and a gate this *run* was told to leave to
+  // another job. Only the second is a statement about the tree.
+  console.log(`SKIP ${absent.length} gate(s) not run here: ${absent.join(", ")}`);
+  if (deferred.length) {
+    console.log(`     ${deferred.length} of those need a browser driver and are run by the \`contract\` job.`);
+  }
+}
 if (json) {
   console.log(JSON.stringify({ ok: allOk, gates: results, notShipped: absent }, null, 2));
 }

@@ -24,6 +24,13 @@ jobs:
         with:
           node-version: 24
 
+      # The gates below are dependency-free by design, but `npx html-validate`
+      # is not: without a local install npx fetches the latest major into its
+      # cache, so a new html-validate release could fail this job with no source
+      # change. Installing pins it to the version in devDependencies.
+      - name: Install dependencies
+        run: npm install
+
       - name: Validate markup
         run: npx html-validate index.html templates/*.html
 
@@ -121,8 +128,13 @@ jobs:
       - name: Check deliberately absent components stay absent
         run: node tools/check-absent-components.mjs
 
+      # --node-only leaves out the nine gates that import tools/audit/lib/browser.mjs.
+      # That module exits 1 at import time when it cannot resolve a driver, and this
+      # job installs no browser, so the full sweep would report nine import failures
+      # rather than nine measurements. The browser gates run in the `contract` job,
+      # which installs a driver on purpose; doctor names the ones it skipped.
       - name: Run the node gate sweep
-        run: node tools/doctor.mjs
+        run: node tools/doctor.mjs --node-only
 
       - name: Check the component contract resolves against src/css
         run: node tools/check-components.mjs
@@ -193,7 +205,7 @@ jobs:
       - name: Install the audit harnesses' dev dependency
         run: npm --prefix tools/audit install
       - name: Install chromium
-        run: npx --yes playwright@1.64.1 install --with-deps chromium
+        run: npx --yes playwright@1.65.1 install --with-deps chromium
       # dist/ is gitignored, so a job that reads the shipped artifacts has to
       # build them. The build runs first on purpose: a failed build leaves the
       # previous dist/ in place, and a lane after it would then certify bytes
@@ -298,13 +310,18 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Build the design system
         run: node tools/build.mjs
+      # Before the build, not after. `npm run build-storybook` rewrites
+      # storybook/build-manifest.json from the current src/, so running this
+      # afterwards compares the manifest against a tree it was just derived from
+      # and can never fail. Run first, it measures the artifact Pages actually
+      # serves — the one that is committed.
+      - name: Check the committed Storybook site is not behind src/
+        run: node tools/check-storybook-stale.mjs
       - name: Build Storybook
         run: npm run build-storybook
       - name: Run Storybook interaction and a11y tests
         run: node tools/storybook-tests.mjs
       - name: Check Storybook coverage
         run: npm run check:storybook-coverage
-      - name: Check the committed Storybook site is not behind src/
-        run: node tools/check-storybook-stale.mjs
       - name: Visual regression check (CDS-019, armed baselines)
         run: npm run visual:check
