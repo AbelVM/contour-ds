@@ -40,6 +40,8 @@ Every contour:* event the layer dispatches, the payload keys an emission site ca
 
 One card, two ways to change it. Writing three attributes in turn rebuilds the card three times; the same three writes inside batch() rebuild it once. The count is the element's own renderCount, not a number this page keeps, so it cannot drift from what the layer did.
 
+A single attribute write runs the whole lifecycle, in order. The four rows below are filled from the element rather than from this page: the count is renderCount, and the last row only turns green once the close button — which the layer rebuilt during the re-render — still handles a click. That is the part a re-render gets wrong when a listener is captured on a node the render then replaces.
+
 Concise usage notes for the web-component layer. The generated API cards above cover structural inputs (observed attributes, properties, parts); these notes cover intent, composition and gotchas the cards cannot express. Full text: tmp/dx_notes.md.
 
 Toggle attributes live and watch the component re-render. The alert's variant and the kpi's value are driven by the controls below; no page-level state is kept.
@@ -65,6 +67,7 @@ Content behind the scrim.
 - Composition and states
 - Event vocabulary
 - Reactivity, counted
+- One write, from top to bottom
 - DX notes (per component)
 - Reactivity playground
 - Form association
@@ -73,7 +76,7 @@ Content behind the scrim.
 
 ## Blocks documented here
 
-29 block(s). Their facts live in `../contour.components.json`;
+30 block(s). Their facts live in `../contour.components.json`;
 only the names are here, because the same figure in two files is how a document
 starts disagreeing with itself.
 
@@ -82,6 +85,7 @@ starts disagreeing with itself.
 - `.c-btn`
 - `.c-card`
 - `.c-cluster`
+- `.c-code`
 - `.c-feature-inspector`
 - `.c-filter-pill`
 - `.c-geocoder`
@@ -109,4 +113,4 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `18d63f18e011d5c6` · last committed 2026-11-19T21:00:59+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `e8d7c58884e27900` · last committed 2026-11-20T18:57:00+01:00 · no URL: the project is private until v1.0.

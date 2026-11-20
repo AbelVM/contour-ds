@@ -124,8 +124,10 @@ class ContourDashKpiRow extends ContourBase {
       this.classList.add("c-dash-kpi-row");
       if (!this.hasAttribute("role")) this.setAttribute("role", "group");
       if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("title") || "KPI row");
-      // Drop previously generated kpis so re-render doesn't stack.
-      Array.from(this.querySelectorAll("contour-kpi")).forEach((n) => n.remove());
+      // Drop previously generated kpis so re-render doesn't stack. Only the ones
+      // this component generated: an authored <contour-kpi> is the author's own
+      // child, and removing it destroyed their content on every render (F-FC13).
+      Array.from(this.querySelectorAll("contour-kpi[data-contour-generated]")).forEach((n) => n.remove());
       const items = this.getAttribute("items");
       let parsed = null;
       if (items) { try { parsed = JSON.parse(items); } catch (e) { parsed = null; } }
@@ -146,6 +148,7 @@ class ContourDashKpiRow extends ContourBase {
           // One tab stop for the row; arrow keys rove. The keydown handler below
           // needs a tabbable item or document.activeElement is never in the list.
           k.setAttribute("tabindex", i === 0 ? "0" : "-1");
+          k.dataset.contourGenerated = "";
           this.appendChild(k);
         });
       }
@@ -217,7 +220,17 @@ class ContourSavedView extends ContourBase {
       } else {
         this.classList.remove("c-saved-view--active");
       }
-      const thumb = this.ensure(".c-saved-view__thumb", () => { const el = document.createElement("div"); el.className = "c-saved-view__thumb"; el.setAttribute("aria-hidden", "true"); return el; });
+      // The thumbnail is a picture of the view, so it is named rather than
+      // hidden: `aria-hidden` told a screen reader the view had no preview at
+      // all (F-CSS22). It carries no information the name does not already
+      // give, so the label repeats the name instead of inventing one.
+      const thumb = this.ensure(".c-saved-view__thumb", () => {
+        const el = document.createElement("div");
+        el.className = "c-saved-view__thumb";
+        el.setAttribute("role", "img");
+        return el;
+      });
+      thumb.setAttribute("aria-label", `${labelText(this, "preview", "Preview")} — ${this.getAttribute("name") || labelText(this, "unnamed", "Saved view")}`);
       if (thumb.parentNode !== this) this.appendChild(thumb);
       const name = this.ensure(".c-saved-view__name", () => { const el = document.createElement("div"); el.className = "c-saved-view__name"; return el; });
       name.textContent = this.getAttribute("name") || "Saved view";
@@ -269,6 +282,11 @@ class ContourProvenance extends ContourBase {
       this.classList.add("c-provenance");
       this.setAttribute("role", "group");
       this.setAttribute("aria-label", labelText(this, "provenance", "Data provenance"));
+      // Provenance is a readout that changes underneath the reader (a new
+      // source is resolved, a confidence is revised). Without a live region the
+      // change is silent unless the reader goes looking for it (F-CSS23). An
+      // author's own live-region choice is left alone.
+      if (!this.hasAttribute("aria-live")) this.setAttribute("aria-live", "polite");
       const source = this.getAttribute("source");
       if (source) {
         const s = this.ensure(".c-provenance__source", () => { const el = document.createElement("span"); el.className = "c-provenance__source"; return el; });
@@ -282,7 +300,13 @@ class ContourProvenance extends ContourBase {
       const confidence = this.getAttribute("confidence");
       if (confidence) {
         const c = this.ensure(".c-provenance__confidence", () => { const el = document.createElement("span"); el.className = "c-provenance__confidence"; return el; });
-        c.className = `c-provenance__confidence c-provenance__confidence--${confidence}`;
+        // Only the three modelled levels get a modifier. An unknown value used
+        // to produce `c-provenance__confidence--high-ish`, a class with no rule
+        // behind it, so the confidence silently lost its colour coding
+        // (F-CSS23). The text still names what the consumer passed.
+        const level = String(confidence).toLowerCase();
+        const known = level === "high" || level === "medium" || level === "low";
+        c.className = "c-provenance__confidence" + (known ? " c-provenance__confidence--" + level : " c-provenance__confidence--unknown");
         c.textContent = `Confidence: ${confidence}`;
       } else {
         const c = this.querySelector(".c-provenance__confidence");

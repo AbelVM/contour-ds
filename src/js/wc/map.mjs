@@ -371,12 +371,18 @@ class ContourLayerPanel extends ContourBase {
              nm.replaceWith(input);
              input.focus();
              input.select();
-             const commit = () => {
-               const trimmed = (input.value || "").trim();
-               const span = document.createElement("span");
-               span.className = "c-layer-panel__name";
-               span.textContent = trimmed || name;
-               input.replaceWith(span);
+            const commit = () => {
+              // `input.replaceWith(span)` moves the focused input out of the
+              // document, which fires `blur` synchronously and re-enters this
+              // closure through the once-listener. The second pass then tried to
+              // remove a node that was already gone and threw NotFoundError on
+              // every Enter/Escape commit (F-RO12).
+              if (!input.isConnected) return;
+              const trimmed = (input.value || "").trim();
+              const span = document.createElement("span");
+              span.className = "c-layer-panel__name";
+              span.textContent = trimmed || name;
+              input.replaceWith(span);
                if (trimmed && trimmed !== name) {
                  this.dispatchEvent(new CustomEvent("contour:layer-rename", { bubbles: true, composed: true, detail: { name, newName: trimmed } }));
                }
@@ -416,7 +422,11 @@ class ContourLayerPanel extends ContourBase {
              else this.insertBefore(items[newIdx], item);
              (isDrag ? e.target : item).focus();
              setTimeout(() => item.classList.remove("c-layer-panel__item--dragging"), 200);
-             const layerIds = Array.from(this.querySelectorAll(".c-layer-panel__item")).map((el) => el.querySelector(".c-layer-panel__name")?.textContent || "");
+             // A stable per-layer id, not the display name: two layers can share
+            // a name, and the reorder detail then carried duplicate ids the
+            // consumer could not disambiguate (F-FC14). The index is stable for
+            // the duration of the interaction and is what the DOM order means.
+            const layerIds = Array.from(this.querySelectorAll(".c-layer-panel__item")).map((el, i) => el.dataset.layerId || el.getAttribute("data-layer-id") || String(i));
              this.dispatchEvent(new CustomEvent("contour:layer-reorder", { bubbles: true, composed: true, detail: { layerIds } }));
            }
          });

@@ -15171,6 +15171,49 @@ area.addEventListener("contour:map-control", (e) =&gt; {
                   <button class="c-btn c-btn--ghost c-btn--sm" type="button" data-wc-demo-batch>Three writes, one batch</button>
                   <span class="u-mono" role="status" data-wc-demo-count></span>
                 </div>
+                <pre class="c-code"><code>// three writes, three renders
+el.setAttribute("value", "129");
+el.setAttribute("delta", "+1");
+el.setAttribute("direction", "down");
+
+// the same three writes, one render
+el.batch(() =&gt; {
+  el.setAttribute("value", "129");
+  el.setAttribute("delta", "+1");
+  el.setAttribute("direction", "down");
+});</code></pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="c-panel" data-wc-lifecycle>
+            <div class="c-panel__head">
+              <div>
+                <h3 class="c-panel__title">One write, from top to bottom</h3>
+              </div>
+            </div>
+            <div class="c-panel__body">
+              <div class="c-stack">
+                <p>
+                  A single attribute write runs the whole lifecycle, in order. The four rows below
+                  are filled from the element rather than from this page: the count is
+                  <code class="c-kbd">renderCount</code>, and the last row only turns green once the
+                  close button — which the layer rebuilt during the re-render — still handles a click.
+                  That is the part a re-render gets wrong when a listener is captured on a node the
+                  render then replaces.
+                </p>
+                <contour-alert data-wc-lc-alert variant="info" title="Lifecycle probe" body="Close me after the re-render" closable></contour-alert>
+                <div class="c-cluster">
+                  <button class="c-btn c-btn--sm" type="button" data-wc-lc-write>Write one attribute</button>
+                  <button class="c-btn c-btn--ghost c-btn--sm" type="button" data-wc-lc-reset>Reset probe</button>
+                  <span class="u-mono" role="status" data-wc-lc-out></span>
+                </div>
+                <ol class="c-stack" style="margin:0;padding-inline-start:1.25rem">
+                  <li>Snapshot — <span class="u-mono" data-wc-lc-snap>—</span></li>
+                  <li>Write — <span class="u-mono" data-wc-lc-what>—</span></li>
+                  <li>Re-render — <span class="u-mono" data-wc-lc-render>—</span></li>
+                  <li>Enhance — <span class="u-mono" data-wc-lc-enhance>waiting for a close click</span></li>
+                </ol>
               </div>
             </div>
           </div>

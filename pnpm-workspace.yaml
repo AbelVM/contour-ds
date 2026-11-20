@@ -1,0 +1,15 @@
+allowBuilds:
+  esbuild: true
+  onnxruntime-node: true
+minimumReleaseAgeExclude:
+  - '@storybook/addon-a11y@10.6.8'
+  - '@storybook/addon-docs@10.6.8'
+  - '@storybook/addon-mcp@10.6.8'
+  - '@storybook/addon-vitest@10.6.8'
+  - '@storybook/builder-vite@10.6.8'
+  - '@storybook/react-dom-shim@10.6.8'
+  - '@storybook/web-components-vite@10.6.8'
+  - '@storybook/web-components@10.6.8'
+  - storybook@10.6.8
+  - stylelint-config-standard@41.1.0
+  - stylelint@18.1.0

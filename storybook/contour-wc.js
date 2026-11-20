@@ -361,6 +361,28 @@ function headingTag(host, fallback = "h3") {
   }
 
   /**
+   * Read a boolean attribute the way an author means it.
+   *
+   * `hasAttribute()` answers "is it there", not "is it on": a consumer who
+   * writes `closable="false"` or `sparkline="0"` from a template still has the
+   * attribute, so a presence test renders the close button / the sparkline they
+   * explicitly switched off (F-RO19, F-RO20, F-FC11). The HTML boolean
+   * convention is presence-only, but these attributes are commonly rendered by
+   * frameworks that stringify `false`, so the explicit negative values win.
+   *
+   * A bare attribute (`closable`) is present with an empty value and is ON —
+   * that is the HTML boolean convention, and treating `""` as off broke every
+   * plain `closable` in the guide.
+   */
+function flagOn(host, name) {
+    if (!host || !host.getAttribute) return false;
+    const raw = host.getAttribute(name);
+    if (raw === null) return false;
+    const v = raw.trim().toLowerCase();
+    return v !== "0" && v !== "false" && v !== "no" && v !== "off" && v !== "null" && v !== "undefined";
+  }
+
+  /**
    * Resolve a localised label for a host (R18-63). A consumer supplies a
    * `labels` JSON attribute (e.g. `labels='{"clear":"Effacer"}'`); it is merged
    * over the English `fallback`, so a partial object localises only the keys it
@@ -4533,13 +4555,22 @@ class ContourGeocoder extends ContourBase {
       wireStates(this);
       loadRemote(this, ["results"]);
       if (renderStates(this, "geocoder")) return;
-      // Input
+      // Input. It carries `c-input` as well as the block's own class: the
+      // system's control contract (focus ring, hover, `:user-invalid`, the
+      // `--target-control` height) is what a text field is supposed to look
+      // like, and re-implementing a subset of it in the block's CSS is how the
+      // two drifted apart (F-CSS18, F-GEO1).
       let inp = this.querySelector(".c-geocoder__input");
       if (!inp) {
         inp = document.createElement("input");
         inp.type = "search";
-        inp.className = "c-geocoder__input";
+        inp.className = "c-input c-geocoder__input";
         if (!inp.hasAttribute("aria-label")) inp.setAttribute("aria-label", this.getAttribute("placeholder") || "Search location");
+        // Combobox contract: the input owns the list, announces which option is
+        // active, and the list is only "expanded" while it holds results.
+        inp.setAttribute("role", "combobox");
+        inp.setAttribute("aria-autocomplete", "list");
+        inp.setAttribute("aria-expanded", "false");
         this.appendChild(inp);
       }
       const ph = this.getAttribute("placeholder");
@@ -4555,14 +4586,22 @@ class ContourGeocoder extends ContourBase {
       const remote = remoteData(this, "results");
       if (Array.isArray(remote)) results = remote;
       if (Array.isArray(results) && results.length) {
+        // A rebuilt list has no active option, whatever was active before.
+        this._geocoderIndex = -1;
+        // One list id per host, so `aria-controls` keeps pointing at the list
+        // that actually exists after a re-render.
+        if (!this._geocoderListId) this._geocoderListId = contourId("geocoder-list");
         const list = document.createElement("ul");
         list.className = "c-geocoder__list";
+        list.id = this._geocoderListId;
         list.setAttribute("role", "listbox");
         results.forEach((r, idx) => {
           const li = document.createElement("li");
           li.className = "c-geocoder__result";
+          li.id = this._geocoderListId + "-" + idx;
           li.setAttribute("role", "option");
-          li.setAttribute("tabindex", idx === 0 ? "0" : "-1");
+          li.setAttribute("aria-selected", "false");
+          li.setAttribute("tabindex", "-1");
           li.textContent = (typeof r === "object") ? (r.label || r.name || "") : String(r);
           if (typeof r === "object") {
             if (r.lat != null) li.dataset.lat = String(r.lat);
@@ -4571,44 +4610,118 @@ class ContourGeocoder extends ContourBase {
           list.appendChild(li);
         });
         this.appendChild(list);
-      } else if (!this.hasAttribute("loading") && !this.hasAttribute("error")) {
-        renderEmpty(this, "geocoder");
+        inp.setAttribute("aria-controls", this._geocoderListId);
+        inp.setAttribute("aria-expanded", "true");
+      } else {
+        inp.removeAttribute("aria-controls");
+        inp.setAttribute("aria-expanded", "false");
+        inp.removeAttribute("aria-activedescendant");
+        this._geocoderIndex = -1;
+        if (!this.hasAttribute("loading") && !this.hasAttribute("error")) {
+          renderEmpty(this, "geocoder");
+        }
       }
     }
     enhance() {
       if (this._wiredGeocoder) return;
       this._wiredGeocoder = true;
       const inp = this.querySelector(".c-geocoder__input");
+      // The current option, by index into `.c-geocoder__result`. `render()`
+      // rebuilds the list, so the index is re-derived from the DOM per event
+      // rather than captured (rule 12).
+      // `render()` rebuilds the list, so the active index is re-derived from the
+      // DOM per event rather than captured (rule 12). It starts at -1 — "nothing
+      // active" — and must be a number, because `undefined + 1` is NaN and a
+      // NaN index silently selected nothing.
+      if (typeof this._geocoderIndex !== "number") this._geocoderIndex = -1;
+      const options = () => Array.from(this.querySelectorAll(".c-geocoder__result"));
+      const active = () => {
+        const opts = options();
+        const i = this._geocoderIndex;
+        return i >= 0 && i < opts.length ? opts[i] : null;
+      };
+      const setActive = (i) => {
+        const opts = options();
+        if (!opts.length) return;
+        const next = Math.max(0, Math.min(opts.length - 1, Number.isFinite(i) ? i : 0));
+        opts.forEach((o, n) => o.setAttribute("aria-selected", n === next ? "true" : "false"));
+        this._geocoderIndex = next;
+        if (inp) {
+          if (next >= 0) inp.setAttribute("aria-activedescendant", opts[next].id);
+          else inp.removeAttribute("aria-activedescendant");
+        }
+      };
+      const clearActive = () => {
+        this._geocoderIndex = -1;
+        options().forEach((o) => o.setAttribute("aria-selected", "false"));
+        if (inp) inp.removeAttribute("aria-activedescendant");
+      };
+      const select = (li) => {
+        if (!li) return;
+        const result = { label: li.textContent.trim(), lat: li.dataset.lat, lon: li.dataset.lon };
+        this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { result } }));
+      };
       if (inp) {
-        let timer = null;
+        // The debounce handle lives on the host, not in a closure, so
+        // `disconnectedCallback` can cancel a pending search: a timer that
+        // outlived its host dispatched `contour:search` against a detached
+        // element (F-RO10).
         inp.addEventListener("input", () => {
-          if (timer) clearTimeout(timer);
-          timer = setTimeout(() => {
+          clearActive();
+          if (this._geocoderTimer) clearTimeout(this._geocoderTimer);
+          this._geocoderTimer = setTimeout(() => {
+            this._geocoderTimer = null;
+            if (!this.isConnected) return;
             this.dispatchEvent(new CustomEvent("contour:search", { bubbles: true, composed: true, detail: { query: inp.value } }));
           }, 200);
         });
         inp.addEventListener("keydown", (e) => {
+          const opts = options();
+          if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+            if (!opts.length) return;
+            e.preventDefault();
+            const cur = this._geocoderIndex < 0 ? (e.key === "ArrowDown" ? -1 : opts.length) : this._geocoderIndex;
+            setActive(cur + (e.key === "ArrowDown" ? 1 : -1));
+            return;
+          }
           if (e.key === "Enter") {
             e.preventDefault();
-            this.dispatchEvent(new CustomEvent("contour:search", { bubbles: true, composed: true, detail: { query: inp.value } }));
+            // Enter on an active option selects it; otherwise it is a search.
+            const li = active();
+            if (li) select(li);
+            else this.dispatchEvent(new CustomEvent("contour:search", { bubbles: true, composed: true, detail: { query: inp.value } }));
+            return;
+          }
+          if (e.key === "Escape") {
+            // Escape leaves the list first; only a second Escape is the
+            // consumer's to handle.
+            if (opts.length && inp.getAttribute("aria-expanded") === "true") {
+              e.preventDefault();
+              clearActive();
+              inp.setAttribute("aria-expanded", "false");
+              inp.removeAttribute("aria-controls");
+            }
           }
         });
       }
       this.addEventListener("click", (e) => {
         const li = e.target && e.target.closest ? e.target.closest(".c-geocoder__result") : null;
         if (!li || !this.contains(li)) return;
-        const result = { label: li.textContent.trim(), lat: li.dataset.lat, lon: li.dataset.lon };
-        this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { result } }));
+        select(li);
       });
       this.addEventListener("keydown", (e) => {
         const li = e.target && e.target.closest ? e.target.closest(".c-geocoder__result") : null;
         if (!li || !this.contains(li)) return;
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          const result = { label: li.textContent.trim(), lat: li.dataset.lat, lon: li.dataset.lon };
-          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { result } }));
+          select(li);
         }
       });
+    }
+    disconnectedCallback() {
+      // A pending debounce must not outlive its host (F-RO10).
+      if (this._geocoderTimer) { clearTimeout(this._geocoderTimer); this._geocoderTimer = null; }
+      super.disconnectedCallback();
     }
   }
   define("contour-geocoder", ContourGeocoder);
@@ -4738,8 +4851,10 @@ class ContourDashKpiRow extends ContourBase {
       this.classList.add("c-dash-kpi-row");
       if (!this.hasAttribute("role")) this.setAttribute("role", "group");
       if (!this.hasAttribute("aria-label")) this.setAttribute("aria-label", this.getAttribute("title") || "KPI row");
-      // Drop previously generated kpis so re-render doesn't stack.
-      Array.from(this.querySelectorAll("contour-kpi")).forEach((n) => n.remove());
+      // Drop previously generated kpis so re-render doesn't stack. Only the ones
+      // this component generated: an authored <contour-kpi> is the author's own
+      // child, and removing it destroyed their content on every render (F-FC13).
+      Array.from(this.querySelectorAll("contour-kpi[data-contour-generated]")).forEach((n) => n.remove());
       const items = this.getAttribute("items");
       let parsed = null;
       if (items) { try { parsed = JSON.parse(items); } catch (e) { parsed = null; } }
@@ -4760,6 +4875,7 @@ class ContourDashKpiRow extends ContourBase {
           // One tab stop for the row; arrow keys rove. The keydown handler below
           // needs a tabbable item or document.activeElement is never in the list.
           k.setAttribute("tabindex", i === 0 ? "0" : "-1");
+          k.dataset.contourGenerated = "";
           this.appendChild(k);
         });
       }
@@ -4831,7 +4947,17 @@ class ContourSavedView extends ContourBase {
       } else {
         this.classList.remove("c-saved-view--active");
       }
-      const thumb = this.ensure(".c-saved-view__thumb", () => { const el = document.createElement("div"); el.className = "c-saved-view__thumb"; el.setAttribute("aria-hidden", "true"); return el; });
+      // The thumbnail is a picture of the view, so it is named rather than
+      // hidden: `aria-hidden` told a screen reader the view had no preview at
+      // all (F-CSS22). It carries no information the name does not already
+      // give, so the label repeats the name instead of inventing one.
+      const thumb = this.ensure(".c-saved-view__thumb", () => {
+        const el = document.createElement("div");
+        el.className = "c-saved-view__thumb";
+        el.setAttribute("role", "img");
+        return el;
+      });
+      thumb.setAttribute("aria-label", `${labelText(this, "preview", "Preview")} — ${this.getAttribute("name") || labelText(this, "unnamed", "Saved view")}`);
       if (thumb.parentNode !== this) this.appendChild(thumb);
       const name = this.ensure(".c-saved-view__name", () => { const el = document.createElement("div"); el.className = "c-saved-view__name"; return el; });
       name.textContent = this.getAttribute("name") || "Saved view";
@@ -4883,6 +5009,11 @@ class ContourProvenance extends ContourBase {
       this.classList.add("c-provenance");
       this.setAttribute("role", "group");
       this.setAttribute("aria-label", labelText(this, "provenance", "Data provenance"));
+      // Provenance is a readout that changes underneath the reader (a new
+      // source is resolved, a confidence is revised). Without a live region the
+      // change is silent unless the reader goes looking for it (F-CSS23). An
+      // author's own live-region choice is left alone.
+      if (!this.hasAttribute("aria-live")) this.setAttribute("aria-live", "polite");
       const source = this.getAttribute("source");
       if (source) {
         const s = this.ensure(".c-provenance__source", () => { const el = document.createElement("span"); el.className = "c-provenance__source"; return el; });
@@ -4896,7 +5027,13 @@ class ContourProvenance extends ContourBase {
       const confidence = this.getAttribute("confidence");
       if (confidence) {
         const c = this.ensure(".c-provenance__confidence", () => { const el = document.createElement("span"); el.className = "c-provenance__confidence"; return el; });
-        c.className = `c-provenance__confidence c-provenance__confidence--${confidence}`;
+        // Only the three modelled levels get a modifier. An unknown value used
+        // to produce `c-provenance__confidence--high-ish`, a class with no rule
+        // behind it, so the confidence silently lost its colour coding
+        // (F-CSS23). The text still names what the consumer passed.
+        const level = String(confidence).toLowerCase();
+        const known = level === "high" || level === "medium" || level === "low";
+        c.className = "c-provenance__confidence" + (known ? " c-provenance__confidence--" + level : " c-provenance__confidence--unknown");
         c.textContent = `Confidence: ${confidence}`;
       } else {
         const c = this.querySelector(".c-provenance__confidence");
@@ -5144,9 +5281,12 @@ class ContourKpi extends ContourBase {
       // remove orphaned foot container when no children remain
       const foot = this.querySelector(".c-kpi__foot");
       if (foot && !foot.querySelector(".c-delta, .c-kpi__note, .c-kpi__threshold-badge")) foot.remove();
-      // sparkline canvas
+      // sparkline canvas. A boolean flag is presence, but `sparkline="0"` and
+      // `sparkline="false"` are non-empty strings — a consumer who writes the
+      // value out from a template means "off", so honour it (F-FC11).
       const spark = this.getAttribute("sparkline");
-      if (spark) {
+      const sparkOn = spark !== null && spark !== "" && spark !== "0" && spark.toLowerCase() !== "false";
+      if (sparkOn) {
         let canvas = this.querySelector(".c-kpi__sparkline-canvas");
         if (!canvas) { canvas = document.createElement("canvas"); canvas.className = "c-kpi__sparkline-canvas"; canvas.setAttribute("part", "sparkline-canvas"); this.appendChild(canvas); }
       } else {
@@ -6707,7 +6847,10 @@ class ContourMeter extends ContourBase {
       }
        if (!this.hasAttribute("role")) this.setAttribute("role", "meter");
        if (label && !this.hasAttribute("aria-label")) this.setAttribute("aria-label", label);
-      const ariaValue = rValue === null ? "0" : rValue;
+      // ARIA requires `aria-valuenow` to be a number. The raw attribute string
+      // would put `aria-valuenow="abc"` on the host while the text showed 0%
+      // (F-RO14), so mirror the same finite-number guard the label uses.
+      const ariaValue = Number.isFinite(num) ? String(num) : "0";
       const prevVal = this._meterAriaValue;
       if (!this.hasAttribute("aria-valuenow") || this.getAttribute("aria-valuenow") === prevVal) {
         this.setAttribute("aria-valuenow", ariaValue);
@@ -7121,6 +7264,13 @@ class ContourBrush extends ContourBase {
         }
         this.dispatchEvent(new CustomEvent("contour:brush-end", { bubbles: true, composed: true, detail: { value: this.getAttribute("end"), start: this.getAttribute("start"), end: this.getAttribute("end"), range: this._rangeValue() } }));
         this.dispatchEvent(new CustomEvent("contour:brush", { bubbles: true, composed: true, detail: { start: this.getAttribute("start"), end: this.getAttribute("end"), value: this.getAttribute("end"), range: this._rangeValue() } }));
+      });
+      // A cancelled pointer (window blur, browser gesture, lost capture) never
+      // fires `pointerup`, so without this the next hover kept brushing (F-RO13).
+      this.addEventListener("pointercancel", () => {
+        if (!dragging) return;
+        dragging = null;
+        this._brushPending = null;
       });
       // Keyboard: Enter/Space emits brush-start/brush-end (WC-P1-08).
       if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
@@ -7968,6 +8118,8 @@ class ContourBivariateLegend extends ContourBivariate {
       this.setAttribute("role", "group");
       this.setAttribute("aria-label", "Bivariate legend");
       const size = Math.min(12, Math.max(1, parseInt(this.getAttribute("size") || "3", 10) || 3));
+      const axisXName = this.getAttribute("axis-x") || "X";
+      const axisYName = this.getAttribute("axis-y") || "Y";
       const matrix = this.ensure(".c-bivariate-legend__matrix", () => { const el = document.createElement("div"); el.className = "c-bivariate-legend__matrix"; return el; });
       matrix.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
       matrix.style.gridTemplateRows = `repeat(${size}, 1fr)`;
@@ -7984,7 +8136,12 @@ class ContourBivariateLegend extends ContourBivariate {
             cell.className = "c-bivariate-legend__cell";
             cell.setAttribute("role", "button");
             cell.setAttribute("tabindex", "0");
-            cell.setAttribute("aria-label", "Cell " + c + "," + r);
+            // "Cell 0,0" names the indices, not the thing: a screen-reader user
+            // hears two numbers with no idea which axis is which or how far
+            // along it they are (F-CSS20). Rows count from the bottom, matching
+            // the palette order below.
+            const rowFromBottom = size - r;
+            cell.setAttribute("aria-label", `${axisYName} ${rowFromBottom} of ${size}, ${axisXName} ${c + 1} of ${size}`);
             // Palette runs from bottom-left (low/low) to top-right (high/high):
             // reverse the row order so the first palette row sits at the bottom.
             const srcIndex = (size - 1 - r) * size + c;
@@ -8006,9 +8163,12 @@ class ContourBivariateLegend extends ContourBivariate {
             else cell.removeAttribute("data-selected");
           });
         }
-        // aria-live region
+        // aria-live region. `.visually-hidden` is the system's own utility —
+        // the inline `position/width/height/clip` copy was the same rule written
+        // out by hand, and it drifted from the anchored version that keeps a
+        // hidden label inside a scroller (F-CSS20).
         let live = this.querySelector(".c-bivariate-legend__live");
-        if (!live) { live = document.createElement("div"); live.className = "c-bivariate-legend__live"; live.setAttribute("aria-live", "polite"); live.style.position = "absolute"; live.style.width = "1px"; live.style.height = "1px"; live.style.overflow = "hidden"; live.style.clip = "rect(0,0,0,0)"; this.appendChild(live); }
+        if (!live) { live = document.createElement("div"); live.className = "visually-hidden c-bivariate-legend__live"; live.setAttribute("aria-live", "polite"); this.appendChild(live); }
       }
       const axisX = this.getAttribute("axis-x");
       if (axisX) {
@@ -8044,6 +8204,11 @@ class ContourBivariateLegend extends ContourBivariate {
           if (rr === row && cc === col) cell.setAttribute("data-selected", "");
           else cell.removeAttribute("data-selected");
         });
+        // Announce the pick: the cell's own label is the only description, and
+        // a selection that changes nothing audible is one a screen reader
+        // cannot confirm.
+        const live = this.querySelector(".c-bivariate-legend__live");
+        if (live) live.textContent = cell.getAttribute("aria-label") || "";
         this.dispatchEvent(new CustomEvent("contour:select", { detail: { row, col }, bubbles: true, composed: true }));
       };
       this.addEventListener("click", (e) => {
@@ -9142,13 +9307,24 @@ class ContourErrorBoundary extends ContourBase {
     static get properties() { return { fallback: { attribute: "fallback" }, error: { attribute: "error" } }; }
     render() {
       this.classList.add("c-error-boundary");
-      this.setAttribute("role", "region");
-      this.setAttribute("aria-live", "polite");
+      // An author's role and live-region choice outrank the boundary's own
+      // defaults; overwriting them silently changed the host's semantics
+      // (F-RO18).
+      if (!this.hasAttribute("role")) this.setAttribute("role", "region");
+      if (!this.hasAttribute("aria-live")) this.setAttribute("aria-live", "polite");
       const err = this.getAttribute("error");
       if (err) {
         this.dataset.state = "error";
-        // Hide authored children, show fallback.
-        Array.from(this.children).forEach((c) => { if (!c.hasAttribute("data-fallback")) c.style.display = "none"; });
+        // Hide authored children, show fallback. `display: none` is restored
+        // from the value it had, not from `""` — the empty string resolves to
+        // the UA default, which turned a <span> or a <tr> into a block (F-RO17).
+        Array.from(this.children).forEach((c) => {
+          if (c.hasAttribute("data-fallback")) return;
+          if (c.dataset.contourDisplay === undefined) {
+            c.dataset.contourDisplay = c.style.display;
+          }
+          c.style.display = "none";
+        });
         let fb = this.querySelector("[data-fallback]");
         if (!fb) {
           fb = document.createElement("div");
@@ -9161,7 +9337,17 @@ class ContourErrorBoundary extends ContourBase {
         }
       } else {
         this.dataset.state = "ready";
-        Array.from(this.children).forEach((c) => { c.style.display = ""; });
+        Array.from(this.children).forEach((c) => {
+          if (c.dataset.contourDisplay !== undefined) {
+            c.style.display = c.dataset.contourDisplay;
+            delete c.dataset.contourDisplay;
+          } else if (c.style.display === "none" && !c.hasAttribute("data-fallback")) {
+            // No saved value (the child was hidden by something else, or the
+            // error state was set before this render): clear the inline value
+            // rather than leaving it hidden.
+            c.style.display = "";
+          }
+        });
         const fb = this.querySelector("[data-fallback]");
         if (fb) fb.remove();
       }
@@ -9190,7 +9376,10 @@ class ContourDataExport extends ContourBase {
       const fmt = (this.getAttribute("format") || "json").toLowerCase();
       const btn = this.ensure(".c-data-export__btn", () => {
         const b = document.createElement("button");
-        b.className = "c-data-export__btn";
+        // `c-btn` carries the control contract — press language, focus ring,
+        // disabled state — which the block's own hand-rolled rule could not
+        // keep in step with (F-CSS21).
+        b.className = "c-btn c-data-export__btn";
         b.type = "button";
         return b;
       });
@@ -9237,6 +9426,63 @@ class ContourDataExport extends ContourBase {
 class ContourQueryBuilder extends ContourBase {
   static get observed() { return ["query", "fields"]; }
   static get properties() { return { query: { attribute: "query" }, fields: { attribute: "fields" } }; }
+  // One reader for the whole component. Add, remove, move and group-edit all
+  // need the same projection of the DOM back into the `query` data model, and
+  // three copies of it had already drifted (the connector was never read at
+  // all, so an AND/OR edit was silently dropped).
+  readRules() {
+    const rows = [];
+    const nodes = Array.from(this.querySelectorAll(".c-query-builder__row"));
+    // One connector per gap, in order: connector i-1 is the one that joins
+    // row i-1 to row i. They are siblings of the rows and of the groups, so
+    // the lookup is by position rather than by parentage.
+    const conns = Array.from(this.querySelectorAll(".c-query-builder__connector__op"));
+    nodes.forEach((r, i) => {
+      const rule = {
+        field: r.querySelector(".c-query-builder__field")?.value || "",
+        op: r.querySelector(".c-query-builder__op")?.value || "=",
+        value: r.querySelector(".c-query-builder__value")?.value || "",
+      };
+      if (i > 0 && conns[i - 1]) rule.connector = conns[i - 1].value || "AND";
+      const g = r.closest(".c-query-builder__group");
+      if (g) rule.group = g._groupName || "";
+      rows.push(rule);
+    });
+    return rows;
+  }
+  // Connectors belong to the GAP between two rules, not to a rule. A structural
+  // edit changes which rule sits on each side of a gap, so the connector is
+  // re-applied by position afterwards: carrying it on the rule object made an
+  // AND/OR choice travel with a rule that moved, and left a stray connector on
+  // a rule that had become the first row.
+  static reindexConnectors(rows, conns) {
+    rows.forEach((r, i) => {
+      if (i > 0 && conns && conns[i]) r.connector = conns[i];
+      else delete r.connector;
+    });
+    return rows;
+  }
+  // A `query` write-back normally rebuilds the rows. During a field edit that
+  // is exactly wrong: `change` fires on blur or on a select commit, and
+  // rebuilding destroys the control the reader just left — focus falls to
+  // <body> and the next Tab restarts at the top of the document (WC5-76).
+  // The attribute still has to carry the edit, so the write is allowed
+  // through with the re-render suppressed.
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (name === "query" && this._suppressQueryRender) return;
+    super.attributeChangedCallback(name, oldValue, newValue);
+  }
+  // Write the model back and say so.
+  commit(rows, rerender = true) {
+    if (rerender) {
+      this.setAttribute("query", JSON.stringify(rows));
+    } else {
+      this._suppressQueryRender = true;
+      try { this.setAttribute("query", JSON.stringify(rows)); }
+      finally { this._suppressQueryRender = false; }
+    }
+    this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { query: rows } }));
+  }
   render() {
     this.classList.add("c-query-builder");
     const fields = this.getAttribute("fields");
@@ -9273,10 +9519,22 @@ class ContourQueryBuilder extends ContourBase {
           currentGroup = document.createElement("div");
           currentGroup.className = "c-query-builder__group";
           currentGroup._groupName = groupName;
+          const head = document.createElement("div");
+          head.className = "c-query-builder__group-head";
           const lbl = document.createElement("div");
           lbl.className = "c-query-builder__group-label";
           lbl.textContent = groupName;
-          currentGroup.appendChild(lbl);
+          // Groups are part of the model, so they have to be editable from the
+          // page rather than only from the JSON attribute (WC5-33).
+          const rm = document.createElement("button");
+          rm.type = "button";
+          rm.className = "c-btn c-btn--sm c-btn--ghost c-query-builder__group-remove";
+          rm.setAttribute("aria-label", "Remove group " + groupName);
+          rm.setAttribute("data-group", groupName);
+          rm.textContent = "\u00d7";
+          head.appendChild(lbl);
+          head.appendChild(rm);
+          currentGroup.appendChild(head);
           list.appendChild(currentGroup);
         }
       } else {
@@ -9308,45 +9566,99 @@ class ContourQueryBuilder extends ContourBase {
       val.type = "text";
       val.value = rule.value || "";
       val.setAttribute("aria-label", "Value " + (i + 1));
+      // Reordering (WC5-75). Buttons, not drag handles: a drag handle is a
+      // pointer-only affordance, and the same operation has to be reachable
+      // from the keyboard.
+      const up = document.createElement("button");
+      up.type = "button";
+      up.className = "c-btn c-btn--sm c-btn--ghost c-query-builder__move c-query-builder__move--up";
+      up.setAttribute("aria-label", "Move rule " + (i + 1) + " up");
+      up.textContent = "\u2191";
+      const down = document.createElement("button");
+      down.type = "button";
+      down.className = "c-btn c-btn--sm c-btn--ghost c-query-builder__move c-query-builder__move--down";
+      down.setAttribute("aria-label", "Move rule " + (i + 1) + " down");
+      down.textContent = "\u2193";
       const remove = document.createElement("button");
       remove.type = "button";
       remove.className = "c-btn c-btn--sm c-btn--ghost c-query-builder__remove";
       remove.setAttribute("aria-label", "Remove rule " + (i + 1));
-      remove.textContent = "×";
-      row.appendChild(field); row.appendChild(op); row.appendChild(val); row.appendChild(remove);
+      remove.textContent = "\u00d7";
+      row.appendChild(field); row.appendChild(op); row.appendChild(val);
+      row.appendChild(up); row.appendChild(down); row.appendChild(remove);
       if (currentGroup) currentGroup.appendChild(row); else list.appendChild(row);
     });
     const add = this.ensure(".c-query-builder__add", () => { const b = document.createElement("button"); b.type = "button"; b.className = "c-btn c-btn--sm c-query-builder__add"; return b; });
     add.textContent = labelText(this, "add-rule", "Add rule");
     if (add.parentNode !== this) this.appendChild(add);
+    const addGroup = this.ensure(".c-query-builder__add-group", () => { const b = document.createElement("button"); b.type = "button"; b.className = "c-btn c-btn--sm c-btn--ghost c-query-builder__add-group"; return b; });
+    addGroup.textContent = labelText(this, "add-group", "Add group");
+    if (addGroup.parentNode !== this) this.appendChild(addGroup);
   }
   enhance() {
     if (this._wiredQueryBuilder) return;
     this._wiredQueryBuilder = true;
+    // Field, operator, value and connector edits all reach the consumer. The
+    // connector select is a native `<select>`, so its keyboard behaviour is
+    // the platform's (WC5-76); what was missing is that changing it did
+    // nothing at all.
+    this.addEventListener("change", (e) => {
+      const t = e.target;
+      if (!(t instanceof Element)) return;
+      if (!t.matches(".c-query-builder__field, .c-query-builder__op, .c-query-builder__value, .c-query-builder__connector__op")) return;
+      this.commit(this.readRules(), false);
+    });
     this.addEventListener("click", (e) => {
       const t = e.target;
-      if (t && t.closest && t.closest(".c-query-builder__add")) {
-        const rows = Array.from(this.querySelectorAll(".c-query-builder__row")).map((r) => ({
-          field: r.querySelector(".c-query-builder__field")?.value || "",
-          op: r.querySelector(".c-query-builder__op")?.value || "=",
-          value: r.querySelector(".c-query-builder__value")?.value || "",
-        }));
+      if (!(t instanceof Element)) return;
+      if (t.closest(".c-query-builder__add")) {
+        const conns = this.readRules().map((r) => r.connector);
+        const rows = this.readRules();
         rows.push({ field: "", op: "=", value: "" });
-        this.setAttribute("query", JSON.stringify(rows));
-        this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { query: rows } }));
+        this.commit(ContourQueryBuilder.reindexConnectors(rows, conns));
+        return;
       }
-      if (t && t.closest && t.closest(".c-query-builder__remove")) {
+      if (t.closest(".c-query-builder__add-group")) {
+        const conns = this.readRules().map((r) => r.connector);
+        const rows = this.readRules();
+        // A group with no rules cannot be seen, so a new group starts with one
+        // empty rule in it.
+        const n = this.querySelectorAll(".c-query-builder__group").length + 1;
+        rows.push({ field: "", op: "=", value: "", group: "Group " + n });
+        this.commit(ContourQueryBuilder.reindexConnectors(rows, conns));
+        return;
+      }
+      const groupBtn = t.closest(".c-query-builder__group-remove");
+      if (groupBtn) {
+        const name = groupBtn.getAttribute("data-group") || "";
+        const conns = this.readRules().map((r) => r.connector);
+        const rows = this.readRules().filter((r) => (r.group || "") !== name);
+        this.commit(ContourQueryBuilder.reindexConnectors(rows, conns));
+        return;
+      }
+      const moveBtn = t.closest(".c-query-builder__move");
+      if (moveBtn) {
+        const row = moveBtn.closest(".c-query-builder__row");
+        if (!row) return;
+        const conns = this.readRules().map((r) => r.connector);
+        const rows = this.readRules();
+        const nodes = Array.from(this.querySelectorAll(".c-query-builder__row"));
+        const idx = nodes.indexOf(row);
+        if (idx < 0) return;
+        const to = moveBtn.classList.contains("c-query-builder__move--up") ? idx - 1 : idx + 1;
+        if (to < 0 || to >= rows.length) return;
+        const tmp = rows[to]; rows[to] = rows[idx]; rows[idx] = tmp;
+        this.commit(ContourQueryBuilder.reindexConnectors(rows, conns));
+        return;
+      }
+      if (t.closest(".c-query-builder__remove")) {
         const row = t.closest(".c-query-builder__row");
         if (!row) return;
-        const rows = Array.from(this.querySelectorAll(".c-query-builder__row")).map((r) => ({
-          field: r.querySelector(".c-query-builder__field")?.value || "",
-          op: r.querySelector(".c-query-builder__op")?.value || "=",
-          value: r.querySelector(".c-query-builder__value")?.value || "",
-        }));
+        const conns = this.readRules().map((r) => r.connector);
+        const rows = this.readRules();
         const idx = Array.from(this.querySelectorAll(".c-query-builder__row")).indexOf(row);
         if (idx >= 0) rows.splice(idx, 1);
-        this.setAttribute("query", JSON.stringify(rows));
-        this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { query: rows } }));
+        this.commit(ContourQueryBuilder.reindexConnectors(rows, conns));
       }
     });
   }
@@ -9910,7 +10222,7 @@ class ContourAlert extends ContourBase {
         a.textContent = label;
         this.appendChild(a);
       });
-      if (this.hasAttribute("closable")) {
+      if (flagOn(this, "closable")) {
         this.ensure(".c-alert__close", () => {
           const btn = document.createElement("button");
           btn.className = "c-alert__close";
@@ -10058,7 +10370,7 @@ class ContourCallout extends ContourBase {
         const t = this.querySelector(".c-callout__title");
         if (t) t.remove();
       }
-      if (this.hasAttribute("closable")) {
+      if (flagOn(this, "closable")) {
         this.ensure(".c-callout__close", () => {
           const btn = document.createElement("button");
           btn.className = "c-callout__close";
@@ -12888,15 +13200,21 @@ class ContourResizable extends ContourBase {
       // the listeners are delegated on the host and re-query per event (rule
       // 12). Dragging sets the first pane's flex-basis; the second pane's
       // `flex: 1 1 0` takes the rest, so the split is the drag's own number.
+      // One split writer for pointer and keyboard (F-FC12): both paths set the
+      // first pane's flex-basis and mirror the percentage onto the host, so a
+      // keyboard resize lands on exactly the same state a drag leaves behind.
+      const applySplit = (pct) => {
+        const p1 = this.querySelector(".c-resizable__pane");
+        if (p1) p1.style.flex = `0 0 ${pct}%`;
+        this._splitValue = String(pct);
+      };
       const setSplit = (clientX, clientY) => {
         const rect = this.getBoundingClientRect();
         const vertical = this.classList.contains("c-resizable--vertical");
         const span = vertical ? rect.height : rect.width;
         const pos = vertical ? clientY - rect.top : clientX - rect.left;
         const frac = span > 0 ? Math.min(0.9, Math.max(0.1, pos / span)) : 0.5;
-        const p1 = this.querySelector(".c-resizable__pane");
-        if (p1) p1.style.flex = `0 0 ${Math.round(frac * 100)}%`;
-        this._splitValue = String(Math.round(frac * 100));
+        applySplit(Math.round(frac * 100));
       };
       this.addEventListener("pointerdown", (e) => {
         const handle = this.querySelector(".c-resize-handle");
@@ -12931,8 +13249,8 @@ class ContourResizable extends ContourBase {
         if (!handle || document.activeElement !== handle) return;
         const vertical = this.classList.contains("c-resizable--vertical");
         const cur = parseFloat(this.getAttribute("value")) || 50;
-        if (e.key === "ArrowLeft" || e.key === "ArrowDown") { e.preventDefault(); setSplit && setSplit; const p1 = this.querySelector(".c-resizable__pane"); if (p1) { const nv = Math.max(10, cur - 5); p1.style.flex = `0 0 ${nv}%`; this.setAttribute("value", String(nv)); } }
-        else if (e.key === "ArrowRight" || e.key === "ArrowUp") { e.preventDefault(); const p1 = this.querySelector(".c-resizable__pane"); if (p1) { const nv = Math.min(90, cur + 5); p1.style.flex = `0 0 ${nv}%`; this.setAttribute("value", String(nv)); } }
+        if (e.key === "ArrowLeft" || e.key === "ArrowDown") { e.preventDefault(); applySplit(Math.max(10, cur - 5)); this._splitValue = null; this.setAttribute("value", String(Math.max(10, cur - 5))); }
+        else if (e.key === "ArrowRight" || e.key === "ArrowUp") { e.preventDefault(); applySplit(Math.min(90, cur + 5)); this._splitValue = null; this.setAttribute("value", String(Math.min(90, cur + 5))); }
         const r = this.getBoundingClientRect();
         this.dispatchEvent(new CustomEvent("contour:resize", { bubbles: true, composed: true, detail: { width: Math.round(r.width), height: Math.round(r.height) } }));
       });
@@ -13709,12 +14027,18 @@ class ContourLayerPanel extends ContourBase {
              nm.replaceWith(input);
              input.focus();
              input.select();
-             const commit = () => {
-               const trimmed = (input.value || "").trim();
-               const span = document.createElement("span");
-               span.className = "c-layer-panel__name";
-               span.textContent = trimmed || name;
-               input.replaceWith(span);
+            const commit = () => {
+              // `input.replaceWith(span)` moves the focused input out of the
+              // document, which fires `blur` synchronously and re-enters this
+              // closure through the once-listener. The second pass then tried to
+              // remove a node that was already gone and threw NotFoundError on
+              // every Enter/Escape commit (F-RO12).
+              if (!input.isConnected) return;
+              const trimmed = (input.value || "").trim();
+              const span = document.createElement("span");
+              span.className = "c-layer-panel__name";
+              span.textContent = trimmed || name;
+              input.replaceWith(span);
                if (trimmed && trimmed !== name) {
                  this.dispatchEvent(new CustomEvent("contour:layer-rename", { bubbles: true, composed: true, detail: { name, newName: trimmed } }));
                }
@@ -13754,7 +14078,11 @@ class ContourLayerPanel extends ContourBase {
              else this.insertBefore(items[newIdx], item);
              (isDrag ? e.target : item).focus();
              setTimeout(() => item.classList.remove("c-layer-panel__item--dragging"), 200);
-             const layerIds = Array.from(this.querySelectorAll(".c-layer-panel__item")).map((el) => el.querySelector(".c-layer-panel__name")?.textContent || "");
+             // A stable per-layer id, not the display name: two layers can share
+            // a name, and the reorder detail then carried duplicate ids the
+            // consumer could not disambiguate (F-FC14). The index is stable for
+            // the duration of the interaction and is what the DOM order means.
+            const layerIds = Array.from(this.querySelectorAll(".c-layer-panel__item")).map((el, i) => el.dataset.layerId || el.getAttribute("data-layer-id") || String(i));
              this.dispatchEvent(new CustomEvent("contour:layer-reorder", { bubbles: true, composed: true, detail: { layerIds } }));
            }
          });

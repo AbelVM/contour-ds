@@ -135,9 +135,12 @@ class ContourKpi extends ContourBase {
       // remove orphaned foot container when no children remain
       const foot = this.querySelector(".c-kpi__foot");
       if (foot && !foot.querySelector(".c-delta, .c-kpi__note, .c-kpi__threshold-badge")) foot.remove();
-      // sparkline canvas
+      // sparkline canvas. A boolean flag is presence, but `sparkline="0"` and
+      // `sparkline="false"` are non-empty strings — a consumer who writes the
+      // value out from a template means "off", so honour it (F-FC11).
       const spark = this.getAttribute("sparkline");
-      if (spark) {
+      const sparkOn = spark !== null && spark !== "" && spark !== "0" && spark.toLowerCase() !== "false";
+      if (sparkOn) {
         let canvas = this.querySelector(".c-kpi__sparkline-canvas");
         if (!canvas) { canvas = document.createElement("canvas"); canvas.className = "c-kpi__sparkline-canvas"; canvas.setAttribute("part", "sparkline-canvas"); this.appendChild(canvas); }
       } else {
@@ -1698,7 +1701,10 @@ class ContourMeter extends ContourBase {
       }
        if (!this.hasAttribute("role")) this.setAttribute("role", "meter");
        if (label && !this.hasAttribute("aria-label")) this.setAttribute("aria-label", label);
-      const ariaValue = rValue === null ? "0" : rValue;
+      // ARIA requires `aria-valuenow` to be a number. The raw attribute string
+      // would put `aria-valuenow="abc"` on the host while the text showed 0%
+      // (F-RO14), so mirror the same finite-number guard the label uses.
+      const ariaValue = Number.isFinite(num) ? String(num) : "0";
       const prevVal = this._meterAriaValue;
       if (!this.hasAttribute("aria-valuenow") || this.getAttribute("aria-valuenow") === prevVal) {
         this.setAttribute("aria-valuenow", ariaValue);
@@ -2112,6 +2118,13 @@ class ContourBrush extends ContourBase {
         }
         this.dispatchEvent(new CustomEvent("contour:brush-end", { bubbles: true, composed: true, detail: { value: this.getAttribute("end"), start: this.getAttribute("start"), end: this.getAttribute("end"), range: this._rangeValue() } }));
         this.dispatchEvent(new CustomEvent("contour:brush", { bubbles: true, composed: true, detail: { start: this.getAttribute("start"), end: this.getAttribute("end"), value: this.getAttribute("end"), range: this._rangeValue() } }));
+      });
+      // A cancelled pointer (window blur, browser gesture, lost capture) never
+      // fires `pointerup`, so without this the next hover kept brushing (F-RO13).
+      this.addEventListener("pointercancel", () => {
+        if (!dragging) return;
+        dragging = null;
+        this._brushPending = null;
       });
       // Keyboard: Enter/Space emits brush-start/brush-end (WC-P1-08).
       if (!this.hasAttribute("tabindex")) this.setAttribute("tabindex", "0");
@@ -2959,6 +2972,8 @@ class ContourBivariateLegend extends ContourBivariate {
       this.setAttribute("role", "group");
       this.setAttribute("aria-label", "Bivariate legend");
       const size = Math.min(12, Math.max(1, parseInt(this.getAttribute("size") || "3", 10) || 3));
+      const axisXName = this.getAttribute("axis-x") || "X";
+      const axisYName = this.getAttribute("axis-y") || "Y";
       const matrix = this.ensure(".c-bivariate-legend__matrix", () => { const el = document.createElement("div"); el.className = "c-bivariate-legend__matrix"; return el; });
       matrix.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
       matrix.style.gridTemplateRows = `repeat(${size}, 1fr)`;
@@ -2975,7 +2990,12 @@ class ContourBivariateLegend extends ContourBivariate {
             cell.className = "c-bivariate-legend__cell";
             cell.setAttribute("role", "button");
             cell.setAttribute("tabindex", "0");
-            cell.setAttribute("aria-label", "Cell " + c + "," + r);
+            // "Cell 0,0" names the indices, not the thing: a screen-reader user
+            // hears two numbers with no idea which axis is which or how far
+            // along it they are (F-CSS20). Rows count from the bottom, matching
+            // the palette order below.
+            const rowFromBottom = size - r;
+            cell.setAttribute("aria-label", `${axisYName} ${rowFromBottom} of ${size}, ${axisXName} ${c + 1} of ${size}`);
             // Palette runs from bottom-left (low/low) to top-right (high/high):
             // reverse the row order so the first palette row sits at the bottom.
             const srcIndex = (size - 1 - r) * size + c;
@@ -2997,9 +3017,12 @@ class ContourBivariateLegend extends ContourBivariate {
             else cell.removeAttribute("data-selected");
           });
         }
-        // aria-live region
+        // aria-live region. `.visually-hidden` is the system's own utility —
+        // the inline `position/width/height/clip` copy was the same rule written
+        // out by hand, and it drifted from the anchored version that keeps a
+        // hidden label inside a scroller (F-CSS20).
         let live = this.querySelector(".c-bivariate-legend__live");
-        if (!live) { live = document.createElement("div"); live.className = "c-bivariate-legend__live"; live.setAttribute("aria-live", "polite"); live.style.position = "absolute"; live.style.width = "1px"; live.style.height = "1px"; live.style.overflow = "hidden"; live.style.clip = "rect(0,0,0,0)"; this.appendChild(live); }
+        if (!live) { live = document.createElement("div"); live.className = "visually-hidden c-bivariate-legend__live"; live.setAttribute("aria-live", "polite"); this.appendChild(live); }
       }
       const axisX = this.getAttribute("axis-x");
       if (axisX) {
@@ -3035,6 +3058,11 @@ class ContourBivariateLegend extends ContourBivariate {
           if (rr === row && cc === col) cell.setAttribute("data-selected", "");
           else cell.removeAttribute("data-selected");
         });
+        // Announce the pick: the cell's own label is the only description, and
+        // a selection that changes nothing audible is one a screen reader
+        // cannot confirm.
+        const live = this.querySelector(".c-bivariate-legend__live");
+        if (live) live.textContent = cell.getAttribute("aria-label") || "";
         this.dispatchEvent(new CustomEvent("contour:select", { detail: { row, col }, bubbles: true, composed: true }));
       };
       this.addEventListener("click", (e) => {
@@ -4133,13 +4161,24 @@ class ContourErrorBoundary extends ContourBase {
     static get properties() { return { fallback: { attribute: "fallback" }, error: { attribute: "error" } }; }
     render() {
       this.classList.add("c-error-boundary");
-      this.setAttribute("role", "region");
-      this.setAttribute("aria-live", "polite");
+      // An author's role and live-region choice outrank the boundary's own
+      // defaults; overwriting them silently changed the host's semantics
+      // (F-RO18).
+      if (!this.hasAttribute("role")) this.setAttribute("role", "region");
+      if (!this.hasAttribute("aria-live")) this.setAttribute("aria-live", "polite");
       const err = this.getAttribute("error");
       if (err) {
         this.dataset.state = "error";
-        // Hide authored children, show fallback.
-        Array.from(this.children).forEach((c) => { if (!c.hasAttribute("data-fallback")) c.style.display = "none"; });
+        // Hide authored children, show fallback. `display: none` is restored
+        // from the value it had, not from `""` — the empty string resolves to
+        // the UA default, which turned a <span> or a <tr> into a block (F-RO17).
+        Array.from(this.children).forEach((c) => {
+          if (c.hasAttribute("data-fallback")) return;
+          if (c.dataset.contourDisplay === undefined) {
+            c.dataset.contourDisplay = c.style.display;
+          }
+          c.style.display = "none";
+        });
         let fb = this.querySelector("[data-fallback]");
         if (!fb) {
           fb = document.createElement("div");
@@ -4152,7 +4191,17 @@ class ContourErrorBoundary extends ContourBase {
         }
       } else {
         this.dataset.state = "ready";
-        Array.from(this.children).forEach((c) => { c.style.display = ""; });
+        Array.from(this.children).forEach((c) => {
+          if (c.dataset.contourDisplay !== undefined) {
+            c.style.display = c.dataset.contourDisplay;
+            delete c.dataset.contourDisplay;
+          } else if (c.style.display === "none" && !c.hasAttribute("data-fallback")) {
+            // No saved value (the child was hidden by something else, or the
+            // error state was set before this render): clear the inline value
+            // rather than leaving it hidden.
+            c.style.display = "";
+          }
+        });
         const fb = this.querySelector("[data-fallback]");
         if (fb) fb.remove();
       }
@@ -4181,7 +4230,10 @@ class ContourDataExport extends ContourBase {
       const fmt = (this.getAttribute("format") || "json").toLowerCase();
       const btn = this.ensure(".c-data-export__btn", () => {
         const b = document.createElement("button");
-        b.className = "c-data-export__btn";
+        // `c-btn` carries the control contract — press language, focus ring,
+        // disabled state — which the block's own hand-rolled rule could not
+        // keep in step with (F-CSS21).
+        b.className = "c-btn c-data-export__btn";
         b.type = "button";
         return b;
       });
@@ -4228,6 +4280,63 @@ class ContourDataExport extends ContourBase {
 class ContourQueryBuilder extends ContourBase {
   static get observed() { return ["query", "fields"]; }
   static get properties() { return { query: { attribute: "query" }, fields: { attribute: "fields" } }; }
+  // One reader for the whole component. Add, remove, move and group-edit all
+  // need the same projection of the DOM back into the `query` data model, and
+  // three copies of it had already drifted (the connector was never read at
+  // all, so an AND/OR edit was silently dropped).
+  readRules() {
+    const rows = [];
+    const nodes = Array.from(this.querySelectorAll(".c-query-builder__row"));
+    // One connector per gap, in order: connector i-1 is the one that joins
+    // row i-1 to row i. They are siblings of the rows and of the groups, so
+    // the lookup is by position rather than by parentage.
+    const conns = Array.from(this.querySelectorAll(".c-query-builder__connector__op"));
+    nodes.forEach((r, i) => {
+      const rule = {
+        field: r.querySelector(".c-query-builder__field")?.value || "",
+        op: r.querySelector(".c-query-builder__op")?.value || "=",
+        value: r.querySelector(".c-query-builder__value")?.value || "",
+      };
+      if (i > 0 && conns[i - 1]) rule.connector = conns[i - 1].value || "AND";
+      const g = r.closest(".c-query-builder__group");
+      if (g) rule.group = g._groupName || "";
+      rows.push(rule);
+    });
+    return rows;
+  }
+  // Connectors belong to the GAP between two rules, not to a rule. A structural
+  // edit changes which rule sits on each side of a gap, so the connector is
+  // re-applied by position afterwards: carrying it on the rule object made an
+  // AND/OR choice travel with a rule that moved, and left a stray connector on
+  // a rule that had become the first row.
+  static reindexConnectors(rows, conns) {
+    rows.forEach((r, i) => {
+      if (i > 0 && conns && conns[i]) r.connector = conns[i];
+      else delete r.connector;
+    });
+    return rows;
+  }
+  // A `query` write-back normally rebuilds the rows. During a field edit that
+  // is exactly wrong: `change` fires on blur or on a select commit, and
+  // rebuilding destroys the control the reader just left — focus falls to
+  // <body> and the next Tab restarts at the top of the document (WC5-76).
+  // The attribute still has to carry the edit, so the write is allowed
+  // through with the re-render suppressed.
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (name === "query" && this._suppressQueryRender) return;
+    super.attributeChangedCallback(name, oldValue, newValue);
+  }
+  // Write the model back and say so.
+  commit(rows, rerender = true) {
+    if (rerender) {
+      this.setAttribute("query", JSON.stringify(rows));
+    } else {
+      this._suppressQueryRender = true;
+      try { this.setAttribute("query", JSON.stringify(rows)); }
+      finally { this._suppressQueryRender = false; }
+    }
+    this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { query: rows } }));
+  }
   render() {
     this.classList.add("c-query-builder");
     const fields = this.getAttribute("fields");
@@ -4264,10 +4373,22 @@ class ContourQueryBuilder extends ContourBase {
           currentGroup = document.createElement("div");
           currentGroup.className = "c-query-builder__group";
           currentGroup._groupName = groupName;
+          const head = document.createElement("div");
+          head.className = "c-query-builder__group-head";
           const lbl = document.createElement("div");
           lbl.className = "c-query-builder__group-label";
           lbl.textContent = groupName;
-          currentGroup.appendChild(lbl);
+          // Groups are part of the model, so they have to be editable from the
+          // page rather than only from the JSON attribute (WC5-33).
+          const rm = document.createElement("button");
+          rm.type = "button";
+          rm.className = "c-btn c-btn--sm c-btn--ghost c-query-builder__group-remove";
+          rm.setAttribute("aria-label", "Remove group " + groupName);
+          rm.setAttribute("data-group", groupName);
+          rm.textContent = "\u00d7";
+          head.appendChild(lbl);
+          head.appendChild(rm);
+          currentGroup.appendChild(head);
           list.appendChild(currentGroup);
         }
       } else {
@@ -4299,45 +4420,99 @@ class ContourQueryBuilder extends ContourBase {
       val.type = "text";
       val.value = rule.value || "";
       val.setAttribute("aria-label", "Value " + (i + 1));
+      // Reordering (WC5-75). Buttons, not drag handles: a drag handle is a
+      // pointer-only affordance, and the same operation has to be reachable
+      // from the keyboard.
+      const up = document.createElement("button");
+      up.type = "button";
+      up.className = "c-btn c-btn--sm c-btn--ghost c-query-builder__move c-query-builder__move--up";
+      up.setAttribute("aria-label", "Move rule " + (i + 1) + " up");
+      up.textContent = "\u2191";
+      const down = document.createElement("button");
+      down.type = "button";
+      down.className = "c-btn c-btn--sm c-btn--ghost c-query-builder__move c-query-builder__move--down";
+      down.setAttribute("aria-label", "Move rule " + (i + 1) + " down");
+      down.textContent = "\u2193";
       const remove = document.createElement("button");
       remove.type = "button";
       remove.className = "c-btn c-btn--sm c-btn--ghost c-query-builder__remove";
       remove.setAttribute("aria-label", "Remove rule " + (i + 1));
-      remove.textContent = "×";
-      row.appendChild(field); row.appendChild(op); row.appendChild(val); row.appendChild(remove);
+      remove.textContent = "\u00d7";
+      row.appendChild(field); row.appendChild(op); row.appendChild(val);
+      row.appendChild(up); row.appendChild(down); row.appendChild(remove);
       if (currentGroup) currentGroup.appendChild(row); else list.appendChild(row);
     });
     const add = this.ensure(".c-query-builder__add", () => { const b = document.createElement("button"); b.type = "button"; b.className = "c-btn c-btn--sm c-query-builder__add"; return b; });
     add.textContent = labelText(this, "add-rule", "Add rule");
     if (add.parentNode !== this) this.appendChild(add);
+    const addGroup = this.ensure(".c-query-builder__add-group", () => { const b = document.createElement("button"); b.type = "button"; b.className = "c-btn c-btn--sm c-btn--ghost c-query-builder__add-group"; return b; });
+    addGroup.textContent = labelText(this, "add-group", "Add group");
+    if (addGroup.parentNode !== this) this.appendChild(addGroup);
   }
   enhance() {
     if (this._wiredQueryBuilder) return;
     this._wiredQueryBuilder = true;
+    // Field, operator, value and connector edits all reach the consumer. The
+    // connector select is a native `<select>`, so its keyboard behaviour is
+    // the platform's (WC5-76); what was missing is that changing it did
+    // nothing at all.
+    this.addEventListener("change", (e) => {
+      const t = e.target;
+      if (!(t instanceof Element)) return;
+      if (!t.matches(".c-query-builder__field, .c-query-builder__op, .c-query-builder__value, .c-query-builder__connector__op")) return;
+      this.commit(this.readRules(), false);
+    });
     this.addEventListener("click", (e) => {
       const t = e.target;
-      if (t && t.closest && t.closest(".c-query-builder__add")) {
-        const rows = Array.from(this.querySelectorAll(".c-query-builder__row")).map((r) => ({
-          field: r.querySelector(".c-query-builder__field")?.value || "",
-          op: r.querySelector(".c-query-builder__op")?.value || "=",
-          value: r.querySelector(".c-query-builder__value")?.value || "",
-        }));
+      if (!(t instanceof Element)) return;
+      if (t.closest(".c-query-builder__add")) {
+        const conns = this.readRules().map((r) => r.connector);
+        const rows = this.readRules();
         rows.push({ field: "", op: "=", value: "" });
-        this.setAttribute("query", JSON.stringify(rows));
-        this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { query: rows } }));
+        this.commit(ContourQueryBuilder.reindexConnectors(rows, conns));
+        return;
       }
-      if (t && t.closest && t.closest(".c-query-builder__remove")) {
+      if (t.closest(".c-query-builder__add-group")) {
+        const conns = this.readRules().map((r) => r.connector);
+        const rows = this.readRules();
+        // A group with no rules cannot be seen, so a new group starts with one
+        // empty rule in it.
+        const n = this.querySelectorAll(".c-query-builder__group").length + 1;
+        rows.push({ field: "", op: "=", value: "", group: "Group " + n });
+        this.commit(ContourQueryBuilder.reindexConnectors(rows, conns));
+        return;
+      }
+      const groupBtn = t.closest(".c-query-builder__group-remove");
+      if (groupBtn) {
+        const name = groupBtn.getAttribute("data-group") || "";
+        const conns = this.readRules().map((r) => r.connector);
+        const rows = this.readRules().filter((r) => (r.group || "") !== name);
+        this.commit(ContourQueryBuilder.reindexConnectors(rows, conns));
+        return;
+      }
+      const moveBtn = t.closest(".c-query-builder__move");
+      if (moveBtn) {
+        const row = moveBtn.closest(".c-query-builder__row");
+        if (!row) return;
+        const conns = this.readRules().map((r) => r.connector);
+        const rows = this.readRules();
+        const nodes = Array.from(this.querySelectorAll(".c-query-builder__row"));
+        const idx = nodes.indexOf(row);
+        if (idx < 0) return;
+        const to = moveBtn.classList.contains("c-query-builder__move--up") ? idx - 1 : idx + 1;
+        if (to < 0 || to >= rows.length) return;
+        const tmp = rows[to]; rows[to] = rows[idx]; rows[idx] = tmp;
+        this.commit(ContourQueryBuilder.reindexConnectors(rows, conns));
+        return;
+      }
+      if (t.closest(".c-query-builder__remove")) {
         const row = t.closest(".c-query-builder__row");
         if (!row) return;
-        const rows = Array.from(this.querySelectorAll(".c-query-builder__row")).map((r) => ({
-          field: r.querySelector(".c-query-builder__field")?.value || "",
-          op: r.querySelector(".c-query-builder__op")?.value || "=",
-          value: r.querySelector(".c-query-builder__value")?.value || "",
-        }));
+        const conns = this.readRules().map((r) => r.connector);
+        const rows = this.readRules();
         const idx = Array.from(this.querySelectorAll(".c-query-builder__row")).indexOf(row);
         if (idx >= 0) rows.splice(idx, 1);
-        this.setAttribute("query", JSON.stringify(rows));
-        this.dispatchEvent(new CustomEvent("contour:change", { bubbles: true, composed: true, detail: { query: rows } }));
+        this.commit(ContourQueryBuilder.reindexConnectors(rows, conns));
       }
     });
   }

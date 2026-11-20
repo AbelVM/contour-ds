@@ -232,6 +232,17 @@
     aspect-ratio: 1;
     border-radius: var(--radius-xs);
   }
+  /* The selected cell carried `data-selected` with no rule behind it, so the
+     highlight existed only in the markup (F-CSS20). The ring is drawn inside
+     the cell so it survives the 2 px grid gap without being clipped. */
+  .c-bivariate-legend__cell[data-selected] {
+    outline: 2px solid var(--color-text-strong);
+    outline-offset: -2px;
+  }
+  .c-bivariate-legend__cell:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 1px;
+  }
 
   .c-bivariate-legend__swatch {
     display: inline-block;
@@ -313,6 +324,18 @@
     cursor: pointer;
     padding: 0;
   }
+  /* The select is borderless inside a bordered group, so the focus ring is
+     drawn on the group — a ring around the select's text alone read as a
+     second, unrelated control (F-CSS19). `:focus-within` is the pair for the
+     `outline: none` below. */
+  .c-spatial-filter__operator:focus-within {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px var(--color-focus-ring),
+      0 0 0 4px var(--color-focus-halo);
+  }
+  .c-spatial-filter__operator select:focus-visible {
+    outline: none;
+  }
   .c-spatial-filter__clear-all {
     display: inline-flex;
     align-items: center;
@@ -343,14 +366,12 @@
     min-inline-size: 0;
     overflow-wrap: anywhere;
   }
+  /* The input carries `c-input`, so the control contract (focus ring, hover,
+     `:user-invalid`, `--target-control` height) is inherited rather than
+     re-implemented here. Only what is specific to the geocoder is left: it
+     fills the block (F-CSS18). */
   .c-geocoder__input {
     inline-size: 100%;
-    padding: calc(var(--space-xs) * var(--density, 1)) calc(var(--space-sm) * var(--density, 1));
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    background: var(--color-surface-0);
-    color: var(--color-text);
-    font: inherit;
   }
   .c-geocoder__list {
     list-style: none;
@@ -385,24 +406,14 @@
     min-inline-size: 0;
     overflow-wrap: anywhere;
   }
-  .c-data-export__btn {
-    display: inline-flex;
-    align-items: center;
-    gap: calc(var(--space-xs) * var(--density, 1));
-    padding: calc(var(--space-xs) * var(--density, 1)) calc(var(--space-sm) * var(--density, 1));
-    border: 1px solid var(--color-border);
-    transition: background-color var(--dur-fast) var(--ease-standard), border-color var(--dur-fast) var(--ease-standard);
-    border-radius: var(--radius-sm);
-    background: var(--color-surface-1);
-    color: var(--color-text-strong);
-    font: inherit;
-    cursor: pointer;
-  }
+  /* The button is a `c-btn`; only what the block adds is left here. The old
+     rule re-implemented the control's padding, border, radius, background and
+     hover from scratch, which is how it lost the press language, the focus ring
+     and the disabled state (F-CSS21). */
   .c-data-export__btn > * {
     min-inline-size: 0;
     overflow-wrap: anywhere;
   }
-  .c-data-export__btn:hover { background: var(--color-surface-2); }
 
   /* =======================================================================
      11. SAVED VIEW
@@ -487,6 +498,12 @@
     background: var(--color-warning-soft);
     color: var(--color-text-muted);
   }
+  /* An unmodelled confidence still has to read as a confidence: without this
+     the chip fell back to bare text with no surface at all (F-CSS23). */
+  .c-provenance__confidence--unknown {
+    background: var(--color-surface-2);
+    color: var(--color-text-muted);
+  }
   .c-provenance__resolution,
   .c-provenance__coverage,
   .c-provenance__methodology {
@@ -519,6 +536,12 @@
     inline-size: min(34rem, 100vw);
     block-size: min(40rem, 100vh);
     contain: layout;
+  }
+  /* The component mirrors `open` onto the host but nothing read it, so the
+     panel was visible whether it was open or closed (F-FI2). A closed drawer
+     must also leave the tab order, which `display: none` gives for free. */
+  .c-feature-inspector:not([open]) {
+    display: none;
   }
   .c-feature-inspector__head {
     display: flex;

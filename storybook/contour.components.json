@@ -5,12 +5,12 @@
   "statement": "Generated, never hand-edited. Every block, element, variant, state and token below is read from src/css by the same inventory that publishes every count in this repository, and tools/check-components.mjs fails if the shipped bytes are not that derivation. `tokens` lists the custom properties a block's rules read; a rule naming two blocks (`.c-alert, .c-callout`) is credited to both, because that is what a retune does.",
   "counts": {
     "blocks": 246,
-    "elements": 914,
+    "elements": 919,
     "variants": 119,
-    "states": 336,
-    "tokens": 2676,
+    "states": 340,
+    "tokens": 2672,
     "vars": 16,
-    "inputs": 20,
+    "inputs": 19,
     "tokensIndexed": 199
   },
   "blocks": [
@@ -1020,7 +1020,7 @@
       "sheets": [
         "components-data-widgets.css"
       ],
-      "rules": 9,
+      "rules": 11,
       "elements": [
         "c-bivariate-legend__axis",
         "c-bivariate-legend__axis--x",
@@ -1031,7 +1031,10 @@
         "c-bivariate-legend__swatch"
       ],
       "variants": [],
-      "states": [],
+      "states": [
+        ":focus-visible",
+        "[data-selected]"
+      ],
       "attributes": [],
       "booleanAttributes": [],
       "slots": [
@@ -1043,7 +1046,9 @@
       ],
       "tokens": [
         "--color-border",
+        "--color-focus-ring",
         "--color-text-muted",
+        "--color-text-strong",
         "--density",
         "--font-mono",
         "--radius-xs",
@@ -3424,14 +3429,12 @@
       "sheets": [
         "components-data-widgets.css"
       ],
-      "rules": 5,
+      "rules": 3,
       "elements": [
         "c-data-export__btn"
       ],
       "variants": [],
-      "states": [
-        ":hover"
-      ],
+      "states": [],
       "attributes": [
         "data",
         "format",
@@ -3442,15 +3445,7 @@
       "slots": [],
       "parts": [],
       "tokens": [
-        "--color-border",
-        "--color-surface-1",
-        "--color-surface-2",
-        "--color-text-strong",
         "--density",
-        "--dur-fast",
-        "--ease-standard",
-        "--radius-sm",
-        "--space-sm",
         "--space-xs"
       ],
       "vars": [],
@@ -4994,7 +4989,7 @@
       "sheets": [
         "components-data-widgets.css"
       ],
-      "rules": 9,
+      "rules": 10,
       "elements": [
         "c-feature-inspector__action",
         "c-feature-inspector__actions",
@@ -5006,7 +5001,9 @@
         "c-feature-inspector__value"
       ],
       "variants": [],
-      "states": [],
+      "states": [
+        ":not([open])"
+      ],
       "attributes": [
         "title",
         "open",
@@ -5789,10 +5786,8 @@
       "slots": [],
       "parts": [],
       "tokens": [
-        "--color-border",
         "--color-border-subtle",
         "--color-surface-2",
-        "--color-text",
         "--color-text-muted",
         "--density",
         "--radius-sm",
@@ -5800,9 +5795,7 @@
         "--space-xs"
       ],
       "vars": [],
-      "inputs": [
-        "--color-surface-0"
-      ],
+      "inputs": [],
       "renderedIn": {
         "guide": true,
         "templates": []
@@ -8623,12 +8616,13 @@
       "sheets": [
         "components-data-widgets.css"
       ],
-      "rules": 11,
+      "rules": 12,
       "elements": [
         "c-provenance__confidence",
         "c-provenance__confidence--high",
         "c-provenance__confidence--low",
         "c-provenance__confidence--medium",
+        "c-provenance__confidence--unknown",
         "c-provenance__coverage",
         "c-provenance__methodology",
         "c-provenance__resolution",
@@ -8651,6 +8645,7 @@
       "tokens": [
         "--color-success-soft",
         "--color-success-text",
+        "--color-surface-2",
         "--color-text",
         "--color-text-muted",
         "--color-warning-soft",
@@ -8760,15 +8755,19 @@
       "sheets": [
         "components-misc.css"
       ],
-      "rules": 12,
+      "rules": 16,
       "elements": [
         "c-query-builder__add",
+        "c-query-builder__add-group",
         "c-query-builder__connector",
         "c-query-builder__connector__op",
         "c-query-builder__field",
         "c-query-builder__group",
+        "c-query-builder__group-head",
         "c-query-builder__group-label",
+        "c-query-builder__group-remove",
         "c-query-builder__list",
+        "c-query-builder__move",
         "c-query-builder__op",
         "c-query-builder__remove",
         "c-query-builder__row",
@@ -10621,7 +10620,7 @@
         "components-data-widgets.css",
         "components-misc.css"
       ],
-      "rules": 11,
+      "rules": 13,
       "elements": [
         "c-spatial-filter__clear-all",
         "c-spatial-filter__modes",
@@ -10633,6 +10632,8 @@
         "c-spatial-filter--active"
       ],
       "states": [
+        ":focus-visible",
+        ":focus-within",
         ":hover"
       ],
       "attributes": [
@@ -10657,6 +10658,9 @@
       "tokens": [
         "--color-accent",
         "--color-border",
+        "--color-focus-halo",
+        "--color-focus-ring",
+        "--color-primary",
         "--color-surface-1",
         "--color-surface-2",
         "--color-text",
@@ -13294,7 +13298,6 @@
       "c-contour-plot",
       "c-coordinate",
       "c-dash-toolbar",
-      "c-data-export",
       "c-datamark",
       "c-date-picker",
       "c-diff",
@@ -13318,7 +13321,6 @@
       "c-flow-map",
       "c-footer",
       "c-gauge",
-      "c-geocoder",
       "c-heatmap",
       "c-hover-card",
       "c-install",
@@ -13554,9 +13556,11 @@
       "c-input",
       "c-range",
       "c-select",
+      "c-spatial-filter",
       "c-textarea"
     ],
     "--color-focus-ring": [
+      "c-bivariate-legend",
       "c-check",
       "c-command",
       "c-drag-handle",
@@ -13568,6 +13572,7 @@
       "c-scheme-toggle",
       "c-segmented",
       "c-select",
+      "c-spatial-filter",
       "c-switch",
       "c-tabs",
       "c-textarea",
@@ -13671,6 +13676,7 @@
       "c-showcase",
       "c-skip-link",
       "c-sparkline",
+      "c-spatial-filter",
       "c-spinner",
       "c-split-view",
       "c-stepper",
@@ -13835,7 +13841,6 @@
       "c-coordinate",
       "c-cta",
       "c-dash-toolbar",
-      "c-data-export",
       "c-date-picker",
       "c-dialog",
       "c-divider",
@@ -13919,7 +13924,6 @@
       "c-card",
       "c-combobox",
       "c-command",
-      "c-data-export",
       "c-datamark",
       "c-docs-nav",
       "c-drawer",
@@ -13943,6 +13947,7 @@
       "c-panel",
       "c-pill",
       "c-pivot",
+      "c-provenance",
       "c-recipe",
       "c-resizable",
       "c-saved-view",
@@ -14017,7 +14022,6 @@
       "c-filter-pill",
       "c-flow-map",
       "c-form",
-      "c-geocoder",
       "c-heatmap",
       "c-hexbin",
       "c-hover-card",
@@ -14174,6 +14178,7 @@
       "c-activity-feed",
       "c-affordance",
       "c-alert",
+      "c-bivariate-legend",
       "c-brand",
       "c-breadcrumb",
       "c-btn",
@@ -14184,7 +14189,6 @@
       "c-compare",
       "c-cta",
       "c-dash-toolbar",
-      "c-data-export",
       "c-dialog",
       "c-disclosure",
       "c-docs-nav",
@@ -14621,7 +14625,6 @@
       "c-check",
       "c-chip",
       "c-code-tabs",
-      "c-data-export",
       "c-dialog",
       "c-disclosure",
       "c-docs-nav",
@@ -14704,7 +14707,6 @@
       "c-chip",
       "c-code-tabs",
       "c-command",
-      "c-data-export",
       "c-dialog",
       "c-disclosure",
       "c-docs-nav",
@@ -15065,7 +15067,6 @@
       "c-command",
       "c-comparison",
       "c-coordinate",
-      "c-data-export",
       "c-date-picker",
       "c-docs-nav",
       "c-error-boundary",
@@ -15435,7 +15436,6 @@
       "c-compare",
       "c-comparison",
       "c-dash-toolbar",
-      "c-data-export",
       "c-dialog",
       "c-disclosure",
       "c-divider",

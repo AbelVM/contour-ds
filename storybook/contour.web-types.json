@@ -5675,7 +5675,7 @@
         },
         {
           "name": "contour-provenance",
-          "description": "Contour component `c-provenance` (complete-widget). Elements: c-provenance__confidence, c-provenance__confidence--high, c-provenance__confidence--low, c-provenance__confidence--medium, c-provenance__coverage, c-provenance__methodology, c-provenance__resolution, c-provenance__source, c-provenance__warning.",
+          "description": "Contour component `c-provenance` (complete-widget). Elements: c-provenance__confidence, c-provenance__confidence--high, c-provenance__confidence--low, c-provenance__confidence--medium, c-provenance__confidence--unknown, c-provenance__coverage, c-provenance__methodology, c-provenance__resolution, c-provenance__source, c-provenance__warning.",
           "attributes": [
             {
               "name": "confidence",
@@ -5750,7 +5750,7 @@
         },
         {
           "name": "contour-query-builder",
-          "description": "Contour component `c-query-builder` (complete-widget). Elements: c-query-builder__add, c-query-builder__connector, c-query-builder__connector__op, c-query-builder__field, c-query-builder__group, c-query-builder__group-label, c-query-builder__list, c-query-builder__op, c-query-builder__remove, c-query-builder__row, c-query-builder__value.",
+          "description": "Contour component `c-query-builder` (complete-widget). Elements: c-query-builder__add, c-query-builder__add-group, c-query-builder__connector, c-query-builder__connector__op, c-query-builder__field, c-query-builder__group, c-query-builder__group-head, c-query-builder__group-label, c-query-builder__group-remove, c-query-builder__list, c-query-builder__move, c-query-builder__op, c-query-builder__remove, c-query-builder__row, c-query-builder__value.",
           "attributes": [
             {
               "name": "fields",

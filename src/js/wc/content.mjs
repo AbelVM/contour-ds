@@ -1,4 +1,4 @@
-import { ContourBase, define, sanitizeHtml, headingTag, formatValue, navKey, isRtl, safeHref , warnBadJson, labelText } from './core.mjs';
+import { ContourBase, define, sanitizeHtml, headingTag, formatValue, navKey, isRtl, safeHref , warnBadJson, labelText, contourId } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { wireCopy } from './behaviours.mjs';
 
@@ -1109,13 +1109,22 @@ class ContourGeocoder extends ContourBase {
       wireStates(this);
       loadRemote(this, ["results"]);
       if (renderStates(this, "geocoder")) return;
-      // Input
+      // Input. It carries `c-input` as well as the block's own class: the
+      // system's control contract (focus ring, hover, `:user-invalid`, the
+      // `--target-control` height) is what a text field is supposed to look
+      // like, and re-implementing a subset of it in the block's CSS is how the
+      // two drifted apart (F-CSS18, F-GEO1).
       let inp = this.querySelector(".c-geocoder__input");
       if (!inp) {
         inp = document.createElement("input");
         inp.type = "search";
-        inp.className = "c-geocoder__input";
+        inp.className = "c-input c-geocoder__input";
         if (!inp.hasAttribute("aria-label")) inp.setAttribute("aria-label", this.getAttribute("placeholder") || "Search location");
+        // Combobox contract: the input owns the list, announces which option is
+        // active, and the list is only "expanded" while it holds results.
+        inp.setAttribute("role", "combobox");
+        inp.setAttribute("aria-autocomplete", "list");
+        inp.setAttribute("aria-expanded", "false");
         this.appendChild(inp);
       }
       const ph = this.getAttribute("placeholder");
@@ -1131,14 +1140,22 @@ class ContourGeocoder extends ContourBase {
       const remote = remoteData(this, "results");
       if (Array.isArray(remote)) results = remote;
       if (Array.isArray(results) && results.length) {
+        // A rebuilt list has no active option, whatever was active before.
+        this._geocoderIndex = -1;
+        // One list id per host, so `aria-controls` keeps pointing at the list
+        // that actually exists after a re-render.
+        if (!this._geocoderListId) this._geocoderListId = contourId("geocoder-list");
         const list = document.createElement("ul");
         list.className = "c-geocoder__list";
+        list.id = this._geocoderListId;
         list.setAttribute("role", "listbox");
         results.forEach((r, idx) => {
           const li = document.createElement("li");
           li.className = "c-geocoder__result";
+          li.id = this._geocoderListId + "-" + idx;
           li.setAttribute("role", "option");
-          li.setAttribute("tabindex", idx === 0 ? "0" : "-1");
+          li.setAttribute("aria-selected", "false");
+          li.setAttribute("tabindex", "-1");
           li.textContent = (typeof r === "object") ? (r.label || r.name || "") : String(r);
           if (typeof r === "object") {
             if (r.lat != null) li.dataset.lat = String(r.lat);
@@ -1147,44 +1164,118 @@ class ContourGeocoder extends ContourBase {
           list.appendChild(li);
         });
         this.appendChild(list);
-      } else if (!this.hasAttribute("loading") && !this.hasAttribute("error")) {
-        renderEmpty(this, "geocoder");
+        inp.setAttribute("aria-controls", this._geocoderListId);
+        inp.setAttribute("aria-expanded", "true");
+      } else {
+        inp.removeAttribute("aria-controls");
+        inp.setAttribute("aria-expanded", "false");
+        inp.removeAttribute("aria-activedescendant");
+        this._geocoderIndex = -1;
+        if (!this.hasAttribute("loading") && !this.hasAttribute("error")) {
+          renderEmpty(this, "geocoder");
+        }
       }
     }
     enhance() {
       if (this._wiredGeocoder) return;
       this._wiredGeocoder = true;
       const inp = this.querySelector(".c-geocoder__input");
+      // The current option, by index into `.c-geocoder__result`. `render()`
+      // rebuilds the list, so the index is re-derived from the DOM per event
+      // rather than captured (rule 12).
+      // `render()` rebuilds the list, so the active index is re-derived from the
+      // DOM per event rather than captured (rule 12). It starts at -1 — "nothing
+      // active" — and must be a number, because `undefined + 1` is NaN and a
+      // NaN index silently selected nothing.
+      if (typeof this._geocoderIndex !== "number") this._geocoderIndex = -1;
+      const options = () => Array.from(this.querySelectorAll(".c-geocoder__result"));
+      const active = () => {
+        const opts = options();
+        const i = this._geocoderIndex;
+        return i >= 0 && i < opts.length ? opts[i] : null;
+      };
+      const setActive = (i) => {
+        const opts = options();
+        if (!opts.length) return;
+        const next = Math.max(0, Math.min(opts.length - 1, Number.isFinite(i) ? i : 0));
+        opts.forEach((o, n) => o.setAttribute("aria-selected", n === next ? "true" : "false"));
+        this._geocoderIndex = next;
+        if (inp) {
+          if (next >= 0) inp.setAttribute("aria-activedescendant", opts[next].id);
+          else inp.removeAttribute("aria-activedescendant");
+        }
+      };
+      const clearActive = () => {
+        this._geocoderIndex = -1;
+        options().forEach((o) => o.setAttribute("aria-selected", "false"));
+        if (inp) inp.removeAttribute("aria-activedescendant");
+      };
+      const select = (li) => {
+        if (!li) return;
+        const result = { label: li.textContent.trim(), lat: li.dataset.lat, lon: li.dataset.lon };
+        this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { result } }));
+      };
       if (inp) {
-        let timer = null;
+        // The debounce handle lives on the host, not in a closure, so
+        // `disconnectedCallback` can cancel a pending search: a timer that
+        // outlived its host dispatched `contour:search` against a detached
+        // element (F-RO10).
         inp.addEventListener("input", () => {
-          if (timer) clearTimeout(timer);
-          timer = setTimeout(() => {
+          clearActive();
+          if (this._geocoderTimer) clearTimeout(this._geocoderTimer);
+          this._geocoderTimer = setTimeout(() => {
+            this._geocoderTimer = null;
+            if (!this.isConnected) return;
             this.dispatchEvent(new CustomEvent("contour:search", { bubbles: true, composed: true, detail: { query: inp.value } }));
           }, 200);
         });
         inp.addEventListener("keydown", (e) => {
+          const opts = options();
+          if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+            if (!opts.length) return;
+            e.preventDefault();
+            const cur = this._geocoderIndex < 0 ? (e.key === "ArrowDown" ? -1 : opts.length) : this._geocoderIndex;
+            setActive(cur + (e.key === "ArrowDown" ? 1 : -1));
+            return;
+          }
           if (e.key === "Enter") {
             e.preventDefault();
-            this.dispatchEvent(new CustomEvent("contour:search", { bubbles: true, composed: true, detail: { query: inp.value } }));
+            // Enter on an active option selects it; otherwise it is a search.
+            const li = active();
+            if (li) select(li);
+            else this.dispatchEvent(new CustomEvent("contour:search", { bubbles: true, composed: true, detail: { query: inp.value } }));
+            return;
+          }
+          if (e.key === "Escape") {
+            // Escape leaves the list first; only a second Escape is the
+            // consumer's to handle.
+            if (opts.length && inp.getAttribute("aria-expanded") === "true") {
+              e.preventDefault();
+              clearActive();
+              inp.setAttribute("aria-expanded", "false");
+              inp.removeAttribute("aria-controls");
+            }
           }
         });
       }
       this.addEventListener("click", (e) => {
         const li = e.target && e.target.closest ? e.target.closest(".c-geocoder__result") : null;
         if (!li || !this.contains(li)) return;
-        const result = { label: li.textContent.trim(), lat: li.dataset.lat, lon: li.dataset.lon };
-        this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { result } }));
+        select(li);
       });
       this.addEventListener("keydown", (e) => {
         const li = e.target && e.target.closest ? e.target.closest(".c-geocoder__result") : null;
         if (!li || !this.contains(li)) return;
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          const result = { label: li.textContent.trim(), lat: li.dataset.lat, lon: li.dataset.lon };
-          this.dispatchEvent(new CustomEvent("contour:select", { bubbles: true, composed: true, detail: { result } }));
+          select(li);
         }
       });
+    }
+    disconnectedCallback() {
+      // A pending debounce must not outlive its host (F-RO10).
+      if (this._geocoderTimer) { clearTimeout(this._geocoderTimer); this._geocoderTimer = null; }
+      super.disconnectedCallback();
     }
   }
   define("contour-geocoder", ContourGeocoder);

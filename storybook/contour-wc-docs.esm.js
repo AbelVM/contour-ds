@@ -359,6 +359,28 @@
   }
 
   /**
+   * Read a boolean attribute the way an author means it.
+   *
+   * `hasAttribute()` answers "is it there", not "is it on": a consumer who
+   * writes `closable="false"` or `sparkline="0"` from a template still has the
+   * attribute, so a presence test renders the close button / the sparkline they
+   * explicitly switched off (F-RO19, F-RO20, F-FC11). The HTML boolean
+   * convention is presence-only, but these attributes are commonly rendered by
+   * frameworks that stringify `false`, so the explicit negative values win.
+   *
+   * A bare attribute (`closable`) is present with an empty value and is ON —
+   * that is the HTML boolean convention, and treating `""` as off broke every
+   * plain `closable` in the guide.
+   */
+  export function flagOn(host, name) {
+    if (!host || !host.getAttribute) return false;
+    const raw = host.getAttribute(name);
+    if (raw === null) return false;
+    const v = raw.trim().toLowerCase();
+    return v !== "0" && v !== "false" && v !== "no" && v !== "off" && v !== "null" && v !== "undefined";
+  }
+
+  /**
    * Resolve a localised label for a host (R18-63). A consumer supplies a
    * `labels` JSON attribute (e.g. `labels='{"clear":"Effacer"}'`); it is merged
    * over the English `fallback`, so a partial object localises only the keys it

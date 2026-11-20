@@ -1,4 +1,4 @@
-import { ContourBase, define, onDispose, sanitizeHtml, headingTag , warnBadJson, contourId } from './core.mjs';
+import { ContourBase, define, onDispose, sanitizeHtml, headingTag , warnBadJson, contourId, flagOn } from './core.mjs';
 import { loadRemote, remoteData, renderStates, renderEmpty, wireStates } from './states.mjs';
 import { wireRemovable, modalContain } from './behaviours.mjs';
 class ContourDialog extends ContourBase {
@@ -186,7 +186,7 @@ class ContourAlert extends ContourBase {
         a.textContent = label;
         this.appendChild(a);
       });
-      if (this.hasAttribute("closable")) {
+      if (flagOn(this, "closable")) {
         this.ensure(".c-alert__close", () => {
           const btn = document.createElement("button");
           btn.className = "c-alert__close";
@@ -334,7 +334,7 @@ class ContourCallout extends ContourBase {
         const t = this.querySelector(".c-callout__title");
         if (t) t.remove();
       }
-      if (this.hasAttribute("closable")) {
+      if (flagOn(this, "closable")) {
         this.ensure(".c-callout__close", () => {
           const btn = document.createElement("button");
           btn.className = "c-callout__close";
