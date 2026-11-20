@@ -304,5 +304,7 @@ jobs:
         run: node tools/storybook-tests.mjs
       - name: Check Storybook coverage
         run: npm run check:storybook-coverage
+      - name: Check the committed Storybook site is not behind src/
+        run: node tools/check-storybook-stale.mjs
       - name: Visual regression check (CDS-019, armed baselines)
         run: npm run visual:check

@@ -43,6 +43,7 @@
     "build-storybook": "npm run build:storybook",
     "test:storybook": "npm run build && node tools/storybook-tests.mjs",
     "check:storybook-coverage": "node tools/check-storybook-coverage.mjs",
+    "check:storybook-stale": "node tools/check-storybook-stale.mjs",
     "screenshot:baseline": "node tools/screenshot-baseline.mjs",
     "check:storybook": "npm run build-storybook && node tools/storybook-tests.mjs && npm run check:storybook-coverage",
     "check:diagnostics": "node tools/check-diagnostics.mjs",

@@ -73,6 +73,7 @@ Anything that matches is either a leak or a false positive you must justify.
 | `node tools/doctor.mjs` | Dispatches the node gates in one sweep for a human or an agent, and prints what it skipped: a gate absent from the artifact is reported as absent, and a sweep that dispatched nothing exits non-zero rather than going green on an empty run |
 | `npm run storybook` | Dev-only Storybook workshop (Web Components + Vite); not a consumer deliverable |
 | `npm run build:storybook` | Builds the static Storybook site into `storybook/` (committed, so a checkout has a browsable site without a build) |
+| `node tools/check-storybook-stale.mjs` | Fails when the committed `storybook/` is behind `src/`. `storybook/` is committed so GitHub Pages can serve it with no build step, which makes it a derived artifact with nothing between a source edit and a deploy — so the gate re-hashes every source the build manifest names and fails if one is newer, missing, or uncovered. It does not rebuild: a gate that fixed what it measures would pass on a tree nobody reviewed |
 | `npm run test:storybook` | Runs Storybook interaction/a11y tests via Vitest + Playwright |
 | `node tools/check-storybook-coverage.mjs` | Storybook coverage report; fails on zero discovered stories |
 | `node tools/gen-llms.mjs` | Regenerates `llms-full.txt` and `.well-known/llms.txt` from `dist/docs/` and `llms.txt`. Not a gate yet: the build does not emit those files and no lane runs this, so the copies it should keep current can drift; wiring it into the build is the open item |
@@ -437,6 +438,7 @@ node tools/check-layout.mjs     # layout primitives are a ratchet; @deprecated m
 node tools/gen-light-dark.mjs --check  # the light-dark() fallback matches src/css
 node tools/stamp.mjs --check   # published numbers match src/
 node tools/check-claims.mjs    # every published sentence names the gate that owns it
+node tools/check-storybook-stale.mjs # the committed storybook/ is not behind src/ (Pages serves it)
 node tools/execute-docs.mjs    # every snippet the guide publishes is mounted and validated
 node tools/doctor.mjs          # one sweep of the node gates above; reports what it skipped
 ```

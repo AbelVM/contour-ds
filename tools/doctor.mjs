@@ -68,6 +68,7 @@ const gates = [
   ["check-recipes", "node", ["tools/check-recipes.mjs"]],
   ["perf-budget", "node", ["tools/audit/perf-budget.mjs"]],
   ["check-visual", "node", ["tools/check-visual.mjs", "--verify"]],
+  ["check-storybook-stale", "node", ["tools/check-storybook-stale.mjs"]],
   ["contrast-cross-browser", "node", ["tools/audit/contrast-and-aria-cross-browser.mjs"]],
   ["check-api-contracts", "node", ["tools/check-api-contracts.mjs"]],
 ];
