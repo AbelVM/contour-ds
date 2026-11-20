@@ -1124,6 +1124,7 @@ class ContourGeocoder extends ContourBase {
       if (val !== null && inp.value !== val) inp.value = val;
       // Results
       Array.from(this.querySelectorAll(".c-geocoder__result")).forEach((n) => n.remove());
+      Array.from(this.querySelectorAll(".c-geocoder__list")).forEach((n) => n.remove());
       let results = [];
       const rAttr = this.getAttribute("results");
       if (rAttr) { try { results = JSON.parse(rAttr); } catch (e) { results = []; } }

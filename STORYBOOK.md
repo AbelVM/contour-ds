@@ -80,8 +80,8 @@ API stabilizes. `agent-rules.json` and `llms*.txt` remain authoritative.
 
 ## Measured evidence (SB-29)
 
-- Story files: 60; stories: 647; stories with play functions: 647.
-- A11y status (files): error 0, todo 2, off 0, unset 58.
+- Story files: 75; stories: 689; stories with play functions: 689.
+- A11y status (files): error 73, todo 2, off 0, unset 0.
 - Maturity counts (from `tmp/audit/storybook-coverage.json`): complete-widget 549, composition 57, primitive 25, scaffold 16.
 - Defined custom elements: 240; inventory blocks: 246.
 - Composition titles covered: `Contour/Compositions/ChartLegend`, `Contour/Compositions/ChartTable`, `Contour/Compositions/ComboboxField`, `Contour/Compositions/RealWorldDemos`, `Contour/Compositions/DialogForm`, `Contour/Compositions/DocsBehaviors`, `Contour/Compositions/LayerPanelMap`, `Contour/Compositions/SplitPaneOverlays`, `Contour/Compositions/TableFilters`, `Contour/Compositions/WorkspaceShell`.

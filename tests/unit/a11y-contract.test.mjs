@@ -30,8 +30,10 @@ describe("accessibility contract (R12-17/R12-35)", () => {
 describe("docs artifacts (R12-14/R12-16)", () => {
   it("LIBRESHIP.md exists and states ownership boundary", () => {
     const md = readFileSync("LIBRESHIP.md", "utf8");
-    expect(md).toContain("Contour owns");
-    expect(md).toContain("Libreship owns");
+    expect(md).toContain("Design system");
+    expect(md).toContain("Contour");
+    expect(md).toContain("Map engine & lifecycle");
+    expect(md).toContain("Libreship");
   });
 
   it("CSS-VOCABULARY.md exists", () => {

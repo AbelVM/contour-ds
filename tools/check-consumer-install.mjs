@@ -17,7 +17,8 @@ import { createRequire } from 'node:module';
 
 const ROOT = process.cwd();
 const FIXTURES = join(ROOT, 'test-fixtures');
-const TARBALL = join(ROOT, 'contour-ds-1.7.2.tgz');
+const _pkg = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'));
+const TARBALL = join(ROOT, `contour-ds-${_pkg.version}.tgz`);
 
 let failures = 0;
 let passes = 0;
@@ -73,7 +74,7 @@ console.log('Step 1: generating npm tarball from dist/');
 try {
   run('npm pack --pack-destination .', { cwd: ROOT });
   if (!existsSync(TARBALL)) {
-    fail('tarball was not produced at contour-ds-1.7.2.tgz');
+    fail(`tarball was not produced at ${TARBALL}`);
     process.exit(1);
   }
   const size = readFileSync(TARBALL).length;

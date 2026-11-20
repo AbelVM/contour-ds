@@ -163,7 +163,10 @@ class ContourTabs extends ContourBase {
       wireStates(this);
       loadRemote(this, "tabs");
       if (renderStates(this, "tabs")) return;
-      const tabs = remoteData(this, "tabs");
+      // `items` is the attribute the guide's counterpart markup uses (it is the
+      // same name the CSS block reads); `tabs` is the legacy spelling. Accept
+      // both — a consumer writing the documented markup must not get "No data".
+      const tabs = remoteData(this, "tabs") || remoteData(this, "items") || this.getAttribute("tabs") || this.getAttribute("items");
       // Slot composition wins over the JSON attribute, same as ContourMenu:
       // authored tab buttons ([role='tab']) and panels (.c-tabs__panel) in light
       // DOM are used as-is; the JSON `tabs` attribute only fills in when the host
@@ -354,7 +357,7 @@ class ContourHeader extends ContourBase {
           brandEl.className = "c-brand";
           brandEl.setAttribute("data-contour-generated", "");
           brandEl.href = "#";
-          brandEl.innerHTML = `<span class="c-mark"><svg aria-hidden="true"><use href="#i-mark" /></svg></span>`;
+          brandEl.innerHTML = `<span class="c-mark"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-mark" /></svg></span>`;
           const brandName = document.createElement("span");
           brandName.className = "c-brand__name";
           brandEl.appendChild(brandName);
@@ -418,7 +421,7 @@ class ContourHeader extends ContourBase {
           toggle.setAttribute("aria-label", "Toggle navigation");
           toggle.setAttribute("aria-expanded", "false");
           toggle.setAttribute("aria-controls", navEl.id);
-          toggle.innerHTML = '<svg aria-hidden="true"><use href="#i-grid" /></svg>';
+          toggle.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-grid" /></svg>';
           actions.appendChild(toggle);
         }
       }
@@ -556,7 +559,7 @@ class ContourTree extends ContourBase {
         toggle.setAttribute("type", "button");
         toggle.setAttribute("aria-expanded", String(f.expanded));
         toggle.setAttribute("aria-label", "Toggle");
-        toggle.innerHTML = '<svg aria-hidden="true"><use href="#i-chevron-right" /></svg>';
+        toggle.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-chevron-right" /></svg>';
         row.appendChild(toggle);
         const span = document.createElement("span");
         span.textContent = node.label;
@@ -665,7 +668,7 @@ render() {
                    toggle.setAttribute("type", "button");
                    toggle.setAttribute("aria-expanded", "false");
                   toggle.setAttribute("aria-label", "Toggle");
-                  toggle.innerHTML = '<svg aria-hidden="true"><use href="#i-chevron-right" /></svg>';
+toggle.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-chevron-right" /></svg>';
                   row.appendChild(toggle);
                   const span = document.createElement("span");
                   span.textContent = node.label;
@@ -706,11 +709,20 @@ render() {
       }
     }
     enhance() {
-      // Toggle handling via delegation (works for windowed + static trees).
+      // Toggle handling for virtual trees only. Non-virtual trees are handled
+      // by wireTree in behaviours.mjs, which manages children show/hide and
+      // persistence. Having both handlers fire on the same click caused them
+      // to cancel each other out: ContourTree set aria-expanded to !expanded,
+      // then wireTree read that new value and set it back.
       if (!this._wiredTreeToggle) {
         this._wiredTreeToggle = true;
         this.addEventListener("click", (e) => {
-          const toggle = e.target && e.target.closest ? e.target.closest(".c-tree__toggle") : null;
+          if (!this.hasAttribute("virtual")) return;
+          let toggle = e.target && e.target.closest ? e.target.closest(".c-tree__toggle") : null;
+          if (!toggle) {
+            const row = e.target && e.target.closest ? e.target.closest(".c-tree__row") : null;
+            if (row) toggle = row.querySelector(":scope > .c-tree__toggle");
+          }
           if (!toggle || !this.contains(toggle)) return;
           e.stopPropagation();
           const nodeEl = toggle.closest(".c-tree__node");
@@ -1841,6 +1853,8 @@ class ContourSpatialFilter extends ContourBase {
       operator.appendChild(opLabel);
       const opSelect = document.createElement("select");
       opSelect.className = "c-spatial-filter__operator-select";
+      opSelect.setAttribute("aria-label", labelText(this, "operator", "Operator"));
+      opSelect.setAttribute("data-contour-label", "true");
       ops.forEach((op) => {
         const o = document.createElement("option");
         o.value = op;

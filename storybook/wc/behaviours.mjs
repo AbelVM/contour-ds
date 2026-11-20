@@ -741,6 +741,10 @@ export function wireTree(host) {
     wcAll(host, ".c-tree__toggle, .c-tree__leaf").forEach((el) => el.setAttribute("tabindex", el === keep ? "0" : "-1"));
   };
   wcListen(host, "click", (e) => {
+    // Virtual trees are handled by ContourTree's own click handler in
+    // navigation.mjs, which re-renders the window. Non-virtual trees are
+    // handled here: toggle button or row label click both expand/collapse.
+    if (host.hasAttribute("virtual")) return;
     let toggle = wcClosest(host, e.target, ".c-tree__toggle");
     if (!toggle) {
       const row = wcClosest(host, e.target, ".c-tree__row");

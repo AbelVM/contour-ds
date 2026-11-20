@@ -35,7 +35,7 @@
   "meta": {
     "distribution": "pointer",
     "selfContained": true,
-    "bundleBytes": 253501,
+    "bundleBytes": 253587,
     "shared": [
       {
         "path": "contour.tokens.json",

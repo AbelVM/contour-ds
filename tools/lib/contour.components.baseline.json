@@ -4,14 +4,14 @@
   "generatedBy": "tools/build.mjs, from tools/lib/inventory.mjs",
   "statement": "Generated, never hand-edited. Every block, element, variant, state and token below is read from src/css by the same inventory that publishes every count in this repository, and tools/check-components.mjs fails if the shipped bytes are not that derivation. `tokens` lists the custom properties a block's rules read; a rule naming two blocks (`.c-alert, .c-callout`) is credited to both, because that is what a retune does.",
   "counts": {
-    "blocks": 230,
-    "elements": 743,
-    "variants": 97,
-    "states": 305,
-    "tokens": 2479,
+    "blocks": 246,
+    "elements": 912,
+    "variants": 119,
+    "states": 336,
+    "tokens": 2694,
     "vars": 16,
-    "inputs": 17,
-    "tokensIndexed": 198
+    "inputs": 20,
+    "tokensIndexed": 199
   },
   "blocks": [
     {
@@ -21,7 +21,7 @@
         "components-navigation.css",
         "utilities.css"
       ],
-      "rules": 5,
+      "rules": 6,
       "elements": [
         "c-accordion__empty",
         "c-accordion__error",
@@ -158,7 +158,13 @@
         "unread-only",
         "empty",
         "loading",
-        "error"
+        "error",
+        "labels",
+        "src",
+        "lazy",
+        "refresh",
+        "timeout",
+        "skeleton"
       ],
       "booleanAttributes": [
         "unread-only"
@@ -201,10 +207,13 @@
       "maturity": "complete-widget",
       "sheets": [
         "components-display.css",
+        "components-misc.css",
         "utilities.css"
       ],
-      "rules": 3,
-      "elements": [],
+      "rules": 4,
+      "elements": [
+        "c-advanced__title"
+      ],
       "variants": [],
       "states": [
         "[data-profile=\"operator\"]",
@@ -222,7 +231,8 @@
       ],
       "tokens": [
         "--color-text",
-        "--type-sm"
+        "--type-sm",
+        "--weight-semibold"
       ],
       "vars": [],
       "inputs": [],
@@ -420,6 +430,37 @@
       }
     },
     {
+      "name": "c-analysis-stack",
+      "maturity": "complete-widget",
+      "sheets": [
+        "components-misc.css"
+      ],
+      "rules": 3,
+      "elements": [
+        "c-analysis-stack__header",
+        "c-analysis-stack__title"
+      ],
+      "variants": [],
+      "states": [],
+      "attributes": [
+        "title"
+      ],
+      "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
+      "tokens": [
+        "--color-text",
+        "--type-sm",
+        "--weight-semibold"
+      ],
+      "vars": [],
+      "inputs": [],
+      "renderedIn": {
+        "guide": true,
+        "templates": []
+      }
+    },
+    {
       "name": "c-anchor",
       "maturity": "complete-widget",
       "sheets": [
@@ -465,9 +506,11 @@
         "components-data-widgets.css",
         "components-misc.css"
       ],
-      "rules": 3,
+      "rules": 5,
       "elements": [
-        "c-animation-controls__scrubber"
+        "c-animation-controls__caption",
+        "c-animation-controls__scrubber",
+        "c-animation-controls__scrubber--thumb"
       ],
       "variants": [],
       "states": [],
@@ -491,8 +534,11 @@
       "slots": [],
       "parts": [],
       "tokens": [
+        "--color-primary",
+        "--color-text-subtle",
         "--density",
-        "--space-2xs"
+        "--space-2xs",
+        "--type-xs"
       ],
       "vars": [],
       "inputs": [],
@@ -627,8 +673,11 @@
       "sheets": [
         "components-misc.css"
       ],
-      "rules": 5,
-      "elements": [],
+      "rules": 7,
+      "elements": [
+        "c-avatar__img",
+        "c-avatar__status"
+      ],
       "variants": [
         "c-avatar--accent",
         "c-avatar--lg"
@@ -655,6 +704,7 @@
         "--color-accent-text",
         "--color-primary-soft",
         "--color-primary-text",
+        "--color-success",
         "--color-surface-1",
         "--density",
         "--font-mono",
@@ -676,8 +726,10 @@
       "sheets": [
         "components-misc.css"
       ],
-      "rules": 3,
-      "elements": [],
+      "rules": 4,
+      "elements": [
+        "c-avatar-group__overflow"
+      ],
       "variants": [],
       "states": [
         ":first-child"
@@ -691,7 +743,10 @@
       "parts": [],
       "tokens": [
         "--color-surface-1",
-        "--density"
+        "--color-surface-2",
+        "--color-text-muted",
+        "--density",
+        "--type-xs"
       ],
       "vars": [],
       "inputs": [],
@@ -766,12 +821,15 @@
         "components-misc.css",
         "utilities.css"
       ],
-      "rules": 11,
-      "elements": [],
+      "rules": 13,
+      "elements": [
+        "c-badge__remove"
+      ],
       "variants": [
         "c-badge--accent",
         "c-badge--danger",
         "c-badge--data",
+        "c-badge--dot",
         "c-badge--outline",
         "c-badge--primary",
         "c-badge--success",
@@ -836,8 +894,10 @@
         "components-misc.css",
         "utilities.css"
       ],
-      "rules": 2,
-      "elements": [],
+      "rules": 3,
+      "elements": [
+        "c-badge-overflow__more"
+      ],
       "variants": [],
       "states": [],
       "attributes": [
@@ -848,7 +908,9 @@
       "slots": [],
       "parts": [],
       "tokens": [
-        "--border-width-thick"
+        "--border-width-thick",
+        "--color-text-subtle",
+        "--type-xs"
       ],
       "vars": [],
       "inputs": [],
@@ -863,8 +925,10 @@
       "sheets": [
         "components-misc.css"
       ],
-      "rules": 3,
-      "elements": [],
+      "rules": 4,
+      "elements": [
+        "c-banner__message"
+      ],
       "variants": [
         "c-banner--info"
       ],
@@ -1081,9 +1145,10 @@
       "name": "c-breadcrumb",
       "maturity": "complete-widget",
       "sheets": [
-        "components-misc.css"
+        "components-misc.css",
+        "utilities.css"
       ],
-      "rules": 9,
+      "rules": 10,
       "elements": [
         "c-breadcrumb__empty",
         "c-breadcrumb__error",
@@ -1375,34 +1440,50 @@
       "name": "c-calendar",
       "maturity": "complete-widget",
       "sheets": [
-        "components-misc.css"
+        "components-misc.css",
+        "utilities.css"
       ],
-      "rules": 10,
+      "rules": 16,
       "elements": [
         "c-calendar__day",
         "c-calendar__day--empty",
         "c-calendar__grid",
         "c-calendar__header",
         "c-calendar__next",
+        "c-calendar__next-year",
         "c-calendar__prev",
-        "c-calendar__title"
+        "c-calendar__prev-year",
+        "c-calendar__row",
+        "c-calendar__title",
+        "c-calendar__weekday"
       ],
       "variants": [],
       "states": [
+        ".is-in-range",
         ".is-selected"
       ],
       "attributes": [
-        "value"
+        "value",
+        "month",
+        "year",
+        "range",
+        "start",
+        "end"
       ],
-      "booleanAttributes": [],
+      "booleanAttributes": [
+        "range"
+      ],
       "slots": [],
       "parts": [],
       "tokens": [
         "--color-border",
         "--color-on-primary",
         "--color-primary",
+        "--color-primary-soft",
+        "--color-primary-text",
         "--color-surface-1",
         "--color-text",
+        "--color-text-muted",
         "--density",
         "--radius-sm",
         "--space-xs",
@@ -1424,7 +1505,7 @@
         "components-docs.css",
         "utilities.css"
       ],
-      "rules": 25,
+      "rules": 26,
       "elements": [
         "c-callout__body",
         "c-callout__close",
@@ -1575,10 +1656,13 @@
       "name": "c-carousel",
       "maturity": "complete-widget",
       "sheets": [
-        "components-misc.css"
+        "components-misc.css",
+        "utilities.css"
       ],
-      "rules": 8,
+      "rules": 12,
       "elements": [
+        "c-carousel__dot",
+        "c-carousel__dots",
         "c-carousel__next",
         "c-carousel__prev",
         "c-carousel__slide",
@@ -1586,15 +1670,23 @@
         "c-carousel__track"
       ],
       "variants": [],
-      "states": [],
+      "states": [
+        ".is-active"
+      ],
       "attributes": [
         "items",
-        "index"
+        "index",
+        "autoplay",
+        "paused"
       ],
-      "booleanAttributes": [],
+      "booleanAttributes": [
+        "paused"
+      ],
       "slots": [],
       "parts": [],
       "tokens": [
+        "--color-control-edge",
+        "--color-primary",
         "--color-text-muted",
         "--density",
         "--space-sm",
@@ -1793,9 +1885,10 @@
         "components-data-charts.css",
         "components-data-dashboard.css",
         "components-data-maps.css",
+        "components-misc.css",
         "utilities.css"
       ],
-      "rules": 49,
+      "rules": 59,
       "elements": [
         "c-chart__axis",
         "c-chart__axis--centered",
@@ -1812,11 +1905,19 @@
         "c-chart__band--seq-7",
         "c-chart__bar",
         "c-chart__control",
+        "c-chart__data-table",
+        "c-chart__empty",
+        "c-chart__error",
+        "c-chart__legend",
+        "c-chart__legend-item",
+        "c-chart__legend-swatch",
         "c-chart__line",
+        "c-chart__loading",
         "c-chart__missing",
         "c-chart__note",
         "c-chart__plot",
         "c-chart__point",
+        "c-chart__tick",
         "c-chart__tooltip",
         "c-chart__zero"
       ],
@@ -1826,6 +1927,7 @@
       ],
       "states": [
         ":hover",
+        "[data-context]",
         "[data-cvd=\"achromatopsia\"]",
         "[data-cvd=\"deuteranopia\"]",
         "[data-cvd=\"protanopia\"]",
@@ -1901,15 +2003,18 @@
         "--chart-tip-inline-start",
         "--chart-tooltip-bg",
         "--chart-tooltip-fg",
+        "--color-danger-text",
         "--color-surface-1",
         "--color-text-subtle",
         "--density",
         "--font-mono",
         "--radius-xs",
         "--space-2xs",
+        "--space-sm",
         "--space-xs",
         "--target-chart",
         "--type-micro",
+        "--type-sm",
         "--type-xs",
         "--z-tooltip"
       ],
@@ -1932,11 +2037,13 @@
       "maturity": "complete-widget",
       "sheets": [
         "components-data-dashboard.css",
-        "components-data-widgets.css"
+        "components-data-widgets.css",
+        "components-misc.css"
       ],
-      "rules": 8,
+      "rules": 9,
       "elements": [
-        "c-chart-grid__empty"
+        "c-chart-grid__empty",
+        "c-chart-grid__title"
       ],
       "variants": [],
       "states": [
@@ -1967,8 +2074,11 @@
         "chart-grid"
       ],
       "tokens": [
+        "--color-text-muted",
         "--density",
-        "--space-md"
+        "--space-md",
+        "--type-xs",
+        "--weight-medium"
       ],
       "vars": [],
       "inputs": [],
@@ -1987,10 +2097,11 @@
         "components-misc.css",
         "utilities.css"
       ],
-      "rules": 19,
+      "rules": 20,
       "elements": [
-        "c-check__box",
-        "c-check__input"
+        "c-check__input",
+        "c-check__message",
+        "c-check__message--error"
       ],
       "variants": [],
       "states": [
@@ -2025,18 +2136,59 @@
       ],
       "tokens": [
         "--border-width-thick",
-        "--color-border-strong",
+        "--color-control-edge",
+        "--color-danger-text",
         "--color-focus-ring",
         "--color-on-primary",
         "--color-primary",
         "--color-surface-1",
+        "--color-text-subtle",
         "--density",
         "--dur-fast",
         "--ease-out-expo",
         "--ease-standard",
         "--focus-width",
         "--radius-xs",
-        "--type-sm"
+        "--type-sm",
+        "--type-xs"
+      ],
+      "vars": [],
+      "inputs": [],
+      "renderedIn": {
+        "guide": true,
+        "templates": []
+      }
+    },
+    {
+      "name": "c-checkbox-group",
+      "maturity": "complete-widget",
+      "sheets": [
+        "components-forms.css"
+      ],
+      "rules": 4,
+      "elements": [
+        "c-checkbox-group__fieldset",
+        "c-checkbox-group__legend"
+      ],
+      "variants": [],
+      "states": [],
+      "attributes": [
+        "legend",
+        "name",
+        "options",
+        "value",
+        "required",
+        "disabled"
+      ],
+      "booleanAttributes": [
+        "disabled",
+        "required"
+      ],
+      "slots": [],
+      "parts": [],
+      "tokens": [
+        "--color-text",
+        "--weight-semibold"
       ],
       "vars": [],
       "inputs": [],
@@ -2069,9 +2221,12 @@
       "attributes": [
         "variant",
         "key",
-        "value"
+        "value",
+        "live"
       ],
-      "booleanAttributes": [],
+      "booleanAttributes": [
+        "live"
+      ],
       "slots": [
         ""
       ],
@@ -2142,20 +2297,26 @@
       "sheets": [
         "components-display.css"
       ],
-      "rules": 7,
+      "rules": 12,
       "elements": [
         "c-code__copy",
         "c-code__head",
+        "c-code__line",
+        "c-code__line-number",
         "c-code__title"
       ],
-      "variants": [],
+      "variants": [
+        "c-code--numbered"
+      ],
       "states": [],
       "attributes": [
         "title",
-        "copyable"
+        "copyable",
+        "numbered"
       ],
       "booleanAttributes": [
-        "copyable"
+        "copyable",
+        "numbered"
       ],
       "slots": [
         ""
@@ -2261,18 +2422,45 @@
       }
     },
     {
+      "name": "c-code-tabs-panel",
+      "maturity": "complete-widget",
+      "sheets": [
+        "components-misc.css"
+      ],
+      "rules": 1,
+      "elements": [],
+      "variants": [],
+      "states": [],
+      "attributes": [],
+      "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
+      "tokens": [
+        "--density",
+        "--space-sm"
+      ],
+      "vars": [],
+      "inputs": [],
+      "renderedIn": {
+        "guide": false,
+        "templates": []
+      }
+    },
+    {
       "name": "c-color-picker",
       "maturity": "complete-widget",
       "sheets": [
         "components-misc.css",
         "utilities.css"
       ],
-      "rules": 12,
+      "rules": 14,
       "elements": [
         "c-color-picker__alpha",
         "c-color-picker__eyedropper",
         "c-color-picker__input",
         "c-color-picker__label",
+        "c-color-picker__message",
+        "c-color-picker__message--error",
         "c-color-picker__preset",
         "c-color-picker__presets"
       ],
@@ -2299,8 +2487,10 @@
       "parts": [],
       "tokens": [
         "--color-border",
+        "--color-danger-text",
         "--color-surface-1",
         "--color-text-muted",
+        "--color-text-subtle",
         "--density",
         "--radius-xs",
         "--space-2xs",
@@ -2317,15 +2507,27 @@
       "name": "c-combobox",
       "maturity": "complete-widget",
       "sheets": [
+        "components-forms.css",
+        "components-misc.css",
         "utilities.css"
       ],
-      "rules": 7,
+      "rules": 20,
       "elements": [
-        "c-combobox__list"
+        "c-combobox__clear",
+        "c-combobox__empty",
+        "c-combobox__input",
+        "c-combobox__list",
+        "c-combobox__list--virtual",
+        "c-combobox__match",
+        "c-combobox__option",
+        "c-combobox__option--active",
+        "c-combobox__option--selected"
       ],
       "variants": [],
       "states": [
-        ":focus-visible"
+        ":focus-visible",
+        ":hover",
+        "[aria-selected=\"true\"]"
       ],
       "attributes": [
         "options",
@@ -2342,10 +2544,15 @@
         "timeout",
         "empty",
         "skeleton",
-        "virtual"
+        "virtual",
+        "disabled",
+        "required",
+        "name"
       ],
       "booleanAttributes": [
+        "disabled",
         "multiple",
+        "required",
         "virtual"
       ],
       "slots": [
@@ -2358,7 +2565,21 @@
       ],
       "tokens": [
         "--border-width-thick",
-        "--color-surface-1"
+        "--color-control-edge",
+        "--color-primary-soft",
+        "--color-primary-text",
+        "--color-surface-1",
+        "--color-surface-2",
+        "--color-text",
+        "--color-text-subtle",
+        "--density",
+        "--radius-md",
+        "--radius-sm",
+        "--radius-xs",
+        "--shadow-sm",
+        "--space-xs",
+        "--type-sm",
+        "--weight-medium"
       ],
       "vars": [],
       "inputs": [],
@@ -2368,14 +2589,61 @@
       }
     },
     {
+      "name": "c-combobox-list",
+      "maturity": "complete-widget",
+      "sheets": [
+        "components-misc.css"
+      ],
+      "rules": 1,
+      "elements": [],
+      "variants": [],
+      "states": [],
+      "attributes": [],
+      "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
+      "tokens": [],
+      "vars": [],
+      "inputs": [],
+      "renderedIn": {
+        "guide": false,
+        "templates": []
+      }
+    },
+    {
+      "name": "c-combobox-option",
+      "maturity": "complete-widget",
+      "sheets": [
+        "components-misc.css"
+      ],
+      "rules": 1,
+      "elements": [],
+      "variants": [],
+      "states": [],
+      "attributes": [],
+      "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
+      "tokens": [
+        "--density"
+      ],
+      "vars": [],
+      "inputs": [],
+      "renderedIn": {
+        "guide": false,
+        "templates": []
+      }
+    },
+    {
       "name": "c-command",
       "maturity": "complete-widget",
       "sheets": [
         "base.css",
+        "components-misc.css",
         "components-shell.css",
         "utilities.css"
       ],
-      "rules": 42,
+      "rules": 43,
       "elements": [
         "c-command__empty",
         "c-command__field",
@@ -2388,6 +2656,7 @@
         "c-command__item-body",
         "c-command__item-hint",
         "c-command__item-icon",
+        "c-command__item-shortcut",
         "c-command__item-title",
         "c-command__list",
         "c-command__mark",
@@ -2456,6 +2725,7 @@
         "--type-body",
         "--type-micro",
         "--type-sm",
+        "--type-xs",
         "--weight-medium"
       ],
       "vars": [],
@@ -2466,14 +2736,38 @@
       }
     },
     {
+      "name": "c-command-list",
+      "maturity": "complete-widget",
+      "sheets": [
+        "components-misc.css"
+      ],
+      "rules": 1,
+      "elements": [],
+      "variants": [],
+      "states": [],
+      "attributes": [],
+      "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
+      "tokens": [],
+      "vars": [],
+      "inputs": [],
+      "renderedIn": {
+        "guide": false,
+        "templates": []
+      }
+    },
+    {
       "name": "c-command-palette",
       "maturity": "complete-widget",
       "sheets": [
         "components-misc.css",
         "utilities.css"
       ],
-      "rules": 10,
+      "rules": 12,
       "elements": [
+        "c-command-palette__empty",
+        "c-command-palette__group",
         "c-command-palette__item",
         "c-command-palette__list",
         "c-command-palette__search"
@@ -2499,12 +2793,16 @@
         "--color-primary-soft",
         "--color-primary-text",
         "--color-surface-1",
+        "--color-text-muted",
+        "--color-text-subtle",
         "--density",
         "--radius-md",
         "--shadow-md",
         "--space-2xs",
         "--space-xs",
-        "--type-sm"
+        "--type-sm",
+        "--type-xs",
+        "--weight-semibold"
       ],
       "vars": [],
       "inputs": [],
@@ -2752,7 +3050,8 @@
         "[popover]"
       ],
       "attributes": [
-        "items"
+        "items",
+        "trigger"
       ],
       "booleanAttributes": [],
       "slots": [],
@@ -2779,20 +3078,23 @@
       "sheets": [
         "components-data-charts.css"
       ],
-      "rules": 10,
+      "rules": 9,
       "elements": [
-        "c-contour-plot__axis",
         "c-contour-plot__contour",
         "c-contour-plot__contour--level-2",
         "c-contour-plot__contour--level-3",
         "c-contour-plot__contour--level-4",
         "c-contour-plot__contour--level-5",
-        "c-contour-plot__fill",
-        "c-contour-plot__label"
+        "c-contour-plot__empty",
+        "c-contour-plot__fill"
       ],
       "variants": [],
       "states": [],
-      "attributes": [],
+      "attributes": [
+        "values",
+        "levels",
+        "label"
+      ],
       "booleanAttributes": [],
       "slots": [
         ""
@@ -2809,9 +3111,8 @@
         "--color-primary",
         "--color-surface-1",
         "--color-text-subtle",
-        "--density",
-        "--font-mono",
-        "--radius-md"
+        "--radius-md",
+        "--type-sm"
       ],
       "vars": [],
       "inputs": [],
@@ -2984,7 +3285,8 @@
       "variants": [],
       "states": [],
       "attributes": [
-        "items"
+        "items",
+        "title"
       ],
       "booleanAttributes": [],
       "slots": [
@@ -3088,6 +3390,34 @@
       }
     },
     {
+      "name": "c-dashboard-grid",
+      "maturity": "complete-widget",
+      "sheets": [
+        "components-misc.css"
+      ],
+      "rules": 1,
+      "elements": [],
+      "variants": [],
+      "states": [],
+      "attributes": [
+        "cols",
+        "gap"
+      ],
+      "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
+      "tokens": [],
+      "vars": [],
+      "inputs": [
+        "--dashboard-grid-cols",
+        "--dashboard-grid-gap"
+      ],
+      "renderedIn": {
+        "guide": true,
+        "templates": []
+      }
+    },
+    {
       "name": "c-data-export",
       "maturity": "complete-widget",
       "sheets": [
@@ -3172,7 +3502,10 @@
         "page-size",
         "resizable",
         "virtual",
-        "row-height"
+        "row-height",
+        "loading",
+        "error",
+        "empty"
       ],
       "booleanAttributes": [
         "resizable",
@@ -3182,6 +3515,7 @@
       "parts": [],
       "tokens": [
         "--color-border-subtle",
+        "--data-grid-max-height",
         "--density",
         "--space-2xs",
         "--space-xs"
@@ -3277,16 +3611,20 @@
         "components-misc.css",
         "utilities.css"
       ],
-      "rules": 16,
+      "rules": 20,
       "elements": [
         "c-date-picker__calendar",
         "c-date-picker__calendar-day",
         "c-date-picker__calendar-day--empty",
         "c-date-picker__calendar-grid",
         "c-date-picker__calendar-header",
+        "c-date-picker__calendar-row",
         "c-date-picker__calendar-title",
         "c-date-picker__calendar-weekday",
-        "c-date-picker__label"
+        "c-date-picker__end",
+        "c-date-picker__label",
+        "c-date-picker__message",
+        "c-date-picker__message--error"
       ],
       "variants": [],
       "states": [
@@ -3317,10 +3655,12 @@
       "tokens": [
         "--border-width-thick",
         "--color-border",
+        "--color-danger-text",
         "--color-primary-solid",
         "--color-primary-text",
         "--color-surface-1",
         "--color-text-muted",
+        "--color-text-subtle",
         "--density",
         "--radius-md",
         "--radius-sm",
@@ -3359,9 +3699,14 @@
         "time",
         "min",
         "max",
-        "locale"
+        "locale",
+        "name",
+        "required",
+        "disabled"
       ],
       "booleanAttributes": [
+        "disabled",
+        "required",
         "time"
       ],
       "slots": [],
@@ -3435,6 +3780,33 @@
         "templates": [
           "dashboard"
         ]
+      }
+    },
+    {
+      "name": "c-density-toggle",
+      "maturity": "complete-widget",
+      "sheets": [
+        "components-forms.css"
+      ],
+      "rules": 2,
+      "elements": [
+        "c-density-toggle__btn"
+      ],
+      "variants": [],
+      "states": [],
+      "attributes": [
+        "value",
+        "label"
+      ],
+      "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
+      "tokens": [],
+      "vars": [],
+      "inputs": [],
+      "renderedIn": {
+        "guide": true,
+        "templates": []
       }
     },
     {
@@ -3587,7 +3959,7 @@
         "components-navigation.css",
         "utilities.css"
       ],
-      "rules": 11,
+      "rules": 14,
       "elements": [
         "c-disclosure__body",
         "c-disclosure__icon",
@@ -3597,6 +3969,7 @@
       "states": [
         "::-webkit-details-marker",
         "::marker",
+        ":not([open])",
         "[open]"
       ],
       "attributes": [
@@ -3647,8 +4020,10 @@
       "sheets": [
         "components-misc.css"
       ],
-      "rules": 4,
-      "elements": [],
+      "rules": 5,
+      "elements": [
+        "c-divider__label"
+      ],
       "variants": [],
       "states": [
         "::after",
@@ -3663,6 +4038,7 @@
       "parts": [],
       "tokens": [
         "--color-border",
+        "--color-surface-1",
         "--color-text-subtle",
         "--density",
         "--space-sm",
@@ -3732,9 +4108,10 @@
       "name": "c-docs-nav",
       "maturity": "composition",
       "sheets": [
-        "components-docs.css"
+        "components-docs.css",
+        "components-misc.css"
       ],
-      "rules": 34,
+      "rules": 35,
       "elements": [
         "c-docs-nav__badge",
         "c-docs-nav__chevron",
@@ -3743,6 +4120,7 @@
         "c-docs-nav__group",
         "c-docs-nav__group-title",
         "c-docs-nav__link",
+        "c-docs-nav__link--nested",
         "c-docs-nav__list",
         "c-docs-nav__list--nested",
         "c-docs-nav__loading"
@@ -3792,6 +4170,7 @@
         "--space-md",
         "--tracking-label",
         "--type-micro",
+        "--type-sm",
         "--type-xs",
         "--weight-medium",
         "--weight-semibold"
@@ -3811,17 +4190,22 @@
       "sheets": [
         "patterns.css"
       ],
-      "rules": 13,
+      "rules": 19,
       "elements": [
         "c-docs-shell__article",
         "c-docs-shell__header",
         "c-docs-shell__lede",
         "c-docs-shell__nav",
+        "c-docs-shell__nav-toggle",
         "c-docs-shell__title",
         "c-docs-shell__toc"
       ],
       "variants": [],
-      "states": [],
+      "states": [
+        "::backdrop",
+        ":popover-open",
+        "[popover]"
+      ],
       "attributes": [
         "title",
         "lede",
@@ -3836,19 +4220,29 @@
         "docs-shell"
       ],
       "tokens": [
+        "--color-border",
+        "--color-scrim",
+        "--color-surface-1",
         "--color-text-muted",
         "--color-text-strong",
         "--density",
         "--font-display",
         "--header-height",
         "--leading-normal",
+        "--radius-pill",
+        "--shadow-lg",
+        "--shadow-sm",
         "--space-2xl",
         "--space-lg",
         "--space-md",
+        "--space-sm",
+        "--space-xs",
+        "--target-control",
         "--tracking-heading",
         "--type-h1",
         "--type-lead",
-        "--weight-bold"
+        "--weight-bold",
+        "--z-raised"
       ],
       "vars": [],
       "inputs": [],
@@ -3937,10 +4331,15 @@
       "sheets": [
         "components-display.css"
       ],
-      "rules": 2,
+      "rules": 7,
       "elements": [],
       "variants": [
-        "c-dot--live"
+        "c-dot--accent",
+        "c-dot--danger",
+        "c-dot--live",
+        "c-dot--primary",
+        "c-dot--success",
+        "c-dot--warning"
       ],
       "states": [],
       "attributes": [
@@ -3957,10 +4356,18 @@
         "dot"
       ],
       "tokens": [
+        "--color-accent",
+        "--color-accent-text",
         "--color-danger",
         "--color-danger-text",
+        "--color-primary",
+        "--color-primary-text",
+        "--color-success",
+        "--color-success-text",
         "--color-text",
         "--color-text-muted",
+        "--color-warning",
+        "--color-warning-text",
         "--density"
       ],
       "vars": [],
@@ -3990,9 +4397,12 @@
         ":hover"
       ],
       "attributes": [
-        "label"
+        "label",
+        "open"
       ],
-      "booleanAttributes": [],
+      "booleanAttributes": [
+        "open"
+      ],
       "slots": [
         ""
       ],
@@ -4030,9 +4440,12 @@
         ":active"
       ],
       "attributes": [
-        "label"
+        "label",
+        "open"
       ],
-      "booleanAttributes": [],
+      "booleanAttributes": [
+        "open"
+      ],
       "slots": [
         ""
       ],
@@ -4057,7 +4470,7 @@
         "components-data-widgets.css",
         "utilities.css"
       ],
-      "rules": 17,
+      "rules": 18,
       "elements": [
         "c-drawer__body",
         "c-drawer__close",
@@ -4132,9 +4545,12 @@
       ],
       "states": [],
       "attributes": [
-        "label"
+        "label",
+        "open"
       ],
-      "booleanAttributes": [],
+      "booleanAttributes": [
+        "open"
+      ],
       "slots": [
         ""
       ],
@@ -4202,7 +4618,7 @@
         "components-misc.css",
         "utilities.css"
       ],
-      "rules": 5,
+      "rules": 6,
       "elements": [
         "c-dropdown__menu"
       ],
@@ -4334,10 +4750,12 @@
       "maturity": "scaffold",
       "sheets": [
         "components-display.css",
+        "components-misc.css",
         "utilities.css"
       ],
-      "rules": 4,
+      "rules": 5,
       "elements": [
+        "c-error-boundary__fallback",
         "c-error-boundary__message"
       ],
       "variants": [],
@@ -4352,12 +4770,17 @@
       "tokens": [
         "--border-width-thick",
         "--color-border",
+        "--color-danger-border",
+        "--color-danger-soft",
+        "--color-danger-text",
         "--color-surface-1",
         "--color-surface-raised",
         "--color-text-muted",
         "--density",
         "--radius-md",
+        "--radius-sm",
         "--space-md",
+        "--space-sm",
         "--space-xs",
         "--type-sm"
       ],
@@ -4418,7 +4841,7 @@
         "components-misc.css",
         "utilities.css"
       ],
-      "rules": 2,
+      "rules": 3,
       "elements": [],
       "variants": [],
       "states": [],
@@ -4602,7 +5025,9 @@
       "states": [],
       "attributes": [
         "title",
-        "open"
+        "open",
+        "data",
+        "actions"
       ],
       "booleanAttributes": [
         "open"
@@ -4640,7 +5065,7 @@
         "components-forms.css",
         "utilities.css"
       ],
-      "rules": 7,
+      "rules": 8,
       "elements": [
         "c-field__error",
         "c-field__hint",
@@ -4656,9 +5081,14 @@
         "error",
         "placeholder",
         "type",
-        "required"
+        "required",
+        "name",
+        "value",
+        "disabled",
+        "custom-error"
       ],
       "booleanAttributes": [
+        "disabled",
         "required"
       ],
       "slots": [
@@ -4744,6 +5174,40 @@
       }
     },
     {
+      "name": "c-fieldset",
+      "maturity": "complete-widget",
+      "sheets": [
+        "components-forms.css"
+      ],
+      "rules": 2,
+      "elements": [
+        "c-fieldset__legend"
+      ],
+      "variants": [],
+      "states": [],
+      "attributes": [
+        "legend",
+        "disabled"
+      ],
+      "booleanAttributes": [
+        "disabled"
+      ],
+      "slots": [],
+      "parts": [],
+      "tokens": [
+        "--color-border",
+        "--color-text",
+        "--radius-sm",
+        "--weight-semibold"
+      ],
+      "vars": [],
+      "inputs": [],
+      "renderedIn": {
+        "guide": true,
+        "templates": []
+      }
+    },
+    {
       "name": "c-file-tree",
       "maturity": "complete-widget",
       "sheets": [
@@ -4804,7 +5268,8 @@
         "label",
         "accept",
         "multiple",
-        "progress"
+        "progress",
+        "name"
       ],
       "booleanAttributes": [
         "multiple"
@@ -4839,15 +5304,20 @@
       "maturity": "complete-widget",
       "sheets": [
         "components-data-tables.css",
-        "components-data-widgets.css"
+        "components-data-widgets.css",
+        "components-misc.css"
       ],
-      "rules": 9,
+      "rules": 13,
       "elements": [
+        "c-filter-bar__clear-all",
         "c-filter-bar__divider",
         "c-filter-bar__empty",
+        "c-filter-bar__input",
         "c-filter-bar__label",
         "c-filter-bar__mode",
-        "c-filter-bar__modes"
+        "c-filter-bar__modes",
+        "c-filter-bar__scope",
+        "c-filter-bar__scope-btn"
       ],
       "variants": [],
       "states": [
@@ -4885,9 +5355,11 @@
       ],
       "tokens": [
         "--color-border",
+        "--color-control-edge",
         "--color-focus-ring",
         "--color-on-primary-solid",
         "--color-primary-solid",
+        "--color-primary-text",
         "--color-surface-1",
         "--color-surface-2",
         "--color-text",
@@ -4900,9 +5372,11 @@
         "--font-mono",
         "--radius-lg",
         "--radius-pill",
+        "--radius-sm",
         "--space-2xs",
         "--tracking-label",
-        "--type-micro"
+        "--type-micro",
+        "--type-sm"
       ],
       "vars": [],
       "inputs": [],
@@ -5094,9 +5568,10 @@
       "maturity": "composition",
       "sheets": [
         "base.css",
-        "components-misc.css"
+        "components-misc.css",
+        "utilities.css"
       ],
-      "rules": 10,
+      "rules": 11,
       "elements": [
         "c-footer__brand",
         "c-footer__col",
@@ -5158,13 +5633,15 @@
       "name": "c-form",
       "maturity": "complete-widget",
       "sheets": [
-        "components-forms.css"
+        "components-forms.css",
+        "components-misc.css"
       ],
-      "rules": 7,
+      "rules": 8,
       "elements": [
         "c-form__actions",
         "c-form__submit",
-        "c-form__summary"
+        "c-form__summary",
+        "c-form__title"
       ],
       "variants": [],
       "states": [
@@ -5174,7 +5651,9 @@
       "attributes": [
         "submitting",
         "error",
-        "summary"
+        "summary",
+        "title",
+        "submit-label"
       ],
       "booleanAttributes": [
         "submitting"
@@ -5185,11 +5664,14 @@
         "--color-danger",
         "--color-danger-soft",
         "--color-danger-text",
+        "--color-text",
         "--density",
         "--radius-md",
         "--space-md",
         "--space-sm",
-        "--type-sm"
+        "--type-lg",
+        "--type-sm",
+        "--weight-semibold"
       ],
       "vars": [],
       "inputs": [],
@@ -5202,11 +5684,13 @@
       "name": "c-gauge",
       "maturity": "complete-widget",
       "sheets": [
-        "components-data-charts.css"
+        "components-data-charts.css",
+        "components-misc.css"
       ],
-      "rules": 12,
+      "rules": 14,
       "elements": [
         "c-gauge__band",
+        "c-gauge__desc",
         "c-gauge__dial",
         "c-gauge__empty",
         "c-gauge__error",
@@ -5216,7 +5700,8 @@
         "c-gauge__title",
         "c-gauge__track",
         "c-gauge__value",
-        "c-gauge__zone"
+        "c-gauge__zone",
+        "c-gauge__zones"
       ],
       "variants": [],
       "states": [],
@@ -5273,6 +5758,7 @@
         "--space-md",
         "--type-lg",
         "--type-micro",
+        "--type-sm",
         "--type-xs",
         "--weight-bold"
       ],
@@ -5595,6 +6081,32 @@
       }
     },
     {
+      "name": "c-icon",
+      "maturity": "complete-widget",
+      "sheets": [
+        "components-misc.css"
+      ],
+      "rules": 1,
+      "elements": [],
+      "variants": [],
+      "states": [],
+      "attributes": [
+        "name",
+        "size",
+        "label"
+      ],
+      "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
+      "tokens": [],
+      "vars": [],
+      "inputs": [],
+      "renderedIn": {
+        "guide": true,
+        "templates": []
+      }
+    },
+    {
       "name": "c-icon-badge",
       "maturity": "complete-widget",
       "sheets": [
@@ -5642,15 +6154,20 @@
       "maturity": "complete-widget",
       "sheets": [
         "components-forms.css",
+        "components-misc.css",
         "utilities.css"
       ],
-      "rules": 12,
-      "elements": [],
+      "rules": 15,
+      "elements": [
+        "c-input__message",
+        "c-input__message--error"
+      ],
       "variants": [],
       "states": [
         ":disabled",
         ":focus-visible",
         ":hover",
+        ":user-invalid",
         "[aria-invalid=\"true\"]"
       ],
       "attributes": [
@@ -5661,7 +6178,8 @@
         "disabled",
         "error",
         "help",
-        "label"
+        "label",
+        "name"
       ],
       "booleanAttributes": [
         "disabled",
@@ -5677,6 +6195,7 @@
         "--color-border-subtle",
         "--color-control-edge",
         "--color-danger",
+        "--color-danger-text",
         "--color-focus-halo",
         "--color-focus-ring",
         "--color-primary",
@@ -5689,7 +6208,8 @@
         "--ease-standard",
         "--radius-md",
         "--target-control",
-        "--type-sm"
+        "--type-sm",
+        "--type-xs"
       ],
       "vars": [],
       "inputs": [],
@@ -5703,20 +6223,30 @@
       "maturity": "complete-widget",
       "sheets": [
         "components-forms.css",
+        "components-misc.css",
         "utilities.css"
       ],
-      "rules": 6,
-      "elements": [],
+      "rules": 8,
+      "elements": [
+        "c-input-group__clear",
+        "c-input-group__submit"
+      ],
       "variants": [],
       "states": [],
       "attributes": [
         "label",
         "placeholder",
         "clearable",
-        "submit"
+        "submit",
+        "value",
+        "name",
+        "required",
+        "disabled"
       ],
       "booleanAttributes": [
         "clearable",
+        "disabled",
+        "required",
         "submit"
       ],
       "slots": [
@@ -6128,7 +6658,8 @@
         "actions",
         "title",
         "text",
-        "heading"
+        "heading",
+        "preview"
       ],
       "booleanAttributes": [],
       "slots": [
@@ -6331,22 +6862,27 @@
         "components-misc.css",
         "utilities.css"
       ],
-      "rules": 55,
+      "rules": 60,
       "elements": [
         "c-legend__audit",
+        "c-legend__break-input",
         "c-legend__break-label",
         "c-legend__caption",
         "c-legend__classification",
         "c-legend__empty",
         "c-legend__error",
+        "c-legend__glyph",
         "c-legend__item",
         "c-legend__items",
         "c-legend__loading",
         "c-legend__method",
+        "c-legend__no-data",
         "c-legend__norm",
         "c-legend__ramp",
         "c-legend__ramp-break",
         "c-legend__ramp-label",
+        "c-legend__ramp-label--end",
+        "c-legend__ramp-label--start",
         "c-legend__ramp-segment",
         "c-legend__scale",
         "c-legend__size",
@@ -6434,6 +6970,7 @@
         "--chart-seq-6",
         "--chart-seq-7",
         "--color-border",
+        "--color-control-edge",
         "--color-danger-border",
         "--color-danger-text",
         "--color-surface-1",
@@ -6541,11 +7078,16 @@
       "name": "c-live-badge",
       "maturity": "complete-widget",
       "sheets": [
+        "components-display.css",
         "utilities.css"
       ],
-      "rules": 1,
+      "rules": 6,
       "elements": [],
-      "variants": [],
+      "variants": [
+        "c-live-badge--connected",
+        "c-live-badge--disconnected",
+        "c-live-badge--stale"
+      ],
       "states": [
         "::before"
       ],
@@ -6563,7 +7105,19 @@
       "parts": [
         "live-badge"
       ],
-      "tokens": [],
+      "tokens": [
+        "--color-control-edge",
+        "--color-danger",
+        "--color-success",
+        "--color-surface-1",
+        "--color-text",
+        "--color-text-muted",
+        "--color-warning",
+        "--density",
+        "--radius-pill",
+        "--type-xs",
+        "--weight-medium"
+      ],
       "vars": [],
       "inputs": [],
       "renderedIn": {
@@ -6582,14 +7136,9 @@
       "variants": [],
       "states": [],
       "attributes": [
-        "message",
-        "link",
-        "href",
-        "dismissible"
+        "label"
       ],
-      "booleanAttributes": [
-        "dismissible"
-      ],
+      "booleanAttributes": [],
       "slots": [
         ""
       ],
@@ -6691,10 +7240,13 @@
       "name": "c-map-footer",
       "maturity": "complete-widget",
       "sheets": [
-        "components-data-maps.css"
+        "components-data-maps.css",
+        "components-misc.css"
       ],
-      "rules": 2,
-      "elements": [],
+      "rules": 3,
+      "elements": [
+        "c-map-footer__brand"
+      ],
       "variants": [],
       "states": [],
       "attributes": [
@@ -6710,8 +7262,10 @@
       "tokens": [
         "--color-border",
         "--color-surface-1",
+        "--color-text-muted",
         "--density",
-        "--space-sm"
+        "--space-sm",
+        "--weight-medium"
       ],
       "vars": [],
       "inputs": [],
@@ -6775,9 +7329,12 @@
         "components-misc.css",
         "utilities.css"
       ],
-      "rules": 10,
+      "rules": 13,
       "elements": [
         "c-map-popup__body",
+        "c-map-popup__cluster",
+        "c-map-popup__cluster-item",
+        "c-map-popup__cluster-list",
         "c-map-popup__title"
       ],
       "variants": [
@@ -6905,14 +7462,9 @@
       "variants": [],
       "states": [],
       "attributes": [
-        "message",
-        "link",
-        "href",
-        "dismissible"
+        "label"
       ],
-      "booleanAttributes": [
-        "dismissible"
-      ],
+      "booleanAttributes": [],
       "slots": [
         ""
       ],
@@ -6940,9 +7492,10 @@
       "name": "c-measure",
       "maturity": "complete-widget",
       "sheets": [
-        "components-data-dashboard.css"
+        "components-data-dashboard.css",
+        "components-misc.css"
       ],
-      "rules": 8,
+      "rules": 9,
       "elements": [
         "c-measure__empty",
         "c-measure__error",
@@ -6950,7 +7503,8 @@
         "c-measure__line",
         "c-measure__loading",
         "c-measure__point",
-        "c-measure__readout"
+        "c-measure__readout",
+        "c-measure__unit-select"
       ],
       "variants": [],
       "states": [],
@@ -7009,10 +7563,12 @@
         "components-shell.css",
         "utilities.css"
       ],
-      "rules": 30,
+      "rules": 32,
       "elements": [
         "c-menu__empty",
         "c-menu__error",
+        "c-menu__group",
+        "c-menu__group-label",
         "c-menu__item",
         "c-menu__item--danger",
         "c-menu__label",
@@ -7072,7 +7628,8 @@
         "--target-option",
         "--tracking-label",
         "--type-micro",
-        "--type-xs"
+        "--type-xs",
+        "--weight-semibold"
       ],
       "vars": [],
       "inputs": [],
@@ -7283,16 +7840,24 @@
         "components-misc.css",
         "utilities.css"
       ],
-      "rules": 8,
+      "rules": 16,
       "elements": [
+        "c-notification-center__archive",
         "c-notification-center__badge",
         "c-notification-center__bullet",
+        "c-notification-center__dismiss",
+        "c-notification-center__empty",
+        "c-notification-center__error",
         "c-notification-center__item",
+        "c-notification-center__item-label",
+        "c-notification-center__more",
         "c-notification-center__panel",
         "c-notification-center__trigger"
       ],
       "variants": [],
-      "states": [],
+      "states": [
+        ".is-read"
+      ],
       "attributes": [
         "count",
         "items",
@@ -7303,8 +7868,11 @@
       "parts": [],
       "tokens": [
         "--color-border",
+        "--color-danger-text",
         "--color-primary",
         "--color-surface-2",
+        "--color-text",
+        "--color-text-subtle",
         "--density",
         "--radius-md",
         "--shadow-md",
@@ -7327,9 +7895,11 @@
         "components-misc.css",
         "utilities.css"
       ],
-      "rules": 7,
+      "rules": 9,
       "elements": [
-        "c-number-field__label"
+        "c-number-field__label",
+        "c-number-field__message",
+        "c-number-field__message--error"
       ],
       "variants": [],
       "states": [
@@ -7352,8 +7922,10 @@
       "parts": [],
       "tokens": [
         "--border-width-thick",
+        "--color-danger-text",
         "--color-surface-1",
         "--color-text-muted",
+        "--color-text-subtle",
         "--density",
         "--space-2xs",
         "--type-xs"
@@ -7431,12 +8003,13 @@
         "components-misc.css",
         "utilities.css"
       ],
-      "rules": 9,
+      "rules": 10,
       "elements": [
         "c-pagination__empty",
         "c-pagination__error",
         "c-pagination__link",
         "c-pagination__loading",
+        "c-pagination__next",
         "c-pagination__prev"
       ],
       "variants": [],
@@ -7493,8 +8066,12 @@
       "sheets": [
         "components-misc.css"
       ],
-      "rules": 2,
+      "rules": 6,
       "elements": [
+        "c-palette-editor__add",
+        "c-palette-editor__contrast",
+        "c-palette-editor__edit",
+        "c-palette-editor__remove",
         "c-palette-editor__swatch"
       ],
       "variants": [],
@@ -7507,9 +8084,13 @@
       "parts": [],
       "tokens": [
         "--color-border",
+        "--color-text-muted",
+        "--color-text-subtle",
         "--density",
         "--radius-sm",
-        "--space-2xs"
+        "--space-2xs",
+        "--type-sm",
+        "--type-xs"
       ],
       "vars": [],
       "inputs": [],
@@ -7524,14 +8105,16 @@
       "sheets": [
         "base.css",
         "components-data-dashboard.css",
+        "components-misc.css",
         "components-shell.css",
         "utilities.css"
       ],
-      "rules": 32,
+      "rules": 33,
       "elements": [
         "c-panel__actions",
         "c-panel__body",
         "c-panel__body--flush",
+        "c-panel__collapse",
         "c-panel__foot",
         "c-panel__head",
         "c-panel__status",
@@ -7556,11 +8139,13 @@
         "status",
         "heading",
         "collapsible",
-        "collapsed"
+        "collapsed",
+        "flush"
       ],
       "booleanAttributes": [
         "collapsed",
-        "collapsible"
+        "collapsible",
+        "flush"
       ],
       "slots": [
         ""
@@ -7768,7 +8353,7 @@
         "components-misc.css",
         "utilities.css"
       ],
-      "rules": 8,
+      "rules": 9,
       "elements": [
         "c-popover__body",
         "c-popover__content",
@@ -7943,14 +8528,18 @@
       "name": "c-progress",
       "maturity": "complete-widget",
       "sheets": [
-        "components-display.css"
+        "components-display.css",
+        "components-misc.css",
+        "utilities.css"
       ],
-      "rules": 4,
+      "rules": 7,
       "elements": [
-        "c-progress__bar"
+        "c-progress__bar",
+        "c-progress__pause"
       ],
       "variants": [
-        "c-progress--accent"
+        "c-progress--accent",
+        "c-progress--paused"
       ],
       "states": [],
       "attributes": [
@@ -8004,7 +8593,8 @@
       "attributes": [],
       "booleanAttributes": [
         "collapsed",
-        "collapsible"
+        "collapsible",
+        "flush"
       ],
       "slots": [
         ""
@@ -8101,12 +8691,17 @@
       "sheets": [
         "components-display.css"
       ],
-      "rules": 2,
+      "rules": 12,
       "elements": [
+        "c-pull-to-refresh__btn",
         "c-pull-to-refresh__indicator"
       ],
       "variants": [],
-      "states": [],
+      "states": [
+        ".has-error",
+        ".is-refreshing",
+        ":focus-within"
+      ],
       "attributes": [
         "threshold"
       ],
@@ -8114,6 +8709,9 @@
       "slots": [],
       "parts": [],
       "tokens": [
+        "--color-danger",
+        "--color-link",
+        "--color-text",
         "--color-text-subtle",
         "--density",
         "--dur-fast",
@@ -8122,7 +8720,9 @@
         "--type-xs"
       ],
       "vars": [],
-      "inputs": [],
+      "inputs": [
+        "--ptr-offset"
+      ],
       "renderedIn": {
         "guide": true,
         "templates": [
@@ -8171,15 +8771,58 @@
       }
     },
     {
+      "name": "c-query-builder",
+      "maturity": "complete-widget",
+      "sheets": [
+        "components-misc.css"
+      ],
+      "rules": 11,
+      "elements": [
+        "c-query-builder__add",
+        "c-query-builder__connector",
+        "c-query-builder__field",
+        "c-query-builder__group",
+        "c-query-builder__group-label",
+        "c-query-builder__list",
+        "c-query-builder__op",
+        "c-query-builder__remove",
+        "c-query-builder__row",
+        "c-query-builder__value"
+      ],
+      "variants": [],
+      "states": [],
+      "attributes": [
+        "query",
+        "fields"
+      ],
+      "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
+      "tokens": [
+        "--color-border",
+        "--color-text-muted",
+        "--radius-sm",
+        "--type-sm"
+      ],
+      "vars": [],
+      "inputs": [],
+      "renderedIn": {
+        "guide": true,
+        "templates": []
+      }
+    },
+    {
       "name": "c-radio",
       "maturity": "complete-widget",
       "sheets": [
         "components-misc.css",
         "utilities.css"
       ],
-      "rules": 12,
+      "rules": 14,
       "elements": [
-        "c-radio__input"
+        "c-radio__input",
+        "c-radio__message",
+        "c-radio__message--error"
       ],
       "variants": [],
       "states": [
@@ -8213,9 +8856,11 @@
       "tokens": [
         "--border-width-thick",
         "--color-control-edge",
+        "--color-danger-text",
         "--color-focus-ring",
         "--color-primary",
         "--color-surface-1",
+        "--color-text-subtle",
         "--density",
         "--dur-fast",
         "--ease-standard",
@@ -8223,7 +8868,8 @@
         "--space-2xs",
         "--space-3xs",
         "--target-option",
-        "--type-sm"
+        "--type-sm",
+        "--type-xs"
       ],
       "vars": [],
       "inputs": [],
@@ -8287,8 +8933,10 @@
         "components-misc.css",
         "utilities.css"
       ],
-      "rules": 17,
-      "elements": [],
+      "rules": 18,
+      "elements": [
+        "c-range__sparkline"
+      ],
       "variants": [],
       "states": [
         "::-moz-range-progress",
@@ -8312,7 +8960,9 @@
         "label",
         "disabled",
         "error",
-        "help"
+        "help",
+        "name",
+        "step"
       ],
       "booleanAttributes": [
         "disabled"
@@ -8350,10 +9000,14 @@
       "name": "c-range-scale",
       "maturity": "complete-widget",
       "sheets": [
-        "components-forms.css"
+        "components-forms.css",
+        "components-misc.css"
       ],
-      "rules": 1,
-      "elements": [],
+      "rules": 3,
+      "elements": [
+        "c-range-scale__label",
+        "c-range-scale__tick"
+      ],
       "variants": [],
       "states": [],
       "attributes": [
@@ -8369,10 +9023,12 @@
         "range-scale"
       ],
       "tokens": [
+        "--color-border-strong",
         "--color-text-subtle",
         "--density",
         "--font-mono",
-        "--type-micro"
+        "--type-micro",
+        "--type-xs"
       ],
       "vars": [],
       "inputs": [],
@@ -8519,7 +9175,11 @@
         "title",
         "body",
         "canvas",
-        "heading"
+        "heading",
+        "url",
+        "tags",
+        "head",
+        "index"
       ],
       "booleanAttributes": [],
       "slots": [
@@ -8568,10 +9228,13 @@
       "name": "c-reserved",
       "maturity": "scaffold",
       "sheets": [
+        "components-misc.css",
         "components-shell.css"
       ],
-      "rules": 1,
-      "elements": [],
+      "rules": 2,
+      "elements": [
+        "c-reserved__title"
+      ],
       "variants": [],
       "states": [],
       "attributes": [
@@ -8585,7 +9248,10 @@
         "reserved"
       ],
       "tokens": [
-        "--density"
+        "--color-text",
+        "--density",
+        "--type-sm",
+        "--weight-semibold"
       ],
       "vars": [],
       "inputs": [],
@@ -8638,11 +9304,14 @@
       "name": "c-resize-handle",
       "maturity": "complete-widget",
       "sheets": [
+        "components-misc.css",
         "components-shell.css"
       ],
-      "rules": 6,
+      "rules": 7,
       "elements": [],
-      "variants": [],
+      "variants": [
+        "c-resize-handle--dragging"
+      ],
       "states": [
         "::after",
         ":focus-visible",
@@ -8662,6 +9331,7 @@
       ],
       "tokens": [
         "--color-control-edge",
+        "--color-primary",
         "--color-text-muted",
         "--density",
         "--dur-fast",
@@ -8709,11 +9379,13 @@
       "sheets": [
         "components-misc.css"
       ],
-      "rules": 2,
+      "rules": 4,
       "elements": [],
       "variants": [],
       "states": [
-        "[data-breakpoint=\"md\"]"
+        "[data-breakpoint=\"lg\"]",
+        "[data-breakpoint=\"md\"]",
+        "[data-breakpoint=\"sm\"]"
       ],
       "attributes": [
         "breakpoint"
@@ -8910,13 +9582,21 @@
       "sheets": [
         "components-navigation.css"
       ],
-      "rules": 4,
-      "elements": [],
+      "rules": 11,
+      "elements": [
+        "c-scheme-toggle__icons",
+        "c-scheme-toggle__moon",
+        "c-scheme-toggle__sun"
+      ],
       "variants": [],
       "states": [
         ":active",
         ":focus-visible",
-        ":hover"
+        ":has(> head > meta[name=\"color-scheme\"][content=\"dark\"])",
+        ":has(> head > meta[name=\"color-scheme\"][content=\"light dark\"])",
+        ":has(> head > meta[name=\"color-scheme\"][content=\"light\"])",
+        ":hover",
+        ":root"
       ],
       "attributes": [],
       "booleanAttributes": [
@@ -8934,6 +9614,7 @@
         "--color-surface-1",
         "--color-surface-2",
         "--color-text",
+        "--color-text-muted",
         "--density",
         "--dur-base",
         "--ease-out-expo",
@@ -9019,6 +9700,40 @@
         "--type-xs",
         "--weight-semibold"
       ],
+      "vars": [],
+      "inputs": [],
+      "renderedIn": {
+        "guide": true,
+        "templates": []
+      }
+    },
+    {
+      "name": "c-search-field",
+      "maturity": "complete-widget",
+      "sheets": [
+        "components-forms.css"
+      ],
+      "rules": 2,
+      "elements": [
+        "c-search-field__input"
+      ],
+      "variants": [],
+      "states": [],
+      "attributes": [
+        "value",
+        "placeholder",
+        "label",
+        "name",
+        "required",
+        "disabled"
+      ],
+      "booleanAttributes": [
+        "disabled",
+        "required"
+      ],
+      "slots": [],
+      "parts": [],
+      "tokens": [],
       "vars": [],
       "inputs": [],
       "renderedIn": {
@@ -9198,14 +9913,19 @@
         "components-misc.css",
         "utilities.css"
       ],
-      "rules": 12,
-      "elements": [],
+      "rules": 16,
+      "elements": [
+        "c-select__label",
+        "c-select__message",
+        "c-select__message--error"
+      ],
       "variants": [],
       "states": [
         ":dir(rtl)",
         ":disabled",
         ":focus-visible",
         ":hover",
+        ":user-invalid",
         "[dir=\"rtl\"]"
       ],
       "attributes": [
@@ -9215,10 +9935,15 @@
         "placeholder",
         "disabled",
         "error",
-        "help"
+        "help",
+        "value",
+        "name",
+        "multiple",
+        "autocomplete"
       ],
       "booleanAttributes": [
         "disabled",
+        "multiple",
         "required"
       ],
       "slots": [
@@ -9232,19 +9957,23 @@
         "--color-border-strong",
         "--color-border-subtle",
         "--color-control-edge",
+        "--color-danger",
+        "--color-danger-text",
         "--color-focus-halo",
         "--color-focus-ring",
         "--color-primary",
         "--color-surface-1",
         "--color-surface-2",
         "--color-text",
+        "--color-text-muted",
         "--color-text-subtle",
         "--density",
         "--dur-fast",
         "--ease-standard",
         "--radius-md",
         "--target-control",
-        "--type-sm"
+        "--type-sm",
+        "--type-xs"
       ],
       "vars": [],
       "inputs": [],
@@ -9323,9 +10052,10 @@
       "sheets": [
         "components-misc.css"
       ],
-      "rules": 3,
+      "rules": 4,
       "elements": [
-        "c-shortcut__key"
+        "c-shortcut__key",
+        "c-shortcut__label"
       ],
       "variants": [],
       "states": [],
@@ -9338,11 +10068,13 @@
       "parts": [],
       "tokens": [
         "--color-surface-3",
+        "--color-text-muted",
         "--density",
         "--font-mono",
         "--radius-xs",
         "--space-2xs",
         "--type-micro",
+        "--type-sm",
         "--type-xs"
       ],
       "vars": [],
@@ -9356,10 +10088,13 @@
       "name": "c-shortcut-list",
       "maturity": "complete-widget",
       "sheets": [
-        "components-buttons.css"
+        "components-buttons.css",
+        "components-misc.css"
       ],
-      "rules": 1,
-      "elements": [],
+      "rules": 2,
+      "elements": [
+        "c-shortcut-list__title"
+      ],
       "variants": [],
       "states": [],
       "attributes": [
@@ -9373,8 +10108,11 @@
         "shortcut-list"
       ],
       "tokens": [
+        "--color-text",
         "--density",
-        "--space-xs"
+        "--space-xs",
+        "--type-sm",
+        "--weight-semibold"
       ],
       "vars": [],
       "inputs": [],
@@ -9506,10 +10244,12 @@
       "name": "c-showcase",
       "maturity": "complete-widget",
       "sheets": [
-        "components-landing.css"
+        "components-landing.css",
+        "components-misc.css"
       ],
-      "rules": 12,
+      "rules": 13,
       "elements": [
+        "c-showcase__caption",
         "c-showcase__empty",
         "c-showcase__error",
         "c-showcase__list",
@@ -9554,6 +10294,7 @@
         "--color-text",
         "--color-text-muted",
         "--color-text-strong",
+        "--color-text-subtle",
         "--density",
         "--font-display",
         "--leading-relaxed",
@@ -9564,6 +10305,7 @@
         "--type-body",
         "--type-h2",
         "--type-sm",
+        "--type-xs",
         "--weight-bold"
       ],
       "vars": [],
@@ -9582,19 +10324,28 @@
         "components-misc.css",
         "utilities.css"
       ],
-      "rules": 7,
+      "rules": 17,
       "elements": [
         "c-side-sheet__panel",
         "c-side-sheet__title"
       ],
-      "variants": [],
+      "variants": [
+        "c-side-sheet--end",
+        "c-side-sheet--lg",
+        "c-side-sheet--md",
+        "c-side-sheet--sm",
+        "c-side-sheet--start"
+      ],
       "states": [
-        ".is-open"
+        ".is-open",
+        "[dir=\"rtl\"]"
       ],
       "attributes": [
         "open",
         "side",
-        "title"
+        "title",
+        "mode",
+        "size"
       ],
       "booleanAttributes": [
         "open"
@@ -9628,12 +10379,18 @@
         "components-data-maps.css",
         "components-misc.css"
       ],
-      "rules": 5,
+      "rules": 10,
       "elements": [
+        "c-sidebar__link",
+        "c-sidebar__nav",
         "c-sidebar__title"
       ],
-      "variants": [],
-      "states": [],
+      "variants": [
+        "c-sidebar--collapsed"
+      ],
+      "states": [
+        ":hover"
+      ],
       "attributes": [
         "title",
         "items",
@@ -9649,9 +10406,13 @@
         "sidebar"
       ],
       "tokens": [
+        "--color-surface-2",
+        "--color-text",
+        "--color-text-muted",
         "--color-text-strong",
         "--density",
         "--font-display",
+        "--radius-sm",
         "--space-lg",
         "--space-sm",
         "--type-h4",
@@ -9738,21 +10499,59 @@
       }
     },
     {
+      "name": "c-skip-link",
+      "maturity": "complete-widget",
+      "sheets": [
+        "components-misc.css"
+      ],
+      "rules": 2,
+      "elements": [],
+      "variants": [],
+      "states": [
+        ":focus-visible"
+      ],
+      "attributes": [
+        "href",
+        "label"
+      ],
+      "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
+      "tokens": [
+        "--color-on-primary",
+        "--color-primary",
+        "--dur-fast",
+        "--ease-standard",
+        "--radius-sm",
+        "--weight-semibold",
+        "--z-tooltip"
+      ],
+      "vars": [],
+      "inputs": [],
+      "renderedIn": {
+        "guide": true,
+        "templates": []
+      }
+    },
+    {
       "name": "c-sortable-list",
       "maturity": "complete-widget",
       "sheets": [
         "components-misc.css"
       ],
-      "rules": 5,
+      "rules": 7,
       "elements": [
         "c-sortable-list__handle",
         "c-sortable-list__item",
-        "c-sortable-list__list"
+        "c-sortable-list__label",
+        "c-sortable-list__list",
+        "c-sortable-list__live"
       ],
       "variants": [],
       "states": [],
       "attributes": [
-        "items"
+        "items",
+        "order"
       ],
       "booleanAttributes": [],
       "slots": [],
@@ -9760,9 +10559,12 @@
       "tokens": [
         "--color-border",
         "--color-text-muted",
+        "--color-text-subtle",
         "--density",
         "--space-2xs",
-        "--space-xs"
+        "--space-xs",
+        "--type-sm",
+        "--type-xs"
       ],
       "vars": [],
       "inputs": [],
@@ -9831,13 +10633,15 @@
       "name": "c-spatial-filter",
       "maturity": "complete-widget",
       "sheets": [
-        "components-data-widgets.css"
+        "components-data-widgets.css",
+        "components-misc.css"
       ],
-      "rules": 10,
+      "rules": 11,
       "elements": [
         "c-spatial-filter__clear-all",
         "c-spatial-filter__modes",
         "c-spatial-filter__operator",
+        "c-spatial-filter__operator-select",
         "c-spatial-filter__readout"
       ],
       "variants": [
@@ -9877,6 +10681,7 @@
         "--radius-sm",
         "--space-2xs",
         "--space-xs",
+        "--type-sm",
         "--type-xs"
       ],
       "vars": [],
@@ -9993,12 +10798,40 @@
       }
     },
     {
-      "name": "c-split-view",
+      "name": "c-split-pane",
       "maturity": "complete-widget",
       "sheets": [
         "components-data-maps.css"
       ],
-      "rules": 15,
+      "rules": 2,
+      "elements": [],
+      "variants": [
+        "c-split-pane--vertical"
+      ],
+      "states": [],
+      "attributes": [],
+      "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
+      "tokens": [
+        "--density",
+        "--space-sm"
+      ],
+      "vars": [],
+      "inputs": [],
+      "renderedIn": {
+        "guide": true,
+        "templates": []
+      }
+    },
+    {
+      "name": "c-split-view",
+      "maturity": "complete-widget",
+      "sheets": [
+        "components-data-maps.css",
+        "components-misc.css"
+      ],
+      "rules": 16,
       "elements": [
         "c-split-view__divider",
         "c-split-view__divider--dragging",
@@ -10007,6 +10840,7 @@
         "c-split-view__pane--right"
       ],
       "variants": [
+        "c-split-view--horizontal",
         "c-split-view--vertical"
       ],
       "states": [
@@ -10191,8 +11025,10 @@
       "sheets": [
         "components-misc.css"
       ],
-      "rules": 4,
-      "elements": [],
+      "rules": 5,
+      "elements": [
+        "c-status-light__label"
+      ],
       "variants": [
         "c-status-light--success"
       ],
@@ -10208,9 +11044,11 @@
       "parts": [],
       "tokens": [
         "--color-success",
+        "--color-text-muted",
         "--color-text-subtle",
         "--density",
         "--space-2xs",
+        "--type-sm",
         "--type-xs"
       ],
       "vars": [],
@@ -10224,9 +11062,10 @@
       "name": "c-stepper",
       "maturity": "complete-widget",
       "sheets": [
-        "components-misc.css"
+        "components-misc.css",
+        "utilities.css"
       ],
-      "rules": 8,
+      "rules": 10,
       "elements": [
         "c-stepper__list",
         "c-stepper__nav",
@@ -10264,14 +11103,16 @@
       "name": "c-steps",
       "maturity": "complete-widget",
       "sheets": [
-        "components-docs.css"
+        "components-docs.css",
+        "components-misc.css"
       ],
-      "rules": 15,
+      "rules": 16,
       "elements": [
         "c-steps__body",
         "c-steps__empty",
         "c-steps__error",
         "c-steps__item",
+        "c-steps__list",
         "c-steps__loading",
         "c-steps__title"
       ],
@@ -10587,10 +11428,11 @@
         "components-misc.css",
         "utilities.css"
       ],
-      "rules": 17,
+      "rules": 18,
       "elements": [
         "c-switch__input",
-        "c-switch__track"
+        "c-switch__message",
+        "c-switch__message--error"
       ],
       "variants": [],
       "states": [
@@ -10623,11 +11465,13 @@
         "--border-width-thick",
         "--color-border-strong",
         "--color-control-edge",
+        "--color-danger-text",
         "--color-focus-ring",
         "--color-on-primary-solid",
         "--color-primary-solid",
         "--color-surface-1",
         "--color-text",
+        "--color-text-subtle",
         "--density",
         "--dur-base",
         "--ease-out-expo",
@@ -10635,7 +11479,8 @@
         "--focus-width",
         "--radius-pill",
         "--shadow-xs",
-        "--type-sm"
+        "--type-sm",
+        "--type-xs"
       ],
       "vars": [],
       "inputs": [],
@@ -10651,14 +11496,18 @@
         "base.css",
         "components-data-tables.css",
         "components-display.css",
+        "components-misc.css",
         "utilities.css"
       ],
-      "rules": 51,
+      "rules": 54,
       "elements": [
         "c-table__actions",
+        "c-table__filter-input",
         "c-table__pagination",
         "c-table__pinned",
+        "c-table__row-select",
         "c-table__select",
+        "c-table__select-all",
         "c-table__sort"
       ],
       "variants": [
@@ -10688,6 +11537,7 @@
         "sort",
         "sort-dir",
         "virtual",
+        "title",
         "empty",
         "loading",
         "error",
@@ -10709,6 +11559,8 @@
         "--chart-selection",
         "--color-border",
         "--color-border-subtle",
+        "--color-control-edge",
+        "--color-primary-solid",
         "--color-primary-text",
         "--color-selection",
         "--color-surface-1",
@@ -10723,6 +11575,7 @@
         "--dur-fast",
         "--ease-standard",
         "--font-mono",
+        "--radius-sm",
         "--space-3xs",
         "--space-md",
         "--space-sm",
@@ -10872,6 +11725,31 @@
       }
     },
     {
+      "name": "c-tabs-panel",
+      "maturity": "complete-widget",
+      "sheets": [
+        "components-misc.css"
+      ],
+      "rules": 1,
+      "elements": [],
+      "variants": [],
+      "states": [],
+      "attributes": [],
+      "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
+      "tokens": [
+        "--density",
+        "--space-sm"
+      ],
+      "vars": [],
+      "inputs": [],
+      "renderedIn": {
+        "guide": false,
+        "templates": []
+      }
+    },
+    {
       "name": "c-tag",
       "maturity": "complete-widget",
       "sheets": [
@@ -10893,9 +11771,11 @@
       "attributes": [
         "label",
         "removable",
-        "variant"
+        "variant",
+        "live"
       ],
       "booleanAttributes": [
+        "live",
         "removable"
       ],
       "slots": [
@@ -10936,9 +11816,12 @@
         "components-misc.css",
         "utilities.css"
       ],
-      "rules": 6,
+      "rules": 9,
       "elements": [
         "c-tags-input__input",
+        "c-tags-input__live",
+        "c-tags-input__message",
+        "c-tags-input__message--error",
         "c-tags-input__remove",
         "c-tags-input__tag"
       ],
@@ -10949,23 +11832,29 @@
         "placeholder",
         "disabled",
         "error",
-        "help"
+        "help",
+        "required",
+        "max"
       ],
       "booleanAttributes": [
-        "disabled"
+        "disabled",
+        "required"
       ],
       "slots": [],
       "parts": [],
       "tokens": [
         "--color-border",
+        "--color-danger-text",
         "--color-text",
         "--color-text-muted",
+        "--color-text-subtle",
         "--density",
         "--dur-fast",
         "--ease-standard",
         "--radius-md",
         "--space-2xs",
-        "--type-sm"
+        "--type-sm",
+        "--type-xs"
       ],
       "vars": [],
       "inputs": [],
@@ -11037,15 +11926,20 @@
       "maturity": "complete-widget",
       "sheets": [
         "components-forms.css",
+        "components-misc.css",
         "utilities.css"
       ],
-      "rules": 12,
-      "elements": [],
+      "rules": 15,
+      "elements": [
+        "c-textarea__message",
+        "c-textarea__message--error"
+      ],
       "variants": [],
       "states": [
         ":disabled",
         ":focus-visible",
         ":hover",
+        ":user-invalid",
         "[aria-invalid=\"true\"]"
       ],
       "attributes": [
@@ -11053,7 +11947,10 @@
         "required",
         "disabled",
         "error",
-        "help"
+        "help",
+        "value",
+        "name",
+        "label"
       ],
       "booleanAttributes": [
         "disabled",
@@ -11069,6 +11966,7 @@
         "--color-border-subtle",
         "--color-control-edge",
         "--color-danger",
+        "--color-danger-text",
         "--color-focus-halo",
         "--color-focus-ring",
         "--color-primary",
@@ -11081,7 +11979,8 @@
         "--ease-standard",
         "--radius-md",
         "--target-control",
-        "--type-sm"
+        "--type-sm",
+        "--type-xs"
       ],
       "vars": [],
       "inputs": [],
@@ -11094,11 +11993,14 @@
       "name": "c-theme-scope",
       "maturity": "composition",
       "sheets": [
+        "components-misc.css",
         "light-dark-fallback.css",
         "tokens.css"
       ],
-      "rules": 5,
-      "elements": [],
+      "rules": 6,
+      "elements": [
+        "c-theme-scope__title"
+      ],
       "variants": [],
       "states": [
         ":has(> head > meta[name=\"color-scheme\"][content=\"dark\"])",
@@ -11125,7 +12027,11 @@
         "--brand-700",
         "--brand-800",
         "--brand-hue",
-        "--radius-scale"
+        "--color-text",
+        "--density",
+        "--radius-scale",
+        "--type-sm",
+        "--weight-semibold"
       ],
       "vars": [],
       "inputs": [],
@@ -11205,9 +12111,11 @@
         "components-misc.css",
         "utilities.css"
       ],
-      "rules": 5,
+      "rules": 7,
       "elements": [
-        "c-time-picker__label"
+        "c-time-picker__label",
+        "c-time-picker__message",
+        "c-time-picker__message--error"
       ],
       "variants": [],
       "states": [
@@ -11226,7 +12134,9 @@
       "slots": [],
       "parts": [],
       "tokens": [
+        "--color-danger-text",
         "--color-text-muted",
+        "--color-text-subtle",
         "--density",
         "--space-2xs",
         "--type-xs"
@@ -11242,10 +12152,14 @@
       "name": "c-time-range",
       "maturity": "complete-widget",
       "sheets": [
-        "components-data-tables.css"
+        "components-data-tables.css",
+        "components-misc.css"
       ],
-      "rules": 2,
-      "elements": [],
+      "rules": 4,
+      "elements": [
+        "c-time-range__label",
+        "c-time-range__tick"
+      ],
       "variants": [],
       "states": [],
       "attributes": [
@@ -11261,10 +12175,12 @@
         "time-range"
       ],
       "tokens": [
+        "--color-border-strong",
         "--color-text-subtle",
         "--density",
         "--font-mono",
-        "--type-micro"
+        "--type-micro",
+        "--type-xs"
       ],
       "vars": [],
       "inputs": [],
@@ -11278,11 +12194,13 @@
       "maturity": "complete-widget",
       "sheets": [
         "components-data-charts.css",
-        "components-data-dashboard.css"
+        "components-data-dashboard.css",
+        "components-misc.css"
       ],
-      "rules": 5,
+      "rules": 6,
       "elements": [
         "c-time-series__bar",
+        "c-time-series__line",
         "c-time-series__note",
         "c-time-series__plot",
         "c-time-series__point"
@@ -11294,6 +12212,7 @@
         "points",
         "series",
         "style",
+        "title",
         "empty",
         "loading",
         "error",
@@ -11346,6 +12265,8 @@
       "attributes": [
         "label",
         "value",
+        "min",
+        "max",
         "loop",
         "speed",
         "speeds",
@@ -11397,9 +12318,10 @@
       "sheets": [
         "components-misc.css"
       ],
-      "rules": 8,
+      "rules": 9,
       "elements": [
         "c-timeline__item",
+        "c-timeline__list",
         "c-timeline__text",
         "c-timeline__time",
         "c-timeline__title"
@@ -11456,16 +12378,21 @@
       "maturity": "complete-widget",
       "sheets": [
         "components-display.css",
+        "components-misc.css",
         "utilities.css"
       ],
-      "rules": 4,
-      "elements": [],
+      "rules": 7,
+      "elements": [
+        "c-toast__action",
+        "c-toast__text"
+      ],
       "variants": [],
       "states": [],
       "attributes": [
         "message",
         "variant",
-        "duration"
+        "duration",
+        "action"
       ],
       "booleanAttributes": [],
       "slots": [
@@ -11477,6 +12404,7 @@
       "tokens": [
         "--border-width-thick",
         "--color-border-strong",
+        "--color-primary-text",
         "--color-surface-1",
         "--color-surface-2",
         "--color-text",
@@ -11601,9 +12529,12 @@
         "components-misc.css",
         "utilities.css"
       ],
-      "rules": 12,
+      "rules": 15,
       "elements": [
-        "c-toolbar__btn"
+        "c-toolbar__btn",
+        "c-toolbar__overflow",
+        "c-toolbar__overflow-btn",
+        "c-toolbar__overflow-menu"
       ],
       "variants": [],
       "states": [
@@ -11629,12 +12560,14 @@
         "--color-primary",
         "--color-surface-1",
         "--color-surface-3",
+        "--color-surface-raised",
         "--color-text-muted",
         "--color-text-strong",
         "--density",
         "--dur-fast",
         "--ease-standard",
         "--radius-pill",
+        "--radius-sm",
         "--shadow-md",
         "--space-3xs"
       ],
@@ -11649,12 +12582,16 @@
       "name": "c-tooltip",
       "maturity": "complete-widget",
       "sheets": [
+        "components-misc.css",
         "components-overlay.css",
         "utilities.css"
       ],
-      "rules": 8,
+      "rules": 11,
       "elements": [],
-      "variants": [],
+      "variants": [
+        "c-tooltip--flip-x",
+        "c-tooltip--flip-y"
+      ],
       "states": [
         ".is-open",
         "::backdrop"
@@ -11698,23 +12635,31 @@
         "components-misc.css",
         "utilities.css"
       ],
-      "rules": 6,
+      "rules": 8,
       "elements": [
         "c-tour__nav",
         "c-tour__step",
+        "c-tour__target",
         "c-tour__tip"
       ],
       "variants": [],
       "states": [],
       "attributes": [
         "steps",
-        "current"
+        "current",
+        "open",
+        "persist",
+        "id"
       ],
-      "booleanAttributes": [],
+      "booleanAttributes": [
+        "open",
+        "persist"
+      ],
       "slots": [],
       "parts": [],
       "tokens": [
         "--color-border",
+        "--color-primary",
         "--color-surface-2",
         "--color-text-muted",
         "--density",
@@ -11739,12 +12684,29 @@
       "maturity": "complete-widget",
       "sheets": [
         "base.css",
+        "components-misc.css",
         "utilities.css"
       ],
-      "rules": 2,
-      "elements": [],
+      "rules": 18,
+      "elements": [
+        "c-tree__children",
+        "c-tree__empty",
+        "c-tree__indent",
+        "c-tree__leaf",
+        "c-tree__node",
+        "c-tree__row",
+        "c-tree__select",
+        "c-tree__spacer",
+        "c-tree__spacer--bottom",
+        "c-tree__spacer--top",
+        "c-tree__toggle"
+      ],
       "variants": [],
-      "states": [],
+      "states": [
+        "::before",
+        ":hover",
+        "[aria-expanded=\"true\"]"
+      ],
       "attributes": [
         "items",
         "virtual",
@@ -11768,7 +12730,18 @@
       "parts": [
         "tree"
       ],
-      "tokens": [],
+      "tokens": [
+        "--color-border-subtle",
+        "--color-surface-2",
+        "--color-text",
+        "--color-text-muted",
+        "--color-text-subtle",
+        "--density",
+        "--leading-tight",
+        "--radius-sm",
+        "--space-xs",
+        "--type-sm"
+      ],
       "vars": [],
       "inputs": [],
       "renderedIn": {
@@ -11782,20 +12755,29 @@
       "sheets": [
         "components-misc.css"
       ],
-      "rules": 2,
+      "rules": 5,
       "elements": [
-        "c-tree-grid__table"
+        "c-tree-grid__label",
+        "c-tree-grid__table",
+        "c-tree-grid__toggle",
+        "c-tree-grid__wrap"
       ],
       "variants": [],
       "states": [],
       "attributes": [
         "items",
-        "expanded"
+        "expanded",
+        "loading",
+        "error",
+        "empty"
       ],
       "booleanAttributes": [],
       "slots": [],
       "parts": [],
-      "tokens": [],
+      "tokens": [
+        "--data-grid-max-height",
+        "--type-sm"
+      ],
       "vars": [],
       "inputs": [],
       "renderedIn": {
@@ -11817,7 +12799,9 @@
         ":hover"
       ],
       "attributes": [
-        "options"
+        "options",
+        "value",
+        "name"
       ],
       "booleanAttributes": [],
       "slots": [
@@ -11851,10 +12835,14 @@
       "name": "c-version-banner",
       "maturity": "complete-widget",
       "sheets": [
-        "components-docs.css"
+        "components-docs.css",
+        "components-misc.css"
       ],
-      "rules": 2,
-      "elements": [],
+      "rules": 4,
+      "elements": [
+        "c-version-banner__dismiss",
+        "c-version-banner__link"
+      ],
       "variants": [],
       "states": [],
       "attributes": [
@@ -11873,6 +12861,7 @@
         "banner"
       ],
       "tokens": [
+        "--color-primary-text",
         "--color-warning-soft",
         "--color-warning-text",
         "--density",
@@ -11968,6 +12957,52 @@
         "--space-2xs",
         "--space-md",
         "--type-sm"
+      ],
+      "vars": [],
+      "inputs": [],
+      "renderedIn": {
+        "guide": true,
+        "templates": []
+      }
+    },
+    {
+      "name": "c-workspace-shell",
+      "maturity": "complete-widget",
+      "sheets": [
+        "patterns.css"
+      ],
+      "rules": 17,
+      "elements": [
+        "c-workspace-shell__body",
+        "c-workspace-shell__inspector",
+        "c-workspace-shell__inspector-toggle",
+        "c-workspace-shell__resize",
+        "c-workspace-shell__sidebar",
+        "c-workspace-shell__stage"
+      ],
+      "variants": [],
+      "states": [
+        "::backdrop",
+        ":popover-open",
+        "[popover]"
+      ],
+      "attributes": [],
+      "booleanAttributes": [],
+      "slots": [],
+      "parts": [],
+      "tokens": [
+        "--color-border",
+        "--color-scrim",
+        "--color-surface-1",
+        "--color-text-strong",
+        "--density",
+        "--header-height",
+        "--radius-pill",
+        "--shadow-lg",
+        "--shadow-sm",
+        "--space-md",
+        "--space-sm",
+        "--target-control"
       ],
       "vars": [],
       "inputs": [],
@@ -12214,6 +13249,7 @@
       "c-callout",
       "c-chip",
       "c-data-export",
+      "c-dot",
       "c-icon-badge",
       "c-meter",
       "c-pill",
@@ -12241,6 +13277,7 @@
       "c-badge",
       "c-callout",
       "c-chip",
+      "c-dot",
       "c-panel",
       "c-pill",
       "c-readout"
@@ -12281,6 +13318,7 @@
       "c-divider",
       "c-do-dont",
       "c-docs-nav",
+      "c-docs-shell",
       "c-draggable",
       "c-drawer",
       "c-empty",
@@ -12288,6 +13326,7 @@
       "c-faq",
       "c-feature",
       "c-feature-inspector",
+      "c-fieldset",
       "c-file-upload",
       "c-filter-bar",
       "c-filter-pill",
@@ -12322,6 +13361,7 @@
       "c-plate",
       "c-popover",
       "c-price",
+      "c-query-builder",
       "c-recipe",
       "c-resizable",
       "c-saved-view",
@@ -12351,11 +13391,11 @@
       "c-toolbar",
       "c-tour",
       "c-version",
-      "c-virtual-list"
+      "c-virtual-list",
+      "c-workspace-shell"
     ],
     "--color-border-strong": [
       "c-card",
-      "c-check",
       "c-command",
       "c-dialog",
       "c-file-upload",
@@ -12363,11 +13403,13 @@
       "c-landing-hero",
       "c-menu",
       "c-pager",
+      "c-range-scale",
       "c-recipe",
       "c-search-trigger",
       "c-select",
       "c-switch",
       "c-textarea",
+      "c-time-range",
       "c-toast",
       "c-tooltip",
       "c-version"
@@ -12398,7 +13440,8 @@
       "c-sheet",
       "c-split-view",
       "c-table",
-      "c-textarea"
+      "c-textarea",
+      "c-tree"
     ],
     "--color-canvas": [
       "c-app",
@@ -12420,16 +13463,23 @@
     "--color-control-edge": [
       "c-badge",
       "c-btn",
+      "c-carousel",
+      "c-check",
+      "c-combobox",
       "c-container",
       "c-field-group",
+      "c-filter-bar",
       "c-input",
       "c-layer-panel",
+      "c-legend",
+      "c-live-badge",
       "c-panel",
       "c-radio",
       "c-resize-handle",
       "c-scheme-toggle",
       "c-select",
       "c-switch",
+      "c-table",
       "c-textarea"
     ],
     "--color-danger": [
@@ -12447,11 +13497,15 @@
       "c-form",
       "c-input",
       "c-isochrone",
+      "c-live-badge",
       "c-pill",
+      "c-pull-to-refresh",
+      "c-select",
       "c-textarea",
       "c-threshold"
     ],
     "--color-danger-border": [
+      "c-error-boundary",
       "c-legend"
     ],
     "--color-danger-hover": [
@@ -12463,6 +13517,7 @@
       "c-btn",
       "c-callout",
       "c-datamark",
+      "c-error-boundary",
       "c-filter-pill",
       "c-form",
       "c-menu",
@@ -12473,19 +13528,33 @@
       "c-badge",
       "c-btn",
       "c-callout",
+      "c-chart",
+      "c-check",
+      "c-color-picker",
+      "c-date-picker",
       "c-delta",
       "c-destructive-hint",
       "c-diff",
       "c-do-dont",
       "c-dot",
+      "c-error-boundary",
       "c-field",
       "c-field-group",
       "c-filter-pill",
       "c-form",
+      "c-input",
       "c-legend",
       "c-menu",
+      "c-notification-center",
+      "c-number-field",
       "c-panel",
-      "c-pill"
+      "c-pill",
+      "c-radio",
+      "c-select",
+      "c-switch",
+      "c-tags-input",
+      "c-textarea",
+      "c-time-picker"
     ],
     "--color-data": [
       "c-icon-badge",
@@ -12537,7 +13606,8 @@
     "--color-link": [
       "c-link",
       "c-linkish",
-      "c-prose"
+      "c-prose",
+      "c-pull-to-refresh"
     ],
     "--color-on-accent": [
       "c-btn"
@@ -12552,6 +13622,7 @@
       "c-fab",
       "c-pagination",
       "c-segmented",
+      "c-skip-link",
       "c-time-slider",
       "c-toolbar"
     ],
@@ -12564,11 +13635,13 @@
     "--color-primary": [
       "c-activity",
       "c-activity-feed",
+      "c-animation-controls",
       "c-banner",
       "c-brush",
       "c-btn",
       "c-calendar",
       "c-card",
+      "c-carousel",
       "c-catchment",
       "c-category",
       "c-check",
@@ -12581,6 +13654,7 @@
       "c-cta",
       "c-datamark",
       "c-disclosure",
+      "c-dot",
       "c-drop-indicator",
       "c-drop-zone",
       "c-empty",
@@ -12608,9 +13682,11 @@
       "c-pullquote",
       "c-radio",
       "c-range",
+      "c-resize-handle",
       "c-segmented",
       "c-select",
       "c-showcase",
+      "c-skip-link",
       "c-sparkline",
       "c-spinner",
       "c-split-view",
@@ -12628,6 +13704,7 @@
       "c-timeline",
       "c-toc",
       "c-toolbar",
+      "c-tour",
       "c-version"
     ],
     "--color-primary-active": [
@@ -12641,7 +13718,9 @@
       "c-activity-feed",
       "c-avatar",
       "c-badge",
+      "c-calendar",
       "c-chip",
+      "c-combobox",
       "c-command",
       "c-command-palette",
       "c-datamark",
@@ -12666,20 +13745,25 @@
       "c-filter-bar",
       "c-range",
       "c-segmented",
-      "c-switch"
+      "c-switch",
+      "c-table"
     ],
     "--color-primary-text": [
       "c-avatar",
       "c-badge",
       "c-btn",
+      "c-calendar",
       "c-chip",
+      "c-combobox",
       "c-command",
       "c-command-palette",
       "c-compare",
       "c-date-picker",
       "c-disclosure",
+      "c-dot",
       "c-faq",
       "c-file-tree",
+      "c-filter-bar",
       "c-flag",
       "c-install",
       "c-price",
@@ -12689,12 +13773,16 @@
       "c-steps",
       "c-style-switcher",
       "c-table",
-      "c-tag"
+      "c-tag",
+      "c-toast",
+      "c-version-banner"
     ],
     "--color-scrim": [
       "c-command",
       "c-dialog",
-      "c-scrim"
+      "c-docs-shell",
+      "c-scrim",
+      "c-workspace-shell"
     ],
     "--color-selection": [
       "c-table"
@@ -12705,9 +13793,12 @@
     "--color-success": [
       "c-activity-feed",
       "c-alert",
+      "c-avatar",
       "c-callout",
       "c-diff",
       "c-do-dont",
+      "c-dot",
+      "c-live-badge",
       "c-pill",
       "c-status-light",
       "c-stepper"
@@ -12731,6 +13822,7 @@
       "c-delta",
       "c-diff",
       "c-do-dont",
+      "c-dot",
       "c-pill",
       "c-provenance",
       "c-stat"
@@ -12765,7 +13857,9 @@
       "c-data-export",
       "c-date-picker",
       "c-dialog",
+      "c-divider",
       "c-do-dont",
+      "c-docs-shell",
       "c-drawer",
       "c-drop-zone",
       "c-dropdown",
@@ -12788,6 +13882,7 @@
       "c-layer-panel",
       "c-layer-switch",
       "c-legend",
+      "c-live-badge",
       "c-map-footer",
       "c-map-panel",
       "c-map-popup",
@@ -12830,15 +13925,18 @@
       "c-toast",
       "c-toolbar",
       "c-tooltip",
-      "c-version"
+      "c-version",
+      "c-workspace-shell"
     ],
     "--color-surface-2": [
       "c-affordance",
+      "c-avatar-group",
       "c-banner",
       "c-bivariate",
       "c-brush",
       "c-btn",
       "c-card",
+      "c-combobox",
       "c-command",
       "c-data-export",
       "c-datamark",
@@ -12871,12 +13969,14 @@
       "c-search-trigger",
       "c-select",
       "c-sheet",
+      "c-sidebar",
       "c-spatial-filter",
       "c-table",
       "c-tag",
       "c-textarea",
       "c-toast",
-      "c-tour"
+      "c-tour",
+      "c-tree"
     ],
     "--color-surface-3": [
       "c-alert",
@@ -12901,13 +14001,15 @@
     ],
     "--color-surface-raised": [
       "c-error-boundary",
-      "c-file-upload"
+      "c-file-upload",
+      "c-toolbar"
     ],
     "--color-text": [
       "c-activity",
       "c-activity-feed",
       "c-advanced",
       "c-affordance",
+      "c-analysis-stack",
       "c-annotation",
       "c-app",
       "c-banner",
@@ -12915,9 +14017,11 @@
       "c-calendar",
       "c-catchment",
       "c-changelog",
+      "c-checkbox-group",
       "c-chip",
       "c-code",
       "c-code-tabs",
+      "c-combobox",
       "c-command",
       "c-compare",
       "c-comparison",
@@ -12928,9 +14032,11 @@
       "c-drag-handle",
       "c-drop-zone",
       "c-feature-inspector",
+      "c-fieldset",
       "c-filter-bar",
       "c-filter-pill",
       "c-flow-map",
+      "c-form",
       "c-geocoder",
       "c-heatmap",
       "c-hexbin",
@@ -12941,16 +14047,22 @@
       "c-isochrone",
       "c-layer-panel",
       "c-layer-switch",
+      "c-live-badge",
       "c-map-slot",
       "c-measure",
       "c-menu",
+      "c-notification-center",
       "c-popover",
       "c-prose",
       "c-provenance",
+      "c-pull-to-refresh",
+      "c-reserved",
       "c-scheme-toggle",
       "c-select",
+      "c-shortcut-list",
       "c-shortcut-row",
       "c-showcase",
+      "c-sidebar",
       "c-sparkline",
       "c-spatial-filter",
       "c-switch",
@@ -12958,7 +14070,9 @@
       "c-tag",
       "c-tags-input",
       "c-textarea",
+      "c-theme-scope",
       "c-toast",
+      "c-tree",
       "c-version"
     ],
     "--color-text-muted": [
@@ -12967,6 +14081,7 @@
       "c-activity-feed",
       "c-affordance",
       "c-alert",
+      "c-avatar-group",
       "c-badge",
       "c-bivariate",
       "c-bivariate-legend",
@@ -12974,14 +14089,17 @@
       "c-brownout",
       "c-brush",
       "c-btn",
+      "c-calendar",
       "c-callout",
       "c-card",
       "c-carousel",
       "c-category",
       "c-changelog",
+      "c-chart-grid",
       "c-code-tabs",
       "c-color-picker",
       "c-command",
+      "c-command-palette",
       "c-compare",
       "c-comparison",
       "c-compass",
@@ -13022,6 +14140,8 @@
       "c-layer-panel",
       "c-layer-switch",
       "c-legend",
+      "c-live-badge",
+      "c-map-footer",
       "c-map-popup",
       "c-map-slot",
       "c-measure",
@@ -13030,24 +14150,31 @@
       "c-minimap",
       "c-number-field",
       "c-pagination",
+      "c-palette-editor",
       "c-panel",
       "c-pill",
       "c-popover",
       "c-price",
       "c-prose",
       "c-provenance",
+      "c-query-builder",
       "c-radio-list",
       "c-readout",
       "c-recipe",
       "c-resize-handle",
       "c-saved-view",
       "c-scale-bar",
+      "c-scheme-toggle",
       "c-section-head",
       "c-segmented",
+      "c-select",
+      "c-shortcut",
       "c-showcase",
+      "c-sidebar",
       "c-sortable-list",
       "c-spatial-filter",
       "c-stat",
+      "c-status-light",
       "c-stepper",
       "c-steps",
       "c-streaming-chart",
@@ -13061,6 +14188,7 @@
       "c-toc",
       "c-toolbar",
       "c-tour",
+      "c-tree",
       "c-widget-state"
     ],
     "--color-text-strong": [
@@ -13124,28 +14252,36 @@
       "c-threshold",
       "c-timeline",
       "c-toc",
-      "c-toolbar"
+      "c-toolbar",
+      "c-workspace-shell"
     ],
     "--color-text-subtle": [
       "c-activity",
       "c-activity-feed",
       "c-alert",
       "c-anchor",
+      "c-animation-controls",
+      "c-badge-overflow",
       "c-brand",
       "c-breadcrumb",
       "c-callout",
       "c-catchment",
       "c-category",
       "c-chart",
+      "c-check",
       "c-chip",
       "c-code",
       "c-code-tabs",
+      "c-color-picker",
+      "c-combobox",
       "c-command",
+      "c-command-palette",
       "c-compare",
       "c-compass",
       "c-contour-plot",
       "c-coordinate",
       "c-dash-freshness",
+      "c-date-picker",
       "c-delta",
       "c-dialog",
       "c-diff",
@@ -13177,11 +14313,15 @@
       "c-meter",
       "c-metrics",
       "c-minimap",
+      "c-notification-center",
+      "c-number-field",
       "c-pager",
+      "c-palette-editor",
       "c-panel",
       "c-price",
       "c-pull-to-refresh",
       "c-pullquote",
+      "c-radio",
       "c-range-scale",
       "c-rating",
       "c-readout",
@@ -13190,18 +14330,24 @@
       "c-search-trigger",
       "c-select",
       "c-sheet",
+      "c-showcase",
+      "c-sortable-list",
       "c-stat",
       "c-status-light",
       "c-survey",
+      "c-switch",
       "c-table",
       "c-tabs",
+      "c-tags-input",
       "c-testimonial",
       "c-textarea",
+      "c-time-picker",
       "c-time-range",
       "c-time-series",
       "c-time-slider",
       "c-timeline",
-      "c-toc"
+      "c-toc",
+      "c-tree"
     ],
     "--color-tooltip-bg": [
       "c-tooltip"
@@ -13221,7 +14367,9 @@
       "c-activity-feed",
       "c-alert",
       "c-callout",
+      "c-dot",
       "c-icon-badge",
+      "c-live-badge",
       "c-pill",
       "c-rating",
       "c-threshold"
@@ -13241,9 +14389,14 @@
       "c-badge",
       "c-callout",
       "c-data-export",
+      "c-dot",
       "c-pill",
       "c-provenance",
       "c-version-banner"
+    ],
+    "--data-grid-max-height": [
+      "c-data-grid",
+      "c-tree-grid"
     ],
     "--density": [
       "c-accordion",
@@ -13283,7 +14436,10 @@
       "c-cluster",
       "c-code",
       "c-code-tabs",
+      "c-code-tabs-panel",
       "c-color-picker",
+      "c-combobox",
+      "c-combobox-option",
       "c-command",
       "c-command-palette",
       "c-compare",
@@ -13291,7 +14447,6 @@
       "c-compass",
       "c-container",
       "c-context-menu",
-      "c-contour-plot",
       "c-coordinate",
       "c-cta",
       "c-dash-kpi-row",
@@ -13351,6 +14506,7 @@
       "c-layer-switch",
       "c-legend",
       "c-link",
+      "c-live-badge",
       "c-loading",
       "c-logos",
       "c-map-footer",
@@ -13414,6 +14570,7 @@
       "c-spatial-filter",
       "c-spinner",
       "c-split-map",
+      "c-split-pane",
       "c-split-view",
       "c-stack",
       "c-stacked-bar",
@@ -13430,10 +14587,12 @@
       "c-table",
       "c-table-wrap",
       "c-tabs",
+      "c-tabs-panel",
       "c-tag",
       "c-tags-input",
       "c-testimonial",
       "c-textarea",
+      "c-theme-scope",
       "c-threshold",
       "c-time-picker",
       "c-time-range",
@@ -13446,10 +14605,12 @@
       "c-toolbar",
       "c-tooltip",
       "c-tour",
+      "c-tree",
       "c-version",
       "c-version-banner",
       "c-virtual-list",
-      "c-widget-state"
+      "c-widget-state",
+      "c-workspace-shell"
     ],
     "--density-row": [
       "c-table"
@@ -13513,6 +14674,7 @@
       "c-segmented",
       "c-select",
       "c-sheet",
+      "c-skip-link",
       "c-streaming-chart",
       "c-table",
       "c-tabs",
@@ -13599,6 +14761,7 @@
       "c-select",
       "c-sheet",
       "c-side-sheet",
+      "c-skip-link",
       "c-streaming-chart",
       "c-switch",
       "c-table",
@@ -13675,7 +14838,6 @@
       "c-code-tabs",
       "c-command",
       "c-compass",
-      "c-contour-plot",
       "c-coordinate",
       "c-dash-freshness",
       "c-delta",
@@ -13745,7 +14907,8 @@
       "c-dash-toolbar",
       "c-docs-shell",
       "c-header",
-      "c-prose"
+      "c-prose",
+      "c-workspace-shell"
     ],
     "--leading-normal": [
       "c-affordance",
@@ -13772,7 +14935,8 @@
       "c-steps"
     ],
     "--leading-tight": [
-      "c-landing-hero"
+      "c-landing-hero",
+      "c-tree"
     ],
     "--map-attribution-gap": [
       "c-map-slot"
@@ -13831,6 +14995,7 @@
       "c-callout",
       "c-catchment",
       "c-changelog",
+      "c-combobox",
       "c-command-palette",
       "c-comparison",
       "c-context-menu",
@@ -13887,11 +15052,13 @@
       "c-chip",
       "c-container",
       "c-data-export",
+      "c-docs-shell",
       "c-filter-bar",
       "c-filter-pill",
       "c-heatmap",
       "c-kpi",
       "c-legend",
+      "c-live-badge",
       "c-panel",
       "c-pill",
       "c-progress",
@@ -13904,7 +15071,8 @@
       "c-switch",
       "c-threshold",
       "c-toolbar",
-      "c-version"
+      "c-version",
+      "c-workspace-shell"
     ],
     "--radius-scale": [
       "c-theme-scope"
@@ -13919,13 +15087,17 @@
       "c-calendar",
       "c-category",
       "c-code-tabs",
+      "c-combobox",
       "c-command",
       "c-comparison",
       "c-coordinate",
       "c-data-export",
       "c-date-picker",
       "c-docs-nav",
+      "c-error-boundary",
+      "c-fieldset",
       "c-file-upload",
+      "c-filter-bar",
       "c-flag",
       "c-geocoder",
       "c-header",
@@ -13938,12 +15110,18 @@
       "c-minimap",
       "c-pagination",
       "c-palette-editor",
+      "c-query-builder",
       "c-resizable",
       "c-saved-view",
+      "c-sidebar",
+      "c-skip-link",
       "c-spatial-filter",
       "c-stacked-bar",
       "c-swatch",
-      "c-tooltip"
+      "c-table",
+      "c-toolbar",
+      "c-tooltip",
+      "c-tree"
     ],
     "--radius-xl": [
       "c-command",
@@ -13963,6 +15141,7 @@
       "c-chart",
       "c-check",
       "c-color-picker",
+      "c-combobox",
       "c-command",
       "c-dialog",
       "c-donut",
@@ -14005,13 +15184,15 @@
       "c-range"
     ],
     "--shadow-lg": [
+      "c-docs-shell",
       "c-fab",
       "c-landing-hero",
       "c-map-panel",
       "c-menu",
       "c-shortcut-panel",
       "c-side-sheet",
-      "c-toast"
+      "c-toast",
+      "c-workspace-shell"
     ],
     "--shadow-md": [
       "c-command-palette",
@@ -14030,7 +15211,10 @@
     ],
     "--shadow-sm": [
       "c-annotation",
-      "c-header"
+      "c-combobox",
+      "c-docs-shell",
+      "c-header",
+      "c-workspace-shell"
     ],
     "--shadow-xl": [
       "c-command",
@@ -14261,7 +15445,8 @@
       "c-threshold",
       "c-toast-host",
       "c-toc",
-      "c-widget-state"
+      "c-widget-state",
+      "c-workspace-shell"
     ],
     "--space-sm": [
       "c-accordion",
@@ -14273,8 +15458,10 @@
       "c-card",
       "c-carousel",
       "c-changelog",
+      "c-chart",
       "c-cluster",
       "c-code",
+      "c-code-tabs-panel",
       "c-compare",
       "c-comparison",
       "c-dash-toolbar",
@@ -14282,8 +15469,10 @@
       "c-dialog",
       "c-disclosure",
       "c-divider",
+      "c-docs-shell",
       "c-drawer",
       "c-empty",
+      "c-error-boundary",
       "c-expandable",
       "c-faq",
       "c-feature-inspector",
@@ -14312,14 +15501,17 @@
       "c-side-sheet",
       "c-sidebar",
       "c-split-map",
+      "c-split-pane",
       "c-split-view",
       "c-stack",
       "c-stepper",
       "c-style-panel",
       "c-table",
+      "c-tabs-panel",
       "c-time-slider",
       "c-tour",
-      "c-virtual-list"
+      "c-virtual-list",
+      "c-workspace-shell"
     ],
     "--space-xl": [
       "c-command",
@@ -14343,6 +15535,7 @@
       "c-category",
       "c-changelog",
       "c-chart",
+      "c-combobox",
       "c-command-palette",
       "c-comparison",
       "c-container",
@@ -14350,6 +15543,7 @@
       "c-data-export",
       "c-data-grid",
       "c-date-picker",
+      "c-docs-shell",
       "c-donut",
       "c-error-boundary",
       "c-feature",
@@ -14387,20 +15581,23 @@
       "c-time-series",
       "c-time-slider",
       "c-toast",
-      "c-tour"
+      "c-tour",
+      "c-tree"
     ],
     "--target-chart": [
       "c-chart"
     ],
     "--target-control": [
       "c-btn",
+      "c-docs-shell",
       "c-filter-pill",
       "c-header",
       "c-input",
       "c-select",
       "c-tabs",
       "c-tag",
-      "c-textarea"
+      "c-textarea",
+      "c-workspace-shell"
     ],
     "--target-mark": [
       "c-datamark"
@@ -14526,6 +15723,7 @@
     "--type-lg": [
       "c-donut",
       "c-fab",
+      "c-form",
       "c-gauge"
     ],
     "--type-micro": [
@@ -14592,6 +15790,7 @@
       "c-activity-feed",
       "c-advanced",
       "c-alert",
+      "c-analysis-stack",
       "c-avatar",
       "c-banner",
       "c-calendar",
@@ -14599,14 +15798,18 @@
       "c-card",
       "c-category",
       "c-changelog",
+      "c-chart",
       "c-check",
+      "c-combobox",
       "c-command",
       "c-command-palette",
       "c-compare",
+      "c-contour-plot",
       "c-data-export",
       "c-date-picker",
       "c-dialog",
       "c-disclosure",
+      "c-docs-nav",
       "c-donut",
       "c-drop-zone",
       "c-empty",
@@ -14614,8 +15817,10 @@
       "c-faq",
       "c-feature",
       "c-feature-inspector",
+      "c-filter-bar",
       "c-footer",
       "c-form",
+      "c-gauge",
       "c-hover-card",
       "c-input",
       "c-landing-features",
@@ -14624,16 +15829,24 @@
       "c-map-popup",
       "c-measure",
       "c-notification-center",
+      "c-palette-editor",
       "c-pivot",
       "c-popover",
       "c-price",
+      "c-query-builder",
       "c-radio",
       "c-recipe",
+      "c-reserved",
       "c-responsive-content",
       "c-saved-view",
       "c-scheme-toggle",
       "c-select",
+      "c-shortcut",
+      "c-shortcut-list",
       "c-showcase",
+      "c-sortable-list",
+      "c-spatial-filter",
+      "c-status-light",
       "c-stepper",
       "c-steps",
       "c-style-panel",
@@ -14642,9 +15855,12 @@
       "c-tags-input",
       "c-testimonial",
       "c-textarea",
+      "c-theme-scope",
       "c-timeline",
       "c-toast",
       "c-tour",
+      "c-tree",
+      "c-tree-grid",
       "c-virtual-list",
       "c-widget-state"
     ],
@@ -14652,8 +15868,11 @@
       "c-activity",
       "c-activity-feed",
       "c-affordance",
+      "c-animation-controls",
       "c-annotation",
       "c-avatar",
+      "c-avatar-group",
+      "c-badge-overflow",
       "c-breadcrumb",
       "c-brownout",
       "c-brush",
@@ -14662,8 +15881,12 @@
       "c-category",
       "c-changelog",
       "c-chart",
+      "c-chart-grid",
+      "c-check",
       "c-chip",
       "c-color-picker",
+      "c-command",
+      "c-command-palette",
       "c-compare",
       "c-comparison",
       "c-coordinate",
@@ -14686,32 +15909,44 @@
       "c-header",
       "c-heatmap",
       "c-hexbin",
+      "c-input",
       "c-isochrone",
       "c-kpi",
       "c-layer-panel",
       "c-legend",
       "c-link",
+      "c-live-badge",
       "c-measure",
       "c-menu",
       "c-number-field",
       "c-pagination",
+      "c-palette-editor",
       "c-panel",
       "c-price",
       "c-provenance",
       "c-pull-to-refresh",
+      "c-radio",
+      "c-range-scale",
       "c-readout",
       "c-recipe",
       "c-saved-view",
       "c-scroll-area",
       "c-search-trigger",
+      "c-select",
       "c-shortcut",
+      "c-showcase",
+      "c-sortable-list",
       "c-spatial-filter",
       "c-stat",
       "c-status-light",
       "c-steps",
+      "c-switch",
       "c-table",
       "c-tabs",
+      "c-tags-input",
+      "c-textarea",
       "c-time-picker",
+      "c-time-range",
       "c-time-series",
       "c-time-slider",
       "c-timeline",
@@ -14743,6 +15978,8 @@
       "c-annotation",
       "c-badge",
       "c-changelog",
+      "c-chart-grid",
+      "c-combobox",
       "c-command",
       "c-compare",
       "c-docs-nav",
@@ -14754,6 +15991,8 @@
       "c-header",
       "c-kpi",
       "c-layer-panel",
+      "c-live-badge",
+      "c-map-footer",
       "c-pill",
       "c-scheme-toggle",
       "c-table",
@@ -14764,15 +16003,19 @@
     ],
     "--weight-semibold": [
       "c-activity-feed",
+      "c-advanced",
       "c-affordance",
       "c-alert",
+      "c-analysis-stack",
       "c-app",
       "c-avatar",
       "c-btn",
       "c-callout",
       "c-card",
       "c-changelog",
+      "c-checkbox-group",
       "c-chip",
+      "c-command-palette",
       "c-compare",
       "c-dash-toolbar",
       "c-data-export",
@@ -14787,11 +16030,14 @@
       "c-faq",
       "c-feature",
       "c-feature-inspector",
+      "c-fieldset",
+      "c-form",
       "c-hover-card",
       "c-landing-features",
       "c-link",
       "c-logos",
       "c-map-popup",
+      "c-menu",
       "c-pager",
       "c-panel",
       "c-popover",
@@ -14799,16 +16045,20 @@
       "c-prose",
       "c-provenance",
       "c-recipe",
+      "c-reserved",
       "c-saved-view",
       "c-scroll-area",
       "c-segmented",
       "c-sheet",
+      "c-shortcut-list",
       "c-sidebar",
+      "c-skip-link",
       "c-steps",
       "c-style-panel",
       "c-survey",
       "c-tabs",
       "c-testimonial",
+      "c-theme-scope",
       "c-timeline"
     ],
     "--z-drawer": [
@@ -14823,6 +16073,7 @@
       "c-sheet"
     ],
     "--z-raised": [
+      "c-docs-shell",
       "c-map-panel",
       "c-map-slot",
       "c-measure",
@@ -14848,6 +16099,7 @@
       "c-hexbin",
       "c-isochrone",
       "c-notification-center",
+      "c-skip-link",
       "c-sparkline",
       "c-split-button",
       "c-split-view",

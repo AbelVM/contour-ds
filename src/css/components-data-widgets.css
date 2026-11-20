@@ -147,6 +147,8 @@
     color: var(--color-text-subtle);
     letter-spacing: var(--tracking-micro);
     text-transform: uppercase;
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
 
   .c-survey__empty,
@@ -208,6 +210,16 @@
     display: grid;
     gap: 2px;
     max-inline-size: calc(8rem * var(--density, 1));
+  }
+  .c-bivariate-legend__cell {
+    aspect-ratio: 1;
+    border-radius: var(--radius-xs);
+    min-inline-size: 0;
+    /* The cell's default min-inline-size is min-content (45 px), which the
+       grid resolves against the 1fr tracks and pushes the matrix's intrinsic
+       size past its own max-inline-size: a 3×3 matrix measured 128 px wide
+       with a 138 px scrollWidth and `overflow: visible`, spilling 10 px. The
+       matrix cap is the bound; the cell must not exceed it. */
   }
   .c-bivariate-legend__axis--x {
     text-align: center;
@@ -363,7 +375,6 @@
     text-align: center;
   }
 
-  .c-data-export {
   .c-data-export {
     display: inline-flex;
     flex-wrap: wrap;
@@ -524,7 +535,7 @@
   .c-feature-inspector__body {
     overflow: auto;
     padding: calc(var(--space-sm) * var(--density, 1));
-    block-size: 1fr;
+    block-size: auto;
     display: flex;
     flex-direction: column;
     gap: calc(var(--space-md) * var(--density, 1));
@@ -547,4 +558,5 @@
     padding: calc(var(--space-sm) * var(--density, 1));
     border-block-start: 1px solid var(--color-border-subtle);
   }
+  .c-feature-inspector__action { flex: 0 0 auto; }
 }

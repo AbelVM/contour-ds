@@ -14,7 +14,7 @@
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 
-const ROOT = new URL("../..", import.meta.url).pathname.replace(/\/$/, "");
+const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
 const ARTIFACT = join(ROOT, "dist/contour.components.json");
 const BASELINE = join(ROOT, "tools/lib/contour.components.baseline.json");
 

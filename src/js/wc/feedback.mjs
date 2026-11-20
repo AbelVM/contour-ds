@@ -31,7 +31,7 @@ class ContourDialog extends ContourBase {
           closeBtn.className = "c-btn c-btn--icon c-btn--ghost c-dialog__close";
           closeBtn.setAttribute("type", "button");
           closeBtn.setAttribute("aria-label", "Close");
-          closeBtn.innerHTML = '<svg aria-hidden="true"><use href="#i-x" /></svg>';
+          closeBtn.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-x" /></svg>';
           head.appendChild(closeBtn);
         }
         const h = head.querySelector(".c-dialog__title");
@@ -145,7 +145,7 @@ class ContourAlert extends ContourBase {
       if (icon) {
         const ic = this.ensure(".c-alert__icon", () => { const el = document.createElement("span"); el.className = "c-alert__icon"; return el; });
         if (ic.parentNode === this && this.firstChild !== ic) this.prepend(ic);
-        ic.innerHTML = '<svg aria-hidden="true"><use href="#' + String(icon).replace(/[^a-zA-Z0-9_-]/g, "") + '" /></svg>';
+        ic.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#' + String(icon).replace(/[^a-zA-Z0-9_-]/g, "") + '" /></svg>';
       } else {
         const ic = this.querySelector(".c-alert__icon");
         if (ic) ic.remove();
@@ -258,7 +258,7 @@ class ContourDisclosure extends ContourBase {
            if (icon) {
             const ic = document.createElement("span");
             ic.className = "c-disclosure__icon";
-            ic.innerHTML = '<svg aria-hidden="true"><use href="#' + String(icon).replace(/[^a-zA-Z0-9_-]/g, "") + '" /></svg>';
+            ic.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#' + String(icon).replace(/[^a-zA-Z0-9_-]/g, "") + '" /></svg>';
             summ.appendChild(ic);
           }
           summ.appendChild(document.createTextNode(summary));
@@ -276,7 +276,7 @@ class ContourDisclosure extends ContourBase {
           if (icon && !ic) {
             const newIc = document.createElement("span");
             newIc.className = "c-disclosure__icon";
-            newIc.innerHTML = '<svg aria-hidden="true"><use href="#' + String(icon).replace(/[^a-zA-Z0-9_-]/g, "") + '" /></svg>';
+            newIc.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#' + String(icon).replace(/[^a-zA-Z0-9_-]/g, "") + '" /></svg>';
             summ.insertBefore(newIc, summ.firstChild);
           } else if (!icon && ic) {
             ic.remove();
@@ -320,7 +320,7 @@ class ContourCallout extends ContourBase {
       if (icon) {
         const ic = this.ensure(".c-callout__icon", () => { const el = document.createElement("span"); el.className = "c-callout__icon"; return el; });
         if (ic.parentNode === this && this.firstChild !== ic) this.prepend(ic);
-        ic.innerHTML = '<svg aria-hidden="true"><use href="#' + String(icon).replace(/[^a-zA-Z0-9_-]/g, "") + '" /></svg>';
+        ic.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#' + String(icon).replace(/[^a-zA-Z0-9_-]/g, "") + '" /></svg>';
       } else {
         const ic = this.querySelector(".c-callout__icon");
         if (ic) ic.remove();
@@ -374,7 +374,7 @@ class ContourEmpty extends ContourBase {
       const icon = this.getAttribute("icon");
       if (icon) {
         const ic = this.ensure(".c-empty__icon", () => { const el = document.createElement("span"); el.className = "c-empty__icon"; return el; });
-        ic.innerHTML = '<svg aria-hidden="true"><use href="#' + String(icon).replace(/[^a-zA-Z0-9_-]/g, "") + '" /></svg>';
+        ic.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#' + String(icon).replace(/[^a-zA-Z0-9_-]/g, "") + '" /></svg>';
       } else {
         const ic = this.querySelector(".c-empty__icon");
         if (ic) ic.remove();
@@ -456,7 +456,7 @@ class ContourFaq extends ContourBase {
             const sign = document.createElement("span");
             sign.className = "c-faq__sign";
             sign.setAttribute("aria-hidden", "true");
-            sign.innerHTML = '<svg aria-hidden="true"><use href="#i-plus" /></svg>';
+            sign.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-plus" /></svg>';
             q.appendChild(sign);
             item.appendChild(q);
             const a = document.createElement("div");
@@ -476,7 +476,7 @@ class ContourFaq extends ContourBase {
            q.textContent = question || "";
            const sign = this.ensure(".c-faq__sign", () => { const el = document.createElement("span"); el.className = "c-faq__sign"; return el; }, q);
            sign.setAttribute("aria-hidden", "true");
-           sign.innerHTML = '<svg aria-hidden="true"><use href="#i-plus" /></svg>';
+           sign.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-plus" /></svg>';
            const a = this.ensure(".c-faq__answer", () => { const el = document.createElement("div"); el.className = "c-faq__answer"; return el; }, item);
            a.textContent = answer || "";
          }
@@ -599,7 +599,7 @@ class ContourDrawer extends ContourBase {
           closeBtn.className = "c-btn c-btn--icon c-btn--ghost c-drawer__close";
           closeBtn.setAttribute("type", "button");
           closeBtn.setAttribute("aria-label", "Close");
-          closeBtn.innerHTML = '<svg aria-hidden="true"><use href="#i-x" /></svg>';
+          closeBtn.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-x" /></svg>';
           head.appendChild(closeBtn);
         }
         const t = head.querySelector(".c-drawer__title");
@@ -702,7 +702,7 @@ class ContourSheet extends ContourBase {
           closeBtn.className = "c-btn c-btn--icon c-btn--ghost c-sheet__close";
           closeBtn.setAttribute("type", "button");
           closeBtn.setAttribute("aria-label", "Close");
-          closeBtn.innerHTML = '<svg aria-hidden="true"><use href="#i-x" /></svg>';
+          closeBtn.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-x" /></svg>';
           head.appendChild(closeBtn);
         }
         const t = head.querySelector(".c-sheet__title");

@@ -2449,6 +2449,10 @@ export function wireTree(host) {
     wcAll(host, ".c-tree__toggle, .c-tree__leaf").forEach((el) => el.setAttribute("tabindex", el === keep ? "0" : "-1"));
   };
   wcListen(host, "click", (e) => {
+    // Virtual trees are handled by ContourTree's own click handler in
+    // navigation.mjs, which re-renders the window. Non-virtual trees are
+    // handled here: toggle button or row label click both expand/collapse.
+    if (host.hasAttribute("virtual")) return;
     let toggle = wcClosest(host, e.target, ".c-tree__toggle");
     if (!toggle) {
       const row = wcClosest(host, e.target, ".c-tree__row");
@@ -6742,6 +6746,7 @@ class ContourFab extends ContourBase {
         // the glyph; the old code wrote the icon name into the button.
         const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         svg.setAttribute("aria-hidden", "true");
+        svg.setAttribute("viewBox", "0 0 24 24");
         const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
         use.setAttribute("href", icon.startsWith("#") ? icon : "#" + icon);
         svg.appendChild(use);
@@ -7785,7 +7790,7 @@ class ContourTour extends ContourBase {
         if (!this.hasAttribute("open")) return;
         const tag = e.target && e.target.tagName;
         if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
-        if (e.key === "Escape") { e.preventDefault(); this.close(); }
+        if (e.key === "Escape") { this.close(); }
         else if (e.key === "ArrowRight") { e.preventDefault(); step("next"); }
         else if (e.key === "ArrowLeft") { e.preventDefault(); step("prev"); }
       };

@@ -512,7 +512,9 @@ export function inventory() {
     components: {
       count: components.length,
       names: components,
-      // Sorted so the shipped contract is deterministic: a byte-for-byte rebuild
+      // The number of custom elements actually registered by the build,
+      // counted from `customElements.define` calls rather than by hand.
+      elements: registeredElements(),
       // must match, or a gate cannot tell a real change from a Set ordering.
       rules: Object.fromEntries(
         [...byComponent].map(([k, v]) => [
@@ -602,4 +604,25 @@ export function toJson(inv = inventory()) {
     null,
     2,
   );
+}
+
+/**
+ * The number of custom elements the build registers, counted from the
+ * `customElements.define(...)` calls in `src/js/wc/`. The published "365
+ * custom elements" figure in README was hand-typed and went stale while every
+ * gate was green; this counts it instead.
+ *
+ * Light-DSD and shadow-DSD wrappers both call `define()`, so the count is the
+ * number of distinct names handed to it — not the number of call sites.
+ */
+function registeredElements() {
+  const names = new Set();
+  const files = ["core", "registration", "shadow", "behaviours", "content", "docs", "feedback", "forms", "interaction", "layout", "map", "misc", "navigation", "states", "ui", "data", "dashboard", "svg"];
+  for (const f of files) {
+    const p = join(ROOT, "src/js/wc", f + ".mjs");
+    if (!existsSync(p)) continue;
+    const text = readFileSync(p, "utf8");
+    for (const m of text.matchAll(/define\(\s*["']([a-z][a-z0-9-]*)["']/g)) names.add(m[1]);
+  }
+  return names.size;
 }

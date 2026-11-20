@@ -2449,6 +2449,10 @@ export function wireTree(host) {
     wcAll(host, ".c-tree__toggle, .c-tree__leaf").forEach((el) => el.setAttribute("tabindex", el === keep ? "0" : "-1"));
   };
   wcListen(host, "click", (e) => {
+    // Virtual trees are handled by ContourTree's own click handler in
+    // navigation.mjs, which re-renders the window. Non-virtual trees are
+    // handled here: toggle button or row label click both expand/collapse.
+    if (host.hasAttribute("virtual")) return;
     let toggle = wcClosest(host, e.target, ".c-tree__toggle");
     if (!toggle) {
       const row = wcClosest(host, e.target, ".c-tree__row");
@@ -5059,7 +5063,7 @@ if (!series && this._pushedBins && this._pushedBins.length) {
                path.setAttribute("class", "c-chart__line");
                path.setAttribute("data-series", String(i + 1));
                path.style.setProperty("--c", `var(--chart-${i + 1})`);
-               path.setAttribute("d", s.d || s);
+               path.setAttribute("d", (typeof s.d === "string" && s.d.trim()) ? s.d : (Array.isArray(s.values) ? smoothPath(s.values) : ""));
                svg.appendChild(path);
              });
              plot.appendChild(svg);
@@ -7556,7 +7560,7 @@ class ContourMeasure extends ContourBase {
       }
       // unit selector
       let sel = this.querySelector(".c-measure__unit-select");
-      if (!sel) { sel = document.createElement("select"); sel.className = "c-measure__unit-select"; this.appendChild(sel); }
+      if (!sel) { sel = document.createElement("select"); sel.className = "c-measure__unit-select"; sel.setAttribute("aria-label", labelText(this, "unit", "Unit")); sel.setAttribute("data-contour-label", "true"); this.appendChild(sel); }
       ["m","km","mi","ft"].forEach((u) => {
         if (!sel.querySelector('option[value="' + u + '"]')) { const o = document.createElement("option"); o.value = u; o.textContent = u; sel.appendChild(o); }
       });
@@ -7836,7 +7840,7 @@ class ContourCompare extends ContourBase {
       if (rYes) {
         const y = document.createElement("span");
         y.className = "c-compare__yes";
-        y.innerHTML = '<svg aria-hidden="true"><use href="#i-check" /></svg>';
+        y.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-check" /></svg>';
         this.appendChild(y);
       }
       if (rNo) {
@@ -7886,8 +7890,12 @@ class ContourSparkline extends ContourBase {
           svg.setAttribute("width", "100%");
           svg.setAttribute("height", "100%");
           svg.setAttribute("title", this.getAttribute("aria-label") || "Sparkline");
+          // A single point has no neighbour to divide by: `i / (n - 1)` is NaN,
+          // and a NaN `d` renders as no path at all — the sparkline silently
+          // vanished for a one-point series. Pin it to the midpoint instead.
+          const n = parsed.length;
           const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-          path.setAttribute("d", parsed.map((p, i) => (i === 0 ? "M" : "L") + " " + (i * 100 / (parsed.length - 1)) + " " + (30 - p * 30)).join(" "));
+          path.setAttribute("d", parsed.map((p, i) => (i === 0 ? "M" : "L") + " " + (n === 1 ? 50 : i * 100 / (n - 1)) + " " + (30 - p * 30)).join(" "));
            svg.appendChild(path);
            const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
            dot.setAttribute("class", "c-sparkline__dot");
@@ -7928,7 +7936,7 @@ class ContourSparkline extends ContourBase {
         if (pts.length === 0) return;
         const idx = Math.round(pct * (pts.length - 1));
         const val = pts[idx];
-        const cx = (idx * 100 / (pts.length - 1));
+        const cx = pts.length === 1 ? 50 : (idx * 100 / (pts.length - 1));
         const cy = 30 - val * 30;
         if (dot) {
           dot.setAttribute("cx", String(cx));
@@ -8169,14 +8177,15 @@ class ContourQueryBuilder extends ContourBase {
     let rules = [];
     if (query) { try { rules = JSON.parse(query); } catch (e) { rules = []; } }
     const list = this.ensure(".c-query-builder__list", () => { const el = document.createElement("div"); el.className = "c-query-builder__list"; return el; });
-    Array.from(list.querySelectorAll(".c-query-builder__row, .c-query-builder__connector")).forEach((n) => n.remove());
+    Array.from(list.querySelectorAll(".c-query-builder__row, .c-query-builder__connector, .c-query-builder__group")).forEach((n) => n.remove());
+    let currentGroup = null;
     rules.forEach((rule, i) => {
       // Connector between rows (AND/OR).
       if (i > 0) {
         const conn = document.createElement("div");
         conn.className = "c-query-builder__connector";
         const sel = document.createElement("select");
-        sel.className = "c-query-builder__op";
+        sel.className = "c-input c-query-builder__connector__op";
         sel.setAttribute("aria-label", "Connector " + i);
         ["AND", "OR"].forEach((c) => {
           const opt = document.createElement("option");
@@ -8187,10 +8196,27 @@ class ContourQueryBuilder extends ContourBase {
         conn.appendChild(sel);
         list.appendChild(conn);
       }
+      // Grouping: consecutive rules sharing a non-empty `group` label are
+      // wrapped in a .c-query-builder__group with a .c-query-builder__group-label.
+      const groupName = (rule && rule.group) ? String(rule.group) : "";
+      if (groupName) {
+        if (!currentGroup || currentGroup._groupName !== groupName) {
+          currentGroup = document.createElement("div");
+          currentGroup.className = "c-query-builder__group";
+          currentGroup._groupName = groupName;
+          const lbl = document.createElement("div");
+          lbl.className = "c-query-builder__group-label";
+          lbl.textContent = groupName;
+          currentGroup.appendChild(lbl);
+          list.appendChild(currentGroup);
+        }
+      } else {
+        currentGroup = null;
+      }
       const row = document.createElement("div");
       row.className = "c-query-builder__row";
       const field = document.createElement("select");
-      field.className = "c-query-builder__field";
+      field.className = "c-input c-query-builder__field";
       field.setAttribute("aria-label", "Field " + (i + 1));
       fieldList.forEach((f) => {
         const opt = document.createElement("option");
@@ -8200,7 +8226,7 @@ class ContourQueryBuilder extends ContourBase {
         field.appendChild(opt);
       });
       const op = document.createElement("select");
-      op.className = "c-query-builder__op";
+      op.className = "c-input c-query-builder__op";
       op.setAttribute("aria-label", "Operator " + (i + 1));
       ["=", "!=", ">", "<", "contains"].forEach((o) => {
         const opt = document.createElement("option");
@@ -8209,7 +8235,7 @@ class ContourQueryBuilder extends ContourBase {
         op.appendChild(opt);
       });
       const val = document.createElement("input");
-      val.className = "c-query-builder__value";
+      val.className = "c-input c-query-builder__value";
       val.type = "text";
       val.value = rule.value || "";
       val.setAttribute("aria-label", "Value " + (i + 1));
@@ -8219,7 +8245,7 @@ class ContourQueryBuilder extends ContourBase {
       remove.setAttribute("aria-label", "Remove rule " + (i + 1));
       remove.textContent = "×";
       row.appendChild(field); row.appendChild(op); row.appendChild(val); row.appendChild(remove);
-      list.appendChild(row);
+      if (currentGroup) currentGroup.appendChild(row); else list.appendChild(row);
     });
     const add = this.ensure(".c-query-builder__add", () => { const b = document.createElement("button"); b.type = "button"; b.className = "c-btn c-btn--sm c-query-builder__add"; return b; });
     add.textContent = labelText(this, "add-rule", "Add rule");

@@ -5,10 +5,10 @@
   "statement": "Generated, never hand-edited. Every block, element, variant, state and token below is read from src/css by the same inventory that publishes every count in this repository, and tools/check-components.mjs fails if the shipped bytes are not that derivation. `tokens` lists the custom properties a block's rules read; a rule naming two blocks (`.c-alert, .c-callout`) is credited to both, because that is what a retune does.",
   "counts": {
     "blocks": 246,
-    "elements": 912,
+    "elements": 914,
     "variants": 119,
     "states": 336,
-    "tokens": 2694,
+    "tokens": 2676,
     "vars": 16,
     "inputs": 20,
     "tokensIndexed": 199
@@ -1020,7 +1020,7 @@
       "sheets": [
         "components-data-widgets.css"
       ],
-      "rules": 8,
+      "rules": 9,
       "elements": [
         "c-bivariate-legend__axis",
         "c-bivariate-legend__axis--x",
@@ -1826,7 +1826,7 @@
       "sheets": [
         "components-docs.css"
       ],
-      "rules": 16,
+      "rules": 23,
       "elements": [
         "c-changelog__body",
         "c-changelog__date",
@@ -2266,9 +2266,10 @@
       "name": "c-cluster",
       "maturity": "primitive",
       "sheets": [
+        "components-data-dashboard.css",
         "components-misc.css"
       ],
-      "rules": 1,
+      "rules": 2,
       "elements": [],
       "variants": [],
       "states": [],
@@ -3423,7 +3424,7 @@
       "sheets": [
         "components-data-widgets.css"
       ],
-      "rules": 35,
+      "rules": 5,
       "elements": [
         "c-data-export__btn"
       ],
@@ -3441,34 +3442,16 @@
       "slots": [],
       "parts": [],
       "tokens": [
-        "--color-accent",
         "--color-border",
-        "--color-border-subtle",
-        "--color-success-soft",
-        "--color-success-text",
         "--color-surface-1",
         "--color-surface-2",
-        "--color-text",
-        "--color-text-muted",
         "--color-text-strong",
-        "--color-warning-soft",
-        "--color-warning-text",
         "--density",
         "--dur-fast",
         "--ease-standard",
-        "--radius-lg",
-        "--radius-md",
-        "--radius-pill",
         "--radius-sm",
-        "--shadow-md",
-        "--shadow-xl",
-        "--space-2xs",
-        "--space-md",
         "--space-sm",
-        "--space-xs",
-        "--type-sm",
-        "--type-xs",
-        "--weight-semibold"
+        "--space-xs"
       ],
       "vars": [],
       "inputs": [],
@@ -4841,7 +4824,7 @@
         "components-misc.css",
         "utilities.css"
       ],
-      "rules": 3,
+      "rules": 4,
       "elements": [],
       "variants": [],
       "states": [],
@@ -5011,8 +4994,9 @@
       "sheets": [
         "components-data-widgets.css"
       ],
-      "rules": 8,
+      "rules": 9,
       "elements": [
+        "c-feature-inspector__action",
         "c-feature-inspector__actions",
         "c-feature-inspector__body",
         "c-feature-inspector__field",
@@ -6489,7 +6473,7 @@
         "components-data-dashboard.css",
         "utilities.css"
       ],
-      "rules": 22,
+      "rules": 23,
       "elements": [
         "c-kpi__empty",
         "c-kpi__error",
@@ -8776,10 +8760,11 @@
       "sheets": [
         "components-misc.css"
       ],
-      "rules": 11,
+      "rules": 12,
       "elements": [
         "c-query-builder__add",
         "c-query-builder__connector",
+        "c-query-builder__connector__op",
         "c-query-builder__field",
         "c-query-builder__group",
         "c-query-builder__group-label",
@@ -12687,7 +12672,7 @@
         "components-misc.css",
         "utilities.css"
       ],
-      "rules": 18,
+      "rules": 19,
       "elements": [
         "c-tree__children",
         "c-tree__empty",
@@ -13248,7 +13233,6 @@
       "c-btn",
       "c-callout",
       "c-chip",
-      "c-data-export",
       "c-dot",
       "c-icon-badge",
       "c-meter",
@@ -13421,7 +13405,6 @@
       "c-code-tabs",
       "c-command",
       "c-compare",
-      "c-data-export",
       "c-data-grid",
       "c-disclosure",
       "c-drawer",
@@ -13808,7 +13791,6 @@
       "c-badge",
       "c-callout",
       "c-compare",
-      "c-data-export",
       "c-pill",
       "c-provenance"
     ],
@@ -13818,7 +13800,6 @@
       "c-btn",
       "c-callout",
       "c-compare",
-      "c-data-export",
       "c-delta",
       "c-diff",
       "c-do-dont",
@@ -14026,7 +14007,6 @@
       "c-compare",
       "c-comparison",
       "c-coordinate",
-      "c-data-export",
       "c-dialog",
       "c-dot",
       "c-drag-handle",
@@ -14105,7 +14085,6 @@
       "c-compass",
       "c-coordinate",
       "c-cta",
-      "c-data-export",
       "c-date-picker",
       "c-date-range",
       "c-delta",
@@ -14378,7 +14357,6 @@
       "c-alert",
       "c-badge",
       "c-callout",
-      "c-data-export",
       "c-icon-badge",
       "c-pill",
       "c-provenance",
@@ -14388,7 +14366,6 @@
       "c-alert",
       "c-badge",
       "c-callout",
-      "c-data-export",
       "c-dot",
       "c-pill",
       "c-provenance",
@@ -14974,7 +14951,6 @@
       "c-code",
       "c-code-tabs",
       "c-dash-toolbar",
-      "c-data-export",
       "c-drawer",
       "c-empty",
       "c-feature-inspector",
@@ -15000,7 +14976,6 @@
       "c-comparison",
       "c-context-menu",
       "c-contour-plot",
-      "c-data-export",
       "c-date-picker",
       "c-diff",
       "c-do-dont",
@@ -15051,7 +15026,6 @@
       "c-category",
       "c-chip",
       "c-container",
-      "c-data-export",
       "c-docs-shell",
       "c-filter-bar",
       "c-filter-pill",
@@ -15197,7 +15171,6 @@
     "--shadow-md": [
       "c-command-palette",
       "c-context-menu",
-      "c-data-export",
       "c-date-picker",
       "c-elevation",
       "c-hover-card",
@@ -15218,7 +15191,6 @@
     ],
     "--shadow-xl": [
       "c-command",
-      "c-data-export",
       "c-dialog",
       "c-drawer",
       "c-feature-inspector"
@@ -15256,7 +15228,6 @@
       "c-container",
       "c-context-menu",
       "c-coordinate",
-      "c-data-export",
       "c-data-grid",
       "c-date-picker",
       "c-date-range",
@@ -15396,7 +15367,6 @@
       "c-dash-kpi-row",
       "c-dash-shell",
       "c-dash-toolbar",
-      "c-data-export",
       "c-do-dont",
       "c-docs-nav",
       "c-docs-shell",
@@ -15805,7 +15775,6 @@
       "c-command-palette",
       "c-compare",
       "c-contour-plot",
-      "c-data-export",
       "c-date-picker",
       "c-dialog",
       "c-disclosure",
@@ -15890,7 +15859,6 @@
       "c-compare",
       "c-comparison",
       "c-coordinate",
-      "c-data-export",
       "c-date-picker",
       "c-date-range",
       "c-delta",
@@ -16018,7 +15986,6 @@
       "c-command-palette",
       "c-compare",
       "c-dash-toolbar",
-      "c-data-export",
       "c-date-picker",
       "c-dialog",
       "c-disclosure",

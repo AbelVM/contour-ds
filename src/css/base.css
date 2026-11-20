@@ -443,7 +443,15 @@
   }
 
   /* -- Print: flatten chrome, preserve content ---------- */
-  @media print {
+  @media (pointer: coarse) {
+  /* Touch targets: enlarge interactive controls on coarse pointers. */
+  button, [role="button"], input, select, textarea, a {
+    min-block-size: 2.75rem;
+    min-inline-size: 2.75rem;
+  }
+}
+
+@media print {
     *,
     *::before,
     *::after {

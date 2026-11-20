@@ -2449,6 +2449,10 @@ export function wireTree(host) {
     wcAll(host, ".c-tree__toggle, .c-tree__leaf").forEach((el) => el.setAttribute("tabindex", el === keep ? "0" : "-1"));
   };
   wcListen(host, "click", (e) => {
+    // Virtual trees are handled by ContourTree's own click handler in
+    // navigation.mjs, which re-renders the window. Non-virtual trees are
+    // handled here: toggle button or row label click both expand/collapse.
+    if (host.hasAttribute("virtual")) return;
     let toggle = wcClosest(host, e.target, ".c-tree__toggle");
     if (!toggle) {
       const row = wcClosest(host, e.target, ".c-tree__row");
@@ -4542,6 +4546,7 @@ class ContourGeocoder extends ContourBase {
       if (val !== null && inp.value !== val) inp.value = val;
       // Results
       Array.from(this.querySelectorAll(".c-geocoder__result")).forEach((n) => n.remove());
+      Array.from(this.querySelectorAll(".c-geocoder__list")).forEach((n) => n.remove());
       let results = [];
       const rAttr = this.getAttribute("results");
       if (rAttr) { try { results = JSON.parse(rAttr); } catch (e) { results = []; } }
@@ -6125,7 +6130,7 @@ if (!series && this._pushedBins && this._pushedBins.length) {
                path.setAttribute("class", "c-chart__line");
                path.setAttribute("data-series", String(i + 1));
                path.style.setProperty("--c", `var(--chart-${i + 1})`);
-               path.setAttribute("d", s.d || s);
+               path.setAttribute("d", (typeof s.d === "string" && s.d.trim()) ? s.d : (Array.isArray(s.values) ? smoothPath(s.values) : ""));
                svg.appendChild(path);
              });
              plot.appendChild(svg);
@@ -8622,7 +8627,7 @@ class ContourMeasure extends ContourBase {
       }
       // unit selector
       let sel = this.querySelector(".c-measure__unit-select");
-      if (!sel) { sel = document.createElement("select"); sel.className = "c-measure__unit-select"; this.appendChild(sel); }
+      if (!sel) { sel = document.createElement("select"); sel.className = "c-measure__unit-select"; sel.setAttribute("aria-label", labelText(this, "unit", "Unit")); sel.setAttribute("data-contour-label", "true"); this.appendChild(sel); }
       ["m","km","mi","ft"].forEach((u) => {
         if (!sel.querySelector('option[value="' + u + '"]')) { const o = document.createElement("option"); o.value = u; o.textContent = u; sel.appendChild(o); }
       });
@@ -8902,7 +8907,7 @@ class ContourCompare extends ContourBase {
       if (rYes) {
         const y = document.createElement("span");
         y.className = "c-compare__yes";
-        y.innerHTML = '<svg aria-hidden="true"><use href="#i-check" /></svg>';
+        y.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-check" /></svg>';
         this.appendChild(y);
       }
       if (rNo) {
@@ -8952,8 +8957,12 @@ class ContourSparkline extends ContourBase {
           svg.setAttribute("width", "100%");
           svg.setAttribute("height", "100%");
           svg.setAttribute("title", this.getAttribute("aria-label") || "Sparkline");
+          // A single point has no neighbour to divide by: `i / (n - 1)` is NaN,
+          // and a NaN `d` renders as no path at all — the sparkline silently
+          // vanished for a one-point series. Pin it to the midpoint instead.
+          const n = parsed.length;
           const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-          path.setAttribute("d", parsed.map((p, i) => (i === 0 ? "M" : "L") + " " + (i * 100 / (parsed.length - 1)) + " " + (30 - p * 30)).join(" "));
+          path.setAttribute("d", parsed.map((p, i) => (i === 0 ? "M" : "L") + " " + (n === 1 ? 50 : i * 100 / (n - 1)) + " " + (30 - p * 30)).join(" "));
            svg.appendChild(path);
            const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
            dot.setAttribute("class", "c-sparkline__dot");
@@ -8994,7 +9003,7 @@ class ContourSparkline extends ContourBase {
         if (pts.length === 0) return;
         const idx = Math.round(pct * (pts.length - 1));
         const val = pts[idx];
-        const cx = (idx * 100 / (pts.length - 1));
+        const cx = pts.length === 1 ? 50 : (idx * 100 / (pts.length - 1));
         const cy = 30 - val * 30;
         if (dot) {
           dot.setAttribute("cx", String(cx));
@@ -9235,14 +9244,15 @@ class ContourQueryBuilder extends ContourBase {
     let rules = [];
     if (query) { try { rules = JSON.parse(query); } catch (e) { rules = []; } }
     const list = this.ensure(".c-query-builder__list", () => { const el = document.createElement("div"); el.className = "c-query-builder__list"; return el; });
-    Array.from(list.querySelectorAll(".c-query-builder__row, .c-query-builder__connector")).forEach((n) => n.remove());
+    Array.from(list.querySelectorAll(".c-query-builder__row, .c-query-builder__connector, .c-query-builder__group")).forEach((n) => n.remove());
+    let currentGroup = null;
     rules.forEach((rule, i) => {
       // Connector between rows (AND/OR).
       if (i > 0) {
         const conn = document.createElement("div");
         conn.className = "c-query-builder__connector";
         const sel = document.createElement("select");
-        sel.className = "c-query-builder__op";
+        sel.className = "c-input c-query-builder__connector__op";
         sel.setAttribute("aria-label", "Connector " + i);
         ["AND", "OR"].forEach((c) => {
           const opt = document.createElement("option");
@@ -9253,10 +9263,27 @@ class ContourQueryBuilder extends ContourBase {
         conn.appendChild(sel);
         list.appendChild(conn);
       }
+      // Grouping: consecutive rules sharing a non-empty `group` label are
+      // wrapped in a .c-query-builder__group with a .c-query-builder__group-label.
+      const groupName = (rule && rule.group) ? String(rule.group) : "";
+      if (groupName) {
+        if (!currentGroup || currentGroup._groupName !== groupName) {
+          currentGroup = document.createElement("div");
+          currentGroup.className = "c-query-builder__group";
+          currentGroup._groupName = groupName;
+          const lbl = document.createElement("div");
+          lbl.className = "c-query-builder__group-label";
+          lbl.textContent = groupName;
+          currentGroup.appendChild(lbl);
+          list.appendChild(currentGroup);
+        }
+      } else {
+        currentGroup = null;
+      }
       const row = document.createElement("div");
       row.className = "c-query-builder__row";
       const field = document.createElement("select");
-      field.className = "c-query-builder__field";
+      field.className = "c-input c-query-builder__field";
       field.setAttribute("aria-label", "Field " + (i + 1));
       fieldList.forEach((f) => {
         const opt = document.createElement("option");
@@ -9266,7 +9293,7 @@ class ContourQueryBuilder extends ContourBase {
         field.appendChild(opt);
       });
       const op = document.createElement("select");
-      op.className = "c-query-builder__op";
+      op.className = "c-input c-query-builder__op";
       op.setAttribute("aria-label", "Operator " + (i + 1));
       ["=", "!=", ">", "<", "contains"].forEach((o) => {
         const opt = document.createElement("option");
@@ -9275,7 +9302,7 @@ class ContourQueryBuilder extends ContourBase {
         op.appendChild(opt);
       });
       const val = document.createElement("input");
-      val.className = "c-query-builder__value";
+      val.className = "c-input c-query-builder__value";
       val.type = "text";
       val.value = rule.value || "";
       val.setAttribute("aria-label", "Value " + (i + 1));
@@ -9285,7 +9312,7 @@ class ContourQueryBuilder extends ContourBase {
       remove.setAttribute("aria-label", "Remove rule " + (i + 1));
       remove.textContent = "×";
       row.appendChild(field); row.appendChild(op); row.appendChild(val); row.appendChild(remove);
-      list.appendChild(row);
+      if (currentGroup) currentGroup.appendChild(row); else list.appendChild(row);
     });
     const add = this.ensure(".c-query-builder__add", () => { const b = document.createElement("button"); b.type = "button"; b.className = "c-btn c-btn--sm c-query-builder__add"; return b; });
     add.textContent = labelText(this, "add-rule", "Add rule");
@@ -9726,7 +9753,7 @@ class ContourDialog extends ContourBase {
           closeBtn.className = "c-btn c-btn--icon c-btn--ghost c-dialog__close";
           closeBtn.setAttribute("type", "button");
           closeBtn.setAttribute("aria-label", "Close");
-          closeBtn.innerHTML = '<svg aria-hidden="true"><use href="#i-x" /></svg>';
+          closeBtn.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-x" /></svg>';
           head.appendChild(closeBtn);
         }
         const h = head.querySelector(".c-dialog__title");
@@ -9840,7 +9867,7 @@ class ContourAlert extends ContourBase {
       if (icon) {
         const ic = this.ensure(".c-alert__icon", () => { const el = document.createElement("span"); el.className = "c-alert__icon"; return el; });
         if (ic.parentNode === this && this.firstChild !== ic) this.prepend(ic);
-        ic.innerHTML = '<svg aria-hidden="true"><use href="#' + String(icon).replace(/[^a-zA-Z0-9_-]/g, "") + '" /></svg>';
+        ic.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#' + String(icon).replace(/[^a-zA-Z0-9_-]/g, "") + '" /></svg>';
       } else {
         const ic = this.querySelector(".c-alert__icon");
         if (ic) ic.remove();
@@ -9953,7 +9980,7 @@ class ContourDisclosure extends ContourBase {
            if (icon) {
             const ic = document.createElement("span");
             ic.className = "c-disclosure__icon";
-            ic.innerHTML = '<svg aria-hidden="true"><use href="#' + String(icon).replace(/[^a-zA-Z0-9_-]/g, "") + '" /></svg>';
+            ic.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#' + String(icon).replace(/[^a-zA-Z0-9_-]/g, "") + '" /></svg>';
             summ.appendChild(ic);
           }
           summ.appendChild(document.createTextNode(summary));
@@ -9971,7 +9998,7 @@ class ContourDisclosure extends ContourBase {
           if (icon && !ic) {
             const newIc = document.createElement("span");
             newIc.className = "c-disclosure__icon";
-            newIc.innerHTML = '<svg aria-hidden="true"><use href="#' + String(icon).replace(/[^a-zA-Z0-9_-]/g, "") + '" /></svg>';
+            newIc.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#' + String(icon).replace(/[^a-zA-Z0-9_-]/g, "") + '" /></svg>';
             summ.insertBefore(newIc, summ.firstChild);
           } else if (!icon && ic) {
             ic.remove();
@@ -10015,7 +10042,7 @@ class ContourCallout extends ContourBase {
       if (icon) {
         const ic = this.ensure(".c-callout__icon", () => { const el = document.createElement("span"); el.className = "c-callout__icon"; return el; });
         if (ic.parentNode === this && this.firstChild !== ic) this.prepend(ic);
-        ic.innerHTML = '<svg aria-hidden="true"><use href="#' + String(icon).replace(/[^a-zA-Z0-9_-]/g, "") + '" /></svg>';
+        ic.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#' + String(icon).replace(/[^a-zA-Z0-9_-]/g, "") + '" /></svg>';
       } else {
         const ic = this.querySelector(".c-callout__icon");
         if (ic) ic.remove();
@@ -10069,7 +10096,7 @@ class ContourEmpty extends ContourBase {
       const icon = this.getAttribute("icon");
       if (icon) {
         const ic = this.ensure(".c-empty__icon", () => { const el = document.createElement("span"); el.className = "c-empty__icon"; return el; });
-        ic.innerHTML = '<svg aria-hidden="true"><use href="#' + String(icon).replace(/[^a-zA-Z0-9_-]/g, "") + '" /></svg>';
+        ic.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#' + String(icon).replace(/[^a-zA-Z0-9_-]/g, "") + '" /></svg>';
       } else {
         const ic = this.querySelector(".c-empty__icon");
         if (ic) ic.remove();
@@ -10151,7 +10178,7 @@ class ContourFaq extends ContourBase {
             const sign = document.createElement("span");
             sign.className = "c-faq__sign";
             sign.setAttribute("aria-hidden", "true");
-            sign.innerHTML = '<svg aria-hidden="true"><use href="#i-plus" /></svg>';
+            sign.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-plus" /></svg>';
             q.appendChild(sign);
             item.appendChild(q);
             const a = document.createElement("div");
@@ -10171,7 +10198,7 @@ class ContourFaq extends ContourBase {
            q.textContent = question || "";
            const sign = this.ensure(".c-faq__sign", () => { const el = document.createElement("span"); el.className = "c-faq__sign"; return el; }, q);
            sign.setAttribute("aria-hidden", "true");
-           sign.innerHTML = '<svg aria-hidden="true"><use href="#i-plus" /></svg>';
+           sign.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-plus" /></svg>';
            const a = this.ensure(".c-faq__answer", () => { const el = document.createElement("div"); el.className = "c-faq__answer"; return el; }, item);
            a.textContent = answer || "";
          }
@@ -10294,7 +10321,7 @@ class ContourDrawer extends ContourBase {
           closeBtn.className = "c-btn c-btn--icon c-btn--ghost c-drawer__close";
           closeBtn.setAttribute("type", "button");
           closeBtn.setAttribute("aria-label", "Close");
-          closeBtn.innerHTML = '<svg aria-hidden="true"><use href="#i-x" /></svg>';
+          closeBtn.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-x" /></svg>';
           head.appendChild(closeBtn);
         }
         const t = head.querySelector(".c-drawer__title");
@@ -10397,7 +10424,7 @@ class ContourSheet extends ContourBase {
           closeBtn.className = "c-btn c-btn--icon c-btn--ghost c-sheet__close";
           closeBtn.setAttribute("type", "button");
           closeBtn.setAttribute("aria-label", "Close");
-          closeBtn.innerHTML = '<svg aria-hidden="true"><use href="#i-x" /></svg>';
+          closeBtn.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-x" /></svg>';
           head.appendChild(closeBtn);
         }
         const t = head.querySelector(".c-sheet__title");
@@ -13471,7 +13498,7 @@ class ContourCoordinate extends ContourBase {
       span.textContent = text;
       // copy button
       let btn = this.querySelector(".c-coordinate__copy");
-      if (!btn) { btn = document.createElement("button"); btn.type = "button"; btn.className = "c-coordinate__copy"; btn.textContent = labelText(this, "copy", "Copy"); btn.setAttribute("aria-label", labelText(this, "copy-coordinate", "Copy coordinate")); this.appendChild(btn); }
+      if (!btn) { btn = document.createElement("button"); btn.type = "button"; btn.className = "c-btn c-btn--sm c-btn--icon c-coordinate__copy"; btn.textContent = labelText(this, "copy", "Copy"); btn.setAttribute("aria-label", labelText(this, "copy-coordinate", "Copy coordinate")); btn.setAttribute("data-contour-label", "true"); this.appendChild(btn); }
       btn.onclick = () => {
         try {
           if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -13566,7 +13593,7 @@ class ContourLayerPanel extends ContourBase {
             const isVisible = savedVisibility.has(name) ? savedVisibility.get(name) : (typeof it === "object" && it.visible !== false);
             toggle.setAttribute("aria-pressed", String(!!isVisible));
             toggle.checked = !!isVisible;
-            toggle.innerHTML = isVisible ? '<svg aria-hidden="true"><use href="#i-check" /></svg>' : '<svg aria-hidden="true"><use href="#i-minus" /></svg>';
+            toggle.innerHTML = isVisible ? '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-check" /></svg>' : '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-minus" /></svg>';
             item.appendChild(toggle);
             const nm = document.createElement("span");
             nm.className = "c-layer-panel__name";
@@ -13615,7 +13642,7 @@ class ContourLayerPanel extends ContourBase {
             const removeBtn = document.createElement("button");
             removeBtn.type = "button";
             removeBtn.className = "c-layer-panel__remove";
-            removeBtn.innerHTML = '<svg aria-hidden="true"><use href="#i-minus" /></svg>';
+            removeBtn.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-minus" /></svg>';
             removeBtn.setAttribute("aria-label", labelText(this, "remove", "Remove") + " " + (name || "layer"));
             item.appendChild(removeBtn);
             }
@@ -13645,7 +13672,7 @@ class ContourLayerPanel extends ContourBase {
            const now = (typeof e.target.checked === "boolean") ? e.target.checked : (e.target.getAttribute("aria-pressed") !== "true");
            e.target.checked = now;
            e.target.setAttribute("aria-pressed", String(now));
-           e.target.innerHTML = now ? '<svg aria-hidden="true"><use href="#i-check" /></svg>' : '<svg aria-hidden="true"><use href="#i-minus" /></svg>';
+           e.target.innerHTML = now ? '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-check" /></svg>' : '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-minus" /></svg>';
            this.dispatchEvent(new CustomEvent("contour:layer-visibility", { bubbles: true, composed: true, detail: { name, visible: now } }));
          } else if (e.target.classList.contains("c-layer-panel__opacity")) {
            this.dispatchEvent(new CustomEvent("contour:layer-opacity", { bubbles: true, composed: true, detail: { name, opacity: Number(e.target.value) } }));
@@ -13663,7 +13690,7 @@ class ContourLayerPanel extends ContourBase {
            const now = btn.getAttribute("aria-pressed") !== "true";
            btn.setAttribute("aria-pressed", String(now));
            btn.checked = now;
-           btn.innerHTML = now ? '<svg aria-hidden="true"><use href="#i-check" /></svg>' : '<svg aria-hidden="true"><use href="#i-minus" /></svg>';
+           btn.innerHTML = now ? '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-check" /></svg>' : '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-minus" /></svg>';
            this.dispatchEvent(new CustomEvent("contour:layer-visibility", { bubbles: true, composed: true, detail: { name, visible: now } }));
            return;
          }
@@ -14323,7 +14350,7 @@ class ContourLayerSwitch extends ContourBase {
             toggle.type = "button";
              toggle.setAttribute("aria-label", "Toggle " + (typeof it === "string" ? it : (it.name || it.label || "layer")));
              toggle.setAttribute("aria-pressed", "true");
-            toggle.innerHTML = '<svg aria-hidden="true"><use href="#i-check" /></svg>';
+            toggle.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-check" /></svg>';
             item.appendChild(toggle);
             this.appendChild(item);
           });
@@ -15070,7 +15097,10 @@ class ContourTabs extends ContourBase {
       wireStates(this);
       loadRemote(this, "tabs");
       if (renderStates(this, "tabs")) return;
-      const tabs = remoteData(this, "tabs");
+      // `items` is the attribute the guide's counterpart markup uses (it is the
+      // same name the CSS block reads); `tabs` is the legacy spelling. Accept
+      // both — a consumer writing the documented markup must not get "No data".
+      const tabs = remoteData(this, "tabs") || remoteData(this, "items") || this.getAttribute("tabs") || this.getAttribute("items");
       // Slot composition wins over the JSON attribute, same as ContourMenu:
       // authored tab buttons ([role='tab']) and panels (.c-tabs__panel) in light
       // DOM are used as-is; the JSON `tabs` attribute only fills in when the host
@@ -15261,7 +15291,7 @@ class ContourHeader extends ContourBase {
           brandEl.className = "c-brand";
           brandEl.setAttribute("data-contour-generated", "");
           brandEl.href = "#";
-          brandEl.innerHTML = `<span class="c-mark"><svg aria-hidden="true"><use href="#i-mark" /></svg></span>`;
+          brandEl.innerHTML = `<span class="c-mark"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-mark" /></svg></span>`;
           const brandName = document.createElement("span");
           brandName.className = "c-brand__name";
           brandEl.appendChild(brandName);
@@ -15325,7 +15355,7 @@ class ContourHeader extends ContourBase {
           toggle.setAttribute("aria-label", "Toggle navigation");
           toggle.setAttribute("aria-expanded", "false");
           toggle.setAttribute("aria-controls", navEl.id);
-          toggle.innerHTML = '<svg aria-hidden="true"><use href="#i-grid" /></svg>';
+          toggle.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-grid" /></svg>';
           actions.appendChild(toggle);
         }
       }
@@ -15463,7 +15493,7 @@ class ContourTree extends ContourBase {
         toggle.setAttribute("type", "button");
         toggle.setAttribute("aria-expanded", String(f.expanded));
         toggle.setAttribute("aria-label", "Toggle");
-        toggle.innerHTML = '<svg aria-hidden="true"><use href="#i-chevron-right" /></svg>';
+        toggle.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-chevron-right" /></svg>';
         row.appendChild(toggle);
         const span = document.createElement("span");
         span.textContent = node.label;
@@ -15572,7 +15602,7 @@ render() {
                    toggle.setAttribute("type", "button");
                    toggle.setAttribute("aria-expanded", "false");
                   toggle.setAttribute("aria-label", "Toggle");
-                  toggle.innerHTML = '<svg aria-hidden="true"><use href="#i-chevron-right" /></svg>';
+toggle.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-chevron-right" /></svg>';
                   row.appendChild(toggle);
                   const span = document.createElement("span");
                   span.textContent = node.label;
@@ -15613,11 +15643,20 @@ render() {
       }
     }
     enhance() {
-      // Toggle handling via delegation (works for windowed + static trees).
+      // Toggle handling for virtual trees only. Non-virtual trees are handled
+      // by wireTree in behaviours.mjs, which manages children show/hide and
+      // persistence. Having both handlers fire on the same click caused them
+      // to cancel each other out: ContourTree set aria-expanded to !expanded,
+      // then wireTree read that new value and set it back.
       if (!this._wiredTreeToggle) {
         this._wiredTreeToggle = true;
         this.addEventListener("click", (e) => {
-          const toggle = e.target && e.target.closest ? e.target.closest(".c-tree__toggle") : null;
+          if (!this.hasAttribute("virtual")) return;
+          let toggle = e.target && e.target.closest ? e.target.closest(".c-tree__toggle") : null;
+          if (!toggle) {
+            const row = e.target && e.target.closest ? e.target.closest(".c-tree__row") : null;
+            if (row) toggle = row.querySelector(":scope > .c-tree__toggle");
+          }
           if (!toggle || !this.contains(toggle)) return;
           e.stopPropagation();
           const nodeEl = toggle.closest(".c-tree__node");
@@ -16748,6 +16787,8 @@ class ContourSpatialFilter extends ContourBase {
       operator.appendChild(opLabel);
       const opSelect = document.createElement("select");
       opSelect.className = "c-spatial-filter__operator-select";
+      opSelect.setAttribute("aria-label", labelText(this, "operator", "Operator"));
+      opSelect.setAttribute("data-contour-label", "true");
       ops.forEach((op) => {
         const o = document.createElement("option");
         o.value = op;
@@ -19621,6 +19662,7 @@ class ContourFab extends ContourBase {
         // the glyph; the old code wrote the icon name into the button.
         const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
         svg.setAttribute("aria-hidden", "true");
+        svg.setAttribute("viewBox", "0 0 24 24");
         const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
         use.setAttribute("href", icon.startsWith("#") ? icon : "#" + icon);
         svg.appendChild(use);
@@ -20664,7 +20706,7 @@ class ContourTour extends ContourBase {
         if (!this.hasAttribute("open")) return;
         const tag = e.target && e.target.tagName;
         if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
-        if (e.key === "Escape") { e.preventDefault(); this.close(); }
+        if (e.key === "Escape") { this.close(); }
         else if (e.key === "ArrowRight") { e.preventDefault(); step("next"); }
         else if (e.key === "ArrowLeft") { e.preventDefault(); step("prev"); }
       };

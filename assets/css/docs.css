@@ -212,7 +212,7 @@
   }
 
   /* Back to top (BY3-D) */
-  .c-back-to-top {
+  .ds-back-to-top {
     position: fixed;
     inset-block-end: 1.5rem;
     inset-inline-end: 1.5rem;
@@ -227,7 +227,7 @@
     text-decoration: none;
     z-index: 10;
   }
-  .c-back-to-top:hover {
+  .ds-back-to-top:hover {
     color: var(--color-text-strong);
     background: var(--color-surface-3);
   }

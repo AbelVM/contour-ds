@@ -762,6 +762,7 @@
     font-size: var(--type-lg);
     z-index: var(--z-toast);
   }
+  .c-fab svg { inline-size: 1.5rem; block-size: 1.5rem; }
   .c-context-menu {
     padding: calc(var(--space-2xs) * var(--density, 1));
     border-radius: var(--radius-md);
@@ -1569,6 +1570,7 @@
   .c-tree__toggle[aria-expanded="true"] svg {
     transform: rotate(90deg);
   }
+  .c-tree__toggle svg { inline-size: 1rem; block-size: 1rem; }
   .c-tree__children {
     padding-inline-start: calc(1.25rem * var(--density, 1));
   }
@@ -2164,14 +2166,18 @@
   .c-analysis-stack__header { margin: 0; }
   .c-analysis-stack__title { font-size: var(--type-sm); font-weight: var(--weight-semibold); color: var(--color-text); }
 
-  /* Query builder (R18-34): a list of field/operator/value rows. */
+  /* Query builder (R18-34): a list of field/operator/value rows. The controls
+     carry `c-input` (they are real inputs, not bare natives) — which sets
+     `inline-size: 100%` — so the flex items size by flex-basis, not by that
+     declaration. */
   .c-query-builder { display: flex; flex-direction: column; gap: 0.5rem; }
   .c-query-builder__list { display: flex; flex-direction: column; gap: 0.5rem; }
   .c-query-builder__row { display: flex; gap: 0.5rem; align-items: center; }
-  .c-query-builder__field, .c-query-builder__op { flex: 1 1 auto; }
-  .c-query-builder__value { flex: 2 1 auto; }
+  .c-query-builder__field, .c-query-builder__op { flex: 1 1 0; min-inline-size: 0; }
+  .c-query-builder__value { flex: 2 1 0; min-inline-size: 0; }
   .c-query-builder__remove { flex: 0 0 auto; }
   .c-query-builder__connector { flex: 0 0 auto; align-self: center; font-size: var(--type-sm); color: var(--color-text-muted); }
+  .c-query-builder__connector__op { inline-size: auto; }
   .c-query-builder__group { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.5rem; border: 1px solid var(--color-border); border-radius: var(--radius-sm); }
   .c-query-builder__group-label { font-size: var(--type-sm); font-weight: 600; color: var(--color-text-muted); }
   .c-query-builder__add { flex: 0 0 auto; align-self: flex-end; }

@@ -2449,6 +2449,10 @@ export function wireTree(host) {
     wcAll(host, ".c-tree__toggle, .c-tree__leaf").forEach((el) => el.setAttribute("tabindex", el === keep ? "0" : "-1"));
   };
   wcListen(host, "click", (e) => {
+    // Virtual trees are handled by ContourTree's own click handler in
+    // navigation.mjs, which re-renders the window. Non-virtual trees are
+    // handled here: toggle button or row label click both expand/collapse.
+    if (host.hasAttribute("virtual")) return;
     let toggle = wcClosest(host, e.target, ".c-tree__toggle");
     if (!toggle) {
       const row = wcClosest(host, e.target, ".c-tree__row");
@@ -4097,7 +4101,7 @@ class ContourCoordinate extends ContourBase {
       span.textContent = text;
       // copy button
       let btn = this.querySelector(".c-coordinate__copy");
-      if (!btn) { btn = document.createElement("button"); btn.type = "button"; btn.className = "c-coordinate__copy"; btn.textContent = labelText(this, "copy", "Copy"); btn.setAttribute("aria-label", labelText(this, "copy-coordinate", "Copy coordinate")); this.appendChild(btn); }
+      if (!btn) { btn = document.createElement("button"); btn.type = "button"; btn.className = "c-btn c-btn--sm c-btn--icon c-coordinate__copy"; btn.textContent = labelText(this, "copy", "Copy"); btn.setAttribute("aria-label", labelText(this, "copy-coordinate", "Copy coordinate")); btn.setAttribute("data-contour-label", "true"); this.appendChild(btn); }
       btn.onclick = () => {
         try {
           if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -4192,7 +4196,7 @@ class ContourLayerPanel extends ContourBase {
             const isVisible = savedVisibility.has(name) ? savedVisibility.get(name) : (typeof it === "object" && it.visible !== false);
             toggle.setAttribute("aria-pressed", String(!!isVisible));
             toggle.checked = !!isVisible;
-            toggle.innerHTML = isVisible ? '<svg aria-hidden="true"><use href="#i-check" /></svg>' : '<svg aria-hidden="true"><use href="#i-minus" /></svg>';
+            toggle.innerHTML = isVisible ? '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-check" /></svg>' : '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-minus" /></svg>';
             item.appendChild(toggle);
             const nm = document.createElement("span");
             nm.className = "c-layer-panel__name";
@@ -4241,7 +4245,7 @@ class ContourLayerPanel extends ContourBase {
             const removeBtn = document.createElement("button");
             removeBtn.type = "button";
             removeBtn.className = "c-layer-panel__remove";
-            removeBtn.innerHTML = '<svg aria-hidden="true"><use href="#i-minus" /></svg>';
+            removeBtn.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-minus" /></svg>';
             removeBtn.setAttribute("aria-label", labelText(this, "remove", "Remove") + " " + (name || "layer"));
             item.appendChild(removeBtn);
             }
@@ -4271,7 +4275,7 @@ class ContourLayerPanel extends ContourBase {
            const now = (typeof e.target.checked === "boolean") ? e.target.checked : (e.target.getAttribute("aria-pressed") !== "true");
            e.target.checked = now;
            e.target.setAttribute("aria-pressed", String(now));
-           e.target.innerHTML = now ? '<svg aria-hidden="true"><use href="#i-check" /></svg>' : '<svg aria-hidden="true"><use href="#i-minus" /></svg>';
+           e.target.innerHTML = now ? '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-check" /></svg>' : '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-minus" /></svg>';
            this.dispatchEvent(new CustomEvent("contour:layer-visibility", { bubbles: true, composed: true, detail: { name, visible: now } }));
          } else if (e.target.classList.contains("c-layer-panel__opacity")) {
            this.dispatchEvent(new CustomEvent("contour:layer-opacity", { bubbles: true, composed: true, detail: { name, opacity: Number(e.target.value) } }));
@@ -4289,7 +4293,7 @@ class ContourLayerPanel extends ContourBase {
            const now = btn.getAttribute("aria-pressed") !== "true";
            btn.setAttribute("aria-pressed", String(now));
            btn.checked = now;
-           btn.innerHTML = now ? '<svg aria-hidden="true"><use href="#i-check" /></svg>' : '<svg aria-hidden="true"><use href="#i-minus" /></svg>';
+           btn.innerHTML = now ? '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-check" /></svg>' : '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-minus" /></svg>';
            this.dispatchEvent(new CustomEvent("contour:layer-visibility", { bubbles: true, composed: true, detail: { name, visible: now } }));
            return;
          }
@@ -4949,7 +4953,7 @@ class ContourLayerSwitch extends ContourBase {
             toggle.type = "button";
              toggle.setAttribute("aria-label", "Toggle " + (typeof it === "string" ? it : (it.name || it.label || "layer")));
              toggle.setAttribute("aria-pressed", "true");
-            toggle.innerHTML = '<svg aria-hidden="true"><use href="#i-check" /></svg>';
+            toggle.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-check" /></svg>';
             item.appendChild(toggle);
             this.appendChild(item);
           });

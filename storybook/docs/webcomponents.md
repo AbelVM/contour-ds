@@ -60,8 +60,6 @@ Dialog body content.
 
 Content behind the scrim.
 
-Every attribute, boolean attribute, slot and part declared by each block, counted from dist/contour.components.json. Boolean attributes are set by presence; all others take a string value. Blocks with no declared attributes are omitted.
-
 ## Subsections
 
 - Composition and states
@@ -111,4 +109,4 @@ starts disagreeing with itself.
 
 ---
 
-Source `index.html` @ `338d3c25b201b176` · last committed 2026-11-19T21:00:59+01:00 · no URL: the project is private until v1.0.
+Source `index.html` @ `18d63f18e011d5c6` · last committed 2026-11-19T21:00:59+01:00 · no URL: the project is private until v1.0.

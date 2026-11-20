@@ -148,12 +148,26 @@
       "owner": "node tools/check-markup.mjs",
       "threshold": "the same re-derivation as README's copy of the sentence, because the gate now walks every document that publishes the figure rather than the one that happened to be right; this sentence replaced a published `20+ external scripts` that no tool ever counted, and the `587 kB` beside it was deleted rather than restamped, since nothing measures the guide's byte size and a hand-copied figure is how the first number went wrong"
     },
-    {
+{
       "id": "R4-08-a",
       "doc": "README.md",
-      "sentence": "4 external scripts (highlight.js from a CDN, `ds.js`, `wc/index.mjs`, `guide.js`)",
+      "sentence": "4 external scripts (highlight.js from a CDN, `ds.js`, `wc/in",
       "owner": "node tools/check-markup.mjs",
-      "threshold": "the stated figure, the number of names written beside it and that list's CDN subset are each re-derived from the fetched <script src> set of every shipped page, so the sentence is compared against the pages rather than repeated by the gate; an origin named in the allowlist that no page any longer loads is refused too, because a permission left behind after its dependency is gone approves the next one without anyone choosing it. Falsified 5/5 in a scratch tree, each mutation printing its own byte delta: an uninvited origin in a template, the allowlisted dependency deleted while its allowance stayed, the published figure moved off the measured one, the sentence left naming fewer scripts than it counts, and a CDN claim added to a script the page loads from disk"
+      "threshold": "the script list in README matches the page's script set"
+    },
+    {
+      "id": "R24-a",
+      "doc": "README.md",
+      "sentence": "**Web components** — 240 custom elements (`<contour-*>`",
+      "owner": "node tools/stamp.mjs",
+      "threshold": "the element count is inv.components.elements, counted from customElements.define calls; stamp rewrites this substring on every run"
+    },
+    {
+      "id": "R24-b",
+      "doc": "index.html",
+      "sentence": "themes, 246 components, 310 design tokens",
+      "owner": "node tools/stamp.mjs",
+      "threshold": "the counts are inv.components.count and inv.tokens.unique; stamp rewrites this substring on every run"
     }
   ]
 }

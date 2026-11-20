@@ -58,6 +58,15 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     background: var(--color-surface-1);
+    min-inline-size: 0;
+    /* `.c-kpi` is a size container, so its intrinsic size is 0 and inside a
+       flex row it collapses to padding: the four async-state tiles in §Actions
+       measured 42 px wide inside a 1061 px cluster, with their text escaping
+       the tile. A KPI in a cluster is a cell, not a shrink-to-fit — give it a
+       flex basis so it takes its share. */
+  }
+  .c-cluster > .c-kpi {
+    flex: 1 1 0;
   }
 
   .c-kpi__empty,

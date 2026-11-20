@@ -317,7 +317,7 @@
     flex-direction: column;
     gap: calc(var(--space-xs) * var(--density, 1));
     overflow: auto;
-    block-size: 1fr;
+    block-size: auto;
     content-visibility: auto;
     contain-intrinsic-size: auto 200px;
     list-style: none;

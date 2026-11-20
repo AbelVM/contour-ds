@@ -863,7 +863,6 @@
     }
     .c-changelog__summary > * {
       min-inline-size: 0;
-    }
       padding: calc(var(--space-sm) * var(--density, 1)) calc(var(--space-md) * var(--density, 1));
       cursor: pointer;
       list-style: none;

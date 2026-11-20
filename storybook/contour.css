@@ -1250,7 +1250,15 @@
   }
 
   /* -- Print: flatten chrome, preserve content ---------- */
-  @media print {
+  @media (pointer: coarse) {
+  /* Touch targets: enlarge interactive controls on coarse pointers. */
+  button, [role="button"], input, select, textarea, a {
+    min-block-size: 2.75rem;
+    min-inline-size: 2.75rem;
+  }
+}
+
+@media print {
     *,
     *::before,
     *::after {
@@ -5064,6 +5072,7 @@
     font-size: var(--type-lg);
     z-index: var(--z-toast);
   }
+  .c-fab svg { inline-size: 1.5rem; block-size: 1.5rem; }
   .c-context-menu {
     padding: calc(var(--space-2xs) * var(--density, 1));
     border-radius: var(--radius-md);
@@ -5871,6 +5880,7 @@
   .c-tree__toggle[aria-expanded="true"] svg {
     transform: rotate(90deg);
   }
+  .c-tree__toggle svg { inline-size: 1rem; block-size: 1rem; }
   .c-tree__children {
     padding-inline-start: calc(1.25rem * var(--density, 1));
   }
@@ -6466,14 +6476,18 @@
   .c-analysis-stack__header { margin: 0; }
   .c-analysis-stack__title { font-size: var(--type-sm); font-weight: var(--weight-semibold); color: var(--color-text); }
 
-  /* Query builder (R18-34): a list of field/operator/value rows. */
+  /* Query builder (R18-34): a list of field/operator/value rows. The controls
+     carry `c-input` (they are real inputs, not bare natives) — which sets
+     `inline-size: 100%` — so the flex items size by flex-basis, not by that
+     declaration. */
   .c-query-builder { display: flex; flex-direction: column; gap: 0.5rem; }
   .c-query-builder__list { display: flex; flex-direction: column; gap: 0.5rem; }
   .c-query-builder__row { display: flex; gap: 0.5rem; align-items: center; }
-  .c-query-builder__field, .c-query-builder__op { flex: 1 1 auto; }
-  .c-query-builder__value { flex: 2 1 auto; }
+  .c-query-builder__field, .c-query-builder__op { flex: 1 1 0; min-inline-size: 0; }
+  .c-query-builder__value { flex: 2 1 0; min-inline-size: 0; }
   .c-query-builder__remove { flex: 0 0 auto; }
   .c-query-builder__connector { flex: 0 0 auto; align-self: center; font-size: var(--type-sm); color: var(--color-text-muted); }
+  .c-query-builder__connector__op { inline-size: auto; }
   .c-query-builder__group { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.5rem; border: 1px solid var(--color-border); border-radius: var(--radius-sm); }
   .c-query-builder__group-label { font-size: var(--type-sm); font-weight: 600; color: var(--color-text-muted); }
   .c-query-builder__add { flex: 0 0 auto; align-self: flex-end; }
@@ -7215,6 +7229,15 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     background: var(--color-surface-1);
+    min-inline-size: 0;
+    /* `.c-kpi` is a size container, so its intrinsic size is 0 and inside a
+       flex row it collapses to padding: the four async-state tiles in §Actions
+       measured 42 px wide inside a 1061 px cluster, with their text escaping
+       the tile. A KPI in a cluster is a cell, not a shrink-to-fit — give it a
+       flex basis so it takes its share. */
+  }
+  .c-cluster > .c-kpi {
+    flex: 1 1 0;
   }
 
   .c-kpi__empty,
@@ -8772,7 +8795,7 @@
     flex-direction: column;
     gap: calc(var(--space-xs) * var(--density, 1));
     overflow: auto;
-    block-size: 1fr;
+    block-size: auto;
     content-visibility: auto;
     contain-intrinsic-size: auto 200px;
     list-style: none;
@@ -10313,6 +10336,8 @@
     color: var(--color-text-subtle);
     letter-spacing: var(--tracking-micro);
     text-transform: uppercase;
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
   }
 
   .c-survey__empty,
@@ -10374,6 +10399,16 @@
     display: grid;
     gap: 2px;
     max-inline-size: calc(8rem * var(--density, 1));
+  }
+  .c-bivariate-legend__cell {
+    aspect-ratio: 1;
+    border-radius: var(--radius-xs);
+    min-inline-size: 0;
+    /* The cell's default min-inline-size is min-content (45 px), which the
+       grid resolves against the 1fr tracks and pushes the matrix's intrinsic
+       size past its own max-inline-size: a 3×3 matrix measured 128 px wide
+       with a 138 px scrollWidth and `overflow: visible`, spilling 10 px. The
+       matrix cap is the bound; the cell must not exceed it. */
   }
   .c-bivariate-legend__axis--x {
     text-align: center;
@@ -10529,7 +10564,6 @@
     text-align: center;
   }
 
-  .c-data-export {
   .c-data-export {
     display: inline-flex;
     flex-wrap: wrap;
@@ -10690,7 +10724,7 @@
   .c-feature-inspector__body {
     overflow: auto;
     padding: calc(var(--space-sm) * var(--density, 1));
-    block-size: 1fr;
+    block-size: auto;
     display: flex;
     flex-direction: column;
     gap: calc(var(--space-md) * var(--density, 1));
@@ -10713,6 +10747,7 @@
     padding: calc(var(--space-sm) * var(--density, 1));
     border-block-start: 1px solid var(--color-border-subtle);
   }
+  .c-feature-inspector__action { flex: 0 0 auto; }
 }
 
 /* ============================================================================
@@ -11580,7 +11615,6 @@
     }
     .c-changelog__summary > * {
       min-inline-size: 0;
-    }
       padding: calc(var(--space-sm) * var(--density, 1)) calc(var(--space-md) * var(--density, 1));
       cursor: pointer;
       list-style: none;

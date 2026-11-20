@@ -3350,7 +3350,7 @@
       "name": "contour-feature-inspector",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-feature-inspector` (complete-widget). Elements: c-feature-inspector__actions, c-feature-inspector__body, c-feature-inspector__field, c-feature-inspector__head, c-feature-inspector__label, c-feature-inspector__title, c-feature-inspector__value."
+        "value": "Contour component `c-feature-inspector` (complete-widget). Elements: c-feature-inspector__action, c-feature-inspector__actions, c-feature-inspector__body, c-feature-inspector__field, c-feature-inspector__head, c-feature-inspector__label, c-feature-inspector__title, c-feature-inspector__value."
       },
       "attributes": [
         {
@@ -6052,7 +6052,7 @@
       "name": "contour-query-builder",
       "description": {
         "kind": "markdown",
-        "value": "Contour component `c-query-builder` (complete-widget). Elements: c-query-builder__add, c-query-builder__connector, c-query-builder__field, c-query-builder__group, c-query-builder__group-label, c-query-builder__list, c-query-builder__op, c-query-builder__remove, c-query-builder__row, c-query-builder__value."
+        "value": "Contour component `c-query-builder` (complete-widget). Elements: c-query-builder__add, c-query-builder__connector, c-query-builder__connector__op, c-query-builder__field, c-query-builder__group, c-query-builder__group-label, c-query-builder__list, c-query-builder__op, c-query-builder__remove, c-query-builder__row, c-query-builder__value."
       },
       "attributes": [
         {

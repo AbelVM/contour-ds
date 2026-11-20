@@ -51,6 +51,7 @@ const FIGURES = {
   "tokens-unread": String(inv.tokens.unreadCount),
   specCount: String(inv.components.specCount),
   noSpecimen: String(inv.components.noSpecimen.length),
+  elements: String(inv.components.elements),
   "components-line": `${inv.components.count} components, ${inv.tokens.unique} design tokens`,
   // Counted from AGENTS.md itself, because "contains ten rules" was already
   // stale there by one: the file had grown an eleventh rule.
@@ -169,6 +170,36 @@ const REWRITES = [
     label: "AGENTS rule count",
     re: /(`AGENTS\.md` contains )\w+ rules/,
     to: (_m, head) => `${head}${FIGURES["agents-rules"]} rules`,
+  },
+  {
+    // README "Key features" and the JSON-LD `description` both carried
+    // hand-typed counts (203/294/365) that no gate owned, so they went
+    // stale while every check was green. Anchored to the phrase rather than
+    // a marker, because these bullets have no `<!-- ds:... -->` comment.
+    file: "README.md",
+    label: "key features component count",
+    re: /\*\*(\d+) components\*\* across 14 stylesheets/,
+    to: () => `**${FIGURES.components} components** across 14 stylesheets`,
+  },
+  {
+    file: "README.md",
+    label: "key features token count",
+    re: /\*\*(\d+) design tokens\*\* — colours/,
+    to: () => `**${FIGURES.tokens} design tokens** — colours`,
+  },
+  {
+    file: "README.md",
+    label: "key features element count",
+    re: /Web components\*\* — (\d+) custom elements/,
+    to: () => `Web components** — ${FIGURES.elements} custom elements`,
+  },
+  {
+    // JSON-LD: the description is prose, so the count is matched inside the
+    // sentence and rewritten in place rather than regenerated whole.
+    file: "index.html",
+    label: "json-ld description counts",
+    re: /themes, (\d+) components, (\d+) design tokens/,
+    to: (_m, c, t) => `themes, ${FIGURES.components} components, ${FIGURES.tokens} design tokens`,
   },
 ];
 

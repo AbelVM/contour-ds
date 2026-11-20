@@ -142,10 +142,12 @@
     "lit": "3.3.3",
     "playwright-core": "1.65.1",
     "storybook": "^10.6.7",
+    "stylelint": "^18.1.0",
+    "stylelint-config-standard": "^41.1.0",
     "vite": "^8.3.8",
     "vitest": "^5.1.1"
   },
-  "author": "Abel V\u00e1zquez Montoro",
+  "author": "Abel Vázquez Montoro",
   "repository": {
     "type": "git",
     "url": "https://github.com/AbelVM/contour-ds.git"

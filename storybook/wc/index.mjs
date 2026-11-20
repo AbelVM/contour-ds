@@ -35,7 +35,7 @@ export { SHADOW_MARKUP, renderShadowDSD };
 // `stampVersion`); the literal here is the source-time fallback and is never
 // shipped — the build replaces it with the package.json version.
 /** Published component runtime version. */
-export const CONTOUR_VERSION = "1.8.0";
+export const CONTOUR_VERSION = "1.8.1";
 if (typeof window !== "undefined") {
   window.ContourVersion = CONTOUR_VERSION;
   if (!window.Contour) {
